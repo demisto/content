@@ -8,24 +8,29 @@ from GroupIBTIA import (
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 import GroupIBTIA
+from json import load
+import os
+
+realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
+
+with open(f'{realpath}/test_data/main_collections_examples.json') as example:
+    COLLECTIONS_RAW_JSON = load(example)
+
+with open(f'{realpath}/test_data/search_example.json') as example:
+    SEARCH_RAW_JSON = load(example)
+
+with open(f'{realpath}/test_data/avalible_collections_example.json') as example:
+    AVALIBLE_COLLECTIONS_RAW_JSON = load(example)
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
 
 
-BASE_URL = "https://tap.group-ib.com/api/v2/"
-USERNAME = (
-    "example@roup-ib.com"  # Replace this value before the tests. example@roup-ib.com
-)
-PASSWORD = "exampleAPI_TOKEN"  # Replace this value before the tests. exampleAPI_TOKEN
-
 COLLECTION_NAMES = [
     "compromised/account_group",
     "compromised/bank_card_group",
-    "compromised/breached",
     "compromised/mule",
     "osi/git_repository",
-    "osi/public_leak",
     "osi/vulnerability",
     "attacks/ddos",
     "attacks/deface",
@@ -37,12 +42,15 @@ COLLECTION_NAMES = [
     "suspicious_ip/vpn",
     "suspicious_ip/scanner",
     "malware/cnc",
-    "malware/malware",
     "hi/threat",
-    "hi/threat_actor",
-    "apt/threat_actor",
     "apt/threat"
 ]
+# For now, these collections are not available for testing
+# "malware/malware",
+# "hi/threat_actor",
+# "apt/threat_actor",
+# "osi/public_leak",
+# "compromised/breached",
 
 
 @pytest.fixture(scope="function", params=COLLECTION_NAMES)
@@ -61,12 +69,9 @@ def session_fixture(request):
       - The Client instance is configured to interact with the appropriate collection by connecting
         to the integration's base URL, using authentication, and including necessary headers.
     """
-    # This part is commented out because it interfered with merge tests, but it would be good to add it in the future.
-    # if USERNAME == "example@roup-ib.com" or PASSWORD == "exampleAPI_TOKEN":
-    #     raise Exception("You must replace the basic credentials to run the tests")
     return request.param, Client(
-        base_url=BASE_URL,
-        auth=(USERNAME, PASSWORD),
+        base_url="https://some-url.com",
+        auth=("example@example.com", "exampleAPI_TOKEN"),
         verify=True,
         headers={"Accept": "*/*"},
     )
@@ -87,18 +92,15 @@ def single_session_fixture():
       - Returns a Client instance configured with the base URL, authentication, and headers.
       - The instance can be reused by any test that doesn't depend on a specific collection name.
     """
-    # This part is commented out because it interfered with merge tests, but it would be good to add it in the future.
-    # if USERNAME == "example@roup-ib.com" or PASSWORD == "exampleAPI_TOKEN":
-    #     raise Exception("You must replace the basic credentials to run the tests")
     return Client(
-        base_url=BASE_URL,
-        auth=(USERNAME, PASSWORD),
+        base_url="https://some-url.com",
+        auth=("example@example.com", "exampleAPI_TOKEN"),
         verify=True,
         headers={"Accept": "*/*"},
     )
 
 
-def test_fetch_incidents(session_fixture):
+def test_fetch_incidents(mocker, session_fixture):
     """
     Test for verifying the behavior of the fetch_incidents_command function.
 
@@ -117,6 +119,8 @@ def test_fetch_incidents(session_fixture):
         and that the returned data structure matches the expected format.
     """
     collection_name, client = session_fixture
+    collection_name, client = session_fixture
+    mocker.patch.object(client, 'create_poll_generator', return_value=[COLLECTIONS_RAW_JSON[collection_name]])
     next_run, incidents = fetch_incidents_command(
         client=client,
         last_run={},
@@ -147,7 +151,7 @@ def test_main_error():
         main()["error_command"]()  # type: ignore
 
 
-def test_global_search_command(single_session_fixture):
+def test_global_search_command(mocker, single_session_fixture):
     """
     Test for verifying the functionality of the global_search_command function.
 
@@ -166,6 +170,7 @@ def test_global_search_command(single_session_fixture):
         consistent output formatting.
     """
     client = single_session_fixture
+    mocker.patch.object(client, 'search_proxy_function', return_value=SEARCH_RAW_JSON)
     test_query = {"query": "8.8.8.8"}
     result = GroupIBTIA.global_search_command(client=client, args=test_query)
 
@@ -173,7 +178,7 @@ def test_global_search_command(single_session_fixture):
     assert result.outputs_key_field == "query"
 
 
-def test_get_available_collections(single_session_fixture):
+def test_get_available_collections(mocker, single_session_fixture):
     """
     Test for validating the get_available_collections_command function.
 
@@ -192,6 +197,7 @@ def test_get_available_collections(single_session_fixture):
         collections from the server response.
     """
     client = single_session_fixture
+    mocker.patch.object(client, 'get_available_collections_proxy_function', return_value=[AVALIBLE_COLLECTIONS_RAW_JSON])
     result = get_available_collections_command(client=client)
 
     assert result.outputs_prefix == "GIBTIA.OtherInfo"

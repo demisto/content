@@ -408,15 +408,18 @@ COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public
 
 COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
 
+
 class NumberedSeverity(Enum):
     LOW = 1
     MEDIUM = 2
     HIGH = 3
 
+
 class StringSeverity(Enum):
     LOW = "Low"
     MEDIUM = "Medium"
     HIGH = "High"
+
 
 MAPPING = {
     "compromised/account_group": {  # GIB Source:sourceType, severity:systemSeverity
@@ -1380,15 +1383,17 @@ MAPPING = {
 }
 
 DEPRECATED_COLLECTIONS = {
-    "malware/targeted_malware":"malware/malware",
-    "compromised/masked_cards":"compromised/bank_card_group",
-    "compromised/bank_card":"compromised/bank_card_group",
-    "compromised/card":"compromised/bank_card_group",
-    "compromised/account":"compromised/account_group",
-    "attacks/phishing":"attacks/phishing_group",
+    "malware/targeted_malware": "malware/malware",
+    "compromised/masked_cards": "compromised/bank_card_group",
+    "compromised/bank_card": "compromised/bank_card_group",
+    "compromised/card": "compromised/bank_card_group",
+    "compromised/account": "compromised/account_group",
+    "attacks/phishing": "attacks/phishing_group",
 }
 
 REMOVED_COLLECTIONS = ["bp/phishing", "bp/phishing_kit", "compromised/imei"]
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -1482,6 +1487,12 @@ class Client(BaseClient):
                 ),
                 last_fetch,
             )
+
+    def search_proxy_function(self, query: str) -> list[dict[str, Any]]:
+        return self.poller.global_search(query=query)
+
+    def get_available_collections_proxy_function(self) -> list:
+        return self.poller.get_available_collections()
 
 
 """ Support functions """
@@ -1621,11 +1632,12 @@ class CommonHelpers:
     @staticmethod
     def validate_collections(collection_name):
 
-        if collection_name in DEPRECATED_COLLECTIONS.keys():
+        if collection_name in DEPRECATED_COLLECTIONS:
             raise Exception(
                 f"Collection {collection_name} is obsolete. Please use {DEPRECATED_COLLECTIONS.get(collection_name)}")
         if collection_name in REMOVED_COLLECTIONS:
             raise Exception(f"The {collection_name} collection is not valid")
+
 
 class IndicatorsHelper:
 
@@ -1794,11 +1806,9 @@ class IncidentBuilder:
         if isinstance(occured_date_field, str):
             occured_date_field = [occured_date_field]
 
-
         if not isinstance(occured_date_field, list):
             raise DemistoException(f"Expected list or string for occured_date_field, got {type(occured_date_field).__name__}")
-        
-        
+
         for variant in occured_date_field:
             try:
                 incident_occured_date = dateparser_parse(
@@ -2066,10 +2076,11 @@ def test_module(client: Client) -> str:
         return "There are no collections available"
     return "ok"
 
+
 def collection_availability_check(client: Client, collection_name: str) -> None:
     if collection_name not in client.poller.get_available_collections():
         raise Exception(
-            f"Collection {collection_name} is not available from you, " \
+            f"Collection {collection_name} is not available from you, "
             "please disable collection on it or contact Group-IB to grant access"
         )
 
@@ -2146,7 +2157,7 @@ def get_available_collections_command(client: Client, args: dict | None = None):
     :param client: GIB_TI&A_Feed client.
     """
 
-    my_collections = client.poller.get_available_collections()
+    my_collections = client.get_available_collections_proxy_function()
     readable_output = tableToMarkdown(
         name="Available collections",
         t={"collections": my_collections},
@@ -2203,9 +2214,9 @@ def get_info_by_id_command(collection_name: str):
     return get_info_by_id_for_collection
 
 
-def global_search_command(client: Client, args: dict):
+def global_search_command(client: Client, args: dict) -> CommandResults:
     query = str(args.get("query"))
-    raw_response = client.poller.global_search(query=query)
+    raw_response = client.search_proxy_function(query=query)
     handled_list = []
     for result in raw_response:
         if result.get("apiPath") in MAPPING:
@@ -2294,6 +2305,7 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    incident_collections = None
     try:
         params = demisto.params()
         credentials: dict = params.get("credentials", {})

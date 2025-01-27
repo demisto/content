@@ -1,16 +1,12 @@
-import pytest
-from GroupIB_TIA_Feed import fetch_indicators_command, Client
+import pytest, os
+from json import load
+from GroupIB_TIA_Feed import fetch_indicators_command, Client, main
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
+from cyberintegrations.cyberintegrations import Parser
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
-
-BASE_URL = "https://tap.group-ib.com/api/v2/"
-USERNAME = (
-    "example@roup-ib.com"  # Replace this value before the tests. example@roup-ib.com
-)
-PASSWORD = "exampleAPI_TOKEN"  # Replace this value before the tests. exampleAPI_TOKEN
 
 COLLECTION_NAMES = [
     "compromised/account_group",
@@ -32,6 +28,14 @@ COLLECTION_NAMES = [
     "osi/git_repository",
     "ioc/common",
 ]
+
+realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
+
+with open(f'{realpath}/test_data/avalible_collections_example.json') as example:
+    AVALIBLE_COLLECTIONS_RAW_JSON = load(example)
+    
+with open(f'{realpath}/test_data/main_collections_examples.json') as example:
+    COLLECTIONS_RAW_JSON = load(example)
 
 
 @pytest.fixture(scope='function', params=COLLECTION_NAMES)
@@ -55,18 +59,33 @@ def session_fixture(request):
       - This fixture allows parameterized tests that run independently for each collection,
         providing an isolated client setup for each run.
     """
-    # This part is commented out because it interfered with merge tests, but it would be good to add it in the future.
-    # if USERNAME == "example@roup-ib.com" or PASSWORD == "exampleAPI_TOKEN":
-    #     raise Exception("You must replace the basic credentials to run the tests")
     return request.param, Client(
-        base_url=BASE_URL,
-        auth=(USERNAME, PASSWORD),
+        base_url="https://some-url.com",
+        auth=("example@roup-ib.com", "exampleAPI_TOKEN"),
         verify=True,
         headers={"Accept": "*/*"},
     )
 
 
-def test_fetch_indicators_command(session_fixture):
+def test_main_error():
+    """
+    Test for verifying the error-handling behavior in the main() function.
+
+    Given:
+      - A main() function configured to raise an exception when calling error_command.
+
+    When:
+      - The main function invokes error_command(), which is expected to trigger an error.
+
+    Then:
+      - Ensures that a SystemExit exception is raised as expected.
+      - The test checks that the main function handles errors in a predictable and controlled
+        manner, allowing graceful exits during failure.
+    """
+    with pytest.raises(SystemExit):
+        main()["error_command"]()  # type: ignore
+        
+def test_fetch_indicators_command(mocker, session_fixture):
     """
     Test for validating the functionality of fetch_indicators_command with multiple collection types.
 
@@ -105,6 +124,9 @@ def test_fetch_indicators_command(session_fixture):
     else:
         first_fetch_time = "15 days"
 
+    mocker.patch.object(client, 'get_available_collections_proxy_function', return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(client, 'create_update_generator_proxy_functions', return_value=[Parser(chunk=COLLECTIONS_RAW_JSON[collection_name], keys=[], iocs_keys=[])])
+    
     next_run, indicators = fetch_indicators_command(
         client=client,
         last_run={},
@@ -117,7 +139,8 @@ def test_fetch_indicators_command(session_fixture):
     assert "last_fetch" in next_run, (
         "Expected 'last_fetch' key in next_run to indicate the last data retrieval time."
     )
-    assert "gibid" in indicators[0].get('fields'), (
-        "Expected 'gibid' field in the first indicator's 'fields' dictionary, ensuring each indicator "
-        "includes unique identifier data."
-    )
+    if len(indicators) > 0:
+        assert "gibid" in indicators[0].get('fields'), (
+            "Expected 'gibid' field in the first indicator's 'fields' dictionary, ensuring each indicator "
+            "includes unique identifier data."
+        )

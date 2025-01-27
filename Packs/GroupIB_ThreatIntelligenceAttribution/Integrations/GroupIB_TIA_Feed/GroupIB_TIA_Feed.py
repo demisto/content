@@ -39,7 +39,7 @@ COMMON_MAPPING = {
             },
             "service_url": {
                 "id": "gibid",
-            }
+            },
         },
         "parser_mapping": {
             "id": "id",
@@ -843,7 +843,11 @@ COMMON_MAPPING = {
     },
 }
 
-COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public_leak", "compromised/breached"]
+COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = [
+    "osi/git_repository",
+    "osi/public_leak",
+    "compromised/breached",
+]
 
 
 class Client(BaseClient):
@@ -871,6 +875,25 @@ class Client(BaseClient):
             integration_version="2.0.0",
         )
 
+    def create_update_generator_proxy_functions(
+        self,
+        collection_name: str,
+        date_from: str | None = None,
+        sequpdate: int | str = None,
+        apply_hunting_rules: int | str = None,
+        limit: int | str = None,
+    ):
+        return self.poller.create_update_generator(
+            collection_name=collection_name,
+            date_from=date_from,
+            sequpdate=sequpdate,
+            apply_hunting_rules=apply_hunting_rules,
+            limit=limit,
+        )
+
+    def get_available_collections_proxy_function(self) -> list:
+        return self.poller.get_available_collections()
+
 
 def test_module(client: Client) -> str:
     """
@@ -879,7 +902,7 @@ def test_module(client: Client) -> str:
     :param client: GIB_TI&A_Feed client
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    test = client.poller.get_available_collections()
+    test = client.get_available_collections_proxy_function()
     if len(test) == 0:
         return "There are no collections available"
     return "ok"
@@ -1005,8 +1028,7 @@ class IndicatorBuilding:
                 row = (
                     " | "
                     + " | ".join(
-                        software_mixed_data[key][i]
-                        for key in software_mixed_data
+                        software_mixed_data[key][i] for key in software_mixed_data
                     )
                     + " \n"
                 )
@@ -1019,7 +1041,9 @@ class IndicatorBuilding:
         indicator_value = software_mixed
         return indicator_value
 
-    def build_indicator_value_for_date_field(self, feed: dict, indicator_type_name: str):
+    def build_indicator_value_for_date_field(
+        self, feed: dict, indicator_type_name: str
+    ):
         indicator_value = dateparser.parse(feed.get(indicator_type_name))  # type: ignore
         if indicator_value is not None:
             indicator_value = indicator_value.strftime(DATE_FORMAT)  # type: ignore
@@ -1049,57 +1073,90 @@ class IndicatorBuilding:
         :param feed: feed from GIB TI&A.
         """
         indicators_types = self.collection_mapping.get("types", {})
-        indicators_add_fields_types = self.collection_mapping.get("add_fields_types", {})
+        indicators_add_fields_types = self.collection_mapping.get(
+            "add_fields_types", {}
+        )
 
         indicators = []
 
-        demisto.debug(f"Starting to process find_iocs_in_feed feed: {feed}, collection: {self.collection_name}")
+        demisto.debug(
+            f"Starting to process find_iocs_in_feed feed: {feed}, collection: {self.collection_name}"
+        )
 
         for indicator_type_name, indicator_type in indicators_types.items():
             add_fields = {}
             demisto.debug(
-                f"Processing find_iocs_in_feed indicator type: {indicator_type_name}, corresponding type: {indicator_type}")
+                f"Processing find_iocs_in_feed indicator type: {indicator_type_name}, corresponding type: {indicator_type}"
+            )
 
             if indicator_type in self.fields_list_for_parse:
-                indicator_value = self.build_indicator_value_for_date_field(feed=feed, indicator_type_name=indicator_type_name)
-                demisto.debug(f"Extracted date field find_iocs_in_feed indicator value: {indicator_value}")
+                indicator_value = self.build_indicator_value_for_date_field(
+                    feed=feed, indicator_type_name=indicator_type_name
+                )
+                demisto.debug(
+                    f"Extracted date field find_iocs_in_feed indicator value: {indicator_value}"
+                )
             else:
                 if indicator_type_name == "software_mixed":
-                    indicator_value = self.build_indicator_value_for_software_mixed(feed=feed)
-                    demisto.debug(f"Extracted software mixed find_iocs_in_feed indicator value: {indicator_value}")
+                    indicator_value = self.build_indicator_value_for_software_mixed(
+                        feed=feed
+                    )
+                    demisto.debug(
+                        f"Extracted software mixed find_iocs_in_feed indicator value: {indicator_value}"
+                    )
 
                 elif indicator_type_name in indicators_add_fields_types:
                     # Retrieve the initial indicator value
                     indicator_value = feed.get(indicator_type_name)
-                    demisto.debug(f"Raw find_iocs_in_feed indicator value for {indicator_type_name}: {indicator_value}")
+                    demisto.debug(
+                        f"Raw find_iocs_in_feed indicator value for {indicator_type_name}: {indicator_value}"
+                    )
 
                     # If the value is a list, flatten it to get a single non-list value
                     indicator_value = self.extract_single_value(indicator_value)
-                    demisto.debug(f"Flattened find_iocs_in_feed indicator value: {indicator_value}")
+                    demisto.debug(
+                        f"Flattened find_iocs_in_feed indicator value: {indicator_value}"
+                    )
 
                     # Now process additional fields
-                    for additional_field_name, additional_field_type in indicators_add_fields_types.get(indicator_type_name).items():  # noqa: E501
+                    for (
+                        additional_field_name,
+                        additional_field_type,
+                    ) in indicators_add_fields_types.get(
+                        indicator_type_name
+                    ).items():  # noqa: E501
                         additional_field_value = feed.get(additional_field_name)
 
                         # Process additional_field_value similarly
-                        additional_field_value = self.extract_single_value(additional_field_value)
+                        additional_field_value = self.extract_single_value(
+                            additional_field_value
+                        )
 
                         demisto.debug(
-                            f"Processed find_iocs_in_feed additional field '{additional_field_name}': {additional_field_value}")
+                            f"Processed find_iocs_in_feed additional field '{additional_field_name}': {additional_field_value}"
+                        )
 
                         # Only add to add_fields if additional_field_value is not None or empty
-                        if additional_field_value is not None and additional_field_value != "":
+                        if (
+                            additional_field_value is not None
+                            and additional_field_value != ""
+                        ):
                             add_fields[additional_field_type] = additional_field_value
                             demisto.debug(
-                                f"Added additional field find_iocs_in_feed '{additional_field_type}': {additional_field_value}")
+                                f"Added additional field find_iocs_in_feed '{additional_field_type}': {additional_field_value}"
+                            )
 
                     add_fields.update(
                         {
-                            "trafficlightprotocol": self.common_fields.get("trafficlightprotocol"),
+                            "trafficlightprotocol": self.common_fields.get(
+                                "trafficlightprotocol"
+                            ),
                             "gibcollection": self.collection_name,
                         }
                     )
-                    demisto.debug(f"Updated find_iocs_in_feed additional fields: {add_fields}")
+                    demisto.debug(
+                        f"Updated find_iocs_in_feed additional fields: {add_fields}"
+                    )
 
             # Create the raw JSON object
             if indicator_value is not None and indicator_value != "":
@@ -1120,7 +1177,9 @@ class IndicatorBuilding:
                         "fields": add_fields,
                     }
                 )
-                demisto.debug(f"Added indicator find_iocs_in_feed: {indicator_value} of type: {indicator_type}")
+                demisto.debug(
+                    f"Added indicator find_iocs_in_feed: {indicator_value} of type: {indicator_type}"
+                )
 
         demisto.debug(f"Final list of find_iocs_in_feed indicators: {indicators}")
 
@@ -1193,12 +1252,16 @@ def validate_launch_get_indicators_command(limit, collection_name):
 
 
 """ Commands """
+
+
 def collection_availability_check(client: Client, collection_name: str) -> None:
-    if collection_name not in client.poller.get_available_collections():
+    if collection_name not in client.get_available_collections_proxy_function():
         raise Exception(
-            f"Collection {collection_name} is not available from you, " \
+            f"Collection {collection_name} is not available from you, "
             "please disable collection on it or contact Group-IB to grant access"
+            f"{client.get_available_collections_proxy_function()}"
         )
+
 
 def fetch_indicators_command(
     client: Client,
@@ -1238,14 +1301,14 @@ def fetch_indicators_command(
         else:
             hunting_rules = None
 
-        generator = client.poller.create_update_generator(
+        portions = client.create_update_generator_proxy_functions(
             collection_name=collection_name,
             date_from=date_from,
             sequpdate=seq_update,
             apply_hunting_rules=hunting_rules,
         )
-
-        for portion in generator:
+        # print('portions', portions)
+        for portion in portions:
             seq_update = portion.sequpdate
             parsed_json: list[dict] = portion.parse_portion(keys=mapping.get("parser_mapping"))  # type: ignore
             builded_indicators = IndicatorBuilding(
@@ -1289,8 +1352,10 @@ def get_indicators_command(client: Client, args: dict[str, str]):
             apply_hunting_rules = 1
         else:
             apply_hunting_rules = None
-        portions = client.poller.create_update_generator(
-            collection_name=collection_name, limit=limit, apply_hunting_rules=apply_hunting_rules
+        portions = client.create_update_generator_proxy_functions(
+            collection_name=collection_name,
+            limit=limit,
+            apply_hunting_rules=apply_hunting_rules,
         )
         for portion in portions:
             parsed_json = portion.parse_portion(keys=mapping.get("parser_mapping"))
@@ -1329,23 +1394,25 @@ def main():  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    params = demisto.params()
-    credentials: dict = params.get("credentials")  # type: ignore
-    username = credentials.get("identifier")
-    password = credentials.get("password")
-    proxy = params.get("proxy", False)
-    verify_certificate = not params.get("insecure", False)
-    base_url = str(params.get("url"))
-
-    indicator_collections = params.get("indicator_collections", [])
-    indicators_first_fetch = params.get("indicators_first_fetch", "3 days").strip()
-    requests_count = int(params.get("requests_count", 2))
-
-    args = demisto.args()
-    command = demisto.command()
-    LOG(f"Command being called is {command}")
-    demisto.debug(f"Command being called is {command}")
+    indicator_collections = None
     try:
+        params = demisto.params()
+        credentials: dict = params.get("credentials")  # type: ignore
+        username = credentials.get("identifier")
+        password = credentials.get("password")
+        proxy = params.get("proxy", False)
+        verify_certificate = not params.get("insecure", False)
+        base_url = str(params.get("url"))
+
+        indicator_collections = params.get("indicator_collections", [])
+        indicators_first_fetch = params.get("indicators_first_fetch", "3 days").strip()
+        requests_count = int(params.get("requests_count", 2))
+
+        args = demisto.args()
+        command = demisto.command()
+        LOG(f"Command being called is {command}")
+        demisto.debug(f"Command being called is {command}")
+    
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
