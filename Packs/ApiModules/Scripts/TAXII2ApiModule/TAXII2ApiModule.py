@@ -347,6 +347,7 @@ class XSOAR2STIXParser:
                     if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
                         stix_ioc = self.convert_sco_to_indicator_sdo(
                             stix_ioc, xsoar_indicator)
+                    demisto.debug(f"T2API: create_indicators {stix_ioc=}")
                     if self.has_extension and stix_ioc:
                         iocs.append(stix_ioc)
                         if extension_definition:
@@ -415,10 +416,13 @@ class XSOAR2STIXParser:
             demisto.debug(f"Skip indicator of type 'file' with value: '{indicator_value}', as it is not a valid hash.")
             return {}, {}, {}
 
+        demisto.debug(f"T2API: {xsoar_indicator=}")
         created_parsed = parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+        demisto.debug(f"T2API: {created_parsed=}")
 
         try:
             modified_parsed = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+            demisto.debug(f"T2API: {modified_parsed=}")
         except Exception:
             modified_parsed = ''
         # Properties required for STIX objects in all versions: id, type, created, modified.
@@ -429,6 +433,7 @@ class XSOAR2STIXParser:
             'created': created_parsed,
             'modified': modified_parsed,
         }
+        demisto.debug(f"T2API: {stix_object=}")
         if xsoar_type == ThreatIntel.ObjectsNames.REPORT:
             stix_object['object_refs'] = [ref['objectstixid']
                                           for ref in xsoar_indicator['CustomFields'].get('reportobjectreferences', [])]
@@ -461,6 +466,7 @@ class XSOAR2STIXParser:
 
         if is_sdo:
             stix_object['description'] = (xsoar_indicator.get('CustomFields') or {}).get('description', "")
+        demisto.debug(f"T2API: at the end of the function create_stix_object {stix_object=}")
         return stix_object, extension_definition, extensions_dict
 
     def handle_report_relationships(self, relationships: list[dict[str, Any]], stix_iocs: list[dict[str, Any]]):
@@ -684,6 +690,7 @@ class XSOAR2STIXParser:
                     xsoar_indicator, xsoar_type, extensions_dict)
                 if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
                     stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
+                demisto.debug(f"T2API: create_entity_b_stix_objects {stix_ioc=}")
                 if self.has_extension and stix_ioc:
                     entity_b_objects.append(stix_ioc)
                     if extension_definition:
@@ -722,8 +729,10 @@ class XSOAR2STIXParser:
                               f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")
                 continue
             try:
+                demisto.debug(f"T2API: in create_relationships_objects {relationship=}")
                 created_parsed = parse(relationship.get('createdInSystem')).strftime(STIX_DATE_FORMAT)
                 modified_parsed = parse(relationship.get('modified')).strftime(STIX_DATE_FORMAT)
+                demisto.debug(f"T2API: {created_parsed=} {modified_parsed=}")
             except Exception as e:
                 created_parsed, modified_parsed = '', ''
                 demisto.debug(f"Error parsing dates for relationship {relationship.get('id')}: {e}")
