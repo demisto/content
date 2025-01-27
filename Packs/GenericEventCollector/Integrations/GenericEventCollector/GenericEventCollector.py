@@ -4,7 +4,7 @@ import enum
 from json import JSONDecodeError
 from CommonServerPython import *
 import demistomock as demisto
-from typing import Any, cast, Tuple  # noqa: UP035
+from typing import Any  # noqa: UP035
 from base64 import b64encode
 from datetime import datetime
 # from distutils.util import strtobool
@@ -155,7 +155,7 @@ class Client(BaseClient):
 
     def search_events(self,
                       endpoint: str,
-                      method: str,
+                      http_method: str,
                       request_data: dict[Any, Any],
                       request_json: dict[Any, Any],
                       query_params: dict[Any, Any]) -> dict[Any, Any]:
@@ -165,7 +165,7 @@ class Client(BaseClient):
 
         Args:
             endpoint: API endpoint to send the request to.
-            method: HTTP method to use in the request.
+            http_method: HTTP method to use in the request.
             request_data: data to send in the body of the request.
             request_json: JSON data to send in the body of the request.
             query_params: query parameters to send in the request.
@@ -173,7 +173,7 @@ class Client(BaseClient):
             list: list of events as dicts.
         """
         return self._http_request(  # type: ignore
-            method=method,
+            method=http_method,
             url_suffix=endpoint,
             json_data=request_json,
             data=request_data,
@@ -306,7 +306,7 @@ def fetch_events(client: Client,
                  last_run: dict[Any, Any],
                  first_fetch_datetime: datetime,
                  endpoint: str,
-                 method: str,
+                 http_method: str,
                  pagination_logic: PaginationLogic,
                  events_keys: list[str],
                  timestamp_field_config: TimestampFieldConfig) -> tuple[dict[Any, Any], list[dict[Any, Any]]]:
@@ -320,10 +320,10 @@ def fetch_events(client: Client,
     if last_fetched_datetime_str is None:
         # if missing, use what provided via first_fetch_timestamp
         last_fetched_datetime: datetime = first_fetch_datetime
-        first_fetch_for_this_integration = True
+        first_fetch_for_this_integration: bool = True
     else:
         # otherwise, use the stored last fetch
-        last_fetched_datetime: datetime = datetime.fromisoformat(last_fetched_datetime_str)
+        last_fetched_datetime = datetime.fromisoformat(last_fetched_datetime_str)
         first_fetch_for_this_integration = False
     # endregion
 
@@ -345,7 +345,7 @@ def fetch_events(client: Client,
 
     # region Handle substitutions
     substitutions: list[tuple[str, str]] = [
-        (place_holder.value, last_run.get(place_holder.value)) for place_holder in PlaceHolders
+        (place_holder.value, last_run.get(place_holder.value)) for place_holder in PlaceHolders  # type: ignore[misc]
         if last_run.get(place_holder.value) is not None
     ]
     substitutions_query_params: dict[Any, Any] = recursive_replace(query_params, substitutions)
@@ -361,7 +361,7 @@ def fetch_events(client: Client,
     while pagination_needed:
 
         raw_events = client.search_events(endpoint=endpoint,
-                                          method=method,
+                                          http_method=http_method,
                                           request_data=substitutions_request_data,
                                           request_json=substitutions_request_json,
                                           query_params=substitutions_query_params)
@@ -422,12 +422,15 @@ def iso8601_to_datetime_str(iso8601_time: str) -> str:
 
 def test_module(client: Client,
                 endpoint: str,
-                method: str,
+                http_method: str,
                 request_data: dict[Any, Any],
                 request_json: dict[Any, Any],
                 query_params: dict[Any, Any]):
     try:
-        events = client.search_events(endpoint=endpoint, method=method, request_data=request_data, request_json=request_json,
+        events = client.search_events(endpoint=endpoint,
+                                      http_method=http_method,
+                                      request_data=request_data,
+                                      request_json=request_json,
                                       query_params=query_params)
         demisto.debug(f"{events!s}")
     except DemistoException as e:
@@ -448,7 +451,7 @@ def try_load_json(json_str: str) -> dict:
     return json.loads(json_str)
 
 
-def parse_json_param(json_param_value: str, json_param_name) -> dict[Any, Any]:
+def parse_json_param(json_param_value: Any, json_param_name) -> dict[Any, Any]:
     if json_param_value and json_param_value != 'None':
         try:
             demisto.debug(f"parsing argument: {json_param_name}")
@@ -532,11 +535,11 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
 
 def get_events_command(client: Client,
                        endpoint: str,
-                       method: str,
+                       http_method: str,
                        request_data: dict[Any, Any],
                        request_json: dict[Any, Any],
                        query_params: dict[Any, Any],
-                       limit: int) -> Tuple[List[Dict[str, Any]], CommandResults]:
+                       limit: int) -> tuple[Dict[str, Any], CommandResults]:
     """
     Fetch events from AWS Security Hub.
 
@@ -544,7 +547,7 @@ def get_events_command(client: Client,
         query_params:
         request_json:
         request_data:
-        method:
+        http_method:
         endpoint:
         client (Client):
         limit (int, optional): Maximum number of events to fetch, Defaults to 0 (no limit).
@@ -552,7 +555,10 @@ def get_events_command(client: Client,
     Returns:
         CommandResults: CommandResults containing the events.
     """
-    events = client.search_events(endpoint=endpoint, method=method, request_data=request_data, request_json=request_json,
+    events = client.search_events(endpoint=endpoint,
+                                  http_method=http_method,
+                                  request_data=request_data,
+                                  request_json=request_json,
                                   query_params=query_params)
     return events, CommandResults(
         readable_output=tableToMarkdown('Generic Events', events[:limit], sort_headers=False),
@@ -600,7 +606,7 @@ def main() -> None:
         # endregion
 
         # How much time before the first fetch to retrieve incidents.
-        first_fetch_datetime = arg_to_datetime(
+        first_fetch_datetime: datetime = arg_to_datetime(  # type: ignore[assignment]
             arg=params.get('first_fetch', '3 days'),
             arg_name='First fetch time',
             required=True
@@ -629,7 +635,7 @@ def main() -> None:
             test_module(
                 client=client,
                 endpoint=endpoint,
-                method=http_method,
+                http_method=http_method,
                 request_data=parse_json_param(params.get('request_data'), 'request_data'),
                 request_json=parse_json_param(params.get('request_json'), 'request_json'),
                 query_params=parse_json_param(params.get('query_params'), 'query_params'),
@@ -653,7 +659,7 @@ def main() -> None:
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict.
                 first_fetch_datetime=first_fetch_datetime,
                 endpoint=endpoint,
-                method=http_method,
+                http_method=http_method,
                 pagination_logic=pagination_logic,
                 events_keys=events_keys,
                 timestamp_field_config=timestamp_field_config,
@@ -668,8 +674,12 @@ def main() -> None:
         elif command == "generic-event-collector-get-events":
             args: dict[Any, Any] = demisto.args()
             should_push_events: bool = argToBoolean(args.get("should_push_events"))
-            limit: int = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-            raw_events, results = get_events_command(client, limit)  # type: ignore
+            limit: int = arg_to_number(args.get("limit", DEFAULT_LIMIT), "limit", True)  # type: ignore[assignment]
+            raw_events, results = get_events_command(client, endpoint, http_method,
+                                                     request_data=parse_json_param(params.get('request_data'), 'request_data'),
+                                                     request_json=parse_json_param(params.get('request_json'), 'request_json'),
+                                                     query_params=parse_json_param(params.get('query_params'), 'query_params'),
+                                                     limit=limit)
 
             return_results(results)
 
