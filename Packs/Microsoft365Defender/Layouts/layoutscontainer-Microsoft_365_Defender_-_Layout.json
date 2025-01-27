@@ -1,5 +1,4 @@
 {
-	"cacheVersn": 0,
 	"close": {
 		"sections": [
 			{
@@ -34,10 +33,7 @@
 	},
 	"definitionId": "",
 	"description": "Microsoft 365 layout page",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -1917,13 +1913,7 @@
 	"id": "Microsoft 365 Defender - Layout",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
-	"itemVersion": "4.6.0",
-	"locked": false,
-	"mobile": null,
 	"name": "Microsoft 365 Defender - Layout",
-	"packID": "",
-	"packName": "Microsoft 365 Defender",
-	"propagationLabels": [],
 	"quickView": {
 		"sections": [
 			{
@@ -3048,8 +3038,8 @@
 			}
 		]
 	},
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "99.99.99",
+	"fromVersion": "6.0.0",
 	"version": -1
+
 }
