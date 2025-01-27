@@ -1,17 +1,5 @@
 ### Get Started
 
-To use the app you need the following:
-
-1. Doppel Tenant URL that you can use for calling the [Doppel APIs](https://doppel.readme.io/reference/create_alert). eg. *https://api.doppel.com/*
-2. API Key for calling Doppel
-
-Please reach out to Doppel to get access to above.
-
-Once you have the URL and API Key, use the same for configuring the Doppel-XSOAR integration instance.
-
-
-
-
 # Overview
 Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The XSOAR pack for Doppel provides mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
 
@@ -35,8 +23,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
     | Use system proxy settings |  | False |
     | Incidents Fetch Interval |  | False |
     | Mirror Direction | Choose the direction to mirror the incident: Incoming \(from Doppel to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Doppel\), or Incoming and Outgoing \(from/to Cortex XSOAR and Doppel\). | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the Doppel ticket is mirrored in Cortex XSOAR. | False |
-
+    
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
