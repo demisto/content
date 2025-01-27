@@ -576,7 +576,7 @@ class Client(BaseClient):
         event_types: List[int] = None,
         limit: int = None,
         offset: int = None,
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] | None:
         """
         Get a list of events that can be filtered by the input parameters.
 
