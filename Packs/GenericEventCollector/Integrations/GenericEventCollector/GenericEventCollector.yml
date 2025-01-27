@@ -166,8 +166,9 @@ configuration:
     type: 19
     required: false
 description: Collect logs from 3rd party vendors.
-display: Generic Event Collector
+display: Generic Event Collector (Beta)
 name: GenericEventCollector
+beta: true
 script:
   commands:
     - arguments:
