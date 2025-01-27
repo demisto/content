@@ -2008,7 +2008,7 @@ def sub_main():  # pragma: no cover
 
         # Office365 regular maintenance case
         if (isinstance(e, ErrorMailboxMoveInProgress | ErrorMailboxStoreUnavailable)
-                and 'outlook.office365.com' in client.ews_server):
+                and urlparse(client.ews_server.lower()).hostname == 'outlook.office365.com'):
             log_message = "Office365 is undergoing load balancing operations. " \
                           "As a result, the service is temporarily unavailable."
             if demisto.command() == 'fetch-incidents':

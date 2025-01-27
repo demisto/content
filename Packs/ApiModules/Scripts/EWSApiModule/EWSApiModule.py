@@ -285,7 +285,7 @@ class EWSClient:
             self.auth_type = NTLM
 
         if not self.version:
-            return_error('Exchange Server Version is required for on-premise Exchange Servers.')
+            raise DemistoException('Exchange Server Version is required for on-premise Exchange Servers.')
 
         # Configure the on-prem Exchange Server connection
         credentials = Credentials(username=self.client_id, password=self.client_secret)
@@ -328,9 +328,7 @@ class EWSClient:
                 server_build = account.protocol.version.build
                 demisto.setIntegrationContext(cache_autodiscover_results(context_dict, account))
             except AutoDiscoverFailed:
-                return_error('Auto discovery failed. Check credentials or configure manually')
-            except Exception as e:
-                return_error(str(e))
+                raise DemistoException('Auto discovery failed. Check credentials or configure manually')
 
         return ews_server, server_build
 
@@ -403,7 +401,7 @@ class EWSClient:
                 access_type=self.access_type,
             )
         except AutoDiscoverFailed:
-            return_error('Auto discovery failed. Check credentials or configure manually')
+            raise DemistoException('Auto discovery failed. Check credentials or configure manually')
 
         new_context = cache_autodiscover_results(context_dict, account)
         if new_context == context_dict and original_exc:

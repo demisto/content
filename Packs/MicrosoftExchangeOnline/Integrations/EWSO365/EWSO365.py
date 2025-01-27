@@ -1586,7 +1586,7 @@ def handle_template_params(template_params):  # pragma: no cover
                 elif params[p].get('key'):
                     actual_params[p] = demisto.dt(demisto.context(), params[p]['key'])
         except ValueError as e:
-            return_error('Unable to parse template_params: %s' % (str(e)))
+            return_error(f'Unable to parse template_params: {str(e)}')
 
     return actual_params
 
