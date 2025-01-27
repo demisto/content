@@ -141,7 +141,7 @@ class Client(BaseClient):
 
         response = self._http_request(
             method='GET',
-            url_suffix=CBS_API_ENDPOINT + API['FETCH'],
+            url_suffix=CBS_API_ENDPOINT + API.get('FETCH', ''),
             params=params
         )
         log(DEBUG, 'at client\'s test function')
@@ -162,7 +162,7 @@ class Client(BaseClient):
             retries=MAX_RETRIES,
             backoff_factor=10,
             status_list_to_retry=[400, 429, 500],
-            url_suffix=CBS_API_ENDPOINT + API['FETCH'],
+            url_suffix=CBS_API_ENDPOINT + API.get('FETCH', ''),
             params=params
         )
         log(DEBUG, 'at client\'s fetch function')
@@ -185,7 +185,7 @@ class Client(BaseClient):
             retries=MAX_RETRIES,
             backoff_factor=10,
             status_list_to_retry=[400, 429, 500],
-            url_suffix=CBS_API_ENDPOINT + API['FETCH'],
+            url_suffix=CBS_API_ENDPOINT + API.get('FETCH', ''),
             params=params
         )
         log(DEBUG, 'at client\'s fetch function')
