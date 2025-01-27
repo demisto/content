@@ -2118,7 +2118,6 @@ def file_scan_and_get_analysis(
 def private_file_scan_and_get_analysis(client: Client, args: dict):
     """Calls to gti-privatescanning-file-scan and gti-privatescanning-analysis-get."""
     interval = int(args.get('interval_in_seconds', 60))
-    extended = argToBoolean(args.get('extended_data', False))
 
     if not args.get('id'):
         command_results = private_file_scan(client, args)
@@ -2133,7 +2132,6 @@ def private_file_scan_and_get_analysis(client: Client, args: dict):
                 'entryID': args.get('entryID'),
                 'id': outputs.get('vtScanID'),
                 'interval_in_seconds': interval,
-                'extended_data': extended,
             },
             timeout_in_seconds=6000,
         )
@@ -2153,7 +2151,6 @@ def private_file_scan_and_get_analysis(client: Client, args: dict):
             'entryID': args.get('entryID'),
             'id': outputs.get('id'),
             'interval_in_seconds': interval,
-            'extended_data': extended,
         },
         timeout_in_seconds=6000,
     )
@@ -2215,7 +2212,6 @@ def private_url_scan_and_get_analysis(
 ):
     """Calls to gti-privatescanning-url-scan and gti-analysis-get."""
     interval = int(args.get('interval_in_seconds', 60))
-    extended = argToBoolean(args.get('extended_data', False))
 
     if not args.get('id'):
         command_result = private_scan_url_command(client, args)
@@ -2229,7 +2225,6 @@ def private_url_scan_and_get_analysis(
                 'url': args.get('url'),
                 'id': outputs.get('vtScanID'),
                 'interval_in_seconds': interval,
-                'extended_data': extended,
             },
             timeout_in_seconds=6000,
         )
@@ -2249,7 +2244,6 @@ def private_url_scan_and_get_analysis(
             'url': args.get('url'),
             'id': outputs.get('id'),
             'interval_in_seconds': interval,
-            'extended_data': extended,
         },
         timeout_in_seconds=6000,
     )

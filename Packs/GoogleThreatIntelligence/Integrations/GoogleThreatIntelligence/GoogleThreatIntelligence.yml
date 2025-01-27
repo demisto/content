@@ -1680,7 +1680,7 @@ script:
       description: Type of the file.
       type: String
   - name: gti-privatescanning-analysis-get
-    description: Get analysis of a private file submitted to GoogleThreatIntelligence.
+    description: Get analysis of a private file or URL submitted to GoogleThreatIntelligence.
     arguments:
     - name: id
       required: true
@@ -1693,14 +1693,29 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
       description: Status of the analysis.
       type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.sha256
+      description: SHA-256 hash of the private file (if analysis is completed).
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level
-      description: Threat severity level of the private file.
+      description: Threat severity level of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.popular_threat_category
-      description: Popular threat category of the private file.
+      description: Popular threat category of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_verdict
-      description: Threat verdict of the private file.
+      description: Threat verdict of the private file (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.url
+      description: URL submitted (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.title
+      description: Title of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.last_http_response_content_sha256
+      description: Last HTTP response content SHA-256 hash of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.positives
+      description: Ratio of malicious detections to the total number of engines that scanned the private URL (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.id
       description: ID of the analysis.
@@ -1720,6 +1735,12 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.size
       description: Size of the file.
       type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.id
+      description: ID of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.url
+      description: URL submitted.
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.id
       description: The analysis ID.
       type: String
@@ -2033,13 +2054,6 @@ script:
       description: The file entry ID to submit.
     - name: id
       description: This is an internal argument used for the polling process, not to be used by the user.
-    - name: extended_data
-      description: Whether to return extended data.
-      defaultValue: false
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
     - name: interval_in_seconds
       description: Interval in seconds between each poll.
       defaultValue: '60'
@@ -2050,14 +2064,17 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
       description: Status of the analysis.
       type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.sha256
+      description: SHA-256 hash of the private file (if analysis is completed).
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level
-      description: Threat severity level of the private file.
+      description: Threat severity level of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.popular_threat_category
-      description: Popular threat category of the private file.
+      description: Popular threat category of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_verdict
-      description: Threat verdict of the private file.
+      description: Threat verdict of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.id
       description: ID of the analysis.
@@ -2268,6 +2285,53 @@ script:
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.url
       description: The URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.id
+      description: The analysis ID.
+      type: String
+  - name: gti-private-url-scan-and-analysis-get
+    description: Scan and get the analysis of a private URL submitted to GoogleThreatIntelligence.
+    polling: true
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to scan.
+    - name: id
+      description: This is an internal argument used for the polling process, not to be used by the user.
+    - name: interval_in_seconds
+      description: Interval in seconds between each poll.
+      defaultValue: '60'
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.date
+      description: Date of the analysis in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
+      description: Status of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.url
+      description: URL submitted (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.title
+      description: Title of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.last_http_response_content_sha256
+      description: Last HTTP response content SHA-256 hash of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.positives
+      description: Ratio of malicious detections to the total number of engines that scanned the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.id
+      description: ID of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.type
+      description: Type of object (analysis).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.id
+      description: ID of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.url
+      description: URL submitted.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.id
       description: The analysis ID.
