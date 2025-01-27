@@ -46,11 +46,12 @@ configuration:
   advanced: true
   required: false
   defaultvalue: Low
-- display: Types of Notifications to Send (Deprecated)
+- display: Types of Notifications to Send.
   name: permitted_notifications
   type: 16
   section: Collect
-  hidden: true
+  hidden:
+  - marketplacev2
   required: false
   options:
   - incidentAssigned
@@ -66,7 +67,7 @@ configuration:
   - mentionNew
   - mentionOld
   advanced: true
-  additionalinfo: Deprecated. Use User (User Name) -> User Preferences -> Notifications instead. 
+  additionalinfo: Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).To enable use User (User Name) -> User Preferences -> Notifications
 - display: Type of incidents created in Slack
   name: incidentType
   type: 13
