@@ -228,6 +228,9 @@ def execute_action(action, logo_name, logo_content, associated_domains, model: M
         success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
     elif action == KEY_REMOVE_LOGO:
         success, msg = model.remove_logo(logo_name)
+    elif action == KEY_DISPLAY_LOGOS:
+        display_all_logos(model)
+        return None, None
     else:
         success, msg = model.update_domain_for_custom_logo(logo_name, associated_domains)
     return success, msg
@@ -240,15 +243,6 @@ def main():
         logo_name = demisto.args().get('logoName', '')
         associated_domains = demisto.args().get('associatedDomains', '').split(',')
         action = demisto.args().get('action', None)
-
-        if action == KEY_DISPLAY_LOGOS:
-            exist, _, _, model_data = oob_model_exists_and_updated()
-            if exist:
-                model = decode_model_data(model_data)
-            else:
-                model = load_model_from_docker()
-            display_all_logos(model)
-            return None
 
         if (action == KEY_ADD_LOGO) and (not logo_image_id or not logo_name):
             return_error(MSG_EMPTY_NAME_OR_URL)
@@ -288,7 +282,10 @@ def main():
 
         success, msg = execute_action(action, logo_name, logo_content, associated_domains, model)
         msg_list.append(msg)
-        if success:
+
+        if action == KEY_DISPLAY_LOGOS:
+            return
+        elif success:
             model.minor += 1
             msg = save_upgraded_version_model(model)
             msg_list.append(msg)
