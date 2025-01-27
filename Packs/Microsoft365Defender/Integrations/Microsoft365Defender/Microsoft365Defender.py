@@ -518,7 +518,7 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 @logger
 def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int,
                     timeout: int = None) -> List[
-    dict]:
+        dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -785,7 +785,7 @@ def fetch_modified_incident(client: Client, incident_id: int) -> dict:
 
 
 def get_entries_for_comments(comments: List[dict[str, str]], last_update: datetime, comment_tag: str) -> List[
-    dict]:
+        dict]:
     """
     Get the entries for the comments of the incident.
     Args:
@@ -823,7 +823,7 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
 
 
 def get_incident_entries(mirrored_object: dict, last_update: datetime, comment_tag: str, close_incident: bool = False) -> List[
-    dict]:
+        dict]:
     """
     Creates the entries for the mirrored in incident.
     Args:
@@ -858,7 +858,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     if not last_update:
         raise DemistoException(f"Could not parse {remote_args.last_update}")
     close_incident = argToBoolean(demisto.params().get('close_incident', False))
-    remote_incident_id: int = arg_to_number(remote_args.remote_incident_id)
+    remote_incident_id = arg_to_number(remote_args.remote_incident_id)
+    if remote_incident_id is None:
+        raise DemistoException(f"remote_incident_id is None")
     mirrored_object: Dict = {}
     demisto.debug(
         f'Microsoft Defender 365 - Performing get-remote-data command with incident id: {remote_incident_id} and '
@@ -1040,7 +1042,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-                             params.get('certificate_thumbprint', '')
+        params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))
