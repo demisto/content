@@ -860,7 +860,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     close_incident = argToBoolean(demisto.params().get('close_incident', False))
     remote_incident_id = arg_to_number(remote_args.remote_incident_id)
     if remote_incident_id is None:
-        raise DemistoException(f"remote_incident_id is None")
+        raise DemistoException("remote_incident_id is None")
     mirrored_object: Dict = {}
     demisto.debug(
         f'Microsoft Defender 365 - Performing get-remote-data command with incident id: {remote_incident_id} and '
