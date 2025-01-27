@@ -110,9 +110,7 @@ class Client(BaseClient):
             params={"connectionTimeout": DEFAULT_CONNECTION_TIMEOUT},
             resp_type="text",
             headers=self.headers,
-            stream=True,
         )
-        demisto.debug(f"The raw response from API {res=}")
         # Formats a string into a valid JSON array
         res = res.replace("}\n{", ",")
         if not res.startswith("["):
