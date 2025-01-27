@@ -1,0 +1,69 @@
+[MODEL:dataset="forcepoint_forcepoint_dlp_raw"]
+// Syslog events
+filter  _collector_source != "API"
+| alter fsize = to_float(arrayindex(regextract(fname,"\s\-\s(\d+\.\d+)\s\w+"),0)),
+        fsize_unit = arrayindex(regextract(fname,"\s\-\s\d+\.\d+\s(\w+)"),0)
+| alter fname = if(fname contains "N/A",null,arrayindex(regextract(fname ,"(.*)\s\-\s\d+"),0))
+| alter xdm.event.original_event_type = to_string(eventid),
+        xdm.event.operation_sub_type = act,
+        xdm.observer.name = analyzedBy,
+        xdm.event.description = cat,
+        xdm.source.identity.username = suser,
+        xdm.target.resource.name = if(duser contains "N/A",null,duser ),
+        xdm.event.type = msg,
+        xdm.target.file.path = fname,
+        xdm.target.file.size = to_integer(if(fsize_unit = "KB",  multiply(fsize,1024),fsize_unit = "MB",  multiply(multiply(fsize,1024),1024),fsize_unit = "GB",  multiply(multiply(multiply(fsize,1024),1024),1024) ,fsize)),
+        xdm.source.ipv4 = if(sourceIp contains "N/A",null,sourceIp ),
+        xdm.network.application_protocol_category = sourceServiceName,
+        xdm.alert.severity = severityType,
+        xdm.source.host.hostname = sourceHost,
+        xdm.observer.version = productVersion;
+
+// API based logs modeling rules
+filter  _collector_source = "API"
+| alter xdm.observer.action=action,
+        xdm.observer.name=analyzed_by,
+        xdm.event.type=channel,
+        xdm.target.host.device_category = if(channel ~= "PRINT", "PRINTER", null),
+        xdm.email.recipients=if(channel = "EMAIL", split(destination, ";"), null),
+        xdm.target.host.hostname = if(channel = "ENDPOINT_PRINTING", destination),
+        xdm.target.url = if(channel ~= "HTTP|FTP", destination),
+        xdm.target.application.name = if(channel ~= "ENDPOINT_APPLICATION", destination),
+        xdm.target.ipv4 = arrayindex(regextract(destination, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0),
+        xdm.target.port = to_integer(arrayindex(regextract(destination, "\w+:(\d{1,5})"), 0)),
+        xdm.email.subject = if(channel = "EMAIL", details),
+        xdm.event.description=details,
+        observer_type = arrayindex(regextract(detected_by, "(.+?)\s+on"), 0)
+| alter xdm.observer.type = coalesce(observer_type, detected_by),
+        xdm.source.host.device_category=endpoint_type,
+        xdm.event.id=event_id,
+        file_name_array = arraymap(regextract(file_name, "(.+?)\s+\-\s+\d+[\.\d]*\s+[KMGTP]*B;?"), trim("@element"))
+| alter file_type_array = arraymap(file_name_array, if("@element" ~= "\.[\w]+$", arrayindex(regextract("@element", ".+?\.(\w+)$"), 0), ""))
+| alter file_names = arraystring(file_name_array, ";"),
+        file_types = arraystring(file_type_array, ";")
+| alter xdm.target.file.filename = file_names,
+        xdm.target.file.file_type = file_types,
+        xdm.email.attachment.filename = if(channel ~= "EMAIL", file_names),
+        xdm.email.attachment.file_type =  if(channel ~= "EMAIL", file_types),
+        xdm.target.file.path = if(channel = "ENDPOINT_LAN", destination),
+        xdm.alert.original_alert_id=to_string(id),
+        xdm.network.rule=policies,
+        xdm.alert.severity=severity,
+        xdm.source.identity.groups = arraymap(split(json_extract_scalar(source, "$.business_unit"), ","), trim("@element")),
+        xdm.source.identity.ou=json_extract_scalar(source, "$.department"),
+        xdm.email.sender=json_extract_scalar(source, "$.email_address"),
+        xdm.source.host.hostname=json_extract_scalar(source, "$.host_name"),
+        ip_address = json_extract_scalar(source,  "$.ip_address")
+| alter xdm.source.ipv6 = if(ip_address ~= "\:[a-fA-F\d]{1,4}|[a-fA-F\d]{1,4}\:", ip_address, null),
+        xdm.source.ipv4 = if(ip_address ~= "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", ip_address, null),
+        username = json_extract_scalar(source,  "$.login_name"),
+        nt_domain = json_extract_scalar(source,  "$.nt_domain"),
+        email_address = json_extract_scalar(source,  "$.email_address")
+| alter xdm.source.identity.username=coalesce(username, email_address),
+        user_domain = arrayindex(regextract(username, "([^\\]+)\\"), 0)
+| alter xdm.source.identity.domain = coalesce(nt_domain, user_domain),
+        xdm.event.is_completed = if(uppercase(status) ~= "CLOSE|FALSE.POSITIVE", true, false),
+        xdm.event.tags = arraycreate(`tag`),
+        xdm.target.file.size=to_integer(transaction_size),
+        xdm.source.sent_packets=to_integer(violation_triggers),
+        xdm.event.outcome = if(action in ("AUTHORIZED", "RELEASED", "AUDITED", "ENDPOINT_CONFIRM_CONTINUE"), XDM_CONST.OUTCOME_SUCCESS, action in ("QUARANTINED", "BLOCKED", "ENDPOINT_CONFIRM_ABORT"), XDM_CONST.OUTCOME_FAILED);

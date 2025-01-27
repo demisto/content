@@ -1,0 +1,128 @@
+{
+    "forcepoint_forcepoint_dlp_raw": {
+        "_collector_source": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventid": {
+            "type": "string",
+            "is_array": false
+        },
+        "source": {
+            "type": "string",
+            "is_array": false
+        },
+        "act": {
+            "type": "string",
+            "is_array": false
+        },
+        "analyzedBy": {
+            "type": "string",
+            "is_array": false
+        },
+        "cat": {
+            "type": "string",
+            "is_array": false
+        },
+        "suser": {
+            "type": "string",
+            "is_array": false
+        },
+        "duser": {
+            "type": "string",
+            "is_array": false
+        },
+        "msg": {
+            "type": "string",
+            "is_array": false
+        },
+        "fname": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceIp": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceServiceName": {
+            "type": "string",
+            "is_array": false
+        },
+        "severityType": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceHost": {
+            "type": "string",
+            "is_array": false
+        },
+        "productVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "analyzed_by": {
+            "type": "string",
+            "is_array": false
+        },
+        "channel": {
+            "type": "string",
+            "is_array": false
+        },
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "detected_by": {
+            "type": "string",
+            "is_array": false
+        },
+        "endpoint_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "file_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "destination": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "policies": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "tag": {
+            "type": "string",
+            "is_array": false
+        },
+        "transaction_size": {
+            "type": "int",
+            "is_array": false
+        },
+        "violation_triggers": {
+            "type": "int",
+            "is_array": false
+        }
+    }
+}

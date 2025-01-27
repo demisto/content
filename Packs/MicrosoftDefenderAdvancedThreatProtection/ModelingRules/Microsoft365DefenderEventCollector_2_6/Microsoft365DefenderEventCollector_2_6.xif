@@ -1,0 +1,30 @@
+[MODEL: dataset=microsoft_365_defender_raw]
+alter
+    outcome_result = json_extract_scalar(evidence, "$.detectionStatus")
+| alter
+    //_time = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", alertCreationTime),
+    xdm.event.id = id,
+    xdm.alert.original_alert_id = to_string(incidentId),
+    xdm.alert.severity = severity,
+    xdm.alert.category = category,
+    xdm.alert.subcategory = threatFamilyName,
+    xdm.alert.name = if(threatName = null, title, threatName),
+    xdm.alert.description = description,
+    xdm.target.host.device_id = machineId,
+    xdm.target.host.fqdn = computerDnsName,
+    xdm.alert.mitre_techniques = json_extract_array(mitreTechniques, "$."),
+    xdm.target.file.sha256 = json_extract_scalar(evidence, "$.sha256"),
+    xdm.target.file.filename = json_extract_scalar(evidence, "$.fileName"),
+    xdm.target.file.path = json_extract_scalar(evidence, "$.filePath"),
+    xdm.target.process.pid = to_integer(json_extract_scalar(evidence, "$.processId")),
+    xdm.target.process.command_line = json_extract_scalar(evidence, "$.processCommandLine"),
+    xdm.target.process.parent_id = json_extract_scalar(evidence, "$.parentProcessId"),
+    xdm.target.host.ipv4_addresses = if(json_extract_scalar(evidence, "$.ipAddress") != null, arraycreate(json_extract_scalar(evidence, "$.ipAddress")), null),
+    xdm.target.registry.key = json_extract_scalar(evidence, "$.registryKey"),
+    xdm.target.registry.value_type = json_extract_scalar(evidence, "$.registryValueType"),
+    xdm.target.registry.value = json_extract_scalar(evidence, "$.registryValue"),
+    xdm.source.identity.username = json_extract_scalar(evidence, "$.accountName"),
+    xdm.source.identity.domain = json_extract_scalar(evidence, "$.domainName"),
+    xdm.source.identity.identifier = json_extract_scalar(evidence, "$.userSid"),
+    xdm.target.ipv4 = json_extract_scalar(evidence, "$.ipAddress"),
+    xdm.event.outcome = if(outcome_result = "Detected", XDM_CONST.OUTCOME_FAILED, outcome_result = "Blocked", XDM_CONST.OUTCOME_SUCCESS, outcome_result = "Prevented", XDM_CONST.OUTCOME_PARTIAL, outcome_result = null, null, to_string(outcome_result));
