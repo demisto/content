@@ -576,7 +576,7 @@ class Client(BaseClient):
         event_types: List[int] = None,
         limit: int = None,
         offset: int = None,
-    ) -> dict[str, Any] | None:
+    ) -> dict[str, Any]:
         """
         Get a list of events that can be filtered by the input parameters.
 
@@ -3228,7 +3228,7 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
 
         else:  # an empty list
             readable_output = f"Cisco AMP: {file_hash} not found in Cisco AMP v2."
-            raw_response, file_indicator = None, None
+            raw_response, file_indicator = {}, None
 
         command_results.append(
             CommandResults(
