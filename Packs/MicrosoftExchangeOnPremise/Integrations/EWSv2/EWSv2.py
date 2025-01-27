@@ -649,7 +649,7 @@ def get_message_for_body_type(body, body_type, html_body, handle_inline_image: b
     Returns:
         Body: the body of the message.
     """
-    demisto.debug(f"get_message_for_body_type: Received body_type={body_type}, handle_inline_image={handle_inline_image}")
+    demisto.debug(f"get_message_for_body_type: Received {body_type=}, {handle_inline_image=}")
     attachments: list = []
 
     if html_body and handle_inline_image:
