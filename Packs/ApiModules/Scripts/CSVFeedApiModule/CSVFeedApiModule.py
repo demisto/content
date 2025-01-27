@@ -422,7 +422,7 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     auto_detect = demisto.params().get('auto_detect_type')
     relationships = demisto.params().get('create_relationships', False)
     enrichment_excluded = (demisto.params().get('enrichmentExcluded', False) or
-                           (demisto.params().get('tlp_color') == 'Red' and is_xsiam_or_xsoar_saas()))
+                           (demisto.params().get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     indicators_list, _ = fetch_indicators_command(client, itype, auto_detect, limit, relationships, enrichment_excluded)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
