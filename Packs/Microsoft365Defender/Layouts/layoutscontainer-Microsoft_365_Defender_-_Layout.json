@@ -1908,11 +1908,8 @@
 			}
 		]
 	},
-	"fromServerVersion": "6.0.0",
 	"group": "incident",
 	"id": "Microsoft 365 Defender - Layout",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
 	"name": "Microsoft 365 Defender - Layout",
 	"quickView": {
 		"sections": [
