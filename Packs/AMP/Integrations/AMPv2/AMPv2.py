@@ -3228,8 +3228,7 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
 
         else:  # an empty list
             readable_output = f"Cisco AMP: {file_hash} not found in Cisco AMP v2."
-            raw_response = {"result": f"{file_hash} not found in Cisco AMP v2."}
-            file_indicator = None
+            raw_response, file_indicator = None, None
 
         command_results.append(
             CommandResults(
