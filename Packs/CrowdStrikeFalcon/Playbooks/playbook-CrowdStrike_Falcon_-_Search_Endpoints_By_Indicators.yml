@@ -1059,3 +1059,6 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
 description: This playbooks searches for different indicators (IP,IPV6,File hashes,Domain) in the crowdstrike falcon console. The output will be all the endpoints found associated with provided indicators. Provided agent id as an input will be excluded from the returned list.
+marketplaces:
+- xsoar
+# Should not appear in marketplacev2
