@@ -20,6 +20,10 @@ ignore=GR103
 [file:playbook-Scheduled_task_created_with_HTTP_or_FTP_reference.yml]
 ignore=GR103
 
+# GR103 fails on SearchAlertsv2
+[file:playbook-A_user_executed_multiple_LDAP_enumeration_queries.yml]
+ignore=GR103
+
 [known_words]
 xsiam
 coreirapimodule
