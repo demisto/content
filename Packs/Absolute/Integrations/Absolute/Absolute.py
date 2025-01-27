@@ -433,7 +433,7 @@ class ClientV3(BaseClient):
             signed (bytes): The signed HTTP request data.
 
         Returns:
-            Response: The response object from the HTTP request.
+            dict: A dictionary containing the response object from the HTTP request.
         """
         return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
                                   headers={"content-type": "text/plain"}, timeout=60)
