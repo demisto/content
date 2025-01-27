@@ -113,15 +113,14 @@ class UserMappingObject:
         self.table_name = table_name
         self.xsoar_user_column_name = xsoar_user_column_name
         self.splunk_user_column_name = splunk_user_column_name
-        self._mapping_cache: dict[str, Any] = {}
+        self._kvstore_data: list[dict[str, Any]] = []
 
     def _get_record(self, col: str, value_to_search: str):
         """ Gets the records with the value found in the relevant column. """
-        cache_key = f'{col}:{value_to_search}'
-        if cache_key not in self._mapping_cache:
+        if not self._kvstore_data:
             kvstore: client.KVStoreCollection = self.service.kvstore[self.table_name]
-            self._mapping_cache[cache_key] = kvstore.data.query(query=json.dumps({col: value_to_search}))
-        return self._mapping_cache[cache_key]
+            self._kvstore_data = kvstore.data.query()
+        return filter(lambda row: row.get(col) == value_to_search, self._kvstore_data)
 
     def get_xsoar_user_by_splunk(self, splunk_user):
 
