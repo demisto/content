@@ -1,4 +1,4 @@
-FROM python:3.10-slim-bookworm
+FROM python:3.11-slim-bookworm
 
 ENV USERNAME demisto
 ENV HOME /home/$USERNAME
