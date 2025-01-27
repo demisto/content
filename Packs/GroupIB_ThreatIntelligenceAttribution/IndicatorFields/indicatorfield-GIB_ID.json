@@ -14,7 +14,7 @@
     "cliName": "gibid",
     "closeForm": false,
     "content": true,
-    "description": "ID of event in GIB TI&A",
+    "description": "ID of event in GIB TI\u0026A",
     "editForm": true,
     "group": 2,
     "hidden": false,

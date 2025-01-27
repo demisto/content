@@ -1,4 +1,5 @@
-import pytest, os
+import pytest
+import os
 from json import load
 from GroupIB_TIA_Feed import fetch_indicators_command, Client, main
 from urllib3.exceptions import InsecureRequestWarning
@@ -33,7 +34,7 @@ realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
 with open(f'{realpath}/test_data/avalible_collections_example.json') as example:
     AVALIBLE_COLLECTIONS_RAW_JSON = load(example)
-    
+
 with open(f'{realpath}/test_data/main_collections_examples.json') as example:
     COLLECTIONS_RAW_JSON = load(example)
 
@@ -84,7 +85,8 @@ def test_main_error():
     """
     with pytest.raises(SystemExit):
         main()["error_command"]()  # type: ignore
-        
+
+
 def test_fetch_indicators_command(mocker, session_fixture):
     """
     Test for validating the functionality of fetch_indicators_command with multiple collection types.
@@ -125,8 +127,9 @@ def test_fetch_indicators_command(mocker, session_fixture):
         first_fetch_time = "15 days"
 
     mocker.patch.object(client, 'get_available_collections_proxy_function', return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
-    mocker.patch.object(client, 'create_update_generator_proxy_functions', return_value=[Parser(chunk=COLLECTIONS_RAW_JSON[collection_name], keys=[], iocs_keys=[])])
-    
+    mocker.patch.object(client, 'create_update_generator_proxy_functions', return_value=[
+                        Parser(chunk=COLLECTIONS_RAW_JSON[collection_name], keys=[], iocs_keys=[])])
+
     next_run, indicators = fetch_indicators_command(
         client=client,
         last_run={},

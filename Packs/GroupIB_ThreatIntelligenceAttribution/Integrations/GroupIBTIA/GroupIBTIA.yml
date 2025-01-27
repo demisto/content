@@ -14,8 +14,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Whether to allow connections without verifying SSL certificates
-    validity.
+- additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -65,9 +64,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: A number of requests per collection that integration sends in one
-    fetch iteration (each request picks up to 200 incidents). If you face some runtime
-    errors, lower the value.
+- additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 incidents). If you face some runtime errors, lower the value.
   defaultvalue: '3'
   display: Number of requests per collection
   hidden: false
@@ -90,37 +87,20 @@ configuration:
   type: 8
   required: false
   additionalinfo: To enable the collection of data using hunting rules, please select this parameter.
-description: "Pack helps to integrate Group-IB Threat Intelligence and get incidents\
-  \ directly into Cortex XSOAR. \nThe list of included collections: \nCompromised\
-  \ Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing\
-  \ Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
-detaileddescription: "### Group-IB Threat Intelligence\n  \n  \n- This section explains\
-  \ how to configure the instance of Threat Intelligence in Cortex XSOAR.  \n  \n\
-  1. Open Group-IB TI web interface. (It may be either new interface: [https://tap.group-ib.com](https://tap.group-ib.com))\
-  \  \n2. To generate API key(password):  \n2.1. In the new interface: click on your\
-  \ name in the right upper corner -> choose **Profile** option -> switch to **Security\
-  \ and Access** tab -> click **Personal token** -> follow instructions to generate\
-  \ API token.  \n3. Your server URL is the same as your TI web interface URL.  \n\
-  4. Your username is the email that you use to enter in the web interface.\n5. Set\
-  \ classifier and mapper with Group-IB Threat Intelligence classifier and mapper\
-  \ or with our own if you want so.\n6. Go to Settings->Integrations->Pre-Processing\
-  \ Rules and set up the pre-processing rule:\n* Set up conditions: \"gibid Is not\
-  \ empty (General)\" and \"Type Doesn't equal(String) GIB Data Breach\".\n* Action:\
-  \ \"Run a script\".\n* Script: \"GIBIncidentUpdate\" (will recreate closed incidents\
-  \ if they get an update, in other cases will update the existing one) or \"GIBIncidentUpdateIncludingClosed\"\
-  (will only update incidents). \n7. Don't forget to contact Group-IB to add to allow\
-  \ list your Cortex IP or public IP of a proxy that you are using with Cortex."
+description: "Pack helps to integrate Group-IB Threat Intelligence and get incidents directly into Cortex XSOAR. \nThe list of included collections: \nCompromised Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
+detaileddescription: "### Group-IB Threat Intelligence\n  \n  \n- This section explains how to configure the instance of Threat Intelligence in Cortex XSOAR.  \n  \n1. Open Group-IB TI web interface. (It may be either new interface: [https://tap.group-ib.com](https://tap.group-ib.com))  \n2. To generate API key(password):  \n2.1. In the new interface: click on your name in the right upper corner -> choose **Profile** option -> switch to **Security and Access** tab -> click **Personal token** -> follow instructions to generate API token.  \n3. Your server URL is the same as your TI web interface URL.  \n4. Your username is the email that you use to enter in the web interface.\n5. Set classifier and mapper with Group-IB Threat Intelligence classifier and mapper or with our own if you want so.\n6. Go to Settings->Integrations->Pre-Processing Rules and set up the pre-processing rule:\n* Set up conditions: \"gibid Is not empty (General)\" and \"Type Doesn't equal(String) GIB Data Breach\".\n* Action: \"Run a script\".\n* Script: \"GIBIncidentUpdate\" (will recreate closed incidents if they get an update, in other cases will update the existing one) or \"GIBIncidentUpdateIncludingClosed\"(will only update incidents). \n7. Don't forget to contact Group-IB to add to allow list your Cortex IP or public IP of a proxy that you are using with Cortex."
 display: Group-IB Threat Intelligence
 name: Group-IB Threat Intelligence & Attribution
 script:
   commands:
-  - name: gibtia-get-compromised-account-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: 253b9a136f0d574149fc43691eaf7ae27aff141a.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/account collection with provided ID.
+    name: gibtia-get-compromised-account-info
     outputs:
     - contextPath: GIBTIA.CompromisedAccount.client.ipv4.asn
       description: Victim IP address.
@@ -191,19 +171,17 @@ script:
     - contextPath: GIBTIA.CompromisedAccount.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in compromised/account collection
-      with provided ID.
-  - name: gibtia-get-compromised-mule-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: 50a3b4abbfca5dcbec9c8b3a110598f61ba93r33.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/mule collection with provided ID.
+    name: gibtia-get-compromised-mule-info
     outputs:
     - contextPath: GIBTIA.CompromisedMule.account
-      description: Account number (card/phone), which was used by threat actor to
-        cash out.
+      description: Account number (card/phone), which was used by threat actor to cash out.
       type: String
     - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.asn
       description: CNC ASN.
@@ -250,15 +228,14 @@ script:
     - contextPath: GIBTIA.CompromisedMule.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in compromised/mule collection
-      with provided ID.
-  - name: gibtia-get-compromised-breached-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: 6fd344f340f4bdc08548cb36ded62bdf.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/breached collection with provided ID.
+    name: gibtia-get-compromised-breached-info
     outputs:
     - contextPath: GIBTIA.DataBreach.email
       description: List of breached emails.
@@ -278,15 +255,14 @@ script:
     - contextPath: GIBTIA.DataBreach.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in compromised/breached collection
-      with provided ID.
-  - name: gibtia-get-osi-git-leak-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: f201c253ac71f7d78db39fa111a2af9d7ee7a3f7.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in osi/git_leak collection with provided ID.
+    name: gibtia-get-osi-git-leak-info
     outputs:
     - contextPath: GIBTIA.GitLeak.dateDetected
       description: Leak detection date.
@@ -321,15 +297,14 @@ script:
     - contextPath: GIBTIA.GitLeak.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in osi/git_leak collection
-      with provided ID.
-  - name: gibtia-get-osi-public-leak-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: a9a5b5cb9b971a2a037e3a0a30654185ea148095.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in osi/public_leak collection with provided ID.
+    name: gibtia-get-osi-public-leak-info
     outputs:
     - contextPath: GIBTIA.PublicLeak.created
       description: Leak event detection date.
@@ -367,16 +342,15 @@ script:
     - contextPath: GIBTIA.PublicLeak.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in osi/public_leak collection
-      with provided ID.
-  - name: gibtia-get-osi-vulnerability-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
 
         e.g.: CVE-2021-27152.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in osi/vulnerability collection with provided ID.
+    name: gibtia-get-osi-vulnerability-info
     outputs:
     - contextPath: GIBTIA.OSIVulnerability.affectedSoftware.name
       description: Affected software name.
@@ -417,15 +391,14 @@ script:
     - contextPath: GIBTIA.OSIVulnerability.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in osi/vulnerability collection
-      with provided ID.
-  - name: gibtia-get-attacks-ddos-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: 26a05baa4025edff367b058b13c6b43e820538a5.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in attacks/ddos collection with provided ID.
+    name: gibtia-get-attacks-ddos-info
     outputs:
     - contextPath: GIBTIA.AttacksDDoS.cnc.url
       description: CNC URL.
@@ -478,15 +451,14 @@ script:
     - contextPath: GIBTIA.AttacksDDoS.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in attacks/ddos collection
-      with provided ID.
-  - name: gibtia-get-attacks-deface-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: 6009637a1135cd001ef46e21.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in attacks/deface collection with provided ID.
+    name: gibtia-get-attacks-deface-info
     outputs:
     - contextPath: GIBTIA.AttacksDeface.date
       description: Date of deface.
@@ -518,15 +490,12 @@ script:
     - contextPath: GIBTIA.AttacksDeface.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in attacks/deface collection
-      with provided ID.
-  - name: gibtia-get-threat-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: 1b09d389d016121afbffe481a14b30ea995876e4.
+      name: id
+      required: true
     - name: isAPT
       auto: PREDEFINED
       predefined:
@@ -534,6 +503,8 @@ script:
       - "false"
       description: Is threat APT.
       defaultValue: "false"
+    description: Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
+    name: gibtia-get-threat-info
     outputs:
     - contextPath: GIBTIA.Threat.contacts.account
       description: Threat accounts found in this threat action.
@@ -640,15 +611,12 @@ script:
     - contextPath: GIBTIA.Threat.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in hi/threat (or in apt/threat
-      if the APT flag is true) collection with provided ID.
-  - name: gibtia-get-threat-actor-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB internal threatActor ID.
         e.g.: 0d4496592ac3a0f5511cd62ef29887f48d9cb545.
+      name: id
+      required: true
     - name: isAPT
       auto: PREDEFINED
       predefined:
@@ -656,6 +624,8 @@ script:
       - "false"
       description: Is threat actor APT group.
       defaultValue: "false"
+    description: Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
+    name: gibtia-get-threat-actor-info
     outputs:
     - contextPath: GIBTIA.ThreatActor.aliases
       description: Threat actor aliases.
@@ -714,15 +684,14 @@ script:
     - contextPath: GIBTIA.ThreatActor.stat.sectors
       description: Sectors attacked by threat actor.
       type: String
-    description: Command performs Group IB event lookup in hi/threat_actor (or in
-      apt/threat_actor if the APT flag is true) collection with provided ID.
-  - name: gibtia-get-suspicious-ip-tor-node-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: 109.70.100.46.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in suspicious_ip/tor_node collection with provided ID.
+    name: gibtia-get-suspicious-ip-tor-node-info
     outputs:
     - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.asn
       description: Tor node ASN.
@@ -742,15 +711,14 @@ script:
     - contextPath: GIBTIA.SuspiciousIPTorNode.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in suspicious_ip/tor_node
-      collection with provided ID.
-  - name: gibtia-get-suspicious-ip-open-proxy-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: cc6a2856da2806b03839f81aa214f22dbcfd7369.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in suspicious_ip/open_proxy collection with provided ID.
+    name: gibtia-get-suspicious-ip-open-proxy-info
     outputs:
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.asn
       description: Proxy ASN.
@@ -779,15 +747,14 @@ script:
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in suspicious_ip/open_proxy
-      collection with provided ID.
-  - name: gibtia-get-suspicious-ip-socks-proxy-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in suspicious_ip/socks_proxy collection with provided ID.
+    name: gibtia-get-suspicious-ip-socks-proxy-info
     outputs:
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.asn
       description: Proxy IP ASN.
@@ -807,22 +774,21 @@ script:
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.evaluation.severity
       description: Event severity.
       type: String
-    description: Command performs Group IB event lookup in suspicious_ip/socks_proxy
-      collection with provided ID.
-  - name: gibtia-get-available-collections
-    arguments: []
+  - arguments: []
+    description: Returns list of available collections.
+    name: gibtia-get-available-collections
     outputs:
     - contextPath: GIBTIA.OtherInfo.collections
       description: List of availiable collections.
       type: String
-    description: Returns list of available collections.
-  - name: gibtia-get-malware-cnc-info
-    arguments:
-    - name: id
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         GIB event id.
         e.g.: aeed277396e27e375d030a91533aa232444d0089.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in malware/cnc collection by provided ID.
+    name: gibtia-get-malware-cnc-info
     outputs:
     - contextPath: GIBTIA.MalwareCNC.dateDetected
       description: Date CNC detected.
@@ -863,15 +829,14 @@ script:
     - contextPath: GIBTIA.MalwareCNC.id
       description: GIB event ID.
       type: String
-    description: Command performs Group IB event lookup in malware/cnc collection
-      by provided ID.
-  - name: gibtia-global-search
-    arguments:
-    - name: query
-      required: true
-      description: |-
+  - arguments:
+    - description: |-
         Query you want to search.
         e.g.: 8.8.8.8.
+      name: query
+      required: true
+    description: Command performs global Group IB search.
+    name: gibtia-global-search
     outputs:
     - contextPath: apiPath
       description: Name of collection in which found matches.
@@ -882,10 +847,10 @@ script:
     - contextPath: GIBLink
       description: Link to GIB TI&A interface.
       type: String
-    description: Command performs global Group IB search.
-  - name: gibtia-local-search
-    arguments:
-    - name: collection_name
+  - arguments:
+    - description: |-
+        Collection you want to search.
+      name: collection_name
       required: true
       auto: PREDEFINED
       predefined:
@@ -911,7 +876,6 @@ script:
       - hi/threat_actor
       - apt/threat_actor
       - apt/threat
-      description: Collection you want to search.
     - name: query
       required: true
       description: |-
@@ -921,6 +885,8 @@ script:
       description: Start date of search session.
     - name: date_to
       description: End date of search session.
+    description: Command performs Group IB search in selected collection.
+    name: gibtia-local-search
     outputs:
     - contextPath: id
       description: Id of a feed that matches a query.
@@ -928,40 +894,35 @@ script:
     - contextPath: additional_info
       description: Additional info about feed.
       type: String
-    description: Command performs Group IB search in selected collection.
-  - name: gibtia-get-suspicious-ip-vpn-info
+  - arguments:
+    - description: 'GIB event id.e.g.: 192.168.0.1.'
+      name: id
+    description: Command performs Group IB event lookup in suspicious_ip/vpn collection by provided ID.
+    name: gibtia-get-suspicious-ip-vpn-info
+  - description: Command performs Group IB event lookup in suspicious_ip/scanner collection by provided ID.
+    name: gibtia-get-suspicious-ip-scanner-info
     arguments:
     - name: id
       description: 'GIB event id.e.g.: 192.168.0.1.'
-    description: Command performs Group IB event lookup in suspicious_ip/vpn collection
-      by provided ID.
-  - name: gibtia-get-suspicious-ip-scanner-info
-    arguments:
-    - name: id
-      description: 'GIB event id.e.g.: 192.168.0.1.'
-    description: Command performs Group IB event lookup in suspicious_ip/scanner collection
-      by provided ID.
-  - name: gibtia-get-malware-malware-info
-    arguments:
-    - name: id
-      description: 'GIB event id.e.g.: 653654fb986b47a31c73d92f4a20a273acd2f779.'
-    description: Command performs Group IB event lookup in malware/malware collection
-      by provided ID.
-  - name: gibtia-get-compromised-card-group-info
-    arguments:
-    - name: id
+  - arguments:
+    - description: 'GIB event id.e.g.: 653654fb986b47a31c73d92f4a20a273acd2f779.'
+      name: id
+    description: Command performs Group IB event lookup in malware/malware collection by provided ID.
+    name: gibtia-get-malware-malware-info
+  - arguments:
+    - description: |-
+        GIB event id.
+      name: id
       required: true
-      description: GIB event id
-    description: Command performs Group IB event lookup in compromised/bank_card_group
-      collection by provided ID.
-  - name: gibtia-get-phishing-group-info
-    arguments:
-    - name: id
+    description: Command performs Group IB event lookup in compromised/bank_card_group collection by provided ID.
+    name: gibtia-get-compromised-card-group-info
+  - arguments:
+    - description: GIB event id.
+      name: id
       required: true
-      description: GIB event id
-    description: Command performs Group IB event lookup in attacks/phishing_group
-      collection by provided ID.
-  dockerimage: demisto/vendors-sdk:1.0.0.106889
+    description: Command performs Group IB event lookup in attacks/phishing_group collection by provided ID.
+    name: gibtia-get-phishing-group-info
+  dockerimage: demisto/vendors-sdk:1.0.0.2073752
   feed: false
   isfetch: true
   longRunning: false

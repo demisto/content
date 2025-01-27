@@ -879,9 +879,9 @@ class Client(BaseClient):
         self,
         collection_name: str,
         date_from: str | None = None,
-        sequpdate: int | str = None,
-        apply_hunting_rules: int | str = None,
-        limit: int | str = None,
+        sequpdate: int | str | None = None,
+        apply_hunting_rules: int | str | None = None,
+        limit: int | str | None = None,
     ):
         return self.poller.create_update_generator(
             collection_name=collection_name,
@@ -1412,7 +1412,7 @@ def main():  # pragma: no cover
         command = demisto.command()
         LOG(f"Command being called is {command}")
         demisto.debug(f"Command being called is {command}")
-    
+
         client = Client(
             base_url=base_url,
             verify=verify_certificate,

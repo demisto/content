@@ -1,95 +1,88 @@
 {
-	"action": "script",
-	"cacheVersn": 0,
-	"definitionId": "",
-	"enabled": true,
-	"existingEventsFilters": [],
-	"fromServerVersion": "",
-	"id": "gib_rule",
-	"index": 0,
-	"itemVersion": "",
-	"linkTo": "oldest",
-	"locked": false,
-	"name": "gib_rule",
-	"newEventFilters": [
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "gibid"
-					}
-				},
-				"operator": "isNotEmpty",
-				"right": {
-					"value": {}
-				},
-				"type": "shortText"
-			}
-		],
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "type"
-					}
-				},
-				"operator": "isNotEqualString",
-				"right": {
-					"value": {
-						"simple": "GIB Data Breach"
-					}
-				},
-				"type": "singleSelect"
-			}
-		]
-	],
-	"packID": "",
-	"packName": "",
-	"period": {
-		"by": "days",
-		"fromValue": 30
-	},
-	"readyExistingEventsFilters": [],
-	"readyNewEventFilters": [
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "gibid"
-					}
-				},
-				"operator": "isNotEmpty",
-				"right": {
-					"value": {}
-				},
-				"type": "shortText"
-			}
-		],
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "type"
-					}
-				},
-				"operator": "isNotEqualString",
-				"right": {
-					"value": {
-						"simple": "GIB Data Breach"
-					}
-				},
-				"type": "singleSelect"
-			}
-		]
-	],
-	"scriptID": "GIBIncidentUpdate",
-	"scriptName": "",
-	"searchClosed": false,
-	"system": false,
-	"toServerVersion": "",
-	"version": -1
+    "action": "script",
+    "enabled": true,
+    "id": "gib_rule",
+    "index": 0,
+    "itemVersion": "",
+    "linkTo": "oldest",
+    "locked": false,
+    "name": "gib_rule",
+    "newEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ],
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "type"
+                    }
+                },
+                "operator": "isNotEqualString",
+                "right": {
+                    "value": {
+                        "simple": "GIB Data Breach"
+                    }
+                },
+                "type": "singleSelect"
+            }
+        ]
+    ],
+    "packID": "",
+    "period": {
+        "by": "days",
+        "fromValue": 30
+    },
+    "readyNewEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ],
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "type"
+                    }
+                },
+                "operator": "isNotEqualString",
+                "right": {
+                    "value": {
+                        "simple": "GIB Data Breach"
+                    }
+                },
+                "type": "singleSelect"
+            }
+        ]
+    ],
+    "scriptName": "",
+    "searchClosed": false,
+    "system": false,
+    "toServerVersion": "",
+    "version": -1
 }
