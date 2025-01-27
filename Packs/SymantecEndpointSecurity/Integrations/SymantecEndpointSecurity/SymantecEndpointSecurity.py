@@ -40,7 +40,8 @@ class NextPointingNotAvailable(Exception):
     ...
 
 
-class RateLimitFromAPI(Exception): ...
+class RateLimitFromAPI(Exception):
+    ...
 
 
 class Client(BaseClient):
