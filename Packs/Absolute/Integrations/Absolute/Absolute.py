@@ -110,6 +110,8 @@ SEIM_EVENTS_PAGE_SIZE = 1000
 CLIENT_V3_JWS_VALIDATION_URL = "https://api.absolute.com/jws/validate"
 VENDOR = 'Absolute'
 PRODUCT = 'Secure Endpoint'
+HEADERS_V3: dict = {"content-type": "text/plain"}
+
 
 class Client(BaseClient):
     def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool,
@@ -374,20 +376,6 @@ class ClientV3(BaseClient):
             "payload": {}
         }
 
-    def prepare_request_payload(self, request_data: dict) -> dict[str, Any]:
-        """
-        Prepares the request payload for making an API call.
-
-        Args:
-            request_data (dict): The request data dictionary obtained from the `prepare_request_data` method.
-
-        Returns:
-            dict[str, Any]: A dictionary containing the prepared request payload.
-        """
-        return {
-            "data": request_data["payload"]
-        }
-
     def prepare_request_headers(self, request_data: dict) -> dict[str, Any]:
         """
         Prepares the request headers for making an API call.
@@ -421,36 +409,22 @@ class ClientV3(BaseClient):
             bytes: The prepared signed HTTP request data.
         """
         request_data = self.prepare_request_data(method, url_suffix, query_string)
-        request_payload_data = self.prepare_request_payload(request_data)
         headers = self.prepare_request_headers(request_data)
-        return self._jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
+        return self._jws.serialize_compact(headers, json.dumps({"data": {}}), self._secret_key)
 
-    def perform_request(self, signed: bytes) -> dict[str, Any]:
+    def fetch_events_request(self, query_string: str) -> dict[str, Any]:
         """
         Performs the HTTP request using the signed request data.
 
         Args:
-            signed (bytes): The signed HTTP request data.
+            query_string (str): The query string parameters for the events to be fetched.
 
         Returns:
             dict: A dictionary containing the response object from the HTTP request.
         """
-        return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
-                                  headers={"content-type": "text/plain"}, timeout=60)
-
-    def fetch_events(self, query_string: str) -> dict[str, Any]:
-        """
-         Fetches events from the API based on the provided query string.
-
-         Args:
-             query_string (str): The query string parameters for the events to be fetched.
-
-         Returns:
-             dict: A dictionary containing the fetched events.
-         """
         signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
-        response: dict = self.perform_request(signed)
-        return response
+        return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
+                                  headers={"content-type": "text/plain"})
 
     def fetch_events_with_pagination(self, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> tuple[
         List[Dict[str, Any]], str]:
@@ -469,9 +443,9 @@ class ClientV3(BaseClient):
         all_events = []
         while len(all_events) < fetch_limit:
             page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
-            query_string = prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date, end_date=end_date,
+            query_string = self.prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date, end_date=end_date,
                                                                  next_page=next_page_token)
-            response = self.fetch_events(query_string=query_string)
+            response = self.fetch_events_request(query_string=query_string)
             events = response.get('data', [])
             all_events.extend(events)
             next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
@@ -480,6 +454,31 @@ class ClientV3(BaseClient):
 
         demisto.debug(f'run_fetch_mechanism: Fetched {len(all_events)} events')
         return all_events, next_page_token
+
+    def prepare_query_string_for_fetch_events(self, page_size: int = None, start_date: datetime = None, end_date: datetime = None,
+                                              next_page: str = None) -> str:
+        """
+        Prepares the query string for fetching events based on the provided parameters.
+
+        Args:
+            page_size (int, optional): The size of each page to fetch. Defaults to None.
+            start_date (datetime, optional): The start date of the events to fetch. Defaults to None.
+            end_date (datetime, optional): The end date of the events to fetch. Defaults to None.
+            next_page (str, optional): The token to fetch the next page of events. Defaults to None.
+
+        Returns:
+            str: The prepared query string for fetching events.
+
+        """
+        from_date_time_utc = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+        to_date_time_utc = f'toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+        query = f'{from_date_time_utc}&{to_date_time_utc}'
+        if page_size:
+            query += f'&pageSize={page_size}'
+        if next_page:
+            query += f'&nextPage={next_page}'
+        demisto.debug(f'Query string for fetching events: {query}')
+        return query
 
 
 def sign(key, msg):
@@ -963,19 +962,6 @@ def parse_geo_location_outputs(response):
     return parsed_response
 
 
-def prepare_query_string_for_fetch_events(page_size: int = None, start_date: datetime = None, end_date: datetime = None,
-                                          next_page: str = None) -> str:
-    from_date_time_utc = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
-    to_date_time_utc = f'toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
-    query = f'{from_date_time_utc}&{to_date_time_utc}'
-    if page_size:
-        query += f'&pageSize={page_size}'
-    if next_page:
-        query += f'&nextPage={next_page}'
-    demisto.debug(f'Query string for fetching events: {query}')
-    return query
-
-
 def get_device_application_list_command(args, client) -> CommandResults:
     page = arg_to_number(args.get('page', 0))
     limit = arg_to_number(args.get('limit', 50))
@@ -1067,6 +1053,21 @@ def get_device_location_command(args, client) -> CommandResults:
 
 
 def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """
+        Fetches events from the APIv3 client, with pagination and duplication handling.
+        The function using the client to fetch events, and then helper function to handle duplication,
+        add time field and calculate the new latest events.
+
+        Args:
+            client (ClientV3): The client object used for fetching events.
+            fetch_limit (int): The maximum number of events to fetch.
+            last_run (Dict[str, Any]): A dictionary containing the last run information, including the next page token,
+                latest events ID, start date, and end date.
+
+        Returns:
+            Tuple[List[Dict[str, Any]], Dict[str, Any]]: A tuple containing the fetched events and the updated last run
+                information.
+        """
     next_page_token = last_run.get('next_page_token', '')
     last_run_latest_events_id = last_run.get('latest_events_id', [])
     last_end_date = last_run.get('end_date', '')
@@ -1083,16 +1084,17 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
 
     demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {next_page_token=}, {last_run=}')
     all_events, next_page_token = client.fetch_events_with_pagination(fetch_limit, next_page_token, start_date, end_date)
-    if not all_events:
-        return [], {
-            'next_page_token': '',
-            'start_date': start_date.strftime("%Y-%m-%d %H:%M:%S"),
-            'end_date': end_date.strftime("%Y-%m-%d %H:%M:%S"),
-            'latest_events_id': []}
-
-    events, latest_events_id = handle_duplication_and_add_time_field_to_events_and_get_latest_events(all_events,
+    events, latest_events_id = process_events(all_events,
                                                                                                      last_run_latest_events_id)
     demisto.debug(f'fetch_events: {latest_events_id=}')
+
+    # TODO: remove the loop below
+    log_events = []
+    for event in events:
+        log_events.append(event.get('id'))
+    demisto.debug(f"{log_events=}")
+    # TODO: remove the loop above
+
     return events, {
         'next_page_token': next_page_token,
         'start_date': start_date.strftime("%Y-%m-%d %H:%M:%S"),
@@ -1100,14 +1102,25 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
         'latest_events_id': latest_events_id}
 
 
-def handle_duplication_and_add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]],
+def process_events(events: List[Dict[str, Any]],
                                                                           last_run_latest_events_id: List[str],
                                                                           should_get_latest_events: bool = True) -> tuple[
     List[Dict[str, Any]], List[str]]:
+    """
+    Processes events by handling duplication, adding a time field, and optionally getting the latest events ID.
 
+    Args:
+        events (List[Dict[str, Any]]): The list of events to be processed.
+        last_run_latest_events_id (List[str]): The list of latest events ID from the last run.
+        should_get_latest_events (bool, optional): A flag indicating whether to get the latest events ID. Defaults to True.
+
+    Returns:
+        Tuple[List[Dict[str, Any]], List[str]]: A tuple containing the processed events and the latest events ID.
+
+    """
     demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id")
-    earliest_event_time = events[0].get('eventDateTimeUtc')
-    latest_event_time = events[-1].get('eventDateTimeUtc')
+    earliest_event_time = events[0].get('eventDateTimeUtc') if events else None
+    latest_event_time = events[-1].get('eventDateTimeUtc') if events else None
     latest_events_id = []
     filtered_events = []
     for event in events:
@@ -1138,7 +1151,7 @@ def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
     events, _ = client.fetch_events_with_pagination(fetch_limit, '', start_date, end_date)
     demisto.debug(f'get_events: Found {len(events)} events. {events=}')
     if events:
-        events, _ = handle_duplication_and_add_time_field_to_events_and_get_latest_events(events, [],
+        events, _ = process_events(events, [],
                                                                                           should_get_latest_events=False)
     return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
 
@@ -1170,14 +1183,11 @@ def main() -> None:  # pragma: no cover
             x_abs_date=x_abs_date,
         )
 
-        headers_v3: dict = {"content-type": "text/plain"}
-
-
         client_v3 = ClientV3(
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            headers=headers_v3,
+            headers=HEADERS_V3,
             token_id=token_id,
             secret_key=secret_key
         )

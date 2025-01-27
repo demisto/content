@@ -525,7 +525,7 @@ def test_fetch_events_no_events(mocker, absolute_client_v3):
     from Absolute import fetch_events
     mock_response = {'data': [], 'metadata': {}}
     mocker.patch('Absolute.ClientV3.fetch_events_with_pagination', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.handle_duplication_and_add_time_field_to_events_and_get_latest_events',
+    mocker.patch('Absolute.process_events',
                  return_value=(mock_response.get('data'), []))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
@@ -548,8 +548,7 @@ def test_fetch_events_first_fetch(mocker, absolute_client_v3):
     from Absolute import fetch_events
     mock_response = util_load_json('test_data/siem_events.json')
     mocker.patch('Absolute.ClientV3.fetch_events_with_pagination', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.handle_duplication_and_add_time_field_to_events_and_get_latest_events',
-                 return_value=(mock_response.get('data'), []))
+    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), []))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
     assert last_run_object.get('start_date')
@@ -599,10 +598,10 @@ def test_fetch_events_with_pagination_one_fetch(mocker, absolute_client_v3):
     from datetime import timedelta
     mock_response = util_load_json('test_data/siem_events.json')
     mock_response['metadata']['pagination']['nextPage'] = ''
-    mocker.patch.object(absolute_client_v3, 'fetch_events', return_value=mock_response)
+    mocker.patch.object(absolute_client_v3, 'fetch_events_request', return_value=mock_response)
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(minutes=1)
-    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events')
+    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events_request')
     all_events, next_page_token = ClientV3.fetch_events_with_pagination(absolute_client_v3, 10000, '', start_date, end_date)
     assert all_events == mock_response.get('data')
     fetch_events_spy.assert_called_once()
@@ -650,8 +649,8 @@ def test_fetch_events_with_pagination_multiple_fetches(mocker, absolute_client_v
             }
 
     fetch_events_side_effect.call_count = 1
-    mocker.patch.object(absolute_client_v3, 'fetch_events', side_effect=fetch_events_side_effect)
-    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events')
+    mocker.patch.object(absolute_client_v3, 'fetch_events_request', side_effect=fetch_events_side_effect)
+    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events_request')
     all_events, next_page_token = ClientV3.fetch_events_with_pagination(absolute_client_v3, 10000, '', start_date, end_date)
 
     assert all_events == mock_response.get('data')
@@ -670,11 +669,10 @@ def test_add_time_field(absolute_client_v3):
     Then:
         - All the events in the list should have a "_time" field.
     """
-    from Absolute import handle_duplication_and_add_time_field_to_events_and_get_latest_events
+    from Absolute import process_events
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
-    all_events, _ = handle_duplication_and_add_time_field_to_events_and_get_latest_events(events=events,
-                                                                                          last_run_latest_events_id=[])
+    all_events, _ = process_events(events=events, last_run_latest_events_id=[])
     for event in all_events:
         assert event.get('_time')
 
@@ -693,11 +691,10 @@ def test_get_latest_events(absolute_client_v3):
         - The IDs in the latest_events_id list should be unique.
         - The IDs in the latest_events_id list should match the expected IDs.
     """
-    from Absolute import handle_duplication_and_add_time_field_to_events_and_get_latest_events
+    from Absolute import process_events
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
-    _, latest_events_id = handle_duplication_and_add_time_field_to_events_and_get_latest_events(events=events,
-                                                                                                last_run_latest_events_id=[])
+    _, latest_events_id = process_events(events=events, last_run_latest_events_id=[])
     assert len(latest_events_id) == 2
     assert len(set(latest_events_id)) == 2
     assert latest_events_id == ['id14', 'id15']
@@ -719,8 +716,7 @@ def test_get_events_command(mocker, absolute_client_v3):
     from Absolute import get_events
     mock_response = util_load_json('test_data/siem_events.json')
     mocker.patch('Absolute.ClientV3.fetch_events_with_pagination', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.handle_duplication_and_add_time_field_to_events_and_get_latest_events',
-                 return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ''))
     events, _ = get_events(absolute_client_v3, {})
     assert events == mock_response.get('data')
 
@@ -758,7 +754,7 @@ def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
     Then:
         - The function should return a query string for fetching events.
     """
-    from Absolute import prepare_query_string_for_fetch_events
+    from Absolute import ClientV3
     from datetime import timedelta
     mock_response = util_load_json('test_data/siem_events.json')
     event = mock_response.get('data')[0]
@@ -766,6 +762,10 @@ def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
     end_date = start_date + timedelta(minutes=1)
     page_size = 1000
     next_page = 'next_token'
-    query = prepare_query_string_for_fetch_events(page_size, start_date, end_date, next_page)
+    query = ClientV3.prepare_query_string_for_fetch_events(None,
+                                                           page_size=page_size,
+                                                           start_date=start_date,
+                                                           end_date=end_date,
+                                                           next_page=next_page)
     expected_query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}&nextPage={next_page}'
     assert query == expected_query
