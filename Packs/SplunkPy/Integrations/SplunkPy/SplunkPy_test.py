@@ -932,7 +932,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=deepcopy(SAMPLE_RESPONSE))
     mapper = UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
     incidents = demisto.incidents.call_args[0][0]
@@ -996,7 +996,7 @@ def test_fetch_notables(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = Service('DONE')
-    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=deepcopy(SAMPLE_RESPONSE))
     mapper = splunk.UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper=mapper, comment_tag_to_splunk='comment_tag_to_splunk',
                            comment_tag_from_splunk='comment_tag_from_splunk')
@@ -2579,7 +2579,7 @@ def test_labels_with_non_str_values(mocker):
         "bool_val": False,
         "float_val": 100.0
     }
-    mocked_response: list[results.Message | dict] = SAMPLE_RESPONSE.copy()
+    mocked_response: list[results.Message | dict] = deepcopy(SAMPLE_RESPONSE)
     mocked_response[1]['_raw'] = json.dumps(raw)
     mock_last_run = {'time': '2018-10-24T14:13:20'}
     mock_params = {'fetchQuery': "something", "parseNotableEventsRaw": True}
@@ -3116,7 +3116,7 @@ def test_get_modified_remote_data_command_with_user_mapping(mocker, should_map_u
         Then:
         - Verify the correct owner are returned.
     """
-    notable_without_owner = SAMPLE_RESPONSE[2].copy()
+    notable_without_owner = deepcopy(SAMPLE_RESPONSE[2])
     del notable_without_owner['owner']
 
     mapped_user = 'mapped_splunk_user'
@@ -3155,14 +3155,11 @@ def test_mirror_in_with_enrichment_enabled(mocker):
     - Validate the integration context stored the "delta" for the incident which sent to enrichment but not yet created
     in order to create the incident with the updated fields.
     """
-
     # create an integration context in order to simulate the context in a normal run.
     integration_context = {
         splunk.CACHE: json.dumps(
             {splunk.SUBMITTED_NOTABLES: [splunk.Notable(SAMPLE_RESPONSE[2])]}, default=lambda obj: obj.__dict__),
     }
-    # cache = splunk.Cache.load_from_integration_context(integration_context)
-    # assert cache.submitted_notables[0].id == SAMPLE_RESPONSE[2]['event_id']
     mocker.patch('SplunkPy.set_integration_context')
     mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
@@ -3207,6 +3204,7 @@ def test_user_mapping_used_cache(mocker):
     Then:
     - Validate that the function use cache to store the mapped values and called only once.
     """
+    mocker.patch.object(demisto, 'error')
     mocked_service = mocker.patch('SplunkPy.client.Service')
     mapper = splunk.UserMappingObject(mocked_service, True)
     for _ in range(5):

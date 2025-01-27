@@ -28,6 +28,7 @@ configuration:
   display: Fetch events query
   name: fetchQuery
   type: 0
+  section: Collect
   required: false
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
