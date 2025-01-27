@@ -22,5 +22,5 @@ Timestamp is extracted from the **date** field with the following format - yyyy-
 4. Click **Connect**.
 5. Set the following values:
    - Name as `Proofpoint Isolation`
-   - API Key - paste the **Reporting API Key** we copied from **Proofpoint Isolation** UI.
+   - API Key - Paste the **Reporting API Key** you copied from the **Proofpoint Isolation** UI.
 6. Click **Connect**.
