@@ -30,7 +30,6 @@ configuration:
     options:
       - Basic
       - Token
-      - Username&Password
       - Bearer
       - Api-Key
       - RawToken
@@ -89,6 +88,16 @@ configuration:
     a need to add more then one use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - section: Connect
+    display: 'Initial Query Parameters'
+    name: initial_query_params
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product requires a different initial query parameters for the first fetch call,
+   please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Connect
     display: 'Is pagination Needed'
     name: pagination_needed
     type: 8
@@ -97,18 +106,19 @@ configuration:
     name: pagination_field_name
     type: 0
     required: false
+    additionalinfo: 'Next page field in JSON response, e.g., "cursor", "next_page"'
   - section: Connect
     display: Pagination Flag
     name: pagination_flag
     type: 0
     required: false
-    additionalinfo: 'Flag examples: {has_more: True}, {next: True} etc'
+    additionalinfo: 'Next page existence in JSON response e.g., "has_more", "next"'
   - section: Connect
     display: Timestamp format of the event creation time.
     name: timestamp_format
     type: 0
     required: false
-    additionalinfo: 'e.g. "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S"'
+    additionalinfo: 'Python compatible datetime formatting (e.g. "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S") or "epoch" to use UNIX epoch time.'
   - section: Connect
     display: Timestamp field
     name: timestamp_field_name
@@ -121,6 +131,12 @@ configuration:
     type: 0
     required: false
     additionalinfo: 'Where within the response object to find the events list.'
+  - section: Connect
+    display: 'Event id lookup path in the event response JSON, dot seperated, e.g. "id".'
+    name: id_keys
+    type: 0
+    required: false
+    additionalinfo: 'Where within the event object to find the events id.'
   - section: Connect
     display: Use system proxy settings
     name: proxy
@@ -171,17 +187,6 @@ name: GenericEventCollector
 beta: true
 script:
   commands:
-    - arguments:
-        - auto: PREDEFINED
-          defaultValue: 'false'
-          description: Set this argument to true in order to create events, otherwise the command will only display them.
-          name: should_push_events
-          predefined:
-            - 'true'
-            - 'false'
-          required: true
-      description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
-      name: fetch-events
     - arguments:
         - auto: PREDEFINED
           defaultValue: 'false'
