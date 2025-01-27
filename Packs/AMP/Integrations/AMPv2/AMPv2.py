@@ -3170,6 +3170,7 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             raise ValueError(f'Cisco AMP: Hash "{file_hash}" is not of type SHA-256')
 
         raw_response = client.event_list_request(detection_sha256=file_hash)
+        demisto.debug(f"########### {raw_response=} ######################")
 
         data_list = raw_response["data"]
 
