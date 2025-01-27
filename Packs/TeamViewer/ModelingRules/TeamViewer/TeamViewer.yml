@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: TeamViewer_ModelingRule
+id: TeamViewer_Tensor_ModelingRule
 name: TeamViewer Tensor Modeling Rule
 rules: ''
 schema: ''
