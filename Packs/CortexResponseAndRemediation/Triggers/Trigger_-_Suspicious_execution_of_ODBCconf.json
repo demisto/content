@@ -1,5 +1,5 @@
 {
-  "trigger_id": "41f9310c50c55b761fdc0aa5c48d6459",
+  "trigger_id": "46bd6792e691ffece5ecb4fd9596323c",
   "playbook_id": "Suspicious execution of ODBCConf",
   "suggestion_reason": "Recommended for the 'Suspicious execution of ODBCConf' alert.",
   "description": "This trigger is responsible for handling 'Suspicious execution of ODBCConf' alerts.",
