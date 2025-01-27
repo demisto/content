@@ -1,0 +1,19 @@
+{
+  "trigger_id": "41f9310c50c55b761fdc0aa5c48d6459",
+  "playbook_id": "Suspicious execution of ODBCConf",
+  "suggestion_reason": "Recommended for the 'Suspicious execution of ODBCConf' alert.",
+  "description": "This trigger is responsible for handling 'Suspicious execution of ODBCConf' alerts.",
+  "trigger_name": "Suspicious execution of ODBCConf",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Suspicious execution of ODBCConf"
+        }
+      ]
+    }
+  }
+}
