@@ -184,6 +184,11 @@ class Client(BaseClient):
         Returns:
             list: list of events as dicts.
         """
+        demisto.debug(f"Searching events for {endpoint}")
+        demisto.debug(f"{request_data.request_json=}")
+        demisto.debug(f"{request_data.request_data=}")
+        demisto.debug(f"{request_data.query_params=}")
+
         return self._http_request(  # type: ignore
             method=http_method,
             url_suffix=endpoint,
@@ -327,7 +332,7 @@ def fetch_events(client: Client,
     # region Gets events & Searches for pagination
     all_events_list: list[dict[str, Any]] = []
     pagination_needed: bool = True
-    id_keys: list[str] = argToList(params.get('id_keys', '.'))
+    id_keys: list[str] = argToList(params.get('id_keys'), '.')
     while pagination_needed:
 
         raw_events = client.search_events(endpoint=endpoint,
@@ -338,7 +343,8 @@ def fetch_events(client: Client,
         demisto.debug(f"{len(all_events_list)} events fetched")
         pagination_needed, next_page_value = is_pagination_needed(raw_events, pagination_logic)
         if pagination_needed:
-            request_data.request_json[pagination_logic.pagination_field_name] = next_page_value
+            request_json = {pagination_logic.pagination_field_name: next_page_value}
+            request_data = RequestData(request_data.request_data, request_json, request_data.query_params)
 
     # endregion
 
@@ -478,9 +484,9 @@ def parse_json_param(json_param_value: Any, json_param_name) -> dict | None:
 def generate_headers(params: dict[str, Any]) -> dict[Any, Any]:
 
     headers = generate_authentication_headers(params)
-    if ((add_fields_to_header := str(params.get('add_fields_to_header'))) and
-            (parsed := parse_json_param(add_fields_to_header, 'add_fields_to_header') is not None)):
-        headers.update(parsed)
+    if add_fields_to_header := str(params.get('add_fields_to_header')):
+        if (parsed := parse_json_param(add_fields_to_header, 'add_fields_to_header')) is not None:
+            headers.update(parsed)
     return headers
 
 
@@ -711,7 +717,7 @@ def extract_pagination_params(params):
     pagination_flag: str | None = params.get('pagination_flag')
     pagination_logic = PaginationLogic(pagination_needed, pagination_field_name, pagination_flag)
     if pagination_logic.pagination_needed:
-        demisto.debug("Pagination logic - Pagination Needed"
+        demisto.debug("Pagination logic - Pagination Needed, "
                       f"pagination_field_name: {pagination_logic.pagination_field_name}, "
                       f"pagination_flag: {pagination_logic.pagination_flag}")
         if not pagination_logic.pagination_field_name:

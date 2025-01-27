@@ -68,13 +68,23 @@ configuration:
     a need to add more then one use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - section: Connect
-    display: 'Request Parameters'
-    name: request_params
+    display: 'Request Data'
+    name: request_data
     type: 0
     required: false
     advanced: true
     additionalinfo: 'If the product authentication requires more fields to add to the
     DATA please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Connect
+    display: 'Request JSON Parameters'
+    name: request_json
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product authentication requires more fields to add to the
+    body as JSON please add it here in a dictionary format {unique_field : 286} if there''s
     a need to add more then one use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - section: Connect
