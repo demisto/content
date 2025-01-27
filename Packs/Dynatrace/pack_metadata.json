@@ -1,6 +1,6 @@
 {
     "name": "Dynatrace",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Dynatrace is a revolutionary platform that delivers analytics and automation for unified observability and security.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

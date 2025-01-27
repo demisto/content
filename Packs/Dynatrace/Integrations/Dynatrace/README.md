@@ -33,7 +33,7 @@ Manual command to fetch events and display them.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | events_types_to_get | comma separated list of events types to get. Possible values are: Audit logs, APM. | Required | 
-| audit_from | The start date for searching audit_logs events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/events-v2/get-events fro more information. | Optional | 
+| audit_from | The start date for searching audit_logs events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/events-v2/get-events for more information. | Optional | 
 | apm_from | The start date for searching apm events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/audit-logs/get-log for more information. | Optional | 
 | audit_limit | Number of audit_logs events to fetch. Default is 1. | Optional | 
 | apm_limit | Number of apm events to fetch. Default is 1. | Optional | 

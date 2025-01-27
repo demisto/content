@@ -1,44 +1,12 @@
 from demisto_sdk.commands.common.handlers import JSON_Handler
-import json
-
 import pytest
 import Dynatrace as dyn
-import demistomock as demisto
 from CommonServerPython import *
 
-# def util_load_json(path):
-#     with open(path, encoding="utf-8") as f:
-#         return json.loads(f.read())
 
-AUDIT_CLIENT = dyn.DynatraceClient(
+CLIENT = dyn.DynatraceClient(
     base_url="https://AAAAA.dynatrace.com",
-    client_id=None,
-    client_secret=None,
-    uuid=None,
     token="AAAAAAAAA.AAAAAAA.AAAAAAA",
-    events_to_fetch=["Audit logs"],
-    verify=True,
-    proxy=None
-    )
-
-APM_CLIENT = dyn.DynatraceClient(
-    base_url="https://AAAAA.dynatrace.com",
-    client_id=None,
-    client_secret=None,
-    uuid=None,
-    token="AAAAAAAAA.AAAAAAA.AAAAAAA",
-    events_to_fetch=["APM"],
-    verify=True,
-    proxy=None
-    )
-
-APM_AUDIT_CLIENT = dyn.DynatraceClient(
-    base_url="https://AAAAA.dynatrace.com",
-    client_id=None,
-    client_secret=None,
-    uuid=None,
-    token="AAAAAAAAA.AAAAAAA.AAAAAAA",
-    events_to_fetch=["APM", "Audit logs"],
     verify=True,
     proxy=None
     )
@@ -50,8 +18,8 @@ def test_get_audit_logs_events(mocker):
     When: calling get_audit_logs_events function
     Then: the http request is called with "GET" arg and with the right url.
     """
-    http_request = mocker.patch.object(AUDIT_CLIENT, '_http_request', return_value=[])
-    AUDIT_CLIENT.get_audit_logs_events(query="?querykey=queryarg")
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
+    CLIENT.get_audit_logs_events(query="?querykey=queryarg")
     assert http_request.call_args[0][0] == "GET"
     assert http_request.call_args[0][1] == "/api/v2/auditlogs?querykey=queryarg"
     
@@ -62,44 +30,35 @@ def test_get_APM_events(mocker):
     When: calling get_APM_events function
     Then: the http request is called with "GET" arg and with the right url.
     """
-    http_request = mocker.patch.object(APM_CLIENT, '_http_request', return_value=[])
-    APM_CLIENT.get_APM_events(query="?querykey=queryarg")
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
+    CLIENT.get_APM_events(query="?querykey=queryarg")
     assert http_request.call_args[0][0] == "GET"
     assert http_request.call_args[0][1] == "/api/v2/events?querykey=queryarg"
     
     
 @pytest.mark.parametrize(
-    "client_id, client_secret, uuid, token, events_to_fetch, audit_max, apm_max, expected_exception, expected_message",
+    "token, events_to_fetch, audit_max, apm_max, expected_exception, expected_message",
     [
-        # Valid OAuth2 configuration
-        ("client_id", "client_secret", "uuid", None, ["APM"], 25000, 5000, None, None),
-        
         # Valid token configuration
-        (None, None, None, "token", ["APM"], 25000, 5000, None, None),
-        
-        # Invalid: Both OAuth2 and token parameters provided
-        ("client_id", "client_secret", "uuid", "token", ["APM"], 25000, 5000, DemistoException, "When using OAuth 2"),
-        
-        # Invalid: Missing both OAuth2 and token parameters
-        (None, None, None, None, ["APM"], 25000, 5000, DemistoException, "When using OAuth 2"),
+        ("token", ["APM"], 25000, 5000, None, None),
         
         # Invalid: No event types specified
-        ("client_id", "client_secret", "uuid", None, [], 25000, 5000, DemistoException, "Please specify at least one event type"),
+        (None, [], 25000, 5000, DemistoException, "Please specify at least one event type"),
         
         # Invalid: audit_max out of range (too high)
-        ("client_id", "client_secret", "uuid", None, ["Audit logs"], 30000, 5000, DemistoException, "The maximum number of audit logs events"),
+        (None, ["Audit logs"], 30000, 5000, DemistoException, "The maximum number of audit logs events"),
         
         # Invalid: audit_max out of range (negative)
-        ("client_id", "client_secret", "uuid", None, ["Audit logs"], -1, 5000, DemistoException, "The maximum number of audit logs events"),
+        (None, ["Audit logs"], -1, 5000, DemistoException, "The maximum number of audit logs events"),
         
         # Invalid: apm_max out of range (too high)
-        ("client_id", "client_secret", "uuid", None, ["APM"], 25000, 6000, DemistoException, "The maximum number of APM events"),
+        (None, ["APM"], 25000, 6000, DemistoException, "The maximum number of APM events"),
         
         # Invalid: apm_max out of range (negative)
-        ("client_id", "client_secret", "uuid", None, ["APM"], 25000, -1, DemistoException, "The maximum number of APM events"),
+        (None, ["APM"], 25000, -1, DemistoException, "The maximum number of APM events"),
     ],
 )
-def test_validate_params(client_id, client_secret, uuid, token, events_to_fetch, audit_max, apm_max, expected_exception, expected_message):
+def test_validate_params(token, events_to_fetch, audit_max, apm_max, expected_exception, expected_message):
     """
     Given: all instance params
     When: Calling validate_params function
@@ -110,9 +69,6 @@ def test_validate_params(client_id, client_secret, uuid, token, events_to_fetch,
         with pytest.raises(expected_exception) as excinfo:
             validate_params(
                 url="http://example.com",
-                client_id=client_id,
-                client_secret=client_secret,
-                uuid=uuid,
                 token=token,
                 events_to_fetch=events_to_fetch,
                 audit_max=audit_max,
@@ -122,9 +78,6 @@ def test_validate_params(client_id, client_secret, uuid, token, events_to_fetch,
     else:
         validate_params(
             url="http://example.com",
-            client_id=client_id,
-            client_secret=client_secret,
-            uuid=uuid,
             token=token,
             events_to_fetch=events_to_fetch,
             audit_max=audit_max,
@@ -184,8 +137,8 @@ def test_events_query__APM(mocker):
     Then: The get_APM_events is called with the right query.
     """
     from Dynatrace import events_query
-    request = mocker.patch.object(APM_CLIENT, 'get_APM_events', return_value=[])
-    events_query(APM_CLIENT, {"apm_limit": "100", "apm_from": "1640995200000"}, "APM")
+    request = mocker.patch.object(CLIENT, 'get_APM_events', return_value=[])
+    events_query(CLIENT, {"apm_limit": "100", "apm_from": "1640995200000"}, "APM")
     assert request.call_args[0][0] == '?pageSize=100&from=1640995200000'
     
     
@@ -196,8 +149,8 @@ def test_events_query__audit(mocker):
     Then: The get_audit_events is called with the right query.
     """
     from Dynatrace import events_query
-    request = mocker.patch.object(AUDIT_CLIENT, 'get_audit_logs_events', return_value=[])
-    events_query(AUDIT_CLIENT, {"audit_limit": "100", "audit_from": "1640995200000"}, "Audit logs")
+    request = mocker.patch.object(CLIENT, 'get_audit_logs_events', return_value=[])
+    events_query(CLIENT, {"audit_limit": "100", "audit_from": "1640995200000"}, "Audit logs")
     assert request.call_args[0][0] == '?pageSize=100&from=1640995200000'
     
 
@@ -213,7 +166,7 @@ def test_fetch_events(mocker):
     add_fields_to_events_mock = mocker.patch("Dynatrace.add_fields_to_events", return_value=[])
     send_events_to_xsiam_mock = mocker.patch("Dynatrace.send_events_to_xsiam")
     
-    fetch_events(APM_AUDIT_CLIENT, ["APM", "Audit logs"], 200, 100)
+    fetch_events(CLIENT, ["APM", "Audit logs"], 200, 100)
     
     assert apm_mock.call_args.args[1] == 100
     assert audit_mock.call_args.args[1] == 200
@@ -234,9 +187,9 @@ def test_get_events_command__APM(mocker):
     add_fields_to_events_mock = mocker.patch("Dynatrace.add_fields_to_events", return_value=[])
     send_events_to_xsiam_mock = mocker.patch("Dynatrace.send_events_to_xsiam")
     
-    res = get_events_command(APM_CLIENT, {"events_types_to_get": "APM", "should_push_events": True})
+    res = get_events_command(CLIENT, {"events_types_to_get": "APM", "should_push_events": True})
     
-    events_query_mock.assert_called_once_with(APM_CLIENT, {"events_types_to_get": "APM", "should_push_events": True}, "APM")
+    events_query_mock.assert_called_once_with(CLIENT, {"events_types_to_get": "APM", "should_push_events": True}, "APM")
     add_fields_to_events_mock.assert_called_once_with([], "APM")
     send_events_to_xsiam_mock.assert_called_once_with(events=[], vendor="Dynatrace", product="Platform")
     assert "No events were received" in res.readable_output
@@ -257,9 +210,9 @@ def test_get_events_command__Audit_logs(mocker):
                                              return_value=[{"timestamp": 1640995200000, "SOURCE_LOG_TYPE": "Audit logs events"}])
     send_events_to_xsiam_mock = mocker.patch("Dynatrace.send_events_to_xsiam")
     
-    res = get_events_command(AUDIT_CLIENT, {"events_types_to_get": "Audit logs", "should_push_events": False})
+    res = get_events_command(CLIENT, {"events_types_to_get": "Audit logs", "should_push_events": False})
     
-    events_query_mock.assert_called_once_with(AUDIT_CLIENT,
+    events_query_mock.assert_called_once_with(CLIENT,
                                               {"events_types_to_get": "Audit logs", "should_push_events": False}, "Audit logs")
     add_fields_to_events_mock.assert_called_once_with([{"timestamp": 1640995200000}], "Audit logs")
     send_events_to_xsiam_mock.assert_not_called()

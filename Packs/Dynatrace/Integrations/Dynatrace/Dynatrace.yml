@@ -7,33 +7,14 @@ sectionOrder:
 name: Dynatrace
 display: Dynatrace
 category: Cloud Services
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.].'
+description: 'Fetch Audit logs and APM events from Dynatrace Platform'
 configuration:
 - display: Server URL
   name: url
   required: true
   type: 0
   section: Connect
-- display: Client ID
-  additionalinfo: Required If using OAuth 2 as authentication method.
-  name: client_id
-  required: false
-  type: 4
-  section: Connect
-- display: Client Secret
-  additionalinfo: Required If using OAuth 2 as authentication method.
-  name: client_secret
-  required: false
-  type: 4
-  section: Connect
-- display: Account UUID
-  additionalinfo: Required If using OAuth 2 as authentication method.
-  name: uuid
-  required: false
-  type: 4
-  section: Connect
 - display: Access Token
-  additionalinfo: Required If using Personal Access Token.
   name: token
   required: false
   type: 4
@@ -51,13 +32,13 @@ configuration:
 - display: The maximum number of audit logs events per fetch
   section: Collect
   advanced: true
-  defaultvalue: "5000"
+  defaultvalue: "25000"
   type: 0
   name: audit_limit
 - display: The maximum number of APM events per fetch
   section: Collect
   advanced: true
-  defaultvalue: "5000"  # Need to ask sara about the default limit in all event types
+  defaultvalue: "5000"
   type: 0
   name: apm_limit
 - display: Trust any certificate (not secure)
@@ -83,9 +64,9 @@ script:
       - APM
       required: true
     - name: audit_from
-      description: The start date for searching audit_logs events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to # TODO https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
+      description: The start date for searching audit_logs events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/events-v2/get-events for more information.
     - name: apm_from
-      description: The start date for searching apm events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to #TODO https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
+      description: The start date for searching apm events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/audit-logs/get-log for more information.
     - name: audit_limit
       required: false
       description: Number of audit_logs events to fetch.
