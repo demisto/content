@@ -738,7 +738,7 @@ def test_private_url_command(mocker, requests_mock):
     - A valid Testing private URL
 
     When:
-    - Running the !vt-privatescanning-url command
+    - Running the !gti-privatescanning-url command
 
     Then:
     - Validate the command results are valid and contains metric data
@@ -775,7 +775,7 @@ def test_not_found_private_url_command(mocker, requests_mock):
     - A valid Testing private file
 
     When:
-    - Running the !vt-privatescanning-url command
+    - Running the !gti-privatescanning-url command
 
     Then:
     - Display "Not found" message to user

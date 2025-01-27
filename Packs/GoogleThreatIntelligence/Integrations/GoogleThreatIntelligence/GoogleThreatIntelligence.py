@@ -2210,7 +2210,7 @@ def private_url_scan_and_get_analysis(
         client: Client,
         args: dict
 ):
-    """Calls to gti-privatescanning-url-scan and gti-analysis-get."""
+    """Calls to gti-privatescanning-url-scan and gti-privatescanning-analysis-get."""
     interval = int(args.get('interval_in_seconds', 60))
 
     if not args.get('id'):

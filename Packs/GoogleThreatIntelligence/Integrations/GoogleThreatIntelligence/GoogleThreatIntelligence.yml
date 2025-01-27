@@ -1679,6 +1679,92 @@ script:
     - contextPath: GoogleThreatIntelligence.Submission.Type
       description: Type of the file.
       type: String
+  - name: gti-privatescanning-url
+    description: Checks the reputation of a private URL.
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: Private URL to check.
+      isArray: true
+    outputs:
+    - contextPath: GoogleThreatIntelligence.URL.attributes.favicon.raw_md5
+      description: The MD5 hash of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.favicon.dhash
+      description: Difference hash.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_content_length
+      description: The last HTTPS response length.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.date
+      description: The last response header date.
+      type: Date
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.x-sinkhole
+      description: DNS sinkhole from last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-length
+      description: The content length of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-type
+      description: The content type of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_content_sha256
+      description: The SHA-256 hash of the content of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_code
+      description: Last response status code.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_final_url
+      description: Last final URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.url
+      description: The URL itself.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.title
+      description: Title of the page.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.harmless
+      description: The number of engines that found the domain to be harmless.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.malicious
+      description: The number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.suspicious
+      description: The number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.undetected
+      description: The number of engines that could not detect the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.timeout
+      description: The number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.outgoing_links
+      description: Outgoing links of the URL page.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.type
+      description: Type of the indicator (private_url).
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.id
+      description: ID of the indicator.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.links.self
+      description: Link to the response.
+      type: String
+  - name: gti-privatescanning-url-scan
+    description: Submits an URL for private scanning. Use the gti-privatescanning-analysis-get command to get the scan results.
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The private URL to scan.
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Submission.Type
+      description: The type of the submission (private_analysis).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Submission.id
+      description: The ID of the submission.
+      type: String
   - name: gti-privatescanning-analysis-get
     description: Get analysis of a private file or URL submitted to GoogleThreatIntelligence.
     arguments:
@@ -1721,7 +1807,7 @@ script:
       description: ID of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.type
-      description: Type of object (analysis).
+      description: Type of object (private_analysis).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.sha256
       description: SHA-256 hash of the file.
@@ -2054,6 +2140,13 @@ script:
       description: The file entry ID to submit.
     - name: id
       description: This is an internal argument used for the polling process, not to be used by the user.
+    - name: extended_data
+      description: Whether to return extended data.
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: interval_in_seconds
       description: Interval in seconds between each poll.
       defaultValue: '60'
@@ -2080,7 +2173,7 @@ script:
       description: ID of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.type
-      description: Type of object (analysis).
+      description: Type of object (private_analysis).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.sha256
       description: SHA-256 hash of the file.
@@ -2299,6 +2392,13 @@ script:
       description: The URL to scan.
     - name: id
       description: This is an internal argument used for the polling process, not to be used by the user.
+    - name: extended_data
+      description: Whether to return extended data.
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: interval_in_seconds
       description: Interval in seconds between each poll.
       defaultValue: '60'
@@ -2325,7 +2425,7 @@ script:
       description: ID of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.type
-      description: Type of object (analysis).
+      description: Type of object (private_analysis).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.id
       description: ID of the URL.
