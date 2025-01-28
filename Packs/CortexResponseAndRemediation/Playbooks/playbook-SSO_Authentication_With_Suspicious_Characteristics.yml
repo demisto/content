@@ -871,7 +871,7 @@ tasks:
       id: 10ecbe66-7ca4-4080-89bb-d5af2ae0c4d0
       description: ""
       version: -1
-      name: Any suspicious evidence found?
+      name: Check for suspicious evidence
       type: condition
       iscommand: false
       brand: ""
