@@ -188,3 +188,17 @@ def test_fetch_enrichment_excluded(mocker):
             ind['enrichmentExcluded'] = True
 
         assert res == expected
+
+
+def test_client_enrichment_excluded_with_tlp_red(mocker):
+    """
+        Given: integration params with enrichment excluded set to False and tlp_color set to RED
+        When: creating client
+        Then: validate the enrichment_excluded is set to True
+    """
+    from FeedTAXII import TAXIIClient
+
+    mocker.patch('FeedTAXII.is_xsiam_or_xsoar_saas', return_value=True)
+
+    client = TAXIIClient(collection="test", enrichmentExcluded=False, tlp_color='RED')
+    assert client.enrichment_excluded is True
