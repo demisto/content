@@ -6,6 +6,10 @@ import ipaddress
 import json
 from typing import Any
 
+# -----------------------------------------------------------------------------
+# 1) BASE64 & RELATED UTILITY FUNCTIONS
+# -----------------------------------------------------------------------------
+
 def is_base64(possible_base64: Union[str, bytes]) -> bool:
     """
     Validates if the provided string is a Base64-encoded string.
@@ -25,7 +29,7 @@ def is_base64(possible_base64: Union[str, bytes]) -> bool:
             return False
 
         # Apply heuristic for short strings: must contain '=' if <= 16
-        if len(possible_base64) <= 16 and b'=' not in possible_base64:
+        if len(possible_base64) <= 20 and b'=' not in possible_base64:
             return False
 
         # Attempt strict decoding
@@ -33,7 +37,6 @@ def is_base64(possible_base64: Union[str, bytes]) -> bool:
         return True
     except Exception:
         return False
-
 
 
 def clean_non_base64_chars(encoded_str: str) -> str:
@@ -140,6 +143,7 @@ def identify_and_decode_base64(command_line: str) -> tuple[str, bool]:
 
     return result, double_encoded_detected
 
+
 def reverse_command(command_line: str) -> tuple[str, bool]:
     """
     Detects if the command line contains a reversed PowerShell string and reverses it.
@@ -147,6 +151,11 @@ def reverse_command(command_line: str) -> tuple[str, bool]:
     if "llehsrewop" in command_line.lower():
         return command_line[::-1], True
     return command_line, False
+
+
+# -----------------------------------------------------------------------------
+# 2) PATTERN-CHECKING FUNCTIONS
+# -----------------------------------------------------------------------------
 
 def suspicious_macos_applescript_commands(command_line: str) -> dict:
     """
@@ -183,6 +192,7 @@ def suspicious_macos_applescript_commands(command_line: str) -> dict:
         results[category] = matched_combinations
 
     return results
+
 
 def check_malicious_commands(command_line: str) -> list[str]:
     patterns = [
@@ -491,7 +501,7 @@ def check_data_exfiltration(command_line: str) -> list[str]:
     return matches
 
 
-def check_custom_patterns(command_line: str, custom_patterns: list[str] | None = None) -> list[str]:
+def check_custom_patterns(command_line: str, custom_patterns: List[str] | None = None) -> list[str]:
     matches: list[str] = []
     if custom_patterns:
         # Ensure custom_patterns is a list
@@ -501,6 +511,10 @@ def check_custom_patterns(command_line: str, custom_patterns: list[str] | None =
             matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
     return matches
 
+
+# -----------------------------------------------------------------------------
+# 3) IP & INDICATOR EXTRACTION
+# -----------------------------------------------------------------------------
 
 def is_reserved_ip(ip_str: str) -> bool:
     try:
@@ -543,10 +557,8 @@ def extract_indicators(command_line: str) -> dict:
                             if indicator_type == "IP" and is_reserved_ip(value):
                                 continue  # Skip reserved IPs
 
-                            # If this indicator type isn't in the dict yet, create a list
                             if indicator_type not in extracted_by_type:
                                 extracted_by_type[indicator_type] = []
-
                             extracted_by_type[indicator_type].append(value)
 
     except Exception as e:
@@ -554,7 +566,15 @@ def extract_indicators(command_line: str) -> dict:
 
     return extracted_by_type
 
+# -----------------------------------------------------------------------------
+# 4) SCORING FUNCTION
+# -----------------------------------------------------------------------------
+
 def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Aggregates findings from the analysis and assigns a score (0-100).
+    Incorporates bonuses for certain risky combinations.
+    """
     # Define weights for base scoring
     weights: Dict[str, int] = {
         "mixed_case_powershell": 25,
@@ -602,10 +622,10 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     theoretical_max = 120
 
     # Helper function to calculate score and detect combinations
-    def process_context(context_name: str, context_results: Dict[str, Any]) -> tuple[int, list[str]]:
+    def process_context(context_results: Dict[str, Any]) -> tuple[int, list[str]]:
         context_score = 0
         context_findings: list[str] = []
-        context_keys_detected: Set[str] = set()
+        context_keys_detected = set()
 
         # Calculate base score for each key (count each category once)
         for key, value in context_results.items():
@@ -633,18 +653,22 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
 
         return context_score, context_findings
 
-    # Process original and decoded findings
-    scores["original"], findings["original"] = process_context("original", results.get("analysis", {}).get("original", {}))
-    scores["decoded"], findings["decoded"] = process_context("decoded", results.get("analysis", {}).get("decoded", {}))
+    # Process original
+    original_results = results.get("analysis", {}).get("original", {})
+    scores["original"], findings["original"] = process_context(original_results)
 
-    # Check global combinations (e.g., double encoding globally)
-    if results.get("Double Encoding Detected"):
-        # Add the double_encoding weight once if detected
+    # Process decoded
+    decoded_results = results.get("analysis", {}).get("decoded", {})
+    scores["decoded"], findings["decoded"] = process_context(decoded_results)
+
+    # Check global combinations (like double encoding globally)
+    if results.get("double_encoding_detected"):
         scores["decoded"] += weights["double_encoding"]
-        findings["decoded"].append("Double encoding detected")
+        findings["decoded"].append("double_encoding_detected")
 
     # Calculate total raw score
     total_raw_score = scores["original"] + scores["decoded"]
+
     # Normalize the score to fit within 0-100 based on the fixed theoretical max
     normalized_score = (total_raw_score / theoretical_max) * 100
     normalized_score = min(normalized_score, 100)  # Cap at 100
@@ -665,9 +689,19 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def analyze_command_line(command_line, custom_patterns=None):
+# -----------------------------------------------------------------------------
+# 5) ANALYZER FUNCTION
+# -----------------------------------------------------------------------------
+
+def analyze_command_line(command_line: str, custom_patterns=None) -> Dict[str, Any]:
     """
     Analyzes the given command line for suspicious patterns, indicators, and encodings.
+    Returns a dictionary containing:
+      - "original_command"
+      - "analysis" -> {"original": {...}, "decoded": {...}}
+      - "decoded_command" (if any)
+      - "Double Encoding Detected" (bool)
+      - "score", "findings", "risk"
     """
     reversed_command_line, is_reversed = reverse_command(command_line)
     if is_reversed:
@@ -698,7 +732,6 @@ def analyze_command_line(command_line, custom_patterns=None):
 
     # Only set "base64_encoding" if we actually decoded something
     if decoded_command_line:
-        # store as a single string
         original_analysis["base64_encoding"] = decoded_command_line
 
     if is_reversed:
@@ -708,7 +741,6 @@ def analyze_command_line(command_line, custom_patterns=None):
     if 'osascript' in command_line:
         original_analysis["macOS_suspicious_commands"] = suspicious_macos_applescript_commands(command_line)
 
-    # Place our original analysis results
     results["analysis"]["original"] = original_analysis
 
     # If we got a decoded command, analyze it
@@ -728,7 +760,7 @@ def analyze_command_line(command_line, custom_patterns=None):
             "amsi_techniques": check_amsi(decoded_command_line),
             "indicators": extract_indicators(decoded_command_line)
         }
-        results["Double Encoding Detected"] = double_encoded
+        results["double_encoding_detected"] = double_encoded
 
     # Calculate the score
     score_details = calculate_score(results)
