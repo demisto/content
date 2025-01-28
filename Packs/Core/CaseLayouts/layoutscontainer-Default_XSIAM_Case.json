@@ -14,7 +14,7 @@
             },
             {
                 "id": "alerts_and_insights",
-                "name": "Alerts \u0026 Insights",
+                "name": "Issues / Alerts \u0026 Insights",
                 "type": "alerts_and_insights"
             },
             {
@@ -24,7 +24,7 @@
             },
             {
                 "id": "war_room",
-                "name": "Incident War Room",
+                "name": "Case / Incident War Room",
                 "type": "war_room"
             },
             {
