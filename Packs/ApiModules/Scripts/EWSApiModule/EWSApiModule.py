@@ -59,12 +59,21 @@ SUPPORTED_ON_PREM_BUILDS = {
 """ Context Keys """
 ATTACHMENT_ID = 'attachmentId'
 ACTION = 'action'
-MAILBOX = "mailbox"
-MAILBOX_ID = "mailboxId"
+MAILBOX = 'mailbox'
+MAILBOX_ID = 'mailboxId'
+MOVED_TO_MAILBOX = 'movedToMailbox'
+MOVED_TO_FOLDER = 'movedToFolder'
+NEW_ITEM_ID = 'newItemId'
+MESSAGE_ID = 'messageId'
+ITEM_ID = 'itemId'
+TARGET_MAILBOX = 'receivedBy'
 
 """ Context Paths """
 CONTEXT_UPDATE_ITEM_ATTACHMENT = f'.ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})'
 CONTEXT_UPDATE_FILE_ATTACHMENT = f'.FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})'
+CONTEXT_UPDATE_EWS_ITEM = f'EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || ' \
+    f'(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))' \
+    f' && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})'
 
 
 class IncidentFilter(str, Enum):
@@ -524,7 +533,7 @@ class EWSClient:
 
         return attachments
 
-    def is_default_folder(self, folder_path, is_public=None):
+    def is_default_folder(self, folder_path: str, is_public: Optional[bool]=None) -> bool:
         """
         Check whether the given folder_path is known to be public,
         determined either by the is_public argument, or in the case where folder_path is the
@@ -838,7 +847,7 @@ def delete_attachments_for_message(client: EWSClient, item_id, target_mailbox=No
     :param item_id: item id
     :param (Optional) target_mailbox: target mailbox
     :param (Optional) attachment_ids: attachment ids to delete
-    :return: entries that were delted
+    :return: entries that were deleted
     """
     attachment_ids = argToList(attachment_ids)
     attachments = client.get_attachments_for_item(
@@ -883,3 +892,75 @@ def get_searchable_mailboxes(client: EWSClient):
     searchable_mailboxes = GetSearchableMailboxes(protocol=client.get_protocol()).call()
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes',
                                 searchable_mailboxes, ['displayName', 'mailbox'])
+
+
+def move_item_between_mailboxes(client: EWSClient,
+    item_id,
+    destination_mailbox,
+    destination_folder_path,
+    source_mailbox=None,
+    is_public=None,
+):
+    """
+    Moves item between mailboxes
+    :param client: EWS Client
+    :param item_id: item id
+    :param destination_mailbox: destination mailbox
+    :param destination_folder_path: destination folder path
+    :param (Optional) source_mailbox: source mailbox
+    :param (Optional) is_public: is the destination folder public
+    :return: result object
+    """
+    source_account = client.get_account(source_mailbox)
+    destination_account = client.get_account(destination_mailbox)
+    is_public = client.is_default_folder(destination_folder_path, is_public)
+    destination_folder = client.get_folder_by_path(destination_folder_path, destination_account, is_public)
+
+    item = client.get_item_from_mailbox(source_account, item_id)
+    exported_items = source_account.export([item])
+    destination_account.upload([(destination_folder, exported_items[0])])
+    source_account.bulk_delete([item])
+
+    move_result = {
+        MOVED_TO_MAILBOX: destination_mailbox,
+        MOVED_TO_FOLDER: destination_folder_path,
+    }
+
+    return {
+        'Type': entryTypes['note'],
+        'Contents': 'Item was moved successfully.',
+        'ContentsFormat': formats['text'],
+        'EntryContext': {
+            f"EWS.Items(val.itemId === '{item_id}')": move_result
+        }
+    }
+
+
+def move_item(client: EWSClient, item_id: str, target_folder_path: str,
+              target_mailbox: Optional[str]=None, is_public: Optional[bool]=None):
+    """
+    Moves an item within the same mailbox
+    :param client: EWS Client
+    :param item_id: item id
+    :param target_folder_path: target folder path
+    :param (Optional) target_mailbox: mailbox containing the item (defaults to account email)
+    :param (Optional) is_public: is the destination folder public (default - False)
+    :return: result object
+    """
+    account = client.get_account(target_mailbox)
+    is_public = client.is_default_folder(target_folder_path, is_public)
+    target_folder = client.get_folder_by_path(target_folder_path, is_public=is_public)
+    item = client.get_item_from_mailbox(account, item_id)
+    if isinstance(item, ErrorInvalidIdMalformed):
+        raise Exception('Item not found')
+
+    item.move(target_folder)
+    move_result = {
+        NEW_ITEM_ID: item.id,
+        ITEM_ID: item_id,
+        MESSAGE_ID: item.message_id,
+        ACTION: 'moved',
+    }
+
+    return get_entry_for_object('Moved items', CONTEXT_UPDATE_EWS_ITEM, move_result)
+
