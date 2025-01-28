@@ -383,10 +383,10 @@ class XSOAR2STIXParser:
             return {}
         entry = {
             'id': stix_id,
-            'date_added': parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),  # type: ignore[arg-type]
+            'date_added': arg_to_datetime(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),  # type: ignore[arg-type]
         }
         if self.server_version == TAXII_VER_2_1:
-            entry['version'] = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+            entry['version'] = arg_to_datetime(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
         return entry
 
     def create_stix_object(self, xsoar_indicator: dict, xsoar_type: str, extensions_dict: dict = {}) -> tuple[dict, dict, dict]:
@@ -419,11 +419,11 @@ class XSOAR2STIXParser:
             return {}, {}, {}
 
         demisto.debug(f"T2API: {xsoar_indicator=}")
-        created_parsed = arg_to_datetime(xsoar_indicator.get('timestamp', ''), is_utc=False).strftime(STIX_DATE_FORMAT)
+        created_parsed = arg_to_datetime(xsoar_indicator.get('timestamp', ''), is_utc=False).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
         demisto.debug(f"T2API: {created_parsed=}")
 
         try:
-            modified_parsed = arg_to_datetime(xsoar_indicator.get('modified', ''), is_utc=False).strftime(STIX_DATE_FORMAT)
+            modified_parsed = arg_to_datetime(xsoar_indicator.get('modified', ''), is_utc=False).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
             demisto.debug(f"T2API: {modified_parsed=}")
         except Exception:
             modified_parsed = ''
@@ -563,7 +563,7 @@ class XSOAR2STIXParser:
             https://docs.oasis-open.org/cti/stix/v2.1/cs01/stix-v2.1-cs01.html#_muftrcpnf89v
         """
         try:
-            expiration_parsed = parse(xsoar_indicator.get('expiration')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+            expiration_parsed = arg_to_datetime(xsoar_indicator.get('expiration')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
         except Exception:
             expiration_parsed = ''
 
@@ -732,8 +732,8 @@ class XSOAR2STIXParser:
                 continue
             try:
                 demisto.debug(f"T2API: in create_relationships_objects {relationship=}")
-                created_parsed = arg_to_datetime(relationship.get('createdInSystem'), is_utc=False).strftime(STIX_DATE_FORMAT)
-                modified_parsed = arg_to_datetime(relationship.get('modified'), is_utc=False).strftime(STIX_DATE_FORMAT)
+                created_parsed = arg_to_datetime(relationship.get('createdInSystem'), is_utc=False).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+                modified_parsed = arg_to_datetime(relationship.get('modified'), is_utc=False).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
                 demisto.debug(f"T2API: {created_parsed=} {modified_parsed=}")
             except Exception as e:
                 created_parsed, modified_parsed = '', ''
