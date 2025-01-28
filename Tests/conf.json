@@ -701,7 +701,8 @@
         {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "Cofense Feed",
