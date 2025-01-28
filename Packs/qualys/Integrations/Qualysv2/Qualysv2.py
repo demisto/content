@@ -2984,7 +2984,7 @@ def get_vulnerabilities(client: Client, since_datetime: str | None = None, detec
         host_list_detections = client.get_vulnerabilities(since_datetime=since_datetime)
         vulnerabilities = handle_vulnerabilities_result(host_list_detections) or []
 
-    elif detection_qids is not None:
+    elif detection_qids:
         vulnerabilities = []
         for qids_batch in batch(detection_qids, QIDS_BATCH_SIZE):
             host_list_detections = client.get_vulnerabilities(detection_qids=",".join(qids_batch))
@@ -3302,7 +3302,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
 
     assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
     detection_qids: list = list({asset.get('DETECTION', {}).get('QID') for asset in assets})
-    vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids=detection_qids)
+    vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids) if detection_qids else ([], {})
     has_next_assets_page = bool(new_last_run.get('next_page'))
 
     # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
