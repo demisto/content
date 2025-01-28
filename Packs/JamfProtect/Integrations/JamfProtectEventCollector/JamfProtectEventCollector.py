@@ -170,6 +170,7 @@ class Client(BaseClient):
         Returns:
             dict: The API response containing the requested data and pagination information.
         """
+        query = ""
         if event_type == "alert":
             query = """
             query listAlerts($created: AWSDateTime, $page_size: Int, $next: String) {
@@ -225,7 +226,7 @@ class Client(BaseClient):
             }
             """
 
-            variables: dict[str, Any] = {
+            variables = {
                 "input": assign_params(
                     pageSize=AUDIT_PAGE_SIZE,
                     next=next_page
@@ -432,7 +433,7 @@ def fetch_events(client: Any, max_fetch_alerts: int, max_fetch_audits: int, last
             - A combined list of fetched events.
     """
     events = []
-    next_run = {}
+    next_run: dict[str, Any] = {}
     event_types = {"alert": max_fetch_alerts, "audit": max_fetch_audits}
 
     for event_type, max_fetch in event_types.items():
@@ -617,7 +618,7 @@ def add_fields_to_events(events: list[dict[str, Any]], event_type: str) -> list:
     """
     Adds a '_time' field and a 'source_log_type' field to each event.
 
-    For events that are not of type 'computer', the '_time' field is set to 
+    For events that are not of type 'computer', the '_time' field is set to
     the value of the 'date' or 'created' field (if present).
 
     Args:
@@ -691,8 +692,9 @@ def main() -> None:  # pragma: no cover
 
             assets, new_last_run, total_assets_to_report, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
 
-            demisto.debug(
-                f'Sending {len(assets)} assets to XSIAM API with snapshot_id: {snapshot_id} and items_count: {total_assets_to_report}')
+            demisto.debug(f"Sending {len(assets)} assets to XSIAM API"
+                          f"with snapshot_id: {snapshot_id} and items_count: {total_assets_to_report}")
+
             send_data_to_xsiam(data=assets, vendor=VENDOR, product=ASSETS_PRODUCT, data_type='assets',
                                snapshot_id=snapshot_id, items_count=str(total_assets_to_report))
 
