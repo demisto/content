@@ -3,7 +3,7 @@
     "next": "3",
     "objects": [
         {
-            "created": "2021-12-28T14:58:19.712448Z",
+            "created": "2021-12-28T12:58:19.712448Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "CustomFields": {
@@ -63,12 +63,12 @@
                 "SHA-1": "1111111111111111111111111111111111111111"
             },
             "id": "file--a8b26730-1daf-57e7-9c48-02c6481f82a0",
-            "modified": "2021-12-28T14:58:19.712449Z",
+            "modified": "2021-12-28T12:58:19.712449Z",
             "spec_version": "2.1",
             "type": "file"
         },
         {
-            "created": "2021-12-28T14:58:19.711459Z",
+            "created": "2021-12-28T12:58:19.711459Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "CustomFields": {
@@ -128,19 +128,19 @@
                 "SHA-1": "3333333333333333333333333333333333333333"
             },
             "id": "file--427204f1-558f-5703-b72a-a769445c4281",
-            "modified": "2021-12-28T14:58:19.711461Z",
+            "modified": "2021-12-28T12:58:19.711461Z",
             "spec_version": "2.1",
             "type": "file"
         },
         {
-            "created": "2021-12-28T14:58:19.711496Z",
+            "created": "2021-12-28T12:58:19.711496Z",
             "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
             "description": "This schema adds TIM data to the object",
             "extension_types": [
                 "property-extension"
             ],
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
-            "modified": "2021-12-28T14:58:19.711497Z",
+            "modified": "2021-12-28T12:58:19.711497Z",
             "name": "Cortex XSOAR TIM File",
             "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.1",
