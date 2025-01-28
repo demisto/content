@@ -1,5 +1,5 @@
 fromversion: 6.8.0
-id: azure_events_hub_modeling_rule
+id: Microsoft_Azure_Events_Hub_(Deprecated)_ModelingRule
 name: Azure Events Hub Modeling Rule
 rules: ''
 schema: ''
