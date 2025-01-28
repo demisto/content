@@ -953,8 +953,7 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
         f"Alert me when {target or 'portfolio'} {change_direction} in "
         f"{'factor(s) ' if 'overall' not in score_types else ''}grade"
     )
-
-    delivery = {
+    delivery: Dict[str, Any] = {
         "workflow": {
             "steps": [
                 {
@@ -973,6 +972,9 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
                     "grade": {
                         "value": "any",
                     },
+                    "factor": {
+                        "value": [],
+                    },
                 },
                 "scorecards": {
                     "value": (
@@ -980,29 +982,28 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
                         else "my_scorecard" if target == "my_scorecard"
                         else "in_portfolio"
                     ),
+                    "portfolio_id": {
+                        "value": portfolio
+                    },
                 },
             },
         },
     }
 
-    if portfolio:
-        delivery["workflow"]["filters"]["scorecards"]["portfolio_id"] = {
-            "value": portfolio
-        }
+    if not portfolio:
+        del delivery["workflow"]["filters"]["scorecards"]["portfolio_id"]
 
     if "overall" not in score_types:
         if "any_factor_score" in score_types:
-            delivery["workflow"]["filters"]["changes"]["factor"] = {
-                "value": [
-                    'network_security', 'dns_health', 'patching_cadence', 'endpoint_security',
-                    'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter',
-                    'leaked_information', 'social_engineering'
-                ],
-            }
+            delivery["workflow"]["filters"]["changes"]["factor"]["value"] = [
+                'network_security', 'dns_health', 'patching_cadence', 'endpoint_security',
+                'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter',
+                'leaked_information', 'social_engineering'
+            ]
         else:
-            delivery["workflow"]["filters"]["changes"]["factor"] = {
-                "value": score_types,
-            }
+            delivery["workflow"]["filters"]["changes"]["factor"]["value"] = score_types
+    else:
+        del delivery["workflow"]["filters"]["changes"]["factor"]
 
     response = client.create_alert_subscription(
         event_type="scorecard.changed",
@@ -1075,7 +1076,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
         f"{'factor(s)' if 'overall' not in score_types else 'overall'} score {change_direction} {threshold} pts"
     )
 
-    delivery = {
+    delivery: Dict[str, Any] = {
         "workflow": {
             "steps": [
                 {
@@ -1094,6 +1095,9 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
                     "threshold": {
                         "value": f"{threshold}",
                     },
+                    "factor": {
+                        "value": [],
+                    },
                 },
                 "scorecards": {
                     "value": (
@@ -1101,29 +1105,28 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
                         else "my_scorecard" if target == "my_scorecard"
                         else "in_portfolio"
                     ),
+                    "portfolio_id": {
+                        "value": portfolio
+                    },
                 },
             },
         },
     }
 
-    if portfolio:
-        delivery["workflow"]["filters"]["scorecards"]["portfolio_id"] = {
-            "value": portfolio
-        }
+    if not portfolio:
+        del delivery["workflow"]["filters"]["scorecards"]["portfolio_id"]
 
     if "overall" not in score_types:
         if "any_factor_score" in score_types:
-            delivery["workflow"]["filters"]["changes"]["factor"] = {
-                "value": [
-                    'network_security', 'dns_health', 'patching_cadence', 'endpoint_security',
-                    'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter',
-                    'leaked_information', 'social_engineering'
-                ],
-            }
+            delivery["workflow"]["filters"]["changes"]["factor"]["value"] = [
+                'network_security', 'dns_health', 'patching_cadence', 'endpoint_security',
+                'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter',
+                'leaked_information', 'social_engineering'
+            ]
         else:
-            delivery["workflow"]["filters"]["changes"]["factor"] = {
-                "value": score_types,
-            }
+            delivery["workflow"]["filters"]["changes"]["factor"]["value"] = score_types
+    else:
+        del delivery["workflow"]["filters"]["changes"]["factor"]
 
     response = client.create_alert_subscription(
         event_type="scorecard.changed",
@@ -1209,8 +1212,9 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
         if change_data:
             try:
                 for change in change_data:
-                    content["change data"] = change
-                    content["workflow id"] = change.get("workflow", {}).get("id", "N/A")
+                    # content["change data"] = change
+                    content["alert id"] = change.get("workflow", {}).get("id", "N/A")
+                    content["trigger"] = change.get("score_change", {}).get("trigger_value", "N/A")
                     content["grade"] = change.get("score_change", {}).get("grade", "N/A")
                     content["score"] = change.get("score_change", {}).get("score", "N/A")
 
