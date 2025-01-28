@@ -1,5 +1,5 @@
 # Overview
-Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The XSOAR pack for Doppel provides mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
+Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The XSOAR pack for Doppel mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
 
 
 ## Configure Doppel on Cortex XSOAR
@@ -10,7 +10,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Doppel Tenant URL | The tenant URL of the Prisma Cloud DSPM | True |
+    | Doppel Tenant URL | The tenant URL of the Doppel | True |
     | API Key | API key to use for the connection. | True |
     | Fetch incidents |  | False |
     | Incident type |  | False |
