@@ -39,28 +39,28 @@ def test_get_APM_events(mocker):
     
     
 @pytest.mark.parametrize(
-    "token, events_to_fetch, audit_max, apm_max, expected_exception, expected_message",
+    "events_to_fetch, audit_max, apm_max, expected_exception, expected_message",
     [
         # Valid token configuration
-        ("token", ["APM"], 25000, 5000, None, None),
+        (["APM"], 25000, 5000, None, None),
         
         # Invalid: No event types specified
-        (None, [], 25000, 5000, DemistoException, "Please specify at least one event type"),
+        ([], 25000, 5000, DemistoException, "Please specify at least one event type"),
         
         # Invalid: audit_max out of range (too high)
-        (None, ["Audit logs"], 30000, 5000, DemistoException, "The maximum number of audit logs events"),
+        (["Audit logs"], 30000, 5000, DemistoException, "The maximum number of audit logs events"),
         
         # Invalid: audit_max out of range (negative)
-        (None, ["Audit logs"], -1, 5000, DemistoException, "The maximum number of audit logs events"),
+        (["Audit logs"], -1, 5000, DemistoException, "The maximum number of audit logs events"),
         
         # Invalid: apm_max out of range (too high)
-        (None, ["APM"], 25000, 6000, DemistoException, "The maximum number of APM events"),
+        (["APM"], 25000, 6000, DemistoException, "The maximum number of APM events"),
         
         # Invalid: apm_max out of range (negative)
-        (None, ["APM"], 25000, -1, DemistoException, "The maximum number of APM events"),
+        (["APM"], 25000, -1, DemistoException, "The maximum number of APM events"),
     ],
 )
-def test_validate_params(token, events_to_fetch, audit_max, apm_max, expected_exception, expected_message):
+def test_validate_params(events_to_fetch, audit_max, apm_max, expected_exception, expected_message):
     """
     Given: all instance params
     When: Calling validate_params function
@@ -70,8 +70,6 @@ def test_validate_params(token, events_to_fetch, audit_max, apm_max, expected_ex
     if expected_exception:
         with pytest.raises(expected_exception) as excinfo:
             validate_params(
-                url="http://example.com",
-                token=token,
                 events_to_fetch=events_to_fetch,
                 audit_max=audit_max,
                 apm_max=apm_max,
@@ -79,8 +77,6 @@ def test_validate_params(token, events_to_fetch, audit_max, apm_max, expected_ex
         assert expected_message in str(excinfo.value)
     else:
         validate_params(
-            url="http://example.com",
-            token=token,
             events_to_fetch=events_to_fetch,
             audit_max=audit_max,
             apm_max=apm_max,

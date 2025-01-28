@@ -33,8 +33,16 @@ class DynatraceClient(BaseClient):
 
 """ HELPER FUNCTIONS """
 
-def validate_params(url, token, events_to_fetch, audit_max, apm_max):
-    
+def validate_params(events_to_fetch, audit_max, apm_max):
+    """
+    Validates the integration parameters.
+
+    1. `events_to_fetch` must contain at least one event type.
+    2. `audit_max` must not exceed 25,000.
+    3. `apm_max` must not exceed 5,000.
+
+    If any of the parameters are invalid, the function raises a `ValueError` with a descriptive error message.
+    """
     if not events_to_fetch:
         raise DemistoException("Please specify at least one event type to fetch.")
     if audit_max < 1 or audit_max > 25000:
@@ -44,8 +52,15 @@ def validate_params(url, token, events_to_fetch, audit_max, apm_max):
 
 
 def add_fields_to_events(events, event_type):
-    
-    # TODO ask sara if we need the word 'events' in the end of the type, I don't think we usually do so.
+    """Adds SOURCE_LOG_TYPE and _time field to each event.
+
+    Args:
+        events (List): list of events.
+        event_type (str): "APM" if events are apm type or "Audit logs" if events are audit logs type.
+
+    Returns:
+        list or events with the added fields.
+    """
     
     field_mapping = {
         "Audit logs": ["Audit logs events", "timestamp"],
@@ -60,6 +75,16 @@ def add_fields_to_events(events, event_type):
 
 
 def events_query(client: DynatraceClient, args: dict, event_type: str):
+    """Calls the right api to get events of event_type type according to the args
+
+    Args:
+        client (DynatraceClient): client
+        args (dict): A dictionary containing the arguments such as amp_limit or apm_from so we can call the api with the right query.
+        event_type (str): "APM" or "Audit logs".
+
+    Returns:
+        The response from the api.
+    """
     query_lst = []
     query = ""
     
@@ -88,7 +113,8 @@ def events_query(client: DynatraceClient, args: dict, event_type: str):
 
 
 def fetch_apm_events(client, limit, fetch_start_time):
-    
+    """Fetches events of APM type from fetch_start_time and not more than the limit given.
+    """
     # last_apm_run should be None or a {"nextPageKey": val, "last_timestamp": val}
     integration_cnx = demisto.getIntegrationContext()
     last_run = integration_cnx.get("last_apm_run") or {}
@@ -154,6 +180,8 @@ def fetch_apm_events(client, limit, fetch_start_time):
                 
 
 def fetch_audit_log_events(client, limit, fetch_start_time):
+    """Fetches events of Audit logs type from fetch_start_time and not more than the limit given.
+    """
     
     # last_audit_run should be None or a {"nextPageKey": val, "last_timestamp": val}
     integration_cnx = demisto.getIntegrationContext()
@@ -221,7 +249,14 @@ def fetch_audit_log_events(client, limit, fetch_start_time):
 """ COMMAND FUNCTIONS """
 
 def fetch_events(client: DynatraceClient, events_to_fetch: list, audit_limit: int, apm_limit: int):
-    
+    """Gets events from the fetching functions, adds the events the relevant fields and sends the events to XSIAM.
+
+    Args:
+        client (DynatraceClient): client
+        events_to_fetch (list): list of events types to fetch
+        audit_limit (int): limit of Audit logs  events to fetch
+        apm_limit (int): limit of APM events to fetch
+    """
     fetch_start_time = int(datetime.now().timestamp() * 1000)  # We want this timestamp to look like this: 1737656746001
     demisto.debug(f"Dynatrace fetch Audit Logs events start time is {fetch_start_time}")
     
@@ -240,7 +275,8 @@ def fetch_events(client: DynatraceClient, events_to_fetch: list, audit_limit: in
 
 
 def get_events_command(client: DynatraceClient, args: dict):
-    
+    """Gets Dynatrace events according to the arguments given.
+    """
     events_types = argToList(args.get("events_types_to_get"))
     events_to_return = []
             
@@ -286,7 +322,7 @@ def main():  # pragma: no cover
     audit_limit = arg_to_number(params.get('audit_limit'))  or 25000
     apm_limit = arg_to_number(params.get('apm_limit'))  or 25000
     
-    validate_params(url, token, events_to_fetch, audit_limit, apm_limit)
+    validate_params(events_to_fetch, audit_limit, apm_limit)
     
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
