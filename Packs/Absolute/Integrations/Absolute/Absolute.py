@@ -14,7 +14,6 @@ from datetime import timedelta
 from authlib.jose import JsonWebSignature
 from requests.models import Response
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -426,14 +425,12 @@ class ClientV3(BaseClient):
         return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
                                   headers={"content-type": "text/plain"})
 
-    def fetch_events_with_pagination(self, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> tuple[
-        List[Dict[str, Any]], str]:
+    def fetch_events_between_dates(self, fetch_limit: int, start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
         """
         Helper function to fetch events with pagination from the API based on the provided parameters.
 
         Args:
             fetch_limit (int): The maximum number of events to fetch.
-            next_page_token (str): The token for the next page of events (used for pagination).
             start_date (datetime): The start date for the events to be fetched.
             end_date (datetime): The end date for the events to be fetched.
 
@@ -444,19 +441,18 @@ class ClientV3(BaseClient):
         while len(all_events) < fetch_limit:
             page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
             query_string = self.prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date,
-                                                                      end_date=end_date, next_page=next_page_token)
+                                                                      end_date=end_date)
             response = self.fetch_events_request(query_string=query_string)
-            events = response.get('data', [])
-            all_events.extend(events)
+            all_events.extend(response.get('data', []))
             next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
             if not next_page_token:
                 break
 
-        demisto.debug(f'fetch_events_with_pagination: Fetched {len(all_events)} events')
-        return all_events, next_page_token
+        demisto.debug(f'fetch_events_between_dates: Fetched {len(all_events)} events')
+        return all_events
 
-    def prepare_query_string_for_fetch_events(self, page_size: int = None, start_date: datetime = None, end_date: datetime = None,
-                                              next_page: str = None) -> str:
+    def prepare_query_string_for_fetch_events(self, page_size: int = None, start_date: datetime = None,
+                                              end_date: datetime = None) -> str:
         """
         Prepares the query string for fetching events based on the provided parameters.
 
@@ -464,7 +460,6 @@ class ClientV3(BaseClient):
             page_size (int, optional): The size of each page to fetch. Defaults to None.
             start_date (datetime, optional): The start date of the events to fetch. Defaults to None.
             end_date (datetime, optional): The end date of the events to fetch. Defaults to None.
-            next_page (str, optional): The token to fetch the next page of events. Defaults to None.
 
         Returns:
             str: The prepared query string for fetching events.
@@ -475,8 +470,6 @@ class ClientV3(BaseClient):
         query = f'{from_date_time_utc}&{to_date_time_utc}'
         if page_size:
             query += f'&pageSize={page_size}'
-        if next_page:
-            query += f'&nextPage={next_page}'
         demisto.debug(f'Query string for fetching events: {query}')
         return query
 
@@ -615,7 +608,7 @@ def device_freeze_request_command(args, client) -> CommandResults:
     outputs = parse_freeze_device_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION} device freeze requests results', outputs,
                                      headers=['FailedDeviceUIDs', 'RequestUID', 'SucceededDeviceUIDs'], removeNull=True,
-                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()},)
+                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()}, )
 
     outputs.pop('FailedDeviceUIDs', '')
     return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
@@ -1068,24 +1061,21 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
             Tuple[List[Dict[str, Any]], Dict[str, Any]]: A tuple containing the fetched events and the updated last run
                 information.
         """
-    next_page_token = last_run.get('next_page_token', '')
     last_run_latest_events_id = last_run.get('latest_events_id', [])
-    last_end_date = last_run.get('end_date', '')
-    last_start_date = last_run.get('start_date', '')
+    latest_events_time = last_run.get('latest_events_time')
     end_date = datetime.utcnow()
+    start_date: datetime = datetime.strptime(latest_events_time, "%Y-%m-%dT%H:%M:%S.%fZ") if latest_events_time else (
+            end_date - timedelta(days=7))  # TODO: change to one minute ago
+    demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {last_run=}')
 
-    # start_date = datetime.strptime(last_start_date, "%Y-%m-%d %H:%M:%S") if next_page_token else (
-    #     datetime.strptime(last_end_date, "%Y-%m-%d %H:%M:%S") if last_end_date else end_date - timedelta(minutes=1))
+    if fetch_limit == len(last_run_latest_events_id):
+        demisto.debug(f'fetch_limit ({fetch_limit}) equally to the number of last_run_latest_events_id. doubling the fetch_limit')
+        fetch_limit *= 2
 
-    # TODO: remove this temp start_date
-    start_date = datetime.strptime(last_start_date, "%Y-%m-%d %H:%M:%S") if next_page_token else (
-        datetime.strptime(last_end_date, "%Y-%m-%d %H:%M:%S") if last_end_date else end_date - timedelta(days=7))
-    # TODO: remove this temp start_date
-
-    demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {next_page_token=}, {last_run=}')
-    all_events, next_page_token = client.fetch_events_with_pagination(fetch_limit, next_page_token, start_date, end_date)
-    events, latest_events_id = process_events(all_events, last_run_latest_events_id)
-    demisto.debug(f'fetch_events: {latest_events_id=}')
+    all_events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
+    events, latest_events_id_and_time_tuple = process_events(all_events, last_run_latest_events_id)
+    latest_events_id, latest_events_time = latest_events_id_and_time_tuple
+    demisto.debug(f'fetch_events: {latest_events_id=}, {latest_events_time=}')
 
     # TODO: remove the loop below
     log_events = []
@@ -1095,14 +1085,14 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
     # TODO: remove the loop above
 
     return events, {
-        'next_page_token': next_page_token,
-        'start_date': start_date.strftime("%Y-%m-%d %H:%M:%S"),
-        'end_date': end_date.strftime("%Y-%m-%d %H:%M:%S"),
-        'latest_events_id': latest_events_id}
+        'end_date': end_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        'latest_events_id': latest_events_id,
+        'latest_events_time': latest_events_time
+    }
 
 
 def process_events(events: List[Dict[str, Any]], last_run_latest_events_id: List[str], should_get_latest_events: bool = True) -> \
-    tuple[List[Dict[str, Any]], List[str]]:
+    tuple[List[Dict[str, Any]], tuple[List[str], str]]:
     """
     Processes events by handling duplication, adding a time field, and optionally getting the latest events ID.
 
@@ -1117,7 +1107,7 @@ def process_events(events: List[Dict[str, Any]], last_run_latest_events_id: List
     """
     demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id")
     earliest_event_time = events[0].get('eventDateTimeUtc') if events else None
-    latest_event_time = events[-1].get('eventDateTimeUtc') if events else None
+    latest_event_time = events[-1].get('eventDateTimeUtc') if events else ''
     latest_events_id = []
     filtered_events = []
     for event in events:
@@ -1132,23 +1122,20 @@ def process_events(events: List[Dict[str, Any]], last_run_latest_events_id: List
             latest_events_id.append(event.get('id'))
         filtered_events.append(event)
 
-    return filtered_events, latest_events_id
+    if not filtered_events:
+        latest_event_time = ''
+    return filtered_events, (latest_events_id, latest_event_time)
 
 
 def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
+    start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
     end_date = arg_to_datetime(args.get('end_date', "now"))
-    # start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
-
-    # TODO: remove this temp start_date
-    start_date = arg_to_datetime(args.get('start_date', "7 days ago"))
-    # TODO: remove this temp start_date
-
     fetch_limit = int(args.get('limit', 50))
     if start_date > end_date:
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
 
-    events, _ = client.fetch_events_with_pagination(fetch_limit, '', start_date, end_date)
-    demisto.debug(f'get_events: Found {len(events)} events. {events=}')
+    events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
+    demisto.debug(f'get_events: Found {len(events)} events.')
     if events:
         events, _ = process_events(events, [], should_get_latest_events=False)
     return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
