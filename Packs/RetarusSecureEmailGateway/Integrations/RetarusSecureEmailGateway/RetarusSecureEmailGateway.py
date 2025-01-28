@@ -133,8 +133,9 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     Returns:
         bool: True if the interval has passed, False otherwise
     """
-    return fetch_start_time + timedelta(seconds=fetch_interval) < datetime.now().astimezone(timezone.utc)
-
+    is_interval_passed =  fetch_start_time + timedelta(seconds=fetch_interval) < datetime.now().astimezone(timezone.utc)
+    demisto.debug(f"returning {is_interval_passed=}")
+    return is_interval_passed
 
 def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
     """
@@ -144,12 +145,14 @@ def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
         connection (EventConnection): A connection object to fetch events from.
         fetch_interval (int): Fetch time for this fetching events cycle.
     """
+    demisto.debug(f"{LOG_PREFIX} starting to fetch events")
     events = fetch_events(connection, fetch_interval)
     demisto.debug(f'{LOG_PREFIX} Adding {len(events)} Events to XSIAM')
 
     # Send the events to the XSIAM.
     try:
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        demisto.debug("Sended events to XSIAM successfully")
     except DemistoException:
         demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
 
@@ -268,6 +271,8 @@ def main():  # pragma: no cover
     fetch_interval = arg_to_number(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
     verify_ssl = argToBoolean(not params.get("insecure", False))
     channel = params.get("channel", DEFAULT_CHANNEL)
+
+    demisto.debug(f"{LOG_PREFIX} command being called is {command}")
 
     try:
         if command == "long-running-execution":

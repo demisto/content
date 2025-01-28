@@ -10,11 +10,9 @@ Integrate Retarus Secure Email Gateway to seamlessly fetch events and enhance em
     | --- | --- | --- |
     | Server URL | True | |
     | Token ID | True | |
-    | Channel name | False | The channel to fetch events from |
+    | Channel name | False | The channel to fetch events from. In Retarus, a channel name represents a specific configuration or processing pipeline used to manage email traffic based on criteria like sender, recipient, domain, or metadata, enabling tailored routing, filtering, compliance, and logging rules.|
     | Fetch interval in seconds | True | |
     | Trust any certificate (not secure) | False | |
-
-5. There is no test option available due to API limitations. To verify the configuration, run the retarus-get-last-run-results command and ensure it returns no errors."
 
 ### Troubleshooting
 
