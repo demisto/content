@@ -964,3 +964,64 @@ def move_item(client: EWSClient, item_id: str, target_folder_path: str,
 
     return get_entry_for_object('Moved items', CONTEXT_UPDATE_EWS_ITEM, move_result)
 
+
+def delete_items(client: EWSClient, item_ids, delete_type: str, target_mailbox: Optional[str]=None):
+    """
+    Delete items in a mailbox
+    :param client: EWS Client
+    :param item_ids: items ids to delete
+    :param delete_type: delete type soft/hard
+    :param (Optional) target_mailbox: mailbox containing the items (defaults to account email)
+    :return: result object
+    """
+    deleted_items = []
+    item_ids = argToList(item_ids)
+    items = client.get_items_from_mailbox(target_mailbox, item_ids)
+    delete_type = delete_type.lower()
+
+    for item in items:
+        item_id = item.id
+        if delete_type == 'trash':
+            item.move_to_trash()
+        elif delete_type == 'soft':
+            item.soft_delete()
+        elif delete_type == 'hard':
+            item.delete()
+        else:
+            raise Exception(f'invalid delete type: {delete_type}. Use "trash" \\ "soft" \\ "hard"')
+
+        deleted_items.append({
+            ITEM_ID: item_id,
+            MESSAGE_ID: item.message_id,
+            ACTION: f'{delete_type}-deleted',
+            }
+        )
+
+    return get_entry_for_object(f'Deleted items ({delete_type} delete type)',
+                                CONTEXT_UPDATE_EWS_ITEM,
+                                deleted_items)
+
+
+def get_out_of_office_state(client: EWSClient, target_mailbox: Optional[str]=None):
+    """
+    Retrieve get out of office state of the targeted mailbox
+    :param client: EWS Client
+    :param (Optional) target_mailbox: target mailbox
+    :return: result object
+    """
+    account = client.get_account(target_mailbox)
+    oof = account.oof_settings
+    oof_dict = {
+        'state': oof.state,  # pylint: disable=E1101
+        'externalAudience': getattr(oof, 'external_audience', None),
+        'start': oof.start.ewsformat() if oof.start else None,  # pylint: disable=E1101
+        'end': oof.end.ewsformat() if oof.end else None,  # pylint: disable=E1101
+        'internalReply': getattr(oof, 'internal_replay', None),
+        'externalReply': getattr(oof, 'external_replay', None),
+        MAILBOX: account.primary_smtp_address,
+    }
+
+    return get_entry_for_object(f'Out of office state for {account.primary_smtp_address}',
+                                f'Account.Email(val.Address == obj.{MAILBOX}).OutOfOffice',
+                                oof_dict)
+

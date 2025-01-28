@@ -1149,34 +1149,6 @@ def fetch_attachments_for_message(client: EWSClient, item_id: str, target_mailbo
     return entries
 
 
-def delete_items(client: EWSClient, item_ids, delete_type, target_mailbox=None):  # pragma: no cover
-    account = client.get_account(target_mailbox or client.account_email)
-    deleted_items = []
-    item_ids = argToList(item_ids)
-    items = client.get_items_from_mailbox(account, item_ids)
-    delete_type = delete_type.lower()
-
-    for item in items:
-        item_id = item.id
-        if delete_type == 'trash':
-            item.move_to_trash()
-        elif delete_type == 'soft':
-            item.soft_delete()
-        elif delete_type == 'hard':
-            item.delete()
-        else:
-            raise Exception(f'Invalid delete type: {delete_type}. Use "trash" \\ "soft" \\ "hard"')
-        deleted_items.append({
-            ITEM_ID: item_id,
-            MESSAGE_ID: item.message_id,
-            ACTION: f'{delete_type}-deleted'
-        })
-
-    return get_entry_for_object(f'Deleted items ({delete_type} delete type)',
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                deleted_items)
-
-
 def prepare_args(d):  # pragma: no cover
     d = {k.replace("-", "_"): v for k, v in list(d.items())}
     if 'is_public' in d:
@@ -1243,23 +1215,6 @@ def search_items_in_mailbox(client: EWSClient, query=None, message_id=None, fold
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 searched_items_result,
                                 headers=ITEMS_RESULTS_HEADERS if selected_all_fields else None)
-
-
-def get_out_of_office_state(client: EWSClient, target_mailbox=None):  # pragma: no cover
-    account = client.get_account(target_mailbox or client.account_email)
-    oof = account.oof_settings
-    oof_dict = {
-        'state': oof.state,  # pylint: disable=E1101
-        'externalAudience': getattr(oof, 'external_audience', None),
-        'start': oof.start.ewsformat() if oof.start else None,  # pylint: disable=E1101
-        'end': oof.end.ewsformat() if oof.end else None,  # pylint: disable=E1101
-        'internalReply': getattr(oof, 'internal_replay', None),
-        'externalReply': getattr(oof, 'external_replay', None),
-        MAILBOX: account.primary_smtp_address
-    }
-    return get_entry_for_object(f"Out of office state for {account.primary_smtp_address}",
-                                f'Account.Email(val.Address == obj.{MAILBOX}).OutOfOffice',
-                                oof_dict)
 
 
 def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path="Inbox", target_mailbox=None,

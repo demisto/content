@@ -756,47 +756,6 @@ def fetch_attachments_for_message(
     return entries
 
 
-def delete_items(client: EWSClient, item_ids, delete_type, target_mailbox=None):  # pragma: no cover
-    """
-    Delete items in a mailbox
-    :param client: EWS Client
-    :param item_ids: items ids to delete
-    :param delete_type: delte type soft/hard
-    :param (Optional) target_mailbox: mailbox containinf the items
-    :return: Output tuple
-    """
-    deleted_items = []
-    item_ids = argToList(item_ids)
-    items = client.get_items_from_mailbox(target_mailbox, item_ids)
-    delete_type = delete_type.lower()
-
-    for item in items:
-        item_id = item.id
-        if delete_type == "trash":
-            item.move_to_trash()
-        elif delete_type == "soft":
-            item.soft_delete()
-        elif delete_type == "hard":
-            item.delete()
-        else:
-            raise Exception(
-                f'invalid delete type: {delete_type}. Use "trash" \\ "soft" \\ "hard"'
-            )
-        deleted_items.append(
-            {
-                ITEM_ID: item_id,
-                MESSAGE_ID: item.message_id,
-                ACTION: f"{delete_type}-deleted",
-            }
-        )
-
-    readable_output = tableToMarkdown(
-        f"Deleted items ({delete_type} delete type)", deleted_items
-    )
-    output = {CONTEXT_UPDATE_EWS_ITEM: deleted_items}
-    return readable_output, output, deleted_items
-
-
 def search_items_in_mailbox(
     client: EWSClient,
     query=None,
@@ -882,31 +841,6 @@ def search_items_in_mailbox(
     )
     output = {CONTEXT_UPDATE_EWS_ITEM: searched_items_result}
     return readable_output, output, searched_items_result
-
-
-def get_out_of_office_state(client: EWSClient, target_mailbox=None):  # pragma: no cover
-    """
-    Retrieve get out of office state of the targeted mailbox
-    :param client: EWS Client
-    :param (Optional) target_mailbox: target mailbox
-    :return: Output tuple
-    """
-    account = client.get_account(target_mailbox)
-    oof = account.oof_settings
-    oof_dict = {
-        "state": oof.state,  # pylint: disable=E1101
-        "externalAudience": getattr(oof, "external_audience", None),
-        "start": oof.start.ewsformat() if oof.start else None,  # pylint: disable=E1101
-        "end": oof.end.ewsformat() if oof.end else None,  # pylint: disable=E1101
-        "internalReply": getattr(oof, "internal_replay", None),
-        "externalReply": getattr(oof, "external_replay", None),
-        MAILBOX: account.primary_smtp_address,
-    }
-    readable_output = tableToMarkdown(
-        f"Out of office state for {account.primary_smtp_address}", oof_dict
-    )
-    output = {f"Account.Email(val.Address == obj.{MAILBOX}).OutOfOffice": oof_dict}
-    return readable_output, output, oof_dict
 
 
 def recover_soft_delete_item(
