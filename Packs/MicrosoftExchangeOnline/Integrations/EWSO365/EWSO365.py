@@ -69,12 +69,10 @@ ATTACHMENT_TYPE = "attachmentType"
 TOIS_PATH = "/root/Top of Information Store/"
 
 # context keys
-ATTACHMENT_ID = "attachmentId"
 ATTACHMENT_ORIGINAL_ITEM_ID = "originalItemId"
 NEW_ITEM_ID = "newItemId"
 MESSAGE_ID = "messageId"
 ITEM_ID = "itemId"
-ACTION = "action"
 MAILBOX = "mailbox"
 MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
@@ -86,8 +84,6 @@ CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || " \
     f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
 
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
-CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
-CONTEXT_UPDATE_FILE_ATTACHMENT = f".FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
 CONTEXT_UPDATE_FOLDER = f"EWS.Folders(val.{FOLDER_ID} == obj.{FOLDER_ID})"
 
 # fetch params
@@ -387,30 +383,6 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", is_
     elif eml_extension and not attachment_name.endswith(".eml"):
         return f'{attachment_name}.eml'
     return attachment_name
-
-
-def get_entry_for_object(title, context_key, obj, headers=None):
-    """
-    Create an entry for a given object
-    :param title: Title of the human readable
-    :param context_key: Context key used for entry context
-    :param obj: Object to create entry for
-    :param headers: (Optional) headers used in the tableToMarkDown
-    :return: Entry object to be used with demisto.results()
-    """
-    if len(obj) == 0:
-        return "There is no output results"
-    if headers and isinstance(obj, dict):
-        headers = list(set(headers).intersection(set(obj.keys())))
-
-    return {
-        "Type": entryTypes["note"],
-        "Contents": obj,
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": tableToMarkdown(title, obj, headers),
-        "EntryContext": {context_key: obj},
-    }
 
 
 def prepare_args(args):
@@ -792,53 +764,6 @@ def get_searchable_mailboxes(client: EWSClient):
     )
     output = {"EWS.Mailboxes": searchable_mailboxes}
     return readable_output, output, searchable_mailboxes
-
-
-def delete_attachments_for_message(
-    client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
-):  # pragma: no cover
-    """
-    Deletes attachments for a given message
-    :param client: EWS Client
-    :param item_id: item id
-    :param (Optional) target_mailbox: target mailbox
-    :param (Optional) attachment_ids: attachment ids to delete
-    :return: entries that were delted
-    """
-    attachment_ids = argToList(attachment_ids)
-    attachments = client.get_attachments_for_item(
-        item_id, target_mailbox, attachment_ids
-    )
-    deleted_file_attachments = []
-    deleted_item_attachments = []  # type: ignore
-    for attachment in attachments:
-        attachment_deleted_action = {
-            ATTACHMENT_ID: attachment.attachment_id.id,
-            ACTION: "deleted",
-        }
-        if isinstance(attachment, FileAttachment):
-            deleted_file_attachments.append(attachment_deleted_action)
-        else:
-            deleted_item_attachments.append(attachment_deleted_action)
-        attachment.detach()
-
-    entries = []
-    if len(deleted_file_attachments) > 0:
-        entry = get_entry_for_object(
-            "Deleted file attachments",
-            "EWS.Items" + CONTEXT_UPDATE_FILE_ATTACHMENT,
-            deleted_file_attachments,
-        )
-        entries.append(entry)
-    if len(deleted_item_attachments) > 0:
-        entry = get_entry_for_object(
-            "Deleted item attachments",
-            "EWS.Items" + CONTEXT_UPDATE_ITEM_ATTACHMENT,
-            deleted_item_attachments,
-        )
-        entries.append(entry)
-
-    return entries
 
 
 def fetch_attachments_for_message(

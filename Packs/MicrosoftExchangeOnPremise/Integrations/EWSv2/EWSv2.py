@@ -89,12 +89,10 @@ VERSIONS = {
 }
 
 APP_NAME = "EWSv2"
-ATTACHMENT_ID = "attachmentId"
 ATTACHMENT_ORIGINAL_ITEM_ID = 'originalItemId'
 NEW_ITEM_ID = 'newItemId'
 MESSAGE_ID = "messageId"
 ITEM_ID = "itemId"
-ACTION = "action"
 MAILBOX = "mailbox"
 MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
@@ -114,8 +112,6 @@ CONTEXT_UPDATE_EWS_ITEM = (
     f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} == obj.{MESSAGE_ID}))"
 )
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
-CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
-CONTEXT_UPDATE_FILE_ATTACHMENT = f".FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
 CONTEXT_UPDATE_FOLDER = f"EWS.Folders(val.{FOLDER_ID} == obj.{FOLDER_ID})"
 
 LAST_RUN_TIME = "lastRunTime"
@@ -218,16 +214,6 @@ def str_to_unicode(obj):  # pragma: no cover
     return obj
 
 
-def filter_dict_null(d):  # pragma: no cover
-    if isinstance(d, dict):
-        return {k: v for k, v in list(d.items()) if v is not None}
-    return d
-
-
-def is_empty_object(obj):
-    return (obj.__sizeof__() if isinstance(obj, map) else len(obj)) == 0
-
-
 def get_time_zone() -> EWSTimeZone | None:
     """get the XSOAR user time zone
     :return:
@@ -255,43 +241,6 @@ def get_attachment_name(attachment_name, content_id="", is_inline=False, attachm
     if not attachment_name and not attachment_subject:
         return 'demisto_untitled_attachment'
     return attachment_name
-
-
-def switch_hr_headers(obj, hr_header_changes):
-    """
-    Will swap keys according to hr_header_changes.
-    hr_header_changes: a dict, keys are the old value, value is the new value
-    """
-    if not isinstance(obj, dict):
-        return obj
-    obj_copy = obj.copy()
-    for old_header, new_header in hr_header_changes.items():
-        if old_header in obj:
-            obj_copy[new_header] = obj_copy.pop(old_header)
-    return obj_copy
-
-
-def get_entry_for_object(title, context_key, obj, headers=None, hr_header_changes={}):  # pragma: no cover
-    if is_empty_object(obj):
-        return "There is no output results"
-    obj = filter_dict_null(obj)
-    hr_obj = switch_hr_headers(obj, hr_header_changes)
-    if isinstance(obj, list):
-        obj = [filter_dict_null(k) for k in obj]
-        hr_obj = [switch_hr_headers(k, hr_header_changes) for k in obj]
-    if headers and isinstance(obj, dict):
-        headers = list(set(headers).intersection(set(obj.keys())))
-
-    return {
-        'Type': entryTypes['note'],
-        'Contents': obj,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, hr_obj, headers),
-        ENTRY_CONTEXT: {
-            context_key: obj
-        }
-    }
 
 
 class MarkAsJunk(EWSAccountService):
@@ -1206,39 +1155,6 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
 
     return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
                                 dict_result)
-
-
-def delete_attachments_for_message(client: EWSClient, item_id: str, target_mailbox: Optional[str] = None,
-                                   attachment_ids=None):  # pragma: no cover
-    account = client.get_account(target_mailbox or client.account_email)
-    attachment_ids = argToList(attachment_ids)
-    attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
-    deleted_file_attachments = []
-    deleted_item_attachments = []
-    for attachment in attachments:
-        attachment_deleted_action = {
-            ATTACHMENT_ID: attachment.attachment_id.id,
-            ACTION: 'deleted'
-        }
-        if isinstance(attachment, FileAttachment):
-            deleted_file_attachments.append(attachment_deleted_action)
-        else:
-            deleted_item_attachments.append(attachment_deleted_action)
-        attachment.detach()
-
-    entries = []
-    if len(deleted_file_attachments) > 0:
-        entry = get_entry_for_object("Deleted file attachments",
-                                     "EWS.Items" + CONTEXT_UPDATE_FILE_ATTACHMENT,
-                                     deleted_file_attachments)
-        entries.append(entry)
-    if len(deleted_item_attachments) > 0:
-        entry = get_entry_for_object("Deleted item attachments",
-                                     "EWS.Items" + CONTEXT_UPDATE_ITEM_ATTACHMENT,
-                                     deleted_item_attachments)
-        entries.append(entry)
-
-    return entries
 
 
 def fetch_attachments_for_message(client: EWSClient, item_id: str, target_mailbox: Optional[str] = None,
