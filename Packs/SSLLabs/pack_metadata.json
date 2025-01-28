@@ -2,7 +2,7 @@
     "name": "SSL Labs",
     "description": "This pack integrates with Qualys SSL Labs. A free online service performs a deep analysis of the configuration of any SSL web server on the public Internet",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Rich Fontaine",
     "url": "",
     "email": "",
