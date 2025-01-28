@@ -35,7 +35,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 30. qualys-virtual-host-list - Added new parameters, changed outputs.
 31. qualys-scheduled-report-list - Added new parameters, changed existing parameters, changed outputs.
 32. qualys-report-template-list - Added new parameters, changed outputs.
-33. qualys-report-launch-map - changed existing parameters
+33. qualys-report-launch-map - Changed existing parameters.
 34. qualys-ip-restricted-manage - New command.
 35. qualys-purge-scan-host-data - New command.
 
@@ -66,22 +66,22 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
     | Use system proxy settings | | False |
     | Fetch Events | | False |
     | Event first fetch time | Available on Cortex XSIAM only. If "First event fetch time" is set for a long time ago, it may cause performance issues. | False |
-    | Event Fetch Limit | Available on Cortex XSIAM only. Maximum number of events to fetch per fetch iteration. | False |
-    | Events Fetch Interval | Available on Cortex XSIAM only. | False |
-    | Fetch Assets and Vulnerabilities | Available on Cortex XSIAM only. | False |
-    | Assets and Vulnerabilities Fetch Interval | Available on Cortex XSIAM only. The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour. | False |
-    | Fetch Vulnerabilities Behavior | Available on Cortex XSIAM only. Selecting "Fetch by unique QIDs of assets" will fetch by unique QIDs relevant to the assets regardless of the vulnerability modified time. Otherwise, vulnerabilities modified in the last 90 days will be fetched. Default is Fetch by last modified date. | False |
+    | Event Fetch Limit | Available in Cortex XSIAM only. Maximum number of events to fetch per fetch iteration. | False |
+    | Events Fetch Interval | Available in Cortex XSIAM only. | False |
+    | Fetch Assets and Vulnerabilities | Available in Cortex XSIAM only. | False |
+    | Assets and Vulnerabilities Fetch Interval | Available in Cortex XSIAM only. The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour. | False |
+    | Fetch Vulnerabilities Behavior | Available in Cortex XSIAM only. Default is Fetch by last modified date. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Notes
 
-When configuring the integration instance, selecting the "Fetch by last modified date" option in the **Fetch Vulnerabilities Behavior** dropdown fetches assets and vulnerabilities from the last 90 days only. To fetch vulnerabilities by unique QIDs relevant to the assets regardless of the vulnerability modified time, choose the "Fetch by unique QIDs of assets" option.
+When configuring the integration instance, selecting the "Fetch by last modified date" option in the *Fetch Vulnerabilities Behavior* dropdown fetches assets and vulnerabilities from the last 90 days only. To fetch vulnerabilities by unique QIDs relevant to the assets regardless of the vulnerability modified time, choose the "Fetch by unique QIDs of assets" option.
 
 ## Asset Tag Commands
 
-The API endpoints in the Qualys API that can be used depend on the value of the **Server URL** parameter in the integration instance configuration.
-When using `asset-tag` commands, the [official documentation](https://www.qualys.com/docs/qualys-asset-management-tagging-api-v2-user-guide.pdf) recommends that the **Server URL** parameter should be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`.
+The API endpoints in the Qualys API that can be used depend on the value of the *Server URL* parameter in the integration instance configuration.
+When using `asset-tag` commands, the [official documentation](https://www.qualys.com/docs/qualys-asset-management-tagging-api-v2-user-guide.pdf) recommends that the *Server URL* parameter be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`.
 
 ## Commands
 
