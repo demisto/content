@@ -496,7 +496,7 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
         username = params.get("credentials", {}).get("identifier")
         password = params.get("credentials", {}).get("password")
         if password:
-            demisto.debug(f"Adding Password to sensitive logs strings")
+            demisto.debug("Adding Password to sensitive logs strings")
             add_sensitive_log_strs(password)
         else:
             demisto.error("Password is required for Basic Authentication.")
@@ -512,7 +512,7 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
     if authentication == 'Bearer':
         demisto.debug("Authenticating with Bearer Authentication")
         if token := params.get('token', {}).get("password"):
-            demisto.debug(f"Adding Token to sensitive logs strings")
+            demisto.debug("Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -523,7 +523,7 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
     if authentication == 'Token':
         demisto.debug("Authenticating with Token Authentication")
         if token := params.get('token', {}).get("password"):
-            demisto.debug(f"Adding Token to sensitive logs strings")
+            demisto.debug("Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -534,7 +534,7 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
     if authentication == 'Api-Key':
         demisto.debug("Authenticating with Api-Key Authentication")
         if token := params.get('token', {}).get("password"):
-            demisto.debug(f"Adding Token to sensitive logs strings")
+            demisto.debug("Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -545,7 +545,7 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
     if authentication == 'RawToken':
         demisto.debug("Authenticating with raw token")
         if token := params.get('token', {}).get("password"):
-            demisto.debug(f"Adding Token to sensitive logs strings")
+            demisto.debug("Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -556,11 +556,12 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
     if authentication == 'No Authorization':
         demisto.debug("Connecting without Authorization")
         return {}
-    else:
-        err_msg = ("Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken"
-                   f"No Authorization, got: {authentication}")
-        demisto.error(err_msg)
-        return_error(err_msg)
+
+    err_msg = ("Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken"
+               f"No Authorization, got: {authentication}")
+    demisto.error(err_msg)
+    return_error(err_msg)
+    return {}
 
 
 def get_events_command(client: Client,
@@ -608,10 +609,10 @@ def main() -> None:
             return_error('Base URL is missing')
         if not endpoint:
             return_error('Endpoint is missing')
-        if not http_method:
+        if http_method is None:
             return_error('HTTP method is missing')
         if not http_method or http_method.upper() not in ['GET', 'POST']:
-            return_error('HTTP method is not valid, please choose between GET and POST')
+            return_error(f'HTTP method is not valid, please choose between GET and POST, got: {http_method}')
         # endregion
 
         # region Gets the timestamp field configuration
