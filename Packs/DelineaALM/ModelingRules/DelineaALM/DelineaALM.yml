@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Delinea_Account_Lifecycle_Manager_ModelingRule
-name: Delinea Account Lifecycle Manager Modeling Rule
+id: Delinea_ALM_ModelingRule
+name: Delinea ALM Modeling Rule
 rules: ''
 schema: ''
 tags: ''
