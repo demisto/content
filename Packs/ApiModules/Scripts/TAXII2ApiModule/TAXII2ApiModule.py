@@ -381,12 +381,14 @@ class XSOAR2STIXParser:
             return {}
         date_added = arg_to_datetime(xsoar_indicator.get('timestamp'), is_utc=False)
         version = arg_to_datetime(xsoar_indicator.get('modified'), is_utc=False)
+        demisto.debug(f"T2API: create_manifest_entry {xsoar_indicator.get('timestamp')=} {xsoar_indicator.get('modified')=}")
         entry = {
             'id': stix_id,
             'date_added': date_added.strftime(STIX_DATE_FORMAT) if date_added else '',
         }
         if self.server_version == TAXII_VER_2_1:
             entry['version'] = version.strftime(STIX_DATE_FORMAT) if version else ''
+        demisto.debug(f"T2API: create_manifest_entry {entry=}")
         return entry
 
     def create_stix_object(self, xsoar_indicator: dict, xsoar_type: str, extensions_dict: dict = {}) -> tuple[dict, dict, dict]:
@@ -565,8 +567,10 @@ class XSOAR2STIXParser:
             https://docs.oasis-open.org/cti/stix/v2.1/cs01/stix-v2.1-cs01.html#_muftrcpnf89v
         """
         try:
+            demisto.debug(f"T2API: convert_sco_to_indicator_sdo {xsoar_indicator.get('expiration')=}")
             expiration_datetime = arg_to_datetime(xsoar_indicator.get('expiration'), is_utc=False)
             expiration_parsed = expiration_datetime.strftime(STIX_DATE_FORMAT) if expiration_datetime else ''
+            demisto.debug(f"T2API: convert_sco_to_indicator_sdo {expiration_parsed=}")
         except Exception:
             expiration_parsed = ''
 
