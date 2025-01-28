@@ -58,7 +58,7 @@ def remove_null_bytes(decoded_str: str) -> str:
     return decoded_str.replace("\x00", "")
 
 
-def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: bool = False) -> Tuple[str, bool]:
+def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: bool = False) -> tuple[str, bool]:
     """
     Recursively decodes Base64 segments found in the **entire** string `encoded_str`.
     Returns (decoded_string, double_encoded_detected).
@@ -690,7 +690,7 @@ def analyze_command_line(command_line, custom_patterns=None):
         }
         results["Double Encoding Detected"] = double_encoded
 
-    # Finally, calculate score etc.
+    # Calculate the score
     score_details = calculate_score(results)
     results.update(score_details)
 
