@@ -141,7 +141,6 @@ def test_nextTrigger(
     if with_audit_next_page:
         mocked_audits["data"]["listAuditLogsByDate"]["pageInfo"]["next"] = "example_next_page"
 
-
     mocker.patch.object(Client, '_http_request',
                         side_effect=[mocked_alerts, mocked_audits])
     mocker.patch.object(Client, '_login', return_value="ExampleToken")
@@ -241,8 +240,8 @@ def test_alerts_and_next_page_audits_and_next_page(mocker):
         "nextTrigger": "0"
     }
     mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
-        (parse_response(util_load_json('test_data/raw_alerts.json'))[1], {"next":'next_page_alerts'}),
-        (parse_response(util_load_json('test_data/raw_audits.json'))[1], {"next":'next_page_audits'}),
+        (parse_response(util_load_json('test_data/raw_alerts.json'))[1], {"next": 'next_page_alerts'}),
+        (parse_response(util_load_json('test_data/raw_audits.json'))[1], {"next": 'next_page_audits'}),
     ])
     mocker.patch.object(demisto, 'params', return_value={})
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
@@ -287,7 +286,7 @@ def test_no_alerts_and_no_next_page_no_audits_and_no_next_page(mocker):
     mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
 
     main()
-    
+
     assert mock_next_run.call_args.args[0] == expected_mock_last_run
 
 
