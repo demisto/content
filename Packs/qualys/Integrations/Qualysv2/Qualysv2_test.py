@@ -25,6 +25,7 @@ from Qualysv2 import (
     parse_raw_response,
     get_simple_response_from_raw,
     validate_required_group,
+    get_vulnerabilities,
     get_activity_logs_events_command,
     fetch_events, get_activity_logs_events,
     fetch_assets, fetch_vulnerabilities,
@@ -1598,6 +1599,52 @@ def test_truncate_asset_size(mocker, asset, expected_truncated):
 
     # Reset mock_debug for the next test case
     mock_debug.reset_mock()
+
+
+def test_get_vulnerabilities_invalid_inputs(client: Client):
+    """
+    Given:
+        - Missing both since_datetime and detection_qids.
+    When:
+        - Calling get_vulnerabilities.
+    Assert:
+        - Ensure a ValueError is raised that matches the correct error message.
+    """
+    with pytest.raises(ValueError, match="Either 'since_datetime' or 'detection_qids' need to be specified"):
+        get_vulnerabilities(client)
+
+
+@pytest.mark.parametrize(
+    'since_datetime, detection_qids, expected_params',
+    [
+        pytest.param("2024-12-12", None, {"last_modified_after": "2024-12-12"}, id="Specified since datetime"),
+        pytest.param(None, ["A", "B"], {"ids": "A,B"}, id="Specified detection QIDs"),
+    ]
+)
+def test_get_vulnerabilities_valid_inputs(
+    mocker: MockerFixture,
+    client: Client,
+    since_datetime: str | None,
+    detection_qids: list | None,
+    expected_params: dict,
+) -> None:
+    """
+    Given:
+        - Either a since_datetime or detection_qids value.
+    When:
+        - Calling get_vulnerabilities.
+    Assert:
+        - Ensure correct request HTTP method, API endpoint, and params.
+    """
+    client_http_request = mocker.patch.object(client, "_http_request")
+
+    get_vulnerabilities(client, since_datetime, detection_qids)
+
+    http_request_kwargs = client_http_request.call_args.kwargs
+
+    assert http_request_kwargs["method"] == "POST"
+    assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+    assert http_request_kwargs["params"] == expected_params
 
 
 @freeze_time("2025-01-01 00:00:00 UTC")
