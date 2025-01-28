@@ -38,7 +38,7 @@ def validate_params(url, token, events_to_fetch, audit_max, apm_max):
     if not events_to_fetch:
         raise DemistoException("Please specify at least one event type to fetch.")
     if audit_max < 1 or audit_max > 25000:
-        raise DemistoException("The maximum number of audit logs events per fetch needs to be grater then 0 and not more then then 2500")
+        raise DemistoException("The maximum number of audit logs events per fetch needs to be grater then 0 and not more then then 25000")
     if apm_max < 1 or apm_max > 5000:
         raise DemistoException("The maximum number of APM events per fetch needs to be grater then 0 and not more then then 5000")
 
@@ -118,24 +118,25 @@ def fetch_apm_events(client, limit, fetch_start_time):
                     # This approach eliminates the need for deduplication.
                     args["apm_from"] = last_run["last_timestamp"] + 1
             
-            demisto.debug(f"Dynatrace fetch APM {i} times in loop. calling query with {args=}")
+            demisto.debug(f"Dynatrace fetch APM {i+1} times in loop. calling query with {args=}")
             response = events_query(client, args, "APM")
             num_events = len(response.get("events"))
-            demisto.debug(f"Dynatrace fetch APM {i} times in loop. got {num_events} events")
+            events_count += num_events
+            demisto.debug(f"Dynatrace fetch APM {i+1} times in loop. got {num_events} events")
             
             # TODO need to see what happens if we get no events is response.get("events") empty or None?
             if response.get("nextPageKey"):
-                demisto.debug(f"Dynatrace fetch APM {i} times in loop. setting last run with nextPageKey")
+                demisto.debug(f"Dynatrace fetch APM {i+1} times in loop. setting last run with nextPageKey")
                 last_run_to_save["nextPageKey"] = response["nextPageKey"]
                 last_run_to_save["last_timestamp"] = None  # This timestamp won't be relevant at the next run.
             else:
-                demisto.debug(f"Dynatrace fetch APM {i} times in loop. setting last run with timestamp")
+                demisto.debug(f"Dynatrace fetch APM {i+1} times in loop. setting last run with timestamp")
                 # If events were retrieved during this run (which might not always happen),
                 # we save the last timestamp from this run.
                 # If no events were retrieved, we retain the same last_timestamp as before,
                 # In cases where no events were retrieved and this is the first run (i.e., no last_run_timestamp exists),
                 # the query will use start_fetch_time again in the next execution.
-                last_run_to_save["last_timestamp"] = response.get("events")[0]["startTime"] if response["totalCount"] != 0 else (last_run.get("last_timestamp") or fetch_start_time)  # What happens when no events are retrieved?
+                last_run_to_save["last_timestamp"] = response.get("events")[0]["startTime"] if response["totalCount"] != 0 else (last_run.get("last_timestamp") or fetch_start_time)
                 last_run_to_save["nextPageKey"] = None
                 
             events = response.get("events")
@@ -143,6 +144,7 @@ def fetch_apm_events(client, limit, fetch_start_time):
             events_to_return.extend(events)
 
         last_run = last_run_to_save
+        args = {}
     
     demisto.debug(f"Dynatrace fetch APM ou of loop. setting last_apm_run to {last_run_to_save}")
     integration_cnx["last_apm_run"] = last_run_to_save
@@ -182,17 +184,18 @@ def fetch_audit_log_events(client, limit, fetch_start_time):
                     # This approach eliminates the need for deduplication.
                     args["audit_from"] = last_run["last_timestamp"] + 1
             
-            demisto.debug(f"Dynatrace fetch audit logs {i} times in loop. calling query with {args=}")
+            demisto.debug(f"Dynatrace fetch audit logs {i+1} times in loop. calling query with {args=}")
             response = events_query(client, args, "Audit logs")
             num_events = len(response.get("auditLogs"))
-            demisto.debug(f"Dynatrace fetch audit logs {i} times in loop. got {num_events} events")
+            events_count += num_events
+            demisto.debug(f"Dynatrace fetch audit logs {i+1} times in loop. got {num_events} events")
             
             if response.get("nextPageKey"):
-                demisto.debug(f"Dynatrace fetch audit logs {i} times in loop. setting last run with nextPageKey")
+                demisto.debug(f"Dynatrace fetch audit logs {i+1} times in loop. setting last run with nextPageKey")
                 last_run_to_save["nextPageKey"] = response["nextPageKey"]
                 last_run_to_save["last_timestamp"] = None  # This timestamp won't be relevant at the next run.
             else:
-                demisto.debug(f"Dynatrace fetch audit logs {i} times in loop. setting last run with timestamp")
+                demisto.debug(f"Dynatrace fetch audit logs {i+1} times in loop. setting last run with timestamp")
                 # If events were retrieved during this run (which might not always happen),
                 # we save the last timestamp from this run.
                 # If no events were retrieved, we retain the same last_timestamp as before,
@@ -206,6 +209,7 @@ def fetch_audit_log_events(client, limit, fetch_start_time):
             events_to_return.extend(events)
 
         last_run = last_run_to_save
+        args = {}
     
     demisto.debug(f"Dynatrace fetch Audit logs out of loop. setting last_audit_run to {last_run_to_save}")
     integration_cnx["last_audit_run"] = last_run_to_save
