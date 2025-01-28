@@ -1,11 +1,14 @@
+from typing import Any
+
+import urllib3
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa #! pylint: disable=unused-wildcard-import
-from typing import Any
-import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+# comment
 
 """ CONSTANTS """
 
