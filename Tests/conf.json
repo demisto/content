@@ -696,7 +696,8 @@
         {
             "integrations": "AzureFeed",
             "playbookID": "AzureFeed - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "SpamhausFeed",
@@ -2319,7 +2320,8 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "MSG-ediscovery-tpb",
-            "instance_names": "ms_graph_security_ediscovery"
+            "instance_names": "ms_graph_security_ediscovery",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph",
