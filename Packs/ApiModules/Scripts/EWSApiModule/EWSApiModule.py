@@ -15,6 +15,7 @@ from exchangelib import (
     Configuration,
     Credentials,
     FileAttachment,
+    Folder,
     HTMLBody,
     Identity,
     Version,
@@ -23,12 +24,13 @@ from exchangelib.errors import (
     ErrorInvalidIdMalformed,
     ErrorItemNotFound,
     AutoDiscoverFailed,
+    ResponseMessageError,
 )
 from exchangelib.items import Item, Message
 from exchangelib.protocol import BaseProtocol, FaultTolerance, Protocol
 from exchangelib.folders.base import BaseFolder
 from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCredentials
-from exchangelib.services.common import EWSService
+from exchangelib.services.common import EWSService, EWSAccountService
 from exchangelib.util import MNS, TNS, create_element
 from oauthlib.oauth2 import OAuth2Token
 from exchangelib.version import (
@@ -175,6 +177,32 @@ class GetSearchableMailboxes(EWSService):
     def get_payload(self):
         element = create_element(f'm:{self.SERVICE_NAME}')
         return element
+
+
+class MarkAsJunk(EWSAccountService):
+    """
+    EWSAccountService class used for marking items as junk
+    """
+    SERVICE_NAME = 'MarkAsJunk'
+
+    def call(self, item_id, move_item):
+        elements = list(self._get_elements(payload=self.get_payload(item_id=item_id, move_item=move_item)))
+        for element in elements:
+            if isinstance(element, ResponseMessageError):
+                return str(element)
+        return 'Success'
+
+    def get_payload(self, item_id, move_item):
+        junk = create_element(f'm:{self.SERVICE_NAME}',
+                              {'IsJunk': 'true',
+                               'MoveItem': 'true' if move_item else 'false'})
+
+        items_list = create_element('m:ItemIds')
+        item_element = create_element('t:ItemId', {'Id': item_id})
+        items_list.append(item_element)
+        junk.append(items_list)
+
+        return junk
 
 
 class EWSClient:
@@ -807,7 +835,8 @@ def switch_hr_headers(obj, hr_header_changes: dict):
     return obj_copy
 
 
-def get_entry_for_object(title: str, context_key: str, obj, headers: Optional[list]=None, hr_header_changes: dict={}) -> dict|str:
+def get_entry_for_object(title: str, context_key: str, obj, headers: Optional[list]=None,
+                         hr_header_changes: dict={}) -> dict|str:
     """
     Create an entry for a given object
     :param title: Title of the human readable
@@ -818,7 +847,7 @@ def get_entry_for_object(title: str, context_key: str, obj, headers: Optional[li
     :return: Entry object to be used with demisto.results()
     """
     if is_empty_object(obj):
-        return "There is no output results"
+        return 'There is no output results'
     obj = filter_dict_null(obj)
     hr_obj = switch_hr_headers(obj, hr_header_changes)
     if isinstance(obj, list):
@@ -840,7 +869,8 @@ def get_entry_for_object(title: str, context_key: str, obj, headers: Optional[li
     }
 
 
-def delete_attachments_for_message(client: EWSClient, item_id, target_mailbox=None, attachment_ids=None):
+def delete_attachments_for_message(client: EWSClient, item_id: str, target_mailbox: Optional[str]=None,
+                                   attachment_ids=None):
     """
     Deletes attachments for a given message
     :param client: EWS Client
@@ -850,9 +880,7 @@ def delete_attachments_for_message(client: EWSClient, item_id, target_mailbox=No
     :return: entries that were deleted
     """
     attachment_ids = argToList(attachment_ids)
-    attachments = client.get_attachments_for_item(
-        item_id, target_mailbox, attachment_ids
-    )
+    attachments = client.get_attachments_for_item(item_id, target_mailbox, attachment_ids)
     deleted_file_attachments = []
     deleted_item_attachments = []
     for attachment in attachments:
@@ -894,13 +922,8 @@ def get_searchable_mailboxes(client: EWSClient):
                                 searchable_mailboxes, ['displayName', 'mailbox'])
 
 
-def move_item_between_mailboxes(client: EWSClient,
-    item_id,
-    destination_mailbox,
-    destination_folder_path,
-    source_mailbox=None,
-    is_public=None,
-):
+def move_item_between_mailboxes(client: EWSClient, item_id, destination_mailbox: str, destination_folder_path: str,
+                                source_mailbox: Optional[str]=None, is_public: Optional[bool]=None):
     """
     Moves item between mailboxes
     :param client: EWS Client
@@ -936,8 +959,8 @@ def move_item_between_mailboxes(client: EWSClient,
     }
 
 
-def move_item(client: EWSClient, item_id: str, target_folder_path: str,
-              target_mailbox: Optional[str]=None, is_public: Optional[bool]=None):
+def move_item(client: EWSClient, item_id: str, target_folder_path: str, target_mailbox: Optional[str]=None,
+              is_public: Optional[bool]=None):
     """
     Moves an item within the same mailbox
     :param client: EWS Client
@@ -997,9 +1020,7 @@ def delete_items(client: EWSClient, item_ids, delete_type: str, target_mailbox: 
             }
         )
 
-    return get_entry_for_object(f'Deleted items ({delete_type} delete type)',
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                deleted_items)
+    return get_entry_for_object(f'Deleted items ({delete_type} delete type)', CONTEXT_UPDATE_EWS_ITEM, deleted_items)
 
 
 def get_out_of_office_state(client: EWSClient, target_mailbox: Optional[str]=None):
@@ -1024,4 +1045,90 @@ def get_out_of_office_state(client: EWSClient, target_mailbox: Optional[str]=Non
     return get_entry_for_object(f'Out of office state for {account.primary_smtp_address}',
                                 f'Account.Email(val.Address == obj.{MAILBOX}).OutOfOffice',
                                 oof_dict)
+
+
+def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path: str='Inbox',
+                             target_mailbox: Optional[str]=None, is_public: Optional[bool]=None):
+    """
+    Recovers soft deleted items
+    :param client: EWS Client
+    :param message_ids: Message ids to recover
+    :param (Optional) target_folder_path: target folder path
+    :param (Optional) target_mailbox: target mailbox
+    :param (Optional) is_public: is the target folder public
+    :return: result object
+    """
+    account = client.get_account(target_mailbox)
+    is_public = client.is_default_folder(target_folder_path, is_public)
+    target_folder = client.get_folder_by_path(target_folder_path, account, is_public)
+    recovered_messages = []
+    message_ids = argToList(message_ids)
+
+    items_to_recover = account.recoverable_items_deletions.filter(message_id__in=message_ids).all()  # pylint: disable=E1101
+
+    recovered_items = set()
+    for item in items_to_recover:
+        recovered_items.add(item)
+
+    if len(recovered_items) != len(message_ids):
+        missing_items = set(message_ids).difference(recovered_items)
+        raise Exception(f'Some message ids are missing in recoverable items directory: {missing_items}')
+
+    for item in recovered_items:
+        item.move(target_folder)
+        recovered_messages.append({ITEM_ID: item.id, MESSAGE_ID: item.message_id, ACTION: 'recovered'})
+
+    return get_entry_for_object('Recovered messages', CONTEXT_UPDATE_EWS_ITEM, recovered_messages)
+
+
+def create_folder(client: EWSClient, new_folder_name: str, folder_path: str,
+                  target_mailbox: Optional[str]=None):
+    """
+    Creates a folder in the target mailbox or the client mailbox
+    :param client: EWS Client
+    :param new_folder_name: new folder name
+    :param folder_path: path of the new folder
+    :param (Optional) target_mailbox: target mailbox
+    :return: Result message
+    """
+    account = client.get_account(target_mailbox)
+    full_path = os.path.join(folder_path, new_folder_name)
+    try:
+        demisto.debug('Checking if folder exists')
+        if client.get_folder_by_path(full_path, account):
+            return f'Folder {full_path} already exists',
+    except Exception:
+        pass
+    demisto.debug('Folder doesnt already exist. Getting path to add folder')
+    parent_folder = client.get_folder_by_path(folder_path, account)
+
+    demisto.debug('Saving folder')
+    f = Folder(parent=parent_folder, name=new_folder_name)
+    f.save()
+    demisto.debug('Verifying folder was saved')
+    client.get_folder_by_path(full_path, account)
+    return f'Folder {full_path} created successfully',
+
+
+def mark_item_as_junk(client: EWSClient, item_id, move_items: str, target_mailbox: Optional[str]=None):
+    """
+    Marks item as junk in the target mailbox or client mailbox
+    :param client: EWS Client
+    :param item_id: item ids to mark as junk
+    :param move_items: 'yes' or 'no' - to move or not to move to trash
+    :param (Optional) target_mailbox: target mailbox
+    :return:
+    """
+    account = client.get_account(target_mailbox)
+    move_to_trash: bool = (move_items.lower() == 'yes')
+    ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_to_trash)
+    mark_as_junk_result = {
+        ITEM_ID: item_id,
+    }
+    if ews_result == 'Success':
+        mark_as_junk_result[ACTION] = 'marked-as-junk'
+    else:
+        raise Exception(f'Failed mark-item-as-junk with error: {ews_result}')
+
+    return get_entry_for_object('Mark item as junk', CONTEXT_UPDATE_EWS_ITEM, mark_as_junk_result)
 

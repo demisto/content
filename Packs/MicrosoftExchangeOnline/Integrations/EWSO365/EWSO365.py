@@ -115,37 +115,6 @@ UTF_8 = 'utf-8'
 """ Classes """
 
 
-class MarkAsJunk(EWSAccountService):
-    """
-    EWSAccountService class used for marking items as junk
-    """
-    SERVICE_NAME = "MarkAsJunk"
-
-    def call(self, item_id, move_item):
-        elements = list(
-            self._get_elements(
-                payload=self.get_payload(item_id=item_id, move_item=move_item)
-            )
-        )
-        for element in elements:
-            if isinstance(element, ResponseMessageError):
-                return str(element)
-        return "Success"
-
-    def get_payload(self, item_id, move_item):  # pragma: no cover
-        junk = create_element(
-            f"m:{self.SERVICE_NAME}",
-            {"IsJunk": "true", "MoveItem": "true" if move_item else "false"},
-        )
-
-        items_list = create_element("m:ItemIds")
-        item_element = create_element("t:ItemId", {"Id": item_id})
-        items_list.append(item_element)
-        junk.append(items_list)
-
-        return junk
-
-
 class ExpandGroup(EWSService):
     """
     EWSAccountService class used for expanding groups
@@ -843,52 +812,6 @@ def search_items_in_mailbox(
     return readable_output, output, searched_items_result
 
 
-def recover_soft_delete_item(
-    client: EWSClient,
-    message_ids,
-    target_folder_path="Inbox",
-    target_mailbox=None,
-    is_public=None,
-):  # pragma: no cover
-    """
-    Recovers soft deleted items
-    :param client: EWS Client
-    :param message_ids: Message ids to recover
-    :param (Optional) target_folder_path: target folder path
-    :param (Optional) target_mailbox: target mailbox
-    :param (Optional) is_public: is the target folder public
-    :return:
-    """
-    account = client.get_account(target_mailbox)
-    is_public = client.is_default_folder(target_folder_path, is_public)
-    target_folder = client.get_folder_by_path(target_folder_path, account, is_public)
-    recovered_messages = []
-    message_ids = argToList(message_ids)
-
-    items_to_recover = account.recoverable_items_deletions.filter(  # pylint: disable=E1101
-        message_id__in=message_ids
-    ).all()  # pylint: disable=E1101
-
-    recovered_items = set()
-    for item in items_to_recover:
-        recovered_items.add(item)
-    if len(recovered_items) != len(message_ids):
-        missing_items = set(message_ids).difference(recovered_items)
-        raise Exception(
-            f"Some message ids are missing in recoverable items directory: {missing_items}"
-        )
-
-    for item in recovered_items:
-        item.move(target_folder)
-        recovered_messages.append(
-            {ITEM_ID: item.id, MESSAGE_ID: item.message_id, ACTION: "recovered"}
-        )
-
-    readable_output = tableToMarkdown("Recovered messages", recovered_messages)
-    output = {CONTEXT_UPDATE_EWS_ITEM: recovered_messages}
-    return readable_output, output, recovered_messages
-
-
 def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no cover
     """
     Retrieve contacts of the target mailbox or client mailbox
@@ -946,34 +869,6 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no c
     return readable_output, output, contacts
 
 
-def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbox=None):  # pragma: no cover
-    """
-    Creates a folder in the target mailbox or the client mailbox
-    :param client: EWS Client
-    :param new_folder_name: new folder name
-    :param folder_path: path of the new folder
-    :param (Optional) target_mailbox: target mailbox
-    :return: Output tuple
-    """
-    account = client.get_account(target_mailbox)
-    full_path = os.path.join(folder_path, new_folder_name)
-    try:
-        demisto.debug('checking if folder exists')
-        if client.get_folder_by_path(full_path, account):
-            return f"Folder {full_path} already exists",
-    except Exception:
-        pass
-    demisto.debug('folder doesnt already exist. Getting path to add folder')
-    parent_folder = client.get_folder_by_path(folder_path, account)
-
-    demisto.debug('saving folder')
-    f = Folder(parent=parent_folder, name=new_folder_name)
-    f.save()
-    demisto.debug('verifying folder was saved')
-    client.get_folder_by_path(full_path, account)
-    return f"Folder {full_path} created successfully",
-
-
 def find_folders(client: EWSClient, target_mailbox=None):
     """
     Finds folders in the mailbox
@@ -994,31 +889,6 @@ def find_folders(client: EWSClient, target_mailbox=None):
     readable_output = folders_tree
     output = {"EWS.Folders(val.id == obj.id)": folders}
     return readable_output, output, folders
-
-
-def mark_item_as_junk(client: EWSClient, item_id, move_items, target_mailbox=None):  # pragma: no cover
-    """
-    Marks item as junk in the target mailbox or client mailbox
-    :param client: EWS Client
-    :param item_id: item ids to mark as junk
-    :param move_items: "yes" or "no" - to move or not to move to trash
-    :param (Optional) target_mailbox: target mailbox
-    :return:
-    """
-    account = client.get_account(target_mailbox)
-    move_items = move_items.lower() == "yes"
-    ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_items)
-    mark_as_junk_result = {
-        ITEM_ID: item_id,
-    }
-    if ews_result == "Success":
-        mark_as_junk_result[ACTION] = "marked-as-junk"
-    else:
-        raise Exception("Failed mark-item-as-junk with error: " + ews_result)
-
-    readable_output = tableToMarkdown("Mark item as junk", mark_as_junk_result)
-    output = {CONTEXT_UPDATE_EWS_ITEM: mark_as_junk_result}
-    return readable_output, output, mark_as_junk_result
 
 
 def get_items_from_folder(

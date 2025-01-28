@@ -243,29 +243,6 @@ def get_attachment_name(attachment_name, content_id="", is_inline=False, attachm
     return attachment_name
 
 
-class MarkAsJunk(EWSAccountService):
-    SERVICE_NAME = 'MarkAsJunk'
-
-    def call(self, item_id, move_item):  # pragma: no cover
-        elements = list(self._get_elements(payload=self.get_payload(item_id=item_id, move_item=move_item)))
-        for element in elements:
-            if isinstance(element, ResponseMessageError):
-                return element.message
-        return "Success"
-
-    def get_payload(self, item_id, move_item):  # pragma: no cover
-        junk = create_element(f'm:{self.SERVICE_NAME}',
-                              {"IsJunk": "true",
-                               "MoveItem": ("true" if move_item else "false")})
-
-        items_list = create_element('m:ItemIds')
-        item_element = create_element("t:ItemId", {"Id": item_id})
-        items_list.append(item_element)
-        junk.append(items_list)
-
-        return junk
-
-
 def send_email_to_mailbox(  # pragma: no cover
     account, to, subject, body, body_type,
     bcc, cc, reply_to, handle_inline_image: bool = True,
@@ -1217,29 +1194,6 @@ def search_items_in_mailbox(client: EWSClient, query=None, message_id=None, fold
                                 headers=ITEMS_RESULTS_HEADERS if selected_all_fields else None)
 
 
-def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path="Inbox", target_mailbox=None,
-                             is_public=None):  # pragma: no cover
-    account = client.get_account(target_mailbox or client.account_email)
-    is_public = client.is_default_folder(target_folder_path, is_public)
-    target_folder = client.get_folder_by_path(target_folder_path, account, is_public)
-    recovered_messages = []
-    message_ids = argToList(message_ids)
-    items_to_recover = account.recoverable_items_deletions.filter(  # pylint: disable=E1101
-        message_id__in=message_ids).all()  # pylint: disable=E1101
-    if items_to_recover.count() != len(message_ids):
-        raise Exception("Some message ids are missing in recoverable items directory")
-    for item in items_to_recover:
-        item.move(target_folder)
-        recovered_messages.append({
-            ITEM_ID: item.id,
-            MESSAGE_ID: item.message_id,
-            ACTION: 'recovered'
-        })
-    return get_entry_for_object("Recovered messages",
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                recovered_messages)
-
-
 def parse_physical_address(address):
     result = {}
     for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
@@ -1295,21 +1249,6 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no c
                                 contacts)
 
 
-def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbox=None):  # pragma: no cover
-    account = client.get_account(target_mailbox or client.account_email)
-    full_path = f"{folder_path}\\{new_folder_name}"
-    try:
-        if client.get_folder_by_path(full_path, account):
-            return f"Folder {full_path} already exists"
-    except Exception:
-        pass
-    parent_folder = client.get_folder_by_path(folder_path, account)
-    f = Folder(parent=parent_folder, name=new_folder_name)
-    f.save()
-    client.get_folder_by_path(full_path, account)
-    return f"Folder {full_path} created successfully"
-
-
 def find_folders(client: EWSClient, target_mailbox=None, is_public=None):  # pragma: no cover
     account = client.get_account(target_mailbox or client.account_email)
     root = account.public_folders_root if is_public else account.root.tois  # pylint: disable=E1101
@@ -1331,23 +1270,6 @@ def find_folders(client: EWSClient, target_mailbox=None, is_public=None):  # pra
             'EWS.Folders(val.id == obj.id)': folders
         }
     }
-
-
-def mark_item_as_junk(client: EWSClient, item_id, move_items, target_mailbox=None):  # pragma: no cover
-    account = client.get_account(target_mailbox or client.account_email)
-    move_items = (move_items.lower() == "yes")
-    ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_items)
-    mark_as_junk_result = {
-        ITEM_ID: item_id,
-    }
-    if ews_result == "Success":
-        mark_as_junk_result[ACTION] = 'marked-as-junk'
-    else:
-        raise Exception("Failed mark-item-as-junk with error: " + ews_result)
-
-    return get_entry_for_object('Mark item as junk',
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                mark_as_junk_result)
 
 
 def get_items_from_folder(client: EWSClient, folder_path, limit=100, target_mailbox=None, is_public=None,
