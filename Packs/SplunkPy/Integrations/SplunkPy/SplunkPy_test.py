@@ -1076,40 +1076,40 @@ def test_reset_enriching_fetch_mechanism(mocker):
     assert integration_context == {'wow': 'wow'}
 
 
-# @pytest.mark.parametrize(
-#     "drilldown_creation_time, asset_creation_time, enrichment_timeout, output",
-#     [
-#         (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
-#         (
-#             (datetime.utcnow() - timedelta(minutes=6)).isoformat(),
-#             datetime.utcnow().isoformat(),
-#             5,
-#             True,
-#         ),
-#     ],
-# )
-# def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout,
-#                                          output):
-#     """
-#     Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident with all
-#      the data gathered so far.
+@pytest.mark.parametrize(
+    "drilldown_creation_time, asset_creation_time, enrichment_timeout, output",
+    [
+        (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
+        (
+            (datetime.utcnow() - timedelta(minutes=6)).isoformat(),
+            datetime.utcnow().isoformat(),
+            5,
+            True,
+        ),
+    ],
+)
+def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout,
+                                         output):
+    """
+    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident with all
+     the data gathered so far.
 
-#     Given:
-#     - Two enrichments that none of them exceeds the timeout.
-#     - An enrichment exceeding the timeout and one that does not exceeds the timeout.
+    Given:
+    - Two enrichments that none of them exceeds the timeout.
+    - An enrichment exceeding the timeout and one that does not exceeds the timeout.
 
-#     When:
-#     - is_enrichment_process_exceeding_timeout is called
+    When:
+    - is_enrichment_process_exceeding_timeout is called
 
-#     Then:
-#     - Return the expected result
-#     """
-#     mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS',
-#                         return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
-#     notable = splunk.Notable({splunk.EVENT_ID: 'id'})
-#     notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
-#     notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
-#     assert notable.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS',
+                        return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
+    notable = splunk.Notable({splunk.EVENT_ID: 'id'})
+    notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
+    notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
+    assert notable.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
 
 
 INCIDENT_1 = {'name': 'incident1', 'rawJSON': json.dumps({})}
@@ -1138,7 +1138,6 @@ def test_store_incidents_for_mapping(incidents, output):
     splunk.set_integration_context({})
     splunk.store_incidents_for_mapping(incidents)
     assert splunk.get_integration_context().get(splunk.INCIDENTS, []) == output
-    # assert integration_context.get(splunk.INCIDENTS, []) == output
 
 
 @pytest.mark.parametrize('notable_data, raw, earliest, latest', [
@@ -2653,9 +2652,10 @@ OWNER_MAPPING = [{'xsoar_user': 'test_xsoar', 'splunk_user': 'test_splunk', 'wai
 
 MAPPER_CASES_XSOAR_TO_SPLUNK = [
     ('', 'unassigned',
-     'Could not find splunk user matching xsoar\'s . Consider adding it to the splunk_xsoar_users lookup.'),
+     'UserMapping: Could not find splunk user matching xsoar\'s . Consider adding it to the splunk_xsoar_users lookup.'),
     ('not_in_table', 'unassigned',
-     'Could not find splunk user matching xsoar\'s not_in_table. Consider adding it to the splunk_xsoar_users lookup.')
+     'UserMapping: Could not find splunk user matching xsoar\'s not_in_table. '
+     'Consider adding it to the splunk_xsoar_users lookup.')
 
 ]
 
@@ -2691,11 +2691,12 @@ def test_owner_mapping_mechanism_xsoar_to_splunk(mocker, xsoar_name, expected_sp
 MAPPER_CASES_SPLUNK_TO_XSOAR = [
     ('test_splunk', 'test_xsoar', None),
     ('test_not_full', '',
-     "Xsoar user matching splunk's test_not_full is empty. Fix the record in splunk_xsoar_users lookup."),
+     "UserMapping: Xsoar user matching splunk's test_not_full is empty. Fix the record in splunk_xsoar_users lookup."),
     ('unassigned', '',
-     "Could not find xsoar user matching splunk's unassigned. Consider adding it to the splunk_xsoar_users lookup."),
+     "UserMapping: Could not find xsoar user matching splunk's unassigned. Consider adding it to the splunk_xsoar_users lookup."),
     ('not_in_table', '',
-     "Could not find xsoar user matching splunk's not_in_table. Consider adding it to the splunk_xsoar_users lookup.")
+     "UserMapping: Could not find xsoar user matching splunk's not_in_table. "
+     "Consider adding it to the splunk_xsoar_users lookup.")
 
 ]
 

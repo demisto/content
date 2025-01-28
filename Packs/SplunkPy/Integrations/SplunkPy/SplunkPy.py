@@ -118,8 +118,10 @@ class UserMappingObject:
     def _get_record(self, col: str, value_to_search: str):
         """ Gets the records with the value found in the relevant column. """
         if not self._kvstore_data:
+            demisto.debug('UserMapping: kvstore data empty, initialize it')
             kvstore: client.KVStoreCollection = self.service.kvstore[self.table_name]
             self._kvstore_data = kvstore.data.query()
+            demisto.debug(f'UserMapping: {self._kvstore_data=}')
         return filter(lambda row: row.get(col) == value_to_search, self._kvstore_data)
 
     def get_xsoar_user_by_splunk(self, splunk_user):
@@ -129,7 +131,7 @@ class UserMappingObject:
         if not record:
 
             demisto.error(
-                f"Could not find xsoar user matching splunk's {splunk_user}. "
+                f"UserMapping: Could not find xsoar user matching splunk's {splunk_user}. "
                 f"Consider adding it to the {self.table_name} lookup.")
             return ''
 
@@ -138,7 +140,7 @@ class UserMappingObject:
 
         if not xsoar_user:
             demisto.error(
-                f"Xsoar user matching splunk's {splunk_user} is empty. Fix the record in {self.table_name} lookup.")
+                f"UserMapping: Xsoar user matching splunk's {splunk_user} is empty. Fix the record in {self.table_name} lookup.")
             return ''
 
         return xsoar_user
@@ -149,7 +151,8 @@ class UserMappingObject:
 
         if not record:
             demisto.error(
-                f"Could not find splunk user matching xsoar's {xsoar_user}. Consider adding it to the {self.table_name} lookup.")
+                f"UserMapping: Could not find splunk user matching xsoar's {xsoar_user}. "
+                f"Consider adding it to the {self.table_name} lookup.")
             return 'unassigned' if map_missing else None
 
         # assuming username is unique, so only one record is returned.
@@ -157,7 +160,7 @@ class UserMappingObject:
 
         if not splunk_user:
             demisto.error(
-                f"Splunk user matching Xsoar's {xsoar_user} is empty. Fix the record in {self.table_name} lookup.")
+                f"UserMapping: Splunk user matching Xsoar's {xsoar_user} is empty. Fix the record in {self.table_name} lookup.")
             return 'unassigned' if map_missing else None
 
         return splunk_user
@@ -181,14 +184,21 @@ class UserMappingObject:
         )
 
     def update_xsoar_user_in_notables(self, notables_data):
+        """In case of `should_map_user` is True, update the 'owner' in the notables to be the mapped XSOAR user.
+
+        Args:
+            notables_data (list[dict]): The notables to be updated.
+        """
         if self.should_map:
-            demisto.debug("instance configured to map Splunk user to XSOAR users, trying to map.")
+            demisto.debug("UserMapping: instance configured to map Splunk user to XSOAR users, trying to map.")
             for notable_data in notables_data:
                 if splunk_user := notable_data.get('owner'):
                     xsoar_user = self.get_xsoar_user_by_splunk(splunk_user)
                     notable_data["owner"] = xsoar_user
                     demisto.debug(
-                        f"owner field was mapped from {splunk_user} to {xsoar_user} for notable {notable_data.get(EVENT_ID)}.")
+                        f"UserMapping: 'owner' was mapped from {splunk_user} to {xsoar_user} "
+                        f"for notable {notable_data.get(EVENT_ID)}."
+                    )
 
 
 class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
@@ -211,9 +221,9 @@ class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
         extensive_log(f'mirror-in: updated entries: {self.entries}')
 
     def to_entry(self):
-        """Extracts the response
+        """Convert data to entries.
 
-        :return: List of notables data + entries.
+        :return: List of notables data as entries + entries (from comments and close data).
         :rtype: ``list``
         """
         return [
@@ -224,6 +234,7 @@ class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
                 'ContentsFormat': EntryFormat.JSON}
             for data in self.modified_notables_data
         ] + self.entries
+
 # =========== Regular Fetch Mechanism ===========
 
 
@@ -1165,7 +1176,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
              [(query_name, query_search, splunk_job)]
     """
     jobs_and_queries = []
-    extensive_log(f"notable data is: {notable_data}")
+    demisto.debug(f"notable data is: {notable_data}")
     if searches := get_drilldown_searches(notable_data):
         raw_dict = rawToDict(notable_data.get("_raw", ""))
 
@@ -1419,7 +1430,7 @@ def submit_notables(service: client.Service, cache_object: Cache) -> tuple[list[
             demisto.debug(f'Submitted enrichment request to Splunk for notable {notable.id}')
         else:
             failed_notables.append(notable)
-            demisto.debug(f'Created incident from notable {notable.id} as each enrichment submission failed')
+            demisto.debug(f'Incident will be created from notable {notable.id} as each enrichment submission failed')
 
     cache_object.not_yet_submitted_notables = [n for n in notables if n not in submitted_notables + failed_notables]
 
@@ -1665,7 +1676,7 @@ def get_comments_data(service: client.Service, notable_id: str, comment_tag_from
 
 
 def handle_enriching_notables(modified_notables: dict[str, dict]):
-    """Stored the "delta" of the notables which not yet created because of enrichment mechanism.
+    """Store the mirror in "delta" of the notables which not yet created because of enrichment mechanism.
 
     Args:
         modified_notables (dict[str, str]): The Notables changes from get-modified-remote-data
@@ -1689,15 +1700,37 @@ def handle_enriching_notables(modified_notables: dict[str, dict]):
                     del modified_notables[notable.id]
 
                 integration_context[MIRRORED_ENRICHING_NOTABLES] = delta_map
-                extensive_log(f'delate map after mirror update: {delta_map}')
+                extensive_log(f'delta map after mirror update: {delta_map}')
                 set_integration_context(integration_context)
-                demisto.debug(f'mirror-in: updated delta for the submitted notables - {[n.id for n in enriched_and_changed]}')
+                demisto.debug(f'mirror-in: delta updated for the enriching notables - {[n.id for n in enriched_and_changed]}')
             else:
-                demisto.debug('mirror-in: enrichment submitted notables was not updated in remote.')
+                demisto.debug('mirror-in: enriching notables was not updated in remote.')
         else:
-            demisto.debug('mirror-in: no enrichment submitted notables found.')
+            demisto.debug('mirror-in: no enriching notables found.')
     except Exception as e:
-        demisto.error(f'Failed to check for updated submitted notables, {e}')
+        demisto.error(f'mirror-in: failed to check for enriching notables, {e}')
+
+
+def handle_closed_notable(notable, notable_id, close_extra_labels, close_end_statuses, entries):
+    if notable.get('status_label'):
+        status_label = notable['status_label']
+
+        if status_label == "Closed" or (status_label in close_extra_labels) \
+                or (close_end_statuses and argToBoolean(notable.get('status_end', 'false'))):
+            demisto.info(f'mirror-in: closing incident related to notable {notable_id} with status_label: {status_label}')
+            entries.append({
+                'EntryContext': {'mirrorRemoteId': notable_id},
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': f'Notable event was closed on Splunk with status \"{status_label}\".'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
+
+    else:
+        demisto.debug('"status_label" key could not be found on the returned data, '
+                      f'skipping closure mirror for notable {notable_id}.')
 
 
 def get_modified_remote_data_command(service: client.Service, args: dict,
@@ -1716,10 +1749,10 @@ def get_modified_remote_data_command(service: client.Service, args: dict,
         comment_tag_from_splunk (str): the name of the tag that represented a comment which comes from Splunk.
 
     Returns:
-        GetModifiedRemoteDataResponse: The response containing the list of notables changed
+        SplunkGetModifiedRemoteDataResponse: The response containing the list of notables changed
     """
     modified_notables_map = {}
-    entries = []
+    entries: list[dict] = []
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
     incident_review_search = '|`incident_review` ' \
@@ -1736,30 +1769,10 @@ def get_modified_remote_data_command(service: client.Service, args: dict,
         updated_notable = parse_notable(item, to_dict=True)
         notable_id = updated_notable['rule_id']  # in the `incident_review` macro - the ID are in the rule_id key
         modified_notables_map[notable_id] = updated_notable
-        # if updated_notable.get('owner'):
-        #     demisto.debug("mirror-in: owner field was found, changing according to mapping.")
-        #     updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
-        #         updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
+
         if close_incident:
-            if updated_notable.get('status_label'):
-                status_label = updated_notable['status_label']
+            handle_closed_notable(updated_notable, notable_id, close_extra_labels, close_end_statuses, entries)
 
-                if status_label == "Closed" or (status_label in close_extra_labels) \
-                        or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
-                    demisto.info(f'mirror-in: closing incident related to notable {notable_id} with status_label: {status_label}')
-                    entries.append({
-                        'EntryContext': {'mirrorRemoteId': notable_id},
-                        'Type': EntryType.NOTE,
-                        'Contents': {
-                            'dbotIncidentClose': True,
-                            'closeReason': f'Notable event was closed on Splunk with status \"{status_label}\".'
-                        },
-                        'ContentsFormat': EntryFormat.JSON
-                    })
-
-            else:
-                demisto.debug('"status_label" key could not be found on the returned data, '
-                              f'skipping closure mirror for notable {notable_id}.')
         if (comment := updated_notable.get('comment')) and COMMENT_MIRRORED_FROM_XSOAR not in comment:
             # comment, here in the `incident_review` macro results, hold only the updated comment
             # Creating a note
@@ -1774,7 +1787,6 @@ def get_modified_remote_data_command(service: client.Service, args: dict,
 
     if modified_notables_map:
         notable_ids_with_quotes = [f'"{notable_id}"' for notable_id in modified_notables_map]
-        # filter out the owner field as it's already set in mapper.update_xsoar_user_in_notables
         notable_search = f'search `notable` | where {EVENT_ID} in ({",".join(notable_ids_with_quotes)}) | expandtoken'
         kwargs = {'query': notable_search, 'earliest_time': '-3d', 'count': MIRROR_LIMIT, 'output_mode': OUTPUT_MODE_JSON}
         demisto.debug(f'mirror-in: performing `notable` search with the kwargs: {kwargs}')
@@ -3429,7 +3441,7 @@ def main():  # pragma: no cover
         else:
             return_results(get_mapping_fields_command(service, mapper, params, comment_tag_to_splunk, comment_tag_from_splunk))
     elif command == 'get-remote-data':
-        raise NotImplementedError(f'the {command} command is not not implemented, use get-modified-remote-data instead.')
+        raise NotImplementedError(f'the {command} command is not implemented, use get-modified-remote-data instead.')
     elif command == 'get-modified-remote-data':
         demisto.info('########### MIRROR IN #############')
         get_modified_remote_data_command(service=service, args=args,
