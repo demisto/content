@@ -109,6 +109,7 @@ def vulndb_vulnerability_to_entry(vuln):
 
 
 def vulndb_vulnerability_results_to_demisto_results(res):
+    results = []
     if 'vulnerability' in res:
         results = [res['vulnerability']]
     elif 'results' in res:
@@ -293,6 +294,7 @@ def vulndb_get_updates_by_dates_or_hours_command(args: dict, client: Client):
     hours_ago = args.get('hours_ago')
     max_size = args.get('max_size')
 
+    res = ""
     if start_date:
         url_suffix = f'/vulnerabilities/find_by_date?start_date={start_date}'
         if end_date:
@@ -312,6 +314,7 @@ def vulndb_get_vendor_command(args: dict, client: Client):
     vendor_name = args.get('vendor_name')
     max_size = args.get('max_size')
 
+    res = ""
     if vendor_id is not None and vendor_name is not None:
         return_error('Provide either vendor id or vendor name or neither, not both.')
     elif vendor_id:
@@ -329,6 +332,7 @@ def vulndb_get_product_command(args: dict, client: Client):
     vendor_name = args.get('vendor_name')
     max_size = args.get('max_size')
 
+    res = ""
     if vendor_id is not None and vendor_name is not None:
         return_error('Provide either vendor id or vendor name or neither, not both.')
     elif vendor_id:
@@ -346,12 +350,16 @@ def vulndb_get_version_command(args: dict, client: Client):
     product_name = args.get('product_name')
     max_size = args.get('max_size')
 
+    res = ""
     if product_id is not None and product_name is not None:
         return_error('Provide either product id or vendor name, not both.')
     elif product_id:
         res = client.http_request(f'/versions/by_product_id?product_id={product_id}', max_size)
     elif product_name:
         res = client.http_request(f'/versions/by_product_name?product_name={product_name}', max_size)
+    else:
+        res = ""
+        demisto.debug(f"No product_id and no product_name -> {res=}")
 
     vulndb_product_results_to_demisto_results(res)
 

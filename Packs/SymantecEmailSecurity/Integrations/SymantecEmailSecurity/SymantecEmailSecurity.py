@@ -202,7 +202,7 @@ class IOC:
         """
         field_types = {f.name: f.type for f in dataclasses.fields(cls)}
         processed_env = {
-            key: cls._convert_to_enum(value, field_types[key])
+            key: cls._convert_to_enum(value, field_types[key])  # type: ignore[arg-type]
             for key, value in env.items()
             if key in field_types
         }
