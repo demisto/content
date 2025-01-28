@@ -162,7 +162,7 @@ class ZFClient(BaseClient):
                 raise ZeroFoxAuthException(
                     cause="The application is sending too many requests to ZeroFox API,\
                           please contact support."
-                    )
+                )
             response = raw_response.json()
             if non_field_errors := response.get("non_field_errors", []):
                 raise ZeroFoxAuthException(cause=non_field_errors[0])
