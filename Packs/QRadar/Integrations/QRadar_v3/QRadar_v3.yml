@@ -1,11 +1,11 @@
 commonfields:
-  id: QRadar v3
+  id: QRadar v3_39_supported
   version: -1
 sectionOrder:
 - Connect
 - Collect
-name: QRadar v3
-display: IBM QRadar v3
+name: QRadar v3_39_supported
+display: IBM QRadar v3 (3.9 custom version)
 category: Analytics & SIEM
 description: IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
 configuration:
