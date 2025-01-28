@@ -354,7 +354,7 @@ def get_events(
 
     while True:
         if len(events) >= max_fetch:
-            demisto.debug(f"Reached max fetch ({max_fetch}).")
+            demisto.debug(f"Reached {event_type} max fetch ({max_fetch}).")
             break
 
         response = client.get_data(event_type, next_page, command_args)
@@ -365,14 +365,16 @@ def get_events(
         next_page = page_info.get("next", "")
 
         if not next_page:
-            demisto.debug(f"No next page, stopping fetch loop, total fetched: {len(events)}")
+            demisto.debug(f"No next page, stopping fetch loop, total fetched for type {event_type}: {len(events)}")
             break
+
+    add_fields_to_events(events, event_type)
 
     return events, page_info
 
 
 def get_events_for_type(
-    client: Client, last_run: dict, event_type: str, max_fetch: int, start_date: str = ""
+    client: Client, last_run: dict, event_type: str, max_fetch: int, start_date: str = "", end_date: str = ""
 ) -> tuple[list[dict], dict]:
     """
     Fetches computer type events from the Jamf Protect API within a specified date range.
@@ -393,16 +395,14 @@ def get_events_for_type(
             - A dictionary with new last run values,
              the end date of the fetched events and a continuance token if the fetched reached the max limit.
     """
-    created, current_date = calculate_fetch_dates(start_date, last_run)
+    created, current_date = calculate_fetch_dates(start_date, last_run, end_date)
     command_args = {"created": created, "end_date": current_date}
     next_page = last_run.get("next_page", "")
 
     events, page_info = get_events(client, event_type, max_fetch, next_page, command_args)
     filtered_events = [event for event in events if (event.get("date") or event.get(
         "created")) != last_run.get("last_fetch")] if events else events
-
-    for event in filtered_events:
-        event["source_log_type"] = event_type
+    demisto.debug(f"Filtered out {len(events)-len(filtered_events)} duplicate events.")
 
     latest_event = max(filter(None, (arg_to_datetime(event.get("created") or event.get("date"), DATE_FORMAT)
                                      for event in filtered_events))).strftime(DATE_FORMAT) if filtered_events else current_date
@@ -416,7 +416,7 @@ def get_events_for_type(
     return filtered_events, new_last_run
 
 
-def fetch_events(client: Any, max_fetch_alerts: int, max_fetch_audits: int, last_run: dict = {}) -> tuple[dict, list[dict]]:
+def fetch_events(client: Any, max_fetch_alerts: int, max_fetch_audits: int, last_run: dict = {}) -> tuple[list[dict], dict]:
     """
     Fetches events for multiple event types from the Jamf Protect API.
 
@@ -449,7 +449,7 @@ def fetch_events(client: Any, max_fetch_alerts: int, max_fetch_audits: int, last
     if "next_trigger_for" in next_run:
         next_run["nextTrigger"] = "0"
 
-    return next_run, events
+    return events, next_run
 
 
 def fetch_assets(client, assets_last_run={}, max_fetch=COMPUTER_MAX_FETCH):
@@ -470,7 +470,7 @@ def fetch_assets(client, assets_last_run={}, max_fetch=COMPUTER_MAX_FETCH):
     next_page = assets_last_run.get('next_page', '')
     snapshot_id = assets_last_run.get('snapshot_id', str(round(time.time() * 1000)))
 
-    fetched_assets, page_info = get_events(client, "computer", max_fetch, next_page)
+    assets, page_info = get_events(client, "computer", max_fetch, next_page)
 
     next_run = {
         'next_page': page_info.get("next"),
@@ -478,7 +478,7 @@ def fetch_assets(client, assets_last_run={}, max_fetch=COMPUTER_MAX_FETCH):
         'nextTrigger': "0"
     } if page_info.get("next") else {}
 
-    return fetched_assets, next_run, page_info.get("total", 0), snapshot_id
+    return assets, next_run, page_info.get("total", 0), snapshot_id
 
 
 def get_events_command(
@@ -510,13 +510,15 @@ def get_events_command(
     command_results: list[CommandResults] = []
 
     for event_type, max_fetch in event_types.items():
-        events, _ = get_events_for_type(
+        fetched_events, _ = get_events_for_type(
             client,
             last_run={},
             event_type=event_type,
             max_fetch=max_fetch,
-            start_date=start_date
+            start_date=start_date,
+            end_date=end_date
         )
+        events = fetched_events[:max_fetch]
         all_fetched_events.extend(events)
 
         if events:
@@ -611,21 +613,25 @@ def validate_start_and_end_dates(args):
     return start_date_str, end_date_str
 
 
-def add_time_field(events: list[dict[str, Any]]) -> list:
+def add_fields_to_events(events: list[dict[str, Any]], event_type: str) -> list:
     """
-    Adds a '_time' field to each event in the list of events.
+    Adds a '_time' field and a 'source_log_type' field to each event.
 
-    This function iterates over the list of events.
-     For each event, it adds a new field '_time' with the value of the 'date' or 'created' field of the event.
+    For events that are not of type 'computer', the '_time' field is set to 
+    the value of the 'date' or 'created' field (if present).
 
     Args:
-        events (List[Dict[str, Any]]): A list of dictionaries. Each dictionary represents an event.
+        events (List[Dict[str, Any]]): A list of dictionaries representing events.
+        event_type (str): The type of event to assign to 'source_log_type'.
 
     Returns:
-        list: The updated list of events. Each event now includes a '_time' field.
+        List[Dict[str, Any]]: The updated list of events with added fields.
     """
     for event in events:
-        event['_time'] = event.get('date') or event.get('created')
+        event["source_log_type"] = event_type
+        if event_type != "computer":
+            event['_time'] = event.get('date') or event.get('created')
+
     return events
 
 
@@ -667,13 +673,12 @@ def main() -> None:  # pragma: no cover
             last_run = demisto.getLastRun()
             demisto.debug(f'Starting fetch events with last run: {last_run}')
 
-            new_last_run, events = fetch_events(
+            events, new_last_run = fetch_events(
                 client=client,
                 max_fetch_alerts=max_fetch_alerts,
                 max_fetch_audits=max_fetch_audits,
                 last_run=last_run,
             )
-            add_time_field(events)
             demisto.debug(f'Sending {len(events)} events to XSIAM API')
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
