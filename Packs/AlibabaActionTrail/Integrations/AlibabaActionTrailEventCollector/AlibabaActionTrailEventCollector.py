@@ -179,7 +179,7 @@ def main():
     demisto_params['headers'] = headers
 
     request = IntegrationHTTPRequest(**demisto_params)
-    request.params = AlibabaParams.model_validate(params)  # type: ignore[attr-defined]
+    request.params = AlibabaParams.model_validate(params)  # type: ignore[attr-defined,assignment]
 
     options = IntegrationOptions.model_validate(demisto_params)  # type: ignore[attr-defined]
 
