@@ -14,7 +14,9 @@ Qualys VMDR uses basic authentication. Qualys user login credentials are needed 
 
 ### Fetch Vulnerabilities Behavior
 
-Selecting "Fetch by unique QIDs of assets" will fetch by unique QIDs relevant to the assets regardless of the vulnerability modified time. Otherwise, vulnerabilities modified in the last 90 days will be fetched.
+When configuring the integration instance, selecting the "Fetch by last modified date" option fetches all assets and vulnerabilities from the last 90 days.
+
+To fetch only vulnerabilities by unique QIDs relevant to the assets regardless of the vulnerability modified time, choose the "Fetch by unique QIDs of assets" option.
 
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/qualys-v2)

@@ -75,7 +75,7 @@ configuration:
   hidden:
   - xsoar
   - xpanse
-- additionalinfo: The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour.
+- additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours, and the minimum interval is 1 hour.
   defaultvalue: 1440
   display: Assets and Vulnerabilities Fetch Interval
   name: assetsFetchInterval

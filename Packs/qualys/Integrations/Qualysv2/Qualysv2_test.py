@@ -1114,19 +1114,36 @@ class TestClientClass:
             "show_qds_factors": 1
         }
 
-    def test_get_vulnerabilities(self, mocker):
-        since_datetime = "2024-12-12"
-        asset_qids = "A,B"
-
+    @pytest.mark.parametrize(
+        'since_datetime, detection_qids, expected_params',
+        [
+            pytest.param("2024-12-12", None, {"last_modified_after": "2024-12-12"}, id="Specified since datetime"),
+            pytest.param(None, "A,B", {"ids": "A,B"}, id="Specified detection QIDs"),
+        ]
+    )
+    def test_get_vulnerabilities(
+        self,
+        mocker: MockerFixture,
+        since_datetime: str | None, detection_qids: str | None,
+        expected_params: dict,
+    ) -> None:
+        """
+        Given:
+            - Either a since_datetime or detection_qids value.
+        When:
+            - Calling client.get_vulnerabilities.
+        Assert:
+            - Ensure correct request HTTP method, API endpoint, and params.
+        """
         client_http_request = mocker.patch.object(self.client, "_http_request")
-        self.client.get_vulnerabilities(since_datetime, asset_qids)
+        self.client.get_vulnerabilities(since_datetime, detection_qids)
 
         http_request_kwargs = client_http_request.call_args.kwargs
 
         assert client_http_request.called_once
         assert http_request_kwargs["method"] == "POST"
-        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, 'knowledge_base/vuln/?action=list')
-        assert http_request_kwargs["params"] == {'ids': asset_qids, 'last_modified_after': since_datetime}
+        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+        assert http_request_kwargs["params"] == expected_params
 
 
 class TestInputValidations:

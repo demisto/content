@@ -1,7 +1,7 @@
 import copy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from typing import Any
 import csv
 import io
@@ -2969,7 +2969,7 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
     return assets, next_page, set_new_limit
 
 
-def get_vulnerabilities(client: Client, since_datetime: str | None = None, detection_qids: Iterable | None = None) -> list:
+def get_vulnerabilities(client: Client, since_datetime: str | None = None, detection_qids: list | None = None) -> list:
     """ Get vulnerabilities list from qualys
     Args:
         client (Client): Qualys client
@@ -2986,7 +2986,7 @@ def get_vulnerabilities(client: Client, since_datetime: str | None = None, detec
 
     elif detection_qids is not None:
         vulnerabilities = []
-        for qids_batch in batch(iterable=list(detection_qids), batch_size=QIDS_BATCH_SIZE):
+        for qids_batch in batch(detection_qids, QIDS_BATCH_SIZE):
             host_list_detections = client.get_vulnerabilities(detection_qids=",".join(qids_batch))
             vulnerabilities_batch = handle_vulnerabilities_result(host_list_detections) or []
             vulnerabilities.extend(vulnerabilities_batch)
@@ -3047,12 +3047,12 @@ def set_last_run_with_new_limit(last_run, limit):
     return last_run
 
 
-def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qids: Iterable | None = None):
+def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qids: list | None = None):
     """ Fetches vulnerabilities
     Args:
         client (Client): Qualys client
         last_run (dict): The last run.
-        detection_qids (Iterable | None): List of Qualys host detection IDs.
+        detection_qids (list | None): List of Qualys host detection IDs.
     Return:
         vulnerabilities: vulnerabilities to push to xsiam
         last_run: The  new last run to save.
@@ -3060,12 +3060,14 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
     demisto.debug('Starting fetch for vulnerabilities')
 
     if detection_qids:
+        demisto.debug(f"Getting vulnerabilities for {len(detection_qids)} QIDs")
         vulnerabilities = get_vulnerabilities(client, detection_qids=detection_qids)
     else:
         since_datetime = (
             last_run.get('since_datetime')
             or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
         )
+        demisto.debug(f"Getting vulnerabilities modified after {since_datetime}")
         vulnerabilities = get_vulnerabilities(client, since_datetime=since_datetime)
 
     new_last_run = DEFAULT_LAST_ASSETS_RUN
@@ -3262,6 +3264,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         demisto.debug(f'Starting fetch for assets, {EXECUTION_START_TIME=}')
         assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
 
+        # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
         if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
             new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
             new_last_run['nextTrigger'] = '0'
@@ -3298,10 +3301,11 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     demisto.debug(f'Starting fetch for assets and vulnerabilities, {EXECUTION_START_TIME=}')
 
     assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
-    detection_qids = {asset.get('DETECTION', {}).get('QID') for asset in assets}
+    detection_qids: list = list({asset.get('DETECTION', {}).get('QID') for asset in assets})
     vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids=detection_qids)
     has_next_assets_page = bool(new_last_run.get('next_page'))
 
+    # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
     if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
         new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
         new_last_run['nextTrigger'] = '0'
@@ -3352,7 +3356,7 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
-    fetch_vulnerabilities_behavior = params.get("fetch_vulnerabilities_behavior")
+    fetch_vulnerabilities_behavior = params["fetch_vulnerabilities_behavior"]
 
     commands_methods: dict[str, dict[str, Callable]] = {
         # *** Commands with unparsed response as output ***
@@ -3649,6 +3653,7 @@ def main():  # pragma: no cover
         elif command == 'fetch-assets':
             last_run = demisto.getAssetsLastRun()
 
+            demisto.debug(f"Fetch vulnerabilites behavior is set to: {fetch_vulnerabilities_behavior}")
             if fetch_vulnerabilities_behavior == "Fetch by unique QIDs of assets":
                 fetch_assets_and_vulnerabilities_by_qids(client, last_run)
             else:
@@ -3660,7 +3665,7 @@ def main():  # pragma: no cover
             )
 
         else:
-            raise NotImplementedError(f'Unknown command {command}')
+            raise NotImplementedError(f"Unknown command {command}")
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
