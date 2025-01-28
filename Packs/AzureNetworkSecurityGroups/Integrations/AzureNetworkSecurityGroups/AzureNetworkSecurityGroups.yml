@@ -724,7 +724,7 @@ script:
       type: String
     - contextPath: AzureNSG.SecurityGroup.properties.securityRules
       description: A collection of security rules of the network security group.
-      type: String
+      type: List
     arguments:
     - description: "The security group name."
       name: security_group_name
@@ -872,7 +872,7 @@ script:
       default: false
       type: String
       isArray: false
-      required: false
+      required: true
     - description: "The private ip"
       name: private_ip
       default: false
@@ -896,7 +896,7 @@ script:
       default: false
       type: String
       isArray: false
-      required: false
+      required: true
     - description: "The Resource location."
       name: location
       default: false

@@ -683,10 +683,7 @@ def azure_nsg_security_group_create(client: AzureNSGClient, params: Dict, args: 
     response = client.create_or_update_security_group(subscription_id=subscription_id, resource_group_name=resource_group_name,
                                                       security_group_name=security_group_name, location=location)
     
-    data_from_response = response.get('value', [])
-    for data in data_from_response:
-        data = extract_inner_dict(data, ['properties'], 'securityRules')
-    
+    data_from_response = extract_inner_dict(response, ['properties'], 'securityRules')
     readable_output = tableToMarkdown('Security Group List',
                                       data_from_response,
                                       ['name', 'etag', 'location', 'properties.securityRules',],
@@ -723,16 +720,16 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
     for data in data_from_response:
         data = extract_inner_dict(data, ['properties'])
         data = extract_inner_dict(data, ['properties.dnsSettings'])
-        data = extract_list(data, 'ipConfigurations', 'name')
-        data = extract_list(data, 'ipConfigurations', 'id')
-        data = extract_list(data, 'ipConfigurations', 'properties')
+        data = extract_list(data, 'properties.ipConfigurations', 'name')
+        data = extract_list(data, 'properties.ipConfigurations', 'id')
+        data = extract_list(data, 'properties.ipConfigurations', 'properties')
         vm = data.get('properties.virtualMachine')
         if vm:
             data['properties.virtualMachine.id'] = vm.get('id')
         properties = data.get('properties.ipConfigurations.properties')
-        if properties:
-            data['properties.ipConfigurations.properties.privateIPAddress'] = properties.get('privateIPAddress')
-            public_ip = properties.get('publicIPAddress')
+        for prop in properties:
+            data['properties.ipConfigurations.properties.privateIPAddress'] = prop.get('privateIPAddress')
+            public_ip = prop.get('publicIPAddress')
             if public_ip:
                 data['properties.ipConfigurations.properties.publicIPAddress.id'] = public_ip.get('id')
         
@@ -751,7 +748,7 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
     if not all_results:
         readable_output = readable_output[:limit]
     return CommandResults(
-        outputs_prefix='AzureNSG.PublicIPAdress',
+        outputs_prefix='AzureNSG.NetworkInterfaces',
         outputs_key_field='id',
         outputs=data_from_response,
         raw_response=response,
@@ -770,27 +767,55 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
         Command results with raw response, outputs and readable outputs.
     """
     nic_name = args.pop('nic_name')
+    nsg_name = args.get('nsg_name')
+    private_ip = args.get('private_ip')
+    vnet_name = args.get('vnet_name')
+    subnet_name = args.get('subnet_name')
+    public_ip_address_name = args.get('public_ip_address_name')
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     
+    prefix = f'/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/'
+    subnet_id = f'{prefix}virtualNetworks/{vnet_name}/subnets/{subnet_name}'
+    data = {
+    'location': args.get('location'),
+    'properties': {
+        'ipConfigurations': [
+            {
+                'name': args.get('ip_config_name'),
+                'properties': {
+                    'subnet': {
+                        'id': subnet_id
+                    }
+                }
+            }
+        ]
+    }
+}
+    
+    if nsg_name:
+        data['properties']['networkSecurityGroup'] = {'id': f'{prefix}/networkSecurityGroups/{nsg_name}'}
+    if private_ip:
+        data['properties']['ipConfigurations'][0]['properties']['privateIPAddress'] = private_ip
+    if public_ip_address_name:
+        data['properties']['ipConfigurations'][0]['properties']['publicIPAddress'] = {'name': public_ip_address_name}
+    
     response = client.create_or_update_network_interface(subscription_id=subscription_id, resource_group_name=resource_group_name,
-                                                        nic_name=nic_name, data=args)
-    data_from_response = response.get('value', [])
-    for data in data_from_response:
-        data = extract_inner_dict(data, ['properties'])
-        data = extract_list(data, 'ipConfigurations', 'name')
-        data = extract_list(data, 'ipConfigurations', 'properties')
-        properties = data.get('properties.ipConfigurations.properties')
-        if properties:
-            data['properties.ipConfigurations.properties.privateIPAddress'] = properties.get('privateIPAddress')
-            public_ip = properties.get('publicIPAddress')
-            if public_ip:
-                data['properties.ipConfigurations.properties.publicIPAddress.id'] = public_ip.get('id')
-            subnet = properties.get('subnet')
-            if subnet:
-                data['properties.ipConfigurations.properties.subnet.id'] = subnet.get('id')
+                                                        nic_name=nic_name, data=data)
+    data_from_response = extract_inner_dict(response, ['properties'])
+    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations', 'name')
+    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations', 'properties')
+    properties = data_from_response.get('properties.ipConfigurations.properties')
+    for prop in properties:
+        data_from_response['properties.ipConfigurations.properties.privateIPAddress'] = prop.get('privateIPAddress')
+        public_ip = prop.get('publicIPAddress')
+        if public_ip:
+            data_from_response['properties.ipConfigurations.properties.publicIPAddress.id'] = public_ip.get('id')
+        subnet = prop.get('subnet')
+        if subnet:
+            data_from_response['properties.ipConfigurations.properties.subnet.id'] = subnet.get('id')
         
     readable_output = tableToMarkdown('Public IP Addresses List',
                                       data_from_response,
@@ -802,14 +827,13 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
                                        ],
                                       removeNull=True, headerTransform=string_to_table_header)
     return CommandResults(
-        outputs_prefix='AzureNSG.PublicIPAdress',
+        outputs_prefix='AzureNSG.NetworkInterface',
         outputs_key_field='id',
         outputs=data_from_response,
         raw_response=response,
         readable_output=readable_output,
     )
 
-#TODO: add tests
 @logger
 def test_connection(client: AzureNSGClient, params: dict) -> str:
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
