@@ -133,9 +133,10 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     Returns:
         bool: True if the interval has passed, False otherwise
     """
-    is_interval_passed =  fetch_start_time + timedelta(seconds=fetch_interval) < datetime.now().astimezone(timezone.utc)
+    is_interval_passed = fetch_start_time + timedelta(seconds=fetch_interval) < datetime.now().astimezone(timezone.utc)
     demisto.debug(f"returning {is_interval_passed=}")
     return is_interval_passed
+
 
 def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
     """
