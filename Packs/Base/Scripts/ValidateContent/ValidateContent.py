@@ -1,9 +1,6 @@
 import shutil
-import traceback
-import types
-from datetime import datetime, timedelta
 
-import requests
+from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 from ruamel.yaml import YAML
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
@@ -19,9 +16,7 @@ from contextlib import contextmanager, redirect_stderr
 import zipfile
 import git
 import io
-import os
-import re
-import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -107,7 +102,7 @@ class ValidationResult:
 
 
 @contextmanager
-def ConstantTemporaryDirectory(path):
+def ConstantTemporaryDirectory(path: str):
     """ Creates a temporary directory with a constant name. """
 
     def cleanup():
@@ -136,7 +131,7 @@ def setup_proxy(_args: dict):
         del os.environ['https_proxy']
 
 
-def strip_ansi_codes(text):
+def strip_ansi_codes(text: str):
     ansi_escape = re.compile(r'''
         \x1B  # ESC
         \[    # [
@@ -255,7 +250,7 @@ def content_item_to_package_format(
                 os.remove(content_item_file_path)
 
 
-def convert_contribution_to_pack(contrib_converter):
+def convert_contribution_to_pack(contrib_converter: ContributionConverter):
     """
         Creates or updates a pack in the Content repo from the contents of a contributed zip file.
     Args:
@@ -320,11 +315,16 @@ def prepare_single_content_item_for_validation(file_name: str, data: bytes, pack
     pack_name = 'TmpPack'
     pack_path = os.path.join(packs_path, pack_name)
     demisto.debug(f'Pack name: {pack_name}')
-    # create pack_metadata.json file in TmpPack
+
     contrib_converter = ContributionConverter(
         name=pack_name, pack_dir_name=pack_name, contribution=pack_name
     )
+    # create pack_metadata.json file in TmpPack
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
+    # Create base files.
+    contrib_converter.create_pack_base_files = _create_pack_base_files
+    contrib_converter.create_pack_base_files(contrib_converter)
+
     # Determine entity type by filename prefix.
     file_name_prefix = '-'.join(file_name.split('-')[:-1])
     containing_dir = os.path.join(pack_path, ENTITY_TYPE_TO_DIR.get(file_name_prefix, 'Integrations'))
@@ -755,7 +755,7 @@ def setup_content_dir(file_name: str, file_contents: bytes | str, entry_id: str,
 
 
 def setup_envvars():
-    os.environ['DEMISTO_SDK_IGNORE_CONTENT_WARNING'] = "false"
+    os.environ['DEMISTO_SDK_IGNORE_CONTENT_WARNING'] = 'false'
     os.environ['DEMISTO_SDK_OFFLINE_ENV'] = 'False'
     os.environ['ARTIFACTS_FOLDER'] = '/tmp/artifacts'
     os.environ['DEMISTO_SDK_LOG_NO_COLORS'] = 'true'
