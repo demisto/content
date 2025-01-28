@@ -112,83 +112,6 @@ ITEMS_RESULTS_HEADERS = [
 LEGACY_NAME = argToBoolean(demisto.params().get('legacy_name', False))
 UTF_8 = 'utf-8'
 
-""" Classes """
-
-
-class ExpandGroup(EWSService):
-    """
-    EWSAccountService class used for expanding groups
-    """
-    SERVICE_NAME = "ExpandDL"
-    element_container_name = f"{{{MNS}}}DLExpansion"
-
-    @staticmethod
-    def parse_element(element):
-        return {
-            MAILBOX: element.find(f"{{{TNS}}}EmailAddress").text
-            if element.find(f"{{{TNS}}}EmailAddress") is not None
-            else None,
-            "displayName": element.find(f"{{{TNS}}}Name").text
-            if element.find(f"{{{TNS}}}Name") is not None
-            else None,
-            "mailboxType": element.find(f"{{{TNS}}}MailboxType").text
-            if element.find(f"{{{TNS}}}MailboxType") is not None
-            else None,
-        }
-
-    def call(self, email_address, recursive_expansion=False):  # pragma: no cover
-        try:
-            if recursive_expansion == "True":
-                group_members: dict = {}
-                self.expand_group_recursive(email_address, group_members)
-                return list(group_members.values())
-            else:
-                return self.expand_group(email_address)
-        except ErrorNameResolutionNoResults:
-            demisto.results("No results were found.")
-            sys.exit()
-
-    def get_payload(self, email_address):
-        element = create_element(f"m:{self.SERVICE_NAME}")
-        mailbox_element = create_element("m:Mailbox")
-        add_xml_child(mailbox_element, "t:EmailAddress", email_address)
-        element.append(mailbox_element)
-        return element
-
-    def expand_group(self, email_address):
-        """
-        Expand given group
-        :param email_address: email address of the group to expand
-        :return: list dict with parsed expanded group data
-        """
-        elements = self._get_elements(payload=self.get_payload(email_address))
-        return [self.parse_element(x) for x in elements]
-
-    def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=None):  # pragma: no cover
-        """
-        Expand group recursively
-        :param email_address: email address of the group to expand
-        :param non_dl_emails: non distribution only emails
-        :param dl_emails: (Optional) distribution only emails
-        :return: Set of dl emails and non dl emails (returned via reference)
-        """
-        if dl_emails is None:
-            dl_emails = set()
-        if email_address in non_dl_emails or email_address in dl_emails:
-            return
-        dl_emails.add(email_address)
-
-        for member in self.expand_group(email_address):
-            if (
-                member["mailboxType"] == "PublicDL"
-                or member["mailboxType"] == "PrivateDL"
-            ):
-                self.expand_group_recursive(member.get("mailbox"), non_dl_emails, dl_emails)
-            else:
-                if member["mailbox"] not in non_dl_emails:
-                    non_dl_emails[member["mailbox"]] = member
-
-
 # If you are modifying this probably also need to modify in other files
 def exchangelib_cleanup():  # pragma: no cover
     key_protocols = list(exchangelib.protocol.CachingProtocol._protocol_cache.items())
@@ -664,23 +587,6 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
 """ Command Functions """
 
 
-def get_expanded_group(client: EWSClient, email_address, recursive_expansion=False):
-    """
-    Retrieve expanded group command
-    :param client: EWS Client
-    :param email_address: Email address of the group to expand
-    :param (Optional) recursive_expansion: Whether to enable recursive expansion. Default is "False".
-    :return: Expanded groups output tuple
-    """
-    group_members = ExpandGroup(protocol=client.get_protocol()).call(
-        email_address, recursive_expansion
-    )
-    group_details = {"name": email_address, "members": group_members}
-    output = {"EWS.ExpandGroup": group_details}
-    readable_output = tableToMarkdown("Group Members", group_members)
-    return readable_output, output, group_details
-
-
 def fetch_attachments_for_message(
     client: EWSClient, item_id, target_mailbox=None, attachment_ids=None, identifiers_filter=""
 ):  # pragma: no cover
@@ -979,90 +885,6 @@ def get_items(client: EWSClient, item_ids, target_mailbox=None):  # pragma: no c
         "Email": [email_ec(item) for item in items],
     }
     return readable_output, output, items_as_incidents
-
-
-def get_folder(client: EWSClient, folder_path, target_mailbox=None, is_public=None):  # pragma: no cover
-    """
-    Retrieve a folder from the target mailbox or client mailbox
-    :param client: EWS Client
-    :param folder_path: folder path to retrieve
-    :param (Optional) target_mailbox: target mailbox
-    :param (Optional) is_public: is the folder public
-    :return:
-    """
-    account = client.get_account(target_mailbox)
-    is_public = client.is_default_folder(folder_path, is_public)
-    folder = folder_to_context_entry(
-        client.get_folder_by_path(folder_path, account=account, is_public=is_public)
-    )
-    readable_output = tableToMarkdown(f"Folder {folder_path}", folder)
-    output = {CONTEXT_UPDATE_FOLDER: folder}
-    return readable_output, output, folder
-
-
-def folder_to_context_entry(f):
-    """
-    Create a context entry from a folder response
-    :param f: folder response
-    :return: dict context entry
-    """
-    try:
-        f_entry = {
-            "name": f.name,
-            "totalCount": f.total_count,
-            "id": f.id,
-            "childrenFolderCount": f.child_folder_count,
-            "changeKey": f.changekey,
-        }
-
-        if "unread_count" in [x.name for x in Folder.FIELDS]:
-            f_entry["unreadCount"] = f.unread_count
-        return f_entry
-    except AttributeError:
-        if isinstance(f, dict):
-            return {
-                "name": f.get("name"),
-                "totalCount": f.get("total_count"),
-                "id": f.get("id"),
-                "childrenFolderCount": f.get("child_folder_count"),
-                "changeKey": f.get("changekey"),
-                "unreadCount": f.get("unread_count"),
-            }
-
-
-def mark_item_as_read(
-    client: EWSClient, item_ids, operation="read", target_mailbox=None
-):  # pragma: no cover
-    """
-    Marks item as read
-    :param client: EWS Client
-    :param item_ids: items ids to mark as read
-    :param (Optional) operation: operation to execute
-    :param (Optional) target_mailbox: target mailbox
-    :return: Output tuple
-    """
-    marked_items = []
-    item_ids = argToList(item_ids)
-    items = client.get_items_from_mailbox(target_mailbox, item_ids)
-    items = [x for x in items if isinstance(x, Message)]
-
-    for item in items:
-        item.is_read = operation == "read"
-        item.save()
-
-        marked_items.append(
-            {
-                ITEM_ID: item.id,
-                MESSAGE_ID: item.message_id,
-                ACTION: f"marked-as-{operation}",
-            }
-        )
-
-    readable_output = tableToMarkdown(
-        f"Marked items ({operation} marked operation)", marked_items
-    )
-    output = {CONTEXT_UPDATE_EWS_ITEM: marked_items}
-    return readable_output, output, marked_items
 
 
 def collect_manual_attachments(manualAttachObj):  # pragma: no cover

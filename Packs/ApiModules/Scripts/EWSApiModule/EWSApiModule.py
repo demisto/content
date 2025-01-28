@@ -25,13 +25,14 @@ from exchangelib.errors import (
     ErrorItemNotFound,
     AutoDiscoverFailed,
     ResponseMessageError,
+    ErrorNameResolutionNoResults,
 )
 from exchangelib.items import Item, Message
 from exchangelib.protocol import BaseProtocol, FaultTolerance, Protocol
 from exchangelib.folders.base import BaseFolder
 from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCredentials
 from exchangelib.services.common import EWSService, EWSAccountService
-from exchangelib.util import MNS, TNS, create_element
+from exchangelib.util import MNS, TNS, create_element, add_xml_child
 from oauthlib.oauth2 import OAuth2Token
 from exchangelib.version import (
     EXCHANGE_O365,
@@ -69,10 +70,12 @@ NEW_ITEM_ID = 'newItemId'
 MESSAGE_ID = 'messageId'
 ITEM_ID = 'itemId'
 TARGET_MAILBOX = 'receivedBy'
+FOLDER_ID = 'id'
 
 """ Context Paths """
 CONTEXT_UPDATE_ITEM_ATTACHMENT = f'.ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})'
 CONTEXT_UPDATE_FILE_ATTACHMENT = f'.FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})'
+CONTEXT_UPDATE_FOLDER = f'EWS.Folders(val.{FOLDER_ID} == obj.{FOLDER_ID})'
 CONTEXT_UPDATE_EWS_ITEM = f'EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || ' \
     f'(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))' \
     f' && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})'
@@ -203,6 +206,82 @@ class MarkAsJunk(EWSAccountService):
         junk.append(items_list)
 
         return junk
+
+
+class ExpandGroup(EWSService):
+    """
+    EWSAccountService class used for expanding groups
+    """
+    SERVICE_NAME = 'ExpandDL'
+    element_container_name = f'{{{MNS}}}DLExpansion'
+
+    @staticmethod
+    def parse_element(element):
+        return {
+            MAILBOX: element.find(f'{{{TNS}}}EmailAddress').text
+            if element.find(f'{{{TNS}}}EmailAddress') is not None
+            else None,
+            'displayName': element.find(f'{{{TNS}}}Name').text
+            if element.find(f'{{{TNS}}}Name') is not None
+            else None,
+            'mailboxType': element.find(f'{{{TNS}}}MailboxType').text
+            if element.find(f'{{{TNS}}}MailboxType') is not None
+            else None,
+        }
+
+    def call(self, email_address, recursive_expansion=False):
+        if self.protocol.version.build < EXCHANGE_2010:
+            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2010 servers and later')
+        try:
+            if recursive_expansion == 'True':
+                group_members: dict = {}
+                self.expand_group_recursive(email_address, group_members)
+                return list(group_members.values())
+            else:
+                return self.expand_group(email_address)
+
+        except ErrorNameResolutionNoResults:
+            demisto.results('No results were found.')
+            sys.exit()
+
+    def get_payload(self, email_address):
+        element = create_element(f'm:{self.SERVICE_NAME}')
+        mailbox_element = create_element('m:Mailbox')
+        add_xml_child(mailbox_element, 't:EmailAddress', email_address)
+        element.append(mailbox_element)
+        return element
+
+    def expand_group(self, email_address):
+        """
+        Expand given group
+        :param email_address: email address of the group to expand
+        :return: list dict with parsed expanded group data
+        """
+        elements = self._get_elements(payload=self.get_payload(email_address))
+        return [self.parse_element(x) for x in elements]
+
+    def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=None):
+        """
+        Expand group recursively
+        :param email_address: email address of the group to expand
+        :param non_dl_emails: non distribution only emails
+        :param dl_emails: (Optional) distribution only emails
+        :return: Set of dl emails and non dl emails (returned via reference)
+        """
+        if dl_emails is None:
+            dl_emails = set()
+
+        if email_address in non_dl_emails or email_address in dl_emails:
+            return
+
+        dl_emails.add(email_address)
+
+        for member in self.expand_group(email_address):
+            if (member['mailboxType'] == 'PublicDL' or member['mailboxType'] == 'PrivateDL'):
+                self.expand_group_recursive(member.get('mailbox'), non_dl_emails, dl_emails)
+            else:
+                if member['mailbox'] not in non_dl_emails:
+                    non_dl_emails[member['mailbox']] = member
 
 
 class EWSClient:
@@ -1116,8 +1195,8 @@ def mark_item_as_junk(client: EWSClient, item_id, move_items: str, target_mailbo
     :param client: EWS Client
     :param item_id: item ids to mark as junk
     :param move_items: 'yes' or 'no' - to move or not to move to trash
-    :param (Optional) target_mailbox: target mailbox
-    :return:
+    :param (Optional) target_mailbox: target mailbox the item is in
+    :return: Results object
     """
     account = client.get_account(target_mailbox)
     move_to_trash: bool = (move_items.lower() == 'yes')
@@ -1131,4 +1210,101 @@ def mark_item_as_junk(client: EWSClient, item_id, move_items: str, target_mailbo
         raise Exception(f'Failed mark-item-as-junk with error: {ews_result}')
 
     return get_entry_for_object('Mark item as junk', CONTEXT_UPDATE_EWS_ITEM, mark_as_junk_result)
+
+
+def folder_to_context_entry(f) -> dict:
+    """
+    Create a context entry from a folder response
+    :param f: folder response
+    :return: dict context entry
+    """
+    try:
+        f_entry = {
+            'name': f.name,
+            'totalCount': f.total_count,
+            'id': f.id,
+            'childrenFolderCount': f.child_folder_count,
+            'changeKey': f.changekey,
+        }
+
+        if 'unread_count' in [x.name for x in Folder.FIELDS]:
+            f_entry['unreadCount'] = f.unread_count
+        return f_entry
+
+    except AttributeError:
+        if isinstance(f, dict):
+            return {
+                'name': f.get('name'),
+                'totalCount': f.get('total_count'),
+                'id': f.get('id'),
+                'childrenFolderCount': f.get('child_folder_count'),
+                'changeKey': f.get('changekey'),
+                'unreadCount': f.get('unread_count'),
+            }
+
+    return {}
+
+
+def get_folder(client: EWSClient, folder_path: str, target_mailbox:
+               Optional[str]=None, is_public: Optional[bool]=None):
+    """
+    Retrieve a folder from the target mailbox or client mailbox
+    :param client: EWS Client
+    :param folder_path: folder path to retrieve
+    :param (Optional) target_mailbox: target mailbox to get the folder from
+    :param (Optional) is_public: is the folder public
+    :return: Results object
+    """
+    account = client.get_account(target_mailbox)
+    is_public = client.is_default_folder(folder_path, is_public)
+    folder = folder_to_context_entry(
+        client.get_folder_by_path(folder_path, account=account, is_public=is_public)
+    )
+
+    return get_entry_for_object(f'Folder {folder_path}', CONTEXT_UPDATE_FOLDER, folder)
+
+
+def get_expanded_group(client: EWSClient, email_address, recursive_expansion: bool=False):
+    """
+    Retrieve expanded group command
+    :param client: EWS Client
+    :param email_address: Email address of the group to expand
+    :param (Optional) recursive_expansion: Whether to enable recursive expansion. Default is 'False'.
+    :return: Results object containing expanded groups
+    """
+    group_members = ExpandGroup(protocol=client.get_protocol()).call(email_address, recursive_expansion)
+    group_details = {
+        'name': email_address,
+        'members': group_members
+        }
+    entry_for_object = get_entry_for_object('Expanded group', 'EWS.ExpandGroup', group_details)
+    entry_for_object['HumanReadable'] = tableToMarkdown('Group Members', group_members)
+    return entry_for_object
+
+
+def mark_item_as_read(client: EWSClient, item_ids, operation: str='read', target_mailbox: Optional[str]=None):
+    """
+    Marks item as read
+    :param client: EWS Client
+    :param item_ids: items ids to mark as read
+    :param (Optional) operation: operation to execute
+    :param (Optional) target_mailbox: target mailbox
+    :return: results object
+    """
+    marked_items = []
+    item_ids = argToList(item_ids)
+    items = client.get_items_from_mailbox(target_mailbox, item_ids)
+    items = [x for x in items if isinstance(x, Message)]
+
+    for item in items:
+        item.is_read = (operation == 'read')
+        item.save()
+
+        marked_items.append({
+            ITEM_ID: item.id,
+            MESSAGE_ID: item.message_id,
+            ACTION: f'marked-as-{operation}',
+        })
+
+    return get_entry_for_object(f'Marked items ({operation} marked operation)', CONTEXT_UPDATE_EWS_ITEM, marked_items)
 

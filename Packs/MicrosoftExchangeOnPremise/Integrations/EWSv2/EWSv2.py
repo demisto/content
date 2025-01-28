@@ -384,69 +384,6 @@ class SearchMailboxes(EWSService):
         return element
 
 
-class ExpandGroup(EWSService):
-    SERVICE_NAME = 'ExpandDL'
-    element_container_name = f'{{{MNS}}}DLExpansion'
-
-    @staticmethod
-    def parse_element(element):  # pragma: no cover
-        return {
-            MAILBOX: element.find(f"{{{TNS}}}EmailAddress").text if element.find(
-                f"{{{TNS}}}EmailAddress") is not None else None,
-            'displayName': element.find(f"{{{TNS}}}Name").text if element.find(f"{{{TNS}}}Name") is not None else None,
-            'mailboxType': element.find(f"{{{TNS}}}MailboxType").text if element.find(
-                f"{{{TNS}}}MailboxType") is not None else None
-        }
-
-    def call(self, email_address, recursive_expansion=False):  # pragma: no cover
-        if self.protocol.version.build < EXCHANGE_2010:
-            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2010 servers and later')
-        try:
-            if recursive_expansion == 'True':
-                group_members = {}  # type: dict
-                self.expand_group_recursive(email_address, group_members)
-                return list(group_members.values())
-            else:
-                return self.expand_group(email_address)
-        except ErrorNameResolutionNoResults:
-            demisto.results("No results were found.")
-            sys.exit()
-
-    def get_payload(self, email_address):  # pragma: no cover
-        element = create_element(f'm:{self.SERVICE_NAME}', )
-        mailbox_element = create_element('m:Mailbox')
-        add_xml_child(mailbox_element, 't:EmailAddress', email_address)
-        element.append(mailbox_element)
-        return element
-
-    def expand_group(self, email_address):  # pragma: no cover
-        elements = self._get_elements(payload=self.get_payload(email_address))
-        return [self.parse_element(x) for x in elements]
-
-    def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=set()):  # pragma: no cover
-        if email_address in non_dl_emails or email_address in dl_emails:
-            return
-        dl_emails.add(email_address)
-
-        for member in self.expand_group(email_address):
-            if member['mailboxType'] == 'PublicDL' or member['mailboxType'] == 'PrivateDL':
-                self.expand_group_recursive(member['mailbox'], non_dl_emails, dl_emails)
-            else:
-                if member['mailbox'] not in non_dl_emails:
-                    non_dl_emails[member['mailbox']] = member
-
-
-def get_expanded_group(client: EWSClient, email_address, recursive_expansion=False):  # pragma: no cover
-    group_members = ExpandGroup(protocol=client.get_protocol()).call(email_address, recursive_expansion)
-    group_details = {
-        "name": email_address,
-        "members": group_members
-    }
-    entry_for_object = get_entry_for_object("Expanded group", 'EWS.ExpandGroup', group_details)
-    entry_for_object['HumanReadable'] = tableToMarkdown('Group Members', group_members)
-    return entry_for_object
-
-
 def search_mailboxes(client: EWSClient, filter, limit=100, mailbox_search_scope=None, email_addresses=None):  # pragma: no cover
     """
     Search mailboxes for items matching the given filter.
@@ -1328,27 +1265,6 @@ def get_items(client: EWSClient, item_ids, target_mailbox=None):  # pragma: no c
     }
 
 
-def get_folder(client: EWSClient, folder_path, target_mailbox=None, is_public=None):  # pragma: no cover
-    account = client.get_account(target_mailbox or client.account_email)
-    is_public = client.is_default_folder(folder_path, is_public)
-    folder = folder_to_context_entry(client.get_folder_by_path(folder_path, account, is_public))
-    return get_entry_for_object(f"Folder {folder_path}", CONTEXT_UPDATE_FOLDER, folder)
-
-
-def folder_to_context_entry(f):  # pragma: no cover
-    f_entry = {
-        'name': f.name,
-        'totalCount': f.total_count,
-        'id': f.id,
-        'childrenFolderCount': f.child_folder_count,
-        'changeKey': f.changekey
-    }
-
-    if 'unread_count' in [x.name for x in Folder.FIELDS]:
-        f_entry['unreadCount'] = f.unread_count
-    return f_entry
-
-
 def get_autodiscovery_config():  # pragma: no cover
     config_dict = demisto.getIntegrationContext()
     return {
@@ -1393,28 +1309,6 @@ def resolve_name_command(client: EWSClient, args):  # pragma: no cover
                                 remove_empty_elements(output),  # noqa: F405
                                 headers=['primary_email_address', 'name', 'mailbox_type', 'routing_type'],
                                 hr_header_changes={'email_address': 'primary_email_address'})
-
-
-def mark_item_as_read(client: EWSClient, item_ids, operation='read', target_mailbox=None):  # pragma: no cover
-    marked_items = []
-    account = client.get_account(target_mailbox or client.account_email)
-    item_ids = argToList(item_ids)
-    items = client.get_items_from_mailbox(account, item_ids)
-    items = [x for x in items if isinstance(x, Message)]
-
-    for item in items:
-        item.is_read = (operation == 'read')
-        item.save()
-
-        marked_items.append({
-            ITEM_ID: item.id,
-            MESSAGE_ID: item.message_id,
-            ACTION: f'marked-as-{operation}'
-        })
-
-    return get_entry_for_object(f'Marked items ({operation} marked operation)',
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                marked_items)
 
 
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma: no cover
