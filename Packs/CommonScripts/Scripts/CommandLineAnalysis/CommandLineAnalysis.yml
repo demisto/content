@@ -82,7 +82,7 @@ outputs:
   description: Extracts indicators of compromise (IOCs) from the decoded Base64 command line.
 - contextPath: CommandLineAnalysis.analysis.original.macOS_suspicious_commands
   description: Checks for suspicious macOS patterns in the decoded Base64 command line.
-- contextPath: CommandLineAnalysis.double_encoding_detected
+- contextPath: CommandLineAnalysis.Double Encoding Detected
   description: Identifies nested Base64 strings.
 scripttarget: 0
 subtype: python3

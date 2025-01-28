@@ -662,9 +662,9 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     scores["decoded"], findings["decoded"] = process_context(decoded_results)
 
     # Check global combinations (like double encoding globally)
-    if results.get("double_encoding_detected"):
+    if results.get("Double Encoding Detected"):
         scores["decoded"] += weights["double_encoding"]
-        findings["decoded"].append("double_encoding_detected")
+        findings["decoded"].append("Double Encoding Detected")
 
     # Calculate total raw score
     total_raw_score = scores["original"] + scores["decoded"]
@@ -760,7 +760,7 @@ def analyze_command_line(command_line: str, custom_patterns=None) -> Dict[str, A
             "amsi_techniques": check_amsi(decoded_command_line),
             "indicators": extract_indicators(decoded_command_line)
         }
-        results["double_encoding_detected"] = double_encoded
+        results["Double Encoding Detected"] = double_encoded
 
     # Calculate the score
     score_details = calculate_score(results)
