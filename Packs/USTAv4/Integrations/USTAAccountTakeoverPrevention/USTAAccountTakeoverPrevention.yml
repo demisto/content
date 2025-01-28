@@ -23,6 +23,7 @@ configuration:
   name: api_key
   required: true
   type: 4
+  section: Connect
 - display: Fetch incidents by status
   defaultvalue: All
   name: status
