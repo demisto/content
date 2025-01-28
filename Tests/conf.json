@@ -2320,8 +2320,7 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "MSG-ediscovery-tpb",
-            "instance_names": "ms_graph_security_ediscovery",
-            "is_mockable": false
+            "instance_names": "ms_graph_security_ediscovery"
         },
         {
             "integrations": "Microsoft Graph",
