@@ -28,6 +28,8 @@ from exchangelib.items import Item, Message
 from exchangelib.protocol import BaseProtocol, FaultTolerance, Protocol
 from exchangelib.folders.base import BaseFolder
 from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCredentials
+from exchangelib.services.common import EWSService
+from exchangelib.util import MNS, TNS, create_element
 from oauthlib.oauth2 import OAuth2Token
 from exchangelib.version import (
     EXCHANGE_O365,
@@ -57,6 +59,8 @@ SUPPORTED_ON_PREM_BUILDS = {
 """ Context Keys """
 ATTACHMENT_ID = 'attachmentId'
 ACTION = 'action'
+MAILBOX = "mailbox"
+MAILBOX_ID = "mailboxId"
 
 """ Context Paths """
 CONTEXT_UPDATE_ITEM_ATTACHMENT = f'.ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})'
@@ -129,6 +133,39 @@ class InsecureProxyAdapter(InsecureSSLAdapter):
     def send(self, *args, **kwargs):
         kwargs['proxies'] = handle_proxy()
         return super().send(*args, **kwargs)
+
+
+class GetSearchableMailboxes(EWSService):
+    """
+    EWSAccountService class used for getting Searchable Mailboxes
+    """
+    SERVICE_NAME = 'GetSearchableMailboxes'
+    element_container_name = f'{{{MNS}}}SearchableMailboxes'
+
+    @staticmethod
+    def parse_element(element):
+        return {
+            MAILBOX: element.find(f'{{{TNS}}}PrimarySmtpAddress').text
+            if element.find(f'{{{TNS}}}PrimarySmtpAddress') is not None else None,
+            MAILBOX_ID: element.find(f'{{{TNS}}}ReferenceId').text
+            if element.find(f'{{{TNS}}}ReferenceId') is not None else None,
+            'displayName': element.find(f'{{{TNS}}}DisplayName').text
+            if element.find(f'{{{TNS}}}DisplayName') is not None else None,
+            'isExternal': element.find(f'{{{TNS}}}IsExternalMailbox').text
+            if element.find(f'{{{TNS}}}IsExternalMailbox') is not None else None,
+            'externalEmailAddress': element.find(f'{{{TNS}}}ExternalEmailAddress').text
+            if element.find(f'{{{TNS}}}ExternalEmailAddress') is not None else None,
+        }
+
+    def call(self):
+        if self.protocol.version.build < EXCHANGE_2013:
+            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2013 servers and later')
+        elements = self._get_elements(payload=self.get_payload())
+        return [ self.parse_element(e) for e in elements]
+
+    def get_payload(self):
+        element = create_element(f'm:{self.SERVICE_NAME}')
+        return element
 
 
 class EWSClient:
@@ -835,3 +872,14 @@ def delete_attachments_for_message(client: EWSClient, item_id, target_mailbox=No
         entries.append(entry)
 
     return entries
+
+
+def get_searchable_mailboxes(client: EWSClient):
+    """
+    Retrieve searchable mailboxes command
+    :param client: EWS Client
+    :return: Context entry containing searchable mailboxes
+    """
+    searchable_mailboxes = GetSearchableMailboxes(protocol=client.get_protocol()).call()
+    return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes',
+                                searchable_mailboxes, ['displayName', 'mailbox'])

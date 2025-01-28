@@ -346,38 +346,6 @@ def get_message_for_body_type(body, body_type, html_body, handle_inline_image: b
     return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments
 
 
-class GetSearchableMailboxes(EWSService):  # pragma: no cover
-    SERVICE_NAME = 'GetSearchableMailboxes'
-    element_container_name = f'{{{MNS}}}SearchableMailboxes'
-
-    @staticmethod
-    def parse_element(element):
-        return {
-            MAILBOX: element.find(f"{{{TNS}}}PrimarySmtpAddress").text if element.find(
-                f"{{{TNS}}}PrimarySmtpAddress") is not None else None,
-            MAILBOX_ID: element.find(f"{{{TNS}}}ReferenceId").text if element.find(
-                f"{{{TNS}}}ReferenceId") is not None else None,
-            'displayName': element.find(f"{{{TNS}}}DisplayName").text if element.find(
-                f"{{{TNS}}}DisplayName") is not None else None,
-            'isExternal': element.find(f"{{{TNS}}}IsExternalMailbox").text if element.find(
-                f"{{{TNS}}}IsExternalMailbox") is not None else None,
-            'externalEmailAddress': element.find(f"{{{TNS}}}ExternalEmailAddress").text if element.find(
-                f"{{{TNS}}}ExternalEmailAddress") is not None else None
-        }
-
-    def call(self):
-        if self.protocol.version.build < EXCHANGE_2013:
-            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2013 servers and later')
-        elements = self._get_elements(payload=self.get_payload())
-        return [self.parse_element(e) for e in elements]
-
-    def get_payload(self):
-        element = create_element(
-            f'm:{self.SERVICE_NAME}',
-        )
-        return element
-
-
 class SearchMailboxes(EWSService):
 
     def __init__(self, protocol, limit):
@@ -500,11 +468,6 @@ def get_expanded_group(client: EWSClient, email_address, recursive_expansion=Fal
     entry_for_object = get_entry_for_object("Expanded group", 'EWS.ExpandGroup', group_details)
     entry_for_object['HumanReadable'] = tableToMarkdown('Group Members', group_members)
     return entry_for_object
-
-
-def get_searchable_mailboxes(client: EWSClient):  # pragma: no cover
-    searchable_mailboxes = GetSearchableMailboxes(protocol=client.get_protocol()).call()
-    return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
 
 def search_mailboxes(client: EWSClient, filter, limit=100, mailbox_search_scope=None, email_addresses=None):  # pragma: no cover

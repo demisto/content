@@ -146,46 +146,6 @@ class MarkAsJunk(EWSAccountService):
         return junk
 
 
-class GetSearchableMailboxes(EWSService):
-    """
-    EWSAccountService class used for getting Searchable Mailboxes
-    """
-    SERVICE_NAME = "GetSearchableMailboxes"
-    element_container_name = f"{{{MNS}}}SearchableMailboxes"
-
-    @staticmethod
-    def parse_element(element):
-        return {
-            MAILBOX: element.find(f"{{{TNS}}}PrimarySmtpAddress").text
-            if element.find(f"{{{TNS}}}PrimarySmtpAddress") is not None
-            else None,
-            MAILBOX_ID: element.find(f"{{{TNS}}}ReferenceId").text
-            if element.find(f"{{{TNS}}}ReferenceId") is not None
-            else None,
-            "displayName": element.find(f"{{{TNS}}}DisplayName").text
-            if element.find(f"{{{TNS}}}DisplayName") is not None
-            else None,
-            "isExternal": element.find(f"{{{TNS}}}IsExternalMailbox").text
-            if element.find(f"{{{TNS}}}IsExternalMailbox") is not None
-            else None,
-            "externalEmailAddress": element.find(f"{{{TNS}}}ExternalEmailAddress").text
-            if element.find(f"{{{TNS}}}ExternalEmailAddress") is not None
-            else None,
-        }
-
-    def call(self):
-        elements = self._get_elements(payload=self.get_payload())
-        return [
-            self.parse_element(x)
-            for x in elements
-            if x.find(f"{{{TNS}}}ReferenceId").text
-        ]
-
-    def get_payload(self):
-        element = create_element(f"m:{self.SERVICE_NAME}")
-        return element
-
-
 class ExpandGroup(EWSService):
     """
     EWSAccountService class used for expanding groups
@@ -750,20 +710,6 @@ def get_expanded_group(client: EWSClient, email_address, recursive_expansion=Fal
     output = {"EWS.ExpandGroup": group_details}
     readable_output = tableToMarkdown("Group Members", group_members)
     return readable_output, output, group_details
-
-
-def get_searchable_mailboxes(client: EWSClient):
-    """
-    Retrieve searchable mailboxes command
-    :param client: EWS Client
-    :return: Searchable mailboxes output tuple
-    """
-    searchable_mailboxes = GetSearchableMailboxes(protocol=client.get_protocol()).call()
-    readable_output = tableToMarkdown(
-        "Searchable mailboxes", searchable_mailboxes, headers=["displayName", "mailbox"]
-    )
-    output = {"EWS.Mailboxes": searchable_mailboxes}
-    return readable_output, output, searchable_mailboxes
 
 
 def fetch_attachments_for_message(
@@ -2365,7 +2311,10 @@ def sub_main():  # pragma: no cover
         # normal commands
         else:
             output = normal_commands[command](client, **args)  # type: ignore[operator]
-            return_outputs(*output)
+            if isinstance(output, tuple): # Legacy, some commands return a tuple for return outputs
+                return_outputs(*output)
+            else:
+                return_results(output)
 
     except Exception as e:
         demisto.error(f'got exception {e}')
