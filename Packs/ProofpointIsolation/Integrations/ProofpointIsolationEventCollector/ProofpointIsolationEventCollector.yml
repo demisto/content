@@ -1,0 +1,79 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: ProofpointIsolationEventCollector
+  version: -1
+configuration:
+- defaultvalue: https://proofpointisolation.com
+  additionalinfo: The endpoint URL.
+  display: Server URL
+  name: base_url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection.
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- additionalinfo: 'Defines the maximum number of browser and email isolation events per fetch cycle. Default value: 50000.'
+  defaultvalue: "50000"
+  display: Maximum number of events per fetch
+  name: max_events_per_fetch
+  required: true
+  type: 0
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+description: 'Proofpoint Isolation is an integration that supports fetching Browser and Email Isolation logs events.'
+display: Proofpoint Isolation
+name: ProofpointIsolationEventCollector
+script:
+  commands:
+  - name: proofpoint-isolation-get-events
+    description: Retrieves a list of events from the Proofpoint Isolation instance.
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+        - 'true'
+        - 'false'
+      required: true
+    - description: 'Maximum number of events to return. Value range: 1-50000.'
+      name: limit
+      required: true
+    - description: 'The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08.'
+      name: start_date
+      required: true
+    - description: 'The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08.'
+      name: end_date
+      required: true
+    outputs:
+      - contextPath: ProofpointIsolationEventCollector
+        description: The list of events.
+        type: List
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.10.0
+marketplaces:
+- marketplacev2
+tests:
+- No tests (auto formatted)
