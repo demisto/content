@@ -11,16 +11,19 @@ configuration:
   name: feed
   required: false
   type: 8
+  section: Collect
 - defaultvalue: https://usta.prodaft.com/
   display: Server's URL
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Key
   additionalinfo: The API Key to use for connection
   name: api_key
   required: true
   type: 4
+  section: Connect
 - display: IOC Feed Type
   name: ioc_feed_type
   options:
@@ -30,6 +33,7 @@ configuration:
   - phishing-sites
   required: true
   type: 16
+  section: Collect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
@@ -41,6 +45,7 @@ configuration:
   - Bad
   required: false
   type: 18
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -54,6 +59,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -64,25 +70,30 @@ configuration:
   - WHITE
   required: false
   type: 15
+  section: Collect
 - defaultvalue: '30'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
+  section: Collect
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'true'
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - display: ''
   name: feedExpirationPolicy
   type: 17
@@ -93,16 +104,19 @@ configuration:
   - indicatorType
   - suddenDeath
   defaultvalue: interval
+  section: Collect
 - display: ''
   name: feedExpirationInterval
   type: 1
   required: false
   defaultvalue: '20160'
+  section: Collect
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
   type: 0
+  section: Collect
 display: USTA Threat Stream IOC Feed
 name: FeedUstaThreatStream
 script:
@@ -219,7 +233,7 @@ script:
     - contextPath: USTA.ThreatStreamPhishingSites.created
       description: The creation date of the phishing site.
       type: Date
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   isfetch: false
   longRunning: false

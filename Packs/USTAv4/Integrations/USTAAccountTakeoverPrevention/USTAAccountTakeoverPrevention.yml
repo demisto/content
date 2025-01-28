@@ -17,6 +17,7 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Key
   additionalinfo: The API Key to use for connection
   name: api_key
@@ -42,18 +43,21 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect  
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
   required: false
 - display: First Fetch Time
   additionalinfo: 'The time range to consider for the initial data fetch. Warning: Fetching a large time range may cause performance issues!'
@@ -61,7 +65,7 @@ configuration:
   name: first_fetch
   type: 0
   required: true
-  section: Collect
+  section: Connect
 script:
   commands:
   - arguments:
@@ -131,7 +135,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
