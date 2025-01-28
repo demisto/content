@@ -148,6 +148,41 @@ def reverse_command(command_line: str) -> tuple[str, bool]:
         return command_line[::-1], True
     return command_line, False
 
+def suspicious_macos_applescript_commands(command_line: str) -> dict:
+    """
+    Checks for suspicious macOS/AppleScript commands by grouping multiple sets
+    of required substrings under a category. If all required substrings appear,
+    that combination is recorded under its category.
+    """
+    text = command_line.lower()
+
+    # Define categories and the sets of required substrings belonging to each
+    patterns_by_category = {
+        "infostealer_characteristics": [
+            ["telegram", "deskwallet"],
+            ["to set visible", "false"],
+            ["chflags hidden"],
+            ["osascript -e", "system_profiler", "hidden answer"],
+            ["tell application finder", "duplicate"]
+        ],
+        "possible_exfiltration": [
+            ["display dialog", "curl -"],
+            ["osascript -e", "curl -x", "system_profiler"],
+            ["osascript -e", "curl -"]
+        ]
+    }
+
+    results = {}
+    for category, pattern_groups in patterns_by_category.items():
+        matched_combinations = []
+        for required_phrases in pattern_groups:
+            # If all required substrings appear in text
+            if all(phrase in text for phrase in required_phrases):
+                matched_combinations.append(required_phrases)
+        # Store only if we found matches
+        results[category] = matched_combinations
+
+    return results
 
 def check_malicious_commands(command_line: str) -> list[str]:
     patterns = [
@@ -530,6 +565,7 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
         "amsi_techniques": 25,
         "malicious_commands": 25,
         "custom_patterns": 25,
+        "suspicious_macos_applescript_commands": 25,
         "data_exfiltration": 15,
         "lateral_movement": 15,
         "windows_temp_path": 10,
@@ -547,7 +583,7 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     high_risk_keys = {
         "mixed_case_powershell", "double_encoding", "amsi_techniques",
         "malicious_commands", "powershell_suspicious_patterns",
-        "credential_dumping", "reversed_command", "custom_patterns"
+        "credential_dumping", "reversed_command", "suspicious_macos_applescript_commands", "custom_patterns"
     }
     medium_risk_keys = {
         "data_exfiltration", "lateral_movement", "indicators",
@@ -667,6 +703,10 @@ def analyze_command_line(command_line, custom_patterns=None):
 
     if is_reversed:
         original_analysis["reversed_command"] = ["reversed_command"]
+
+    # Handle macOS
+    if 'osascript' in command_line:
+        original_analysis["macOS_suspicious_commands"] = suspicious_macos_applescript_commands(command_line)
 
     # Place our original analysis results
     results["analysis"]["original"] = original_analysis
