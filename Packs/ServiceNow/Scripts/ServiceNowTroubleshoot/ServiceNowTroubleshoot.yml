@@ -1,25 +1,24 @@
-args:
-comment: Use this script to Troubleshoot.
-commonfields:
-  id: ServiceNowAddComment
+args: []
+comment: "Troubleshot ServiceNow v2 integration by displaying health information of enabled instances and old and active incidents of disabled instances."
+  id: ServiceNowTroubleshoot
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-dependson:
-  must:
-  - '|||servicenow-add-comment'
-dockerimage: demisto/python3:3.11.10.115186
-enabled: true
-name: ServiceNowAddComment
-runas: DBotWeakRole
-script: ''
-scripttarget: 0
-subtype: python3
+enabled: false
+name: ServiceNowTroubleshoot
+outputs:
+- contextPath: ServiceNowTroubleshoot.Output
+  description: 'ServiceNow Troubleshoot information.'
+  type: String
+script: '-'
+system: false
 tags:
 - servicenow
 - servicenow v2
+timeout: '0'
 type: python
-fromversion: 8.8.0
-tests:
-- No tests (auto formatted)
+subtype: python3
+dockerimage: demisto/python3:3.9.8.24399
+fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+

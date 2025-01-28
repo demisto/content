@@ -1,19 +1,43 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from Packs.Base.Scripts.CommonServerPython.CommonServerPython import CommandResults, tableToMarkdown, return_error, \
-     return_results, isError
+    return_results
 import json
+from collections import defaultdict
 
 INTEGRATION = 'ServiceNow v2'
 HEADERS_TO_EXTRACTED = ['sizeInBytes',
                         'incidentsPulled',
-                        'incidentsDropped'
                         'lastPullTime',
-                        'lastError',
-                        'version']
+                        'lastError']
+
+
+def get_active_incidents_by_instances() -> dict[str, Any]:
+    """
+        Find active incidents created 30 days ago of 'ServiceNow v2'.
+        and generate a Markdown table summarizing the results.
+
+        :return: A Dict summarizing the instances and their active incidents,
+        :rtype: `dict
+    """
+
+    response = demisto.internalHttpRequest('POST', 'incidents/search', body=json.dumps(query))
+    query = {
+        'filter': {
+            'query': f'sourceBrand:"{INTEGRATION}" and status:Active and created:>="30 days ago"'
+        }
+    }
+    response = demisto.internalHttpRequest('POST', 'incidents/search', body=json.dumps(query))
+    return json.loads(response.get('body', '{}'))
 
 
 def get_integrations_details() -> dict[str, Any]:
+    """
+    Retrieve details of the integrations, including their health status.
+
+    :return: A dictionary containing the details of the integrations and their health status.
+    :rtype: dict[str, Any]
+    """
     http_result = json.loads(demisto.internalHttpRequest('POST', 'settings/integration/search').get('body'))
     instances, health = http_result['instances'], http_result['health']
     instances_health = {}
@@ -22,141 +46,121 @@ def get_integrations_details() -> dict[str, Any]:
         if instance.get('brand') == INTEGRATION:
             instances_health[instance_name] = instance
             if instance_name in health:
-                instances_health[instance_name].update(health[instance_name])
+                instances_health[instance_name].update({"health": health[instance_name]})
     return instances_health
 
-def get_disabled_instances(instances_data) -> dict[str, Any]:
+
+def filter_instances_data(instances_data) -> tuple[dict, list]:
+    """
+    Filter the instances data to separate enabled instances and disabled instances with active incidents.
+
+    :param instances_data: A dictionary containing data for each instance.
+    :type instances_data: dict
+
+    :return: A tuple containing the filtered data for enabled instances and a list of disabled instances with active incidents.
+    :rtype: tuple[dict, list]
+    """
     filtered_data = {}
     disabled_instances = []
+
     for instance_name, data in instances_data.items():
-        if not data['enabled'] and data['incidentsPulled'] > 0:
-            demisto.info(f'Instance {instance_name} is disabled. Please close all incidents related by getting all open incidents'
-                         f'with query sourceInstance:"{instance_name}" and status:Active')
-            # incidents/search
-            disabled_instances.append(data['instance_name'])
+        if data['enabled'] == 'true':
+            filtered_data[instance_name] = data
+            continue
+        if int(data['health']['incidentsPulled']) > 0 and data['configvalues']['mirror_direction'] != 'None':
+            disabled_instances.append(instance_name)
         else:
-            filtered_data[instance_name]=data
-    res = demisto.internalHttpRequest('POST', 'incidents/search', body=json.dumps({'filter':{'status': 2, 'sourceInstance': instance_name}})).get('body')
+            filtered_data[instance_name] = data
+    return filtered_data, disabled_instances
 
 
+def active_incidents_data(disabled_instances: list[str]) -> tuple[dict, dict]:
+    """
+    Retrieve incidents from ServiceNow instances and filter them based on whether the created instance is enabled or disabled.
 
-def remove_null(res) -> dict[str, Any]:
-    fixed_dict = {}
-    # ['data']['Incident Mirroring Direction']
-    # closed: 2239
-    for keys, values in res.items():
-        if values is not None:
-            fixed_dict[keys] = values
-    return fixed_dict
+    Filter the instances data to separate enabled instances and disabled instances with active incidents.
+
+    :param disabled_instances: A list containing names of disabled instances.
+    :type disabled_instances: list
+
+    :return: A tuple containing the active incidents for enabled instances and for disabled instances.
+    :rtype: tuple[dict, list]
+    """
+    response = get_active_incidents_by_instances()
+    disabled_incidents_instances, enabled_incidents_instances = defaultdict(list), defaultdict(list)
+    data = response.get('data', {})
+    for incident in data:
+        source_instance = incident.get("sourceInstance")
+        incident_name = incident.get("name")
+        if source_instance and incident_name:
+            if source_instance in disabled_instances:
+                disabled_incidents_instances[source_instance].append(incident_name)
+            else:
+                enabled_incidents_instances[source_instance].append(incident_name)
+    return enabled_incidents_instances, disabled_incidents_instances
+
+
+def parse_disabled_instances(disabled_incidents_instances: Dict[str, Any]) -> str:
+    """
+    Parse the list of disabled instances to find those with active incidents
+    and generate a Markdown table summarizing the results.
+
+    :param disabled_incidents_instances: A dictionary containing active incidents that were created 30 days ago
+                                        of disabled instances.
+
+    :return: A Markdown table summarizing the disabled instances and their active incidents,
+             or an error message if the response is invalid.
+    :rtype: ``str``
+    """
+    markdown_data = [
+        {'Instance': instance, 'Incidents': "\n".join(incidents)}
+        for instance, incidents in disabled_incidents_instances.items()
+    ]
+
+    return tableToMarkdown(
+        name="Closed instances with open incidents",
+        t=markdown_data,
+    )
+
+
+def parse_enabled_instances(enabled_instances_health: Dict[str, Any], enabled_incidents_instances: Dict[str, Any]) -> str:
+    """
+    Parse the health information of enabled instances and generate a Markdown table.
+
+    :param enabled_instances_health: A dictionary containing health information for enabled instances.
+    :type enabled_instances_health: Dict[str, Any]
+    :param enabled_incidents_instances: A dictionary containing active incidents that were created 30 days ago
+                                        of enabled instances.
+    :type enabled_instances_health: Dict[str, Any]
+
+    :return: A Markdown table summarizing the health information of enabled instances.
+    :rtype: str
+    """
+    human_readable_dict = []
+    for instance_name, instance_data in enabled_instances_health.items():
+        filtered_data = {
+            'Instance Name': instance_name,
+            'Size In Bytes': instance_data['sizeInBytes'],
+            'Number of Incidents Pulled': instance_data['health']['incidentsPulled'],
+            'Last Pull Time': instance_data['health']['lastPullTime'],
+            'Query': instance_data['configvalues']['sysparm_query'],
+            'Last Error': instance_data['health']['lastError'],
+        }
+        if instance_name in enabled_incidents_instances:
+            filtered_data["Open Incidents> 30 days"] = enabled_incidents_instances[instance_name]
+        human_readable_dict.append(filtered_data)
+    return tableToMarkdown(name="Open Instances Health Information", t=human_readable_dict,
+                           removeNull=True)
+
 
 def main():
     try:
-        res = {'ServiceNow v2_instance_2':
-                   {'id': '1b140d3f-bd9a-44c1-8a59-8593ac455d9a',
-                    'version': 5,
-                    'cacheVersn': 0,
-                    'sequenceNumber': 453233,
-                    'primaryTerm': 1,
-                    'modified': '2025-01-27T09:14:18.207475895Z',
-                    'sizeInBytes': 3066,
-                    'sortValues': ['5939'],
-                    'enabled': 'true',
-                    'configvalues': {'api_version': None, 'close_custom_state': None, 'close_incident': 'None', 'close_ticket': False,
-                                     'close_ticket_multiple_options': 'None', 'comment_tag': 'comments',
-                                     'comment_tag_from_servicenow': 'CommentFromServiceNow',
-                                     'credentials': {
-                                         'credential': '', 'credentials':
-                                             {'cacheVersn': 0, 'id': '', 'locked': False, 'modified': '0001-01-01T00:00:00Z', 'name': '', 'sizeInBytes': 0, 'user': '', 'vaultInstanceId': '', 'version': 0, 'workgroup': ''},
-                                              'identifier': 'admin-cnt-test-2024-02', 'passwordChanged': False},
-                                         'custom_fields': None, 'display_date_format': 'None', 'fetch_limit': '10',
-                                         'fetch_time': '1 year', 'file_tag': 'ForServiceNow', 'file_tag_from_service_now': 'FromServiceNow',
-                                         'get_attachments': False, 'incidentFetchInterval': '1',
-                                         'incidentType': None, 'incident_name': 'number', 'insecure': False, 'isFetch': True,
-                                         'look_back': '0', 'mirror_direction': 'None',
-                                         'mirror_limit': '100', 'mirror_notes_for_new_incidents': False, 'proxy': False,
-                                         'server_close_custom_state': None, 'server_custom_close_code': None,
-                                         'sysparm_query': 'stateNOT IN6,7', 'ticket_type': 'incident', 'timestamp_field': 'opened_at',
-                                         'update_timestamp_field': 'sys_updated_on', 'url': 'https://ven03941.service-now.com/',
-                                         'use_display_value': False, 'use_oauth': False, 'work_notes_tag': 'work_notes',
-                                         'work_notes_tag_from_servicenow': 'WorkNoteFromServiceNow'},
-                    'configtypes': {
-                        'api_version': 0, 'close_custom_state': 0, 'close_incident': 15, 'close_ticket': 8,
-                        'close_ticket_multiple_options': 15, 'comment_tag': 0, 'comment_tag_from_servicenow': 0, 'credentials': 9,
-                        'custom_fields': 12, 'display_date_format': 15, 'fetch_limit': 0, 'fetch_time': 0, 'file_tag': 0,
-                        'file_tag_from_service_now': 0, 'get_attachments': 8, 'incidentFetchInterval': 19, 'incidentType': 13,
-                        'incident_name': 0, 'insecure': 8, 'isFetch': 8, 'look_back': 0, 'mirror_direction': 15, 'mirror_limit': 0,
-                        'mirror_notes_for_new_incidents': 8, 'proxy': 8, 'server_close_custom_state': 0, 'server_custom_close_code': 0,
-                        'sysparm_query': 0, 'ticket_type': 0, 'timestamp_field': 0, 'update_timestamp_field': 0, 'url': 0,
-                        'use_display_value': 8, 'use_oauth': 8, 'work_notes_tag': 0, 'work_notes_tag_from_servicenow': 0
-                    },
-                    'brand': 'ServiceNow v2', 'category': 'Case Management', 'path': '', 'executable': '', 'cmdline': '',
-                    'engine': '', 'engineGroup': '', 'hidden': False, 'isIntegrationScript': True, 'islongRunning': False,
-                    'mappingId': '', 'outgoingMapperId': '', 'incomingMapperId': '', 'remoteSync': True, 'isSystemIntegration': True,
-                    'canSample': True, 'defaultIgnore': False, 'integrationLogLevel': '', 'commandsPermissions': None, 'longRunningId': '',
-                    'incidentFetchInterval': 0, 'eventFetchInterval': 0, 'assetsFetchInterval': 0, 'servicesID': 'main',
-                    'isBuiltin': False, 'hybrid': False,
-                    'configuration': {
-                        'id': '', 'version': 0, 'cacheVersn': 0,
-                        'modified': '0001-01-01T00:00:00Z', 'sizeInBytes': 0, 'packID': '', 'packName': '', 'itemVersion': '',
-                        'fromServerVersion': '', 'toServerVersion': '', 'definitionId': '', 'vcShouldIgnore': False,
-                        'vcShouldKeepItemLegacyProdMachine': False, 'commitMessage': '', 'shouldCommit': False, 'name': '',
-                        'prevName': '', 'display': '', 'brand': '', 'category': '', 'icon': '', 'description': '',
-                        'configuration': None, 'integrationScript': None, 'hidden': False, 'canGetSamples': False
-                    },
-                    'data': [
-                        {'display': 'Mirrored ServiceNow Ticket custom close state code', 'displayPassword': '',
-                         'name': 'close_custom_state', 'defaultValue': '', 'type': 0, 'required': False, 'hidden': False,
-                         'hiddenUsername': False, 'hiddenPassword': False, 'options': None,
-                         'info': 'Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.', 'hasvalue': False, 'value': None},
-                        {'display': 'Fetch incidents', 'displayPassword': '', 'name': 'isFetch', 'defaultValue': '', 'type': 8,
-                         'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None,
-                         'info': '', 'hasvalue': True, 'value': True},
-                        {'display': 'Use system proxy settings', 'displayPassword': '', 'name': 'proxy', 'defaultValue': 'false',
-                         'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': False},
-                        {'display': 'Close Mirrored ServiceNow Ticket', 'displayPassword': '', 'name': 'close_ticket', 'defaultValue': 'false', 'type': 8, 'required': False, 'hidden': True, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'When selected, closing the XSOAR incident is mirrored in ServiceNow.', 'hasvalue': True, 'value': False},
-                        {'display': 'Mirror Existing Notes For New Fetched Incidents', 'displayPassword': '', 'name': 'mirror_notes_for_new_incidents', 'defaultValue': 'false', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present.', 'hasvalue': True, 'value': False},
-                        {'display': 'Get incident attachments', 'displayPassword': '', 'name': 'get_attachments', 'defaultValue': '', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': False},
-                        {'display': 'Use OAuth Login', 'displayPassword': '', 'name': 'use_oauth', 'defaultValue': '', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Select this checkbox if to use OAuth 2.0 authentication. See (?) for more information.', 'hasvalue': True, 'value': False},
-                        {'display': 'Mirrored ServiceNow Ticket closure method', 'displayPassword': '', 'name': 'close_ticket_multiple_options', 'defaultValue': 'None', 'type': 15, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': ['None', 'closed', 'resolved'], 'info': "Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.", 'hasvalue': True, 'value': 'None'},
-                        {'display': 'Incidents Fetch Interval', 'displayPassword': '', 'name': 'incidentFetchInterval', 'defaultValue': '1', 'type': 19, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': '1'},
-                        {'display': 'ServiceNow URL, in the format https://company.service-now.com/', 'displayPassword': '', 'name': 'url', 'defaultValue': '', 'type': 0, 'required': True, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': 'https://ven03941.service-now.com/'},
-                        {'display': 'How many incidents to mirror incoming each time', 'displayPassword': '', 'name': 'mirror_limit', 'defaultValue': '100', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': "If a greater number of incidents than the limit were modified, then they won't be mirrored in.", 'hasvalue': True, 'value': '100'},
-                        {'display': 'Instance Date Format', 'displayPassword': '', 'name': 'display_date_format', 'defaultValue': 'None', 'type': 15, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': ['MM-dd-yyyy', 'MM/dd/yyyy', 'dd/MM/yyyy', 'dd-MM-yyyy', 'dd.MM.yyyy', 'yyyy-MM-dd', 'mmm-dd-yyyy'], 'info': 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM.', 'hasvalue': True, 'value': 'None'},
-                        {'display': 'File Entry Tag From ServiceNow', 'displayPassword': '', 'name': 'file_tag_from_service_now', 'defaultValue': 'FromServiceNow', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a file from ServiceNow.', 'hasvalue': True, 'value': 'FromServiceNow'},
-                        {'display': 'How many incidents to fetch each time', 'displayPassword': '', 'name': 'fetch_limit', 'defaultValue': '10', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': '10'},
-                        {'display': "ServiceNow API Version (e.g. 'v1')", 'displayPassword': '', 'name': 'api_version', 'defaultValue': '', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': False, 'value': None},
-                        {'display': 'The query to use when fetching incidents', 'displayPassword': '', 'name': 'sysparm_query', 'defaultValue': 'stateNOT IN6,7', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': 'stateNOT IN6,7'},
-                        {'display': 'Incident Mirroring Direction', 'displayPassword': '', 'name': 'mirror_direction', 'defaultValue': 'None', 'type': 15, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': ['None', 'Incoming', 'Outgoing', 'Incoming And Outgoing'], 'info': 'Choose the direction to mirror the incident: Incoming (from ServiceNow to Cortex XSOAR), Outgoing (from Cortex XSOAR to ServiceNow), or Incoming and Outgoing (from/to Cortex XSOAR and ServiceNow).', 'hasvalue': True, 'value': 'None'},
-                        {'display': 'Mirrored XSOAR Ticket closure method', 'displayPassword': '', 'name': 'close_incident', 'defaultValue': 'None', 'type': 15, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': ['None', 'closed', 'resolved'], 'info': 'When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.', 'hasvalue': True, 'value': 'None'},
-                        {'display': 'First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)', 'displayPassword': '', 'name': 'fetch_time', 'defaultValue': '10 minutes', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': '1 year'},
-                        {'display': 'File Entry Tag To ServiceNow', 'displayPassword': '', 'name': 'file_tag', 'defaultValue': 'ForServiceNow', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a file in ServiceNow.', 'hasvalue': True, 'value': 'ForServiceNow'},
-                        {'display': 'Use Display Value', 'displayPassword': '', 'name': 'use_display_value', 'defaultValue': '', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Select this checkbox to retrieve comments and work notes without accessing the `sys_field_journal` table.', 'hasvalue': True, 'value': False},
-                        {'display': 'Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at>[Last Run]".\nTo prevent duplicate incidents, this field is mandatory for fetching incidents.', 'displayPassword': '', 'name': 'timestamp_field', 'defaultValue': 'opened_at', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': 'opened_at'},
-                        {'display': 'Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state)', 'displayPassword': '', 'name': 'server_custom_close_code', 'defaultValue': '', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.', 'hasvalue': False, 'value': None},
-                        {'display': 'ServiceNow ticket column to be set as the incident name. Default is the incident number', 'displayPassword': '', 'name': 'incident_name', 'defaultValue': 'number', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': 'number'},
-                        {'display': 'Timestamp field to query for updates as part of the mirroring flow', 'displayPassword': '', 'name': 'update_timestamp_field', 'defaultValue': 'sys_updated_on', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'According to the timestamp in this field, records will be queried to check for updates.', 'hasvalue': True, 'value': 'sys_updated_on'},
-                        {'display': 'Work Note Entry Tag To ServiceNow', 'displayPassword': '', 'name': 'work_notes_tag', 'defaultValue': 'work_notes', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a work note in ServiceNow.', 'hasvalue': True, 'value': 'work_notes'},
-                        {'display': 'Work Note Entry Tag From ServiceNow', 'displayPassword': '', 'name': 'work_notes_tag_from_servicenow', 'defaultValue': 'WorkNoteFromServiceNow', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a work note from ServiceNow.', 'hasvalue': True, 'value': 'WorkNoteFromServiceNow'},
-                        {'display': 'Comment Entry Tag From ServiceNow', 'displayPassword': '', 'name': 'comment_tag_from_servicenow', 'defaultValue': 'CommentFromServiceNow', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a comment from ServiceNow.', 'hasvalue': True, 'value': 'CommentFromServiceNow'},
-                        {'display': 'Trust any certificate (not secure)', 'displayPassword': '', 'name': 'insecure', 'defaultValue': 'false', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': False},
-                        {'display': 'Username/Client ID', 'displayPassword': '', 'name': 'credentials', 'defaultValue': '', 'type': 9, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': {'credential': '', 'credentials': {'cacheVersn': 0, 'id': '', 'locked': False, 'modified': '0001-01-01T00:00:00Z', 'name': '', 'sizeInBytes': 0, 'user': '', 'vaultInstanceId': '', 'version': 0, 'workgroup': ''}, 'identifier': 'admin-cnt-test-2024-02', 'passwordChanged': False}},
-                        {'display': 'Custom Fields to Mirror', 'displayPassword': '', 'name': 'custom_fields', 'defaultValue': '', 'type': 12, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here.", 'hasvalue': False, 'value': None}, {'display': 'Default ticket type for running ticket commands and fetching incidents', 'displayPassword': '', 'name': 'ticket_type', 'defaultValue': 'incident', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item.', 'hasvalue': True, 'value': 'incident'}, {'display': 'Incident type', 'displayPassword': '', 'name': 'incidentType', 'defaultValue': '', 'type': 13, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': False, 'value': None},
-                        {'display': 'Mirrored XSOAR Ticket custom close state code', 'displayPassword': '', 'name': 'server_close_custom_state', 'defaultValue': '', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.', 'hasvalue': False, 'value': None}, {'display': 'Comment Entry Tag To ServiceNow', 'displayPassword': '', 'name': 'comment_tag', 'defaultValue': 'comments', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a comment in ServiceNow.', 'hasvalue': True, 'value': 'comments'},
-                        {'display': 'Advanced: Minutes to look back when fetching', 'displayPassword': '', 'name': 'look_back', 'defaultValue': '0', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.', 'hasvalue': True, 'value': '0'}],
-                    'displayPassword': '', 'passwordProtected': False, 'mappable': True, 'remoteSyncableIn': True, 'remoteSyncableOut': True, 'isFetchSamples': False, 'debugMode': False,
-                    'health': {
-                        'id': 'ServiceNow v2.ServiceNow v2_instance_2', 'version': 16, 'cacheVersn': 0,
-                        'sequenceNumber': 454401, 'primaryTerm': 1,
-                        'modified': '2025-01-27T09:26:49.458264357Z', 'sizeInBytes': 516, 'sortValues': ['5994'],
-                        'brand': 'ServiceNow v2', 'instance': 'ServiceNow v2_instance_2', 'incidentsPulled': 10,
-                        'incidentsDropped': 0, 'lastPullTime': '2025-01-27T09:26:45.226409678Z', 'lastError': '',
-                    }
-                },
-               'ServiceNow_v2_instance_1':{
-                   'id': '50bbed49-1b04-4f73-8d1f-c3feee238ce0', 'version': 3, 'cacheVersn': 0, 'sequenceNumber': 384120, 'primaryTerm': 1, 'modified': '2025-01-26T16:06:02.422316357Z', 'sizeInBytes': 3092, 'sortValues': ['4918'], 'packID': '', 'packName': '', 'itemVersion': '', 'fromServerVersion': '', 'toServerVersion': '', 'propagationLabels': ['all'], 'definitionId': '', 'prevName': '', 'password': '', 'enabled': 'true', 'name': 'ServiceNow_v2_instance_1', 'configvalues': {'api_version': None, 'close_custom_state': None, 'close_incident': 'None', 'close_ticket': False, 'close_ticket_multiple_options': 'None', 'comment_tag': 'comments', 'comment_tag_from_servicenow': 'CommentFromServiceNow', 'credentials': {'credential': '', 'credentials': {'cacheVersn': 0, 'id': '', 'locked': False, 'modified': '0001-01-01T00:00:00Z', 'name': '', 'sizeInBytes': 0, 'user': '', 'vaultInstanceId': '', 'version': 0, 'workgroup': ''}, 'identifier': 'admin-cnt-test-2024-02', 'passwordChanged': False}, 'custom_fields': None, 'display_date_format': 'None', 'feed': False, 'fetch_limit': '10', 'fetch_time': '10 minutes', 'file_tag': 'ForServiceNow', 'file_tag_from_service_now': 'FromServiceNow', 'get_attachments': False, 'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'number', 'insecure': False, 'isFetch': True, 'look_back': '0', 'mirror_direction': 'None', 'mirror_limit': '100', 'mirror_notes_for_new_incidents': False, 'proxy': False, 'server_close_custom_state': None, 'server_custom_close_code': None, 'sysparm_query': 'stateNOT IN6,7', 'ticket_type': 'incident', 'timestamp_field': 'opened_at', 'update_timestamp_field': 'sys_updated_on', 'url': 'https://ven03941.service-now.com/', 'use_display_value': False, 'use_oauth': False, 'work_notes_tag': 'work_notes', 'work_notes_tag_from_servicenow': 'WorkNoteFromServiceNow'}, 'configtypes': {'api_version': 0, 'close_custom_state': 0, 'close_incident': 15, 'close_ticket': 8, 'close_ticket_multiple_options': 15, 'comment_tag': 0, 'comment_tag_from_servicenow': 0, 'credentials': 9, 'custom_fields': 12, 'display_date_format': 15, 'feed': 8, 'fetch_limit': 0, 'fetch_time': 0, 'file_tag': 0, 'file_tag_from_service_now': 0, 'get_attachments': 8, 'incidentFetchInterval': 19, 'incidentType': 13, 'incident_name': 0, 'insecure': 8, 'isFetch': 8, 'look_back': 0, 'mirror_direction': 15, 'mirror_limit': 0, 'mirror_notes_for_new_incidents': 8, 'proxy': 8, 'server_close_custom_state': 0, 'server_custom_close_code': 0, 'sysparm_query': 0, 'ticket_type': 0, 'timestamp_field': 0, 'update_timestamp_field': 0, 'url': 0, 'use_display_value': 8, 'use_oauth': 8, 'work_notes_tag': 0, 'work_notes_tag_from_servicenow': 0}, 'brand': 'ServiceNow v2', 'category': 'Case Management', 'path': '', 'executable': '', 'cmdline': '', 'engine': '', 'engineGroup': '', 'hidden': False, 'isIntegrationScript': True, 'islongRunning': False, 'mappingId': '', 'outgoingMapperId': '', 'incomingMapperId': '', 'remoteSync': True, 'isSystemIntegration': True, 'canSample': True, 'defaultIgnore': False, 'integrationLogLevel': '', 'commandsPermissions': None, 'longRunningId': '', 'incidentFetchInterval': 0, 'eventFetchInterval': 0, 'assetsFetchInterval': 0, 'servicesID': 'main', 'isBuiltin': False, 'hybrid': False, 'configuration': {'id': '', 'version': 0, 'cacheVersn': 0, 'modified': '0001-01-01T00:00:00Z', 'sizeInBytes': 0, 'packID': '', 'packName': '', 'itemVersion': '', 'fromServerVersion': '', 'toServerVersion': '', 'definitionId': '', 'vcShouldIgnore': False, 'vcShouldKeepItemLegacyProdMachine': False, 'commitMessage': '', 'shouldCommit': False, 'name': '', 'prevName': '', 'display': '', 'brand': '', 'category': '', 'icon': '', 'description': '', 'configuration': None, 'integrationScript': None, 'hidden': False, 'canGetSamples': False}, 'data': [{'display': 'Custom Fields to Mirror', 'displayPassword': '', 'name': 'custom_fields', 'defaultValue': '', 'type': 12, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here.", 'hasvalue': False, 'value': None}, {'display': 'Get incident attachments', 'displayPassword': '', 'name': 'get_attachments', 'defaultValue': '', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': False}, {'display': 'How many incidents to fetch each time', 'displayPassword': '', 'name': 'fetch_limit', 'defaultValue': '10', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': '10'}, {'display': 'Default ticket type for running ticket commands and fetching incidents', 'displayPassword': '', 'name': 'ticket_type', 'defaultValue': 'incident', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item.', 'hasvalue': True, 'value': 'incident'}, {'display': 'Incidents Fetch Interval', 'displayPassword': '', 'name': 'incidentFetchInterval', 'defaultValue': '1', 'type': 19, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': '1'}, {'display': 'First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)', 'displayPassword': '', 'name': 'fetch_time', 'defaultValue': '10 minutes', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': '10 minutes'}, {'display': 'Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at>[Last Run]".\nTo prevent duplicate incidents, this field is mandatory for fetching incidents.', 'displayPassword': '', 'name': 'timestamp_field', 'defaultValue': 'opened_at', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': 'opened_at'}, {'display': 'Username/Client ID', 'displayPassword': '', 'name': 'credentials', 'defaultValue': '', 'type': 9, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': {'credential': '', 'credentials': {'cacheVersn': 0, 'id': '', 'locked': False, 'modified': '0001-01-01T00:00:00Z', 'name': '', 'sizeInBytes': 0, 'user': '', 'vaultInstanceId': '', 'version': 0, 'workgroup': ''}, 'identifier': 'admin-cnt-test-2024-02', 'passwordChanged': False}}, {'display': 'Comment Entry Tag To ServiceNow', 'displayPassword': '', 'name': 'comment_tag', 'defaultValue': 'comments', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a comment in ServiceNow.', 'hasvalue': True, 'value': 'comments'}, {'display': '', 'displayPassword': '', 'name': 'feed', 'defaultValue': '', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': False}, {'display': 'Mirrored ServiceNow Ticket closure method', 'displayPassword': '', 'name': 'close_ticket_multiple_options', 'defaultValue': 'None', 'type': 15, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': ['None', 'closed', 'resolved'], 'info': "Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.", 'hasvalue': True, 'value': 'None'}, {'display': 'Trust any certificate (not secure)', 'displayPassword': '', 'name': 'insecure', 'defaultValue': 'false', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': False}, {'display': 'ServiceNow ticket column to be set as the incident name. Default is the incident number', 'displayPassword': '', 'name': 'incident_name', 'defaultValue': 'number', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': 'number'}, {'display': 'The query to use when fetching incidents', 'displayPassword': '', 'name': 'sysparm_query', 'defaultValue': 'stateNOT IN6,7', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': 'stateNOT IN6,7'}, {'display': 'Fetch incidents', 'displayPassword': '', 'name': 'isFetch', 'defaultValue': '', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': True}, {'display': 'Incident type', 'displayPassword': '', 'name': 'incidentType', 'defaultValue': '', 'type': 13, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': False, 'value': None}, {'display': 'Mirrored ServiceNow Ticket custom close state code', 'displayPassword': '', 'name': 'close_custom_state', 'defaultValue': '', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.', 'hasvalue': False, 'value': None}, {'display': 'Timestamp field to query for updates as part of the mirroring flow', 'displayPassword': '', 'name': 'update_timestamp_field', 'defaultValue': 'sys_updated_on', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'According to the timestamp in this field, records will be queried to check for updates.', 'hasvalue': True, 'value': 'sys_updated_on'}, {'display': 'Instance Date Format', 'displayPassword': '', 'name': 'display_date_format', 'defaultValue': 'None', 'type': 15, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': ['MM-dd-yyyy', 'MM/dd/yyyy', 'dd/MM/yyyy', 'dd-MM-yyyy', 'dd.MM.yyyy', 'yyyy-MM-dd', 'mmm-dd-yyyy'], 'info': 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM.', 'hasvalue': True, 'value': 'None'}, {'display': 'File Entry Tag From ServiceNow', 'displayPassword': '', 'name': 'file_tag_from_service_now', 'defaultValue': 'FromServiceNow', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a file from ServiceNow.', 'hasvalue': True, 'value': 'FromServiceNow'}, {'display': 'Incident Mirroring Direction', 'displayPassword': '', 'name': 'mirror_direction', 'defaultValue': 'None', 'type': 15, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': ['None', 'Incoming', 'Outgoing', 'Incoming And Outgoing'], 'info': 'Choose the direction to mirror the incident: Incoming (from ServiceNow to Cortex XSOAR), Outgoing (from Cortex XSOAR to ServiceNow), or Incoming and Outgoing (from/to Cortex XSOAR and ServiceNow).', 'hasvalue': True, 'value': 'None'}, {'display': 'Work Note Entry Tag From ServiceNow', 'displayPassword': '', 'name': 'work_notes_tag_from_servicenow', 'defaultValue': 'WorkNoteFromServiceNow', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a work note from ServiceNow.', 'hasvalue': True, 'value': 'WorkNoteFromServiceNow'}, {'display': 'Mirrored XSOAR Ticket custom close state code', 'displayPassword': '', 'name': 'server_close_custom_state', 'defaultValue': '', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.', 'hasvalue': False, 'value': None}, {'display': 'Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state)', 'displayPassword': '', 'name': 'server_custom_close_code', 'defaultValue': '', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.', 'hasvalue': False, 'value': None}, {'display': 'Use Display Value', 'displayPassword': '', 'name': 'use_display_value', 'defaultValue': '', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Select this checkbox to retrieve comments and work notes without accessing the `sys_field_journal` table.', 'hasvalue': True, 'value': False}, {'display': 'Work Note Entry Tag To ServiceNow', 'displayPassword': '', 'name': 'work_notes_tag', 'defaultValue': 'work_notes', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a work note in ServiceNow.', 'hasvalue': True, 'value': 'work_notes'}, {'display': 'Comment Entry Tag From ServiceNow', 'displayPassword': '', 'name': 'comment_tag_from_servicenow', 'defaultValue': 'CommentFromServiceNow', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a comment from ServiceNow.', 'hasvalue': True, 'value': 'CommentFromServiceNow'}, {'display': 'File Entry Tag To ServiceNow', 'displayPassword': '', 'name': 'file_tag', 'defaultValue': 'ForServiceNow', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Choose the tag to add to an entry to mirror it as a file in ServiceNow.', 'hasvalue': True, 'value': 'ForServiceNow'}, {'display': 'Advanced: Minutes to look back when fetching', 'displayPassword': '', 'name': 'look_back', 'defaultValue': '0', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.', 'hasvalue': True, 'value': '0'}, {'display': 'Mirrored XSOAR Ticket closure method', 'displayPassword': '', 'name': 'close_incident', 'defaultValue': 'None', 'type': 15, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': ['None', 'closed', 'resolved'], 'info': 'When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.', 'hasvalue': True, 'value': 'None'}, {'display': 'How many incidents to mirror incoming each time', 'displayPassword': '', 'name': 'mirror_limit', 'defaultValue': '100', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': "If a greater number of incidents than the limit were modified, then they won't be mirrored in.", 'hasvalue': True, 'value': '100'}, {'display': 'Use system proxy settings', 'displayPassword': '', 'name': 'proxy', 'defaultValue': 'false', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': False}, {'display': 'Use OAuth Login', 'displayPassword': '', 'name': 'use_oauth', 'defaultValue': '', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'Select this checkbox if to use OAuth 2.0 authentication. See (?) for more information.', 'hasvalue': True, 'value': False}, {'display': 'Close Mirrored ServiceNow Ticket', 'displayPassword': '', 'name': 'close_ticket', 'defaultValue': 'false', 'type': 8, 'required': False, 'hidden': True, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'When selected, closing the XSOAR incident is mirrored in ServiceNow.', 'hasvalue': True, 'value': False}, {'display': 'Mirror Existing Notes For New Fetched Incidents', 'displayPassword': '', 'name': 'mirror_notes_for_new_incidents', 'defaultValue': 'false', 'type': 8, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': 'When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present.', 'hasvalue': True, 'value': False}, {'display': "ServiceNow API Version (e.g. 'v1')", 'displayPassword': '', 'name': 'api_version', 'defaultValue': '', 'type': 0, 'required': False, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': False, 'value': None}, {'display': 'ServiceNow URL, in the format https://company.service-now.com/', 'displayPassword': '', 'name': 'url', 'defaultValue': '', 'type': 0, 'required': True, 'hidden': False, 'hiddenUsername': False, 'hiddenPassword': False, 'options': None, 'info': '', 'hasvalue': True, 'value': 'https://ven03941.service-now.com/'}], 'displayPassword': '', 'passwordProtected': False, 'mappable': True, 'remoteSyncableIn': True, 'remoteSyncableOut': True, 'isFetchSamples': False, 'debugMode': False, 'health': {'id': 'ServiceNow v2.ServiceNow_v2_instance_1', 'version': 4, 'cacheVersn': 0, 'sequenceNumber': 453917, 'primaryTerm': 1, 'modified': '2025-01-27T09:19:45.768028441Z', 'sizeInBytes': 513, 'sortValues': ['5968'], 'brand': 'ServiceNow v2', 'instance': 'ServiceNow_v2_instance_1', 'incidentsPulled': 2, 'indicatorsPulled': 0, 'eventsPulled': 0, 'assetsPulled': 0, 'type': 0, 'incidentsDropped': 0, 'lastPullTime': '2025-01-27T09:19:45.136006721Z', 'lastError': '', 'lastIngestionDuration': 261961375, 'fetchDuration': 334346631, 'creation_time': '2025-01-27T00:11:46.086177585Z', 'sum_hour': 0, 'sum_day': 0, 'sum_week': 0}}}
-        new_res = remove_null(res)
-        human_readable = tableToMarkdown('List Projects', res, removeNull=True, headers=HEADERS_TO_EXTRACTED)
-        print(res)
+        instances = get_integrations_details()
+        enabled_instances_health, disabled_instances = filter_instances_data(instances)
+        enabled_incidents_instances, disabled_incidents_instances = active_incidents_data(disabled_instances)
+        disabled_instances_hr = parse_disabled_instances(disabled_incidents_instances)
+        enabled_instances_hr = parse_enabled_instances(enabled_instances_health, enabled_incidents_instances)
+        return_results(CommandResults(readable_output=f'{enabled_instances_hr} \n --- \n\n\n {disabled_instances_hr}'))
 
     except Exception as ex2:
         return_error(f'Failed to execute ServiceNowAddComment. Error: {str(ex2)}')

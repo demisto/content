@@ -1,17 +1,37 @@
-def test_update_comment_or_worknote(mocker):
-    # test update_comment_or_worknote function
-    from ServiceNowAddComment import update_comment_or_worknote, demisto
-    import ServiceNowAddComment
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': {'result': {'sys_id': '1',
-                                                                                          'sys_updated_on': '2',
-                                                                                          'sys_updated_by': '3',
-                                                                                          'number': '4',
-                                                                                          'sys_class_name': '5',
-                                                                                          'sys_created_by': '6',
-                                                                                          'sys_created_on': '7'}}}])
-    mocker.patch.object(ServiceNowAddComment, 'isError', return_value=False)
-    update_comment_or_worknote({'ticket_id': '1', 'note': 'test'})
-    assert demisto.executeCommand.call_count == 1
-    assert demisto.executeCommand.call_args[0][0] == 'servicenow-update-ticket'
-    assert demisto.executeCommand.call_args[0][1]['id'] == '1'
-    assert demisto.executeCommand.call_args[0][1]['work_notes'] == 'test'
+import ServiceNowTroubleshoot
+import demistomock as demisto
+import json
+
+
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
+# TODO: REMOVE the following dummy unit test function
+def test_get_active_incidents_by_instances():
+    pass
+
+
+def test_get_integrations_details(mocker):
+    from ServiceNowTroubleshoot import get_integrations_details
+    http_response = util_load_json("test_data/setting_integration_search_http_response.json")
+    mocker.patch.object(demisto, 'internalHttpRequest', side_effect=http_response)
+    expected = {}
+    res = get_integrations_details()
+    assert expected == res
+
+
+def filter_instances_data():
+    pass
+
+def active_incidents_data():
+    pass
+
+def parse_disabled_instances():
+    pass
+
+def parse_enabled_instances():
+    pass
+    
+

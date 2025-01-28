@@ -4,7 +4,7 @@ commonfields:
   id: GetAwayUsers
   version: -1
 name: GetAwayUsers
-outputs:
+
 - contextPath: AwayUsers.id
   description: Away user ID.
   type: String
