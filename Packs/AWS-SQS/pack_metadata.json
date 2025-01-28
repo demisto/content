@@ -2,7 +2,7 @@
     "name": "AWS - SQS",
     "description": "Amazon Web Services Simple Queuing Service (SQS)",
     "support": "xsoar",
-    "currentVersion": "1.2.30",
+    "currentVersion": "1.2.31",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
