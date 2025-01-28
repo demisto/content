@@ -319,5 +319,8 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }
