@@ -2484,11 +2484,11 @@ Get analysis of a private file or URL submitted to GoogleThreatIntelligence.
 | --- | --- | --- |
 | GoogleThreatIntelligence.Analysis.data.attributes.date | Number | Date of the analysis in epoch format. | 
 | GoogleThreatIntelligence.Analysis.data.attributes.status | String | Status of the analysis. | 
-| GoogleThreatIntelligence.Analysis.data.attributes.sha256 | String | SHA-256 hash of the private file \(if analysis is completed\). | 
+| GoogleThreatIntelligence.Analysis.data.attributes.sha256 | String | SHA-256 hash of the private file. | 
 | GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level | String | Threat severity level of the private file \(if analysis is completed\). | 
 | GoogleThreatIntelligence.Analysis.data.attributes.popular_threat_category | String | Popular threat category of the private file \(if analysis is completed\). | 
 | GoogleThreatIntelligence.Analysis.data.attributes.threat_verdict | String | Threat verdict of the private file \(if analysis is completed\). | 
-| GoogleThreatIntelligence.Analysis.data.attributes.url | String | URL submitted \(if analysis is completed\). | 
+| GoogleThreatIntelligence.Analysis.data.attributes.url | String | URL submitted. | 
 | GoogleThreatIntelligence.Analysis.data.attributes.title | String | Title of the private URL \(if analysis is completed\). | 
 | GoogleThreatIntelligence.Analysis.data.attributes.last_http_response_content_sha256 | String | Last HTTP response content SHA-256 hash of the private URL \(if analysis is completed\). | 
 | GoogleThreatIntelligence.Analysis.data.attributes.positives | String | Ratio of malicious detections to the total number of engines that scanned the private URL \(if analysis is completed\). | 
@@ -2812,7 +2812,7 @@ Scan and get the analysis of a private file submitted to GoogleThreatIntelligenc
 | --- | --- | --- |
 | GoogleThreatIntelligence.Analysis.data.attributes.date | Number | Date of the analysis in epoch format. | 
 | GoogleThreatIntelligence.Analysis.data.attributes.status | String | Status of the analysis. | 
-| GoogleThreatIntelligence.Analysis.data.attributes.sha256 | String | SHA-256 hash of the private file \(if analysis is completed\). | 
+| GoogleThreatIntelligence.Analysis.data.attributes.sha256 | String | SHA-256 hash of the private file. | 
 | GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level | String | Threat severity level of the private file \(if analysis is completed\). | 
 | GoogleThreatIntelligence.Analysis.data.attributes.popular_threat_category | String | Popular threat category of the private file \(if analysis is completed\). | 
 | GoogleThreatIntelligence.Analysis.data.attributes.threat_verdict | String | Threat verdict of the private file \(if analysis is completed\). | 
@@ -2908,7 +2908,7 @@ Scan and get the analysis of a private URL submitted to GoogleThreatIntelligence
 | --- | --- | --- |
 | GoogleThreatIntelligence.Analysis.data.attributes.date | Number | Date of the analysis in epoch format. | 
 | GoogleThreatIntelligence.Analysis.data.attributes.status | String | Status of the analysis. | 
-| GoogleThreatIntelligence.Analysis.data.attributes.url | String | URL submitted \(if analysis is completed\). | 
+| GoogleThreatIntelligence.Analysis.data.attributes.url | String | URL submitted. | 
 | GoogleThreatIntelligence.Analysis.data.attributes.title | String | Title of the private URL \(if analysis is completed\). | 
 | GoogleThreatIntelligence.Analysis.data.attributes.last_http_response_content_sha256 | String | Last HTTP response content SHA-256 hash of the private URL \(if analysis is completed\). | 
 | GoogleThreatIntelligence.Analysis.data.attributes.positives | String | Ratio of malicious detections to the total number of engines that scanned the private URL \(if analysis is completed\). | 

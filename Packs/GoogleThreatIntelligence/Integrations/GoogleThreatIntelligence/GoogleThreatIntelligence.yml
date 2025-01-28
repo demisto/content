@@ -1780,7 +1780,7 @@ script:
       description: Status of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.sha256
-      description: SHA-256 hash of the private file (if analysis is completed).
+      description: SHA-256 hash of the private file.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level
       description: Threat severity level of the private file (if analysis is completed).
@@ -1792,7 +1792,7 @@ script:
       description: Threat verdict of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.url
-      description: URL submitted (if analysis is completed).
+      description: URL submitted.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.title
       description: Title of the private URL (if analysis is completed).
@@ -2158,7 +2158,7 @@ script:
       description: Status of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.sha256
-      description: SHA-256 hash of the private file (if analysis is completed).
+      description: SHA-256 hash of the private file.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level
       description: Threat severity level of the private file (if analysis is completed).
@@ -2410,7 +2410,7 @@ script:
       description: Status of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.url
-      description: URL submitted (if analysis is completed).
+      description: URL submitted.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.title
       description: Title of the private URL (if analysis is completed).

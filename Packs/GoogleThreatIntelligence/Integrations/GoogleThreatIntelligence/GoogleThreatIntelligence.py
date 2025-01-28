@@ -2653,6 +2653,12 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
 
+    if sha256 := raw_response.get('meta', {}).get('file_info', {}).get('sha256'):
+        attributes['sha256'] = sha256
+
+    if url := raw_response.get('meta', {}).get('url_info', {}).get('url'):
+        attributes['url'] = url
+
     if attributes.get('status', '') == 'completed':
         stats = {}
         item_response = client.get_private_item_from_analysis(analysis_id)
@@ -2668,20 +2674,13 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
             stats['threat_verdict'] = VERDICTS.get(verdict, verdict)
 
         # URL attributes
-        if last_analysis_stats := attributes.get('last_analysis_stats'):
+        if last_analysis_stats := item_attributes.get('last_analysis_stats'):
             if detection_engines := sum(last_analysis_stats.values()):
                 positive_detections = last_analysis_stats.get('malicious', 0)
                 stats['positives'] = f'{positive_detections}/{detection_engines}'
 
         attributes.update(stats)
-        for field in [
-            # File attributes
-            'sha256'
-            # URL attributes
-            'url',
-            'title',
-            'last_http_response_content_sha256',
-        ]:
+        for field in ['title', 'last_http_response_content_sha256']:
             if value := item_attributes.get(field):
                 attributes[field] = value
 
