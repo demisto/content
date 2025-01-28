@@ -4082,7 +4082,7 @@ def search_device_command():
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
             headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
         else:
-            if device_groups := single_device['groups']:
+            if device_groups := single_device.get('groups'):
                 single_device.update({'group_names': list(enrich_groups(device_groups).values())})
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_VERBOSE_KEY_MAP)
             headers = list(SEARCH_DEVICE_VERBOSE_KEY_MAP.values())
