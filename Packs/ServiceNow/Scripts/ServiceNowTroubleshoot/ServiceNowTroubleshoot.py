@@ -1,5 +1,5 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from typing import Dict, Any, Tuple, List
 from Packs.Base.Scripts.CommonServerPython.CommonServerPython import CommandResults, tableToMarkdown, return_error, \
     return_results
 import json
@@ -12,13 +12,13 @@ HEADERS_TO_EXTRACTED = ['sizeInBytes',
                         'lastError']
 
 
-def get_active_incidents_by_instances() -> dict[str, Any]:
+def get_active_incidents_by_instances() -> Dict[str, Any]:
     """
         Find active incidents created 30 days ago of 'ServiceNow v2'.
         and generate a Markdown table summarizing the results.
 
         :return: A Dict summarizing the instances and their active incidents,
-        :rtype: `dict
+        :rtype: `Dict
     """
 
     response = demisto.internalHttpRequest('POST', 'incidents/search', body=json.dumps(query))
@@ -31,12 +31,12 @@ def get_active_incidents_by_instances() -> dict[str, Any]:
     return json.loads(response.get('body', '{}'))
 
 
-def get_integrations_details() -> dict[str, Any]:
+def get_integrations_details() -> Dict[str, Any]:
     """
     Retrieve details of the integrations, including their health status.
 
-    :return: A dictionary containing the details of the integrations and their health status.
-    :rtype: dict[str, Any]
+    :return: A Dictionary containing the details of the integrations and their health status.
+    :rtype: Dict[str, Any]
     """
     http_result = json.loads(demisto.internalHttpRequest('POST', 'settings/integration/search').get('body'))
     instances, health = http_result['instances'], http_result['health']
@@ -50,15 +50,15 @@ def get_integrations_details() -> dict[str, Any]:
     return instances_health
 
 
-def filter_instances_data(instances_data) -> tuple[dict, list]:
+def filter_instances_data(instances_data) -> Tuple[Dict, List]:
     """
     Filter the instances data to separate enabled instances and disabled instances with active incidents.
 
-    :param instances_data: A dictionary containing data for each instance.
-    :type instances_data: dict
+    :param instances_data: A Dictionary containing data for each instance.
+    :type instances_data: Dict
 
-    :return: A tuple containing the filtered data for enabled instances and a list of disabled instances with active incidents.
-    :rtype: tuple[dict, list]
+    :return: A Tuple containing the filtered data for enabled instances and a list of disabled instances with active incidents.
+    :rtype: Tuple[Dict, list]
     """
     filtered_data = {}
     disabled_instances = []
@@ -74,7 +74,7 @@ def filter_instances_data(instances_data) -> tuple[dict, list]:
     return filtered_data, disabled_instances
 
 
-def active_incidents_data(disabled_instances: list[str]) -> tuple[dict, dict]:
+def active_incidents_data(disabled_instances: List[str]) -> Tuple[Dict, Dict]:
     """
     Retrieve incidents from ServiceNow instances and filter them based on whether the created instance is enabled or disabled.
 
@@ -83,8 +83,8 @@ def active_incidents_data(disabled_instances: list[str]) -> tuple[dict, dict]:
     :param disabled_instances: A list containing names of disabled instances.
     :type disabled_instances: list
 
-    :return: A tuple containing the active incidents for enabled instances and for disabled instances.
-    :rtype: tuple[dict, list]
+    :return: A Tuple containing the active incidents for enabled instances and for disabled instances.
+    :rtype: Tuple[Dict, list]
     """
     response = get_active_incidents_by_instances()
     disabled_incidents_instances, enabled_incidents_instances = defaultdict(list), defaultdict(list)
@@ -105,7 +105,7 @@ def parse_disabled_instances(disabled_incidents_instances: Dict[str, Any]) -> st
     Parse the list of disabled instances to find those with active incidents
     and generate a Markdown table summarizing the results.
 
-    :param disabled_incidents_instances: A dictionary containing active incidents that were created 30 days ago
+    :param disabled_incidents_instances: A Dictionary containing active incidents that were created 30 days ago
                                         of disabled instances.
 
     :return: A Markdown table summarizing the disabled instances and their active incidents,
@@ -127,16 +127,16 @@ def parse_enabled_instances(enabled_instances_health: Dict[str, Any], enabled_in
     """
     Parse the health information of enabled instances and generate a Markdown table.
 
-    :param enabled_instances_health: A dictionary containing health information for enabled instances.
+    :param enabled_instances_health: A Dictionary containing health information for enabled instances.
     :type enabled_instances_health: Dict[str, Any]
-    :param enabled_incidents_instances: A dictionary containing active incidents that were created 30 days ago
+    :param enabled_incidents_instances: A Dictionary containing active incidents that were created 30 days ago
                                         of enabled instances.
     :type enabled_instances_health: Dict[str, Any]
 
     :return: A Markdown table summarizing the health information of enabled instances.
     :rtype: str
     """
-    human_readable_dict = []
+    human_readable_Dict = []
     for instance_name, instance_data in enabled_instances_health.items():
         filtered_data = {
             'Instance Name': instance_name,
@@ -148,8 +148,8 @@ def parse_enabled_instances(enabled_instances_health: Dict[str, Any], enabled_in
         }
         if instance_name in enabled_incidents_instances:
             filtered_data["Open Incidents> 30 days"] = enabled_incidents_instances[instance_name]
-        human_readable_dict.append(filtered_data)
-    return tableToMarkdown(name="Open Instances Health Information", t=human_readable_dict,
+        human_readable_Dict.append(filtered_data)
+    return tableToMarkdown(name="Open Instances Health Information", t=human_readable_Dict,
                            removeNull=True)
 
 

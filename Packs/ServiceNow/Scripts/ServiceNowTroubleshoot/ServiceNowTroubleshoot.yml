@@ -1,24 +1,31 @@
-args: []
+args:
+- default: false
+  description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+  isArray: false
+  name: dummy
+  required: true
+  secret: false
 comment: "Troubleshot ServiceNow v2 integration by displaying health information of enabled instances and old and active incidents of disabled instances."
+commonfields:
   id: ServiceNowTroubleshoot
   version: -1
 enabled: false
 name: ServiceNowTroubleshoot
 outputs:
-- contextPath: ServiceNowTroubleshoot.Output
-  description: 'ServiceNow Troubleshoot information.'
+- contextPath: BaseScript.Output
+  description: '[Enter a description of the data returned in this output.]'
   type: String
 script: '-'
 system: false
 tags:
+- basescript
 - servicenow
 - servicenow v2
 timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.9.8.24399
-fromversion: 5.5.0
+fromversion: 6.1.0
 marketplaces:
 - xsoar
 - marketplacev2
-

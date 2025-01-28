@@ -1,6 +1,10 @@
-import ServiceNowTroubleshoot
-import demistomock as demisto
+from ServiceNowTroubleshoot import get_integrations_details
+import sys
+sys.path.append('/Users/mmorag/dev/demisto/content/Packs/ServiceNow/Scripts/ServiceNowTroubleshoot/demistomock.py')
+import Packs.ServiceNow.Scripts.ServiceNowTroubleshoot.demistomock as demisto
 import json
+import pytest
+
 
 
 def util_load_json(path):
@@ -14,7 +18,6 @@ def test_get_active_incidents_by_instances():
 
 
 def test_get_integrations_details(mocker):
-    from ServiceNowTroubleshoot import get_integrations_details
     http_response = util_load_json("test_data/setting_integration_search_http_response.json")
     mocker.patch.object(demisto, 'internalHttpRequest', side_effect=http_response)
     expected = {}
