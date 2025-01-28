@@ -2,7 +2,7 @@
     "name": "Exodus Intelligence EVE Platform",
     "description": "Built on original research from some of the best reverse engineers in the world as well as cutting edge machine learning technology,  [Exodus Intelligence’s EVE](https://vpx.exodusintel.com) platform provides deep intelligence about the latest vulnerabilities. This integration allows Cortex XSOAR users to add context regarding the nature of vulnerabilities and their likelihood to be exploited in the wild, identify platforms on which given vulnerabilities exist and have been verified to be exploitable, update incidents with specific mitigation guidance, and much more.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Exodus Intelligence LLC",
     "url": "",
     "email": "eng@exodusintel.com",
