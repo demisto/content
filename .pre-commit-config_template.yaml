@@ -34,7 +34,7 @@ repos:
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.272
+  rev: v0.8.0
   hooks:
   - id: ruff
     parallel: false
@@ -97,7 +97,7 @@ repos:
     args:
     - --ignore=demistomock.py,CommonServerPython.py,CommonServerUserPython.py,conftest.py,.venv
     - -E
-    - --disable=bad-option-value,unsubscriptable-object,E0601,E0606  # Remove E0601,E0606 after CIAC-11651 is done
+    - --disable=bad-option-value,unsubscriptable-object
     - -d duplicate-string-formatting-argument
     - "--msg-template='{path}:{line}:{column}: {msg_id} {obj}: {msg}'"
     - --generated-members=requests.packages.urllib3,requests.codes.ok
@@ -129,7 +129,7 @@ repos:
     - --implicit-optional
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
-    skip: true  #  skip until the https://github.com/demisto/demisto-sdk/pull/4468 will merge
+
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
@@ -221,8 +221,7 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-suffix
-
+    
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json
