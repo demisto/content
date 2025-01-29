@@ -258,7 +258,7 @@ def fetch_events(client: DynatraceClient, events_to_fetch: list, audit_limit: in
         apm_limit (int): limit of APM events to fetch
     """
     fetch_start_time = int(datetime.now().timestamp() * 1000)  # We want this timestamp to look like this: 1737656746001
-    demisto.debug(f"Dynatrace fetch Audit Logs events start time is {fetch_start_time}")
+    demisto.debug(f"Dynatrace fetch start time is {fetch_start_time}")
     
     events_to_send = []
     if "APM" in events_to_fetch:
