@@ -1,6 +1,6 @@
 import demistomock as demisto
 from typing import Any
-from CommonServerPython import CommandResults, tableToMarkdown, return_error, return_results
+from CommonServerPython import *
 import json
 from collections import defaultdict
 
@@ -88,7 +88,7 @@ def categorize_active_incidents(disabled_instances: list[str]) -> tuple[dict, di
     """
     query = {
         'filter': {
-            'query': f'sourceBrand:"{INTEGRATION}" and status:Active and created:>="30 days ago"'
+            'query': f'sourceBrand: "{INTEGRATION}" and status: Active and created: >="30 days ago"'
         }
     }
     incidents_response = wrap_internal_http_request(method='POST', url='incidents/search', body=query)
