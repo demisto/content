@@ -124,8 +124,8 @@ def test_check_powershell_suspicious_patterns():
 # Test check_reconnaissance_temp
 def test_check_suspicious_macos_applescript_commands():
     matches = check_suspicious_macos_applescript_commands(MACOS_COMMAND_LINE)
-    assert "to set visible" in matches
-    assert "false" in matches
+    assert "to set visible" in matches["infostealer_characteristics"]
+    assert "false" in matches["infostealer_characteristics"]
 
 # Test analyze_command_line
 def test_analyze_command_line():
