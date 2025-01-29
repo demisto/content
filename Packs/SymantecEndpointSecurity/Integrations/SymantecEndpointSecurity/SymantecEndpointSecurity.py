@@ -13,6 +13,8 @@ PRODUCT = "endpoint_security"
 DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+MAX_ALLOWED_CHUNKED_ENCODING_ERRORS = 15
+
 
 """
 Sleep time between fetch attempts when an error occurs in the retrieval process,
@@ -35,6 +37,10 @@ class NextPointingNotAvailable(Exception):
     Exception raised when the next pointing is not available.
     """
 
+    ...
+
+
+class RateLimitFromAPI(Exception):
     ...
 
 
@@ -111,6 +117,36 @@ class Client(BaseClient):
         if not res.startswith("["):
             res = f"[{res}]"
         return json.loads(res)
+
+
+def handle_chunked_encoding_error(integration_context: dict[str, str], e: Exception):
+    """
+    Handles the `ChunkedEncodingError` exception raised during an API call.
+    If the number of consecutive `ChunkedEncodingError` occurrences reaches
+    the defined threshold (15) an exception is raised to indicate the error
+    limit has been exceeded.
+    Otherwise, the counter for this error is incremented, logged, and updated
+    in the integration context for next fetch.
+    """
+    if (
+        chunked_encoding_error_counter := int(
+            integration_context.get("chunked_encoding_error_counter", 0)
+        )
+    ) == MAX_ALLOWED_CHUNKED_ENCODING_ERRORS:
+        raise DemistoException(
+            "The API call returned `Response ended prematurely`,"
+            f" reached the maximum allowed errors {chunked_encoding_error_counter}"
+        ) from e
+
+    chunked_encoding_error_counter += 1
+    demisto.debug(
+        "The API call returned `Response ended prematurely` still not raises error,"
+        f" `ChunkedEncodingError` counter is {chunked_encoding_error_counter}"
+    )
+    integration_context.update(
+        {"chunked_encoding_error_counter": str(chunked_encoding_error_counter)}
+    )
+    set_integration_context(integration_context)
 
 
 def sleep_if_necessary(last_run_duration: float) -> None:
@@ -331,6 +367,9 @@ def get_events_command(client: Client, integration_context: dict) -> None:
                 raise UnauthorizedToken
             if e.res.status_code == 410:
                 raise NextPointingNotAvailable
+            if e.res.status_code == 429:
+                raise RateLimitFromAPI
+
         raise
 
     events: list[dict] = list(
@@ -415,6 +454,13 @@ def perform_long_running_loop(client: Client):
             )
             integration_context.pop("next_fetch")
             set_integration_context(integration_context)
+        except RateLimitFromAPI:
+            demisto.info(
+                "Rate limit reached from the API. Sleeping for a few minutes before retrying."
+            )
+            time.sleep(180)
+        except requests.exceptions.ChunkedEncodingError as e:
+            handle_chunked_encoding_error(integration_context, e)
         except Exception as e:
             raise DemistoException("Failed to fetch logs from API") from e
 
