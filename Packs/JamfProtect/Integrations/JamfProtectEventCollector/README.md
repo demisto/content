@@ -11,7 +11,7 @@ Use this integration to fetch audit logs events, alerts events and computer asse
 | Password | The password for the client application. This is used to authenticate the client with the Jamf Protect server. | True |
 | Max alert events per fetch | Maximum number of alert events to fetch at a time. Default is 1000| False |
 | Max audit events per fetch | Maximum number of audit events to fetch at a time. Default is 20,000| False |
-| Fetch Computer Assets Interval | The fetch interval. It is recommended to set it to 12 hours, and the minimum interval is 1 hour. | False |
+| Fetch Computer Assets Interval | The fetch interval. It is recommended to set it to 12 hours. The minimum interval is 1 hour. | False |
 
 
 
