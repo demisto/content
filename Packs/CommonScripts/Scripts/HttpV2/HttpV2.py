@@ -165,6 +165,7 @@ def main():
         args = demisto.args()
         method = args.get('method', '')
         full_url = args.get('url', '')
+        demisto.info(f"{full_url=}")
         body = args.get('body', '')
         request_content_type = args.get('request_content_type', '')
         response_content_type = args.get('response_content_type', '')
@@ -214,11 +215,13 @@ def main():
 
         res = client.http_request(**kwargs)
         parsed_res = get_parsed_response(res, parse_response_as)
+        demisto.info(f"{parsed_res=}")
 
         if save_as_file == 'yes':
             return fileResult(file_name, res.content)
 
         outputs = build_outputs(parsed_res, res)
+        demisto.info(f"{outputs=}")
 
         return CommandResults(
             readable_output=f"Sent a {method} request to {full_url}",
@@ -227,6 +230,7 @@ def main():
             raw_response={'data': parsed_res}
         )
     except Exception as e:
+        demisto.info(f"{str(e)=}")
         return_error(f'Failed to execute HttpV2 script. Error: {str(e)}')
 
 
