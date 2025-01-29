@@ -67,4 +67,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious execution of ODBCConf](../doc_files/Suspicious_execution_of_ODBCConf.png)
+![Suspicious execution of ODBCConf](../doc_files/Uncommon_execution_of_ODBCConf.png)

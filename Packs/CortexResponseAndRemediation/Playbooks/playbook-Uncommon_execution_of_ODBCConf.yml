@@ -1,8 +1,8 @@
-id: Suspicious execution of ODBCConf
+id: Uncommon execution of ODBCConf
 version: -1
-name: Suspicious execution of ODBCConf
+name: Uncommon execution of ODBCConf
 description: |2-
-    This playbook handles "Suspicious execution of ODBCConf" alerts.
+    This playbook handles "Uncommon execution of ODBCConf" alerts.
 
     Playbook Stages:
 
