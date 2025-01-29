@@ -1,10 +1,4 @@
-args:
-- default: false
-  description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-  isArray: false
-  name: dummy
-  required: true
-  secret: false
+args: []
 comment: "Troubleshot ServiceNow v2 integration by displaying health information of enabled instances and old and active incidents of disabled instances."
 commonfields:
   id: ServiceNowTroubleshoot
@@ -18,7 +12,6 @@ outputs:
 script: '-'
 system: false
 tags:
-- basescript
 - servicenow
 - servicenow v2
 timeout: '0'

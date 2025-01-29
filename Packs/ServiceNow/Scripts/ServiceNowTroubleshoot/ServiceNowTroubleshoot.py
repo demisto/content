@@ -1,15 +1,14 @@
-import demistomock as demisto  # noqa: F401
+import demistomock as demisto
 from typing import Dict, Any, Tuple, List
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import CommandResults, tableToMarkdown, return_error, \
-    return_results
+from CommonServerPython import CommandResults, tableToMarkdown, return_error, return_results
 import json
 from collections import defaultdict
 
 INTEGRATION = 'ServiceNow v2'
-HEADERS_TO_EXTRACTED = ['sizeInBytes',
-                        'incidentsPulled',
-                        'lastPullTime',
-                        'lastError']
+NOTE_DISABLED_INCIDENTS = ("### Note: The active incidents, created 30 days ago and listed in the tables for both enabled and"
+                           " disabled instances, are still being mirrored.\n ### Please be aware that irrelevant active incidents"
+                           " may cause system overload. It is recommended to close them.")
+
 
 
 def get_active_incidents_by_instances() -> Dict[str, Any]:
@@ -21,7 +20,6 @@ def get_active_incidents_by_instances() -> Dict[str, Any]:
         :rtype: `Dict
     """
 
-    response = demisto.internalHttpRequest('POST', 'incidents/search', body=json.dumps(query))
     query = {
         'filter': {
             'query': f'sourceBrand:"{INTEGRATION}" and status:Active and created:>="30 days ago"'
@@ -62,7 +60,6 @@ def filter_instances_data(instances_data) -> Tuple[Dict, List]:
     """
     filtered_data = {}
     disabled_instances = []
-
     for instance_name, data in instances_data.items():
         if data['enabled'] == 'true':
             filtered_data[instance_name] = data
@@ -74,7 +71,7 @@ def filter_instances_data(instances_data) -> Tuple[Dict, List]:
     return filtered_data, disabled_instances
 
 
-def active_incidents_data(disabled_instances: List[str]) -> Tuple[Dict, Dict]:
+def categorize_active_incidents(disabled_instances: List[str]) -> Tuple[Dict, Dict]:
     """
     Retrieve incidents from ServiceNow instances and filter them based on whether the created instance is enabled or disabled.
 
@@ -113,12 +110,14 @@ def parse_disabled_instances(disabled_incidents_instances: Dict[str, Any]) -> st
     :rtype: ``str``
     """
     markdown_data = [
-        {'Instance': instance, 'Incidents': "\n".join(incidents)}
+        {'Instance': instance,
+         "Total Active Incidents Created 30 days ago": len(incidents),
+         "Names": "\n".join(incidents
+                            )}
         for instance, incidents in disabled_incidents_instances.items()
     ]
-
     return tableToMarkdown(
-        name="Closed instances with open incidents",
+        name="Disabled instances with Active Incidents Created 30 days ago",
         t=markdown_data,
     )
 
@@ -136,20 +135,21 @@ def parse_enabled_instances(enabled_instances_health: Dict[str, Any], enabled_in
     :return: A Markdown table summarizing the health information of enabled instances.
     :rtype: str
     """
-    human_readable_Dict = []
+    human_readable_dict = []
     for instance_name, instance_data in enabled_instances_health.items():
         filtered_data = {
             'Instance Name': instance_name,
             'Size In Bytes': instance_data['sizeInBytes'],
-            'Number of Incidents Pulled': instance_data['health']['incidentsPulled'],
+            'Number of Incidents Pulled in Last Fetch': instance_data['health']['incidentsPulled'],
             'Last Pull Time': instance_data['health']['lastPullTime'],
             'Query': instance_data['configvalues']['sysparm_query'],
             'Last Error': instance_data['health']['lastError'],
         }
         if instance_name in enabled_incidents_instances:
-            filtered_data["Open Incidents> 30 days"] = enabled_incidents_instances[instance_name]
-        human_readable_Dict.append(filtered_data)
-    return tableToMarkdown(name="Open Instances Health Information", t=human_readable_Dict,
+            filtered_data["Active Incidents Created 30 days ago"] = enabled_incidents_instances[instance_name]
+            filtered_data["Total Active Incidents Created 30 days ago"] = len(enabled_incidents_instances[instance_name])
+        human_readable_dict.append(filtered_data)
+    return tableToMarkdown(name="Enabled Instances Health Information", t=human_readable_dict,
                            removeNull=True)
 
 
@@ -157,10 +157,11 @@ def main():
     try:
         instances = get_integrations_details()
         enabled_instances_health, disabled_instances = filter_instances_data(instances)
-        enabled_incidents_instances, disabled_incidents_instances = active_incidents_data(disabled_instances)
+        enabled_incidents_instances, disabled_incidents_instances = categorize_active_incidents(disabled_instances)
         disabled_instances_hr = parse_disabled_instances(disabled_incidents_instances)
         enabled_instances_hr = parse_enabled_instances(enabled_instances_health, enabled_incidents_instances)
-        return_results(CommandResults(readable_output=f'{enabled_instances_hr} \n --- \n\n\n {disabled_instances_hr}'))
+        return_results(CommandResults(
+            readable_output=f'{enabled_instances_hr} \n --- \n {disabled_instances_hr}\n{NOTE_DISABLED_INCIDENTS}'))
 
     except Exception as ex2:
         return_error(f'Failed to execute ServiceNowAddComment. Error: {str(ex2)}')
