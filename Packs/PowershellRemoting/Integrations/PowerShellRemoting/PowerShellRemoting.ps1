@@ -1,5 +1,8 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
+# Bypass SSL certificate validation
+[System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+
 # remove progress messages such as [oo  ] - used to hide archiving operations
 $global:ProgressPreference = 'SilentlyContinue'
 
