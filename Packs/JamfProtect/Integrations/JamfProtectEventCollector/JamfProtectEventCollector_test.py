@@ -354,3 +354,47 @@ def test_no_alerts_and_next_page_no_audits_and_no_next_page(mocker):
     main()
 
     assert mock_next_run.call_args.args[0] == expected_mock_last_run
+
+
+def test_add_fields_to_events_with_non_computer_events():
+    """
+    Given: A list of non-computer events and an event type.
+    When: Calling the add_fields_to_events function.
+    Then: Ensure the '_time' field and 'source_log_type' field are added to each event.
+    """
+    from JamfProtectEventCollector import add_fields_to_events
+    events = [
+        {"id": 1, "date": "2022-01-01T00:00:00Z"},
+        {"id": 2, "created": "2022-01-02T00:00:00Z"}
+    ]
+    event_type = "alert"
+
+    updated_events = add_fields_to_events(events, event_type)
+
+    assert len(updated_events) == 2
+    assert updated_events[0]["_time"] == "2022-01-01T00:00:00Z"
+    assert updated_events[0]["source_log_type"] == "alert"
+    assert updated_events[1]["_time"] == "2022-01-02T00:00:00Z"
+    assert updated_events[1]["source_log_type"] == "alert"
+
+
+def test_add_fields_to_events_with_computer_events():
+    """
+    Given: A list of computer events and an event type.
+    When: Calling the add_fields_to_events function.
+    Then: Ensure only the 'source_log_type' field is added to each event.
+    """
+    from JamfProtectEventCollector import add_fields_to_events
+    events = [
+        {"id": 1, "created": "2022-01-02T00:00:00Z", "name": "Computer 1"},
+        {"id": 2, "created": "2022-01-02T00:00:00Z", "name": "Computer 2"}
+    ]
+    event_type = "computer"
+
+    updated_events = add_fields_to_events(events, event_type)
+
+    assert len(updated_events) == 2
+    assert "_time" not in updated_events[0]
+    assert updated_events[0]["source_log_type"] == "computer"
+    assert "_time" not in updated_events[1]
+    assert updated_events[1]["source_log_type"] == "computer"
