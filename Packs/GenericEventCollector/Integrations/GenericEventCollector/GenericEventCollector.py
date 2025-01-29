@@ -378,9 +378,10 @@ def fetch_events(client: Client,
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {
         PlaceHolders.LAST_FETCHED_DATETIME.value: latest_created_datetime.isoformat(),
-        PlaceHolders.LAST_FETCHED_ID.value: str(last_fetched_id),
         PlaceHolders.FIRST_FETCH_DATETIME.value: last_run[PlaceHolders.FIRST_FETCH_DATETIME.value],
     }
+    if last_fetched_id is not None:
+        next_run[PlaceHolders.LAST_FETCHED_ID.value] = last_fetched_id
     # endregion
 
     return next_run, returned_event_list
@@ -666,21 +667,12 @@ def main() -> None:
             )
 
         elif command == 'fetch-events':
-
-            # # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
-            # max_results = arg_to_number(
-            #     arg=params.get('max_fetch'),
-            #     arg_name='max_fetch',
-            #     required=False
-            # )
-            #
-            # if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-            #     max_results = MAX_INCIDENTS_TO_FETCH
-
+            last_run = demisto.getLastRun()  # getLastRun() gets the last run dict.
+            demisto.debug(f"Last run: {last_run}")
             next_run, events = fetch_events(
                 client=client,
                 params=params,
-                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict.
+                last_run=last_run,
                 first_fetch_datetime=first_fetch_datetime,
                 endpoint=endpoint,
                 http_method=http_method,
@@ -688,12 +680,13 @@ def main() -> None:
                 timestamp_field_config=timestamp_field_config,
             )
 
-            # saves next_run for the time fetch-incidents are invoked.
-            demisto.setLastRun(next_run)
-
             # Fix The JSON Format to send to XSIAM dataset.
             events_to_xsiam = organize_events_to_xsiam_format(events, events_keys)
             send_events_to_xsiam(events_to_xsiam, vendor=vendor, product=product)  # noqa
+
+            # saves next_run for the time fetch-incidents are invoked.
+            demisto.debug(f"setting last run:{next_run}")
+            demisto.setLastRun(next_run)
         elif command == "generic-event-collector-get-events":
             args: dict[Any, Any] = demisto.args()
             should_push_events: bool = argToBoolean(args.get("should_push_events"))
