@@ -2,7 +2,7 @@
     "name": "Web File Repository",
     "description": "Simple web server with a file uploading console to store small files.\n",
     "support": "community",
-    "currentVersion": "1.0.28",
+    "currentVersion": "1.0.29",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
