@@ -218,12 +218,7 @@ def ack_unack_alerts(ids, status, client):
     data = []
     for id in ids:
         data.append({'id': id, 'ack': status})
-    response = client.http_post_request('/api/open/alerts/ack', {'data': data})
-
-    if 'error' in response and response['error']:
-        return None
-
-    return response.get("result", {}).get("id", None)
+    client.http_post_request('/api/open/alerts/ack', {'data': data})
 
 
 def ack_alerts(ids, client):
