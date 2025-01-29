@@ -276,21 +276,21 @@ class GwClient(GwRequests):
             GwAPIException: If status_code != 200.
         """
         response = self._get(
-            endpoint="/api/v1/status/gcenter/"
+            endpoint="/api/v1/settings/"
         )
         if response.status_code == 200:
             demisto.info(
-                f"Get healthchecks on GCenter {self.ip}: [OK]"
+                f"Get settings on GCenter {self.ip}: [OK]"
             )
             return True
         else:
             demisto.error(
-                f"Get healthchecks on GCenter {self.ip}: [FAILED]",
+                f"Get settings on GCenter {self.ip}: [FAILED]",
                 response.text, response.status_code, response.reason
             )
             return False
 
-def test_module(client: GwClient) -> str:  # noqa: E501
+def test_module(client: GwClient, user: str, password: str, token: str) -> str:  # noqa: E501
     """Tests API connectivity and authentication command.
 
     Args:
@@ -300,6 +300,8 @@ def test_module(client: GwClient) -> str:  # noqa: E501
         'Authentication successful' when the GCenter connection works.
         'Authentication error' when the GCenter connection doesn't works.
     """
+    client.auth(user=user, password=password, token=token)
+
     if client.is_authenticated():
         return "ok"
     else:
@@ -2105,7 +2107,7 @@ def main() -> None:
         )
         if command == "test-module":
             return_results( # noqa: F405
-                test_module(client=client)
+                test_module(client=client,user=user,password=password,token=token)
             ) 
         elif command == "fetch-incidents":
             return_results( # noqa: F405
