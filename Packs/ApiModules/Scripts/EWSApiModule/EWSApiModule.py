@@ -175,7 +175,7 @@ class GetSearchableMailboxes(EWSService):
         if self.protocol.version.build < EXCHANGE_2013:
             raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2013 servers and later')
         elements = self._get_elements(payload=self.get_payload())
-        return [ self.parse_element(e) for e in elements]
+        return [ self.parse_element(e) for e in elements if e.find(f"{{{TNS}}}ReferenceId").text]
 
     def get_payload(self):
         element = create_element(f'm:{self.SERVICE_NAME}')
