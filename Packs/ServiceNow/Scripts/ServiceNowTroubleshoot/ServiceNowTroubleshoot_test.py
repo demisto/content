@@ -77,9 +77,9 @@ def test_parse_disabled_instances():
 
     disabled_incidents_instances = {'ServiceNow v2_instance_1': ['ServiceNow Incident INC0022222']}
     res = parse_disabled_instances(disabled_incidents_instances)
-    expected_result = "### Disabled instances with Active Incidents Created 30 days ago \n\n'\
-        ' - **The following active incidents are still\n|Instance|Names|Total Active Incidents Created 30 days ago|\n'\
-        |---|---|---|\n| ServiceNow v2_instance_1 | ServiceNow Incident INC0022222 | 1 |\n"
+    expected_result = ('### Disabled instances with Active Incidents Created 30 days ago\n'
+                       '|Instance|Names Active Incidents Created 30 days ago|Total|\n'
+                       '|---|---|---|\n| ServiceNow v2_instance_1 | ServiceNow Incident INC0022222 | 1 |\n')
     assert res == expected_result
 
 
@@ -119,11 +119,10 @@ def test_parse_enabled_instances():
         }
     }
     enabled_incidents_instances = {'ServiceNow v2_instance_2': ['ServiceNow Incident INC0011111']}
-    expected = '### Open Instances Health Information \n\n "\
-    "- **UnreActive incidents** \n\n"\
-        "|Instance Name|Last Pull Time|Number of Incidents Pulled|Open Incidents> 30 days|Query|Size In Bytes|\n"\
-        "|---|---|---|---|---|---|\n"\
-        "| ServiceNow v2_instance_2 | 2025-01-27T09:26:45.226409678Z | 10 | ServiceNow Incident INC0011111 |"\
-        " stateNOT IN6,7 | 3066 |\n'
+    expected = ('### Enabled Instances Health Information \n\n\n'
+                '|Instance Name|Last Pull Time|Names of Active Incidents Created 30 days ago|'
+                'Number of Incidents Pulled in Last Fetch|Query|Size In Bytes|Total Active Incidents Created 30 days ago|\n'
+                '|---|---|---|---|---|---|---|\n| ServiceNow v2_instance_2 | 2025-01-27T09:26:45.226409678Z |'
+                ' ServiceNow Incident INC0011111 | 10 | stateNOT IN6,7 | 3066 | 1 |\n')
     res = parse_enabled_instances(enabled_instances_health, enabled_incidents_instances)
     assert res == expected

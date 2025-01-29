@@ -10,7 +10,6 @@ NOTE_DISABLED_INCIDENTS = ("### Note: The active incidents, created 30 days ago 
                            " may cause system overload. It is recommended to close them.")
 
 
-
 def get_active_incidents_by_instances() -> Dict[str, Any]:
     """
         Find active incidents created 30 days ago of 'ServiceNow v2'.
@@ -111,9 +110,9 @@ def parse_disabled_instances(disabled_incidents_instances: Dict[str, Any]) -> st
     """
     markdown_data = [
         {'Instance': instance,
-         "Total Active Incidents Created 30 days ago": len(incidents),
-         "Names": "\n".join(incidents
-                            )}
+         "Total": len(incidents),
+         "Names Active Incidents Created 30 days ago": "\n".join(incidents
+                                                                 )}
         for instance, incidents in disabled_incidents_instances.items()
     ]
     return tableToMarkdown(
@@ -146,7 +145,7 @@ def parse_enabled_instances(enabled_instances_health: Dict[str, Any], enabled_in
             'Last Error': instance_data['health']['lastError'],
         }
         if instance_name in enabled_incidents_instances:
-            filtered_data["Active Incidents Created 30 days ago"] = enabled_incidents_instances[instance_name]
+            filtered_data["Names of Active Incidents Created 30 days ago"] = enabled_incidents_instances[instance_name]
             filtered_data["Total Active Incidents Created 30 days ago"] = len(enabled_incidents_instances[instance_name])
         human_readable_dict.append(filtered_data)
     return tableToMarkdown(name="Enabled Instances Health Information", t=human_readable_dict,
