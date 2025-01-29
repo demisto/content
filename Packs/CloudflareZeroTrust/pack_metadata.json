@@ -1,0 +1,24 @@
+{
+    "name": "Cloudflare Zero Trust",
+    "description": "Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and a content distribution network to provide content across its network of servers.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Security",
+        "Network"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Cloudflare",
+        "Zero Trust"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
