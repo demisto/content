@@ -733,7 +733,7 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
             if public_ip:
                 data['properties.ipConfigurations.properties.publicIPAddress.id'] = public_ip.get('id')
         
-    readable_output = tableToMarkdown('Public IP Addresses List',
+    readable_output = tableToMarkdown('Network Interfaces List',
                                       data_from_response,
                                       [
                                        'name', 'id', 'properties.provisioningState', 'properties.ipConfigurations.name',
@@ -817,7 +817,7 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
         if subnet:
             data_from_response['properties.ipConfigurations.properties.subnet.id'] = subnet.get('id')
         
-    readable_output = tableToMarkdown('Public IP Addresses List',
+    readable_output = tableToMarkdown('Network Interface',
                                       data_from_response,
                                       [
                                        'name', 'etag', 'properties.provisioningState', 'properties.ipConfigurations.name',

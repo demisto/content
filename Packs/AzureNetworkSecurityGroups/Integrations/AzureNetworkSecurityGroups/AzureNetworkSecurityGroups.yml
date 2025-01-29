@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Azure Network Security Groups-bar
+  id: Azure Network Security Groups
   version: -1
 configuration:
 - defaultvalue: d4736600-e3d5-4c97-8e65-57abd2b979fe
@@ -102,8 +102,8 @@ configuration:
   section: Connect
   required: false
 description: Azure network security groups are used to filter network traffic to and from Azure resources in an Azure virtual network.
-display: Azure Network Security Groups-bar
-name: Azure Network Security Groups-bar
+display: Azure Network Security Groups
+name: Azure Network Security Groups
 script:
   commands:
   - description: List all network security groups.
@@ -617,31 +617,31 @@ script:
     name: azure-nsg-public-ip-addresses-list
     outputs:
     - contextPath: AzureNSG.PublicIPAdress.name
-      description: The public ip address's name
+      description: The public ip address's name.
       type: String
     - contextPath: AzureNSG.PublicIPAdress.id
-      description: The public ip address's id
+      description: The public ip address's id.
       type: String
     - contextPath: AzureNSG.PublicIPAdress.etag
-      description: The public ip address's etag
+      description: The public ip address's etag.
       type: String
     - contextPath: AzureNSG.PublicIPAdress.provisioningState
-      description: The public ip address's provisioning state
+      description: The public ip address's provisioning state.
       type: String
     - contextPath: AzureNSG.PublicIPAdress.publicIPAddressVersion
-      description: The public ip address's version
+      description: The public ip address's version.
       type: String
     - contextPath: AzureNSG.PublicIPAdress.ipAddress
-      description: The public ip address's ip address
+      description: The public ip address's ip address.
       type: String
     - contextPath: AzureNSG.PublicIPAdress.domainNameLabel
-      description: The public ip address's domain name label
+      description: The public ip address's domain name label.
       type: String
     - contextPath: AzureNSG.PublicIPAdress.fqdn
       description: The public ip address's fully qualified domain name (FQDN).
       type: String
     arguments:
-    - description: " The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’ "
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
       name: resource_group_name
       default: false
       type: String
@@ -667,28 +667,28 @@ script:
     name: azure-nsg-virtual-networks-list
     outputs:
     - contextPath: AzureNSG.VirtualNetwork.name
-      description: The virtual network's name
+      description: The virtual network's name.
       type: String
     - contextPath: AzureNSG.VirtualNetwork.etag
-      description: The virtual network's etag
+      description: The virtual network's etag.
       type: String
     - contextPath: AzureNSG.VirtualNetwork.location
-      description: The virtual network's location
+      description: The virtual network's location.
       type: String
     - contextPath: AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes
       description: A list of address blocks reserved for this virtual network in CIDR notation.
       type: String
     - contextPath: AzureNSG.VirtualNetwork.properties.subnets.name
-      description: The virtual network's subnet name
+      description: The virtual network's subnet name.
       type: List
     - contextPath: AzureNSG.VirtualNetwork.properties.subnets.properties.addressPrefix
-      description: The virtual network's subnet address prefix
+      description: The virtual network's subnet address prefix.
       type: List
     - contextPath: AzureNSG.VirtualNetwork.properties.subnets.properties.ipConfigurations
-      description: The virtual network's ip configuration
+      description: The virtual network's ip configuration.
       type: JSON
     arguments:
-    - description: " The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’ "
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
       name: resource_group_name
       default: false
       type: String
@@ -714,13 +714,13 @@ script:
     name: azure-nsg-security-group-create
     outputs:
     - contextPath: AzureNSG.SecurityGroup.name
-      description: The network security group's name
+      description: The network security group's name.
       type: String
     - contextPath: AzureNSG.SecurityGroup.etag
-      description: The network security group's etag
+      description: The network security group's etag.
       type: String
     - contextPath: AzureNSG.SecurityGroup.location
-      description: The network security group's location
+      description: The network security group's location.
       type: String
     - contextPath: AzureNSG.SecurityGroup.properties.securityRules
       description: A collection of security rules of the network security group.
@@ -732,7 +732,7 @@ script:
       type: String
       isArray: false
       required: true
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’"
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
       name: resource_group_name
       default: false
       type: String
@@ -754,13 +754,13 @@ script:
     name: azure-nsg-network-interfaces-list
     outputs:
     - contextPath: AzureNSG.NetworkInterfaces.name
-      description: The network interface's name
+      description: The network interface's name.
       type: String
     - contextPath: AzureNSG.NetworkInterfaces.id
-      description: The network interface's id
+      description: The network interface's id.
       type: String
     - contextPath: AzureNSG.NetworkInterfaces.properties.provisioningState
-      description: The network interface's provisioning state
+      description: The network interface's provisioning state.
       type: String
     - contextPath: AzureNSG.NetworkInterfaces.properties.ipConfigurations.name
       description: The name of the resource that is unique within a resource group.
@@ -778,25 +778,25 @@ script:
       description: List of DNS servers IP addresses.
       type: List
     - contextPath: AzureNSG.NetworkInterfaces.properties.dnsSettings.appliedDnsServers
-      description: List of all DNS servers from all NICs that are part of the Availability Set. 
+      description: List of all DNS servers from all NICs that are part of the Availability Set.
       type: List
     - contextPath: AzureNSG.NetworkInterfaces.properties.dnsSettings.internalDomainNameSuffix
-      description: The network interface's internal domain name suffix
+      description: The network interface's internal domain name suffix.
       type: String
     - contextPath: AzureNSG.NetworkInterfaces.properties.macAddress
-      description: The network interface's mac address
+      description: The network interface's mac address.
       type: String
     - contextPath: AzureNSG.NetworkInterfaces.properties.virtualMachine.id
-      description: The network interface's virtual machine's id
+      description: The network interface's virtual machine's id.
       type: String
     - contextPath: AzureNSG.NetworkInterfaces.location
-      description: The network interface's location
+      description: The network interface's location.
       type: String
     - contextPath: AzureNSG.NetworkInterfaces.kind
-      description: The network interface's kind
+      description: The network interface's kind.
       type: String
     arguments:
-    - description: " The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’ "
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
       name: resource_group_name
       default: false
       type: String
@@ -822,13 +822,13 @@ script:
     name: azure-nsg-network-interfaces-create
     outputs:
     - contextPath: AzureNSG.NetworkInterface.name
-      description: The network interface's name
+      description: The network interface's name.
       type: String
     - contextPath: AzureNSG.NetworkInterface.etag
-      description: The network interface's etag
+      description: The network interface's etag.
       type: String
     - contextPath: AzureNSG.NetworkInterface.properties.provisioningState
-      description: The network interface's provisioning state
+      description: The network interface's provisioning state.
       type: String
     - contextPath: AzureNSG.NetworkInterface.properties.ipConfigurations.name
       description: The name of the resource that is unique within a resource group.
@@ -840,16 +840,16 @@ script:
       description: The id of the public IP address of the IP configuration.
       type: List
     - contextPath: AzureNSG.NetworkInterface.properties.ipConfigurations.properties.subnet.id
-      description: The subnet id of the ip configuration
+      description: The subnet id of the ip configuration.
       type: List
     arguments:
-    - description: "The network interface name"
+    - description: "The network interface name."
       name: nic_name
       default: false
       type: String
       isArray: false
       required: true
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’"
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
       name: resource_group_name
       default: false
       type: String
@@ -861,37 +861,37 @@ script:
       type: String
       isArray: false
       required: false
-    - description: "Existing network security group name. Note: use azure-nsg-security-groups-list in order to find existing network security group name"
+    - description: "Existing network security group name. Note: use azure-nsg-security-groups-list in order to find existing network security group name."
       name: nsg_name
       default: false
       type: String
       isArray: false
       required: false
-    - description: "Existing ip configuration name Note: use azure-nsg-public-ip-adresses-list in order to find available ip configuration "
+    - description: "Existing ip configuration name Note: use azure-nsg-public-ip-adresses-list in order to find available ip configuration."
       name: ip_config_name
       default: false
       type: String
       isArray: false
       required: true
-    - description: "The private ip"
+    - description: "The private ip."
       name: private_ip
       default: false
       type: String
       isArray: false
       required: false
-    - description: "The public ip address name"
+    - description: "The public ip address name."
       name: public_ip_address_name
       default: false
       type: String
       isArray: false
       required: false
-    - description: "The virtual network name"
+    - description: "The virtual network name."
       name: vnet_name
       default: false
       type: String
       isArray: false
-      required: false
-    - description: "The subnet name"
+      required: true
+    - description: "The subnet name."
       name: subnet_name
       default: false
       type: String
