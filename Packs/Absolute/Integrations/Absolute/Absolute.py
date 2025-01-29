@@ -354,47 +354,6 @@ class ClientV3(BaseClient):
         self._secret_key = secret_key
         self._jws = JsonWebSignature()
 
-    def prepare_request_data(self, method: str, url_suffix: str, query_string: str) -> dict[str, Any]:
-        """
-        Prepares the request data for making an API call.
-
-        Args:
-            method (str): The HTTP method to be used for the request.
-            url_suffix (str): The endpoint URL suffix for the API call.
-            query_string (str): The query string parameters for the API call.
-
-        Returns:
-            dict[str, Any]: A dictionary containing the prepared request data with keys 'method', 'contentType',
-                           'uri', 'queryString', and 'payload'.
-        """
-        return {
-            "method": method,
-            "contentType": "application/json",
-            "uri": url_suffix,
-            "queryString": query_string,
-            "payload": {}
-        }
-
-    def prepare_request_headers(self, request_data: dict) -> dict[str, Any]:
-        """
-        Prepares the request headers for making an API call.
-
-        Args:
-            request_data (dict): The request data dictionary obtained from the `prepare_request_data` method.
-
-        Returns:
-            dict[str, Any]: A dictionary containing the prepared request headers.
-        """
-        return {
-            "alg": "HS256",
-            "kid": self._token_id,
-            "method": request_data["method"],
-            "content-type": request_data["contentType"],
-            "uri": request_data["uri"],
-            "query-string": request_data["queryString"],
-            "issuedAt": round(time.time() * 1000)
-        }
-
     def prepare_request(self, method: str, url_suffix: str, query_string: str) -> bytes:
         """
         Prepares the signed HTTP request data for making an API call.
@@ -407,8 +366,16 @@ class ClientV3(BaseClient):
         Returns:
             bytes: The prepared signed HTTP request data.
         """
-        request_data = self.prepare_request_data(method, url_suffix, query_string)
-        headers = self.prepare_request_headers(request_data)
+        headers = {
+            "alg": "HS256",
+            "kid": self._token_id,
+            "method": method,
+            "content-type": "application/json",
+            "uri": url_suffix,
+            "query-string": query_string,
+            "issuedAt": round(time.time() * 1000)
+        }
+
         return self._jws.serialize_compact(headers, json.dumps({"data": {}}), self._secret_key)
 
     def fetch_events_request(self, query_string: str) -> dict[str, Any]:
@@ -422,12 +389,11 @@ class ClientV3(BaseClient):
             dict: A dictionary containing the response object from the HTTP request.
         """
         signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
-        return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
-                                  headers={"content-type": "text/plain"})
+        return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL)
 
     def fetch_events_between_dates(self, fetch_limit: int, start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
         """
-        Helper function to fetch events with pagination from the API based on the provided parameters.
+        Helper function to fetch events with time window from the API based on the provided parameters.
 
         Args:
             fetch_limit (int): The maximum number of events to fetch.
@@ -435,7 +401,7 @@ class ClientV3(BaseClient):
             end_date (datetime): The end date for the events to be fetched.
 
         Returns:
-            tuple: A tuple containing a list of fetched events and the next page token (if any) for pagination.
+            list: A list of fetched events.
         """
         all_events = []
         while len(all_events) < fetch_limit:
@@ -1047,15 +1013,15 @@ def get_device_location_command(args, client) -> CommandResults:
 
 def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
-        Fetches events from the APIv3 client, with pagination and duplication handling.
+        Fetches events from the API client, with time window and duplication handling.
         The function using the client to fetch events, and then helper function to handle duplication,
         add time field and calculate the new latest events.
 
         Args:
             client (ClientV3): The client object used for fetching events.
             fetch_limit (int): The maximum number of events to fetch.
-            last_run (Dict[str, Any]): A dictionary containing the last run information, including the next page token,
-                latest events ID, start date, and end date.
+            last_run (Dict[str, Any]): A dictionary containing the last run information, including the latest events time,
+                latest events ID, and end date.
 
         Returns:
             Tuple[List[Dict[str, Any]], Dict[str, Any]]: A tuple containing the fetched events and the updated last run
@@ -1065,7 +1031,7 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
     latest_events_time = last_run.get('latest_events_time')
     end_date = datetime.utcnow()
     start_date: datetime = datetime.strptime(latest_events_time, "%Y-%m-%dT%H:%M:%S.%fZ") if latest_events_time else (
-            end_date - timedelta(days=7))  # TODO: change to one minute ago
+        end_date - timedelta(days=7))  # TODO: change to one minute ago
     demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {last_run=}')
 
     if fetch_limit == len(last_run_latest_events_id):
@@ -1094,7 +1060,7 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
 def process_events(events: List[Dict[str, Any]], last_run_latest_events_id: List[str], should_get_latest_events: bool = True) -> \
     tuple[List[Dict[str, Any]], tuple[List[str], str]]:
     """
-    Processes events by handling duplication, adding a time field, and optionally getting the latest events ID.
+    Processes events by handling duplication, adding a time field, and optionally getting the latest events ID and time.
 
     Args:
         events (List[Dict[str, Any]]): The list of events to be processed.
@@ -1105,7 +1071,7 @@ def process_events(events: List[Dict[str, Any]], last_run_latest_events_id: List
         Tuple[List[Dict[str, Any]], List[str]]: A tuple containing the processed events and the latest events ID.
 
     """
-    demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id")
+    demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id and time")
     earliest_event_time = events[0].get('eventDateTimeUtc') if events else None
     latest_event_time = events[-1].get('eventDateTimeUtc') if events else ''
     latest_events_id = []

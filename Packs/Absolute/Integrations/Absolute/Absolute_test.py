@@ -569,13 +569,6 @@ def test_fetch_events_with_last_run_object_and_handle_deduplication(mocker, abso
     import Absolute
     mock_response = util_load_json('test_data/siem_events.json')
     Absolute.SEIM_EVENTS_PAGE_SIZE = 8
-
-    # first_mock_response = mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE], (
-    #     [mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE][-1].get('id')],
-    #     mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE][-1].get('eventDateTimeUtc'))
-    # second_mock_response = mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:], (
-    #     [mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:][-1].get('id')],
-    #     mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:][-1].get('eventDateTimeUtc'))
     first_mock_response = mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE]
     second_mock_response = mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:]
     mocker.patch.object(ClientV3, 'fetch_events_between_dates', return_value=first_mock_response)
@@ -770,3 +763,31 @@ def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
                                                            end_date=end_date)
     expected_query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}'
     assert query == expected_query
+
+
+def test_fetch_events_case_fetch_limit_equal_last_run_events_id(mocker, absolute_client_v3):
+    """
+    Given:
+        - The fetch_events function is called.
+
+    When:
+        - The fetch limit is equal to the amount of last run events ID.
+
+    Then:
+        - The function should double the fetch limit.
+    """
+    from Absolute import ClientV3
+    from Absolute import fetch_events
+    mock_response = util_load_json('test_data/siem_events_test_fetch_limit.json')
+    fetch_limit = 2
+    first_mock_response = {'data': mock_response.get('data')[:fetch_limit]}
+    second_mock_response = {'data': mock_response.get('data')[fetch_limit:]}
+    mocker.patch.object(ClientV3, 'prepare_query_string_for_fetch_events', return_value='')
+    mocker.patch.object(ClientV3, 'fetch_events_request', return_value=first_mock_response)
+    events_first_batch, last_run_object = fetch_events(absolute_client_v3, fetch_limit, {})
+    mocker.patch.object(ClientV3, 'fetch_events_request', return_value=second_mock_response)
+    events_second_batch, _ = fetch_events(absolute_client_v3, fetch_limit, last_run_object)
+    all_events = events_first_batch + events_second_batch
+    assert len(events_first_batch) == 2
+    assert len(events_second_batch) == 4
+    assert all_events == mock_response.get('data')
