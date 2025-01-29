@@ -20,7 +20,7 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | template_name | The name of a template to choose it from 'templates'. |
 | templates | A list of templates to choose from for building an entry. |
 | base_time | The base time for the relative time provided to earliest_time or latest_time \(The default is the first available value from the following: alert.occurred, incident.occurred, alert.created, incident.created, now\). |
-| round_time | The value \(in seconds\) used to round down the base time \(Default = 0\). |
+| round_time | The value \(in seconds\) used to round down the base time \(Default = 0\). If two parameters are provided in a list, they will be applied to the base time for `earliest_time` and `latest_time`, respectively. |
 | earliest_time | The earliest time at which the time range of the query starts \(Default = 24 hours ago\). |
 | latest_time | The latest time at which the time range of the query ends \(Default = now\). |
 | variable_substitution | The pair of default opening and closing markers that enclose a variable name \(Default = $\{,\}\). |
@@ -92,7 +92,7 @@ The summary of the template structure in the templates is provided below.
       "time_range": {
         "earliest_time": "<earliest time>",
         "latest_time": "<latest time>",
-        "round_time": "<round time>"
+        "round_time": <round time>
       },
       "conditions": <conditions>
     },
@@ -125,7 +125,9 @@ The summary of the template structure in the templates is provided below.
 | .query.command.using | [Optional] The name of the integration instance to execute the XQL query command. It overrides `xql_query_instance` in the argument parameters. | String |
 | .query.time_range.earliest_time | [Optional] The earliest time at which the time range of the query starts. It overrides `earliest_time` in the argument parameters. | String or Number |
 | .query.time_range.latest_time | [Optional] The latest time at which the time range of the query ends. It overrides `latest_time` in the argument parameters. | String or Number |
-| .query.time_range.round_time | [Optional] The value (in seconds) used to round down the base time. It overrides `round_time` in the argument parameters. | String or Number |
+| .query.time_range.round_time | [Optional] The value (in seconds) used to round down the base time. If the value is of type dict, `.query.time_range.round_time.earliest_time` and `.query.time_range.round_time.latest_time` can be provided. This parameter overrides `round_time` in the argument parameters. | String, Number or Dict |
+| .query.time_range.round_time.earliest_time | [Optional] The value (in seconds) used to round down the base time for `earliest_time`. | String or Number |
+| .query.time_range.round_time.latest_time | [Optional] The value (in seconds) used to round down the base time for `latest_time`. | String or Number |
 | .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, the `.entry.default` will be applied if it is specified and the conditions defined for it are satisfied, otherwise, an empty record set will be returned. [Variable Substitution](#variable-substitution) is supported. | Any |
 
 

@@ -1911,6 +1911,72 @@ class Main:
         return str(var_opening), str(var_closing)
 
     @staticmethod
+    def __get_base_time(
+        args: dict[Hashable, Any],
+        template: dict[Hashable, Any],
+        context: ContextData,
+    ) -> tuple[datetime, datetime]:
+        """ Get the base time of earliest_time and latest_time
+
+        :param args: The argument parameters.
+        :param template: The template.
+        :param context: The context data.
+        :return: The base time of earliest_time and latest_time.
+        """
+        round_time = demisto.get(template, 'query.time_range.round_time')
+        if round_time is None:
+            round_time = argToList(args.get('round_time'))
+            if len(round_time) == 0:
+                round_time_latest = round_time_earliest = 0
+            elif len(round_time) == 1:
+                round_time_latest = round_time_earliest = arg_to_number(round_time[0]) or 0
+            elif len(round_time) == 2:
+                round_time[0] = arg_to_number(round_time[0])
+                assert isinstance(round_time[0], int), (
+                    f'list of round_time must be number - {round_time}'
+                )
+                round_time_earliest = round_time[0]
+
+                round_time[1] = arg_to_number(round_time[1])
+                assert isinstance(round_time[1], int), (
+                    f'list of round_time must be number - {round_time}'
+                )
+                round_time_latest = round_time[1]
+            else:
+                raise DemistoException(f'Too many round_time - {round_time}')
+
+        elif isinstance(round_time, dict):
+            round_time_earliest = arg_to_number(round_time.get('earliest_time')) or 0
+            round_time_latest = arg_to_number(round_time.get('latest_time')) or 0
+        elif isinstance(round_time, str | int):
+            round_time_latest = round_time_earliest = arg_to_number(round_time) or 0
+        else:
+            raise DemistoException(f'query.time_range.round_time must be of type str or dict - {round_time}')
+
+        base_time = args.get('base_time')
+        if not base_time:
+            # Set default base time
+            for k in ['alert.occurred', 'incident.occurred', 'alert.created', 'incident.created']:
+                base_time = context.get(k)
+                if base_time and base_time != '0001-01-01T00:00:00Z':
+                    break
+            else:
+                base_time = 'now'
+
+        base_time = Main.__parse_date_time(base_time, None)
+
+        return (
+            base_time if not round_time_earliest else datetime.fromtimestamp(
+                math.floor(base_time.timestamp() / round_time_earliest) * round_time_earliest,
+                base_time.tzinfo
+            ),
+            base_time if not round_time_latest else datetime.fromtimestamp(
+                math.floor(base_time.timestamp() / round_time_latest) * round_time_latest,
+                base_time.tzinfo
+            )
+        )
+
+    @staticmethod
     def __build_query_params(
         args: dict[Hashable, Any],
         query_name: str,
@@ -1927,27 +1993,11 @@ class Main:
         :param context: The context data.
         :return: Query parameters.
         """
-        base_time = args.get('base_time')
-        if not base_time:
-            # Set default base time
-            for k in ['alert.occurred', 'incident.occurred', 'alert.created', 'incident.created']:
-                base_time = context.get(k)
-                if base_time and base_time != '0001-01-01T00:00:00Z':
-                    break
-            else:
-                base_time = 'now'
-
-        base_time = Main.__parse_date_time(base_time, None)
-
-        if round_time := arg_to_number(
-            demisto.get(template, 'query.time_range.round_time')
-            or args.get('round_time')
-            or 0
-        ):
-            base_time = datetime.fromtimestamp(
-                math.floor(base_time.timestamp() / round_time) * round_time,
-                base_time.tzinfo
-            )
+        earliest_time_base, latest_time_base = Main.__get_base_time(
+            args=args,
+            template=template,
+            context=context,
+        )
 
         return QueryParams(
             query_name=query_name,
@@ -1961,7 +2011,7 @@ class Main:
                     'query.time_range.earliest_time',
                     args.get('earliest_time', '24 hours ago')
                 ),
-                base_time
+                earliest_time_base
             ),
             latest_time=Main.__parse_date_time(
                 demisto.get(
@@ -1969,7 +2019,7 @@ class Main:
                     'query.time_range.latest_time',
                     args.get('latest_time', 'now')
                 ),
-                base_time
+                latest_time_base
             )
         )
 
@@ -2065,7 +2115,7 @@ class Main:
         )
         self.__cache_type: str = args.get('cache_type') or CacheType.RECORDSET
         if self.__cache_type not in [str(x) for x in list(CacheType)]:
-            raise DemistoException('Invalid cache_type - {self.__cache_type}')
+            raise DemistoException(f'Invalid cache_type - {self.__cache_type}')
 
         self.__max_retries: int = self.__arg_to_int(
             'max_retries', DEFAULT_RETRY_MAX
