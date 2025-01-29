@@ -10,9 +10,13 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "salesforce"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
