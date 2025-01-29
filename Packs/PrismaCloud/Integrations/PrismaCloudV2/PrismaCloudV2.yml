@@ -2501,11 +2501,11 @@ script:
     execution: false
     name: prisma-cloud-access-key-delete
   - arguments:
-    - description: Unified Asset Id or RRN (Restricted Resource Name).
+    - description: Unified Asset ID or RRN (Restricted Resource Name).
       name: asset_id
       required: true
     - auto: PREDEFINED
-      description: External Finding Types.
+      description: External finding types.
       name: finding_type
       predefined:
       - COMPLIANCE_CIS
@@ -2558,7 +2558,7 @@ script:
       - SERVERLESS_VULNERABILITY
       - PACKAGE_VULNERABILITY
     - auto: PREDEFINED
-      description: External finding risk factors.
+      description: Comma-separated list of external finding risk factors.
       isArray: true
       name: risk_factors
       predefined:
@@ -2586,33 +2586,33 @@ script:
       - ROOT_MOUNT
       - RUNTIME_SOCKET
       - HOST_ACCESS
-    - description: Timeline Item ID.
+    - description: Timeline item ID.
       name: timeline_item_id
-    - description: List of Alert Ids.
+    - description: Comma-separated list of alert IDs.
       isArray: true
       name: alert_ids
     - description: Limit number of records.
       name: limit
-    - description: Permissions Type.
+    - description: Permissions type.
       name: permission_type
-    - description: Next Page Token.
+    - description: Next page token.
       name: page_token
     - auto: PREDEFINED
-      description: Filter Hyperion Findings.
+      description: Filter Hyperion findings.
       name: prisma_cloud_findings_only
       predefined:
       - 'true'
       - 'false'
-    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+    - description: CVE ID, Package ID, or Layer ID. The value needs to be fetched from one of the groups by API calls.
       name: vulnerability_info_type_id
     - auto: PREDEFINED
-      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      description: Supported vulnerability types.
       name: vulnerability_info_type
       predefined:
       - CVE
       - PACKAGE
       - LAYER
-    description: Returns detailed information for the asset with the given id.
+    description: Returns detailed information for the asset with the given ID.
     name: prisma-cloud-asset-get
     outputs:
     - contextPath: PrismaCloud.Asset.problem.title
@@ -2622,7 +2622,7 @@ script:
       description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.Asset.problem.status.reasonPhrase
-      description: 'The reason of the problem.'
+      description: 'The reason for the problem.'
       type: String
     - contextPath: PrismaCloud.Asset.problem.detail
       description: 'The details of the problem.'
@@ -2682,7 +2682,7 @@ script:
       description: 'The region name of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.altAssetId
-      description: 'The alt asset ID of the asset.'
+      description: 'The alternative asset ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.url
       description: 'The URL of the asset.'
@@ -2745,12 +2745,12 @@ script:
       description: 'The data security of the asset.'
       type: Unknown
   - arguments:
-    - description: Unified Asset Id or RRN (Restricted Resource Name).
+    - description: Unified asset ID or RRN (Restricted Resource Name).
       name: asset_id
       required: true
     - auto: PREDEFINED
       defaultValue: asset
-      description: Asset Domain Service query type.
+      description: Asset domain service query type.
       name: type
       predefined:
       - external_finding
@@ -2783,7 +2783,7 @@ script:
       - data_security_summary
       required: true
     - auto: PREDEFINED
-      description: External Finding Types.
+      description: External finding types.
       name: finding_type
       predefined:
       - COMPLIANCE_CIS
@@ -2836,7 +2836,7 @@ script:
       - SERVERLESS_VULNERABILITY
       - PACKAGE_VULNERABILITY
     - auto: PREDEFINED
-      description: External finding risk factors.
+      description: Comma-separated list of external finding risk factors.
       isArray: true
       name: risk_factors
       predefined:
@@ -2864,40 +2864,40 @@ script:
       - ROOT_MOUNT
       - RUNTIME_SOCKET
       - HOST_ACCESS
-    - description: Timeline Item ID.
+    - description: Timeline item ID.
       name: timeline_item_id
-    - description: List of Alert Ids.
+    - description: Comma-separated list of alert IDs.
       isArray: true
       name: alert_ids
     - description: Limit number of records.
       name: limit
-    - description: Permissions Type.
+    - description: Permissions type.
       name: permission_type
-    - description: Next Page Token.
+    - description: Next page token.
       name: page_token
     - auto: PREDEFINED
-      description: Filter Hyperion Findings.
+      description: Filter Hyperion findings.
       name: prisma_cloud_findings_only
       predefined:
       - 'true'
       - 'false'
-    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
       name: vulnerability_info_type_id
     - auto: PREDEFINED
-      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      description: Supported vulnerability types.
       name: vulnerability_info_type
       predefined:
       - CVE
       - PACKAGE
       - LAYER
-    description: Returns detailed information for the asset with the given id.
+    description: Returns detailed information for the asset with the given ID.
     name: prisma-cloud-asset-generic-get
   - arguments:
-    - description: Unified Asset Id or RRN (Restricted Resource Name).
+    - description: Unified asset ID or RRN (Restricted Resource Name).
       name: asset_id
       required: true
     - auto: PREDEFINED
-      description: External Finding Types.
+      description: External finding types.
       name: finding_type
       predefined:
       - COMPLIANCE_CIS
@@ -2950,7 +2950,7 @@ script:
       - SERVERLESS_VULNERABILITY
       - PACKAGE_VULNERABILITY
     - auto: PREDEFINED
-      description: External finding risk factors.
+      description: Comma-separated list of external finding risk factors.
       isArray: true
       name: risk_factors
       predefined:
@@ -2978,33 +2978,33 @@ script:
       - ROOT_MOUNT
       - RUNTIME_SOCKET
       - HOST_ACCESS
-    - description: Timeline Item ID.
+    - description: Timeline item ID.
       name: timeline_item_id
-    - description: List of Alert Ids.
+    - description: Comma-separated list of alert IDs.
       isArray: true
       name: alert_ids
     - description: Limit number of records.
       name: limit
-    - description: Permissions Type.
+    - description: Permissions type.
       name: permission_type
-    - description: Next Page Token.
+    - description: Next page token.
       name: page_token
     - auto: PREDEFINED
-      description: Filter Hyperion Findings.
+      description: Filter Hyperion findings.
       name: prisma_cloud_findings_only
       predefined:
       - 'true'
       - 'false'
-    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
       name: vulnerability_info_type_id
     - auto: PREDEFINED
-      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      description: Supported vulnerability types.
       name: vulnerability_info_type
       predefined:
       - CVE
       - PACKAGE
       - LAYER
-    description: Returns detailed information for the asset findings with the given id.
+    description: Returns detailed information for the asset findings with the given ID.
     name: prisma-cloud-asset-findings-get
     outputs:
     - contextPath: PrismaCloud.AssetFindings.problem.title
@@ -3014,7 +3014,7 @@ script:
       description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetFindings.problem.status.reasonPhrase
-      description: 'The reason of the problem.'
+      description: 'The reason for the problem.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.problem.detail
       description: 'The details of the problem.'
@@ -3116,11 +3116,11 @@ script:
       description: 'The updated on of the asset findings.'
       type: Number
   - arguments:
-    - description: Unified Asset Id or RRN (Restricted Resource Name).
+    - description: Unified asset ID or RRN (Restricted Resource Name).
       name: asset_id
       required: true
     - auto: PREDEFINED
-      description: External Finding Types.
+      description: External finding types.
       name: finding_type
       predefined:
       - COMPLIANCE_CIS
@@ -3173,7 +3173,7 @@ script:
       - SERVERLESS_VULNERABILITY
       - PACKAGE_VULNERABILITY
     - auto: PREDEFINED
-      description: External finding risk factors.
+      description: Comma-separated list of external finding risk factors.
       isArray: true
       name: risk_factors
       predefined:
@@ -3201,33 +3201,33 @@ script:
       - ROOT_MOUNT
       - RUNTIME_SOCKET
       - HOST_ACCESS
-    - description: Timeline Item ID.
+    - description: Timeline item ID.
       name: timeline_item_id
-    - description: List of Alert Ids.
+    - description: Comma-separated list of alert IDs.
       isArray: true
       name: alert_ids
     - description: Limit number of records.
       name: limit
-    - description: Permissions Type.
+    - description: Permissions type.
       name: permission_type
-    - description: Next Page Token.
+    - description: Next page token.
       name: page_token
     - auto: PREDEFINED
-      description: Filter Hyperion Findings.
+      description: Filter Hyperion findings.
       name: prisma_cloud_findings_only
       predefined:
       - 'true'
       - 'false'
-    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
       name: vulnerability_info_type_id
     - auto: PREDEFINED
-      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      description: Supported vulnerability types.
       name: vulnerability_info_type
       predefined:
       - CVE
       - PACKAGE
       - LAYER
-    description: Returns detailed information for the asset vulnerabilities with the given id.
+    description: Returns detailed information for the asset vulnerabilities with the given ID.
     name: prisma-cloud-asset-vulnerabilities-get
     outputs:
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.title
@@ -3237,7 +3237,7 @@ script:
       description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.status.reasonPhrase
-      description: 'The reason of the problem.'
+      description: 'The reason for the problem.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.detail
       description: 'The details of the problem.'
@@ -3339,11 +3339,11 @@ script:
       description: 'The updated on of the asset vulnerability.'
       type: Number
   - arguments:
-    - description: Unified Asset Id or RRN (Restricted Resource Name).
+    - description: Unified asset ID or RRN (Restricted Resource Name).
       name: asset_id
       required: true
     - auto: PREDEFINED
-      description: External Finding Types.
+      description: External finding types.
       name: finding_type
       predefined:
       - COMPLIANCE_CIS
@@ -3396,7 +3396,7 @@ script:
       - SERVERLESS_VULNERABILITY
       - PACKAGE_VULNERABILITY
     - auto: PREDEFINED
-      description: External finding risk factors.
+      description: Comma-separated list of external finding risk factors.
       isArray: true
       name: risk_factors
       predefined:
@@ -3424,33 +3424,33 @@ script:
       - ROOT_MOUNT
       - RUNTIME_SOCKET
       - HOST_ACCESS
-    - description: Timeline Item ID.
+    - description: Timeline item ID.
       name: timeline_item_id
-    - description: List of Alert Ids.
+    - description: Comma-separated list of alert IDs.
       isArray: true
       name: alert_ids
     - description: Limit number of records.
       name: limit
-    - description: Permissions Type.
+    - description: Permissions type.
       name: permission_type
-    - description: Next Page Token.
+    - description: Next page token.
       name: page_token
     - auto: PREDEFINED
-      description: Filter Hyperion Findings.
+      description: Filter Hyperion findings.
       name: prisma_cloud_findings_only
       predefined:
       - 'true'
       - 'false'
-    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
       name: vulnerability_info_type_id
     - auto: PREDEFINED
-      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      description: Supported vulnerability types.
       name: vulnerability_info_type
       predefined:
       - CVE
       - PACKAGE
       - LAYER
-    description: Returns detailed information for the asset alerts with the given id.
+    description: Returns detailed information for the asset alerts with the given ID.
     name: prisma-cloud-asset-alerts-get
     outputs:
     - contextPath: PrismaCloud.AssetAlerts.problem.title
@@ -3460,7 +3460,7 @@ script:
       description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetAlerts.problem.status.reasonPhrase
-      description: 'The reason of the problem.'
+      description: 'The reason for the problem.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.problem.detail
       description: 'The details of the problem.'
@@ -3499,11 +3499,11 @@ script:
       description: 'The alert time of the asset alert.'
       type: Number
   - arguments:
-    - description: Unified Asset Id or RRN (Restricted Resource Name).
+    - description: Unified asset ID or RRN (Restricted Resource Name).
       name: asset_id
       required: true
     - auto: PREDEFINED
-      description: External Finding Types.
+      description: External finding types.
       name: finding_type
       predefined:
       - COMPLIANCE_CIS
@@ -3556,7 +3556,7 @@ script:
       - SERVERLESS_VULNERABILITY
       - PACKAGE_VULNERABILITY
     - auto: PREDEFINED
-      description: External finding risk factors.
+      description: Comma-separated list of external finding risk factors.
       isArray: true
       name: risk_factors
       predefined:
@@ -3584,33 +3584,33 @@ script:
       - ROOT_MOUNT
       - RUNTIME_SOCKET
       - HOST_ACCESS
-    - description: Timeline Item ID.
+    - description: Timeline item ID.
       name: timeline_item_id
-    - description: List of Alert Ids.
+    - description: Comma-separated list of alert IDs.
       isArray: true
       name: alert_ids
     - description: Limit number of records.
       name: limit
-    - description: Permissions Type.
+    - description: Permissions type.
       name: permission_type
-    - description: Next Page Token.
+    - description: Next page token.
       name: page_token
     - auto: PREDEFINED
-      description: Filter Hyperion Findings.
+      description: Filter Hyperion findings.
       name: prisma_cloud_findings_only
       predefined:
       - 'true'
       - 'false'
-    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
       name: vulnerability_info_type_id
     - auto: PREDEFINED
-      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      description: Supported vulnerability types.
       name: vulnerability_info_type
       predefined:
       - CVE
       - PACKAGE
       - LAYER
-    description: Returns detailed information for the asset relationships with the given id.
+    description: Returns detailed information for the asset relationships with the given ID.
     name: prisma-cloud-asset-relationships-get
     outputs:
     - contextPath: PrismaCloud.AssetRelationships.assetId
@@ -3638,7 +3638,7 @@ script:
       description: 'The cloud name of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.pseudoAsset
-      description: 'The pseudoasset of the asset relationship.'
+      description: 'The pseudo asset of the asset relationship.'
       type: Boolean
     - contextPath: PrismaCloud.AssetRelationships.region
       description: 'The region of the asset relationship.'
@@ -3656,16 +3656,16 @@ script:
       description: 'The severity of the alerts of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.alertsCount.count
-      description: 'The count fo alerts of the asset relationships.'
+      description: 'The number of alerts of the asset relationships.'
       type: Number
     - contextPath: PrismaCloud.AssetRelationships.alertCountBySeverity.severity
       description: 'The severity of the alerts of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.alertCountBySeverity.count
-      description: 'The count of alerts by severity of the asset relationship.'
+      description: 'The number of alerts by severity of the asset relationship.'
       type: Number
     - contextPath: PrismaCloud.AssetRelationships.vulnerabilityCounts
-      description: 'The count of vulnerabilites of the asset relationship.'
+      description: 'The number of vulnerabilities of the asset relationship.'
       type: Unknown
     - contextPath: PrismaCloud.AssetRelationships.problem.title
       description: 'The title of the problem.'
@@ -3674,7 +3674,7 @@ script:
       description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetRelationships.problem.status.reasonPhrase
-      description: 'The reason of the problem.'
+      description: 'The reason for the problem.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.problem.detail
       description: 'The details of the problem.'
@@ -3689,11 +3689,11 @@ script:
       description: 'The parameters of the problem.'
       type: Unknown
   - arguments:
-    - description: Unified Asset Id or RRN (Restricted Resource Name).
+    - description: Unified asset ID or RRN (Restricted Resource Name).
       name: asset_id
       required: true
     - auto: PREDEFINED
-      description: External Finding Types.
+      description: External finding types.
       name: finding_type
       predefined:
       - COMPLIANCE_CIS
@@ -3746,7 +3746,7 @@ script:
       - SERVERLESS_VULNERABILITY
       - PACKAGE_VULNERABILITY
     - auto: PREDEFINED
-      description: External finding risk factors.
+      description: Comma-separated list of external finding risk factors.
       isArray: true
       name: risk_factors
       predefined:
@@ -3774,33 +3774,33 @@ script:
       - ROOT_MOUNT
       - RUNTIME_SOCKET
       - HOST_ACCESS
-    - description: Timeline Item ID.
+    - description: Timeline item ID.
       name: timeline_item_id
-    - description: List of Alert Ids.
+    - description: Comma-separated list of alert IDs.
       isArray: true
       name: alert_ids
     - description: Limit number of records.
       name: limit
-    - description: Permissions Type.
+    - description: Permissions type.
       name: permission_type
-    - description: Next Page Token.
+    - description: Next page token.
       name: page_token
     - auto: PREDEFINED
-      description: Filter Hyperion Findings.
+      description: Filter Hyperion findings.
       name: prisma_cloud_findings_only
       predefined:
       - 'true'
       - 'false'
-    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
       name: vulnerability_info_type_id
     - auto: PREDEFINED
-      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      description: Supported vulnerability types.
       name: vulnerability_info_type
       predefined:
       - CVE
       - PACKAGE
       - LAYER
-    description: Returns detailed information for the asset network with the given id.
+    description: Returns detailed information for the asset network with the given ID.
     name: prisma-cloud-asset-network-get
     outputs:
     - contextPath: PrismaCloud.AssetNetwork.problem.title
@@ -3810,7 +3810,7 @@ script:
       description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetNetwork.problem.status.reasonPhrase
-      description: 'The reason of the problem.'
+      description: 'The reason for the problem.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.problem.detail
       description: 'The details of the problem.'
