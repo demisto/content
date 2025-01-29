@@ -83,6 +83,7 @@ class DomainNameObject:
     @staticmethod
     def decode(props, **kwargs):
         dtype = props.get('type', 'FQDN')
+        demisto.debug(f"{dtype=}")
         if dtype != 'FQDN':
             return []
 
@@ -95,13 +96,13 @@ class DomainNameObject:
         for domain in domains_list:
             if 'http' in domain:
                 domain = domain.replace('https://', "").replace("http://", "")
-                if len(domain.split(".")) > 1:
-                    results.append({
-                        'indicator': domain,
-                        'type': 'Domain'
-                    })
-                else:
-                    demisto.debug(f"obj with value {domain} is not a domain, skipping.")
+            if len(domain.split(".")) > 1 or auto_detect_indicator_type(domain) == dtype:
+                results.append({
+                    'indicator': domain,
+                    'type': 'Domain'
+                })
+            else:
+                demisto.debug(f"obj with value {domain} is not a domain, skipping.")
         return results
 
 
@@ -198,11 +199,13 @@ class URIObject:
                 })
             elif type_ == 'Domain':
                 domain = url.replace('https://', "").replace("http://", "")
-                if len(domain.split(".")) > 1:
+                if len(domain.split(".")) > 1 or auto_detect_indicator_type(domain) == type_:
                     results.append({
                         'indicator': domain,
                         'type': 'Domain'
                     })
+                else:
+                    demisto.debug(f"obj with value {url} is not of type {type_}, skipping.")
             else:
                 demisto.debug(f"obj with value {url} is not of type {type_}, skipping.")
 
@@ -300,7 +303,7 @@ class StixDecode:
     @staticmethod
     def object_extract_properties(props, kwargs):
         type_ = props.get('xsi:type').rsplit(':')[-1]
-
+        demisto.debug(f"The type of the indicator is {type_=}")
         if type_ not in StixDecode.DECODERS:
             LOG(f'Unhandled cybox Object type: {type_!r} - {props!r}')
             return []
