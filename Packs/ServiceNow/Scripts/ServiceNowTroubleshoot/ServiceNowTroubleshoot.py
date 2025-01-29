@@ -10,22 +10,26 @@ NOTE_DISABLED_INCIDENTS = ("### Note: The active incidents, created 30 days ago 
                            " may cause system overload. It is recommended to close them.")
 
 
-def get_active_incidents_by_instances() -> dict[str, Any]:
+def wrap_internal_http_request(method: str, url: str, body: dict | None = None):
     """
-        Find active incidents created 30 days ago of 'ServiceNow v2'.
-        and generate a Markdown table summarizing the results.
+    Sends an internal HTTP request using Demisto's `internalHttpRequest` and returns the parsed JSON response.
 
-        :return: A Dict summarizing the instances and their active incidents,
-        :rtype: `Dict
+    Args:
+        method (str): HTTP method (e.g., 'GET', 'POST').
+        url (str): Request URL.
+        body (dict | None, optional): Request payload.
+
+    Returns:
+        dict: Parsed JSON response or an empty dictionary if parsing fails.
     """
-
-    query = {
-        'filter': {
-            'query': f'sourceBrand:"{INTEGRATION}" and status:Active and created:>="30 days ago"'
-        }
-    }
-    response = demisto.internalHttpRequest('POST', 'incidents/search', body=json.dumps(query))
-    return json.loads(response.get('body', '{}'))
+    http_result = demisto.internalHttpRequest(method, url, body=json.dumps(body))
+    http_result_body_raw_response = http_result.get('body', '{}')
+    try:
+        http_result_body_response = json.loads(http_result_body_raw_response)  # type: ignore
+    except json.JSONDecodeError:  # type: ignore[attr-defined]
+        demisto.debug(f'Unable to load response {http_result_body_raw_response}')
+        http_result_body_response = {}
+    return http_result_body_response
 
 
 def get_integrations_details() -> dict[str, Any]:
@@ -35,8 +39,8 @@ def get_integrations_details() -> dict[str, Any]:
     :return: A Dictionary containing the details of the integrations and their health status.
     :rtype: Dict[str, Any]
     """
-    http_result = json.loads(demisto.internalHttpRequest('POST', 'settings/integration/search').get('body'))
-    instances, health = http_result['instances'], http_result['health']
+    integrations_search_response = wrap_internal_http_request(method='POST', url='settings/integration/search')
+    instances, health = integrations_search_response['instances'], integrations_search_response['health']
     instances_health = {}
     for instance in instances:
         instance_name = instance.get('name')
@@ -47,7 +51,7 @@ def get_integrations_details() -> dict[str, Any]:
     return instances_health
 
 
-def filter_instances_data(instances_data) -> tuple[Dict, List]:
+def filter_instances_data(instances_data: dict[str, Any]) -> tuple[dict, list]:
     """
     Filter the instances data to separate enabled instances and disabled instances with active incidents.
 
@@ -82,9 +86,14 @@ def categorize_active_incidents(disabled_instances: list[str]) -> tuple[dict, di
     :return: A Tuple containing the active incidents for enabled instances and for disabled instances.
     :rtype: Tuple[Dict, list]
     """
-    response = get_active_incidents_by_instances()
+    query = {
+        'filter': {
+            'query': f'sourceBrand:"{INTEGRATION}" and status:Active and created:>="30 days ago"'
+        }
+    }
+    incidents_response = wrap_internal_http_request(method='POST', url='incidents/search', body=query)
     disabled_incidents_instances, enabled_incidents_instances = defaultdict(list), defaultdict(list)
-    data = response.get('data', {})
+    data = incidents_response.get('data', {})
     for incident in data:
         source_instance = incident.get("sourceInstance")
         incident_name = incident.get("name")
