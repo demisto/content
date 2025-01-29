@@ -130,7 +130,7 @@ def parse_disabled_instances(disabled_incidents_instances: dict[str, Any]) -> st
     )
 
 
-def parse_enabled_instances(enabled_instances_health: dict[str, Any], enabled_incidents_instances: dict[str, Any]):# -> str:
+def parse_enabled_instances(enabled_instances_health: dict[str, Any], enabled_incidents_instances: dict[str, Any]) -> str:
     """
     Parse the health information of enabled instances and generate a Markdown table.
 
@@ -157,7 +157,6 @@ def parse_enabled_instances(enabled_instances_health: dict[str, Any], enabled_in
             filtered_data["Names of Active Incidents Created 30 days ago"] = enabled_incidents_instances[instance_name]
             filtered_data["Total Active Incidents Created 30 days ago"] = len(enabled_incidents_instances[instance_name])
         human_readable_dict.append(filtered_data)
-    return human_readable_dict
     return tableToMarkdown(name="Enabled Instances Health Information", t=human_readable_dict,
                            removeNull=True)
 
