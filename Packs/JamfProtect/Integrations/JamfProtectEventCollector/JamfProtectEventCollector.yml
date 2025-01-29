@@ -48,7 +48,7 @@ configuration:
   type: 0
   advanced: true
   section: Collect
-- additionalinfo: The fetch interval. It is recommended to set it to 12 hours, and the minimum interval is 1 hour.
+- additionalinfo: The fetch interval. It is recommended to set it to 12 hours. The minimum interval is 1 hour.
   defaultvalue: 720
   display: Fetch Computer Assets Interval
   name: assetsFetchInterval
