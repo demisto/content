@@ -54,7 +54,7 @@ def test_get_APM_events(mocker):
         (["Audit logs"], -1, 5000, DemistoException, "The maximum number of audit logs events"),
         
         # Invalid: apm_max out of range (too high)
-        (["APM"], 25000, 6000, DemistoException, "The maximum number of APM events"),
+        (["APM"], 25000, 8000, DemistoException, "The maximum number of APM events"),
         
         # Invalid: apm_max out of range (negative)
         (["APM"], 25000, -1, DemistoException, "The maximum number of APM events"),
@@ -90,13 +90,13 @@ def test_validate_params(events_to_fetch, audit_max, apm_max, expected_exception
         (
             [{"timestamp": 1640995200000}],
             "Audit logs",
-            [{"timestamp": 1640995200000, "SOURCE_LOG_TYPE": "Audit logs events", "_time": 1640995200000}],
+            [{"timestamp": 1640995200000, "SOURCE_LOG_TYPE": "Audit", "_time": 1640995200000}],
         ),
         # Test case 2: APM
         (
             [{"startTime": 1640995200000}],
             "APM",
-            [{"startTime": 1640995200000, "SOURCE_LOG_TYPE": "APM events", "_time": 1640995200000}],
+            [{"startTime": 1640995200000, "SOURCE_LOG_TYPE": "APM", "_time": 1640995200000}],
         ),
         # Test case 3: Multiple Audit logs events
         (
@@ -106,8 +106,8 @@ def test_validate_params(events_to_fetch, audit_max, apm_max, expected_exception
             ],
             "Audit logs",
             [
-                {"timestamp": 1640995200000, "SOURCE_LOG_TYPE": "Audit logs events", "_time": 1640995200000},
-                {"timestamp": 1640995300000, "SOURCE_LOG_TYPE": "Audit logs events", "_time": 1640995300000},
+                {"timestamp": 1640995200000, "SOURCE_LOG_TYPE": "Audit", "_time": 1640995200000},
+                {"timestamp": 1640995300000, "SOURCE_LOG_TYPE": "Audit", "_time": 1640995300000},
             ],
         ),
         # Test case 4: Empty events
@@ -222,28 +222,36 @@ events_query_expected_calls_apm = [
     (CLIENT, {"apm_limit": 100, "apm_from": 1001}, "APM"),
     (CLIENT, {"apm_limit": 97, "apm_from": 1002}, "APM"),
     (CLIENT, {"apm_limit": 94, "apm_next_page_key": "AAAA"}, "APM"),
-    (CLIENT, {"apm_limit": 91, "apm_next_page_key": "BBBB"}, "APM")
+    (CLIENT, {"apm_limit": 91, "apm_next_page_key": "BBBB"}, "APM"),
+    (CLIENT, {"apm_limit": 88, "apm_from": 2001}, "APM"),
+    (CLIENT, {"apm_limit": 85, "apm_from": 2002}, "APM"),
 ]
 events_query_responses_apm = [
     {"events": [], "totalCount": 0},  # No events returned
     {"events": [{"startTime": 1001}, {"startTime": 1000}, {"startTime": 1000}], "totalCount": 3}, # No next page key
     {"events": [{"startTime": 1002}, {"startTime": 1002}, {"startTime": 1002}], "totalCount": 3, "nextPageKey": "AAAA"}, # NextPageKey exists
     {"events": [{"startTime": 1004}, {"startTime": 1003}, {"startTime": 1002}], "totalCount": 3, "nextPageKey": "BBBB"}, # NextPageKey exists
-    {"events": [{"startTime": 2000}, {"startTime": 2000}, {"startTime": 2000}], "totalCount": 3}  # No nextPageKey
+    {"events": [{"startTime": 2000}, {"startTime": 2000}, {"startTime": 2000}], "totalCount": 3},  # No nextPageKey
+    {"events": [{"startTime": 2001}, {"startTime": 2001}, {"startTime": 2001}], "totalCount": 3},  # No nextPageKey
+    {"events": [{"startTime": 2002}, {"startTime": 2002}, {"startTime": 2002}], "totalCount": 3},  # No nextPageKey
 ]
 add_fields_to_events_expected_calls_apm = [
     ([], "APM"),
     ([{"startTime": 1001}, {"startTime": 1000}, {"startTime": 1000}], "APM"),
     ([{"startTime": 1002}, {"startTime": 1002}, {"startTime": 1002}], "APM"),
     ([{"startTime": 1004}, {"startTime": 1003}, {"startTime": 1002}], "APM"),
-    ([{"startTime": 2000}, {"startTime": 2000}, {"startTime": 2000}], "APM")
+    ([{"startTime": 2000}, {"startTime": 2000}, {"startTime": 2000}], "APM"),
+    ([{"startTime": 2001}, {"startTime": 2001}, {"startTime": 2001}], "APM"),
+    ([{"startTime": 2002}, {"startTime": 2002}, {"startTime": 2002}], "APM")
 ]
 add_fields_to_events_responses_apm = [
     [],
     [{"startTime": 1001}, {"startTime": 1000}, {"startTime": 1000}],
     [{"startTime": 1002}, {"startTime": 1002}, {"startTime": 1002}],
     [{"startTime": 1004}, {"startTime": 1003}, {"startTime": 1002}],
-    [{"startTime": 2000}, {"startTime": 2000}, {"startTime": 2000}]
+    [{"startTime": 2000}, {"startTime": 2000}, {"startTime": 2000}],
+    [{"startTime": 2001}, {"startTime": 2001}, {"startTime": 2001}],
+    [{"startTime": 2002}, {"startTime": 2002}, {"startTime": 2002}]
 ]
 def test_fetch_apm_events(mocker):
     """
@@ -269,15 +277,13 @@ def test_fetch_apm_events(mocker):
     add_fields_to_events_mock = mocker.patch("Dynatrace.add_fields_to_events", side_effect=add_fields_to_events_responses_apm)
     set_integration_context_mock = mocker.patch("Dynatrace.set_integration_context")
     fetch_apm_events(CLIENT, 100, 1000)
-    assert events_query_mock.call_count == 5
-    assert [events_query_mock.call_args_list[i][0] for i in range(5)] == events_query_expected_calls_apm
-    assert add_fields_to_events_mock.call_count == 5
-    assert [add_fields_to_events_mock.call_args_list[i][0] for i in range(5)] == add_fields_to_events_expected_calls_apm
-    set_integration_context_mock.assert_called_with({'last_apm_run': {'last_timestamp': 2000, 'nextPageKey': None}})
+    assert events_query_mock.call_count == 7
+    assert [events_query_mock.call_args_list[i][0] for i in range(7)] == events_query_expected_calls_apm
+    assert add_fields_to_events_mock.call_count == 7
+    assert [add_fields_to_events_mock.call_args_list[i][0] for i in range(7)] == add_fields_to_events_expected_calls_apm
+    set_integration_context_mock.assert_called_with({'last_apm_run': {'last_timestamp': 2002, 'nextPageKey': None}})
     
     
-# Need to check use case when limit is reached reached and excactly reached
-# use case where we get events in the first time and we get nextPageKey
 events_query_expected_calls_audit = [ #"audit_next_page_key"
    (CLIENT, {"audit_limit": 100, "audit_from": 1000}, "Audit logs"),
    (CLIENT, {"audit_limit": 97, "audit_from": 1001}, "Audit logs"),
