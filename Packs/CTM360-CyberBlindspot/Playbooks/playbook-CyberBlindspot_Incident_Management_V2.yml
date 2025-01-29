@@ -421,7 +421,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 455
+          "y": 395
         }
       }
     note: false
@@ -581,7 +581,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 215
+          "y": 205
         }
       }
     note: false
@@ -607,7 +607,7 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "1"
+      - "25"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -626,7 +626,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 715
+          "y": 595
         }
       }
     note: false
@@ -653,8 +653,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1255,
-          "y": 1105
+          "x": 1340,
+          "y": 1185
         }
       }
     note: false
@@ -701,6 +701,44 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 3a856dd5-c2b0-40f7-8b3b-8c3b94759daf
+    type: condition
+    task:
+      id: 3a856dd5-c2b0-40f7-8b3b-8c3b94759daf
+      version: -1
+      name: Check if Integration is Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "23"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: CTM360_CyberBlindspot
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -708,7 +746,6 @@ view: |-
       "10_4_Close Incident": 0.35,
       "18_12_No Action": 0.44,
       "18_4_Close Incident": 0.62,
-      "22_1_yes": 0.61,
       "9_18_Close and Takedown Allowed": 0.54
     },
     "paper": {
