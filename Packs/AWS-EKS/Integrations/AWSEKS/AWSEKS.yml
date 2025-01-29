@@ -1,4 +1,6 @@
 category: Cloud Services
+sectionOrder:
+- Connect
 commonfields:
   id: AWS-EKS
   version: -1
