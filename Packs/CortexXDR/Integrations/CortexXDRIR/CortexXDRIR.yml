@@ -3867,6 +3867,7 @@ script:
   type: python
 tests:
 - Test XDR Playbook execute script commands
+- Test XDR Playbook quarantine file command
 - Test XDR Playbook general commands
 - Test XDR Playbook retrieve file command
 defaultmapperin: Cortex XDR - IR-mapper
