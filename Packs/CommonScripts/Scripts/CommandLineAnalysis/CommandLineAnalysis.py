@@ -10,6 +10,7 @@ from typing import Any
 # 1) BASE64 & RELATED UTILITY FUNCTIONS
 # -----------------------------------------------------------------------------
 
+
 def is_base64(possible_base64: Union[str, bytes]) -> bool:
     """
     Validates if the provided string is a Base64-encoded string.
@@ -569,6 +570,7 @@ def extract_indicators(command_line: str) -> dict:
 # -----------------------------------------------------------------------------
 # 4) SCORING FUNCTION
 # -----------------------------------------------------------------------------
+
 
 def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     """

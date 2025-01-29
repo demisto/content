@@ -20,7 +20,7 @@ from CommandLineAnalysis import (
 # Test data
 DOUBLE_ENCODED_STRING = "cmVjdXJzaXZlIGRlY29kZSBaR1ZqYjJSbElGWkhhSEJqZVVKd1kzbENhRWxJVW14ak0xRm5Zek5TZVdGWE5XND0="
 MALICIOUS_COMMAND_LINE = "wevtutil cl Security RG91YmxlIGVuY29kaW5nIFZHaHBjeUJwY3lCaElHeHBjM1JsYm1WeUtERXhMakV3TVM0eE1qUXVNaklw"
-
+MACOS_COMMAND_LINE = "tell window 1 of application to set visible to false"
 
 @pytest.fixture
 def sample_encoded_command() -> str:
@@ -123,9 +123,8 @@ def test_check_powershell_suspicious_patterns():
 
 # Test check_reconnaissance_temp
 def test_check_suspicious_macos_applescript_commands():
-    command = "tell window 1 of application to set visible to false"
-    matches = check_suspicious_macos_applescript_commands(command)
-    assert "display dialog" and "curl'" in result["analysis"]["original"]["macOS_suspicious_commands"]["possible_exfiltration"]
+    result = analyze_command_line(MACOS_COMMAND_LINE)
+    assert "display dialog" and "curl -" in result["analysis"]["original"]["macOS_suspicious_commands"]["possible_exfiltration"]
 
 
 # Test analyze_command_line
