@@ -164,7 +164,7 @@ def test_fetch_events(mocker):
     add_fields_to_events_mock = mocker.patch("Dynatrace.add_fields_to_events", return_value=[])
     send_events_to_xsiam_mock = mocker.patch("Dynatrace.send_events_to_xsiam")
     
-    fetch_events(CLIENT, ["APM", "Audit logs"], 200, 100)
+    fetch_events(CLIENT, ["APM", "Audit logs"], {"APM": 100, "Audit logs": 200})
     
     assert apm_mock.call_args.args[1] == 100
     assert audit_mock.call_args.args[1] == 200
