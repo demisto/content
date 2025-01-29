@@ -1,5 +1,5 @@
 import demistomock as demisto
-from typing import Dict, Any, Tuple, List
+from typing import Any
 from CommonServerPython import CommandResults, tableToMarkdown, return_error, return_results
 import json
 from collections import defaultdict
@@ -10,7 +10,7 @@ NOTE_DISABLED_INCIDENTS = ("### Note: The active incidents, created 30 days ago 
                            " may cause system overload. It is recommended to close them.")
 
 
-def get_active_incidents_by_instances() -> Dict[str, Any]:
+def get_active_incidents_by_instances() -> dict[str, Any]:
     """
         Find active incidents created 30 days ago of 'ServiceNow v2'.
         and generate a Markdown table summarizing the results.
@@ -28,7 +28,7 @@ def get_active_incidents_by_instances() -> Dict[str, Any]:
     return json.loads(response.get('body', '{}'))
 
 
-def get_integrations_details() -> Dict[str, Any]:
+def get_integrations_details() -> dict[str, Any]:
     """
     Retrieve details of the integrations, including their health status.
 
@@ -47,7 +47,7 @@ def get_integrations_details() -> Dict[str, Any]:
     return instances_health
 
 
-def filter_instances_data(instances_data) -> Tuple[Dict, List]:
+def filter_instances_data(instances_data) -> tuple[Dict, List]:
     """
     Filter the instances data to separate enabled instances and disabled instances with active incidents.
 
@@ -70,7 +70,7 @@ def filter_instances_data(instances_data) -> Tuple[Dict, List]:
     return filtered_data, disabled_instances
 
 
-def categorize_active_incidents(disabled_instances: List[str]) -> Tuple[Dict, Dict]:
+def categorize_active_incidents(disabled_instances: list[str]) -> tuple[dict, dict]:
     """
     Retrieve incidents from ServiceNow instances and filter them based on whether the created instance is enabled or disabled.
 
@@ -96,7 +96,7 @@ def categorize_active_incidents(disabled_instances: List[str]) -> Tuple[Dict, Di
     return enabled_incidents_instances, disabled_incidents_instances
 
 
-def parse_disabled_instances(disabled_incidents_instances: Dict[str, Any]) -> str:
+def parse_disabled_instances(disabled_incidents_instances: dict[str, Any]) -> str:
     """
     Parse the list of disabled instances to find those with active incidents
     and generate a Markdown table summarizing the results.
@@ -121,7 +121,7 @@ def parse_disabled_instances(disabled_incidents_instances: Dict[str, Any]) -> st
     )
 
 
-def parse_enabled_instances(enabled_instances_health: Dict[str, Any], enabled_incidents_instances: Dict[str, Any]) -> str:
+def parse_enabled_instances(enabled_instances_health: dict[str, Any], enabled_incidents_instances: dict[str, Any]) -> str:
     """
     Parse the health information of enabled instances and generate a Markdown table.
 

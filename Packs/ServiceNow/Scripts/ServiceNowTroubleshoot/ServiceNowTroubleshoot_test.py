@@ -6,7 +6,7 @@ import demistomock as demisto
 
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
+        return json.dumps(f.read())
 
 
 def test_get_integrations_details(mocker):
@@ -119,7 +119,7 @@ def test_parse_enabled_instances():
         }
     }
     enabled_incidents_instances = {'ServiceNow v2_instance_2': ['ServiceNow Incident INC0011111']}
-    expected = ('### Enabled Instances Health Information \n\n\n'
+    expected = ('### Enabled Instances Health Information\n\n\n'
                 '|Instance Name|Last Pull Time|Names of Active Incidents Created 30 days ago|'
                 'Number of Incidents Pulled in Last Fetch|Query|Size In Bytes|Total Active Incidents Created 30 days ago|\n'
                 '|---|---|---|---|---|---|---|\n| ServiceNow v2_instance_2 | 2025-01-27T09:26:45.226409678Z |'
