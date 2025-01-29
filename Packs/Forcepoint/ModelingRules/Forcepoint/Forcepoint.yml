@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Forcepoint_Web_Security_ModelingRule
-name: Forcepoint Web Security Modeling Rule
+id: Forcepoint_NGFW_ModelingRule
+name: Forcepoint NGFW Modeling Rule
 rules: ''
 schema: ''
 tags: ''
