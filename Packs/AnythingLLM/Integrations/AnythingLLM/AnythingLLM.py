@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 import json
 import shutil
 
@@ -15,6 +16,7 @@ class Client(BaseClient):
     def document_list(self):
         return self._list("documents")
 
+
     def document_get(self, folder: str, document: str):
         try:
             name = document_name(folder, document, self.document_list())
@@ -23,7 +25,7 @@ class Client(BaseClient):
                 url_suffix=f"/v1/document/{name}"
             )
         except Exception as e:
-            msg = f"AnythingLLM: document_get: exception getting document details - {str(e)}"
+            msg = f"AnythingLLM: document_get: exception getting document details - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -43,7 +45,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: document_delete: exception deleting document - {str(e)}"
+            msg = f"AnythingLLM: document_delete: exception deleting document - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -60,7 +62,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: document_createfolder: exception creating folder - {str(e)}"
+            msg = f"AnythingLLM: document_createfolder: exception creating folder - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -83,7 +85,7 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: document_move: exception moving document - {str(e)}"
+            msg = f"AnythingLLM: document_move: exception moving document - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -114,7 +116,7 @@ class Client(BaseClient):
                 if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{title}]")
         except Exception as e:
-            msg = f"AnythingLLM: document_upload_text: exception uploading text - {str(e)}"
+            msg = f"AnythingLLM: document_upload_text: exception uploading text - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -145,7 +147,7 @@ class Client(BaseClient):
                 if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{title}]")
         except Exception as e:
-            msg = f"AnythingLLM: document_upload_link: exception uploading link [{link}] - {str(e)}"
+            msg = f"AnythingLLM: document_upload_link: exception uploading link [{link}] - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -167,13 +169,14 @@ class Client(BaseClient):
                     method='POST',
                     headers=headers,
                     url_suffix="/v1/document/upload",
-                    files={'file': (file_name, open(file_name, 'rb'))}
+
+                    files={'file': (f"{entry_id}_{file_name}", open(file_name, 'rb'))}
                 )
             finally:
                 if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{file_name}]")
         except Exception as e:
-            msg = f"AnythingLLM: document_upload_file: exception uploading a file entry [{entry_id}] from the war room - {str(e)}"
+            msg = f"AnythingLLM: document_upload_file: exception uploading a file entry [{entry_id}] from the war room - {e}"
             demisto.debug(msg)
             raise Exception(msg)
         finally:
@@ -203,7 +206,7 @@ class Client(BaseClient):
                 if exists:  # pylint: disable=E0601
                     raise Exception("workspace already exists")
         except Exception as e:
-            msg = f"AnythingLLM: workspace_new: exception creating a new workspace [{workspace}] - {str(e)}"
+            msg = f"AnythingLLM: workspace_new: exception creating a new workspace [{workspace}] - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -216,6 +219,19 @@ class Client(BaseClient):
     def workspace_list(self):
         return self._list("workspaces")
 
+    def thread_list(self, workspace: str):
+        try:
+            slug = workspace_slug(workspace, self.workspace_list())
+            response = self._http_request(
+                method="GET",
+                url_suffix=f"/v1/workspace/{slug}",
+            )
+        except Exception as e:
+            msg = f"AnythingLLM: thread_list: exception listing workspace threads - {e}"
+            demisto.debug(msg)
+            raise Exception(msg)
+        return response['workspace'][0]['threads']
+
     def workspace_get(self, workspace: str):
         try:
             slug = workspace_slug(workspace, self.workspace_list())
@@ -224,7 +240,7 @@ class Client(BaseClient):
                 url_suffix=f"/v1/workspace/{slug}",
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_get: exception getting workspace details - {str(e)}"
+            msg = f"AnythingLLM: workspace_get: exception getting workspace details - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -239,27 +255,85 @@ class Client(BaseClient):
                 resp_type='bytes'
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_delete: exception deleting workspace - {str(e)}"
+            msg = f"AnythingLLM: workspace_delete: exception deleting workspace - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
         return {"message": {"success": True, "message": "Workspace removed successfully"}}
 
-    def workspace_settings(self, workspace: str, settings: dict):
+
+    def workspace_thread_new(self, workspace: str, thread: str):
         try:
-            settings = validate_workspace_settings(settings)
-            slug = workspace_slug(workspace, self.workspace_list())
+            wslug = workspace_slug(workspace, self.workspace_list())
+            tslug = f"{thread}_slug"
+            threads = self.thread_list(workspace)
+            if any(t['slug'] == tslug for t in threads):
+                raise Exception(f"Thread '{thread}' already exists in workspace '{workspace}'.")
+            data = {
+                'name': thread,
+                'slug': tslug
+            }
             response = self._http_request(
                 method="POST",
-                url_suffix=f"/v1/workspace/{slug}/update",
-                json_data=settings
+                url_suffix=f"/v1/workspace/{wslug}/thread/new",
+                json_data=data
+            )
+            return response
+        except Exception as e:
+            msg = f"AnythingLLM: workspace_thread_new: exception creating a new workspace [{workspace}] - {e}"
+            demisto.debug(msg)
+            raise Exception(msg)
+
+    def workspace_thread_chat(self, workspace: str, thread: str, message: str, mode: str):
+        return self._tchat(workspace, thread, message, mode, "chat")
+
+    def workspace_thread_chats(self, workspace: str, thread: str):
+        try:
+            slug = workspace_slug(workspace, self.workspace_list())
+            response = self._http_request(
+                method = "GET",
+                url_suffix = f"/v1/workspace/{slug}/thread/{thread + '_slug'}/chats"
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_settings: exception updating workspace settings - {str(e)}"
+            msg = f"AnythingLLM: workspace_thread_chats: exception chatting - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
         return response
+
+    def workspace_settings(self, workspace: str, settings: dict):
+        try:
+            settings = validate_workspace_settings(settings)
+            if len(settings) == 0:
+                raise Exception("Invalid workspace settings")
+            slug = workspace_slug(workspace, self.workspace_list())
+            response = self._http_request(
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/update",
+                json_data = settings
+            )
+        except Exception as e:
+            msg = f"AnythingLLM: workspace_settings: exception updating workspace settings - {e}"
+            demisto.debug(msg)
+            raise Exception(msg)
+
+        return response
+
+    def workspace_thread_delete(self, workspace:str, thread:str):
+        try:
+            wslug = workspace_slug(workspace, self.workspace_list())
+            tslug = thread_slug(thread, self.thread_list(workspace))
+            self._http_request(
+                method = "DELETE",
+                url_suffix = f"/v1/workspace/{wslug}/thread/{tslug}",
+                resp_type='bytes'
+            )
+        except Exception as e:
+            msg = f"AnythingLLM: workspace_thread_delete: exception deleting workspace - {e}"
+            demisto.debug(msg)
+            raise Exception(msg)
+
+        return {"message": {"success": True, "message": "Conversation thread removed successfully"}}
 
     def workspace_add_embedding(self, workspace: str, folder: str, document: str):
         return self._embedding(workspace, folder, document, "adds")
@@ -287,13 +361,13 @@ class Client(BaseClient):
                 json_data=data
             )
         except Exception as e:
-            msg = f"AnythingLLM: workspace_pin: exception pinning embedded document to workspace - {str(e)}"
+            msg = f"AnythingLLM: workspace_pin: exception pinning embedded document to workspace - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
         return response
 
-    def _chat(self, workspace: str, message: str, mode: str, type: str):
+    def _chat(self, workspace: str, message: str, mode: str, ttype: str):
         try:
             data = {
                 'message': message,
@@ -301,17 +375,37 @@ class Client(BaseClient):
             }
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{slug}/{type}",
-                json_data=data
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/{ttype}",
+                json_data = data
             )
         except Exception as e:
-            msg = f"AnythingLLM: _chat: exception chatting - {str(e)}"
+            msg = f"AnythingLLM: _chat: exception chatting - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
         return response
 
+    def _tchat(self, workspace: str, thread: str, message: str, mode: str, ttype: str):
+        try:
+            data = {
+                'message': message,
+                'mode': validate_chat_mode(mode)
+            }
+            wslug = workspace_slug(workspace, self.workspace_list())
+            tslug = thread_slug(thread, self.thread_list(workspace))
+            response = self._http_request(
+                method = "POST",
+                url_suffix = f"/v1/workspace/{wslug}/thread/{tslug}/{ttype}",
+                json_data = data
+            )
+        except Exception as e:
+            msg = f"AnythingLLM: _tchat: exception chatting - {e}"
+            demisto.debug(msg)
+            raise Exception(msg)
+
+        return response
+                           
     def _list(self, items: str):
         try:
             response = self._http_request(
@@ -319,7 +413,7 @@ class Client(BaseClient):
                 url_suffix=f"/v1/{items}",
             )
         except Exception as e:
-            msg = f"AnythingLLM: _list: exception listing {items} - {str(e)}"
+            msg = f"AnythingLLM: _list: exception listing {items} - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -327,30 +421,34 @@ class Client(BaseClient):
 
     def _embedding(self, workspace: str, folder: str, document: str, action: str):
         try:
+            name = ""
             name = document_name(folder, document, self.document_list())
 
             try:
                 ws = self.workspace_get(workspace)
             except Exception:
-                raise Exception(f"workspace [{workspace}] not found")
+                raise Exception("workspace not found")
 
             if action == "adds":
-                if embedding_exists(name, ws):
-                    raise Exception(f"[{document}] already embedded")
-            elif action == "deletes" and not embedding_exists(name, ws):
-                raise Exception(f"[{document}] not embedded")
+                if embedding_exists(ws, document):
+                    raise Exception("already embedded")
+            elif action == "deletes":
+                if not embedding_exists(ws, document):
+                    raise Exception("not embedded")
+            else:
+                raise Exception(f"action [{action}] not 'adds' or 'deletes' ")
 
             data = {
                 action: [f"{folder}/{name}"]
             }
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{slug}/update-embeddings",
-                json_data=data
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/update-embeddings",
+                json_data = data
             )
         except Exception as e:
-            msg = f"AnythingLLM: _embedding: exception [{action}] a document embedding - {str(e)}"
+            msg = f"AnythingLLM: _embedding: exception [{action}] a document embedding [{document}] in [{workspace}] - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
@@ -360,8 +458,13 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def embedding_exists(docname: str, ws: dict) -> bool:
-    return any(doc["filename"] == docname for doc in ws["workspace"]["documents"])
+def embedding_exists(ws: dict, document: str) -> bool:
+    if "documents" in ws['workspace'][0]:
+        for doc in ws['workspace'][0]['documents']:
+            metadata = json.loads(doc['metadata'])
+            if metadata['title'] == document:
+                return True
+    return False
 
 
 def workspace_slug(workspace: str, workspaces) -> str:
@@ -371,18 +474,38 @@ def workspace_slug(workspace: str, workspaces) -> str:
     raise Exception(f"workspace name not found [{workspace}]")
 
 
-def normal_document_title(title: str):
+def thread_slug(thread: str, threads: list) -> str:
+    for t in threads:
+        # Thread data returned does not include the name, so for now,
+        # enforce unique thread names and always append "_slug" to the name
+        # to create the slug
+        if t['slug'] == thread + "_slug":
+            return t['slug']
+    raise Exception(f"thread name not found [{thread}]")
+
+
+def normal_document_title(title: str) -> str:
     title = ' '.join(title.strip().split())
-    return title.lower().replace(" ", "-") + ".txt"
+    return title.lower().replace(" ", "-")  # + ".txt"
+
+
+def remove_entryid(title: str) -> str:
+    parts = title.split("_", 1)  # Strip the entry_id when file is uploaded from XSOAR 225@12345_<title>
+    if len(parts) == 2 and "@" in parts[0]:
+        return (parts[1])
+    else:
+        return title
 
 
 def document_name(folder: str, title: str, documents) -> str:
+    normaltitle = normal_document_title(title)
     for f in documents['localFiles']['items']:
         if f['name'] == folder:
             for d in f['items']:
-                if d['title'] in [title, normal_document_title(title)]:
+                dtitle = d['title']
+                if dtitle in [title, normaltitle]:
                     return d['name']
-    raise Exception(f"document title not found [{title}]")
+    raise Exception(f"document title not found FOLDER [{folder}] TITLE [{title}] DTITLE [{dtitle}] NORMAL [{normaltitle}]")
 
 
 def validate_chat_mode(mode: str):
@@ -395,24 +518,36 @@ def validate_workspace_settings(settings: dict):
     new_settings = {}
     if "name" in settings:
         new_settings['name'] = settings['name']
-    # if "vectorTag" in settings:
+    #if "vectorTag" in settings:
     #    new_settings['vectorTag'] = settings['vectorTag']
     if "openAiTemp" in settings:
-        new_settings['openAiTemp'] = float(settings['openAiTemp'])
+        value = float(settings['openAiTemp'])
+        if value < 0.0 or value > 1.0:
+            return {}
+        new_settings['openAiTemp'] = value
     if "openAiHistory" in settings:
         new_settings['openAiHistory'] = int(settings['openAiHistory'])
     if "openAiPrompt" in settings:
         new_settings['openAiPrompt'] = settings['openAiPrompt']
     if "similarityThreshold" in settings:
-        new_settings['similarityThreshold'] = float(settings['similarityThreshold'])
-    # if "chatProvider" in settings:
+        value = float(settings['similarityThreshold'])
+        if value not in [0.0, 0.25, 0.50, 0.75]:
+            return {}
+        new_settings['similarityThreshold'] = value
+    #if "chatProvider" in settings:
     #    new_settings['chatProvider'] = settings['chatProvider']
-    # if "chatModel" in settings:
+    #if "chatModel" in settings:
     #    new_settings['chatModel'] = settings['chatModel']
     if "topN" in settings:
-        new_settings['topN'] = int(settings['topN'])
+        value = int(settings['topN'])
+        if value < 1 or value > 12:
+            return {}
+        new_settings['topN'] = value
     if "chatMode" in settings:
-        new_settings['chatMode'] = settings['chatMode']
+        value = settings['chatMode'].lower()
+        if value not in ['chat', 'query']:
+            return {}
+        new_settings['chatMode'] = value
     if "queryRefusalResponse" in settings:
         new_settings['queryRefusalResponse'] = settings['queryRefusalResponse']
     return new_settings
@@ -593,26 +728,27 @@ def workspace_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def workspace_new_command(client: Client, args: dict) -> CommandResults:
-    # if 'workspace' in args:
     response = client.workspace_new(args['workspace'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_new',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix ='AnythingLLM.workspace_new',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
-    # msg = f"AnythingLLM: workspace_new_command: missing command arguments [workspace]"
-    # demisto.debug(msg)
-    # raise Exception(msg)
-
-
+                           
 def workspace_chat_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_chat(args['workspace'], args['message'], args['mode'])
-    return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_chat',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
-    )
+    if args['format'] == "dictionary":
+        return CommandResults(
+            outputs_prefix ='AnythingLLM.workspace_chat',
+            outputs = response
+        )
+    else:
+        return CommandResults(
+            outputs_prefix ='AnythingLLM.workspace_chat',
+            readable_output = DictMarkdown(response, ""),
+            outputs = response
+        )
 
 
 def workspace_stream_chat_command(client: Client, args: dict) -> CommandResults:
@@ -660,6 +796,42 @@ def workspace_settings_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def workspace_thread_new_command(client: Client, args: dict) -> CommandResults:
+    response = client.workspace_thread_new(args['workspace'], args['thread'])
+    return CommandResults(
+        outputs_prefix = 'AnythingLLM.workspace_settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
+    )
+
+
+def workspace_thread_chat_command(client: Client, args: dict) -> CommandResults:
+    response = client.workspace_thread_chat(args['workspace'], args['thread'], args['message'], args['mode'])
+    return CommandResults(
+        outputs_prefix = 'AnythingLLM.workspace_settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
+    )
+
+
+def workspace_thread_chats_command(client: Client, args: dict) -> CommandResults:
+    response = client.workspace_thread_chats(args['workspace'], args['thread'])
+    return CommandResults(
+        outputs_prefix = 'AnythingLLM.workspace_settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
+    )
+
+
+def workspace_thread_delete_command(client: Client, args: dict) -> CommandResults:
+    response = client.workspace_thread_delete(args['workspace'], args['thread'])
+    return CommandResults(
+        outputs_prefix = 'AnythingLLM.workspace_settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
+    )
+
+
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -673,6 +845,18 @@ def main() -> None:  # pragma: no cover
             'Authorization': f"Bearer {params.get('apikey')['password']}",
             'Content-Type': "application/json"
         }
+
+        # Support for Cloudflare authentication
+        cf_auth = params.get('cf_auth', None)
+        cf_client_id = None if cf_auth is None else cf_auth['identifier']
+        cf_client_key = None if cf_auth is None else cf_auth['password']
+
+        if cf_client_id is not None and cf_client_key is not None:
+            headers.update({
+                'CF-Access-Client-Id': cf_client_id,
+                'CF-Access-Client-Secret': cf_client_key
+            })
+
         client = Client(
             base_url=params.get('url') + "/api",
             verify=not params.get('insecure', False),
@@ -727,10 +911,18 @@ def main() -> None:  # pragma: no cover
             return_results(workspace_delete_command(client, args))
         elif command == "anyllm-workspace-settings":
             return_results(workspace_settings_command(client, args))
+        elif command == "anyllm-workspace-thread-new":
+            return_results(workspace_thread_new_command(client, args))
+        elif command == "anyllm-workspace-thread-chat":
+            return_results(workspace_thread_chat_command(client, args))
+        elif command == "anyllm-workspace-thread-chats":
+            return_results(workspace_thread_chats_command(client, args))
+        elif command == "anyllm-workspace-thread-delete":
+            return_results(workspace_thread_delete_command(client, args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError: {str(e)}')
+        return_error(f'Failed to execute {command} command.\nError: {e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
