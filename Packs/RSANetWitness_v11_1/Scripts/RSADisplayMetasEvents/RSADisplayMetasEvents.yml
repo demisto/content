@@ -1,7 +1,7 @@
 commonfields:
   id: RSA_DisplayMetasEvents
   version: -1
-dockerimage: demisto/python3:3.10.13.73190
+dockerimage: demisto/python3:3.11.10.116439
 enabled: true
 name: RSA_DisplayMetasEvents
 comment: Use this script to display meta events inside the layout.

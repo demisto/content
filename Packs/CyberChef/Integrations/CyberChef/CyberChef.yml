@@ -58,7 +58,7 @@ script:
     - contextPath: CyberChef.Magic
       description: Output of the Magic operation.
       type: string
-  dockerimage: demisto/cyberchef:1.0.0.114638
+  dockerimage: demisto/cyberchef:1.0.0.118049
   runonce: false
   script: ''
   subtype: python3

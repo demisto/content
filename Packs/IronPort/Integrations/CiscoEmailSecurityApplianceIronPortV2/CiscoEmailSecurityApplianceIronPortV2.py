@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from collections.abc import Callable
 
 import uuid
-
+import ast
 
 DEFAULT_FETCH = 50
 TIMESTAMP_FORMAT = "%d %b %Y %H:%M:%S (%Z +00:00)"
@@ -25,6 +25,7 @@ RELEASE_ACTION = "release"
 ADD_ACTION = "add"
 APPEND_ACTION = "append"
 EDIT_ACTION = "edit"
+DEFAULT_MODE_DICTIONARIES = 'cluster'
 
 
 class Client(BaseClient):
@@ -607,6 +608,179 @@ class Client(BaseClient):
 
         return self._http_request("GET", f"reporting/{report_type}", params=params)
 
+    def dictionary_list_request(
+        self,
+        dictionary_name: Optional[str],
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str]
+    ) -> Dict[str, Any]:
+
+        endpoint = "config/dictionaries"
+        if dictionary_name:
+            endpoint += f"/{dictionary_name}"
+
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+        return self._http_request(
+            "GET",
+            endpoint,
+            params=params,
+        )
+
+    def dictionary_add_request(
+        self,
+        dictionary_name: str,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        whole_words: int,
+        words: list,
+        ignore_case_sensitive: int,
+    ) -> Dict[str, Any]:
+
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+
+        json_data = {
+            'data': {
+                "ignorecase": ignore_case_sensitive,
+                "wholewords": whole_words,
+                "words": words,
+                "encoding": "utf-8",
+            }
+        }
+
+        return self._http_request(
+            "POST",
+            f"config/dictionaries/{dictionary_name}",
+            params=params,
+            json_data=json_data
+        )
+
+    def dictionary_edit_request(
+        self,
+        dictionary_name: str,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        whole_words: int,
+        words: list,
+        ignore_case_sensitive: int,
+        updated_name: Optional[str]
+    ) -> Dict[str, Any]:
+
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+
+        json_data = {
+            'data': {
+                "ignorecase": ignore_case_sensitive,
+                "wholewords": whole_words,
+                "words": words,
+                "encoding": "utf-8",
+            }
+        }
+        if updated_name:
+            json_data['data']['name'] = updated_name
+
+        return self._http_request(
+            "PUT",
+            f"config/dictionaries/{dictionary_name}",
+            params=params,
+            json_data=json_data
+        )
+
+    def dictionary_delete_request(
+        self,
+        dictionary_name: str,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str]
+    ) -> Dict[str, Any]:
+
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+        return self._http_request(
+            "DELETE",
+            f"config/dictionaries/{dictionary_name}",
+            params=params,
+        )
+
+    def dictionary_words_add_request(
+        self,
+        dictionary_name: str,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        words: list
+    ) -> Dict[str, Any]:
+
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+
+        json_data = {
+            'data': {
+                "words": words,
+            }
+        }
+
+        return self._http_request(
+            "POST",
+            f"config/dictionaries/{dictionary_name}/words",
+            params=params,
+            json_data=json_data
+        )
+
+    def dictionary_words_delete_request(
+        self,
+        dictionary_name: str,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        words: list
+    ) -> Dict[str, Any]:
+
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+
+        json_data = {
+            'data': {
+                "words": words,
+            }
+        }
+
+        return self._http_request(
+            "DELETE",
+            f"config/dictionaries/{dictionary_name}/words",
+            params=params,
+            json_data=json_data
+        )
+
 
 def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
     """
@@ -808,8 +982,63 @@ def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> tup
             limit -= REQUEST_MAX_PULL
             offset += REQUEST_MAX_PULL
         pagination_message = f"Showing {len(output)} rows." if len(output) > 0 else None  # type: ignore
+    else:
+        pagination_message = "No pagination information"
+        output = []
+        demisto.debug(f"No pagination parameters {pagination_message=} {output=}")
 
     return output, pagination_message
+
+
+def check_dictionary_mode_args(mode: str, host_name: str, group_name: str) -> tuple:
+    """
+    Check the validity of cluster parameters and return appropriate values based on the mode.
+
+    Args:
+        mode (str): The cluster mode, which can be either "group" or "machine".
+        host_name (str): The name of the host, required when the mode is "machine".
+        group_name (str): The name of the group, required when the mode is "group".
+
+    Returns:
+            - Raises a DemistoException if the required parameters are missing based on the mode:
+                - If the mode is "group" and no group_name is provided.
+                - If the mode is "machine" and no host_name is provided.
+            - If both parameters are provided, returns:
+                - (None, group_name) if the mode is "group".
+                - (host_name, None) if the mode is not "group".
+            - Else: returns (host_name, group_name) as they are.
+    """
+
+    if mode == "group" and not group_name:
+        raise DemistoException("Please specify a group name for a cluster from type group.")
+
+    if mode == "machine" and not host_name:
+        raise DemistoException("Please specify a host name for a cluster from type machine.")
+
+    return (None, group_name) if mode == "group" else (host_name, None)
+
+
+def convert_words_to_list(words: str) -> List[list]:
+    """
+    Convert a string of words into a list of lists.
+
+    Args:
+        words (str): A string containing a list of words.
+
+    Returns:
+        List[str]: A list of lists containing words and their associated values.
+
+    Raises:
+        DemistoException: If the input string is not formatted correctly, with a message indicating the correct pattern.
+                          This pattern is used for adding or editing dictionary entries or adding words, not for deleting words.
+    """
+    try:
+        converted_list = list(ast.literal_eval(words))
+        if isinstance(converted_list[0], str):
+            return [converted_list]
+        return converted_list
+    except Exception:
+        raise DemistoException("Words list is not defined correctly. Please use the following pattern: ['word1',3],['word2'].")
 
 
 def spam_quarantine_message_search_command(
@@ -1710,6 +1939,221 @@ def report_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def dictionary_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve dictionary configuration details.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs for XSOAR, including dictionary configuration details.
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    dictionary_name = args.get("dictionary_name", "")
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+    response = client.dictionary_list_request(dictionary_name=dictionary_name,
+                                              mode=mode,
+                                              host_name=host_name,
+                                              group_name=group_name
+                                              )
+
+    if dictionary_name:
+        name = f'Information for Dictionary: {dictionary_name}'
+    else:
+        name = f'Information for All Configured Dictionaries in mode: {mode}'
+
+    readable_output = tableToMarkdown(
+        name=name,
+        t=response.get('data'),
+        removeNull=True,
+        headers=["name", "words", "ignorecase", "wholewords", "words_count", "encoding"]
+    )
+
+    return CommandResults(
+        outputs_prefix="CiscoESA.Dictionary",
+        outputs=response.get('data'),
+        raw_response=response,
+        readable_output=readable_output
+    )
+
+
+def dictionary_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Add a new dictionary configuration.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs for XSOAR, indicating the successful addition of the dictionary.
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    dictionary_name = args.get("dictionary_name", "")
+    whole_words = args.get("whole_words", True)
+    words = args.get("words", "")
+    ignore_case_sensitive = args.get("ignore_case_sensitive", False)
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+    ignore_case_sensitive = int(argToBoolean(ignore_case_sensitive))  # will be sent to the api as 0 or 1
+    whole_words = int(argToBoolean(whole_words))  # will be sent to the api as 0 or 1
+    words = convert_words_to_list(words)
+
+    response = client.dictionary_add_request(dictionary_name=dictionary_name,
+                                             mode=mode,
+                                             host_name=host_name,
+                                             group_name=group_name,
+                                             whole_words=whole_words,
+                                             words=words,
+                                             ignore_case_sensitive=ignore_case_sensitive,
+                                             )
+    return CommandResults(
+        readable_output=f"{dictionary_name} was added successfully.",
+        raw_response=response,
+    )
+
+
+def dictionary_edit_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Edit an existing dictionary configuration.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs for XSOAR, indicating the successful update of the dictionary.
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    dictionary_name = args.get("dictionary_name", "")
+    updated_name = args.get("updated_name", "")
+    whole_words = args.get("whole_words", True)
+    words = args.get("words", "")
+    ignore_case_sensitive = args.get("ignore_case_sensitive", False)
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+    ignore_case_sensitive = int(argToBoolean(ignore_case_sensitive))  # will be sent to the api as 0 or 1
+    whole_words = int(argToBoolean(whole_words))  # will be sent to the api as 0 or 1
+    words = convert_words_to_list(words)
+
+    response = client.dictionary_edit_request(dictionary_name=dictionary_name,
+                                              mode=mode,
+                                              host_name=host_name,
+                                              group_name=group_name,
+                                              whole_words=whole_words,
+                                              words=words,
+                                              ignore_case_sensitive=ignore_case_sensitive,
+                                              updated_name=updated_name
+                                              )
+    return CommandResults(
+        readable_output=f"{dictionary_name} has been successfully updated.",
+        raw_response=response,
+    )
+
+
+def dictionary_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Delete an existing dictionary configuration.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs for XSOAR, indicating the successful deletion of the dictionary.
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    dictionary_name = args.get("dictionary_name", "")
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+
+    response = client.dictionary_delete_request(dictionary_name=dictionary_name,
+                                                mode=mode,
+                                                host_name=host_name,
+                                                group_name=group_name
+                                                )
+
+    return CommandResults(
+        readable_output=f"{dictionary_name} deleted successfully.",
+        raw_response=response,
+    )
+
+
+def dictionary_words_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Add words to an existing dictionary configuration.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs for XSOAR, indicating the successful addition of words to the dictionary.
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    dictionary_name = args.get("dictionary_name", "")
+    words = args.get("words", "")
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+    words = convert_words_to_list(words)
+
+    response = client.dictionary_words_add_request(dictionary_name=dictionary_name,
+                                                   mode=mode,
+                                                   host_name=host_name,
+                                                   group_name=group_name,
+                                                   words=words
+                                                   )
+
+    return CommandResults(
+        readable_output=f"Added successfully to {dictionary_name}.",
+        raw_response=response,
+    )
+
+
+def dictionary_words_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Delete words from an existing dictionary configuration.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs for XSOAR, indicating the successful deletion of words from the dictionary.
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    dictionary_name = args.get("dictionary_name", "")
+    words = argToList(args.get("words", ""))
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+
+    response = client.dictionary_words_delete_request(dictionary_name=dictionary_name,
+                                                      mode=mode,
+                                                      host_name=host_name,
+                                                      group_name=group_name,
+                                                      words=words)
+
+    return CommandResults(
+        readable_output=f"Words deleted successfully from {dictionary_name}.",
+        raw_response=response,
+    )
+
+
 def fetch_incidents(
     client: Client,
     max_fetch: int,
@@ -1892,6 +2336,12 @@ def main() -> None:
         "cisco-esa-message-dlp-details-get": message_dlp_details_get_command,
         "cisco-esa-message-url-details-get": message_url_details_get_command,
         "cisco-esa-report-get": report_get_command,
+        "cisco-esa-dictionary-list": dictionary_list_command,
+        "cisco-esa-dictionary-add": dictionary_add_command,
+        "cisco-esa-dictionary-edit": dictionary_edit_command,
+        "cisco-esa-dictionary-delete": dictionary_delete_command,
+        "cisco-esa-dictionary-words-add": dictionary_words_add_command,
+        "cisco-esa-dictionary-words-delete": dictionary_words_delete_command,
     }
     try:
         client: Client = Client(

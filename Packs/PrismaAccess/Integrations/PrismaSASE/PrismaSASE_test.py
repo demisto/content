@@ -792,3 +792,37 @@ def test_quarantine_host(mocker):
     result = quarantine_host_command(client, {'host_id': host_id})
 
     assert all(msg in result.readable_output for msg in ['Host Quarantined', host_id])
+
+
+def test_build_security_rule():
+    args = {"action": "allow",
+            "application": "app1,app2",
+            "category": "cat1,cat2",
+            "description": "Test rule description",
+            "destination": "dest1,dest2",
+            "disabled": "no",
+            "from": "zone1,zone2",
+            "profile_setting": "group1,group2",
+            "service": "service1,service2",
+            "source": "src1,src2",
+            "source_user": "user1;user2",
+            "tag": "tag1,tag2",
+            "to": "zone3,zone4", }
+    prisma_sase_client = create_mocked_client()
+    res = prisma_sase_client.build_security_rule(args)
+    expected = {
+        "action": "allow",
+        "application": ["app1", "app2"],
+        "category": ["cat1", "cat2"],
+        "description": "Test rule description",
+        "destination": ["dest1", "dest2"],
+        "disabled": "no",
+        "from": ["zone1", "zone2"],
+        "profile_setting": {"group": ["group1", "group2"]},
+        "service": ["service1", "service2"],
+        "source": ["src1", "src2"],
+        "source_user": ["user1", "user2"],
+        "tag": ["tag1", "tag2"],
+        "to": ["zone3", "zone4"],
+    }
+    assert res == expected

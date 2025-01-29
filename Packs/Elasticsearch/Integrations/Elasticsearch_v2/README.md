@@ -9,36 +9,32 @@ The permissions required to use this integration depends on which operations you
 - **!get-mapping-fields** - If the Elasticsearch security features are enabled, you must have the *view_index_metadata* or *manage* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 - **!es-index** - If the Elasticsearch security features are enabled, you must have the *write* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 
-## Configure Elasticsearch v2 on Cortex XSOAR
+## Configure Elasticsearch v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Elasticsearch v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200. | True |
-    | Username for server login | Provide Username \+ Passoword instead of API key \+ API ID | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Client type | For Elasticsearch version 7 and below, select 'Elasticsearch'. For Elasticsearch server version 8, select 'Elasticsearch_v8'. In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, consider using the 'OpenSearch' client type. | False |
-    | Index from which to fetch incidents (CSV) |  | False |
-    | Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query | False |
-    | Index time field (for sorting sort and limiting data) | The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation. | False |
-    | Raw Query | Will override the 'Query String' Lucene syntax string. Results will not be filtered. | False |
-    | Time field type |  | False |
-    | Map JSON fields into labels |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | The maximum number of results to return per fetch. |  | False |
-    | Request timeout (in seconds). |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200. | True |
+| Username for server login | Provide Username \+ Passoword instead of API key \+ API ID | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Client type | For Elasticsearch version 7 and below, select 'Elasticsearch'. For Elasticsearch server version 8, select 'Elasticsearch_v8'. In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, consider using the 'OpenSearch' client type. | False |
+| Index from which to fetch incidents (CSV) |  | False |
+| Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query | False |
+| Index time field (for sorting sort and limiting data) | The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation. | False |
+| Raw Query | Will override the 'Query String' Lucene syntax string. Results will not be filtered. | False |
+| Time field type |  | False |
+| Map JSON fields into labels |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| The maximum number of results to return per fetch. |  | False |
+| Request timeout (in seconds). |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### es-search
 ***

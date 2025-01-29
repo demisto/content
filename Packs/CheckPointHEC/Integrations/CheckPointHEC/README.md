@@ -1,38 +1,33 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version 1.1.4 of CheckPointHEC
+This integration was integrated and tested with version 1.1.6 of CheckPointHEC
 
-## Configure Check Point Harmony Email and Collaboration (HEC) on Cortex XSOAR
+## Configure Check Point Harmony Email and Collaboration (HEC) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Check Point Harmony Email and Collaboration (HEC).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Smart API URL or Check Point Infinity API URL | The URL of the Smart API or Check Point Infinity API. | True |
-    | Fetch incidents | Enable fetching incidents from the selected SaaS application. | False |
-    | Incident type | Fetch incidents of the selected types. | False |
-    | Client ID | The client ID of the Smart API or Check Point Infinity API. | True |
-    | Client Secret | The client secret of the Smart API or Check Point Infinity API. | True |
-    | First fetch time | The time range for the first fetch. The default is 1 hour. | False |
-    | SaaS Application | Get incidents from the selected SaaS | False |
-    | State | Get incidents with only the selected states | False |
-    | Severity | Get incidents with only the selected severities | False |
-    | Threat Type | Get incidents with only the selected types | False |
-    | Maximum number of incidents per fetch | The maximum number of incidents to fetch per fetch. The default is 10. | False |
-    | Collect restore requests | Collect restore requests as incidents. | False |
-    | Trust any certificate (not secure) | Trust server certificate. | False |
-    | Use system proxy settings | Use system proxy settings. | False |
-    | Incidents Fetch Interval | The interval in minutes to fetch incidents. The default is 1 minute. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Smart API URL or Check Point Infinity API URL | The URL of the Smart API or Check Point Infinity API. | True |
+| Fetch incidents | Enable fetching incidents from the selected SaaS application. | False |
+| Incident type | Fetch incidents of the selected types. | False |
+| Client ID | The client ID of the Smart API or Check Point Infinity API. | True |
+| Client Secret | The client secret of the Smart API or Check Point Infinity API. | True |
+| First fetch time | The time range for the first fetch. The default is 1 hour. | False |
+| SaaS Application | Get incidents from the selected SaaS | False |
+| State | Get incidents with only the selected states | False |
+| Severity | Get incidents with only the selected severities | False |
+| Threat Type | Get incidents with only the selected types | False |
+| Maximum number of incidents per fetch | The maximum number of incidents to fetch per fetch. The default is 10. | False |
+| Collect restore requests | Collect restore requests as incidents. | False |
+| Trust any certificate (not secure) | Trust server certificate. | False |
+| Use system proxy settings | Use system proxy settings. | False |
+| Incidents Fetch Interval | The interval in minutes to fetch incidents. The default is 1 minute. | False |
 
 
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### checkpointhec-get-entity

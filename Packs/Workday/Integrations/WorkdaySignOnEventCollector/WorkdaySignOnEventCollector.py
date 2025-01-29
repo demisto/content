@@ -267,7 +267,7 @@ def convert_to_json(response: str | dict) -> tuple[Dict[str, Any], Dict[str, Any
     :return: Tuple containing the full converted response and the extracted 'Workday_Account_Signons' data.
     :raises ValueError: If the expected data cannot be found in the response.
     """
-    if type(response) == dict:
+    if type(response) is dict:
         raw_json_response = response
     else:
         try:

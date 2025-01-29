@@ -322,7 +322,7 @@ script:
         - contextPath: ThreatZone.Limits.Daily_Submission_Limit
           description: The remaining/total daily submission limits of the current plan.
           type: String
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   subtype: python3
 fromversion: 6.9.0

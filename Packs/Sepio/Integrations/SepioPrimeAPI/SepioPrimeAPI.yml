@@ -426,7 +426,7 @@ script:
       description: New mode to apply – "Approve" or "Disapprove".
     description: Set Agent Peripherals Mode
     execution: true
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

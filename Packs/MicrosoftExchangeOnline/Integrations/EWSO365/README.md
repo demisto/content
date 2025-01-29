@@ -2,6 +2,13 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
+## Retirement of RBAC Application Impersonation
+
+As of February 2025, the Impersonation access type of the integration is deprecated by Microsoft, read about it [here](https://techcommunity.microsoft.com/blog/exchange/critical-update-applicationimpersonation-rbac-role-deprecation-in-exchange-onlin/4295762).
+To avoid disruptions, it is imperative that administrators begin transitioning their applications immediately.
+To identify accounts using the ApplicationImpersonation role use the Exchange Online PowerShell command:
+`Get-ManagementRoleAssignment -Role ApplicationImpersonation -GetEffectiveUsers -Delegating:$false`
+
 ## Use Cases
 
 The EWS integration can be used for the following use cases.
@@ -49,7 +56,7 @@ For more details about the authentication used in this integration, see [Microso
 
 In order to function as expected, the service account should have:
 
-**Impersonation rights** - In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and instructions on how to set up the permission, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
+**Impersonation rights** (deprecated) - In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and instructions on how to set up the permission, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
 Most commands require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
 
 **eDiscovery** permissions to the Exchange Server. For users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information, see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
@@ -75,7 +82,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Token / Tenant ID | Token can be received after following the System Integration Setup (Device side steps). | False |
 | Key / Application Secret | Key can be received after following the System Integration Setup (Device side steps). | False |
 | Azure Cloud | Azure Cloud environment. Options are: _Worldwide_ (The publicly accessible Azure Cloud), _US GCC_ (Azure cloud for the USA Government Cloud Community), _US GCC-High_ (Azure cloud for the USA Government Cloud Community High), _DoD_ (Azure cloud for the USA Department of Defense), _Germany_ (Azure cloud for the German Government), _China_ (Azure cloud for the Chinese Government ) | False|
-| Email Address | Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365/#additional-information | True |
+| Email Address | Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365/#additional-information | True |
 | UPN Address | When provided, the target mailbox if it's different from the Email Address. Otherwise, the Email Address is used. | False |
 | Name of the folder from which to fetch incidents | Supports Exchange Folder ID and sub-folders, e.g., Inbox/Phishing. | True |
 | Access Type | Run the commands using `Delegate` or `Impersonation` access types. | False |
@@ -847,7 +854,7 @@ There is no context output for this command.
 
 ### ews-mark-item-as-junk
 
-Marks an item as junk. This is commonly used to block an email address. For more information, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx).
+Marks an item as junk. This is used to block an email address (meaning all future emails from this sender will be sent to the junk folder). For more information, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx).
 
 #### Permissions
 

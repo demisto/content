@@ -528,3 +528,25 @@ def test_handle_error_read_only_failed(mocker):
             'The error is not due to a problem with write permissions to the file'
         )
     assert str(e.value) == 'The error is not due to a problem with write permissions to the file'
+
+
+def test_extract_urls_and_emails_from_annot_objects_with_binary_data(mocker):
+    """
+    Given:
+        A list of annotation objects where one object contains binary data.
+    When:
+        The extract_urls_and_emails_from_annot_objects function is called with these objects.
+    Then:
+        The function should correctly decode the binary data and extract the URL and email.
+    """
+    from ReadPDFFileV2 import extract_urls_and_emails_from_annot_objects
+    mock_annot_object = mocker.Mock()
+    mock_annot_object.get_object.return_value = mocker.Mock()
+
+    binary_data = b'https://example.com user@example.com'
+    mocker.patch('ReadPDFFileV2.extract_url_from_annot_object', return_value=binary_data)
+
+    urls, emails = extract_urls_and_emails_from_annot_objects([mock_annot_object])
+
+    assert urls == {'https://example.com'}
+    assert emails == {'user@example.com'}

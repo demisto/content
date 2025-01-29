@@ -1,0 +1,56 @@
+!xdr-get-incidents gte_creation_time=2010-10-10T00:00:00 limit=3 sort_by_creation_time=desc
+!xdr-get-incident-extra-data incident_id=4 alerts_limit=10
+!xdr-update-incident incident_id="4" status="RESOLVED_KNOWN_ISSUE" resolve_comment="This issue was solved in Incident number 192304"
+!xdr-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"
+!xdr-isolate-endpoint endpoint_id="f8a2f58846b542579c12090652e79f3d"
+!xdr-unisolate-endpoint endpoint_id="f8a2f58846b542579c12090652e79f3d"
+!xdr-get-distribution-versions
+!xdr-create-distribution agent_version=6.1.4.1680 name="dist_1" package_type=standalone platform=linux description="some description"
+!xdr-get-create-distribution-status distribution_ids=2c74c11b63074653aa01d575a82bf52a
+!xdr-get-distribution-url distribution_id=2c74c11b63074653aa01d575a82bf52a package_type=sh
+!xdr-insert-parsed-alert product="SandBlast" vendor="Checkpoint" local_ip="196.168.0.1" local_port="600" remote_ip="5.5.5.5" remote_port="500" event_timestamp="2020-01-01T00:00:00" severity="High" alert_name="some alert" alert_description="this is test alert"
+!xdr-insert-cef-alerts cef_alerts="CEF:0|Check Point|VPN-1 & FireWall-1|Check Point|Log|microsoft-ds|Unknown|act=AcceptdeviceDirection=0 rt=1569477512000 spt=56957 dpt=445 cs2Label=Rule Name cs2=ADPrimery layer_name=FW_Device_blackened Securitylayer_uuid=07693fc7-1a5c-4f31-8afe-77ae96c71b8c match_id=1806 parent_rule=0rule_action=Accept rule_uid=8e45f36b-d106-4d81-a1f0-9d1ed9a6be5c ifname=bond2logid=0 loguid={0x5d8c5388,0x61,0x29321fac,0xc0000022} origin=1.1.1.1originsicname=CN=DWdeviceBlackend,O=Blackend sequencenum=363 version=5dst=1.1.1.1 inzone=External outzone=Internal product=VPN-1 & FireWall-1 proto=6service_id=microsoft-ds src=1.1.1.1"
+!xdr-get-audit-agent-reports result=Success timestamp_gte="100 days" endpoint_ids=ea303670c76e4ad09600c8b346f7c804 type=Policy limit=2
+!xdr-get-audit-management-logs result=SUCCESS type=DISTRIBUTIONS limit=2 timestamp_gte="3 month"
+!xdr-blacklist-files hash_list=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
+!xdr-whitelist-files hash_list=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
+!xdr-quarantine-files endpoint_id_list=f8a2f58846b542579c12090652e79f3d file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 file_path=/home/ec2-user/test_file.txt
+!xdr-get-quarantine-status endpoint_id=f8a2f58846b542579c12090652e79f3d file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 file_path=/home/ec2-user/test_file.txt
+!xdr-endpoint-scan endpoint_id_list=f8a2f58846b542579c12090652e79f3d
+!xdr-endpoint-scan-abort endpoint_id_list=aeec6a2cc92e46fab3b6f621722e9916
+!xdr-restore-file file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
+!xdr-get-policy endpoint_id="f8a2f58846b542579c12090652e79f3d"
+!xdr-get-endpoint-device-control-violations violation_id_list=100,90,80
+!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\\Users\\demisto\\Desktop\\demisto.txt"
+!xdr-retrieve-file-details action_id=1763
+!xdr-get-scripts created_by="Palo Alto Networks" is_high_risk=true
+!xdr-get-script-metadata script_uid=43973479d389f2ac7e99b6db88eaee40
+!xdr-get-script-code script_uid=548023b6e4a01ec51a495ba6e5d2a15d
+!xdr-action-status-get action_id="1819"
+!xdr-delete-endpoints endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916
+!xdr-run-script script_uid=414763381b5bfb7b05796c9fe690df46 endpoint_ids=23a86310665d413a958926fce5b794b3 parameters={"path":"test.txt"}
+!xdr-run-snippet-code-script endpoint_ids=23a86310665d413a958926fce5b794b3 snippet_code="print('hello world')"
+!xdr-get-script-execution-status action_id=3641
+!xdr-get-script-execution-results action_id=3641
+!xdr-get-script-execution-result-files action_id=3641 endpoint_id=23a86310665d413a958926fce5b794b3
+!xdr-run-script-execute-commands endpoint_ids=23a86310665d413a958926fce5b794b3 commands_list=tasklist
+!xdr-run-script-delete-file endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
+!xdr-run-script-file-exists endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
+!xdr-run-script-kill-process endpoint_ids=23a86310665d413a958926fce5b794b3 process_name=calculator.exe
+!xdr-get-endpoints-by-status status=connected
+!xdr-get-alerts status=connected time_frame=custom start_time=2022-04-09T18:54:12 end_time=2022-04-12T11:34:06
+!xdr-get-contributing-event alert_ids=`[33902 , 33904]`
+!xdr-replace-featured-field field_type=ip_addresses values=`["1.1.1.1"]` comments=`new ip address`
+!xdr-script-run endpoint_ids=1 script_uid=1
+!xdr-endpoint-tag-add endpoint_id=f8a2f58846b542579c12090652e79f3d tag=tag_test
+!xdr-endpoint-tag-remove endpoint_id=f8a2f58846b542579c12090652e79f3d tag=tag_test
+!xdr-get-tenant-info
+!xdr-endpoint-alias-change new_alias_name=test scan_status=success ip_list=1.1.1.1
+!xdr-list-users
+!xdr-list-risky-users user_id=dummy
+!xdr-list-risky-hosts host_id=dummy
+!xdr-list-roles role_names="dummy dummy"
+!xdr-list-user-groups group_names=test
+!xdr-set-user-role role_name=dummy user_emails=email@company.com
+!xdr-remove-user-role user_emails=email@company.com
+!xdr-update-alert alert_ids=35326 severity=low

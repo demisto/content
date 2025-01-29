@@ -7,7 +7,7 @@ commonfields:
   id: IsDemistoRestAPIInstanceAvailable
   id_x2: IsCoreRestAPIInstanceAvailable
   version: -1
-dockerimage: demisto/python3:3.10.13.80014
+dockerimage: demisto/python3:3.11.10.116439
 enabled: true
 name: IsDemistoRestAPIInstanceAvailable
 name_x2: IsCoreRestAPIInstanceAvailable

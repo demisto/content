@@ -1776,7 +1776,7 @@ script:
   runonce: false
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.116949
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

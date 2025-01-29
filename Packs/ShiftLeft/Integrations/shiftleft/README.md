@@ -1,21 +1,17 @@
 Integrate ShiftLeft CORE code analysis platform with Cortex XSOAR.
 This integration was integrated and tested with v4 api of ShiftLeft CORE.
 
-## Configure ShiftLeft CORE on Cortex XSOAR
+## Configure ShiftLeft CORE in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ShiftLeft CORE.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | ShiftLeft Organization Id | You can find this under Account Settings -&amp;gt; Org ID | True |
-    | ShiftLeft Access Token | You can find this under Account Settings -&amp;gt; Access Token | True |
-    | Use system proxy settings | Use system proxy settings. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| ShiftLeft Organization Id | You can find this under Account Settings -&amp;gt; Org ID | True |
+| ShiftLeft Access Token | You can find this under Account Settings -&amp;gt; Access Token | True |
+| Use system proxy settings | Use system proxy settings. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### shiftleft-list-apps
 ***
@@ -95,5 +91,4 @@ There is no context output for this command.
 ``` !shiftleft-list-app-secrets app_name=myapp123```
 
 #### Human Readable Output
-
 

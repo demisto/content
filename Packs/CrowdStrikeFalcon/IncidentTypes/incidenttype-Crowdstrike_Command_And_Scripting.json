@@ -1,0 +1,124 @@
+{
+    "autorun": false,
+    "color": "#69A536",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {
+            "cmd": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            },
+            "cmdline": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            },
+            "commandline": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            },
+            "commandlineverdict": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            },
+            "filehash": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "filesha1": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "filesha256": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "grandparentprocess": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            },
+            "parentcmdline": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            },
+            "parentprocesscmd": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            },
+            "parentprocesssha256": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "processcmd": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            },
+            "processsha256": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "sha1": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "sha256": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "sha512": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            }
+        },
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Crowdstrike Command And Scripting",
+    "layout": "CrowdStrike Falcon Layout",
+    "locked": false,
+    "name": "Crowdstrike Command And Scripting",
+    "onChangeRepAlg": 0,
+    "playbookId": "CrowdStrike Falcon - T1059 - Command and Scripting Interpreter",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.10.0",
+    "marketplaces": ["xsoar"]
+}

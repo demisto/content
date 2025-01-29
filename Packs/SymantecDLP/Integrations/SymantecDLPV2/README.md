@@ -6,35 +6,31 @@ This integration was integrated and tested with Symantec Data Loss Prevention ve
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-symantec-data-loss-prevention-v2).
 
-## Configure Symantec Data Loss Prevention v2 on Cortex XSOAR
+## Configure Symantec Data Loss Prevention v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Symantec Data Loss Prevention v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Enforce Server (e.g. https://192.168.0.1) |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Fetch limit | Max fetch limit is 50 | False |
-    | Fetch incidents from type | If not selected, fetches all incident types. | False |
-    | Incident Status ID | The status ID of the incidents. To get the status IDs, run the \`symantec-dlp-list-incident-status\` command. | False |
-    | Incident Severity | If not selected, fetches high and medium incidents. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Enforce Server (e.g. https://192.168.0.1) |  | True |
+| Username |  | True |
+| Password |  | True |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Fetch limit | Max fetch limit is 50 | False |
+| Fetch incidents from type | If not selected, fetches all incident types. | False |
+| Incident Status ID | The status ID of the incidents. To get the status IDs, run the \`symantec-dlp-list-incident-status\` command. | False |
+| Incident Severity | If not selected, fetches high and medium incidents. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetch Incidents
 The integration fetches incidents in the order they were created. 
 Note that incident IDs may not be fetched in order, due to creation time differences.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### symantec-dlp-list-incidents
 ***

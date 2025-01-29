@@ -2,7 +2,7 @@
     "name": "Logsign SIEM",
     "description": "Logsign SIEM provides to collect and store unlimited data, investigate and detect threats, and respond automatically.",
     "support": "partner",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.15",
     "author": "Logsign",
     "url": " https://support.logsign.net/",
     "email": "support@logsign.net",

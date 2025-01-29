@@ -5,29 +5,25 @@ Datadog is an observability service for cloud-scale applications, providing moni
 The SaaS platform integrates and automates infrastructure monitoring, application performance monitoring and log management to provide unified, real-time observability of our customers' entire technology stack.
 This integration was integrated and tested with version 2.12.0 of datadog-api-client.
 
-## Configure Datadog Cloud SIEM on Cortex XSOAR
+## Configure Datadog Cloud SIEM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Datadog Cloud SIEM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Datadog website URL | True |
-    | API Key | The API Key to use for authentication | True |
-    | Application Key | The application key to use for authentication. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | How many incidents to fetch each time. |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Datadog website URL | True |
+| API Key | The API Key to use for authentication | True |
+| Application Key | The application key to use for authentication. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| How many incidents to fetch each time. |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### datadog-event-create
@@ -2903,4 +2899,3 @@ Query of sequence of data points that are collected over time intervals, allowin
 #### Human Readable Output
 
 >### Query Timeseries Points 
-

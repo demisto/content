@@ -20,9 +20,8 @@ def copy_notes_to_target_incident(args: dict[str, Any]) -> CommandResults:
         raise ValueError('Target Incident ID not specified')
 
     tags = argToList(args.get('tags'))
-    auto_extract = args.get('auto_extract', False)
-    auto_extract_value = "none" if not auto_extract else "inline"
-    entries = demisto.executeCommand('getEntries', {'filter': {'tags': tags, "auto_extract": auto_extract_value}})
+    auto_extract = argToBoolean(args.get('auto_extract', False))
+    entries = demisto.executeCommand('getEntries', {'filter': {'tags': tags}})
 
     note_entries: list = []
     md: str = ''
@@ -31,12 +30,14 @@ def copy_notes_to_target_incident(args: dict[str, Any]) -> CommandResults:
         for entry in entries:
             if entry.get('Note') is True:
                 remove_id_and_version_from_entry(entry)
+                if not auto_extract:
+                    # indicators won't be extracted from the notes in the destination incident
+                    entry['IgnoreAutoExtract'] = True
                 note_entries.append(entry)
 
         if len(note_entries) > 0:
             demisto.executeCommand("addEntries", {"id": target_incident,
-                                                  "entries": note_entries,
-                                                  "auto_extract": auto_extract_value})
+                                                  "entries": note_entries})
             md = f'## {len(note_entries)} notes copied'
         else:
             md = '## No notes found'

@@ -2,7 +2,7 @@
     "name": "HelloWorld",
     "description": "This is the Hello World integration for getting started.",
     "support": "community",
-    "currentVersion": "3.0.12",
+    "currentVersion": "3.0.15",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

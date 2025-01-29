@@ -1,24 +1,20 @@
 Query Indicators of Compromise in AlienVault OTX.
-## Configure AlienVault OTX v2 on Cortex XSOAR
+## Configure AlienVault OTX v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AlienVault OTX v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server address |  | True |
-    | API Token |  | False |
-    | Indicator Threshold. The minimum number of pulses to consider the indicator as malicious. |  | False |
-    | Maximum number of relationships for indicators | If not provided, no relationships will be added. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server address |  | True |
+| API Token |  | False |
+| Indicator Threshold. The minimum number of pulses to consider the indicator as malicious. |  | False |
+| Maximum number of relationships for indicators | If not provided, no relationships will be added. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Create relationships | Create relationships between indicators as part of Enrichment. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***

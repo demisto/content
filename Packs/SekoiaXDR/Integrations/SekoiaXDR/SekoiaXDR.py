@@ -5,7 +5,7 @@ from CommonServerUserPython import *  # noqa: F401
 import json
 import urllib3
 import dateparser  # type: ignore
-from typing import Any, Dict, Tuple, List, Optional, cast
+from typing import Any, cast
 from datetime import datetime
 import re
 import pytz  # type: ignore
@@ -19,11 +19,24 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTERVAL_SECONDS_EVENTS = 1
 TIMEOUT_EVENTS = 30
+INCIDENT_TYPE_NAME = "Sekoia XDR"
+SEKOIA_INCIDENT_FIELDS = {
+    "short_id": "The ID of the alert to edit",
+    "status": "The name of the status.",
+}
+
 STATUS_TRANSITIONS = {
     "Ongoing": "Validate",
     "Acknowledged": "Acknowledge",
     "Rejected": "Reject",
     "Closed": "Close",
+}
+
+MIRROR_DIRECTION = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": None,
+    "Incoming and Outgoing": "In",
 }
 
 
@@ -49,15 +62,15 @@ class Client(BaseClient):
 
     def list_alerts(
         self,
-        alerts_limit: Optional[int],
-        alerts_status: Optional[str],
-        alerts_created_at: Optional[str],
-        alerts_updated_at: Optional[str],
-        alerts_urgency: Optional[str],
-        alerts_type: Optional[str],
-        sort_by: Optional[str],
-    ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {}
+        alerts_limit: int | None,
+        alerts_status: str | None,
+        alerts_created_at: str | None,
+        alerts_updated_at: str | None,
+        alerts_urgency: str | None,
+        alerts_type: str | None,
+        sort_by: str | None,
+    ) -> dict[str, Any]:
+        request_params: dict[str, Any] = {}
 
         """ Normal parameters"""
         if alerts_limit:
@@ -83,15 +96,15 @@ class Client(BaseClient):
             method="GET", url_suffix="/v1/sic/alerts", params=request_params
         )
 
-    def get_alert(self, alert_uuid: str) -> Dict[str, Any]:
+    def get_alert(self, alert_uuid: str) -> dict[str, Any]:
         return self._http_request(
             method="GET", url_suffix=f"/v1/sic/alerts/{alert_uuid}"
         )
 
     def update_status_alert(
-        self, alert_uuid: str, action_uuid: str, comment: Optional[str]
-    ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {"action_uuid": action_uuid}
+        self, alert_uuid: str, action_uuid: str, comment: str | None
+    ) -> dict[str, Any]:
+        request_params: dict[str, Any] = {"action_uuid": action_uuid}
 
         """ Normal parameters"""
         if comment:
@@ -104,9 +117,9 @@ class Client(BaseClient):
         )
 
     def post_comment_alert(
-        self, alert_uuid: str, content: str, author: Optional[str]
-    ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {"content": content}
+        self, alert_uuid: str, content: str, author: str | None
+    ) -> dict[str, Any]:
+        request_params: dict[str, Any] = {"content": content}
 
         """ Normal parameters"""
         if author:
@@ -118,13 +131,13 @@ class Client(BaseClient):
             json_data=request_params,
         )
 
-    def get_comments_alert(self, alert_uuid: str) -> Dict[str, Any]:
+    def get_comments_alert(self, alert_uuid: str) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             url_suffix=f"/v1/sic/alerts/{alert_uuid}/comments",
         )
 
-    def get_workflow_alert(self, alert_uuid: str) -> Dict[str, Any]:
+    def get_workflow_alert(self, alert_uuid: str) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             url_suffix=f"/v1/sic/alerts/{alert_uuid}/workflow",
@@ -135,9 +148,9 @@ class Client(BaseClient):
         events_earliest_time: str,
         events_latest_time: str,
         events_term: str,
-        max_last_events: Optional[str],
-    ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {
+        max_last_events: str | None,
+    ) -> dict[str, Any]:
+        request_params: dict[str, Any] = {
             "earliest_time": events_earliest_time,
             "latest_time": events_latest_time,
             "term": events_term,
@@ -153,22 +166,22 @@ class Client(BaseClient):
             json_data=request_params,
         )
 
-    def query_events_status(self, event_search_job_uuid: str) -> Dict[str, Any]:
+    def query_events_status(self, event_search_job_uuid: str) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             url_suffix=f"/v1/sic/conf/events/search/jobs/{event_search_job_uuid}",
         )
 
-    def retrieve_events(self, event_search_job_uuid: str) -> Dict[str, Any]:
+    def retrieve_events(self, event_search_job_uuid: str) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             url_suffix=f"/v1/sic/conf/events/search/jobs/{event_search_job_uuid}/events",
         )
 
     def get_cases_alert(
-        self, alert_uuid: str, case_id: Optional[str]
-    ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {"match[alert_uuid]": alert_uuid}
+        self, alert_uuid: str, case_id: str | None
+    ) -> dict[str, Any]:
+        request_params: dict[str, Any] = {"match[alert_uuid]": alert_uuid}
 
         """ Matching parameters"""
         if case_id:
@@ -178,16 +191,16 @@ class Client(BaseClient):
             method="GET", url_suffix="v1/sic/cases", params=request_params
         )
 
-    def get_asset(self, asset_uuid: str) -> Dict[str, Any]:
+    def get_asset(self, asset_uuid: str) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             url_suffix=f"/v1/asset-management/assets/{asset_uuid}",
         )
 
     def list_asset(
-        self, limit: Optional[str], assets_type: Optional[str]
-    ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {}
+        self, limit: str | None, assets_type: str | None
+    ) -> dict[str, Any]:
+        request_params: dict[str, Any] = {}
 
         """ Normal parameters"""
         if limit:
@@ -205,8 +218,8 @@ class Client(BaseClient):
 
     def add_attributes_asset(
         self, asset_uuid: str, name: str, value: str
-    ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {"name": name, "value": value}
+    ) -> dict[str, Any]:
+        request_params: dict[str, Any] = {"name": name, "value": value}
 
         return self._http_request(
             method="POST",
@@ -214,8 +227,8 @@ class Client(BaseClient):
             params=request_params,
         )
 
-    def add_keys_asset(self, asset_uuid: str, name: str, value: str) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {"name": name, "value": value}
+    def add_keys_asset(self, asset_uuid: str, name: str, value: str) -> dict[str, Any]:
+        request_params: dict[str, Any] = {"name": name, "value": value}
 
         return self._http_request(
             method="POST",
@@ -225,31 +238,31 @@ class Client(BaseClient):
 
     def remove_attribute_asset(
         self, asset_uuid: str, attribute_uuid: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return self._http_request(
             method="DELETE",
             url_suffix=f"/v1/asset-management/assets/{asset_uuid}/attr/{attribute_uuid}",
             resp_type="text",
         )
 
-    def remove_key_asset(self, asset_uuid: str, key_uuid: str) -> Dict[str, Any]:
+    def remove_key_asset(self, asset_uuid: str, key_uuid: str) -> dict[str, Any]:
         return self._http_request(
             method="DELETE",
             url_suffix=f"/v1/asset-management/assets/{asset_uuid}/keys/{key_uuid}",
             resp_type="text",
         )
 
-    def get_user(self, user_uuid: str) -> Dict[str, Any]:
+    def get_user(self, user_uuid: str) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"/v1/users/{user_uuid}")
 
-    def get_kill_chain(self, kill_chain_uuid: str) -> Dict[str, Any]:
+    def get_kill_chain(self, kill_chain_uuid: str) -> dict[str, Any]:
         return self._http_request(
             method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}"
         )
 
     def http_request(
         self, method: str, url_suffix: str, params: dict
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         if not params:
             params = {}
 
@@ -460,16 +473,17 @@ def filter_dict_by_keys(input_dict: dict, keys_to_keep: list) -> dict:
 
 def fetch_incidents(
     client: Client,
-    max_results: Optional[int],
-    last_run: Dict[str, int],
-    first_fetch_time: Optional[int],
-    alert_status: Optional[str],
-    alert_urgency: Optional[str],
-    alert_type: Optional[str],
-    fetch_mode: Optional[str],
-    fetch_with_assets: Optional[bool],
-    fetch_with_kill_chain: Optional[bool],
-) -> Tuple[Dict[str, int], List[dict]]:
+    max_results: int | None,
+    last_run: dict[str, int],
+    first_fetch_time: int | None,
+    alert_status: str | None,
+    alert_urgency: str | None,
+    alert_type: str | None,
+    fetch_mode: str | None,
+    mirror_direction: str | None,
+    fetch_with_assets: bool | None,
+    fetch_with_kill_chain: bool | None,
+) -> tuple[dict[str, int], list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that incidents are fetched only onces and no incidents are missed.
@@ -487,6 +501,7 @@ def fetch_incidents(
         alert_urgency (str): alert urgency range to search for. Format: "MIN_urgency,MAX_urgency". i.e: 80,100.
         alert_type (str): type of alerts to search for.
         fetch_mode (str): If the alert will be fetched with or without the events.
+        mirror_direction (str): The direction of the mirroring can be set to None or to Incoming.
         fetch_with_assets (bool): If the alert will include the assets information on the fetching.
         fetch_with_kill_chain (bool): If the alert will include the kill chain information on the fetching.
     Returns:
@@ -519,7 +534,7 @@ def fetch_incidents(
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     alerts = client.list_alerts(
         alerts_limit=max_results,
         alerts_status=alert_status,
@@ -598,7 +613,10 @@ def fetch_incidents(
         }
         # If the integration parameter is set to mirror add the appropriate fields to the incident
         alert["mirror_instance"] = demisto.integrationInstance()
+        alert["mirrorOut"] = str(mirror_direction) in ["Outgoing", "Incoming and Outgoing"]
         incident["rawJSON"] = json.dumps(alert)
+        incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(str(mirror_direction))
+        incident["dbotMirrorId"] = alert["short_id"]
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
@@ -610,7 +628,201 @@ def fetch_incidents(
     return next_run, incidents
 
 
-def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+# =========== Mirroring Mechanism ===========
+
+
+def get_remote_data_command(
+    client: Client,
+    args: dict,
+    close_incident: bool,
+    close_note: str,
+    mirror_events: bool,
+    mirror_kill_chain: bool,
+    reopen_incident: bool,
+):
+    """get-remote-data command: Returns an updated alert and error entry (if needed)
+
+    Args:
+        client (Client): Sekoia XDR client to use.
+        args (dict): The command arguments
+        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the alert
+            has been closed on Sekoia's end.
+        close_note (str): Indicates the notes to be including when the incident gets closed by mirroring.
+        mirror_events (bool): If the events will be included in the mirroring of the alerts or not.
+        mirror_kill_chain: If the kill chain information from the alerts will be mirrored.
+        reopen_incident: Indicates whether to reopen the corresponding XSOAR incident if the alert
+            has been reopened on Sekoia's end.
+    Returns:
+        GetRemoteDataResponse: The Response containing the update alert to mirror and the entries
+    """
+
+    demisto.debug("#### Entering MIRRORING IN - get_remote_data_command ####")
+
+    parsed_args = GetRemoteDataArgs(args)
+    alert = client.get_alert(alert_uuid=parsed_args.remote_incident_id)
+    alert_short_id, alert_status = alert["short_id"], alert["status"]["name"]
+    last_update = arg_to_timestamp(
+        arg=parsed_args.last_update, arg_name="lastUpdate", required=True
+    )
+    alert_last_update = arg_to_timestamp(
+        arg=alert.get("updated_at"), arg_name="updated_at", required=False
+    )
+
+    demisto.debug(
+        f"Alert {alert_short_id} with status {alert_status} : last_update is {last_update} , alert_last_update is {alert_last_update}"  # noqa: E501
+    )
+
+    entries = []
+
+    # Add the events to the alert
+    if mirror_events and alert["status"]["name"] not in ["Closed", "Rejected"]:
+        earliest_time = alert["first_seen_at"]
+        lastest_time = "now"
+        term = f"alert_short_ids:{alert['short_id']}"
+        interval_in_seconds = INTERVAL_SECONDS_EVENTS
+        timeout_in_seconds = TIMEOUT_EVENTS
+
+        args = {
+            "earliest_time": earliest_time,
+            "lastest_time": lastest_time,
+            "query": term,
+            "interval_in_seconds": interval_in_seconds,
+            "timeout_in_seconds": timeout_in_seconds,
+        }
+        events = search_events_command(args=args, client=client)
+        alert["events"] = events.outputs  # pylint: disable=E1101
+
+    # Add the kill chain information to the alert
+    if mirror_kill_chain and alert["kill_chain_short_id"]:
+        try:
+            kill_chain = client.get_kill_chain(
+                kill_chain_uuid=alert["kill_chain_short_id"]
+            )
+            alert["kill_chain"] = kill_chain
+        except Exception as e:
+            # Handle the exception if there is any problem with the API call
+            demisto.debug(f"Error fetching kill_chain : {e}")
+
+    # This adds all the information from the XSOAR incident.
+    demisto.debug(
+        f"Alert {alert_short_id} with status {alert_status} have this info updated: {alert}"
+    )
+
+    investigation = demisto.investigation()
+    demisto.debug(f"The investigation information is {investigation}")
+
+    incident_id = investigation["id"]
+    incident_status = investigation["status"]
+
+    demisto.debug(
+        f"The XSOAR incident is {incident_id} with status {incident_status} is being mirrored with the alert {alert_short_id} that have the status {alert_status}."  # noqa: E501
+    )
+
+    # Close the XSOAR incident using mirroring
+    if (
+        (close_incident)
+        and (alert_status in ["Closed", "Rejected"])
+        and (investigation["status"] != 1)
+    ):
+        demisto.debug(
+            f"Alert {alert_short_id} with status {alert_status} was closed or rejected in Sekoia, closing incident {incident_id} in XSOAR"  # noqa: E501
+        )
+        entries = [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": f"{alert_status} - Mirror",
+                    "closeNotes": close_note,
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+
+    # Reopen the XSOAR incident using mirroring
+    if (
+        (reopen_incident)
+        and (alert_status not in ["Closed", "Rejected"])
+        and (investigation["status"] == 1)
+    ):
+        demisto.debug(
+            f"Alert {alert_short_id} with status {alert_status} was reopened in Sekoia, reopening incident {incident_id} in XSOAR"
+        )
+        entries = [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentReopen": True},
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+
+    demisto.debug("#### Leaving MIRRORING IN - get_remote_data_command ####")
+
+    demisto.debug(f"This's the final alert status for mirroring in : {alert}")
+
+    return GetRemoteDataResponse(mirrored_object=alert, entries=entries)
+
+
+def get_modified_remote_data_command(client: Client, args):
+    """Gets the list of all alert ids that have change since a given time
+
+    Args:
+        client (Client): Sekoia XDR client to use.
+        args (dict): The command argument
+
+    Returns:
+        GetModifiedRemoteDataResponse: The response containing the list of ids of notables changed
+    """
+    modified_alert_ids = []
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    last_update_utc = dateparser.parse(
+        last_update, settings={"TIMEZONE": "UTC"}
+    )  # converts to a UTC timestamp
+    formatted_last_update = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")  # type: ignore
+    converted_time = time_converter(formatted_last_update)
+    last_update_time = f"{converted_time},now"
+
+    raw_alerts = client.list_alerts(
+        alerts_updated_at=last_update_time,
+        alerts_limit=100,
+        alerts_status=None,
+        alerts_created_at=None,
+        alerts_urgency=None,
+        alerts_type=None,
+        sort_by="updated_at",
+    )
+
+    modified_alert_ids = [item["short_id"] for item in raw_alerts["items"]]
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
+
+
+def update_remote_system_command(client: Client, args):
+    pass
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+     this command pulls the remote schema for the different incident types, and their associated incident fields,
+     from the remote system.
+    :return: A list of keys you want to map
+    """
+    sekoia_incident_type_scheme = SchemeTypeMapping(type_name=INCIDENT_TYPE_NAME)
+    for argument, description in SEKOIA_INCIDENT_FIELDS.items():
+        sekoia_incident_type_scheme.add_field(name=argument, description=description)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(sekoia_incident_type_scheme)
+
+    return mapping_response
+
+
+# =========== Mirroring Mechanism ===========
+
+
+def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
+
     alerts = client.list_alerts(
         alerts_limit=args.get("limit"),
         alerts_status=args.get("status"),
@@ -633,7 +845,7 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     alert_uuid = args["id"]
 
@@ -659,7 +871,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def query_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def query_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     earliest_time = args["earliest_time"]
     lastest_time = args["lastest_time"]
@@ -684,7 +896,7 @@ def query_events_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def query_events_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def query_events_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     search_job_uuid = args["uuid"]
 
@@ -699,7 +911,7 @@ def query_events_status_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def retrieve_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def retrieve_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     search_job_uuid = args["uuid"]
 
@@ -717,7 +929,7 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 @polling_function(name="sekoia-xdr-search-events", requires_polling_arg=False)
-def search_events_command(args: Dict[str, Any], client: Client) -> PollResult:
+def search_events_command(args: dict[str, Any], client: Client) -> PollResult:
     """Parameters"""
     earliest_time = args["earliest_time"]
     lastest_time = args["lastest_time"]
@@ -800,7 +1012,7 @@ def search_events_command(args: Dict[str, Any], client: Client) -> PollResult:
     )
 
 
-def update_status_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_status_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     alert_uuid, updated_status, comment = (
         args["id"],
@@ -831,7 +1043,7 @@ def update_status_alert_command(client: Client, args: Dict[str, Any]) -> Command
     return CommandResults(readable_output=readable_output, outputs=update)
 
 
-def post_comment_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def post_comment_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     alert_uuid, comment, author = (
         args["id"],
@@ -851,7 +1063,7 @@ def post_comment_alert_command(client: Client, args: Dict[str, Any]) -> CommandR
     return CommandResults(readable_output=readable_output, outputs=response)
 
 
-def get_comments_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_comments_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     alert_uuid = args["id"]
 
@@ -882,7 +1094,7 @@ def get_comments_alert_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def get_workflow_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_workflow_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     alert_uuid = args["id"]
 
@@ -900,7 +1112,7 @@ def get_workflow_alert_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def get_cases_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_cases_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     alert_uuid, case_id = args["alert_id"], args.get("case_id")
 
@@ -926,7 +1138,7 @@ def get_cases_alert_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def get_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     asset_uuid = args["asset_uuid"]
 
@@ -947,7 +1159,7 @@ def get_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     limit, assets_type = args.get("limit"), args.get("assets_type")
 
@@ -966,7 +1178,7 @@ def list_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     user_uuid = args["user_uuid"]
 
@@ -984,7 +1196,7 @@ def get_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def add_attributes_asset_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """Parameters"""
     asset_uuid, name, value = (
@@ -1007,7 +1219,7 @@ def add_attributes_asset_command(
     )
 
 
-def add_keys_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_keys_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     asset_uuid, name, value = (
         args["asset_uuid"],
@@ -1028,7 +1240,7 @@ def add_keys_asset_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def remove_attribute_asset_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """Parameters"""
     asset_uuid, attribute_uuid = args["asset_uuid"], args["attribute_uuid"]
@@ -1041,7 +1253,7 @@ def remove_attribute_asset_command(
     return CommandResults(readable_output=readable_output)
 
 
-def remove_key_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_key_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     asset_uuid, key_uuid = args["asset_uuid"], args["key_uuid"]
 
@@ -1051,7 +1263,7 @@ def remove_key_asset_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return CommandResults(readable_output=readable_output)
 
 
-def get_kill_chain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_kill_chain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     kill_chain_uuid = args["kill_chain_uuid"]
 
@@ -1068,7 +1280,7 @@ def get_kill_chain_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def http_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     method, url_sufix, params = (
         args["method"],
@@ -1163,18 +1375,19 @@ def main() -> None:
 
         elif command == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
-            alerts_status = ",".join(params.get("alerts_status", None))
-            alerts_type = ",".join(params.get("alerts_type", None))
+            alerts_status = ",".join(params.get("alerts_status", ""))
+            alerts_type = ",".join(params.get("alerts_type", ""))
             alerts_urgency = params.get("alerts_urgency", None)
             fetch_mode = params.get("fetch_mode")
             fetch_with_assets = params.get("fetch_with_assets")
             fetch_with_kill_chain = params.get("fetch_with_kill_chain")
+            mirror_direction = params.get("mirror_direction", "None")
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(params["max_fetch"])
-            last_run: Dict[
-                str, Any
-            ] = demisto.getLastRun()  # getLastRun() gets the last run dict
+            last_run: dict[str, Any] = (
+                demisto.getLastRun()
+            )  # getLastRun() gets the last run dict
 
             next_run, incidents = fetch_incidents(
                 client=client,
@@ -1185,6 +1398,7 @@ def main() -> None:
                 alert_urgency=alerts_urgency,
                 alert_type=alerts_type,
                 fetch_mode=fetch_mode,
+                mirror_direction=mirror_direction,
                 fetch_with_assets=fetch_with_assets,
                 fetch_with_kill_chain=fetch_with_kill_chain,
             )
@@ -1234,6 +1448,22 @@ def main() -> None:
             return_results(get_kill_chain_command(client, args))
         elif command == "sekoia-xdr-http-request":
             return_results(http_request_command(client, args))
+        elif command == "get-remote-data":
+            return_results(
+                get_remote_data_command(
+                    client,
+                    args,
+                    close_incident=demisto.params().get("close_incident"),  # type: ignore
+                    close_note=demisto.params().get("close_notes", "Closed by Sekoia."),  # type: ignore
+                    mirror_events=demisto.params().get("mirror_events"),  # type: ignore
+                    mirror_kill_chain=demisto.params().get("mirror_kill_chain"),  # type: ignore
+                    reopen_incident=demisto.params().get("reopen_incident"),  # type: ignore
+                )
+            )
+        elif command == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(client, args))
+        elif command == "get-mapping-fields":
+            return_results(get_mapping_fields_command())
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 

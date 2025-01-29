@@ -193,7 +193,7 @@ script:
       name: postal_code
     - description: Is user synchronized.
       name: synchronized
-    description: Create a new user in the tenant
+    description: Create a new user in the tenant.
     name: sta-create-user
     outputs:
     - contextPath: STA.USER.ID
@@ -644,9 +644,9 @@ script:
   - arguments:
     - description: Username of the user.
       name: userName
-    - description: 'Filter logs since the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z'
+    - description: 'Filter logs since the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z.'
       name: since
-    - description: 'Filter logs until the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z'
+    - description: 'Filter logs until the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z.'
       name: until
     - description: The maximum number of results to return.
       name: limit
@@ -915,7 +915,7 @@ script:
     - contextPath: STA.USER.SESSION.DELETED
       description: Returns true, if all the user SSO sessions deleted successfully.
       type: boolean
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: ''
   subtype: python3

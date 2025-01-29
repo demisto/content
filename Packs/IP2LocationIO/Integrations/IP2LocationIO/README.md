@@ -1,23 +1,19 @@
 IP2Location.io integration to query IP geolocation data.
-## Configure IP2LocationIO on Cortex XSOAR
+## Configure IP2LocationIO in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IP2LocationIO.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | IP2Location.io API |  | True |
-    | API Key |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| IP2Location.io API |  | True |
+| API Key |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ip

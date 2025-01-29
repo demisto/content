@@ -1,26 +1,22 @@
 Provides data enrichment for domains.
 This integration was integrated and tested with version 1.0 of Whois
 
-## Configure Whois on Cortex XSOAR
+## Configure Whois in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Whois.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Return Errors | If set, failed command results will be returned as warnings instead of errors. | False |
-    | Proxy URL | Supports socks4/socks5/http connect proxies \(e.g. socks5h://host:1080\). Will effect all commands except for the \`ip\` command. | False |
-    | Use system proxy settings | Effect the \`ip\` command and the other commands only if the Proxy URL is not set. | False |
-    | Use legacy context | Indicates whether to use the previous/legacy implementation of the integration commands and their outputs or the new ones. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Rate Limit Retry Count | The number of times to try when getting a Rate Limit response. | False |
-    | Rate Limit Wait Seconds | The number of seconds to wait between each iteration when getting a Rate Limit response. | False |
-    | Suppress Rate Limit errors | Whether Rate Limit errors should be supressed or not. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Return Errors | If set, failed command results will be returned as warnings instead of errors. | False |
+| Proxy URL | Supports socks4/socks5/http connect proxies \(e.g. socks5h://host:1080\). Will effect all commands except for the \`ip\` command. | False |
+| Use system proxy settings | Effect the \`ip\` command and the other commands only if the Proxy URL is not set. | False |
+| Use legacy context | Indicates whether to use the previous/legacy implementation of the integration commands and their outputs or the new ones. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Rate Limit Retry Count | The number of times to try when getting a Rate Limit response. | False |
+| Rate Limit Wait Seconds | The number of seconds to wait between each iteration when getting a Rate Limit response. | False |
+| Suppress Rate Limit errors | Whether Rate Limit errors should be supressed or not. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### whois
 ***

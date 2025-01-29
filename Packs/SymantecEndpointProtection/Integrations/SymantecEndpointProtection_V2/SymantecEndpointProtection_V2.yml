@@ -360,7 +360,7 @@ script:
       name: pageSize
     - description: The name of the group to which the endpoint belongs. A wild card search can be done using '*'at the end of the query.
       name: groupName
-    - description: desiredVersion
+    - description: desiredVersion.
       name: desiredVersion
     description: Get endpoints for a running version that is different than the target version or the desired version (if specified).
     name: sep-identify-old-clients
@@ -368,7 +368,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.116949
 tests:
 - SymantecEndpointProtection_Test
 fromversion: 5.0.0

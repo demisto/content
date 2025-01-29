@@ -2,7 +2,7 @@
     "name": "AWS - CloudTrail",
     "description": "Amazon Web Services CloudTrail.",
     "support": "xsoar",
-    "currentVersion": "1.1.5",
+    "currentVersion": "1.1.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,16 @@
     "categories": [
         "Cloud Service Provider"
     ],
-    "tags": [],
+    "tags": [
+        "marketplacev2:Data Source"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Amazon",
+        "AWS",
+        "CloudTrail",
+        "Cloud Trail"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
