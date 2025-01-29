@@ -1,0 +1,37 @@
+args:
+- description: web link to upload as LLM document.
+  name: link
+  required: true
+- description: title of the LLM document.
+  name: title
+  required: true
+- description: author of the LLM document.
+  name: author
+  required: true
+- description: description of the LLM document.
+  name: description
+  required: true
+- description: source of the LLM document.
+  name: source
+  required: true
+comment: Uploads a web link as a LLM document.  Does not currently support full text search.
+commonfields:
+  id: AnyLlmUploadWebLink
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmUploadWebLink
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
