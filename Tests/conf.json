@@ -1138,7 +1138,8 @@
         },
         {
             "integrations": "BeyondTrust Password Safe",
-            "playbookID": "BeyondTrust-Test"
+            "playbookID": "BeyondTrust-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Dell Secureworks",
