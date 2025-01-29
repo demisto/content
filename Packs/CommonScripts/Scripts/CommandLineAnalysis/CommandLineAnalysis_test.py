@@ -22,6 +22,7 @@ DOUBLE_ENCODED_STRING = "cmVjdXJzaXZlIGRlY29kZSBaR1ZqYjJSbElGWkhhSEJqZVVKd1kzbEN
 MALICIOUS_COMMAND_LINE = "wevtutil cl Security RG91YmxlIGVuY29kaW5nIFZHaHBjeUJwY3lCaElHeHBjM1JsYm1WeUtERXhMakV3TVM0eE1qUXVNaklw"
 MACOS_COMMAND_LINE = "tell window 1 of application to set visible to false"
 
+
 @pytest.fixture
 def sample_encoded_command() -> str:
     return DOUBLE_ENCODED_STRING
@@ -124,8 +125,7 @@ def test_check_powershell_suspicious_patterns():
 # Test check_reconnaissance_temp
 def test_check_suspicious_macos_applescript_commands():
     matches = check_suspicious_macos_applescript_commands(MACOS_COMMAND_LINE)
-    assert "to set visible" in matches["infostealer_characteristics"][0]
-    assert "false" in matches["infostealer_characteristics"][0]
+    assert ["to set visible", "false"] in matches["infostealer_characteristics"]
 
 # Test analyze_command_line
 def test_analyze_command_line():
