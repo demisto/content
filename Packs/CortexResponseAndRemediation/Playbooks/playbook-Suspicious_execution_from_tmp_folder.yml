@@ -1324,43 +1324,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "80":
-    id: "80"
-    taskid: 53b5c45b-ef6f-4e9d-84e6-e70e21f05836
-    type: condition
-    task:
-      id: 53b5c45b-ef6f-4e9d-84e6-e70e21f05836
-      version: -1
-      name: Check if related alerts found
-      type: condition
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    conditions:
-    - label: Results Found
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: foundIncidents
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1247.5,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "81":
     id: "81"
     taskid: 8346afec-8836-4095-8dc3-3e3c95b50048
