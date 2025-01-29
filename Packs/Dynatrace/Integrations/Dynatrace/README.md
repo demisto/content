@@ -1,5 +1,4 @@
 Fetch Audit logs and APM events from Dynatrace Platform
-This integration was integrated and tested with version xx of Dynatrace.
 
 ## Configure Dynatrace in Cortex
 

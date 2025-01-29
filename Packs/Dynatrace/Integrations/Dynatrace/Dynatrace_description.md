@@ -13,10 +13,11 @@ Dynatrace doesn't enforce unique token names. You can create multiple tokens wit
 You can only access your token once upon creation. You can't reveal it afterward.
 
 ### Required scopes:
-​​https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/basics/dynatrace-api-authentication
+For each event type to fetch the according scope needs to be added to the token:
 
-Audit logs API - To execute this request, you need an access token with auditLogs.read scope.
-List Events API - To execute this request, you need an access token with events.read scope.
+Audit logs events- auditLogs.read scope.
+
+APM events- events.read scope.
 
 ### Server URL
 Make sure to include the correct url:

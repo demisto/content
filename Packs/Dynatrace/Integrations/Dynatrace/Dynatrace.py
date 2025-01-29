@@ -14,6 +14,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR = "Dynatrace"
 PRODUCT = "Platform"
 EVENTS_TYPE_DICT = {"Audit logs": "auditLogs", "APM": "events"}
+EVENT_TYPES = ["APM", "Audit logs"]
 
 
 """ CLIENT CLASS """
@@ -45,9 +46,12 @@ def validate_params(events_to_fetch, audit_max, apm_max):
     """
     if not events_to_fetch:
         raise DemistoException("Please specify at least one event type to fetch.")
+    for events_type in events_to_fetch:
+        if events_type not in EVENT_TYPES:
+            raise DemistoException("Events types to fetch can only include 'APM' or 'Audit logs'.")
     if audit_max < 1 or audit_max > 25000:
         raise DemistoException("The maximum number of audit logs events per fetch needs to be grater then 0 and not more then then 25000")
-    if apm_max < 1 or apm_max > 5000:
+    if apm_max < 1 or apm_max > 7000:
         raise DemistoException("The maximum number of APM events per fetch needs to be grater then 0 and not more then then 5000")
 
 
@@ -63,8 +67,8 @@ def add_fields_to_events(events, event_type):
     """
     
     field_mapping = {
-        "Audit logs": ["Audit logs events", "timestamp"],
-        "APM": ["APM events", "startTime"]
+        "Audit logs": ["Audit", "timestamp"],
+        "APM": ["APM", "startTime"]
     
     }
     for event in events:
@@ -124,7 +128,7 @@ def fetch_apm_events(client, limit, fetch_start_time):
     events_count = 0
     args = {}
     
-    for i in range(5):  # Design says we will do at most five calls every fetch_interval so we can get more events per fetch
+    for i in range(7):  # Design says we will do at most five calls every fetch_interval so we can get more events per fetch
         args["apm_limit"] = min(limit-events_count, 1000)  # The api can bring up to 1000 events per call
             
         if args["apm_limit"] != 0:  # We didn't get to the limit needed, need to fetch more events

@@ -7,7 +7,7 @@ sectionOrder:
 name: Dynatrace
 display: Dynatrace
 category: Cloud Services
-description: 'Fetch Audit logs and APM events from Dynatrace Platform'
+description: 'Dynatrace is a revolutionary platform that delivers analytics and automation for unified observability and security.'
 configuration:
 - display: Server URL
   name: url
@@ -16,7 +16,7 @@ configuration:
   section: Connect
 - display: Access Token
   name: token
-  required: false
+  required: true
   type: 4
   section: Connect
 - display: Event types to fetch
@@ -38,7 +38,7 @@ configuration:
 - display: The maximum number of APM events per fetch
   section: Collect
   advanced: true
-  defaultvalue: "5000"
+  defaultvalue: "7000"
   type: 0
   name: apm_limit
 - display: Trust any certificate (not secure)
