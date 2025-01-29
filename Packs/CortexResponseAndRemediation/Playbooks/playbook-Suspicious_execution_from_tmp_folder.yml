@@ -1,0 +1,1413 @@
+id: Suspicious execution from tmp folder
+version: -1
+name: Suspicious execution from tmp folder
+description: "This playbook addresses the following alerts:\n \n- Suspicious interactive execution of a binary from the tmp folder\n- Suspicious cron job task execution of a binary from the tmp folder\n- A web server process executed an unpopular application from the tmp folder\n \nPlaybook Stages:\n  \nAnalysis: \n \n- Check target process hash reputation\n- Check commandline extracted indicators reputation\n \nInvestigation:\n \n- Search for suspicious related alerts\n \nRemediation:\n \n- Terminate causality process\n- Quarantine the malicious process image file."
+tags:
+- T1564 - Hide Artifacts
+- TA0005 - Defense Evasion
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cbb00d6d-fd1c-4d06-8515-78c053a04345
+    type: start
+    task:
+      id: cbb00d6d-fd1c-4d06-8515-78c053a04345
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 75e28446-d761-41ad-85ba-203ea15e697c
+    type: regular
+    task:
+      id: 75e28446-d761-41ad-85ba-203ea15e697c
+      version: -1
+      name: Check Target Process Hash Reputation
+      description: Retrieve results for a file hash using WildFire.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      file:
+        simple: ${alert.targetprocesssha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a3d85b15-ad69-4819-8e2b-6ef50a8b4a5f
+    type: regular
+    task:
+      id: a3d85b15-ad69-4819-8e2b-6ef50a8b4a5f
+      version: -1
+      name: Check if commandline includes IOC (IP,URL,Domain)
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      text:
+        simple: ${alert.targetprocesscmd}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 607.5,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: f032c921-6416-4de3-8753-60458f2cb291
+    type: title
+    task:
+      id: f032c921-6416-4de3-8753-60458f2cb291
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 95
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 1282cbda-13d3-4260-8012-a0566dfcb2a8
+    type: condition
+    task:
+      id: 1282cbda-13d3-4260-8012-a0566dfcb2a8
+      version: -1
+      name: Malicious reputation found?
+      description: Check if malicious reputation of IOC is found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 6ca08639-4a4c-4f73-8541-306ad346fe44
+    type: title
+    task:
+      id: 6ca08639-4a4c-4f73-8541-306ad346fe44
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: e8e862a0-abc1-44ce-8cbd-2ebe0eda806a
+    type: condition
+    task:
+      id: e8e862a0-abc1-44ce-8cbd-2ebe0eda806a
+      version: -1
+      name: Check if related alerts found
+      description: Check if related alerts or insights have been found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "64"
+      Results Found:
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: Results Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 9415a66d-5c4b-4d48-88f4-9688dd97c335
+    type: title
+    task:
+      id: 9415a66d-5c4b-4d48-88f4-9688dd97c335
+      version: -1
+      name: Set Context for Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "69"
+      - "70"
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 9326b7e3-7358-474c-8529-7c23e9bb74c7
+    type: regular
+    task:
+      id: 9326b7e3-7358-474c-8529-7c23e9bb74c7
+      version: -1
+      name: Terminate Causality - Action Process
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.actionprocessinstanceid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: f9220831-00ac-42c1-8631-8554aba3bf0d
+    type: title
+    task:
+      id: f9220831-00ac-42c1-8631-8554aba3bf0d
+      version: -1
+      name: Quarantine file
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 0ea9e0c9-f284-4f8c-8ede-47c0017b6199
+    type: regular
+    task:
+      id: 0ea9e0c9-f284-4f8c-8ede-47c0017b6199
+      version: -1
+      name: Get file quarantine status
+      description: Retrieves the quarantine status for a selected file.
+      script: '|||core-get-quarantine-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${MaliciousFileHash}
+      file_path:
+        simple: ${MaliciousFilePath}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: e6c64c8e-1e41-49f0-8e83-2b1158dd16c4
+    type: condition
+    task:
+      id: e6c64c8e-1e41-49f0-8e83-2b1158dd16c4
+      version: -1
+      name: Analyst approval for quarantine the malicious file
+      description: "Dear Analyst,\nShould perform quarantine of the malicious file?\n\nfile name: ${MaliciousFileName}\n\nfile hash: \n${MaliciousFileHash}\n"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      No Quarantine:
+      - "57"
+      Quarantine:
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Quarantine
+      - No Quarantine
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 3b1091a4-5da6-4770-82ea-3312a6c00141
+    type: condition
+    task:
+      id: 3b1091a4-5da6-4770-82ea-3312a6c00141
+      version: -1
+      name: Check if file already quarantined
+      description: Determines whether to quarantine the files based on their quarantine status and the successful calculation of the file hash.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.quarantineFiles.status
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 1a8ad8be-1a27-4f30-895b-0244fec589db
+    type: regular
+    task:
+      id: 1a8ad8be-1a27-4f30-895b-0244fec589db
+      version: -1
+      name: File quarantine
+      description: 'Quarantines a file on selected endpoints. '
+      script: '|||core-quarantine-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "56"
+      '#none#':
+      - "57"
+    scriptarguments:
+      endpoint_id_list:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${MaliciousFileHash}
+      file_path:
+        simple: ${MaliciousFilePath}
+      interval_in_seconds:
+        simple: "20"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -2.5,
+          "y": 2745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 11c35696-da82-4f76-87a8-3c322b817596
+    type: regular
+    task:
+      id: 11c35696-da82-4f76-87a8-3c322b817596
+      version: -1
+      name: Manual action needed – Malicious file couldn't be quarantined
+      description: |-
+        Dear Analyst,
+
+        The playbook was unable to quarantine the Malicious file due to the following possible reasons:
+
+        - The file is not located on the local host.
+        - The endpoint is currently disconnected.
+        - The hash calculation was unsuccessful.
+
+        Please take manual action to terminate the causality process if needed and quarantine the file.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 5ff8887c-01ef-4da1-8a04-4844f342e8d9
+    type: title
+    task:
+      id: 5ff8887c-01ef-4da1-8a04-4844f342e8d9
+      version: -1
+      name: Quarantine file  - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: bd645b9a-1452-4027-8800-b8b23f615988
+    type: regular
+    task:
+      id: bd645b9a-1452-4027-8800-b8b23f615988
+      version: -1
+      name: Search for suspicious-related alerts by MITRE Technique
+      description: |-
+        This task searches for Cortex XSIAM suspicious alerts related to the current alert by Mitre Technique, indicating that the alert is part of an attack pattern.
+
+        Focus on identifying alerts associated with the following MITRE techniques:
+        - Any Agent Alerts within this alert.
+        - T1059 - Command and Scripting Interpreter.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      fromdate:
+        simple: 2 hours ago
+      includeinformational:
+        simple: "true"
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '((name:*Suspicious access to shadow file* or name:*UNIX LOLBIN process connected to a rare external host* or name:*Persistence through service registration* or name:*Adding execution privileges* or name:*Modification of systemd service files* or name:*Adding execution privileges* or name:*Local account discovery*)) and caseid:'
+              suffix:
+                value:
+                  simple: )
+      todate:
+        simple: ${alert.created}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: c71ded9a-e5ed-4dd8-8c01-8bd81c82d4b7
+    type: regular
+    task:
+      id: c71ded9a-e5ed-4dd8-8c01-8bd81c82d4b7
+      version: -1
+      name: Create Indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      value:
+        complex:
+          root: tmpList
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.IP
+                iscontext: true
+              raw: {}
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.URL
+                iscontext: true
+              raw: {}
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              raw: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 607.5,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 85f0a380-4843-4523-8c8a-50db3a6fed18
+    type: regular
+    task:
+      id: 85f0a380-4843-4523-8c8a-50db3a6fed18
+      version: -1
+      name: Enrich Indicators
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: emptylist
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${ExtractedIndicators.IP}
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${ExtractedIndicators.URL}
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 607.5,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 72144f78-b444-4133-86ff-c196fda0d06d
+    type: title
+    task:
+      id: 72144f78-b444-4133-86ff-c196fda0d06d
+      version: -1
+      name: No Results Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 099a8cdb-a1bb-4629-8978-2bcf40cd90f9
+    type: regular
+    task:
+      id: 099a8cdb-a1bb-4629-8978-2bcf40cd90f9
+      version: -1
+      name: Close Alert - False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      closeNotes:
+        simple: False Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "Suspicious execution from tmp folder"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 3295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: a680ef9c-5dc6-4904-83c4-af7fe12140db
+    type: regular
+    task:
+      id: a680ef9c-5dc6-4904-83c4-af7fe12140db
+      version: -1
+      name: Close Alert - True Positive
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious binary execution from /tmp directory detected
+      closeReason:
+        simple: Resolved - Handled by the playbook "Suspicious execution from tmp folder"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: fa6f6095-f92f-4131-8889-32e52164f530
+    type: title
+    task:
+      id: fa6f6095-f92f-4131-8889-32e52164f530
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: dd2ac6df-d374-4b8c-80cf-6794fe1ee591
+    type: regular
+    task:
+      id: dd2ac6df-d374-4b8c-80cf-6794fe1ee591
+      version: -1
+      name: Get action process image file path
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 3ad2275e-edec-4586-8b43-c4ba403a393d
+    type: regular
+    task:
+      id: 3ad2275e-edec-4586-8b43-c4ba403a393d
+      version: -1
+      name: Set Malicious File Hash to Context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      key:
+        simple: MaliciousFileHash
+      value:
+        complex:
+          root: alert
+          accessor: targetprocesssha256
+          transformers:
+          - operator: JoinIfSingleElementOnly
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 90994693-9b1d-43c6-872c-4ed482582fa0
+    type: regular
+    task:
+      id: 90994693-9b1d-43c6-872c-4ed482582fa0
+      version: -1
+      name: Set Malicious File Path to Context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      key:
+        simple: MaliciousFilePath
+      value:
+        simple: ${Core.OriginalAlert.event.action_process_image_path}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 2f499d45-acdd-4383-8584-3207e9e6ce57
+    type: title
+    task:
+      id: 2f499d45-acdd-4383-8584-3207e9e6ce57
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+      - "78"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 2f85a9c6-9aba-4d5d-88af-628f46dbcc0e
+    type: regular
+    task:
+      id: 2f85a9c6-9aba-4d5d-88af-628f46dbcc0e
+      version: -1
+      name: Set Malicious File Name to Context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      key:
+        simple: MaliciousFileName
+      value:
+        complex:
+          root: alert
+          accessor: targetprocessname
+          transformers:
+          - operator: JoinIfSingleElementOnly
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 1a2fb29e-0d63-4aba-8b6e-772c5db427e9
+    type: regular
+    task:
+      id: 1a2fb29e-0d63-4aba-8b6e-772c5db427e9
+      version: -1
+      name: Disable Cronjob Manually
+      description: |-
+        Dear Analyst,
+
+        During the investigation process, the malicious process was found to be executed by a cronjob.
+
+        To complete all remediation steps, please consider disabling the malicious cronjob manually, in addition to the automatic remediation steps.
+
+        Malicious Process: ${MaliciousFileName}
+
+        Malicious Cronjob: ${MaliciousCronjob}
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 927.5,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 3cfb3905-ffcf-4632-8d4b-754c4d681d42
+    type: condition
+    task:
+      id: 3cfb3905-ffcf-4632-8d4b-754c4d681d42
+      version: -1
+      name: Check if cronjob alert
+      description: Check if alert is the cronjob variant
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "67"
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: cron job
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 927.5,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: c98cc0f9-c942-4593-8168-5a9b64033b35
+    type: regular
+    task:
+      id: c98cc0f9-c942-4593-8168-5a9b64033b35
+      version: -1
+      name: Get user's crontab from endpoint
+      description: Initiate a new endpoint script execution of shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      commands:
+        simple: crontab -u ${alert.username.[0]} -l
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 927.5,
+          "y": 2415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 0ec7267c-a68f-42c8-8744-a10f146170c1
+    type: regular
+    task:
+      id: 0ec7267c-a68f-42c8-8744-a10f146170c1
+      version: -1
+      name: Get action results
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 927.5,
+          "y": 2655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: bc19f36d-c861-4096-84a6-556a0d32f930
+    type: regular
+    task:
+      id: bc19f36d-c861-4096-84a6-556a0d32f930
+      version: -1
+      name: Locate the malicious cronjob in crontab
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      key:
+        simple: MaliciousCronjob
+      value:
+        complex:
+          root: Core.ScriptResult.results.command_output
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: Core.ScriptResult.results.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: MaliciousFileName
+                iscontext: true
+            - operator: containsString
+              left:
+                value:
+                  simple: Core.ScriptResult.results.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: MaliciousFilePath
+                iscontext: true
+          - - operator: containsString
+              left:
+                value:
+                  simple: Core.ScriptResult.results.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: /tmp
+          transformers:
+          - operator: uniq
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Malicious Cronjob: '
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 927.5,
+          "y": 2855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: ad7d95ea-a703-4295-8a33-692c8b78aa41
+    type: title
+    task:
+      id: ad7d95ea-a703-4295-8a33-692c8b78aa41
+      version: -1
+      name: Cronjob Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "74"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 927.5,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "36_38_#default#": 0.33,
+      "36_42_yes": 0.37,
+      "53_57_No Quarantine": 0.38,
+      "74_67_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3765,
+        "width": 1920,
+        "x": -250,
+        "y": -230
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0
