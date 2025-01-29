@@ -1,4 +1,7 @@
 category: Cloud Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AWS-EKS
   version: -1
@@ -102,11 +105,13 @@ configuration:
   type: 8
   required: false
   advanced: true
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   advanced: true
+  section: Connect
 description: The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.
 display: AWS-EKS
 name: AWS-EKS
