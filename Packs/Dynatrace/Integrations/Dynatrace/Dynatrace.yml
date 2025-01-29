@@ -83,7 +83,7 @@ script:
       - "True"
       - "False"
       required: false
-    description: Manual command to fetch events and display them.
+    description: Manual command to fetch events and display them. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     name: dynatrace-get-events
   isfetchevents: true
   subtype: python3

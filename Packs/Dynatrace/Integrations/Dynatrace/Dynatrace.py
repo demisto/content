@@ -79,7 +79,7 @@ def add_fields_to_events(events, event_type):
 
 
 def events_query(client: DynatraceClient, args: dict, event_type: str):
-    """Calls the right api to get events of event_type type according to the args
+    """Calls the relevant api to get events of event_type type according to the args
 
     Args:
         client (DynatraceClient): client
@@ -252,27 +252,25 @@ def fetch_audit_log_events(client, limit, fetch_start_time):
 
 """ COMMAND FUNCTIONS """
 
-def fetch_events(client: DynatraceClient, events_to_fetch: list, audit_limit: int, apm_limit: int):
+def fetch_events(client: DynatraceClient, events_to_fetch: list, events_limits: dict[str, int]):
     """Gets events from the fetching functions, adds the events the relevant fields and sends the events to XSIAM.
 
     Args:
         client (DynatraceClient): client
         events_to_fetch (list): list of events types to fetch
-        audit_limit (int): limit of Audit logs  events to fetch
-        apm_limit (int): limit of APM events to fetch
+        events_limit: dict[str, int]: limit of events to fetch by event type
     """
     fetch_start_time = int(datetime.now().timestamp() * 1000)  # We want this timestamp to look like this: 1737656746001
     demisto.debug(f"Dynatrace fetch start time is {fetch_start_time}")
     
     events_to_send = []
-    if "APM" in events_to_fetch:
-        events = fetch_apm_events(client, apm_limit, fetch_start_time)
-        events = add_fields_to_events(events, "APM")
-        events_to_send.extend(events)
-    if "Audit logs" in events_to_fetch:
-        events = fetch_audit_log_events(client, audit_limit, fetch_start_time)
-        events = add_fields_to_events(events, "Audit logs")
-        events_to_send.extend(events)
+    events_fetch_function = {"APM": fetch_apm_events, "Audit logs": fetch_audit_log_events}
+    for event_type in events_fetch_function:
+            demisto.debug(f"Fetching: {event_type} with limit {events_limits[event_type]}")
+            events = events_fetch_function[event_type](client, events_limits[event_type], fetch_start_time)
+            events = add_fields_to_events(events, event_type)
+            events_to_send.extend(events)
+  
     
     demisto.debug(f"Dynatrace sending {len(events_to_send)} to xsiam")
     send_events_to_xsiam(events_to_send, VENDOR, PRODUCT)
@@ -285,6 +283,7 @@ def get_events_command(client: DynatraceClient, args: dict):
     events_to_return = []
             
     for event_type in events_types:
+        demisto.debug(f"Dynatrace calling {event_type} api with {args=}")
         response = events_query(client, args, event_type)
         events = response[EVENTS_TYPE_DICT[event_type]]
         demisto.debug(f"Dynatrace got {len(events)} events of type {event_type}")
@@ -301,8 +300,10 @@ def get_events_command(client: DynatraceClient, args: dict):
         return CommandResults(readable_output="No events were received")
 
 
-def test_module(client: DynatraceClient, events_to_fetch: List[str]) -> str:
-
+def test_module(client: DynatraceClient, events_to_fetch: List[str], audit_limit, apm_limit) -> str:
+    
+    validate_params(events_to_fetch, audit_limit, apm_limit)
+    
     try:
         if "Audit logs" in events_to_fetch:
             client.get_audit_logs_events("?pageSize=1")
@@ -326,8 +327,6 @@ def main():  # pragma: no cover
     audit_limit = arg_to_number(params.get('audit_limit'))  or 25000
     apm_limit = arg_to_number(params.get('apm_limit'))  or 25000
     
-    validate_params(events_to_fetch, audit_limit, apm_limit)
-    
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     
@@ -342,7 +341,7 @@ def main():  # pragma: no cover
         args = demisto.args()
         
         if command == "test-module":
-            result = test_module(client, events_to_fetch)
+            result = test_module(client, events_to_fetch, audit_limit, apm_limit)
             return_results(result)
         elif command == "dynatrace-get-events":
             result = get_events_command(client, args)
