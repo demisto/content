@@ -25,6 +25,9 @@ def main():
             search_query = f"value:({' '.join(indicator_vals)})"
         elif indicator_ids:
             search_query = f"id:({' '.join(indicator_ids)})"
+        else:
+            search_query = ""
+            demisto.debug(f"didn't match any condition. Initializing {search_query=}")
 
         res = execute_command("deleteIndicators", {
             "query": search_query,
