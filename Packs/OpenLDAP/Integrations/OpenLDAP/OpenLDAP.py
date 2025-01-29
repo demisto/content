@@ -510,20 +510,20 @@ class LdapClient:
         """
             Gets a User logon name (the username that is used for log in to XSOAR) and checks if it includes wildcards.
             Raises exception if wildcards are found in the logon name.
-            
+
             Background:
                 LDAP servers support the use of wildcards primarily through the '*' and the '?' symbols for searching entries in
                 the directory.
                 Since the authentication process relies on exact username for login, the login attempt will be denied if the
                 user logon name includes wildcards.
-                                
+
             Note:
                 Wildcards are illegal characters for active directory logon names, however they are valid characters
                 for OpenLdap usernames.
                 Since we believe usernames include '*' or '?' symbols are rare, we fail the authentication when a user logon name
                 includes one of them.
         """
-        err_msg = f"Wildcards were detected in the user logon name - Input Username: {logon_name}."\
+        err_msg = f"Wildcards were detected in the user logon name - Input Username: '{logon_name}'."\
             f" Wildcards are not permitted for user authentication."
 
         wildcards = ['*', '?']
@@ -674,7 +674,7 @@ class LdapClient:
         user_data = self.get_user_data(username=username, search_user_by_dn=search_user_by_dn, pull_name=pull_name,
                                        pull_mail=pull_mail, pull_phone=pull_phone, mail_attribute=mail_attribute,
                                        name_attribute=name_attribute, phone_attribute=phone_attribute)
-        
+
         self.authenticate_ldap_user(user_data['dn'], password)
         user_groups = self.get_user_groups(user_identifier)
 
@@ -734,7 +734,7 @@ class LdapClient:
             Implements authenticate and roles command.
         """
         self._has_wildcards_in_user_logon(username)  # fail login attempt when wildcards are used
-        
+
         if self._ldap_server_vendor == self.ACTIVE_DIRECTORY:
             return self.authenticate_and_roles_active_directory(username=username, password=password,
                                                                 pull_name=pull_name, pull_mail=pull_mail,
@@ -791,7 +791,7 @@ class LdapClient:
             Performs simple bind operation on ldap server.
         """
         self._has_wildcards_in_user_logon(username)  # fail authentication when wildcards are used
-        
+
         if self._ldap_server_vendor == self.OPENLDAP:
             # If the given username is not a full DN, search for it in the ldap server and find it's full DN
             search_user_by_dn, _ = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)

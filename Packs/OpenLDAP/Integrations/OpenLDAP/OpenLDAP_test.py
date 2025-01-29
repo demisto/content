@@ -298,7 +298,7 @@ class TestLDAPAuthentication:
             client._get_formatted_custom_attributes()
         assert e.value.args[0] == (f'User defined attributes must be of the form "attrA=valA,attrB=valB,...", but got: '
                                    f'{client.CUSTOM_ATTRIBUTE}')
-    
+
     @pytest.mark.parametrize('user_logon_name', [
         ('test*'),
         ('test?test'),
@@ -319,7 +319,6 @@ class TestLDAPAuthentication:
             client._has_wildcards_in_user_logon(user_logon_name)
         assert 'Wildcards were detected in the user logon name' in e.value.args[0]
         assert user_logon_name in e.value.args[0]
-
 
 
 class TestEntriesPagedSearch(unittest.TestCase):
