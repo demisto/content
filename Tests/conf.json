@@ -696,12 +696,14 @@
         {
             "integrations": "AzureFeed",
             "playbookID": "AzureFeed - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "Cofense Feed",
@@ -808,7 +810,8 @@
         },
         {
             "integrations": "JsonWhoIs",
-            "playbookID": "JsonWhoIs-Test"
+            "playbookID": "JsonWhoIs-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Maltiverse",
@@ -3200,7 +3203,8 @@
             "fromversion": "5.0.0",
             "memory_threshold": 300,
             "pid_threshold": 200,
-            "timeout": 1500
+            "timeout": 1500,
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "integrations": "Rasterize",
@@ -3320,7 +3324,8 @@
         {
             "integrations": "Shodan_v2",
             "playbookID": "Test-Shodan_v2",
-            "timeout": 1000
+            "timeout": 1000,
+            "is_mockable": false
         },
         {
             "integrations": "Threat Crowd",
@@ -3545,7 +3550,8 @@
         },
         {
             "integrations": "SaasSecurity",
-            "playbookID": "SaasSecurity-Test"
+            "playbookID": "SaasSecurity-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Recorded Future Feed",
