@@ -122,9 +122,9 @@ def test_check_powershell_suspicious_patterns():
 
 
 # Test check_reconnaissance_temp
-def check_suspicious_macos_applescript_commands():
+def test_check_suspicious_macos_applescript_commands():
     command = "tell window 1 of application to set visible to false"
-    matches = check_reconnaissance_temp(command)
+    matches = check_suspicious_macos_applescript_commands(command)
     assert "visible to false" in matches
     assert "tell" and "application" in matches
 
