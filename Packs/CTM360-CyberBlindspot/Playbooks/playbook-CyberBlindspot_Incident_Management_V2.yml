@@ -52,12 +52,12 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      id:
-        simple: ${incident.dbotMirrorId}
       retry-count:
         simple: "3"
       ticketId:
-        simple: ${incident.dbotMirrorId}
+        complex:
+          root: incident
+          accessor: dbotMirrorId
       using:
         simple: ${incident.sourceInstance}
     separatecontext: false
