@@ -321,11 +321,11 @@ tasks:
       threattypes: {}
       trafficlightprotocol: {}
       type:
-        simple: IP
+        simple: URL
       updateddate: {}
       username: {}
       value:
-        simple: 0
+        simple: https://www.demisto.com
     separatecontext: false
     view: |-
       {
