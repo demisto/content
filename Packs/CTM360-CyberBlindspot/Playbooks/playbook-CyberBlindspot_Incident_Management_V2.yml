@@ -98,7 +98,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: in
+      - - operator: isEqualString
           left:
             value:
               simple: CyberBlindspot.RemoteIncident.status
