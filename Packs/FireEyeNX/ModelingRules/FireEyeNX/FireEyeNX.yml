@@ -1,5 +1,5 @@
 name: FireEye NX Modeling Rule
-id: FireEye_Network_Security_(NX)_ModelingRule
+id: FireEye_NX_ModelingRule
 fromversion: 6.8.0
 toversion: 6.9.9
 tags: FireEye NX
