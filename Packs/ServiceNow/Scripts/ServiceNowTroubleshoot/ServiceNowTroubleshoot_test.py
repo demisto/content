@@ -119,7 +119,7 @@ def test_parse_enabled_instances():
         }
     }
     enabled_incidents_instances = {'ServiceNow v2_instance_2': ['ServiceNow Incident INC0011111']}
-    expected = ("### Enabled Instances Health Information|Instance Name|Last Pull Time|"
+    expected = ("### Enabled Instances Health Information\n|Instance Name|Last Pull Time|"
                 "Names of Active Incidents Created 30 days ago|Number of Incidents Pulled in Last Fetch|Query|Size In Bytes|"
                 "Total Active Incidents Created 30 days ago||---|---|---|---|---|---|---|| ServiceNow v2_instance_2 |"
                 " 2025-01-27T09:26:45.226409678Z | ServiceNow Incident INC0011111 | 10 | stateNOT IN6,7 | 3066 | 1 |")
