@@ -12,7 +12,6 @@ import hmac
 
 from datetime import timedelta
 from authlib.jose import JsonWebSignature
-from requests.models import Response
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
