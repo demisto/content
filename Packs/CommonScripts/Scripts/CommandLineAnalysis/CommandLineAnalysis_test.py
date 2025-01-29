@@ -12,6 +12,7 @@ from CommandLineAnalysis import (
     check_amsi,
     check_mixed_case_powershell,
     check_powershell_suspicious_patterns,
+    check_suspicious_macos_applescript_commands,
     analyze_command_line
 )
 
@@ -119,6 +120,13 @@ def test_check_powershell_suspicious_patterns():
     matches = check_powershell_suspicious_patterns(command)
     assert "DownloadString" in matches
 
+
+# Test check_reconnaissance_temp
+def check_suspicious_macos_applescript_commands():
+    command = "tell window 1 of application to set visible to false"
+    matches = check_reconnaissance_temp(command)
+    assert "visible to false" in matches
+    assert "tell" and "application" in matches
 
 # Test analyze_command_line
 def test_analyze_command_line():
