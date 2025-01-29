@@ -1588,7 +1588,7 @@ def handle_template_params(template_params):  # pragma: no cover
                 elif params[p].get('key'):
                     actual_params[p] = demisto.dt(demisto.context(), params[p]['key'])
         except ValueError as e:
-            return_error('Unable to parse template_params: %s' % (str(e)))
+            return_error(f'Unable to parse template_params: {str(e)}')
 
     return actual_params
 
@@ -1662,7 +1662,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
                     attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
                 else:
                     attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                                    is_inline=True, content_id=attachment.get('cid'))
+                                                is_inline=True, content_id=attachment.get('cid'))
 
             message.attach(attachment)
 
