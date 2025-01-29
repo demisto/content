@@ -22,6 +22,7 @@ SUBMISSION_PARAMETERS = ('environmentID', 'environmentId', 'no_share_third_party
 
 class Client(BaseClient):
 
+
     def get_environments(self) -> List[dict]:
         return self._http_request(method='GET', url_suffix='/system/environments')
 
