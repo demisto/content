@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests import HTTPError
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 
 
 ERROR_TITLES = {
@@ -1381,13 +1381,13 @@ def clean_old_inc_context(max_time_mirror_inc: int):
     int_cont = demisto.getIntegrationContext()
     inc_data = int_cont.get("IncidentsDataCount", {})
     current_time = datetime.now()
-    current_time = current_time.replace(tzinfo=timezone.utc)
+    current_time = current_time.replace(tzinfo=UTC)
     total_know = 0
     res = {}
     for inc_id, inc in inc_data.items():
         inc_created = arg_to_datetime(inc["Created"])
         if inc_created:
-            inc_created = inc_created.replace(tzinfo=timezone.utc)
+            inc_created = inc_created.replace(tzinfo=UTC)
             diff = current_time - inc_created
             if diff.days <= max_time_mirror_inc:  # maximum RSA aggregation time 24 days
                 res[inc_id] = inc

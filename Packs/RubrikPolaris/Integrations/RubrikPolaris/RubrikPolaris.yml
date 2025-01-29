@@ -2,40 +2,50 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: RubrikPolaris
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Service Account JSON
   name: service_account_json
   type: 4
   required: false
+  section: Connect
 - display: Rubrik Account (e.g. ${rubrikAccount}.my.rubrik.com)
   name: url
   type: 0
   required: false
+  section: Connect
 - display: Email
   name: email
   type: 9
   required: false
+  section: Connect
 - defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - additionalinfo: The time interval for the first fetch (retroactive). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Maximum number of incidents to fetch every time. The maximum value is 1000.
   defaultvalue: '20'
   display: Fetch Limit (Maximum of 1000)
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: When a Anomaly event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR HIGH
   display: Anomaly Event Critical Severity Level Mapping
@@ -47,6 +57,7 @@ configuration:
   - XSOAR LOW
   type: 15
   required: false
+  section: Collect
 - additionalinfo: When a Anomaly event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR LOW
   display: Anomaly Event Warning Severity Level Mapping
@@ -58,6 +69,7 @@ configuration:
   - XSOAR LOW
   type: 15
   required: false
+  section: Collect
 - name: integration_reliability
   display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
@@ -72,16 +84,19 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Collect
 - additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 description: The Rubrik Security Cloud integration will fetch the Rubrik Anomaly Event and is rich with commands to perform the on-demand scans, backups, recoveries and many more features to manage and protect the organizational data.
 display: Rubrik Security Cloud
 name: RubrikPolaris
@@ -926,7 +941,14 @@ script:
     - description: "The VM object ID (Snappable ID).\n\nNote: Users can retrieve the list of Snappable IDs by executing the \"rubrik-polaris-vm-objects-list\" command.\nExample format to get the Snappable ID: \"VirtualMachine:::<Snappable-ID>\"."
       name: object_id
       required: true
-    description: Request for the analysis and retrieve the download link for the Radar CSV analyzed file.
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: If set to True, the command downloads the anomaly analysis CSV file directly on XSOAR server.
+      name: download_file
+      predefined:
+      - "True"
+      - "False"
+    description: Request for the analysis and retrieve the download link or directly download file for the Radar CSV analyzed file.
     name: rubrik-radar-anomaly-csv-analysis
     outputs:
     - contextPath: RubrikPolaris.RadarAnomalyCSV.clusterId
@@ -940,6 +962,39 @@ script:
       type: String
     - contextPath: RubrikPolaris.RadarAnomalyCSV.investigationCsvDownloadLink.downloadLink
       description: The download link of the CSV analysis.
+      type: String
+    - contextPath: File.Size
+      description: File size in bytes.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of file.
+      type: String
+    - contextPath: File.SHA512
+      description: SHA512 hash of file.
+      type: String
+    - contextPath: File.Name
+      description: File name.
+      type: String
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: Unknown
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
       type: String
   - arguments:
     - description: "ID of the snapshot.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\"  command."
@@ -2291,11 +2346,11 @@ script:
       description: "The comma-separated list of risk levels.\n\nSupported values are: UNKNOWN_RISK, HIGH_RISK, MEDIUM_RISK, LOW_RISK, NO_RISK.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: risk_levels
       predefined:
-        - UNKNOWN_RISK
-        - HIGH_RISK
-        - MEDIUM_RISK
-        - LOW_RISK
-        - NO_RISK
+      - UNKNOWN_RISK
+      - HIGH_RISK
+      - MEDIUM_RISK
+      - LOW_RISK
+      - NO_RISK
     - description: 'Specify the group ID to filter with.'
       name: group_id
     - auto: PREDEFINED
@@ -2310,10 +2365,10 @@ script:
       description: "Specify the principal summary category to filter with.\n\nSupported values are: PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED, USERS_WITH_SENSITIVE_ACCESS, NEW_USERS_WITH_SENSITIVE_ACCESS, USERS_WITH_RISK_LEVEL_INCREASE.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: principal_summary_category
       predefined:
-        - PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED
-        - USERS_WITH_SENSITIVE_ACCESS
-        - NEW_USERS_WITH_SENSITIVE_ACCESS
-        - USERS_WITH_RISK_LEVEL_INCREASE
+      - PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED
+      - USERS_WITH_SENSITIVE_ACCESS
+      - NEW_USERS_WITH_SENSITIVE_ACCESS
+      - USERS_WITH_RISK_LEVEL_INCREASE
     - defaultValue: 50
       description: Number of results to retrieve in the response. The maximum allowed size is 1000.
       name: limit
@@ -2325,13 +2380,13 @@ script:
       description: "Specify the field to use for sorting the response.\n\nSupported values are: RISK_LEVEL, RISK_SENSITIVE_FILES, RISK_SENSITIVE_HITS, TOTAL_SENSITIVE_HITS, TOTAL_SENSITIVE_FILES, SID, TOTAL_SENSITIVE_OBJECTS.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: sort_by
       predefined:
-        - RISK_LEVEL
-        - RISK_SENSITIVE_FILES
-        - RISK_SENSITIVE_HITS
-        - TOTAL_SENSITIVE_HITS
-        - TOTAL_SENSITIVE_FILES
-        - SID
-        - TOTAL_SENSITIVE_OBJECTS
+      - RISK_LEVEL
+      - RISK_SENSITIVE_FILES
+      - RISK_SENSITIVE_HITS
+      - TOTAL_SENSITIVE_HITS
+      - TOTAL_SENSITIVE_FILES
+      - SID
+      - TOTAL_SENSITIVE_OBJECTS
     - auto: PREDEFINED
       defaultValue: DESC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
@@ -2746,21 +2801,21 @@ script:
       description: "Specify the field to use for sorting the response.\n\nSupported values are: HITS, NAME, DAILY_CHANGE, LAST_ACCESS_TIME, OPEN_ACCESS_TYPE, FILES_WITH_HITS, FILES_WITH_OPEN_ACCESS_HITS, STALE_FILES_WITH_HITS, CLUSTER, OBJECT_NAME, OBJECT_LOCATION, SNAPSHOT_TIME, NUM_ACTIVITIES, NUM_ACTIVITIES_DELTA, NATIVE_PATH.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: sort_by
       predefined:
-        - HITS
-        - NAME
-        - DAILY_CHANGE
-        - LAST_ACCESS_TIME
-        - OPEN_ACCESS_TYPE
-        - FILES_WITH_HITS
-        - FILES_WITH_OPEN_ACCESS_HITS
-        - STALE_FILES_WITH_HITS
-        - CLUSTER
-        - OBJECT_NAME
-        - OBJECT_LOCATION
-        - SNAPSHOT_TIME
-        - NUM_ACTIVITIES
-        - NUM_ACTIVITIES_DELTA
-        - NATIVE_PATH
+      - HITS
+      - NAME
+      - DAILY_CHANGE
+      - LAST_ACCESS_TIME
+      - OPEN_ACCESS_TYPE
+      - FILES_WITH_HITS
+      - FILES_WITH_OPEN_ACCESS_HITS
+      - STALE_FILES_WITH_HITS
+      - CLUSTER
+      - OBJECT_NAME
+      - OBJECT_LOCATION
+      - SNAPSHOT_TIME
+      - NUM_ACTIVITIES
+      - NUM_ACTIVITIES_DELTA
+      - NATIVE_PATH
     - auto: PREDEFINED
       defaultValue: DESC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
@@ -3396,7 +3451,7 @@ script:
       description: The status of the domain.
       type: Datte
     - contextPath: Domain.NameServers
-      description: (List<String>) Name servers of the domain.  
+      description: (List<String>) Name servers of the domain.
       type: Unknown
     - contextPath: Domain.Organization
       description: The organization of the domain.

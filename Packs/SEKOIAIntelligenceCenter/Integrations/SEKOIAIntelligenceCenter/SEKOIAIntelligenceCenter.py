@@ -434,6 +434,7 @@ def indicator_context_to_markdown(indicator_context: dict) -> str:
     for stix_bundle in indicator_context["items"]:
         new_list_of_objects = []
         # Read every objects of the bundle
+        indicator_name = ""
         for stix_object in stix_bundle["objects"]:
             # Get the ID of the STIX bundle's indicator
             if stix_object["type"] == "indicator":

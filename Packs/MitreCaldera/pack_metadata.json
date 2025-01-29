@@ -2,7 +2,7 @@
     "name": "MITRE Caldera",
     "description": "Interact with MITRE Caldera via the v2 API.",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Adam Burt",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
