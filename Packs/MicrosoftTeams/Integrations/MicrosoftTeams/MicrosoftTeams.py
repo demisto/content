@@ -1929,6 +1929,7 @@ def get_team_members(service_url: str, team_id: str) -> list:
     response: list = cast(list[Any], http_request('GET', url, api='bot'))
     return response
 
+
 def manual_get_team_members_command() -> list:
     """
     Retrieves and updates in context the team members of given a team_name
@@ -1941,7 +1942,7 @@ def manual_get_team_members_command() -> list:
     teams: list = json.loads(integration_context.get('teams', '[]'))
     for team in teams:
         if team.get('team_name', '') == team_name:
-            team_id = team.get('team_id','')
+            team_id = team.get('team_id', '')
             demisto.debug(f'Following ID: {team_id} for team name: {team_name}')
             url = f'{service_url}/v3/conversations/{team_id}/members'
             team_members: list = cast(list[Any], http_request('GET', url, api='bot'))
@@ -1953,7 +1954,7 @@ def manual_get_team_members_command() -> list:
     if not team_id:
         demisto.error(f'Did not find a team for team name: {team_name}')
         return_results(f'Did not find a team for team name: {team_name}')
-    
+
 
 def get_channel_members(team_id: str, channel_id: str) -> list[dict[str, Any]]:
     """
