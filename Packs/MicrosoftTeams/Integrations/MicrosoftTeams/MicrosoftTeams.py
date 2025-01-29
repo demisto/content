@@ -1930,7 +1930,7 @@ def get_team_members(service_url: str, team_id: str) -> list:
     return response
 
 
-def manual_get_team_members_command() -> list:
+def manual_get_team_members_command():
     """
     Retrieves and updates in context the team members of given a team_name
     :return: List of team members
