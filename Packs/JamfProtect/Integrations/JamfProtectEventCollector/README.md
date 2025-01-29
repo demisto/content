@@ -1,5 +1,4 @@
-Use this integration to fetch audit logs, alerts and computer events from Jamf Protect as events in Cortex XSIAM.
-
+Use this integration to fetch audit logs events, alerts events and computer assets from Jamf Protect to Cortex XSIAM.
 ## Configure Jamf Protect Event Collector in Cortex
 
 
@@ -12,8 +11,7 @@ Use this integration to fetch audit logs, alerts and computer events from Jamf P
 | Password | The password for the client application. This is used to authenticate the client with the Jamf Protect server. | True |
 | Max alert events per fetch | Maximum number of alert events to fetch at a time. Default is 1000| False |
 | Max audit events per fetch | Maximum number of audit events to fetch at a time. Default is 20,000| False |
-| Max computer events per fetch | Maximum number of computer events to fetch at a time. Default is 1000| False |
-| Fetch all computers | When set to true, retrieves all available computers during the initial fetch. Note: This may cause a delay until all computers are retrieved. | False |
+| Fetch Computer Assets Interval | The fetch interval. It is recommended to set it to 12 hours, and the minimum interval is 1 hour. | False |
 
 
 

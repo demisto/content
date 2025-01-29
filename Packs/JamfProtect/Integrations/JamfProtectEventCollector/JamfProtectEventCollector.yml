@@ -56,7 +56,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Use this integration to fetch audit logs, alerts and computer events from Jamf Protect as events in Cortex XSIAM.
+description: Use this integration to fetch audit logs events, alerts events and computer assets from Jamf Protect to Cortex XSIAM.
 display: Jamf Protect Event Collector
 name: Jamf Protect Event Collector
 script:

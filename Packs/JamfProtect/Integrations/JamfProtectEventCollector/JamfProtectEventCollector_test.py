@@ -128,8 +128,7 @@ def test_nextTrigger(
 ):
     """
     Given: A mock JamfProtect client.
-    When: Running fetch_events with different next pages for alerts, audits, and computers,
-        and different values of fetch_all_computers.
+    When: Running fetch_events with different next pages for alerts and audits.
     Then: Ensure the nextTrigger is set to 0 when there are no next pages, and the next page is set when there are next pages.
     """
     from JamfProtectEventCollector import fetch_events, Client
@@ -163,15 +162,12 @@ def test_nextTrigger(
 
 
 @pytest.mark.parametrize("with_computer_next_page", [True, False])
-def test_assets_nextTrigger(
-    with_computer_next_page: bool,
-    mocker: MockerFixture
-):
+def test_assets_nextTrigger(with_computer_next_page: bool, mocker: MockerFixture):
     """
     Given: A mock JamfProtect client.
-    When: Running fetch_events with different next pages for alerts, audits, and computers,
-        and different values of fetch_all_computers.
-    Then: Ensure the nextTrigger is set to 0 when there are no next pages, and the next page is set when there are next pages.
+    When: Running fetch_assets with different next pages.
+    Then: Ensure the nextTrigger is set to 0 when there are no next pages, a
+          nd the next page and snapshot id are set when there are next pages.
     """
     from JamfProtectEventCollector import fetch_assets, Client
     mocked_computers = util_load_json('test_data/raw_computers.json')
