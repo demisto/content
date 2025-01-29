@@ -123,9 +123,9 @@ def test_check_powershell_suspicious_patterns():
 
 # Test check_reconnaissance_temp
 def test_check_suspicious_macos_applescript_commands():
-    result = analyze_command_line(MACOS_COMMAND_LINE)
-    assert "display dialog" and "curl -" in result["analysis"]["original"]["macOS_suspicious_commands"]["possible_exfiltration"][0]
-
+    matches = check_suspicious_macos_applescript_commands(MACOS_COMMAND_LINE)
+    assert "to set visible" in matches
+    assert "false" in matches
 
 # Test analyze_command_line
 def test_analyze_command_line():
