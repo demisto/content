@@ -83,7 +83,6 @@ class DomainNameObject:
     @staticmethod
     def decode(props, **kwargs):
         dtype = props.get('type', 'FQDN')
-        demisto.debug(f"{dtype=}")
         if dtype != 'FQDN':
             return []
 
