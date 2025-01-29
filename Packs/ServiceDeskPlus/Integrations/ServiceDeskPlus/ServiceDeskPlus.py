@@ -147,7 +147,7 @@ def create_output(request: dict) -> dict:
     Creates the output for the context and human readable from the response of an http_request
 
     Args:
-        request: A single request dict returned from the http_request
+        request: A single  request dict returned from the http_request
 
     Returns:
         A dictionary containing all valid fields in the request
