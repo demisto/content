@@ -43,7 +43,7 @@ def get_instance_name_command(args: dict[str, Any]) -> CommandResults:
             'instanceName': instance_names[0],
         },
     )
-4r3w
+
 
 def main():
     try:
