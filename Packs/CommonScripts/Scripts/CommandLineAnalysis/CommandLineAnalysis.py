@@ -535,7 +535,7 @@ def extract_indicators(command_line: str) -> dict:
     """
     Extracts indicators by type (e.g., 'IP', 'Domain') and returns them as a dictionary.
     """
-    extracted_by_type = {}
+    extracted_by_type: Dict[str, Any] = {}
 
     try:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
