@@ -38,32 +38,24 @@ MODULES = [
     ),
     (
         "compromised_cards",
-        # "CyberBlindspot.CompromisedCards",
-        # "CyberBlindspot.RemoteCompromisedCard",
         "CyberBlindspot.IncidentList",
         "CyberBlindspot.RemoteIncident",
         CBS_CARD_FIELDS,
     ),
     (
         "breached_credentials",
-        # "CyberBlindspot.BreachedCreds",
-        # "CyberBlindspot.RemoteBreachedCred",
         "CyberBlindspot.IncidentList",
         "CyberBlindspot.RemoteIncident",
         CBS_CRED_FIELDS,
     ),
     (
         "domain_infringement",
-        # "CyberBlindspot.DomainInfringements",
-        # "CyberBlindspot.RemoteDomainInfringement",
         "CyberBlindspot.IncidentList",
         "CyberBlindspot.RemoteIncident",
         CBS_DOMAIN_INFRINGE_FIELDS,
     ),
     (
         "subdomain_infringement",
-        # "CyberBlindspot.SubdomainInfringements",
-        # "CyberBlindspot.RemoteSubdomainInfringement",
         "CyberBlindspot.IncidentList",
         "CyberBlindspot.RemoteIncident",
         CBS_DOMAIN_INFRINGE_FIELDS,
@@ -615,8 +607,6 @@ def test_get_mapping_fields_command(mock_module, expected_mappings):
 
     mock_instance = Instance(module=mock_module)
 
-    # with patch('CyberBlindspot.MAPPING_FIELDS', new=mock_module_maps):
-
     with patch('CyberBlindspot.INSTANCE', new=mock_instance):
         mappings = get_mapping_fields_command()
         assert mappings.extract_mapping() == expected_mappings
@@ -795,7 +785,6 @@ def test_ctm360_cbs_incident_list_command(
     mock_instance = Instance(module=mock_module)
     with capfd.disabled():
         caplog.set_level(logging.DEBUG)
-        # with patch.multiple('CyberBlindspot', INSTANCE_MODULE=mock_module, LIST_OUTPUT_PREFIX=mock_module_prefix):
         with patch('CyberBlindspot.INSTANCE', new=mock_instance):
             cmd_results = ctm360_cbs_list_command(mock_client, mock_args)
             expected_results = load_mock_response(mock_asserts_file) if mock_asserts_file else []
@@ -961,7 +950,6 @@ def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock
 
     mock_instance = Instance(module=mock_module)
 
-    # with patch('CyberBlindspot.INSTANCE_MODULE', new=mock_module):
     with patch('CyberBlindspot.INSTANCE', new=mock_instance):
         patched_response = load_mock_response(response_file_name) if response_file_name else {}
         mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
@@ -1108,7 +1096,6 @@ def test_get_remote_data(mock_module, mock_response, mock_entry, mock_status, mo
     )
 
     mock_instance = Instance(module=mock_module)
-    # with patch('CyberBlindspot.INSTANCE_MODULE', new=mock_module):
     with patch('CyberBlindspot.INSTANCE', new=mock_instance):
         result = get_remote_data_command(mock_client, mock_args)
         mock_result = map_and_create_incident(mock_result2) if mock_status else []
