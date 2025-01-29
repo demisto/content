@@ -367,7 +367,7 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
         'occurred': convert_time_string(
             unmapped_incident.pop('first_seen', ''),
             CBS_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True),
-        'externalstatus': unmapped_incident.pop('status'),
+        'externalstatus': unmapped_incident.pop('status', 'monitoring'),
         'severity': convert_to_demisto_severity(unmapped_incident.pop('severity', 'low')),
         'CustomFields': {
             'cbs_type': unmapped_incident.pop('type', ''),
