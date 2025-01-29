@@ -214,7 +214,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "60"
+      - "81"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -623,71 +623,6 @@ tasks:
         "position": {
           "x": 377.5,
           "y": 3110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "60":
-    id: "60"
-    taskid: bd645b9a-1452-4027-8800-b8b23f615988
-    type: regular
-    task:
-      id: bd645b9a-1452-4027-8800-b8b23f615988
-      version: -1
-      name: Search for suspicious-related alerts by MITRE Technique
-      description: |-
-        This task searches for Cortex XSIAM suspicious alerts related to the current alert by Mitre Technique, indicating that the alert is part of an attack pattern.
-
-        Focus on identifying alerts associated with the following MITRE techniques:
-        - Any Agent Alerts within this alert.
-        - T1059 - Command and Scripting Interpreter.
-      scriptName: SearchIncidentsV2
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      fromdate:
-        simple: 2 hours ago
-      includeinformational:
-        simple: "true"
-      query:
-        complex:
-          root: alert
-          accessor: parentXDRIncident
-          transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: '-'
-              fields:
-                value:
-                  simple: "2"
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: '((name:*Suspicious access to shadow file* or name:*UNIX LOLBIN process connected to a rare external host* or name:*Persistence through service registration* or name:*Adding execution privileges* or name:*Modification of systemd service files* or name:*Adding execution privileges* or name:*Local account discovery*)) and caseid:'
-              suffix:
-                value:
-                  simple: )
-      todate:
-        simple: ${alert.created}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 827.5,
-          "y": 1050
         }
       }
     note: false
@@ -1380,6 +1315,89 @@ tasks:
         "position": {
           "x": 927.5,
           "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 53b5c45b-ef6f-4e9d-84e6-e70e21f05836
+    type: condition
+    task:
+      id: 53b5c45b-ef6f-4e9d-84e6-e70e21f05836
+      version: -1
+      name: Check if related alerts found
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: Results Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 8346afec-8836-4095-8dc3-3e3c95b50048
+    type: regular
+    task:
+      id: 8346afec-8836-4095-8dc3-3e3c95b50048
+      version: -1
+      name: Search for suspicious-related alerts by MITRE Technique
+      description: |-
+        This task searches for Cortex XSIAM suspicious alerts related to the current alert by Mitre Technique, indicating that the alert is part of an attack pattern.
+
+        Focus on identifying alerts associated with the following MITRE techniques:
+        - Any Agent Alerts within this alert.
+        - T1059 - Command and Scripting Interpreter.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      fromdate:
+        simple: 2 hours ago
+      includeinformational:
+        simple: "true"
+      query:
+        simple: 'agentid:${alert.agentid} AND (name: "Suspicious access to shadow file"  or name: "UNIX LOLBIN process connected to a rare external host" or name: "Persistence through service registration" or name: "Adding execution privileges" or name: "Modification of systemd service files" or name: "Adding execution privileges" or name: "Local account discovery")'
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1050
         }
       }
     note: false
