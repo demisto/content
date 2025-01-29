@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Jamf Protect Event Collector updated the **fetch computer events** to **fetch computer assets** instead."
+}
