@@ -2089,6 +2089,7 @@ def test_handle_incoming_incident(capfd, mocker):
             'ContentsFormat': EntryFormat.JSON
         }
 
+
 def test_get_remote_data_command_exclude_fields(mocker):
     """
     Given:
