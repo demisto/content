@@ -1,22 +1,18 @@
 {
-    "name": "MISP Threat Actors",
-    "description": "This pack downloads and parses the MISP threat actor galaxy into XSOAR TIM.",
+    "name": "Retarus Secure Email Gateway",
+    "description": "The Retarus Secure Email Platform provides comprehensive security and advanced email routing. It offers features such as Advanced Threat Protection and Email Archiving.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Email"
     ],
-    "tags": [
-        "Plug & Fetch",
-        "Free Feed"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }
