@@ -510,26 +510,24 @@ def test_get_device_location_command(mocker, absolute_client):
                         'State': 'Israel'}]
 
 
-def test_fetch_events_no_events(mocker, absolute_client_v3):
+def test_fetch_events_case_no_events_exist(mocker, absolute_client_v3):
     """
     Given:
         - No events.
 
     When:
-        - Running fetch_events.
+        - Running the fetch_events function.
 
     Then:
         - The events list should be empty.
-        - The last_run object should contain start_date and end_date.
+        - The last_run object should contain end_date.
     """
     from Absolute import fetch_events
     mock_response = {'data': [], 'metadata': {}}
-    mocker.patch('Absolute.ClientV3.fetch_events_with_pagination', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.process_events',
-                 return_value=(mock_response.get('data'), []))
+    mocker.patch('Absolute.ClientV3.fetch_events_between_dates', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ([], '')))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
-    assert last_run_object.get('start_date')
     assert last_run_object.get('end_date')
 
 
@@ -543,15 +541,14 @@ def test_fetch_events_first_fetch(mocker, absolute_client_v3):
 
     Then:
         - The events list should contain the fetched events.
-        - The last_run object should contain start_date and end_date.
+        - The last_run object should contain end_date.
     """
     from Absolute import fetch_events
     mock_response = util_load_json('test_data/siem_events.json')
-    mocker.patch('Absolute.ClientV3.fetch_events_with_pagination', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), []))
+    mocker.patch('Absolute.ClientV3.fetch_events_between_dates', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ([], '')))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
-    assert last_run_object.get('start_date')
     assert last_run_object.get('end_date')
 
 
@@ -573,21 +570,26 @@ def test_fetch_events_with_last_run_object_and_handle_deduplication(mocker, abso
     mock_response = util_load_json('test_data/siem_events.json')
     Absolute.SEIM_EVENTS_PAGE_SIZE = 8
 
-    first_mock_response = mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE], mock_response.get('metadata').get(
-        'pagination').get('nextPage')
-    second_mock_response = mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:], ''
-    mocker.patch.object(ClientV3, 'fetch_events_with_pagination', return_value=first_mock_response)
+    # first_mock_response = mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE], (
+    #     [mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE][-1].get('id')],
+    #     mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE][-1].get('eventDateTimeUtc'))
+    # second_mock_response = mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:], (
+    #     [mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:][-1].get('id')],
+    #     mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:][-1].get('eventDateTimeUtc'))
+    first_mock_response = mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE]
+    second_mock_response = mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:]
+    mocker.patch.object(ClientV3, 'fetch_events_between_dates', return_value=first_mock_response)
     events_first_batch, last_run_object = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, {})
-    mocker.patch.object(ClientV3, 'fetch_events_with_pagination', return_value=second_mock_response)
+    mocker.patch.object(ClientV3, 'fetch_events_between_dates', return_value=second_mock_response)
     events_second_batch, _ = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, last_run_object)
     all_events = events_first_batch + events_second_batch
     assert all_events == mock_response.get('data')
 
 
-def test_fetch_events_with_pagination_one_fetch(mocker, absolute_client_v3):
+def test_fetch_events_between_dates_one_fetch(mocker, absolute_client_v3):
     """
     Given:
-        - The run_fetch_mechanism function is called with no previous last run.
+        - The fetch_events_between_dates function is called with no previous last run.
 
     When:
         - The fetch_events function is run.
@@ -603,15 +605,15 @@ def test_fetch_events_with_pagination_one_fetch(mocker, absolute_client_v3):
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(minutes=1)
     fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events_request')
-    all_events, next_page_token = ClientV3.fetch_events_with_pagination(absolute_client_v3, 10000, '', start_date, end_date)
+    all_events = ClientV3.fetch_events_between_dates(absolute_client_v3, 10000, start_date, end_date)
     assert all_events == mock_response.get('data')
     fetch_events_spy.assert_called_once()
 
 
-def test_fetch_events_with_pagination_multiple_fetches(mocker, absolute_client_v3):
+def test_fetch_events_between_dates_multiple_fetches(mocker, absolute_client_v3):
     """
     Given:
-        - The run_fetch_mechanism function is called with multiple fetches. It happens when the amount of events
+        - The fetch_events_between_dates function is called with multiple fetches. It happens when the amount of events
         is greater than the fetch limit.
 
     When:
@@ -619,7 +621,7 @@ def test_fetch_events_with_pagination_multiple_fetches(mocker, absolute_client_v
 
     Then:
         - The fetched events list should contain the expected events.
-        - The fetch_events method should be called multiple times.
+        - The fetch_events_between_dates method should be called multiple times.
     """
     from Absolute import ClientV3
     from datetime import timedelta
@@ -652,11 +654,10 @@ def test_fetch_events_with_pagination_multiple_fetches(mocker, absolute_client_v
     fetch_events_side_effect.call_count = 1
     mocker.patch.object(absolute_client_v3, 'fetch_events_request', side_effect=fetch_events_side_effect)
     fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events_request')
-    all_events, next_page_token = ClientV3.fetch_events_with_pagination(absolute_client_v3, 10000, '', start_date, end_date)
+    all_events = ClientV3.fetch_events_between_dates(absolute_client_v3, 10000, start_date, end_date)
 
     assert all_events == mock_response.get('data')
     assert fetch_events_spy.call_count == 2
-    assert next_page_token == ''
 
 
 def test_add_time_field(absolute_client_v3):
@@ -695,11 +696,12 @@ def test_get_latest_events(absolute_client_v3):
     from Absolute import process_events
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
-    _, latest_events_id = process_events(events=events, last_run_latest_events_id=[])
+    _, latest_events_id_and_time_tuple = process_events(events=events, last_run_latest_events_id=[])
+    latest_events_id, latest_event_time = latest_events_id_and_time_tuple
     assert len(latest_events_id) == 2
     assert len(set(latest_events_id)) == 2
     assert latest_events_id == ['id14', 'id15']
-    assert events[13].get('eventDateTimeUtc') == events[14].get('eventDateTimeUtc')
+    assert events[13].get('eventDateTimeUtc') == events[14].get('eventDateTimeUtc') == latest_event_time
 
 
 def test_get_events_command(mocker, absolute_client_v3):
@@ -711,12 +713,12 @@ def test_get_events_command(mocker, absolute_client_v3):
         - The function is invoked with an empty input and an Absolute client instance.
 
     Then:
-        - The function should retrieve events using run_fetch_mechanism and add_time_field_to_events_and_get_latest_events.
+        - The function should retrieve events using fetch_events_between_dates and process_events the events.
         - The retrieved events should match the expected events from 'test_data/siem_events.json'.
     """
     from Absolute import get_events
     mock_response = util_load_json('test_data/siem_events.json')
-    mocker.patch('Absolute.ClientV3.fetch_events_with_pagination', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.ClientV3.fetch_events_between_dates', return_value=(mock_response.get('data'), ''))
     mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ''))
     events, _ = get_events(absolute_client_v3, {})
     assert events == mock_response.get('data')
@@ -762,11 +764,9 @@ def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
     start_date = datetime.strptime(event.get('createdDateTimeUtc'), "%Y-%m-%dT%H:%M:%S.%fZ")
     end_date = start_date + timedelta(minutes=1)
     page_size = 1000
-    next_page = 'next_token'
     query = ClientV3.prepare_query_string_for_fetch_events(None,
                                                            page_size=page_size,
                                                            start_date=start_date,
-                                                           end_date=end_date,
-                                                           next_page=next_page)
-    expected_query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}&nextPage={next_page}'
+                                                           end_date=end_date)
+    expected_query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}'
     assert query == expected_query
