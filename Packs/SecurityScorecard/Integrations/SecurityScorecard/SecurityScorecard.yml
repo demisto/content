@@ -64,6 +64,7 @@ configuration:
   display: Use system proxy settings
   type: 8
   required: false
+  section: Connect
 - display: Portfolio ID
   name: portfolio_id
   type: 0
