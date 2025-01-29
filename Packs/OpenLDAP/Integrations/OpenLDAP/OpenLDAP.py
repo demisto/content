@@ -674,9 +674,8 @@ class LdapClient:
         user_data = self.get_user_data(username=username, search_user_by_dn=search_user_by_dn, pull_name=pull_name,
                                        pull_mail=pull_mail, pull_phone=pull_phone, mail_attribute=mail_attribute,
                                        name_attribute=name_attribute, phone_attribute=phone_attribute)
-        user_dn = user_data['dn']
-
-        self.authenticate_ldap_user(user_dn, password)
+        
+        self.authenticate_ldap_user(user_data['dn'], password)
         user_groups = self.get_user_groups(user_identifier)
 
         return {
@@ -797,8 +796,7 @@ class LdapClient:
             # If the given username is not a full DN, search for it in the ldap server and find it's full DN
             search_user_by_dn, _ = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
             user_data_entry, _ = self.search_user_data(username, [self.GROUPS_IDENTIFIER_ATTRIBUTE], search_user_by_dn)
-            user_dn = user_data_entry.entry_dn
-            username = user_dn
+            username = user_data_entry.entry_dn
 
         return self.authenticate_ldap_user(username, password)
 
