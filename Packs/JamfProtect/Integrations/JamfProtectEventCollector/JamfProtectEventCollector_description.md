@@ -3,7 +3,7 @@
 
 Use this integration to fetch audit logs, alerts events and computer assets from Jamf Protect to Cortex XSIAM.
 
-To fetch computer assets, enable the Fetch assets and vulnerabilities option. To retrieve audit logs and alert events, enable the Fetch events option.
+To fetch computer assets, enable the *Fetch assets and vulnerabilities* option. To retrieve audit logs and alert events, enable the *Fetch events*option.
 
 Computer assets dataset name: **jamf_protect_computers_raw**
 Events dataset name: **jamf_protect_raw**
