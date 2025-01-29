@@ -211,6 +211,8 @@ def fetch_indicators_command(client: Client, last_run: dict, params: Dict[str, A
                 demisto.debug(f"Skipping indicator {indicator.get('id')} as it was already fetched.")
                 indicators.remove(indicator)
                 continue
+            # Initialize indicator_obj to avoid using it before assignment
+            indicator_obj = {}
 
             # If type is malware-hashes, then we need to convert the hashes to hash type indicator of Cortex XSOAR
             if feed == 'malware-hashes':
