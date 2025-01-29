@@ -233,10 +233,10 @@ alter
   get_riskLevelAggregated = if(riskLevelAggregated = "none", null, riskLevelAggregated),
   get_riskLevelDuringSignIn = if(riskLevelDuringSignIn = "none", null, riskLevelDuringSignIn)
 | alter
-  check_ipAddress_v4 = if(ipAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddress),
-  check_ipAddress_v6 = if(ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddress),
-  check_ipAddressFromResourceProvider_v4 = if(ipAddressFromResourceProvider ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddressFromResourceProvider),
-  check_ipAddressFromResourceProvider_v6 = if(ipAddressFromResourceProvider ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddressFromResourceProvider),
+  check_ipAddress_v4 = arrayindex(regextract(ipAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+  check_ipAddress_v6 = arrayindex(regextract(ipAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
+  check_ipAddressFromResourceProvider_v4 = arrayindex(regextract(ipAddressFromResourceProvider, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+  check_ipAddressFromResourceProvider_v6 = arrayindex(regextract(ipAddressFromResourceProvider, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
   check_os_field = lowercase(coalesce(operatingSystem, deviceDetail -> operatingSystem)),
   check_risk_level = coalesce(get_riskLevelDuringSignIn, get_riskLevelAggregated)
 | alter
