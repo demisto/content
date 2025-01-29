@@ -156,7 +156,7 @@ class BranchAutoBumper:
 
                 config_reader = ConfigReader(explicitly_selected=["RN111"])
                 initializer = Initializer(
-                    prev_ver="some_prev_ver", execution_mode=ExecutionMode.USE_GIT
+                    prev_ver=BASE, execution_mode=ExecutionMode.USE_GIT
                 )
                 validation_results = ResultWriter()
                 validate_manager = ValidateManager(
@@ -165,7 +165,7 @@ class BranchAutoBumper:
                     initializer=initializer,
                     allow_autofix=True
                 )
-                validate_manager.run_validations()
+                results = validate_manager.run_validations()
 
                 print(f'Finished running validate fix on {pack_auto_bumper.pack_id}')
 
