@@ -1,4 +1,4 @@
-  This playbook handles "Suspicious execution of ODBCConf" alerts.
+  This playbook handles "Uncommon execution of ODBCConf" alerts.
 
   Playbook Stages:
 
@@ -13,19 +13,19 @@
   Investigation:
   During the alert investigation, the playbook will perform the following:
 
-  - Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :
-- Evasion Technique - 3048798454
-- An uncommon LOLBIN added to startup-related Registry keys
-- Behavioral Threat
-- An uncommon file was created in the startup folder
-- Unsigned process running from a temporary directory
-- Execution From a Restricted Location
-- Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
+  Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :  
+  - Evasion Technique - 3048798454
+  - An uncommon LOLBIN added to startup-related Registry keys
+  - Behavioral Threat
+  - An uncommon file was created in the startup folder
+  - Unsigned process running from a temporary directory
+  - Execution From a Restricted Location
+  - Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
 
   The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. If related insights are found, it will proceed to remediation actions only if the host score is listed as high.; otherwise, it closes the alert with the message "No indication of malicious activity was found".
 
 
-  Remediation:
+  Remediation:  
 
   - Automatically terminate the causality process.
   - Automatically Close the alert.
@@ -44,14 +44,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchAlertsV2
+* SearchIncidentsV2
 
 ### Commands
 
-* core-get-process-analytics-prevalence
-* core-terminate-causality
-* core-list-risky-hosts
 * closeInvestigation
+* core-get-process-analytics-prevalence
+* core-list-risky-hosts
+* core-terminate-causality
 
 ## Playbook Inputs
 
@@ -67,4 +67,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious execution of ODBCConf](../doc_files/Uncommon_execution_of_ODBCConf.png)
+![Uncommon execution of ODBCConf](../doc_files/Uncommon_execution_of_ODBCConf.png)
