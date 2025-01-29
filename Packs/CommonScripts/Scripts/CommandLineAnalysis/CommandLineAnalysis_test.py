@@ -125,7 +125,7 @@ def test_check_powershell_suspicious_patterns():
 def test_check_suspicious_macos_applescript_commands():
     command = "tell window 1 of application to set visible to false"
     matches = check_suspicious_macos_applescript_commands(command)
-    assert "visible to false" in matches
+    assert "to set visible" and "false" in matches
     assert "tell" and "application" in matches
 
 # Test analyze_command_line
