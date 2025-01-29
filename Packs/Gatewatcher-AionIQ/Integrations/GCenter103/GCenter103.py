@@ -300,7 +300,9 @@ def test_module(client: GwClient, user: str, password: str, token: str) -> str: 
         'Authentication successful' when the GCenter connection works.
         'Authentication error' when the GCenter connection doesn't works.
     """
-    client.auth(user=user, password=password, token=token)
+    client.auth(user=user if user != "" else None,
+                password=password if password != "" else None, 
+                token=token)
 
     if client.is_authenticated():
         return "ok"
