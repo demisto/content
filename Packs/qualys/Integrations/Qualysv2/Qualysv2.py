@@ -2902,6 +2902,41 @@ def get_detections_from_hosts(hosts):
     return fetched_assets, False
 
 
+def send_assets_and_vulnerabilities_to_xsiam(
+    assets: list,
+    vulnerabilities: list,
+    cumulative_assets_count: int,
+    cumulative_vulns_count: int,
+    has_next_page: bool,
+    snapshot_id: str,
+) -> None:
+    """Sends assets and vulnerabilities to their respective snapshot datasets.
+
+    Args:
+        assets (list): List of host detections (assets) dictionaries.
+        vulnerabilities (list): List of vulnerabilities dictionaries.
+        cumulative_assets_count (int): Total count of assets collected since resetting last run object.
+        cumulative_vulns_count (int): Total count of vulnerabilities collected since resetting last run object.
+        has_assets_next_page (bool): Whether there is a next assets page url (indicates more results).
+        snapshot_id (str): Snapshot ID of the dataset (use the same snapshot ID to add more data to the same dataset snapshot).
+    """
+    demisto.debug(f'Sending {len(assets)} assets to XSIAM. '
+                  f'Total assets collected so far: {cumulative_assets_count}')
+
+    total_assets_to_report = 1 if has_next_page else cumulative_assets_count   # set 1 if not done pulling
+    send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
+                       snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
+                       should_update_health_module=False)
+
+    total_vulns_to_report = 1 if has_next_page else cumulative_vulns_count  # set 1 if not done pulling
+    demisto.debug(f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM. '
+                  f'Total vulnerabilities collected so far: {cumulative_vulns_count}')
+
+    send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets',
+                       snapshot_id=snapshot_id, items_count=str(total_vulns_to_report),
+                       should_update_health_module=False)
+
+
 def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
     """ Get logs activity from qualys
     API response returns events sorted in descending order. We are saving the next_page param and
@@ -3300,39 +3335,32 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     """
     demisto.debug(f'Starting fetch for assets and vulnerabilities, {EXECUTION_START_TIME=}')
 
-    assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
+    assets, new_last_run, _, snapshot_id, set_new_limit = fetch_assets(client, last_run)
     detection_qids: list = list({asset.get('DETECTION', {}).get('QID') for asset in assets})
     vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids) if detection_qids else ([], {})
-    has_next_assets_page = bool(new_last_run.get('next_page'))
 
     # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
     if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
         new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
         new_last_run['nextTrigger'] = '0'
     else:
-        # Push assets
         cumulative_assets_count: int = new_last_run['total_assets']
+        has_next_assets_page = bool(new_last_run.get('next_page'))
 
-        demisto.debug(f'Sending {len(assets)} assets to XSIAM. '
-                      f'Total assets collected so far: {cumulative_assets_count}')
-
-        send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
-                           snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
-                           should_update_health_module=False)
-
-        # Push vulnerabilities
         cumulative_vulns_count: int = last_run.get('total_vulnerabilities', 0) + len(vulnerabilities)
-        total_vulns_to_report: int = 1 if has_next_assets_page else cumulative_vulns_count  # set 1 if not done pulling
         new_last_run['total_vulnerabilities'] = cumulative_vulns_count
 
-        demisto.debug(f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM. '
-                      f'Total vulnerabilities collected so far: {cumulative_vulns_count}')
+        demisto.debug(f'Starting to send {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM')
+        send_assets_and_vulnerabilities_to_xsiam(
+            assets=assets,
+            vulnerabilities=vulnerabilities,
+            cumulative_assets_count=cumulative_assets_count,
+            cumulative_vulns_count=cumulative_vulns_count,
+            has_next_page=has_next_assets_page,
+            snapshot_id=snapshot_id,
+        )
 
-        send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets',
-                           snapshot_id=snapshot_id, items_count=str(total_vulns_to_report),
-                           should_update_health_module=False)
-
-        # If no next page (finished fetching assets), then reset last run
+        # If no next assets page (i.e. finished fetching assets and their vulnerabilities), then reset last run
         if not has_next_assets_page:
             demisto.debug('Finished fetching all assets and vulnerabilities. Resetting last run object')
             new_last_run = DEFAULT_LAST_ASSETS_RUN

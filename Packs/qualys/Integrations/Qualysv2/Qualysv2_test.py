@@ -27,6 +27,7 @@ from Qualysv2 import (
     validate_required_group,
     get_vulnerabilities,
     get_activity_logs_events_command,
+    send_assets_and_vulnerabilities_to_xsiam,
     fetch_events, get_activity_logs_events,
     fetch_assets, fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
@@ -55,6 +56,7 @@ WARNING
 ----END_RESPONSE_FOOTER_CSV"""
 
 BASE_URL = 'https://server_url.com/'
+SNAPSHOT_ID = '1737885000'
 
 
 @pytest.fixture
@@ -1116,7 +1118,7 @@ class TestClientClass:
         }
 
     @pytest.mark.parametrize(
-        'since_datetime, detection_qids, expected_params',
+        "since_datetime, detection_qids, expected_params",
         [
             pytest.param("2024-12-12", None, {"last_modified_after": "2024-12-12"}, id="Specified since datetime"),
             pytest.param(None, "A,B", {"ids": "A,B"}, id="Specified detection QIDs"),
@@ -1615,7 +1617,7 @@ def test_get_vulnerabilities_invalid_inputs(client: Client):
 
 
 @pytest.mark.parametrize(
-    'since_datetime, detection_qids, expected_params',
+    "since_datetime, detection_qids, expected_params",
     [
         pytest.param("2024-12-12", None, {"last_modified_after": "2024-12-12"}, id="Specified since datetime"),
         pytest.param(None, ["A", "B"], {"ids": "A,B"}, id="Specified detection QIDs"),
@@ -1651,17 +1653,16 @@ def test_get_vulnerabilities_valid_inputs(
 def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFixture, client: Client):
     """
     Given:
-    - Qualys client and last run dictionary with fetch stage, total assets count, and snapshot ID.
+        - Qualys client and last run dictionary with fetch stage, total assets count, and snapshot ID.
 
     When:
-    - Calling fetch_assets_and_vulnerabilities_by_date with the "assets" stage.
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "assets" stage.
 
     Assert:
-    - Ensure correct sending to XSIAM and correctly set next assets run.
+        - Ensure correct sending to XSIAM and correctly set next assets run.
     """
-    last_snapshot_id = '1737885000'
     last_total_assets = 100
-    last_run = {'stage': 'assets', 'total_assets': last_total_assets, 'snapshot_id': last_snapshot_id}
+    last_run = {'stage': 'assets', 'total_assets': last_total_assets, 'snapshot_id': SNAPSHOT_ID}
 
     expected_assets = util_load_json('./test_data/fetched_assets.json')
     next_page, set_new_limit = '', False
@@ -1678,7 +1679,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     assert send_data_to_xsiam_kwargs['data'] == expected_assets
     assert send_data_to_xsiam_kwargs['vendor'] == VENDOR
     assert send_data_to_xsiam_kwargs['product'] == 'assets'
-    assert send_data_to_xsiam_kwargs['snapshot_id'] == last_snapshot_id
+    assert send_data_to_xsiam_kwargs['snapshot_id'] == SNAPSHOT_ID
     assert send_data_to_xsiam_kwargs['items_count'] == str(last_total_assets + len(expected_assets))
     assert not send_data_to_xsiam_kwargs['should_update_health_module']
 
@@ -1686,23 +1687,22 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     assert next_run['stage'] == 'vulnerabilities'  # next fetch stage should be vulnerabilities because no next assets page
     assert next_run['total_assets'] == last_total_assets + len(expected_assets)
     assert next_run['since_datetime'] == '2024-10-03'  # freezed datetime - 90 days
-    assert next_run['snapshot_id'] == last_snapshot_id
+    assert next_run['snapshot_id'] == SNAPSHOT_ID
 
 
 def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: MockerFixture, client: Client):
     """
     Given:
-    - Qualys client and last run dictionary with fetch stage, total vulnerabilities count, and snapshot ID.
+        - Qualys client and last run dictionary with fetch stage, total vulnerabilities count, and snapshot ID.
 
     When:
-    - Calling fetch_assets_and_vulnerabilities_by_date with the "vulnerabilities" stage.
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "vulnerabilities" stage.
 
     Assert:
-    - Ensure correct sending to XSIAM and that next assets run is reset to default (because pulling is finished).
+        - Ensure correct sending to XSIAM and that next assets run is reset to default (because pulling is finished).
     """
-    last_snapshot_id = '1737885000'
     last_total_vulnerabilities = 153
-    last_run = {'stage': 'vulnerabilities', 'total_vulnerabilities': last_total_vulnerabilities, 'snapshot_id': last_snapshot_id}
+    last_run = {'stage': 'vulnerabilities', 'total_vulnerabilities': last_total_vulnerabilities, 'snapshot_id': SNAPSHOT_ID}
 
     expected_vulnerabilities = util_load_json('./test_data/fetched_vulnerabilities.json')
     mocker.patch('Qualysv2.get_vulnerabilities', return_value=expected_vulnerabilities)
@@ -1726,20 +1726,18 @@ def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: 
 def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, client: Client):
     """
     Given:
-    - Qualys client and last run dictionary with total assets and vulnerabilities counts, and snapshot ID.
+        - Qualys client and last run dictionary with total assets and vulnerabilities counts, and snapshot ID.
 
     When:
-    - Calling fetch_assets_and_vulnerabilities_by_qids.
+        - Calling fetch_assets_and_vulnerabilities_by_qids.
 
     Assert:
-    - Ensure correct sending of assets to XSIAM.
-    - Ensure correct sending of vulnerabilities to XSIAM.
-    - Ensure correct last run that preserves snapshot ID, sets next trigger to 0, and updates total counts.
+        - Ensure correct sending of assets and vulnerabilities to XSIAM.
+        - Ensure correct last run that preserves snapshot ID, sets next trigger to 0, and updates total counts.
     """
-    last_snapshot_id = '1737885000'
     last_total_assets = 100
     last_total_vulns = 66
-    last_run = {'total_assets': last_total_assets, 'total_vulnerabilities': last_total_vulns, 'snapshot_id': last_snapshot_id}
+    last_run = {'total_assets': last_total_assets, 'total_vulnerabilities': last_total_vulns, 'snapshot_id': SNAPSHOT_ID}
 
     expected_assets = util_load_json('./test_data/fetched_assets.json')
     next_page, set_new_limit = f'{BASE_URL}/next/page/abc', False   # has next assets page (so not done pulling assets)
@@ -1748,37 +1746,87 @@ def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, cl
     expected_vulnerabilities = util_load_json('./test_data/fetched_vulnerabilities.json')
     mocker.patch('Qualysv2.fetch_vulnerabilities', return_value=(expected_vulnerabilities, {}))
 
-    mock_send_data_to_xsiam = mocker.patch('Qualysv2.send_data_to_xsiam')
+    mock_send_assets_and_vulnerabilities_to_xsiam = mocker.patch('Qualysv2.send_assets_and_vulnerabilities_to_xsiam')
     mock_set_assets_last_run = mocker.patch('Qualysv2.demisto.setAssetsLastRun')
 
     fetch_assets_and_vulnerabilities_by_qids(client, last_run)
 
-    # first send_data_to_xsiam call is to send assets, second to send vulnerabilities
-    send_data_to_xsiam_assets_kwargs = mock_send_data_to_xsiam.mock_calls[0].kwargs
-    send_data_to_xsiam_vulns_kwargs = mock_send_data_to_xsiam.mock_calls[1].kwargs
+    send_assets_and_vulnerabilities_to_xsiam = mock_send_assets_and_vulnerabilities_to_xsiam.call_args.kwargs
     next_run = mock_set_assets_last_run.call_args[0][0]
 
-    assert send_data_to_xsiam_assets_kwargs['data'] == expected_assets
-    assert send_data_to_xsiam_assets_kwargs['vendor'] == VENDOR
-    assert send_data_to_xsiam_assets_kwargs['product'] == 'assets'
-    assert send_data_to_xsiam_assets_kwargs['snapshot_id'] == last_snapshot_id
-    assert send_data_to_xsiam_assets_kwargs['items_count'] == '1'  # Not done pulling assets, set reported count to 1
-    assert not send_data_to_xsiam_assets_kwargs['should_update_health_module']
-
-    assert send_data_to_xsiam_vulns_kwargs['data'] == expected_vulnerabilities
-    assert send_data_to_xsiam_vulns_kwargs['vendor'] == VENDOR
-    assert send_data_to_xsiam_vulns_kwargs['product'] == 'vulnerabilities'
-    assert send_data_to_xsiam_vulns_kwargs['snapshot_id'] == last_snapshot_id
-    assert send_data_to_xsiam_vulns_kwargs['items_count'] == '1'  # Not done pulling assets, set reported count to 1
-    assert not send_data_to_xsiam_vulns_kwargs['should_update_health_module']
+    assert send_assets_and_vulnerabilities_to_xsiam['assets'] == expected_assets
+    assert send_assets_and_vulnerabilities_to_xsiam['vulnerabilities'] == expected_vulnerabilities
+    assert send_assets_and_vulnerabilities_to_xsiam['cumulative_assets_count'] == last_total_assets + len(expected_assets)
+    assert send_assets_and_vulnerabilities_to_xsiam['cumulative_vulns_count'] == last_total_vulns + len(expected_vulnerabilities)
+    assert send_assets_and_vulnerabilities_to_xsiam['has_next_page'] is True  # next_page not empty (not done pulling)
+    assert send_assets_and_vulnerabilities_to_xsiam['snapshot_id'] == SNAPSHOT_ID  # keep snapshot ID (not done pulling)
 
     assert next_run == {
         'stage': 'assets',
         'next_page': next_page,
         'total_assets': last_total_assets + len(expected_assets),
         'since_datetime': '2024-10-03',  # freezed datetime - 90 days
-        'snapshot_id': last_snapshot_id,
+        'snapshot_id': SNAPSHOT_ID,
         'nextTrigger': '0',
         'type': 1,
         'total_vulnerabilities': last_total_vulns + len(expected_vulnerabilities),
     }
+
+
+@pytest.mark.parametrize(
+    "has_assets_next_page, expected_assets_count_to_report, expected_vulns_count_to_report",
+    [
+        pytest.param(True, '1', '1', id="Has next page"),
+        pytest.param(False, '10', '13', id="Specified detection QIDs"),
+    ]
+)
+def test_send_assets_and_vulnerabilities_to_xsiam(
+    mocker: MockerFixture,
+    has_assets_next_page: bool,
+    expected_assets_count_to_report: str,
+    expected_vulns_count_to_report: str,
+):
+    """
+    Given:
+        - Lists of assets and vulnerabilities, along with their respective cumulative counts, and a snapshot ID.
+
+    When:
+        - Calling send_assets_and_vulnerabilities_to_xsiam.
+
+    Assert:
+        - Ensure correct sending of assets and vulnerabilities data to XSIAM with the correct vendor and product.
+        - Ensure reported count is 1 if not done pulling (has next page). Otherwise, count should be the cumulative value.
+    """
+    expected_assets = util_load_json('./test_data/fetched_assets.json')
+    expected_vulnerabilities = util_load_json('./test_data/fetched_vulnerabilities.json')
+    cumulative_assets_count = 10
+    cumulative_vulns_count = 13
+
+    mock_send_data_to_xsiam = mocker.patch('Qualysv2.send_data_to_xsiam')
+
+    send_assets_and_vulnerabilities_to_xsiam(
+        assets=expected_assets,
+        vulnerabilities=expected_vulnerabilities,
+        cumulative_assets_count=cumulative_assets_count,
+        cumulative_vulns_count=cumulative_vulns_count,
+        has_next_page=has_assets_next_page,
+        snapshot_id=SNAPSHOT_ID,
+    )
+
+    # First send_data_to_xsiam call is to send assets, second to send vulnerabilities
+    send_data_to_xsiam_assets_kwargs = mock_send_data_to_xsiam.mock_calls[0].kwargs
+    send_data_to_xsiam_vulns_kwargs = mock_send_data_to_xsiam.mock_calls[1].kwargs
+
+    assert send_data_to_xsiam_assets_kwargs['data'] == expected_assets
+    assert send_data_to_xsiam_assets_kwargs['vendor'] == VENDOR
+    assert send_data_to_xsiam_assets_kwargs['product'] == 'assets'
+    assert send_data_to_xsiam_assets_kwargs['snapshot_id'] == SNAPSHOT_ID
+    assert send_data_to_xsiam_assets_kwargs['items_count'] == expected_assets_count_to_report
+    assert not send_data_to_xsiam_assets_kwargs['should_update_health_module']
+
+    assert send_data_to_xsiam_vulns_kwargs['data'] == expected_vulnerabilities
+    assert send_data_to_xsiam_vulns_kwargs['vendor'] == VENDOR
+    assert send_data_to_xsiam_vulns_kwargs['product'] == 'vulnerabilities'
+    assert send_data_to_xsiam_vulns_kwargs['snapshot_id'] == SNAPSHOT_ID
+    assert send_data_to_xsiam_vulns_kwargs['items_count'] == expected_vulns_count_to_report
+    assert not send_data_to_xsiam_vulns_kwargs['should_update_health_module']
