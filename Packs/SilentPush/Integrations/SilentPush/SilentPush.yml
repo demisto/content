@@ -13,7 +13,7 @@ configuration:
   defaultvalue: https://api.silentpush.com
 - display: API Key
   name: credentials
-  type: 14
+  type: 9
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
@@ -184,6 +184,95 @@ script:
       type: Number
     - contextPath: SilentPush.NameserverReputation.ips_num_listed
       description: Number of listed IPs in the subnet.
+      type: Number
+  - deprecated: false
+    description: This command search for domains with optional filters.
+    name: silentpush-search-domains
+    arguments:
+    - name: domain
+      isArray: false
+      description: Name or wildcard pattern of domain names to search for.
+      required: false
+      secret: false
+      default: false
+    - name: domain_regex
+      isArray: false
+      description: A valid RE2 regex pattern to match domains. Overrides the domain argument.
+      required: false
+      secret: false
+      default: false
+    - name: name_server
+      isArray: false
+      description: Name server name or wildcard pattern of the name server used by domains.
+      required: false
+      secret: false
+      default: false
+    - name: asnum
+      isArray: false
+      description: Autonomous System (AS) number to filter domains.
+      required: false
+      secret: false
+      default: false
+    - name: asname
+      isArray: false
+      description: Search for all AS numbers where the AS Name begins with the specified value.
+      required: false
+      secret: false
+      default: false
+    - name: min_ip_diversity
+      isArray: false
+      description: Minimum IP diversity limit to filter domains.
+      required: false
+      secret: false
+      default: false
+    - name: registrar
+      isArray: false
+      description: Name or partial name of the registrar used to register domains.
+      required: false
+      secret: false
+      default: false
+    - name: min_asn_diversity
+      isArray: false
+      description: Minimum ASN diversity limit to filter domains.
+      required: false
+      secret: false
+      default: false
+    - name: certificate_issuer
+      isArray: false
+      description: Filter domains that had SSL certificates issued by the specified certificate issuer. Wildcards supported.
+      required: false
+      secret: false
+      default: false
+    - name: whois_date_after
+      isArray: false
+      description: Filter domains with a WHOIS creation date after this date (YYYY-MM-DD).
+      required: false
+      secret: false
+      default: false
+    - name: skip
+      isArray: false
+      description: Number of results to skip in the search query.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: Number of results to return. Defaults to the SilentPush API's behavior.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.Domain.asn_diversity
+      description: The diversity of Autonomous System Numbers (ASNs) associated with the domain.
+      type: Number
+    - contextPath: SilentPush.Domain.host
+      description: The domain name (host) associated with the record.
+      type: String
+    - contextPath: SilentPush.Domain.ip_diversity_all
+      description: The total number of unique IPs associated with the domain.
+      type: Number
+    - contextPath: SilentPush.Domain.ip_diversity_groups
+      description: The number of unique IP groups associated with the domain.
       type: Number
   script: '-'
   type: python

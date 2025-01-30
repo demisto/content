@@ -22,6 +22,7 @@ NAMESERVER_REPUTATION = "explore/nsreputation/nameserver"
 SUBNET_REPUTATION = "explore/ipreputation/history/subnet"
 ASNS_DOMAIN = "explore/padns/lookup/domain/asns"
 DENSITY_LOOKUP = "explore/padns/lookup/density"
+SEARCH_DOMAIN = "explore/domain/search"
 
 ''' COMMANDS INPUTS '''
 
@@ -73,6 +74,32 @@ DENSITY_LOOKUP_INPUTS = [
                 InputArgument(name='scope',
                             description='Match level (optional).')
             ]
+SEARCH_DOMAIN_INPUTS = [
+                InputArgument(name='domain', 
+                            description='Name or wildcard pattern of domain names to search for.'),
+                InputArgument(name='domain_regex', 
+                            description='A valid RE2 regex pattern to match domains. Overrides the domain argument.'),
+                InputArgument(name='name_server', 
+                            description='Name server name or wildcard pattern of the name server used by domains.'),
+                InputArgument(name='asnum', 
+                            description='Autonomous System (AS) number to filter domains.'),
+                InputArgument(name='asname', 
+                            description='Search for all AS numbers where the AS Name begins with the specified value.'),
+                InputArgument(name='min_ip_diversity', 
+                            description='Minimum IP diversity limit to filter domains.'),
+                InputArgument(name='registrar', 
+                            description='Name or partial name of the registrar used to register domains.'),
+                InputArgument(name='min_asn_diversity', 
+                            description='Minimum ASN diversity limit to filter domains.'),
+                InputArgument(name='certificate_issuer', 
+                            description='Filter domains that had SSL certificates issued by the specified certificate issuer. Wildcards supported.'),
+                InputArgument(name='whois_date_after', 
+                            description='Filter domains with a WHOIS creation date after this date (YYYY-MM-DD).'),
+                InputArgument(name='skip', 
+                            description='Number of results to skip in the search query.'),
+                InputArgument(name='limit', 
+                            description='Number of results to return. Defaults to the SilentPush API\'s behavior.')
+            ]
 
 
 ''' COMMANDS OUTPUTS '''
@@ -104,9 +131,15 @@ ASNS_DOMAIN_OUTPUTS = [
                         OutputArgument(name='domain_asns', output_type=dict, description='Dictionary of Autonomous System Numbers (ASNs) associated with the domain.')
                     ]
 DENSITY_LOOKUP_OUTPUTS = [
-    OutputArgument(name='density', output_type=int, description='The density value associated with the query result.'),
-    OutputArgument(name='nssrv', output_type=str, description='The name server (NS) for the query result.')
-]
+                        OutputArgument(name='density', output_type=int, description='The density value associated with the query result.'),
+                        OutputArgument(name='nssrv', output_type=str, description='The name server (NS) for the query result.')
+                    ]
+SEARCH_DOMAIN_OUTPUTS = [
+                        OutputArgument(name='asn_diversity', output_type=int, description='The diversity of Autonomous System Numbers (ASNs) associated with the domain.'),
+                        OutputArgument(name='host', output_type=str, description='The domain name (host) associated with the record.'),
+                        OutputArgument(name='ip_diversity_all', output_type=int, description='The total number of unique IPs associated with the domain.'),
+                        OutputArgument(name='ip_diversity_groups', output_type=int, description='The number of unique IP groups associated with the domain.')
+                    ]
 
 
 
@@ -141,7 +174,7 @@ metadata_collector = YMLMetadataCollector(
             name="credentials",
             display="API Key",
             required=False,
-            key_type=ParameterTypes.TEXT_AREA_ENCRYPTED,
+            key_type=ParameterTypes.AUTH,
         ),
         ConfKey(
             name="insecure",
@@ -339,6 +372,62 @@ class Client(BaseClient):
             params=params
         )
 
+    def search_domains(self, query: Optional[str] = None, start_date: Optional[str] = None, end_date: Optional[str] = None,
+                    risk_score_min: Optional[int] = None, risk_score_max: Optional[int] = None, limit: int = 100, 
+                    domain_regex: Optional[str] = None, name_server: Optional[str] = None, asnum: Optional[int] = None, 
+                    asname: Optional[str] = None, min_ip_diversity: Optional[int] = None, registrar: Optional[str] = None, 
+                    min_asn_diversity: Optional[int] = None, certificate_issuer: Optional[str] = None, 
+                    whois_date_after: Optional[str] = None, skip: Optional[int] = None) -> dict:
+        """
+        Search for domains based on various filtering criteria.
+
+        Args:
+            query (str, optional): Domain search query.
+            start_date (str, optional): Start date for domain search (YYYY-MM-DD).
+            end_date (str, optional): End date for domain search (YYYY-MM-DD).
+            risk_score_min (int, optional): Minimum risk score filter.
+            risk_score_max (int, optional): Maximum risk score filter.
+            limit (int, optional): Maximum number of results to return (defaults to 100).
+            domain_regex (str, optional): Regular expression to filter domains.
+            name_server (str, optional): Name server filter.
+            asnum (int, optional): Autonomous System Number (ASN) filter.
+            asname (str, optional): ASN Name filter.
+            min_ip_diversity (int, optional): Minimum IP diversity filter.
+            registrar (str, optional): Domain registrar filter.
+            min_asn_diversity (int, optional): Minimum ASN diversity filter.
+            certificate_issuer (str, optional): Filter domains by certificate issuer.
+            whois_date_after (str, optional): Filter domains based on WHOIS date (YYYY-MM-DD).
+            skip (int, optional): Number of results to skip.
+
+        Returns:
+            dict: Search results matching the specified criteria.
+        """
+        url_suffix = SEARCH_DOMAIN
+
+        # Prepare parameters and filter out None values using filter_none_values helper function
+        params = filter_none_values({
+            'domain': query,
+            'start_date': start_date,
+            'end_date': end_date,
+            'risk_score_min': risk_score_min,
+            'risk_score_max': risk_score_max,
+            'limit': limit,
+            'domain_regex': domain_regex,
+            'name_server': name_server,
+            'asnum': asnum,
+            'asname': asname,
+            'min_ip_diversity': min_ip_diversity,
+            'registrar': registrar,
+            'min_asn_diversity': min_asn_diversity,
+            'certificate_issuer': certificate_issuer,
+            'whois_date_after': whois_date_after,
+            'skip': skip,
+        })
+
+        # Make the request with the filtered parameters
+        return self._http_request('GET', url_suffix, params=params)
+
+
 ''' HELPER FUNCTIONS '''
 def filter_none_values(params: Dict[str, Any]) -> Dict[str, Any]:
     """Removes None values from a dictionary."""
@@ -375,7 +464,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     # Cortex XSOAR will print everything you return that is different than 'ok' as
     # an error.
     try:
-        resp = client.get_job_status("job_id", "max_wait", "result_type")
+        resp = client.search_domains("job_id", "max_wait", "result_type")
         if resp.get("status_code") != 200:
             return f"Connection failed :- {resp.get('errors')}"
         return 'ok'
@@ -632,8 +721,82 @@ def density_lookup_command(client: Client, args: dict) -> CommandResults:
         raw_response=raw_response
     )
 
+@metadata_collector.command(
+    command_name="silentpush-search-domains",
+    inputs_list=SEARCH_DOMAIN_INPUTS,
+    outputs_prefix="SilentPush.Domain",
+    outputs_list=SEARCH_DOMAIN_OUTPUTS,
+    description="This command search for domains with optional filters."
+)
+def search_domains_command(client: Client, args: dict) -> CommandResults:
+    """
+    Command to search for domains based on various filter parameters.
 
+    Args:
+        client (Client): The client instance to interact with the external service.
+        args (dict): Arguments containing filter parameters for domain search.
 
+    Returns:
+        CommandResults: The results of the domain search, including readable output and raw response.
+    """
+    # Extract arguments
+    query = args.get('query')
+    start_date = args.get('start_date')
+    end_date = args.get('end_date')
+    risk_score_min = arg_to_number(args.get('risk_score_min'))
+    risk_score_max = arg_to_number(args.get('risk_score_max'))
+    limit = arg_to_number(args.get('limit', 100))
+    domain_regex = args.get('domain_regex')
+    name_server = args.get('name_server')
+    asnum = arg_to_number(args.get('asnum'))
+    asname = args.get('asname')
+    min_ip_diversity = arg_to_number(args.get('min_ip_diversity'))
+    registrar = args.get('registrar')
+    min_asn_diversity = arg_to_number(args.get('min_asn_diversity'))
+    certificate_issuer = args.get('certificate_issuer')
+    whois_date_after = args.get('whois_date_after')
+    skip = arg_to_number(args.get('skip'))
+
+    # Call the client method to search domains
+    raw_response = client.search_domains(
+        query=query,
+        start_date=start_date,
+        end_date=end_date,
+        risk_score_min=risk_score_min,
+        risk_score_max=risk_score_max,
+        limit=limit,
+        domain_regex=domain_regex,
+        name_server=name_server,
+        asnum=asnum,
+        asname=asname,
+        min_ip_diversity=min_ip_diversity,
+        registrar=registrar,
+        min_asn_diversity=min_asn_diversity,
+        certificate_issuer=certificate_issuer,
+        whois_date_after=whois_date_after,
+        skip=skip
+    )
+
+    records = raw_response.get('response', {}).get('records', [])
+
+    if not records:
+        return CommandResults(
+            readable_output="No domains found.",
+            raw_response=raw_response,
+            outputs_prefix='SilentPush.Domain',
+            outputs_key_field='domain',
+            outputs=records
+        )
+
+    readable_output = tableToMarkdown('Domain Search Results', records)
+
+    return CommandResults(
+        outputs_prefix='SilentPush.Domain',
+        outputs_key_field='domain',
+        outputs=records,
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -678,6 +841,9 @@ def main() -> None:
         
         elif demisto.command() == 'silentpush-density-lookup':
             return_results(density_lookup_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-search-domains':
+            return_results(search_domains_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
