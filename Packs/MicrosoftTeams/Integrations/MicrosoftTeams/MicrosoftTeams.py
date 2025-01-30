@@ -1930,6 +1930,32 @@ def get_team_members(service_url: str, team_id: str) -> list:
     return response
 
 
+def manual_get_team_members_command():
+    """
+    Retrieves and updates in context the team members of given a team_name
+    :return: List of team members
+    """
+    team_name = demisto.args().get('team_name', '')
+    integration_context: dict = get_integration_context()
+    service_url: str = integration_context.get('service_url', '')
+    team_id = None
+    teams: list = json.loads(integration_context.get('teams', '[]'))
+    for team in teams:
+        if team.get('team_name', '') == team_name:
+            team_id = team.get('team_id', '')
+            demisto.debug(f'Following ID: {team_id} for team name: {team_name}')
+            url = f'{service_url}/v3/conversations/{team_id}/members'
+            team_members: list = cast(list[Any], http_request('GET', url, api='bot'))
+            demisto.debug(f'team_name: {team_name} got the following members: {team_members}')
+            team['team_members'] = team_members
+            integration_context['teams'] = json.dumps(teams)
+            set_integration_context(integration_context)
+            return_results(json.dumps(teams))
+    if not team_id:
+        demisto.error(f'Did not find a team for team name: {team_name}')
+        return_results(f'Did not find a team for team name: {team_name}')
+
+
 def get_channel_members(team_id: str, channel_id: str) -> list[dict[str, Any]]:
     """
     Retrieves channel members given a channel
@@ -3021,7 +3047,8 @@ def main():   # pragma: no cover
         'microsoft-teams-generate-login-url': generate_login_url_command,
         'microsoft-teams-auth-reset': reset_graph_auth_command,
         'microsoft-teams-token-permissions-list': token_permissions_list_command,
-        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command
+        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command,
+        'microsoft-teams-get-team-members': manual_get_team_members_command
     }
 
     commands_auth_code: dict = {
