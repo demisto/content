@@ -1245,7 +1245,7 @@ def validate_launch_get_indicators_command(limit, collection_name):
     except ValueError:
         raise Exception("A limit should be a number, not a string.")
 
-    if collection_name not in COMMON_MAPPING.keys():
+    if collection_name not in COMMON_MAPPING:
         raise Exception(
             "Incorrect collection name. Please, choose one of the displayed options."
         )

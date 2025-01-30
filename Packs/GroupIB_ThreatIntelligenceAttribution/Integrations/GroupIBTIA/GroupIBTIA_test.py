@@ -51,6 +51,7 @@ COLLECTION_NAMES = [
     "compromised/breached"
 ]
 
+
 @pytest.fixture(scope="function", params=COLLECTION_NAMES)
 def session_fixture(request):
     """
