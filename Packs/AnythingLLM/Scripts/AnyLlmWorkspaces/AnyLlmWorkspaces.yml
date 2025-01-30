@@ -1,0 +1,27 @@
+args:
+- default: true
+  defaultValue: llmworkspacelist
+  description: XSOAR grid field name for the workspace list.
+  name: workspacegrid
+  required: true
+comment: Queries the LLM for a list of workspaces and copies it into an XSOAR grid field were the user can select an active workspace.
+commonfields:
+  id: AnyLlmWorkspaces
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmWorkspaces
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
