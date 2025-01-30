@@ -12,9 +12,6 @@ files = [
     {file = "astroid-3.3.8.tar.gz", hash = "sha256:a88c7994f914a4ea8572fac479459f4955eeccc877be3f2d959a33273b0cf40b"},
 ]
 
-[package.dependencies]
-typing-extensions = {version = ">=4.0.0", markers = "python_version < \"3.11\""}
-
 [package.source]
 type = "legacy"
 url = "https://pypi.org/simple"
@@ -59,7 +56,6 @@ files = [
 
 [package.dependencies]
 pycodestyle = ">=2.12.0"
-tomli = {version = "*", markers = "python_version < \"3.11\""}
 
 [package.source]
 type = "legacy"
@@ -734,90 +730,89 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.34.1"
+version = "1.34.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
-python-versions = ">=3.9,<3.13"
+python-versions = ">=3.11,<3.13"
 groups = ["dev"]
-files = [
-    {file = "demisto_sdk-1.34.1-py3-none-any.whl", hash = "sha256:9d1d64b7f5a95ce7fb7ebfa699c12b4b9662d66a0c7e16254692b08642112b21"},
-    {file = "demisto_sdk-1.34.1.tar.gz", hash = "sha256:1e8dff1546a8cb613a761372ff79e0c239dc07a3c9766d5a04f240bae5e7dbee"},
-]
+files = []
+develop = false
 
 [package.dependencies]
-autopep8 = ">=2.0.4,<3.0.0"
-bandit = ">=1.7.4,<2.0.0"
-beautifulsoup4 = ">=4.11.1,<5.0.0"
+autopep8 = "^2.0.4"
+bandit = "^1.7.4"
+beautifulsoup4 = "^4.11.1"
 chardet = ">=4,<6"
-coloredlogs = ">=15.0.1,<16.0.0"
-configparser = ">=5.2.0,<6.0.0"
-coverage = ">=7.2.1,<7.4"
-dateparser = ">=1.1.1,<2.0.0"
-decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.10,<4.0.0"
-dictdiffer = ">=0.9.0,<0.10.0"
-dictor = ">=0.1.9,<0.2.0"
-docker = ">=7.1.0,<8.0.0"
-flatten-dict = ">=0.4.2,<0.5.0"
-gitdb = ">=4.0.9,<5.0.0"
-GitPython = ">=3.1.37,<4.0.0"
-giturlparse = ">=0.10.0,<0.11.0"
-google-cloud-secret-manager = ">=2.18.3,<3.0.0"
-google-cloud-storage = ">=2.13.0,<3.0.0"
-imagesize = ">=1.3.0,<2.0.0"
-importlib-resources = ">=5.6.0,<6.0.0"
-inflection = ">=0.5.1,<0.6.0"
-json5 = ">=0.9.14,<0.10.0"
-jsonschema = ">=4.4.0,<5.0.0"
-junitparser = ">=3.1.0,<4.0.0"
-loguru = ">=0.7.2,<0.8.0"
-lxml = ">=5.0.0,<6.0.0"
-mergedeep = ">=1.3.4,<2.0.0"
-more-itertools = ">=10.0.0,<11.0.0"
-mypy = ">=0.982,<0.983"
-neo4j = ">=5.14.0,<6.0.0"
-networkx = ">=2.7.1,<3.0.0"
-nltk = "3.9.1"
-ordered-set = ">=4.1.0,<5.0.0"
-orjson = ">=3.8.3,<4.0.0"
-packaging = ">=24.0,<25.0"
+coloredlogs = "^15.0.1"
+configparser = "^5.2.0"
+coverage = "^7.2.1,<7.4"
+dateparser = "^1.1.1"
+decorator = "^5.1.1"
+demisto-py = "^3.2.10"
+dictdiffer = "^0.9.0"
+dictor = "^0.1.9"
+docker = "^7.1.0"
+flatten-dict = "^0.4.2"
+gitdb = "^4.0.9"
+GitPython = "^3.1.37"
+giturlparse = "^0.10.0"
+google-cloud-secret-manager = "^2.18.3"
+google-cloud-storage = "^2.13.0"
+imagesize = "^1.3.0"
+importlib-resources = "^5.6.0"
+inflection = "^0.5.1"
+json5 = "^0.9.14"
+jsonschema = "^4.4.0"
+junitparser = "^3.1.0"
+loguru = "^0.7.2"
+lxml = "^5.0.0"
+mergedeep = "^1.3.4"
+more-itertools = "^10.0.0"
+mypy = "^0.982"
+neo4j = "^5.14.0"
+networkx = "^2.7.1"
+nltk = "==3.9.1"
+ordered-set = "^4.1.0"
+orjson = "^3.8.3"
+packaging = "^24.0"
 paramiko = ">=3.4.1,<4.0"
 Pebble = ">=4.6.3,<6.0.0"
-pre-commit = ">=3.5.0,<4.0.0"
-prettytable = ">=3.2.0,<4.0.0"
-pydantic = ">=1.10,<2.0"
-pygithub = ">=2.2.0,<3.0.0"
-pykwalify = ">=1.8.0,<2.0.0"
-pylint = ">=3.3.2,<4.0.0"
-PyPDF2 = ">=1.28.6,<2.0.0"
-pyspellchecker = ">=0.6.3,<0.7.0"
-pytest-freezegun = ">=0.4.2,<0.5.0"
-python-dotenv = ">=0.20.0,<0.21.0"
-requests = ">=2.27.1,<3.0.0"
-"ruamel.yaml" = ">=0.17.21,<0.18.0"
-setuptools = ">=75.5.0,<76.0.0"
-slack-sdk = ">=3.17.0,<4.0.0"
+pre-commit = "^3.5.0"
+prettytable = "^3.2.0"
+pydantic = "^1.10"
+pygithub = "^2.2.0"
+pykwalify = "^1.8.0"
+pylint = "^3.3.2"
+PyPDF2 = "^1.28.6"
+pyspellchecker = "^0.6.3"
+pytest-freezegun = "^0.4.2"
+python-dotenv = "^0.20.0"
+requests = "^2.27.1"
+"ruamel.yaml" = "^0.17.21"
+setuptools = "^75.5.0"
+slack-sdk = "^3.17.0"
 tabulate = ">=0.8.9,<0.10.0"
-tenacity = ">=8.4.1,<9.0.0"
-toml = ">=0.10.2,<0.11.0"
-typer = {version = ">=0.13.0,<0.14.0", extras = ["all"]}
-typing-extensions = ">=4.1.1,<5.0.0"
-ujson = ">=5.1.0,<6.0.0"
+tenacity = "^8.4.1"
+toml = "^0.10.2"
+typer = {version = "^0.13.0", extras = ["all"]}
+typing-extensions = "^4.1.1"
+ujson = "^5.1.0"
 urllib3 = ">=1.26,<3"
-uv = ">=0.1.5,<0.2.0"
-vulture = ">=2.3,<3.0"
-wcmatch = ">=8.3,<9.0"
-werkzeug = ">=2.2.0,<3.0.0"
-yamlordereddictloader = ">=0.4.0,<0.5.0"
+uv = "^0.1.5"
+vulture = "^2.3"
+wcmatch = "^8.3"
+werkzeug = "^2.2.0"
+yamlordereddictloader = "^0.4.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
 generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 
 [package.source]
-type = "legacy"
-url = "https://pypi.org/simple"
-reference = "pypi-public"
+type = "git"
+url = "https://github.com/demisto/demisto-sdk.git"
+reference = "ilappe/CIAC-12263/remove_python_3.9"
+resolved_reference = "ba122a35db126bbf47269d441d883d27de96db37"
 
 [[package]]
 name = "deprecated"
@@ -964,27 +959,6 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
-name = "exceptiongroup"
-version = "1.2.1"
-description = "Backport of PEP 654 (exception groups)"
-optional = false
-python-versions = ">=3.7"
-groups = ["dev", "github-actions"]
-markers = "python_version < \"3.11\""
-files = [
-    {file = "exceptiongroup-1.2.1-py3-none-any.whl", hash = "sha256:5258b9ed329c5bbdd31a309f53cbfb0b155341807f6ff7606a1e801a891b29ad"},
-    {file = "exceptiongroup-1.2.1.tar.gz", hash = "sha256:a4785e48b045528f5bfe627b6ad554ff32def154f42372786903b7abcfe1aa16"},
-]
-
-[package.extras]
-test = ["pytest (>=6)"]
-
-[package.source]
-type = "legacy"
-url = "https://pypi.org/simple"
-reference = "pypi-public"
-
-[[package]]
 name = "filelock"
 version = "3.15.4"
 description = "A platform independent file lock."
@@ -1122,14 +1096,8 @@ files = [
 [package.dependencies]
 google-auth = ">=2.14.1,<3.0.dev0"
 googleapis-common-protos = ">=1.56.2,<2.0.dev0"
-grpcio = [
-    {version = ">=1.33.2,<2.0dev", optional = true, markers = "python_version < \"3.11\" and extra == \"grpc\""},
-    {version = ">=1.49.1,<2.0dev", optional = true, markers = "python_version >= \"3.11\" and extra == \"grpc\""},
-]
-grpcio-status = [
-    {version = ">=1.33.2,<2.0.dev0", optional = true, markers = "python_version < \"3.11\" and extra == \"grpc\""},
-    {version = ">=1.49.1,<2.0.dev0", optional = true, markers = "python_version >= \"3.11\" and extra == \"grpc\""},
-]
+grpcio = {version = ">=1.49.1,<2.0dev", optional = true, markers = "python_version >= \"3.11\" and extra == \"grpc\""}
+grpcio-status = {version = ">=1.49.1,<2.0.dev0", optional = true, markers = "python_version >= \"3.11\" and extra == \"grpc\""}
 proto-plus = ">=1.22.3,<2.0.0dev"
 protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0.dev0"
 requests = ">=2.18.0,<3.0.0.dev0"
@@ -1576,9 +1544,6 @@ files = [
     {file = "importlib_resources-5.13.0-py3-none-any.whl", hash = "sha256:9f7bd0c97b79972a6cce36a366356d16d5e13b09679c11a58f1014bfdf8e64b2"},
     {file = "importlib_resources-5.13.0.tar.gz", hash = "sha256:82d5c6cca930697dbbd86c93333bb2c2e72861d4789a11c2662b933e5ad2b528"},
 ]
-
-[package.dependencies]
-zipp = {version = ">=3.1.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
@@ -2138,7 +2103,6 @@ files = [
 
 [package.dependencies]
 mypy-extensions = ">=0.4.3"
-tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
 typing-extensions = ">=3.10"
 
 [package.extras]
@@ -2806,16 +2770,11 @@ files = [
 [package.dependencies]
 astroid = ">=3.3.8,<=3.4.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
-dill = [
-    {version = ">=0.2", markers = "python_version < \"3.11\""},
-    {version = ">=0.3.6", markers = "python_version >= \"3.11\""},
-]
+dill = {version = ">=0.3.6", markers = "python_version >= \"3.11\""}
 isort = ">=4.2.5,<5.13.0 || >5.13.0,<6"
 mccabe = ">=0.6,<0.8"
 platformdirs = ">=2.2.0"
-tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
 tomlkit = ">=0.10.1"
-typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 spelling = ["pyenchant (>=3.2,<4.0)"]
@@ -2924,11 +2883,9 @@ files = [
 
 [package.dependencies]
 colorama = {version = "*", markers = "sys_platform == \"win32\""}
-exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
 iniconfig = "*"
 packaging = "*"
 pluggy = ">=0.12,<2.0"
-tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 
 [package.extras]
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
@@ -3851,24 +3808,6 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
-name = "tomli"
-version = "2.0.1"
-description = "A lil' TOML parser"
-optional = false
-python-versions = ">=3.7"
-groups = ["dev", "github-actions"]
-markers = "python_version < \"3.11\""
-files = [
-    {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
-    {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
-]
-
-[package.source]
-type = "legacy"
-url = "https://pypi.org/simple"
-reference = "pypi-public"
-
-[[package]]
 name = "tomlkit"
 version = "0.12.5"
 description = "Style preserving TOML library"
@@ -4525,9 +4464,6 @@ files = [
     {file = "vulture-2.11.tar.gz", hash = "sha256:f0fbb60bce6511aad87ee0736c502456737490a82d919a44e6d92262cb35f1c2"},
 ]
 
-[package.dependencies]
-tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
-
 [package.source]
 type = "legacy"
 url = "https://pypi.org/simple"
@@ -4719,29 +4655,7 @@ type = "legacy"
 url = "https://pypi.org/simple"
 reference = "pypi-public"
 
-[[package]]
-name = "zipp"
-version = "3.19.2"
-description = "Backport of pathlib-compatible object wrapper for zip files"
-optional = false
-python-versions = ">=3.8"
-groups = ["dev"]
-markers = "python_version < \"3.10\""
-files = [
-    {file = "zipp-3.19.2-py3-none-any.whl", hash = "sha256:f091755f667055f2d02b32c53771a7a6c8b47e1fdbc4b72a8b9072b3eef8015c"},
-    {file = "zipp-3.19.2.tar.gz", hash = "sha256:bf1dcf6450f873a13e952a29504887c89e6de7506209e5b1bcc3460135d4de19"},
-]
-
-[package.extras]
-doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
-
-[package.source]
-type = "legacy"
-url = "https://pypi.org/simple"
-reference = "pypi-public"
-
 [metadata]
 lock-version = "2.1"
-python-versions = "^3.9,<3.12"
-content-hash = "eb1f5edace1228f083c913420f83efe9a5f9471808cae91a2829c1cf7311acf0"
+python-versions = "^3.11,<3.12"
+content-hash = "54299f2ee7b770190af82321298bceb07e00ba8b4610f1dfc8db8379fb0bb23b"
