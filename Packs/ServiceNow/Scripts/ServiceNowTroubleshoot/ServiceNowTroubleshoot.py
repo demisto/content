@@ -11,7 +11,7 @@ NOTE_INCIDENTS = ("### Note: The active incidents, created 30 days ago and liste
                   " potential system overload.")
 
 
-def wrap_internal_http_request(method: str, url: str, body: dict | None = None):
+def http_request_wrapper(method: str, url: str, body: dict | None = None):
     """
     Sends an internal HTTP request using Demisto's `internalHttpRequest` and returns the parsed JSON response.
 
@@ -121,7 +121,7 @@ def parse_disabled_instances(disabled_incidents_instances: dict[str, Any]) -> st
     markdown_data = [
         {'Instance': instance,
          "Total": len(incidents),
-         "Names Active Incidents Created 30 days ago": "\n".join(incidents
+         "Active incidents more than created 30 days ago": "\n".join(incidents
                                                                  )}
         for instance, incidents in disabled_incidents_instances.items()
     ]
