@@ -16,16 +16,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "3"
-      - "5"
+      - "6"
+      - "7"
+      - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 610,
-          "y": -160
+          "y": -410
         }
       }
     note: false
@@ -55,7 +55,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
     scriptarguments:
       add_fields_to_context:
         simple: mitreid
@@ -116,7 +116,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
     scriptarguments:
       query:
         complex:
@@ -168,6 +168,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
     scriptarguments:
       incidentId:
         simple: ${incident.id}
@@ -178,8 +181,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 530
+          "x": 830,
+          "y": 680
         }
       }
     note: false
@@ -209,7 +212,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
     scriptarguments:
       query:
         complex:
@@ -238,7 +241,199 @@ tasks:
       {
         "position": {
           "x": 1100,
-          "y": 200
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 01655832-29fb-49c9-8a70-ec842e7a70b8
+    type: condition
+    task:
+      id: 01655832-29fb-49c9-8a70-ec842e7a70b8
+      version: -1
+      name: Has Threat Actor
+      description: Check that there is any Threat Actor in the report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.feedlythreatactornames
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b7da2121-66c7-4e88-810a-07c72ddbe66c
+    type: condition
+    task:
+      id: b7da2121-66c7-4e88-810a-07c72ddbe66c
+      version: -1
+      name: Has Malware
+      description: Check that there is any Malware in the report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.feedlymalwarenames
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3d8f39e0-5b3c-4061-8177-0581cc817866
+    type: condition
+    task:
+      id: 3d8f39e0-5b3c-4061-8177-0581cc817866
+      version: -1
+      name: Has TTP
+      description: Check that there is any TTP in the report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.mitretechniqueid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 25a65fcd-958c-45bc-8abb-da56870f1082
+    type: condition
+    task:
+      id: 25a65fcd-958c-45bc-8abb-da56870f1082
+      version: -1
+      name: Found indicatiors
+      description: Check if any indicators was found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${foundIndicators.id}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 519bf625-0d92-4e67-822b-054207b6b233
+    type: title
+    task:
+      id: 519bf625-0d92-4e67-822b-054207b6b233
+      version: -1
+      name: DONE
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 920
         }
       }
     note: false
@@ -253,10 +448,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 785,
+        "height": 1395,
         "width": 1340,
         "x": 140,
-        "y": -160
+        "y": -410
       }
     }
   }
