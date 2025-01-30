@@ -83,13 +83,6 @@ configuration:
   advanced: true
   type: 12  # long text block
   required: false
-- additionalinfo: 'Boolean logic operator to combine two or more "XML for fetch filtering" conditions (if applicable). For example: AND, AND NOT, OR, XOR.'
-  display: Fetch filtering logic operator
-  name: logical_operator
-  section: Collect
-  advanced: true
-  type: 0
-  required: false
 - additionalinfo: Request timeout value in seconds.
   defaultvalue: '400'
   display: Timeout

@@ -6,7 +6,7 @@ import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, \
     search_records_soap_request, upload_and_associate_command, validate_xml_conditions, construct_generic_filter_condition, \
-    construct_operator_logic, FilterConditionTypes
+    FilterConditionTypes
 
 BASE_URL = 'https://test.com/'
 
@@ -1260,27 +1260,6 @@ class TestArcherV2:
             search_value=search_value,
         )
         assert xml_condition == expected_xml_condition
-
-    @pytest.mark.parametrize(
-        'logical_operator, conditions_count, expected_operator_logic',
-        [
-            pytest.param('or', 3, '<OperatorLogic>1 OR 2 AND 3</OperatorLogic>', id='OR with 3 conditions'),
-            pytest.param('AND', 4, '<OperatorLogic>1 AND 2 AND 3 AND 4</OperatorLogic>', id='AND with 4 conditions'),
-            pytest.param('XOR', 1, '', id='XOR with 1 condition'),
-        ]
-    )
-    def test_construct_operator_logic(self, logical_operator: str, conditions_count: int, expected_operator_logic: str):
-        """
-        Given:
-            - A logical operator and a conditions count.
-        When:
-            - Calling construct_operator_logic.
-        Assert:
-            - Cases 1 & 2: Ensure a valid OperatorLogic XML element with the correct inner text.
-            - Case 3: Ensure no operator logic since it is irrelevant for fewer than 2 conditions.
-        """
-        operator_logic = construct_operator_logic(logical_operator, conditions_count)
-        assert operator_logic == expected_operator_logic
 
     def test_upload_and_associate_command_record_has_attachments(self, mocker):
         """

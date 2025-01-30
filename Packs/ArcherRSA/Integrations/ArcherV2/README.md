@@ -24,7 +24,6 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
     | First fetch timestamp | Time from which to begin fetching incidents in the `<number> <time unit>` format. For example: 12 hours, 7 days, 3 months, 1 year. | False |
     | List of fields from the application to get into the incident | A comma-separated list of application field names. For example: `Date/Time Occurred,Days Open`. | False |
     | XML for fetch filtering | Additional XML condition element(s) to use when fetching. Using a "DateComparisonFilterCondition" element is not supported. For more information, check the "Limitations" section of the documentation. | False |
-    | Fetch filtering logic operator | Boolean logic operator to combine two or more "XML for fetch filtering" conditions (if applicable). For example: AND, AND NOT, OR, XOR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

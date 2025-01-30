@@ -294,38 +294,6 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
     return ET.tostring(root, encoding='unicode')
 
 
-def construct_operator_logic(logical_operator: str | None, conditions_count: int) -> str:
-    """
-    Constructs an XML string representing the operator logic that applies to the filtering conditions for searching records.
-    Note that the last condition is always ANDed.
-
-    Args:
-        logical_operator (str | None): The logical operator (e.g. 'AND', 'OR', 'XOR').
-        conditions_count (int): The number of conditions.
-
-    Returns:
-        str: An XML string representing the OperatorLogic element.
-
-    Example:
-        >>> construct_operator_logic('AND', 4)
-        '<OperatorLogic>1 OR 2 OR 3 AND 4</OperatorLogic>'
-    """
-    if not logical_operator or not logical_operator.strip():
-        return ''
-
-    # Only two or more conditions can be joined by a logical operator (e.g. '1 AND 2', '1 OR 2 AND 3')
-    if conditions_count < 2:
-        return ''
-
-    root = ET.Element('OperatorLogic')
-
-    text = f' {logical_operator.upper()} '.join(str(num) for num in range(1, conditions_count))
-    text += f' AND {conditions_count}'
-
-    root.text = text
-    return ET.tostring(root, encoding='unicode')
-
-
 def search_records_soap_request(
     token: str,
     app_id: str,
@@ -339,8 +307,7 @@ def search_records_soap_request(
     max_results: int = 10,
     level_id: str = "",
     sort_type: str = "Ascending",
-    xml_filter_condition: str | None = "",
-    logical_operator: str | None = "",
+    xml_filter_conditions: str | None = "",
 ):
     # CDATA is not supported in Element Tree, therefore keeping original structure.
     request_body = (
@@ -361,11 +328,10 @@ def search_records_soap_request(
         + f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
     )
 
-    # Order of conditions important if using non-commutative logical_operator (e.g. 1 AND NOT 2 != 2 AND NOT 1)
     filter_conditions: list[str] = []
 
-    if xml_filter_condition:
-        filter_conditions.append(xml_filter_condition)
+    if xml_filter_conditions:
+        filter_conditions.extend(xml_filter_conditions)
 
     if search_value:
         if date_operator:
@@ -416,8 +382,7 @@ def search_records_soap_request(
 
     if filter_conditions:
         filter_conditions_xml = '\n'.join(filter_conditions)
-        operator_logic = construct_operator_logic(logical_operator, conditions_count=len(filter_conditions))
-        request_body += f'<Filter><Conditions>{filter_conditions_xml}</Conditions>{operator_logic}</Filter>'
+        request_body += f'<Filter><Conditions>{filter_conditions_xml}</Conditions></Filter>'
 
     if field_id:
         request_body += (
@@ -933,8 +898,7 @@ class Client(BaseClient):
         date_operator: str | None = "",
         max_results: int = 10,
         sort_type: str = "Ascending",
-        xml_filter_condition: str | None = "",
-        logical_operator: str | None = "",
+        xml_filter_conditions: str | None = "",
     ):
         demisto.debug(f"searching for records {field_to_search}:{search_value}")
         if fields_to_display is None:
@@ -974,8 +938,7 @@ class Client(BaseClient):
             max_results=max_results,
             sort_type=sort_type,
             level_id=level_id,
-            xml_filter_condition=xml_filter_condition,
-            logical_operator=logical_operator,
+            xml_filter_conditions=xml_filter_conditions,
         )
 
         if not res:
@@ -1720,8 +1683,8 @@ def search_records_command(client: Client, args: dict[str, str]):
     )
     level_id = args.get("levelId")
 
-    if xml_filter_condition := args.get("xmlForFiltering"):
-        validate_xml_conditions(xml_filter_condition)
+    if xml_filter_conditions := args.get("xmlForFiltering"):
+        validate_xml_conditions(xml_filter_conditions)
 
     if fields_to_get and "Id" not in fields_to_get:
         fields_to_get.append("Id")
@@ -1746,7 +1709,7 @@ def search_records_command(client: Client, args: dict[str, str]):
         date_operator,
         max_results=max_results,
         sort_type=sort_type,
-        xml_filter_condition=xml_filter_condition,
+        xml_filter_conditions=xml_filter_conditions,
     )
 
     records = [x["record"] for x in records]
@@ -1850,13 +1813,11 @@ def fetch_incidents(
     max_results = arg_to_number(params.get("fetch_limit")) or 10
     fields_to_display = argToList(params.get("fields_to_fetch"))
     fields_to_display.append(date_field)
-
-    xml_filter_condition = params.get("fetch_xml")
-    logical_operator = params.get("logical_operator")
+    xml_filter_conditions = params.get("fetch_xml")
 
     # If XML filter is given, verify syntax and check no additional date filter that would interfere with the fetch filter
-    if xml_filter_condition:
-        validate_xml_conditions(xml_filter_condition, blacklisted_tags=[FilterConditionTypes.date.value])
+    if xml_filter_conditions:
+        validate_xml_conditions(xml_filter_conditions, blacklisted_tags=[FilterConditionTypes.date.value])
 
     # API Call
     records, _ = client.search_records(
@@ -1866,8 +1827,7 @@ def fetch_incidents(
         search_value=from_time.strftime(OCCURRED_FORMAT),
         date_operator="GreaterThan",
         max_results=max_results,
-        xml_filter_condition=xml_filter_condition,
-        logical_operator=logical_operator,
+        xml_filter_conditions=xml_filter_conditions,
     )
     demisto.debug(f"Found {len(records)=}.")
     # Build incidents
