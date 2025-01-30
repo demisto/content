@@ -171,8 +171,8 @@ def main():
         return_results(CommandResults(
             readable_output=f'{enabled_instances_hr} \n --- \n {disabled_instances_hr}\n{NOTE_INCIDENTS}'))
 
-    except Exception as ex2:
-        return_error(f'Failed to execute ServiceNowAddComment. Error: {str(ex2)}')
+    except Exception as e:
+        return_error(f'Failed to execute ServiceNowTroubleshoot. Error: {str(e)}')
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
