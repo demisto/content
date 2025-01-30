@@ -528,7 +528,6 @@ def test_fetch_events_case_no_events_exist(mocker, absolute_client_v3):
     mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ([], '')))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
-    assert last_run_object.get('end_date')
 
 
 def test_fetch_events_first_fetch(mocker, absolute_client_v3):
@@ -549,7 +548,6 @@ def test_fetch_events_first_fetch(mocker, absolute_client_v3):
     mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ([], '')))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
-    assert last_run_object.get('end_date')
 
 
 def test_fetch_events_with_last_run_object_and_handle_deduplication(mocker, absolute_client_v3):

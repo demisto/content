@@ -335,7 +335,7 @@ class Client(BaseClient):
 
 
 class ClientV3(BaseClient):
-    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, proxy: bool, headers: dict):
+    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, proxy: bool, headers: dict = HEADERS_V3):
         """
         Client to use in the Absolute integration for API v3. Overrides BaseClient.
 
@@ -1043,7 +1043,6 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
     demisto.debug(f'fetch_events: {latest_events_id=}, {latest_events_time=}')
 
     return events, {
-        'end_date': end_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         'latest_events_id': latest_events_id,
         'latest_events_time': latest_events_time
     }
@@ -1130,7 +1129,6 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            headers=HEADERS_V3,
             token_id=token_id,
             secret_key=secret_key
         )
