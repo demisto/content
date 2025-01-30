@@ -8475,7 +8475,7 @@ def prepare_readable_ip_data(response):
             'asn': response.get('asn'),
             'asn_cidr': response.get('asn_cidr'),
             'asn_date': response.get('asn_date'),
-            'country_code': network_data.get('country'),
+            'country_code': response.get('asn_country_code'),
             'network_name': network_data.get('name')
             }
 

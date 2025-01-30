@@ -1,5 +1,5 @@
 fromversion: 6.8.0
-id: brocade_switch_modeling_rule
+id: Brocade_Switch_ModelingRule
 name: Brocade Switch Modeling Rule
 rules: ''
 schema: ''
