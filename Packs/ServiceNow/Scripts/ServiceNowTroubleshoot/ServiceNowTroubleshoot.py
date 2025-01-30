@@ -126,7 +126,7 @@ def parse_disabled_instances(disabled_incidents_instances: dict[str, Any]) -> st
         for instance, incidents in disabled_incidents_instances.items()
     ]
     return tableToMarkdown(
-        name="Disabled instances with Active Incidents Created 30 days ago",
+        name="Disabled instances with active incidents created more than 30 days ago",
         t=markdown_data,
     )
 
