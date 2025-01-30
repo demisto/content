@@ -24,9 +24,6 @@ Troubleshot ServiceNow v2 integration by displaying health information of enable
 | ServiceNow_v2_instance_disabled | ServiceNow Incident INC001111 |
 
 
-<br><br>
-
-
 ### Example
 
 ![image](../../doc_files/ServiceNowTroubleshotScript.png)

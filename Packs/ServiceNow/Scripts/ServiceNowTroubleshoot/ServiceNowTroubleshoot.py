@@ -5,7 +5,7 @@ import json
 from collections import defaultdict
 
 INTEGRATION = 'ServiceNow v2'
-NOTE_DISABLED_INCIDENTS = ("### Note: The active incidents, created 30 days ago and listed in the tables for both enabled and"
+NOTE_INCIDENTS = ("### Note: The active incidents, created 30 days ago and listed in the tables for both enabled and"
                            " disabled instances, are still being mirrored.\n ### Please be aware that irrelevant active incidents"
                            " may cause system overload. It is recommended to close them.")
 
@@ -169,7 +169,7 @@ def main():
         disabled_instances_hr = parse_disabled_instances(disabled_incidents_instances)
         enabled_instances_hr = parse_enabled_instances(enabled_instances_health, enabled_incidents_instances)
         return_results(CommandResults(
-            readable_output=f'{enabled_instances_hr} \n --- \n {disabled_instances_hr}\n{NOTE_DISABLED_INCIDENTS}'))
+            readable_output=f'{enabled_instances_hr} \n --- \n {disabled_instances_hr}\n{NOTE_INCIDENTS}'))
 
     except Exception as ex2:
         return_error(f'Failed to execute ServiceNowAddComment. Error: {str(ex2)}')
