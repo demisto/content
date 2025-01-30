@@ -776,19 +776,34 @@ def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '1234'
 
-    last_run.update({'index_audit_logs': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
+    last_run.update({'index_audit_logs': 1, 'last_fetch_time': '2022-09-20'})
     audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '12345'
-    assert new_last_run.get('index_audit_logs') == 2
 
-    last_run.update({'last_id': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
-    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
 
-    assert len(audit_logs) == 1
-    assert audit_logs[0].get('id') == '123456'
-    assert new_last_run.get('index_audit_logs') == 3
+@pytest.mark.parametrize(
+    'dt_now, dt_start_date, audit_logs, last_index_fetched, new_last_index_fetched',
+    [
+        (datetime(2024, 1, 26), datetime(2024, 1, 25), [{}], 1, 0),
+        (datetime(2024, 1, 26), datetime(2024, 1, 26), [{}], 1, 2),
+        (datetime(2024, 1, 26), datetime(2024, 1, 26), [], 1, 1),
+    ]
+)
+def test_set_index_audit_logs(dt_now: datetime, dt_start_date: datetime, audit_logs: List[dict], last_index_fetched: int,
+                              new_last_index_fetched: int):
+    """
+    Given:
+        - all the arguments are needed for the function
+    When:
+        - Running the set_index_audit_logs function.
+    Then:
+        - Verify the result is correct as expected by the logic which is written there.
+    """
+    from Tenable_io import set_index_audit_logs
+    result = set_index_audit_logs(dt_now, dt_start_date, audit_logs, last_index_fetched)
+    assert new_last_index_fetched == result
 
 
 def test_test_module(requests_mock, mocker):
