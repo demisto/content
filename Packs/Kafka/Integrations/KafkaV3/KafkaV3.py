@@ -155,16 +155,17 @@ class KafkaCommunicator:
                                 'sasl.username': plain_username,
                                 'sasl.password': plain_password})
             # ca_cert
-            if self.ca_path:
-                client_dict.update({'ssl.ca.location': self.ca_path})
-            else:
-                with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
-                    self.ca_path = ca_descriptor.name
-                    ca_descriptor.write(ca_cert)
-                client_dict.update({'ssl.ca.location': self.ca_path})
+            if not trust_any_cert:
+                if self.ca_path:
+                    client_dict.update({'ssl.ca.location': self.ca_path})
+                else:
+                    with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
+                        self.ca_path = ca_descriptor.name
+                        ca_descriptor.write(ca_cert)
+                    client_dict.update({'ssl.ca.location': self.ca_path})
 
-            if ssl_password:
-                client_dict.update({'ssl.key.password': ssl_password})
+                if ssl_password:
+                    client_dict.update({'ssl.key.password': ssl_password})
 
         if trust_any_cert:
             client_dict.update({'ssl.endpoint.identification.algorithm': 'none',
@@ -482,8 +483,7 @@ def validate_params(use_ssl, use_sasl, plain_username, plain_password, brokers, 
     # Check SASL_PLAIN requirements
     elif use_sasl:
         sasl_params = [(plain_username, 'SASL PLAIN Username'),
-                       (plain_password, 'SASL PLAIN Password'),
-                       (ca_cert, 'CA certificate of Kafka server (.cer)')]
+                       (plain_password, 'SASL PLAIN Password')]
         check_missing_params(sasl_params, missing)
 
     if missing:
@@ -1027,3 +1027,4 @@ def main():  # pragma: no cover
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
+
