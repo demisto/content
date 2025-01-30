@@ -185,3 +185,87 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.security]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+@pytest.mark.parametrize(
+    'server_url, expected_endpoint', [
+        ('com', 'https://api.security.microsoft.com'),
+        ('geo-us', 'https://us.api.security.microsoft.com'),
+        ('geo-eu', 'https://eu.api.security.microsoft.com'),
+        ('geo-uk', 'https://uk.api.security.microsoft.com'),
+        ('geo-au', 'https://au.api.security.microsoft.com'),
+        ('geo-swa', 'https://swa.api.security.microsoft.com'),
+        ('geo-ina', 'https://ina.api.security.microsoft.com'),
+        ('gcc', 'https://api-gcc.security.microsoft.us'),
+        ('gcc-high', 'https://api-gov.security.microsoft.us'),
+        ('dod', 'https://api-gov.security.microsoft.us'),
+    ]
+)
+def test_endpoint_to_api(server_url, expected_endpoint):
+    """
+        Given:
+            - A dictionary mapping server URLs to Microsoft 365 Defender API endpoints.
+        When:
+            - Testing the endpoint lookup for various server URLs.
+        Then:
+            - Ensure the returned endpoint matches the expected value for each server URL.
+    """
+    from MicrosoftApiModule import MICROSOFT_365_DEFENDER_API_ENDPOINTS
+
+    assert MICROSOFT_365_DEFENDER_API_ENDPOINTS[server_url] == expected_endpoint
+
+
+@pytest.mark.parametrize(
+    'server_url, expected_endpoint', [
+        ('com', 'https://login.windows.net'),
+        ('geo-us', 'https://login.windows.net'),
+        ('geo-eu', 'https://login.windows.net'),
+        ('geo-uk', 'https://login.windows.net'),
+        ('geo-au', 'https://login.windows.net'),
+        ('geo-swa', 'https://login.windows.net'),
+        ('geo-ina', 'https://login.windows.net'),
+        ('gcc', 'https://login.microsoftonline.com'),
+        ('gcc-high', 'https://login.microsoftonline.us'),
+        ('dod', 'https://login.microsoftonline.us'),
+    ]
+)
+def test_token_retrieval_endpoint(server_url, expected_endpoint):
+    """
+        Given:
+            - A dictionary mapping server URLs to Microsoft 365 Defender token retrieval endpoints.
+        When:
+            - Testing the token retrieval endpoint lookup for various server URLs.
+        Then:
+            - Ensure the returned endpoint matches the expected value for each server URL.
+    """
+    from MicrosoftApiModule import MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS
+
+    assert MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS[server_url] == expected_endpoint
+
+
+@pytest.mark.parametrize(
+    'server_url, expected_scope', [
+        ('com', 'https://security.microsoft.com'),
+        ('geo-us', 'https://security.microsoft.com'),
+        ('geo-eu', 'https://security.microsoft.com'),
+        ('geo-uk', 'https://security.microsoft.com'),
+        ('geo-au', 'https://security.microsoft.com'),
+        ('geo-swa', 'https://security.microsoft.com'),
+        ('geo-ina', 'https://security.microsoft.com'),
+        ('gcc', 'https://security.microsoft.com'),
+        ('gcc-high', 'https://security.microsoft.us'),
+        ('dod', 'https://security.apps.mil'),
+    ]
+)
+def test_scope_to_api(server_url, expected_scope):
+    """
+        Given:
+            - A dictionary mapping server URLs to Microsoft 365 Defender scopes.
+        When:
+            - Testing the scope lookup for various server URLs.
+        Then:
+            - Ensure the returned scope matches the expected value for each server URL.
+    """
+    from MicrosoftApiModule import MICROSOFT_365_DEFENDER_SCOPES
+
+    assert MICROSOFT_365_DEFENDER_SCOPES[server_url] == expected_scope
