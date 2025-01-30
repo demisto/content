@@ -497,8 +497,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1410
+          "x": 1030,
+          "y": 1420
         }
       }
     note: false
@@ -817,8 +817,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 1410
+          "x": 90,
+          "y": 1420
         }
       }
     note: false
@@ -859,8 +859,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 1915
+          "x": 90,
+          "y": 1925
         }
       }
     note: false
@@ -893,14 +893,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "29"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -50,
-          "y": 1590
+          "x": 510,
+          "y": 1600
         }
       }
     note: false
@@ -952,8 +952,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 2080
+          "x": 90,
+          "y": 2090
         }
       }
     note: false
@@ -983,8 +983,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 2260
+          "x": 90,
+          "y": 2270
         }
       }
     note: false
@@ -1023,8 +1023,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 2390
+          "x": 90,
+          "y": 2400
         }
       }
     note: false
@@ -1070,8 +1070,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 2560
+          "x": 90,
+          "y": 2570
         }
       }
     note: false
@@ -1116,8 +1116,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 2740
+          "x": -90,
+          "y": 2750
         }
       }
     note: false
@@ -1153,8 +1153,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 2920
+          "x": -270,
+          "y": 2930
         }
       }
     note: false
@@ -1193,7 +1193,7 @@ tasks:
       {
         "position": {
           "x": 630,
-          "y": 3100
+          "y": 3110
         }
       }
     note: false
@@ -1487,7 +1487,7 @@ tasks:
       {
         "position": {
           "x": 1480,
-          "y": 1285
+          "y": 1265
         }
       }
     note: false
@@ -1531,8 +1531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 1590
+          "x": 90,
+          "y": 1600
         }
       }
     note: false
@@ -1576,8 +1576,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 1750
+          "x": 90,
+          "y": 1760
         }
       }
     note: false
@@ -2125,7 +2125,7 @@ tasks:
       {
         "position": {
           "x": -570,
-          "y": 1410
+          "y": 1420
         }
       }
     note: false
@@ -2248,6 +2248,7 @@ view: |-
       "52_11_yes": 0.58,
       "57_54_Isolate": 0.55,
       "57_58_#default#": 0.61,
+      "59_60_yes": 0.35,
       "59_61_#default#": 0.2
     },
     "paper": {
