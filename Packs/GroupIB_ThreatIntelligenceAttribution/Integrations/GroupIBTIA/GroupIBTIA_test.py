@@ -1,9 +1,14 @@
+from unittest.mock import patch, MagicMock
+
 import pytest
+
+from CommonServerPython import CommandResults
 from GroupIBTIA import (
     fetch_incidents_command,
     Client,
     main,
     get_available_collections_command,
+    local_search_command
 )
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
@@ -24,7 +29,6 @@ with open(f'{realpath}/test_data/avalible_collections_example.json') as example:
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
-
 
 COLLECTION_NAMES = [
     "compromised/account_group",
@@ -202,3 +206,66 @@ def test_get_available_collections(mocker, single_session_fixture):
     assert result.outputs_prefix == "GIBTIA.OtherInfo"
     assert result.outputs_key_field == "collections"
     assert isinstance(result.outputs["collections"], list)
+
+
+@pytest.fixture
+def mock_client():
+    """Fixture to create a mock client."""
+    client = MagicMock()
+    client.poller.create_search_generator.return_value = []
+    return client
+
+
+@pytest.fixture
+def mock_common_helpers():
+    """Fixture to mock CommonHelpers functions."""
+    with patch("GroupIBTIA.CommonHelpers.validate_collections") as mock_validate, \
+            patch("GroupIBTIA.CommonHelpers.date_parse") as mock_date_parse:
+        mock_validate.return_value = None
+        mock_date_parse.side_effect = lambda date, arg_name: f"parsed_{date}" if date else None
+        yield mock_validate, mock_date_parse
+
+
+def test_local_search_command_no_results(mock_client, mock_common_helpers):
+    """
+    Given: A valid collection name and search query, with no results returned by the client.
+    When: The local_search_command function is executed.
+    Then: The function should return an empty list with appropriate formatting.
+    """
+    args = {"query": "test_query", "collection_name": "test_collection"}
+
+    result = local_search_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == []
+    assert "Search results" in result.readable_output
+
+
+def test_local_search_command_with_results(mock_client, mock_common_helpers):
+    """
+    Given: A valid collection name, search query, and results returned by the client.
+    When: The local_search_command function is executed.
+    Then: The function should return a formatted list of search results.
+    """
+    mock_client.poller.create_search_generator.return_value = [
+        MagicMock(parse_portion=lambda keys, as_json: [
+            {"id": "123", "name": "Test Result"},
+            {"id": "456", "name": "Another Result"},
+        ])
+    ]
+
+    args = {"query": "test_query", "collection_name": "test_collection"}
+
+    result = local_search_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "123"
+    assert result.outputs[0]["additional_info"] == "Name: Test Result"
+    assert "Search results" in result.readable_output
+    assert "Name: Test Result" in result.readable_output
+    assert "Name: Another Result" in result.readable_output
