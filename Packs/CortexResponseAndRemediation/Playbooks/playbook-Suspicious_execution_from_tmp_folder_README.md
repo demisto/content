@@ -1,5 +1,6 @@
 This playbook addresses the following alerts:
 
+- Suspicious process execution from tmp folder
 - Suspicious interactive execution of a binary from the tmp folder
 - Suspicious cron job task execution of a binary from the tmp folder
 - A web server process executed an unpopular application from the tmp folder

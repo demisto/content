@@ -13,6 +13,11 @@
                   {
                   "SEARCH_FIELD": "alert_name",
                   "SEARCH_TYPE": "EQ",
+                  "SEARCH_VALUE": "Suspicious process execution from tmp folder"
+                  },
+                  {
+                  "SEARCH_FIELD": "alert_name",
+                  "SEARCH_TYPE": "EQ",
                   "SEARCH_VALUE": "Suspicious interactive execution of a binary from the tmp folder"
                   },
                   {
