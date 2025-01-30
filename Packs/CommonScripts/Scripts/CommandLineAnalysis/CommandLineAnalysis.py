@@ -10,7 +10,7 @@ from typing import Any
 # 1) BASE64 & RELATED UTILITY FUNCTIONS
 # -----------------------------------------------------------------------------
 
-def is_base64(possible_base64: Union[str, bytes]) -> bool:
+def is_base64(possible_base64: str | bytes) -> bool
     """
     Validates if the provided string is a Base64-encoded string.
     For strings of length 20 or less, require that the string must contain '+', '/' or '='.
