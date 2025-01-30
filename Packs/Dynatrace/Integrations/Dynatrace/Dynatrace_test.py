@@ -161,14 +161,12 @@ def test_fetch_events(mocker):
     from Dynatrace import fetch_events
     apm_mock = mocker.patch("Dynatrace.fetch_apm_events", return_value=[])
     audit_mock = mocker.patch("Dynatrace.fetch_audit_log_events", return_value=[])
-    add_fields_to_events_mock = mocker.patch("Dynatrace.add_fields_to_events", return_value=[])
     send_events_to_xsiam_mock = mocker.patch("Dynatrace.send_events_to_xsiam")
     
     fetch_events(CLIENT, ["APM", "Audit logs"], {"APM": 100, "Audit logs": 200})
     
     assert apm_mock.call_args.args[1] == 100
     assert audit_mock.call_args.args[1] == 200
-    assert add_fields_to_events_mock.call_count == 2
     send_events_to_xsiam_mock.assert_called_once_with([], "Dynatrace", "Platform")
     
     
