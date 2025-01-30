@@ -47,6 +47,12 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- defaultvalue: '120'
+  display: Timeout for fetching incidents
+  name: timeout
+  type: 0
+  section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
