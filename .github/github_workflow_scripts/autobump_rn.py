@@ -4,6 +4,11 @@ from typing import List
 import urllib3
 import argparse
 from blessings import Terminal
+from demisto_sdk.commands.common.constants import ExecutionMode
+from demisto_sdk.commands.validate.config_reader import ConfigReader
+from demisto_sdk.commands.validate.initializer import Initializer
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
+from demisto_sdk.commands.validate.validation_results import ResultWriter
 from github import Github
 from github.PullRequest import PullRequest
 from github.Repository import Repository
@@ -24,7 +29,7 @@ t = Terminal()
 
 ORGANIZATION_NAME = "demisto"
 REPO_MANE = "content"
-BASE = "master"
+BASE = "update_rn_change_rn" #todo change obviously
 PR_COMMENT_TITLE = "### This PR was automatically updated by a " \
                    "[GitHub Action](https://github.com/demisto/content/actions/runs/{})\n"
 PR_COMMENT = "- **{}** pack version was bumped to **{}**.\n"
@@ -148,6 +153,24 @@ class BranchAutoBumper:
                 new_version = pack_auto_bumper.autobump()
                 print(f"Pack {pack_auto_bumper.pack_id} new version: {new_version}.")
                 self.git_repo.git.add(f"{PACKS_DIR}/{pack_auto_bumper.pack_id}")
+
+                config_reader = ConfigReader(explicitly_selected=["RN111"])
+                initializer = Initializer(
+                    prev_ver=BASE, execution_mode=ExecutionMode.USE_GIT
+                )
+                validation_results = ResultWriter()
+                validate_manager = ValidateManager(
+                    validation_results=validation_results,
+                    config_reader=config_reader,
+                    initializer=initializer,
+                    allow_autofix=True
+                )
+                results = validate_manager.run_validations()
+
+                print(f'Finished running validate fix on {pack_auto_bumper.pack_id}')
+
+                self.git_repo.git.add(f"{PACKS_DIR}/{pack_auto_bumper.pack_id}")
+
                 self.git_repo.git.commit(
                     "-m",
                     COMMIT_MESSAGE.format(
@@ -161,8 +184,8 @@ class BranchAutoBumper:
                 )
             print(f"[{self.pr.number}] Committed the changes. Commenting on the pr: \n{body}.\n")
             body += PR_COMMENT_STOP_AUTOMATION
-            self.git_repo.git.push()
-            self.pr.create_issue_comment(body)
+            # self.git_repo.git.push()
+            # self.pr.create_issue_comment(body)
         return body
 
 
@@ -190,7 +213,7 @@ class AutoBumperManager:
         If the pack meets all conditions to autobump pack version, it bumps the version.
         """
         for pr in self.github_repo_obj.get_pulls(
-            state="open", sort="created", base=BASE
+            state="open", sort="created", base=BASE, direction='desc'
         ):
             if pr.draft:
                 # The bot does not go through a PR that is in draft
