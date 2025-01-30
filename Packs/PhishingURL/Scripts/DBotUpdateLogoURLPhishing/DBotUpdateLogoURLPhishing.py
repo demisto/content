@@ -42,7 +42,6 @@ class Model:
 
 class ModelData(dict[Literal['top_domains', 'logos_dict', 'custom_logo_associated_domain'], dict]):
     '''Abstract class that represents the format of the data stored in the server.'''
-    ...
 
 
 def load_old_model_data(encoded_model: str) -> ModelData:
