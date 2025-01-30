@@ -684,7 +684,6 @@ def azure_nsg_security_group_create(client: AzureNSGClient, params: Dict, args: 
     
     response = client.create_or_update_security_group(subscription_id=subscription_id, resource_group_name=resource_group_name,
                                                       security_group_name=security_group_name, location=location)
-    
     data_from_response = extract_inner_dict(response, ['properties'], 'securityRules')
     readable_output = tableToMarkdown('Security Group List',
                                       data_from_response,
@@ -806,15 +805,11 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
     data_from_response = extract_inner_dict(response, ['properties'])
     data_from_response = extract_list(data_from_response, 'properties.ipConfigurations', 'name')
     data_from_response = extract_list(data_from_response, 'properties.ipConfigurations', 'properties')
-    properties = data_from_response.get('properties.ipConfigurations.properties')
-    for prop in properties:
-        data_from_response['properties.ipConfigurations.properties.privateIPAddress'] = prop.get('privateIPAddress')
-        public_ip = prop.get('publicIPAddress')
-        if public_ip:
-            data_from_response['properties.ipConfigurations.properties.publicIPAddress.id'] = public_ip.get('id')
-        subnet = prop.get('subnet')
-        if subnet:
-            data_from_response['properties.ipConfigurations.properties.subnet.id'] = subnet.get('id')
+    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties', 'privateIPAddress')
+    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties', 'publicIPAddress')
+    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties.publicIPAddress', 'id')
+    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties', 'subnet')
+    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties.subnet', 'id')
         
     readable_output = tableToMarkdown('Network Interface',
                                       data_from_response,

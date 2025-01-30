@@ -62,7 +62,7 @@ def test_azure_nsg_public_ip_addresses_list(mocker):
     Validate that azure_nsg_public_ip_addresses_list returns the output in the correct format
     """
     from AzureNetworkSecurityGroups import azure_nsg_public_ip_addresses_list
-    client = mock_client(mocker, util_load_json("test_data/list_public_ip_addresses.json"))
+    client = mock_client(mocker, util_load_json('test_data/list_public_ip_addresses.json'))
     results = azure_nsg_public_ip_addresses_list(client, args={}, params={'subscription_id': 'subscriptionID',
                                                            'resource_group_name': 'resourceGroupName'})
     assert '### Public IP Addresses List' in results.readable_output
@@ -82,7 +82,7 @@ def test_azure_nsg_virtual_networks_list(mocker):
     Validate that test_azure_nsg_virtual_networks_list returns the output in the correct format
     """
     from AzureNetworkSecurityGroups import azure_nsg_virtual_networks_list
-    client = mock_client(mocker, util_load_json("test_data/list_virtual_networks.json"))
+    client = mock_client(mocker, util_load_json('test_data/list_virtual_networks.json'))
     results = azure_nsg_virtual_networks_list(client, args={}, params={'subscription_id': 'subscriptionID',
                                                            'resource_group_name': 'resourceGroupName'})
     assert '### Virtual Networks List' in results.readable_output
@@ -102,7 +102,7 @@ def test_azure_nsg_networks_interfaces_list(mocker):
     Validate that test_azure_nsg_virtual_networks_list returns the output in the correct format
     """
     from AzureNetworkSecurityGroups import azure_nsg_networks_interfaces_list
-    client = mock_client(mocker, util_load_json("test_data/list_networks_interfaces.json"))
+    client = mock_client(mocker, util_load_json('test_data/list_networks_interfaces.json'))
     results = azure_nsg_networks_interfaces_list(client, args={}, params={'subscription_id': 'subscriptionID',
                                                            'resource_group_name': 'resourceGroupName'})
     assert '### Network Interfaces List' in results.readable_output
@@ -127,12 +127,12 @@ def test_azure_nsg_networks_interfaces_list(mocker):
 #     Given: a security group to be created
 #     """
 #     from AzureNetworkSecurityGroups import azure_nsg_security_group_create
-#     client = mock_client(mocker, util_load_json("test_data/list_public_ip_addresses.json"))
-#     azure_nsg_security_group_create(client, args={'security_group_name': 'securityGroup'},
+#     client = mock_client(mocker, util_load_json('test_data/list_public_ip_addresses.json'))
+#     azure_nsg_security_group_create(client, args={'security_group_name': 'securityGroup', 'location': 'westus'},
 #                                     params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
-#     properties = client.http_request.call_args_list[1][1].get('data').get('properties')
-    
-#     assert properties == ''
+#     properties = client.http_request.call_args_list
+   
+#     assert properties==''
 
 def test_create_rule_command(mocker):
     """
