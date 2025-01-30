@@ -602,6 +602,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
         for attachment in attachments:
             m.attach(attachment)
         m.send_and_save()
+    demisto.debug(f"Sent email to mailbox {m}")
     return m
 
 
@@ -614,22 +615,24 @@ def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
     attachments = []
     clean_body = ''
     last_index = 0
-    for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
-        name = f'image{i}'
-        cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
-        attachment = {
-            'data': b64_decode(m.group(3)),
-            'name': name
-        }
-        attachment['cid'] = cid
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + str(attachment['cid'])
-        last_index = m.end() - 1
-        new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                        content_id=attachment.get('cid'), is_inline=True)
-        attachments.append(new_attachment)
+    demisto.debug(f"handle_html: Received HTML body  {html_body=}")
+    # for i, m in enumerate(
+    #         re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
+    #     name = f'image{i}'
+    #     cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
+    #     attachment = {
+    #         'data': b64_decode(m.group(3)),
+    #         'name': name
+    #     }
+    #     attachment['cid'] = cid
+    #     clean_body += html_body[last_index:m.start(1)] + 'cid:' + str(attachment['cid'])
+    #     last_index = m.end() - 1
+    #     new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+    #                                     content_id=attachment.get('cid'), is_inline=True)
+    #     attachments.append(new_attachment)
 
     clean_body += html_body[last_index:]
+    demisto.debug(f"handle_html: Cleaned HTML body {clean_body=} and {attachments=}")
     return clean_body, attachments
 
 
@@ -674,7 +677,7 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
     for attachment in attachments:
         m.attach(attachment)
     m.send()
-
+    demisto.debug(f"Sent email reply to mailbox {m}")
     return m
 
 
