@@ -812,7 +812,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "ilappe/CIAC-12263/remove_python_3.9"
-resolved_reference = "ba122a35db126bbf47269d441d883d27de96db37"
+resolved_reference = "30024991ae19b1bc27f4214cd521b4bb359e2a37"
 
 [[package]]
 name = "deprecated"
