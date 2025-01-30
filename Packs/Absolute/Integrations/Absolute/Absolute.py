@@ -1030,7 +1030,7 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
     latest_events_time = last_run.get('latest_events_time')
     end_date = datetime.utcnow()
     start_date: datetime = datetime.strptime(latest_events_time, "%Y-%m-%dT%H:%M:%S.%fZ") if latest_events_time else (
-        end_date - timedelta(days=7))  # TODO: change to one minute ago
+        end_date - timedelta(minutes=1))
     demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {last_run=}')
 
     if fetch_limit == len(last_run_latest_events_id):
@@ -1041,13 +1041,6 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
     events, latest_events_id_and_time_tuple = process_events(all_events, last_run_latest_events_id)
     latest_events_id, latest_events_time = latest_events_id_and_time_tuple
     demisto.debug(f'fetch_events: {latest_events_id=}, {latest_events_time=}')
-
-    # TODO: remove the loop below
-    log_events = []
-    for event in events:
-        log_events.append(event.get('id'))
-    demisto.debug(f"{log_events=}")
-    # TODO: remove the loop above
 
     return events, {
         'end_date': end_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
