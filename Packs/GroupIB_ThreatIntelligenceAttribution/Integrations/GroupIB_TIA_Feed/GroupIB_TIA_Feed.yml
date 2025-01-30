@@ -74,18 +74,22 @@ configuration:
   display: Indicator collections
   name: indicator_collections
   options:
+  - compromised/account_group
+  - compromised/bank_card_group
   - compromised/mule
-  - compromised/imei
   - attacks/ddos
   - attacks/deface
-  - attacks/phishing
   - attacks/phishing_kit
+  - attacks/phishing_group
   - hi/threat
   - apt/threat
   - osi/vulnerability
+  - osi/git_repository
   - suspicious_ip/tor_node
   - suspicious_ip/open_proxy
   - suspicious_ip/socks_proxy
+  - suspicious_ip/vpn
+  - suspicious_ip/scanner
   - malware/cnc
   - ioc/common
   type: 16
@@ -133,6 +137,7 @@ configuration:
   - never
   - interval
   - indicatorType
+  - suddenDeath
 - display: ''
   name: feedExpirationInterval
   type: 1
@@ -147,18 +152,22 @@ script:
       description: GIB Collection to get indicators from.
       name: collection
       predefined:
+      - compromised/account_group
+      - compromised/bank_card_group
       - compromised/mule
-      - compromised/imei
       - attacks/ddos
       - attacks/deface
-      - attacks/phishing
       - attacks/phishing_kit
+      - attacks/phishing_group
       - hi/threat
       - apt/threat
       - osi/vulnerability
+      - osi/git_repository
       - suspicious_ip/tor_node
       - suspicious_ip/open_proxy
       - suspicious_ip/socks_proxy
+      - suspicious_ip/vpn
+      - suspicious_ip/scanner
       - malware/cnc
       - ioc/common
       required: true
@@ -189,7 +198,7 @@ script:
     name: gibtia-get-indicators
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/vendors-sdk:1.0.0.2073752
   feed: true
   runonce: false
   script: '-'
