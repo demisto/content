@@ -6,8 +6,9 @@ from collections import defaultdict
 
 INTEGRATION = 'ServiceNow v2'
 NOTE_INCIDENTS = ("### Note: The active incidents, created 30 days ago and listed in the tables for both enabled and"
-                  " disabled instances, are still being mirrored.\n ### Please be aware that irrelevant active incidents"
-                  " may cause system overload. It is recommended to close them.")
+                  " disabled instances, are still being mirrored.\n ### If the issue is no longer relevant and does not"
+                  " require further attention, it is recommended to close related incidents promptly to prevent"
+                  " potential system overload.")
 
 
 def wrap_internal_http_request(method: str, url: str, body: dict | None = None):
