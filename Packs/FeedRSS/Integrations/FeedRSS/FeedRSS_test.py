@@ -1,3 +1,4 @@
+
 from CommonServerPython import DemistoException
 import pytest
 from FeedRSS import *
@@ -157,3 +158,31 @@ def test_parsed_indicators_from_response_with_links_field(mocker):
     }]
 
     assert indicators[0]['fields']['publications'] == expected_output
+
+
+def test_feed_main_enrichment_excluded(mocker):
+    """
+        Given: params with tlp_color set to RED and enrichmentExcluded set to False
+        When: Calling feed_main
+        Then: validate enrichment_excluded is set to True
+    """
+    from FeedRSS import main
+
+    params = {
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False,
+        'server_url': 'test.test.com'
+    }
+
+    client_mocker = mocker.patch('FeedRSS.Client')
+
+    mocker.patch('FeedRSS.is_xsiam_or_xsoar_saas', return_value=True)
+    mocker.patch('FeedRSS.fetch_indicators', return_value=[])
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+
+    # Call the function under test
+    main()
+
+    # Assertion - verify that enrichment_excluded is set to True
+    assert client_mocker.call_args.kwargs.get('enrichment_excluded') is True

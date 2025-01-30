@@ -496,7 +496,8 @@ def get_indicators_command(client: Client, params: dict, args: dict = {}) -> Com
         Outputs.
     """
     limit = arg_to_number(args.get("limit"))
-    enrichment_excluded = argToBoolean(params.get('enrichmentExcluded', False))
+    enrichment_excluded = (argToBoolean(params.get('enrichmentExcluded', False))
+                           or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     indicators: list = []
     try:
         if limit and limit <= 0:
@@ -556,7 +557,8 @@ def fetch_indicators_command(client: Client, params: dict, args) -> list[dict]:
     """
     feed_tags = argToList(params.get("feedTags", ""))
     tlp_color = params.get("tlp_color")
-    enrichment_excluded = argToBoolean(params.get('enrichmentExcluded', False))
+    enrichment_excluded = (argToBoolean(params.get('enrichmentExcluded', False))
+                           or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     limit = int(params.get("limit", -1))
     last_commit_fetch = demisto.getLastRun().get("last_commit")
     indicators = fetch_indicators(client, last_commit_fetch, params, tlp_color=tlp_color, feed_tags=feed_tags, limit=limit,
