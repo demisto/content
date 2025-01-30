@@ -1,0 +1,71 @@
+category: Data Enrichment & Threat Intelligence
+description: The Silent Push Platform uses first-party data and a proprietary scanning engine to enrich global DNS data with risk and reputation scoring, giving security teams the ability to join the dots across the entire IPv4 and IPv6 range, and identify adversary infrastructure before an attack is launched. The content pack integrates with the Silent Push system to gain insights into domain/IP information, reputations, enrichment, and infratag-related details. It also provides functionality to live-scan URLs and take screenshots of them. Additionally, it allows fetching future attack feeds from the Silent Push system.
+commonfields:
+  id: SilentPush
+  version: -1
+name: SilentPush
+display: SilentPush
+configuration:
+- display: Base URL
+  name: url
+  type: 0
+  required: true
+  defaultvalue: https://api.silentpush.com
+- display: API Key
+  name: credentials
+  type: 14
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  commands:
+  - deprecated: false
+    description: This command retrieve status of running job or results from completed job.
+    name: silentpush-get-job-status
+    arguments:
+    - name: job_id
+      isArray: false
+      description: ID of the job returned by Silent Push actions.
+      required: true
+      secret: false
+      default: false
+    - name: max_wait
+      isArray: false
+      description: Number of seconds to wait for results (0-25 seconds).
+      required: false
+      secret: false
+      default: false
+    - name: result_type
+      isArray: false
+      description: Type of result to include in the response.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.JobStatus.get
+      description: URL to retrieve the job status.
+      type: String
+    - contextPath: SilentPush.JobStatus.job_id
+      description: Unique identifier for the job.
+      type: String
+    - contextPath: SilentPush.JobStatus.status
+      description: Current status of the job.
+      type: String
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.116949
+  feed: false
+  isfetch: false
+  runonce: false
+  longRunning: false
+  longRunningPort: false
+fromversion: 5.0.0
+tests:
+- No tests
