@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Brand Protection Phishing"
+        "GIB Brand Protection Phishing",
+        "GIB Attacks Phishing Group"
     ],
     "caseInsensitive": true,
     "cliName": "gibphishingdateblocked",
@@ -25,5 +26,11 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "itemVersion": "1.4.2",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB Brand Protection Phishing",
+        "GIB Attacks Phishing Group"
+    ]
 }
