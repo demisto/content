@@ -218,7 +218,7 @@ ignore=IF115
 ignore=IF115
 
 [file:incidentfield-GIB_Nation-State_Cybercriminals_Threat_Actor_Aliases.json]
-ignore=IF115
+ignore=IF115,BA116
 
 [file:incidentfield-GIB_Nation-State_Cybercriminal_Forums_Table.json]
 ignore=IF115
