@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, TIMESTAMP_NOT_AVAILABLE, Message
 from collections.abc import Callable
 from io import StringIO
@@ -26,10 +27,15 @@ class KProducer(Producer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
 
 
+class KSchemaRegistryClient(SchemaRegistryClient):
+    """Empty inheritance class for C-typed class in order to make mocking work."""
+
+
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
     conf_producer: Optional[dict[str, Any]] = None
     conf_consumer: Optional[dict[str, Any]] = None
+    conf_schema_registry: Optional[dict[str, Any]] = None
     ca_path: Optional[str] = None
     client_cert_path: Optional[str] = None
     client_key_path: Optional[str] = None
@@ -48,7 +54,10 @@ class KafkaCommunicator:
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
                  ssl_password: Optional[str] = None, trust_any_cert: bool = False,
-                 kafka_logger: Optional[logging.Logger] = None):
+                 kafka_logger: Optional[logging.Logger] = None,
+                 schema_registry_url: Optional[str] = None,
+                 schema_registry_username: Optional[str] = None,
+                 schema_registry_password: Optional[str] = None):
         """Set configuration dicts for consumer and producer.
 
         Args:
@@ -71,6 +80,7 @@ class KafkaCommunicator:
             raise DemistoException(f'General offset {offset} not found in supported offsets: '
                                    f'{SUPPORTED_GENERAL_OFFSETS}')
 
+        # Set consumer conf dict
         self.conf_consumer = {'session.timeout.ms': self.SESSION_TIMEOUT,
                               'auto.offset.reset': offset,
                               'group.id': group_id,
@@ -84,8 +94,17 @@ class KafkaCommunicator:
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
+        # Set schema registry conf dict
+        if schema_registry_url:
+            self.conf_schema_registry = {
+                'url': schema_registry_url,
+            }
+            if schema_registry_username and schema_registry_password:
+                self.conf_schema_registry['basic.auth.user.info'] = f'{schema_registry_username}:{schema_registry_password}'
+
         demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
         demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
+        demisto.debug(f"The schema registry configuration is  \n{self.conf_schema_registry}\n")
 
     def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password,
                            use_sasl, plain_username, plain_password, brokers):
@@ -161,6 +180,12 @@ class KafkaCommunicator:
         else:
             return KProducer(self.conf_producer)
 
+    def get_kafka_schema_registry(self) -> KSchemaRegistryClient:
+        if self.conf_schema_registry:
+            return KSchemaRegistryClient(self.conf_schema_registry)
+        else:
+            return None
+
     def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None):
         """Update consumer configurations for fetching messages
 
@@ -181,6 +206,7 @@ class KafkaCommunicator:
         error_msg = ''
         consumer: Optional[KConsumer] = None
         producer: Optional[KProducer] = None
+        schema_registry: Optional[KSchemaRegistryClient] = None
 
         try:
             consumer = self.get_kafka_consumer()
@@ -223,6 +249,15 @@ class KafkaCommunicator:
             finally:
                 if error_msg:
                     raise DemistoException(error_msg)
+
+
+        try:
+            schema_registry = self.get_kafka_schema_registry()
+            if schema_registry:
+                schema_registry.get_subjects()
+
+        except Exception as e:
+            raise DemistoException(f'Error connecting to kafka schema registry: {str(e)}\n{traceback.format_exc()}')
 
         return 'ok'
 
@@ -913,6 +948,9 @@ def main():  # pragma: no cover
     ssl_password = demisto_params.get('additional_password', None)
     plain_username = demisto_params.get('credentials', {}).get('identifier')
     plain_password = demisto_params.get('credentials', {}).get('password')
+    schema_registry_url = demisto_params.get('schema_registry_url', None)
+    schema_registry_username = demisto_params.get('schema_registry_credentials', {}).get('identifier', None)
+    schema_registry_password = demisto_params.get('schema_registry_credentials', {}).get('password', None)
     validate_params(use_ssl=use_ssl, use_sasl=use_sasl, plain_username=plain_username, plain_password=plain_password,
                     brokers=brokers, ca_cert=ca_cert, client_cert=client_cert, client_cert_key=client_cert_key)
 
@@ -920,7 +958,10 @@ def main():  # pragma: no cover
                     'use_sasl': use_sasl, 'group_id': group_id,
                     'trust_any_cert': trust_any_cert,
                     'client_cert': client_cert, 'client_cert_key': client_cert_key,
-                    'plain_username': plain_username, 'plain_password': plain_password}
+                    'plain_username': plain_username, 'plain_password': plain_password,
+                    'schema_registry_url': schema_registry_url,
+                    'schema_registry_username': schema_registry_username,
+                    'schema_registry_password': schema_registry_password}
     if ssl_password:
         kafka_kwargs['ssl_password'] = ssl_password
 
