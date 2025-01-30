@@ -253,7 +253,6 @@ class KafkaCommunicator:
                 if error_msg:
                     raise DemistoException(error_msg)
 
-
         try:
             schema_registry = self.get_kafka_schema_registry()
             if schema_registry:
@@ -299,14 +298,14 @@ class KafkaCommunicator:
         return kafka_consumer.get_watermark_offsets(partition=partition, timeout=self.REQUESTS_TIMEOUT)
 
     def produce(
-            self,
-            topic: str,
-            value: Union[str, dict],
-            value_schema_type: Optional[str],
-            value_schema_str: Optional[str],
-            value_schema_subject_name: Optional[str],
-            partition: int
-        ) -> None:
+        self,
+        topic: str,
+        value: Union[str, dict],
+        value_schema_type: Optional[str],
+        value_schema_str: Optional[str],
+        value_schema_subject_name: Optional[str],
+        partition: int
+    ) -> None:
         """Produce in to kafka
 
         Args:
@@ -325,9 +324,10 @@ class KafkaCommunicator:
 
         if value_schema_type:
             if not value_schema_str and not value_schema_subject_name:
-                raise DemistoException(f"Schema is not provided. Please provide one.")
+                raise DemistoException("Schema is not provided. Please provide one.")
             if value_schema_str and value_schema_subject_name:
-                raise DemistoException(f"Both value_schema_str and value_schema_subject_name are provided. Please provide only one.")
+                raise DemistoException(
+                    "Both value_schema_str and value_schema_subject_name are provided. Please provide only one.")
 
             resolved_schema_str = value_schema_str
             # Retrieve schema from schema registry
@@ -338,7 +338,7 @@ class KafkaCommunicator:
                         f"The schema type '{registered_schema.schema.schema_type}' is not supported. Expected '{value_schema_type}'."
                     )
                 resolved_schema_str = registered_schema.schema.schema_str
-               
+
             if value_schema_type == 'AVRO':
                 avro_serializer = AvroSerializer(
                     schema_str=resolved_schema_str,
@@ -652,13 +652,13 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
 
     if value_schema_type == 'None':
         value_schema_type = None
-    
+
     partition_str = str(partition_arg)
     if partition_str.isdigit():
         partition = int(partition_str)
     else:
         partition = 0
-    
+
     try:
         kafka.produce(
             value=str(value),
@@ -1027,4 +1027,3 @@ def main():  # pragma: no cover
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
-
