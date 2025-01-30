@@ -1643,7 +1643,8 @@ class EntryBuilder:
         if scope not in scopes:
             return None
 
-        entry = default.get('entry')
+        entry_key = str(scope) if str(scope) in default else 'entry'
+        entry = default.get(entry_key)
         if isinstance(entry, dict):
             return entry
         elif isinstance(entry, str):
@@ -1655,7 +1656,7 @@ class EntryBuilder:
             }
         else:
             raise DemistoException(
-                f'default.entry must be of type stror dict - {type(entry)}'
+                f'default.{entry_key} must be of type stror dict - {type(entry)}'
             )
 
     def __init__(

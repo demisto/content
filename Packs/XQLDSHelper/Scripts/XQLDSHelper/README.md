@@ -101,7 +101,9 @@ The summary of the template structure in the templates is provided below.
       "<widget type>": <widget type dependent data>
       "default": {
         "scope": "<scope>",
-        "entry": <default entry>
+        "entry": <default entry>,
+        "no_recordset": <default entry>,
+        "query_skipped": <default entry>
       }
     }
   }
@@ -1226,7 +1228,9 @@ The record set must contain at most one record for the duration widget entry. An
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .scope | [Optional] A list of scope. The possible values are `no_recordset` and `query_skipped,` which indicate when no record set is available or when a query is skipped, respectively (Default = ["no_recordset", "query_skipped"]). | String or List |
-| .entry | The default entry that is returned when the conditions specified in `.scope` are met. | String or Dict |
+| .entry | [Optional] The default entry that is returned when the conditions specified in `.scope` are met, and no specific default entries are available. | String or Dict |
+| .no_recordset | [Optional] The default entry returned when `no_recordset` is given to `.scope`, and the specified conditions are met. | String or Dict |
+| .query_skipped | [Optional] The default entry returned when `query_skipped` is given to `.scope`, and the specified conditions are met. | String or Dict |
 
 The default entry is a fallback value. Instead of creating an entry from the query results,
 it is used to display a message indicating that the query was not executed or that no record set is available.
@@ -1234,7 +1238,7 @@ It will be applied if either of the following conditions is met:
  - `query_skipped` is included in the `.scope`, and the `.query.conditions` in the `query` node evaluates to false.
  - `no_recordset` is included in the `.scope`, and no record set is returned by the XQL query.
 
-The `.entry` must be of type `str` or `dict`.
+The `.no_recordset`, `.query_skipped` and `.entry` must be of type `str` or `dict`.
 If it is of type `str`, it represents markdown text to be displayed as an entry, as shown below:
 
 ```

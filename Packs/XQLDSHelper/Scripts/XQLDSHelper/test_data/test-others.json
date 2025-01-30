@@ -2085,6 +2085,40 @@
       }
     }
   },
+  "######### xql.conditions: return default entry (scope=query_skipped, entry=query_skipped)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": false
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            },
+            "default": {
+              "scope": "query_skipped",
+              "entry": "xxx",
+              "query_skipped": "default markdown message"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "default markdown message",
+        "Contents": null
+      }
+    }
+  },
   "######### XQL response: pending > success",
   {
     "args": {
