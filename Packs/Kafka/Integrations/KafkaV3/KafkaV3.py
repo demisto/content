@@ -328,7 +328,9 @@ class KafkaCommunicator:
             if value_schema_str and value_schema_subject_name:
                 raise DemistoException(
                     "Both value_schema_str and value_schema_subject_name are provided. Please provide only one.")
-
+            if not kafka_schema_registry_client:
+                raise DemistoException("Kafka Schema Registry client is not configured. Please configure one to use schema validation.")
+            
             resolved_schema_str = value_schema_str
             # Retrieve schema from schema registry
             if value_schema_subject_name:
