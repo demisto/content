@@ -61,7 +61,7 @@ def remove_null_bytes(decoded_str: str) -> str:
     return decoded_str.replace("\x00", "")
 
 
-def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: bool = False) -> Tuple[str, bool]:
+def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: bool = False) -> tuple[str, bool]:
     """
     Recursively decodes Base64 segments found in the **entire** string `encoded_str`.
     Returns (decoded_string, double_encoded_detected).
@@ -104,7 +104,7 @@ def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: boo
     return result, double_encoded_detected
 
 
-def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
+def identify_and_decode_base64(command_line: str) -> tuple[str, bool]:
     """
     Identifies and decodes all Base64 occurrences in a command line.
     Specifically targets encodedCommand flags commonly used in PowerShell.
@@ -145,7 +145,7 @@ def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
     return result, double_encoded_detected
 
 
-def reverse_command(command_line: str) -> Tuple[str, bool]:
+def reverse_command(command_line: str) -> tuple[str, bool]:
     """
     Detects if the command line contains a reversed PowerShell string and reverses it.
     """
@@ -625,7 +625,7 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     theoretical_max = 120
 
     # Helper function to calculate score and detect combinations
-    def process_context(context_results: Dict[str, Any]) -> Tuple[int, List[str]]:
+    def process_context(context_results: Dict[str, Any]) -> tuple[int, List[str]]:
         context_score = 0
         context_findings: List[str] = []
         context_keys_detected = set()
