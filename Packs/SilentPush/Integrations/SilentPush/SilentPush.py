@@ -23,6 +23,7 @@ SUBNET_REPUTATION = "explore/ipreputation/history/subnet"
 ASNS_DOMAIN = "explore/padns/lookup/domain/asns"
 DENSITY_LOOKUP = "explore/padns/lookup/density"
 SEARCH_DOMAIN = "explore/domain/search"
+DOMAIN_INFRATAGS = "explore/bulk/domain/infratags"
 
 ''' COMMANDS INPUTS '''
 
@@ -100,6 +101,20 @@ SEARCH_DOMAIN_INPUTS = [
                 InputArgument(name='limit', 
                             description='Number of results to return. Defaults to the SilentPush API\'s behavior.')
             ]
+DOMAIN_INFRATAGS_INPUTS = [
+                InputArgument(name='domains', 
+                            description='Comma-separated list of domains.', 
+                            required=True),
+                InputArgument(name='cluster', 
+                            description='Whether to cluster the results.'),
+                InputArgument(name='mode', 
+                            description='Mode for lookup (live/padns). Defaults to "live".', 
+                            default='live'),
+                InputArgument(name='match', 
+                            description='Handling of self-hosted infrastructure. Defaults to "self".', 
+                            default='self')
+            ]
+
 
 
 ''' COMMANDS OUTPUTS '''
@@ -140,6 +155,46 @@ SEARCH_DOMAIN_OUTPUTS = [
                         OutputArgument(name='ip_diversity_all', output_type=int, description='The total number of unique IPs associated with the domain.'),
                         OutputArgument(name='ip_diversity_groups', output_type=int, description='The number of unique IP groups associated with the domain.')
                     ]
+DOMAIN_INFRATAGS_OUTPUTS = [
+                        OutputArgument(name='infratags.domain', 
+                                    output_type=str, 
+                                    description='The domain associated with the infratag.'),
+                        OutputArgument(name='infratags.mode', 
+                                    output_type=str, 
+                                    description='The mode associated with the domain infratag.'),
+                        OutputArgument(name='infratags.tag', 
+                                    output_type=str, 
+                                    description='The tag associated with the domain infratag.'),
+                        
+                        OutputArgument(name='tag_clusters.25.domains', 
+                                    output_type=list, 
+                                    description='List of domains in the tag cluster with score 25.'),
+                        OutputArgument(name='tag_clusters.25.match', 
+                                    output_type=str, 
+                                    description='The match string associated with the domains in the tag cluster with score 25.'),
+                        
+                        OutputArgument(name='tag_clusters.50.domains', 
+                                    output_type=list, 
+                                    description='List of domains in the tag cluster with score 50.'),
+                        OutputArgument(name='tag_clusters.50.match', 
+                                    output_type=str, 
+                                    description='The match string associated with the domains in the tag cluster with score 50.'),
+                        
+                        OutputArgument(name='tag_clusters.75.domains', 
+                                    output_type=list, 
+                                    description='List of domains in the tag cluster with score 75.'),
+                        OutputArgument(name='tag_clusters.75.match', 
+                                    output_type=str, 
+                                    description='The match string associated with the domains in the tag cluster with score 75.'),
+                        
+                        OutputArgument(name='tag_clusters.100.domains', 
+                                    output_type=list, 
+                                    description='List of domains in the tag cluster with score 100.'),
+                        OutputArgument(name='tag_clusters.100.match', 
+                                    output_type=str, 
+                                    description='The match string associated with the domains in the tag cluster with score 100.')
+                    ]
+
 
 
 
@@ -426,6 +481,65 @@ class Client(BaseClient):
 
         # Make the request with the filtered parameters
         return self._http_request('GET', url_suffix, params=params)
+
+    def list_domain_infratags(
+        self,
+        domains: list,
+        cluster: bool = False,
+        mode: str = 'live',
+        match: str = 'self',
+        as_of: Optional[str] = None,
+        origin_uid: Optional[str] = None,
+        use_get: bool = False
+    ) -> dict:
+        """
+        Retrieve infrastructure tags for specified domains, supporting both GET and POST methods.
+
+        Args:
+            domains (list): List of domains to fetch infrastructure tags for.
+            cluster (bool): Whether to include cluster information (default: False).
+            mode (str): Tag retrieval mode (default: 'live').
+            match (str): Matching criteria (default: 'self').
+            as_of (Optional[str]): Specific timestamp for tag retrieval.
+            origin_uid (Optional[str]): Unique identifier for the API user.
+            use_get (bool): Use GET method instead of POST (default: False).
+
+        Returns:
+            dict: API response containing infratags and optional tag clusters.
+        """
+        url_suffix = DOMAIN_INFRATAGS
+
+        # Construct the params dictionary
+        params = {
+            'mode': mode,
+            'match': match,
+            'clusters': int(cluster),
+            'as_of': as_of,
+            'origin_uid': origin_uid
+        }
+
+        # Remove any None values from params using filter_none_values helper function
+        params = filter_none_values(params)
+
+        if use_get:
+            # Use GET method
+            response = self._http_request(
+                method='GET',
+                url_suffix=url_suffix,
+                params=params
+            )
+        else:
+            # Use POST method
+            payload = {'domains': domains}
+            response = self._http_request(
+                method='POST',
+                url_suffix=url_suffix,
+                params=params,
+                data=payload
+            )
+
+        return response
+
 
 
 ''' HELPER FUNCTIONS '''
@@ -799,6 +913,70 @@ def search_domains_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def format_tag_clusters(tag_clusters: list) -> str:
+    """
+    Helper function to format the tag clusters output.
+
+    Args:
+        tag_clusters (list): List of domain tag clusters.
+
+    Returns:
+        str: Formatted table output for tag clusters.
+    """
+    if not tag_clusters:
+        return "\n\n**No tag cluster data returned by the API.**"
+
+    cluster_details = [{'Cluster Level': key, 'Details': value} for cluster in tag_clusters for key, value in cluster.items()]
+    return tableToMarkdown('Domain Tag Clusters', cluster_details)
+
+@metadata_collector.command(
+    command_name="silentpush-list-domain-infratags",
+    inputs_list=DOMAIN_INFRATAGS_INPUTS,
+    outputs_prefix="SilentPush.InfraTags",
+    outputs_list=DOMAIN_INFRATAGS_OUTPUTS,
+    description="This command get infratags for multiple domains with optional clustering."
+)
+def list_domain_infratags_command(client: Client, args: dict) -> CommandResults:
+    """
+    Command function to retrieve domain infratags with optional cluster details.
+
+    Args:
+        client (Client): SilentPush API client.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: Formatted results of the infratags lookup.
+    """
+    domains = argToList(args.get('domains', ''))
+    cluster = argToBoolean(args.get('cluster', False))
+    mode = args.get('mode', 'live')
+    match = args.get('match', 'self')
+    as_of = args.get('as_of', None)
+    origin_uid = args.get('origin_uid', None)
+    use_get = argToBoolean(args.get('use_get', False))
+
+    if not domains and not use_get:
+        raise ValueError('"domains" argument is required when using POST.')
+
+
+    raw_response = client.list_domain_infratags(domains, cluster, mode, match, as_of, origin_uid, use_get)
+    infratags = raw_response.get('response', {}).get('infratags', [])
+    tag_clusters = raw_response.get('response', {}).get('tag_clusters', [])
+
+    readable_output = tableToMarkdown('Domain Infratags', infratags)
+    
+    if cluster:
+        readable_output += format_tag_clusters(tag_clusters)
+    
+    return CommandResults(
+        outputs_prefix='SilentPush.InfraTags',
+        outputs_key_field='domain',
+        outputs=raw_response,
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -844,6 +1022,9 @@ def main() -> None:
 
         elif demisto.command() == 'silentpush-search-domains':
             return_results(search_domains_command(client, demisto.args()))
+        
+        elif demisto.command() == 'silentpush-list-domain-infratags':
+            return_results(list_domain_infratags_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

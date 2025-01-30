@@ -186,6 +186,70 @@ script:
       description: Number of listed IPs in the subnet.
       type: Number
   - deprecated: false
+    description: This command get infratags for multiple domains with optional clustering.
+    name: silentpush-list-domain-infratags
+    arguments:
+    - name: domains
+      isArray: false
+      description: Comma-separated list of domains.
+      required: true
+      secret: false
+      default: false
+    - name: cluster
+      isArray: false
+      description: Whether to cluster the results.
+      required: false
+      secret: false
+      default: false
+    - name: mode
+      isArray: false
+      description: Mode for lookup (live/padns). Defaults to "live".
+      required: false
+      secret: false
+      default: false
+      defaultValue: live
+    - name: match
+      isArray: false
+      description: Handling of self-hosted infrastructure. Defaults to "self".
+      required: false
+      secret: false
+      default: false
+      defaultValue: self
+    outputs:
+    - contextPath: SilentPush.InfraTags.infratags.domain
+      description: The domain associated with the infratag.
+      type: String
+    - contextPath: SilentPush.InfraTags.infratags.mode
+      description: The mode associated with the domain infratag.
+      type: String
+    - contextPath: SilentPush.InfraTags.infratags.tag
+      description: The tag associated with the domain infratag.
+      type: String
+    - contextPath: SilentPush.InfraTags.tag_clusters.25.domains
+      description: List of domains in the tag cluster with score 25.
+      type: Unknown
+    - contextPath: SilentPush.InfraTags.tag_clusters.25.match
+      description: The match string associated with the domains in the tag cluster with score 25.
+      type: String
+    - contextPath: SilentPush.InfraTags.tag_clusters.50.domains
+      description: List of domains in the tag cluster with score 50.
+      type: Unknown
+    - contextPath: SilentPush.InfraTags.tag_clusters.50.match
+      description: The match string associated with the domains in the tag cluster with score 50.
+      type: String
+    - contextPath: SilentPush.InfraTags.tag_clusters.75.domains
+      description: List of domains in the tag cluster with score 75.
+      type: Unknown
+    - contextPath: SilentPush.InfraTags.tag_clusters.75.match
+      description: The match string associated with the domains in the tag cluster with score 75.
+      type: String
+    - contextPath: SilentPush.InfraTags.tag_clusters.100.domains
+      description: List of domains in the tag cluster with score 100.
+      type: Unknown
+    - contextPath: SilentPush.InfraTags.tag_clusters.100.match
+      description: The match string associated with the domains in the tag cluster with score 100.
+      type: String
+  - deprecated: false
     description: This command search for domains with optional filters.
     name: silentpush-search-domains
     arguments:
