@@ -20,6 +20,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 JOB_STATUS = "explore/job"
 NAMESERVER_REPUTATION = "explore/nsreputation/nameserver"
 SUBNET_REPUTATION = "explore/ipreputation/history/subnet"
+ASNS_DOMAIN = "explore/padns/lookup/domain/asns"
 
 ''' COMMANDS INPUTS '''
 
@@ -56,15 +57,21 @@ SUBNET_REPUTATION_INPUTS = [
                         description='Maximum number of reputation history entries to retrieve.'
                     )
                 ]
+ASNS_DOMAIN_INPUTS = [
+                    InputArgument(name='domain',  # option 1
+                                description='Domain name to search ASNs for. Retrieves ASNs associated with A records for the specified domain and its subdomains in the last 30 days.',
+                                required=True)
+                    ]
+
 
 
 ''' COMMANDS OUTPUTS '''
 
 JOB_STATUS_OUTPUTS = [
-                    OutputArgument(name='get', output_type=str, description='URL to retrieve the job status.'),
-                    OutputArgument(name='job_id', output_type=str, description='Unique identifier for the job.'),
-                    OutputArgument(name='status', output_type=str, description='Current status of the job.')
-                ]
+                        OutputArgument(name='get', output_type=str, description='URL to retrieve the job status.'),
+                        OutputArgument(name='job_id', output_type=str, description='Unique identifier for the job.'),
+                        OutputArgument(name='status', output_type=str, description='Current status of the job.')
+                    ]
 
 NAMESERVER_REPUTATION_OUTPUTS = [
                         OutputArgument(name='date', output_type=int, description='Date of the reputation history entry (in YYYYMMDD format).'),
@@ -82,6 +89,11 @@ SUBNET_REPUTATION_OUTPUTS = [
                         OutputArgument(name='ips_num_active', output_type=int, description='Number of active IPs in the subnet.'),
                         OutputArgument(name='ips_num_listed', output_type=int, description='Number of listed IPs in the subnet.')
                     ]
+ASNS_DOMAIN_OUTPUTS = [
+                        OutputArgument(name='domain', output_type=str, description='The domain name for which ASNs are retrieved.'),
+                        OutputArgument(name='domain_asns', output_type=dict, description='Dictionary of Autonomous System Numbers (ASNs) associated with the domain.')
+                    ]
+
 
 
 metadata_collector = YMLMetadataCollector(
@@ -275,6 +287,21 @@ class Client(BaseClient):
         params = filter_none_values(params)
 
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    def get_asns_for_domain(self, domain: str) -> Dict[str, Any]:
+        """
+        Retrieve Autonomous System Numbers (ASNs) associated with the specified domain.
+
+        Args:
+            domain (str): The domain to retrieve ASNs for.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the ASN information for the domain.
+        """
+        url_suffix = f"{ASNS_DOMAIN}/{domain}"
+
+        # Send the request and return the response directly
+        return self._http_request(method="GET", url_suffix=url_suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -475,6 +502,57 @@ def get_subnet_reputation_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+@metadata_collector.command(
+    command_name="silentpush-get-asns-for-domain",
+    inputs_list=ASNS_DOMAIN_INPUTS,
+    outputs_prefix="SilentPush.DomainASNs",
+    outputs_list=ASNS_DOMAIN_OUTPUTS,
+    description="This command retrieves Autonomous System Numbers (ASNs) associated with a domain."
+)
+def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves Autonomous System Numbers (ASNs) for the specified domain.
+
+    Args:
+        client (Client): The client object used to interact with the service.
+        args (dict): Arguments passed to the command, including the domain.
+
+    Returns:
+        CommandResults: The results containing ASNs for the domain or an error message.
+    """
+    domain = args.get('domain')
+
+    if not domain:
+        raise DemistoException("Domain is a required parameter.")
+
+    raw_response = client.get_asns_for_domain(domain)
+    records = raw_response.get('response', {}).get('records', [])
+
+    if not records or 'domain_asns' not in records[0]:
+        readable_output = f"No ASNs found for domain: {domain}"
+        asns = []
+    else:
+        domain_asns = records[0]['domain_asns']
+        asns = [{'ASN': asn, 'Description': description}
+                for asn, description in domain_asns.items()]
+
+        readable_output = tableToMarkdown(
+            f"ASNs for Domain: {domain}",
+            asns,
+            headers=['ASN', 'Description']
+        )
+
+    return CommandResults(
+        outputs_prefix='SilentPush.DomainASNs',
+        outputs_key_field='domain',
+        outputs={
+            'domain': domain,
+            'asns': asns
+        },
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -512,6 +590,9 @@ def main() -> None:
 
         elif demisto.command() == 'silentpush-get-subnet-reputation':
             return_results(get_subnet_reputation_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-get-asns-for-domain':
+            return_results(get_asns_for_domain_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
