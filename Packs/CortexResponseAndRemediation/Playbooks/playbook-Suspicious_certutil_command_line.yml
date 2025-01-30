@@ -10,7 +10,8 @@ description: |-
 
   During the alert analysis, the playbook will perform the following actions:
 
-  - Enrich and checks if the URL reputation is suspicious.
+  - Extracts and enriches the URL from the command line.
+  - Checks if the URL reputation is suspicious.
   - Checks if any process in the causality chain is unsigned.
   - Checks if any process in the causality chain is non-prevalent.
   - Searches for Cortex XSIAM agent alerts related to file drops using certutil.
