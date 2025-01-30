@@ -1,4 +1,4 @@
-[file:GroupIB_TIA.yml]
+[file:GroupIBTIA.yml]
 ignore=BA108,BA109,BC104,BC102,ST111,RM110
 
 [file:GroupIB_TIA_Feed.yml]
@@ -126,6 +126,9 @@ ignore=IF115
 
 [file:incidentfield-GIB_Emails.json]
 ignore=IF115
+
+[file:incidentfield-GIB_Email.json]
+ignore=GR103
 
 [file:incidentfield-GIB_Phishing_Domain_Expiration_Date.json]
 ignore=IF115
@@ -274,6 +277,49 @@ ignore=IF115
 [file:incidentfield-GIB_Date_Updated_At.json]
 ignore=GR103
 
+[file:incidentfield-GIB_Date_Expired.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Phishing_Status.json]
+ignore=GR103
+
+
+[file:incidentfield-GIB_Screenshot.json]
+ignore=GR103
+
+[file:incidentfield-GIB_ID.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Person.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Name_Servers.json]
+ignore=GR103
+
+[file:incidentfield-GIB_HTML.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Title.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Date_Created.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Favicon.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Address.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Phishing_Type.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Phishing_Domain.json]
+ignore=GR103
+
+[file:incidentfield-GIB_Related_Indicators_Data.json]
+ignore=GR103
+
 [file:incidentfield-GIB_Scanner_Sources.json]
 ignore=BA116
 
@@ -351,4 +397,7 @@ ignore=LO107
 ignore=LO107
 
 [file:layoutscontainer-GIB_Attacks_DDOS_Layout.json]
+ignore=LO107
+
+[file:layoutscontainer-GIB_Compromised_Account_Group_Layout.json]
 ignore=LO107
