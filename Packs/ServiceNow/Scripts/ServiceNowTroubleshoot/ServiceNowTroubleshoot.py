@@ -40,8 +40,8 @@ def get_integrations_details() -> dict[str, Any]:
     :return: A Dictionary containing the details of the integrations and their health status.
     :rtype: Dict[str, Any]
     """
-    integrations_search_response = wrap_internal_http_request(method='POST', url='settings/integration/search')
-    instances, health = integrations_search_response['instances'], integrations_search_response['health']
+    integrations_search_response = http_request_wrapper(method='POST', url='settings/integration/search')
+    instances, health = integrations_search_response.get('instances', {}), integrations_search_response.get('health', {})
     instances_health = {}
     for instance in instances:
         instance_name = instance.get('name')
@@ -68,7 +68,8 @@ def filter_instances_data(instances_data: dict[str, Any]) -> tuple[dict, list]:
         if data['enabled'] == 'true':
             filtered_data[instance_name] = data
             continue
-        if int(data['health']['incidentsPulled']) > 0 and data['configvalues']['mirror_direction'] != 'None':
+        if (int(data.get('health', {}).get('incidentsPulled', 0)) > 0
+                and data.get('configvalues', {}).get('mirror_direction', '') != 'None'):
             disabled_instances.append(instance_name)
         else:
             filtered_data[instance_name] = data
@@ -92,18 +93,18 @@ def categorize_active_incidents(disabled_instances: list[str]) -> tuple[dict, di
             'query': f'sourceBrand: "{INTEGRATION}" and status: Active and created: >="30 days ago"'
         }
     }
-    incidents_response = wrap_internal_http_request(method='POST', url='incidents/search', body=query)
-    disabled_incidents_instances, enabled_incidents_instances = defaultdict(list), defaultdict(list)
-    data = incidents_response.get('data', {})
-    for incident in data:
+    incidents_response = http_request_wrapper(method='POST', url='incidents/search', body=query)
+    categorized_incidents: dict[str, Any] = {"enabled": defaultdict(list), "disabled": defaultdict(list)}
+
+    for incident in incidents_response.get('data', {}):
         source_instance = incident.get("sourceInstance")
         incident_name = incident.get("name")
+
         if source_instance and incident_name:
-            if source_instance in disabled_instances:
-                disabled_incidents_instances[source_instance].append(incident_name)
-            else:
-                enabled_incidents_instances[source_instance].append(incident_name)
-    return enabled_incidents_instances, disabled_incidents_instances
+            category = "disabled" if source_instance in disabled_instances else "enabled"
+            categorized_incidents[category][source_instance].append(incident_name)
+
+    return categorized_incidents["enabled"], categorized_incidents["disabled"]
 
 
 def parse_disabled_instances(disabled_incidents_instances: dict[str, Any]) -> str:
@@ -122,7 +123,7 @@ def parse_disabled_instances(disabled_incidents_instances: dict[str, Any]) -> st
         {'Instance': instance,
          "Total": len(incidents),
          "Active incidents more than created 30 days ago": "\n".join(incidents
-                                                                 )}
+                                                                     )}
         for instance, incidents in disabled_incidents_instances.items()
     ]
     return tableToMarkdown(
@@ -148,11 +149,11 @@ def parse_enabled_instances(enabled_instances_health: dict[str, Any], enabled_in
     for instance_name, instance_data in enabled_instances_health.items():
         filtered_data = {
             'Instance Name': instance_name,
-            'Size In Bytes': instance_data['sizeInBytes'],
-            'Number of Incidents Pulled in Last Fetch': instance_data['health']['incidentsPulled'],
-            'Last Pull Time': instance_data['health']['lastPullTime'],
-            'Query': instance_data['configvalues']['sysparm_query'],
-            'Last Error': instance_data['health']['lastError'],
+            'Size In Bytes': instance_data.get('sizeInBytes', ''),
+            'Number of Incidents Pulled in Last Fetch': instance_data.get('health', {}).get('incidentsPulled', ''),
+            'Last Pull Time': instance_data.get('health').get('lastPullTime', ''),
+            'Query': instance_data.get('configvalues').get('sysparm_query', ''),
+            'Last Error': instance_data.get('health').get('lastError', ''),
         }
         if instance_name in enabled_incidents_instances:
             filtered_data["Names of Active Incidents Created 30 days ago"] = enabled_incidents_instances[instance_name]

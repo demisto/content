@@ -80,9 +80,9 @@ def test_parse_disabled_instances():
 
     disabled_incidents_instances = {'ServiceNow v2_instance_1': ['ServiceNow Incident INC0022222']}
     res = parse_disabled_instances(disabled_incidents_instances)
-    expected_result = ('### Disabled instances with Active Incidents Created 30 days ago\n'
-                       '|Instance|Names Active Incidents Created 30 days ago|Total|\n'
-                       '|---|---|---|\n| ServiceNow v2_instance_1 | ServiceNow Incident INC0022222 | 1 |\n')
+    expected_result = ('### Disabled instances with active incidents created more than 30 days ago\n'
+                       '|Active incidents more than created 30 days ago|Instance|Total|\n|---|---|---|\n|'
+                       ' ServiceNow Incident INC0022222 | ServiceNow v2_instance_1 | 1 |\n')
     assert res == expected_result
 
 
