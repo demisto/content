@@ -593,7 +593,7 @@ def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, arg
     data_from_response = response.get('value', [])
     for data in data_from_response:
         data = extract_inner_dict(data, ['properties'])
-        data['properties.dnsSettings.fqdn'] = data.get('dnsSettings.fqdn')
+        data = extract_inner_dict(data, ['properties.dnsSettings'])
     
     readable_output = tableToMarkdown('Public IP Addresses List',
                                       data_from_response,
@@ -635,20 +635,22 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
     data_from_response = response.get('value', [])
     for data in data_from_response:
         data = extract_inner_dict(data, ['properties'])
+        data = extract_inner_dict(data, ['properties.addressSpace'])
         data = extract_list(data, 'properties.subnets', 'name')
-        data = extract_list(data, 'properties.subnets', 'addressPrefix')
-    subnets = data_from_response[0].get('subnets')
-    if subnets:
-        ip_conf = subnets[0].get('properties.ipConfigurations')
-        if ip_conf:
-            data_from_response['properties.subnets.properties.ipConfigurations'] = ip_conf
-    
+        data = extract_inner_dict(data, ['properties.addressSpace.properties'])
+        data = extract_list(data, 'properties.subnets', 'properties')
+        data = extract_list(data, 'properties.subnets.properties', 'addressPrefix')
+        
+    properties = data_from_response[0].get('properties.subnets.properties')[0]
+    if properties:
+        data_from_response[0]['properties.subnets.properties.ipConfigurations'] = properties.get('ipConfigurations')
+        
     readable_output = tableToMarkdown('Virtual Networks List',
                                       data_from_response,
                                       [
                                        'name', 'etag', 'location', 'properties.addressSpace.addressPrefixes',
-                                       'properties.subnets.name', 'properties.subnets.addressPrefix',
-                                       'properties.subnets.ipConfigurations',
+                                       'properties.subnets.name', 'properties.subnets.properties.addressPrefix',
+                                       'properties.subnets.properties.ipConfigurations',
                                        ],
                                       removeNull=True, headerTransform=string_to_table_header)
     if not all_results:
@@ -723,16 +725,13 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
         data = extract_list(data, 'properties.ipConfigurations', 'name')
         data = extract_list(data, 'properties.ipConfigurations', 'id')
         data = extract_list(data, 'properties.ipConfigurations', 'properties')
+        data = extract_list(data, 'properties.ipConfigurations.properties', 'privateIPAddress')
+        data = extract_list(data, 'properties.ipConfigurations.properties', 'publicIPAddress')
+        data = extract_list(data, 'properties.ipConfigurations.properties.publicIPAddress', 'id')
         vm = data.get('properties.virtualMachine')
         if vm:
             data['properties.virtualMachine.id'] = vm.get('id')
-        properties = data.get('properties.ipConfigurations.properties')
-        for prop in properties:
-            data['properties.ipConfigurations.properties.privateIPAddress'] = prop.get('privateIPAddress')
-            public_ip = prop.get('publicIPAddress')
-            if public_ip:
-                data['properties.ipConfigurations.properties.publicIPAddress.id'] = public_ip.get('id')
-        
+
     readable_output = tableToMarkdown('Network Interfaces List',
                                       data_from_response,
                                       [

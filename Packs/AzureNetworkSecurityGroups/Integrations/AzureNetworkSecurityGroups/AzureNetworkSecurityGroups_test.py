@@ -57,6 +57,83 @@ def test_list_groups_command(mocker):
     assert results.outputs[0].get('name') == 'alerts-nsg'
 
 
+def test_azure_nsg_public_ip_addresses_list(mocker):
+    """
+    Validate that azure_nsg_public_ip_addresses_list returns the output in the correct format
+    """
+    from AzureNetworkSecurityGroups import azure_nsg_public_ip_addresses_list
+    client = mock_client(mocker, util_load_json("test_data/list_public_ip_addresses.json"))
+    results = azure_nsg_public_ip_addresses_list(client, args={}, params={'subscription_id': 'subscriptionID',
+                                                           'resource_group_name': 'resourceGroupName'})
+    assert '### Public IP Addresses List' in results.readable_output
+    res = results.outputs[0]
+    assert res.get('name') == 'testDNS-ip'
+    assert res.get('id') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/testDNS-ip'
+    assert res.get('etag') == 'etag'
+    assert res.get('properties.provisioningState') == 'Succeeded'
+    assert res.get('properties.publicIPAddressVersion') == 'IPv4'
+    assert res.get('properties.ipAddress') == '40.85.154.247'
+    assert res.get('properties.dnsSettings.domainNameLabel') == 'testlbl'
+    assert res.get('properties.dnsSettings.fqdn') == 'testlbl.westus.cloudapp.azure.com'
+    
+
+def test_azure_nsg_virtual_networks_list(mocker):
+    """
+    Validate that test_azure_nsg_virtual_networks_list returns the output in the correct format
+    """
+    from AzureNetworkSecurityGroups import azure_nsg_virtual_networks_list
+    client = mock_client(mocker, util_load_json("test_data/list_virtual_networks.json"))
+    results = azure_nsg_virtual_networks_list(client, args={}, params={'subscription_id': 'subscriptionID',
+                                                           'resource_group_name': 'resourceGroupName'})
+    assert '### Virtual Networks List' in results.readable_output
+    res = results.outputs[0]
+    assert res.get('name') == 'vnet1'
+    assert res.get('etag') == 'etag'
+    assert res.get('location') == 'westus'
+    assert res.get('properties.addressSpace.addressPrefixes') == ["10.0.0.0/8"]
+    assert res.get('properties.subnets.name') == ['test-1']
+    assert res.get('properties.subnets.properties.addressPrefix') == ['10.0.0.0/24']
+    assert res.get('properties.subnets.properties.ipConfigurations') == {
+                    "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/testDNS649/\
+ipConfigurations/ipconfig1"}
+                            
+def test_azure_nsg_networks_interfaces_list(mocker):
+    """
+    Validate that test_azure_nsg_virtual_networks_list returns the output in the correct format
+    """
+    from AzureNetworkSecurityGroups import azure_nsg_networks_interfaces_list
+    client = mock_client(mocker, util_load_json("test_data/list_networks_interfaces.json"))
+    results = azure_nsg_networks_interfaces_list(client, args={}, params={'subscription_id': 'subscriptionID',
+                                                           'resource_group_name': 'resourceGroupName'})
+    assert '### Network Interfaces List' in results.readable_output
+    res = results.outputs[0]
+    assert res.get('name') == 'test-nic'
+    assert res.get('id') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic'
+    assert res.get('properties.provisioningState') == 'Succeeded'
+    assert res.get('properties.ipConfigurations.name') == ["ipconfig1"]
+    assert res.get('properties.ipConfigurations.id') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic/ipConfigurations/ipconfig1']
+    assert res.get('properties.ipConfigurations.properties.privateIPAddress') == ['172.20.2.4']
+    assert res.get('properties.ipConfigurations.properties.publicIPAddress.id') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip']
+    assert res.get('properties.dnsSettings.dnsServers') == []
+    assert res.get('properties.dnsSettings.appliedDnsServers') == []
+    assert res.get('properties.dnsSettings.internalDomainNameSuffix') == 'test.bx.internal.cloudapp.net'
+    assert res.get('properties.macAddress') == '00-0D-3A-1B-C7-21'
+    assert res.get('properties.virtualMachine.id') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Compute/virtualMachines/vm1'
+    assert res.get('location') == 'eastus'
+    assert res.get('kind') == 'kind'
+    
+# def test_create_azure_nsg_security_group(mocker):
+#     """
+#     Given: a security group to be created
+#     """
+#     from AzureNetworkSecurityGroups import azure_nsg_security_group_create
+#     client = mock_client(mocker, util_load_json("test_data/list_public_ip_addresses.json"))
+#     azure_nsg_security_group_create(client, args={'security_group_name': 'securityGroup'},
+#                                     params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
+#     properties = client.http_request.call_args_list[1][1].get('data').get('properties')
+    
+#     assert properties == ''
+
 def test_create_rule_command(mocker):
     """
     Given: a rule to be created
