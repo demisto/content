@@ -515,5 +515,3 @@ def test_get_indicators_command_with_tlp_color_red(mocker):
 
     command_res = get_indicators_command(client_mock, params, args)
     assert command_res.outputs[0].get('enrichmentExcluded') is True
-
-

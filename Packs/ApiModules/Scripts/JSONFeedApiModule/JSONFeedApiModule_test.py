@@ -615,7 +615,7 @@ def test_feed_main_enrichment_excluded(mocker):
     with patch('JSONFeedApiModule.Client') as client_mock:
         client_instance = mocker.Mock()
         client_mock.return_value = client_instance
-        fetch_indicators_command_mock = mocker.patch('JSONFeedApiModule.fetch_indicators_command', return_value=([],[]))
+        fetch_indicators_command_mock = mocker.patch('JSONFeedApiModule.fetch_indicators_command', return_value=([], []))
         mocker.patch('JSONFeedApiModule.is_xsiam_or_xsoar_saas', return_value=True)
         mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
 

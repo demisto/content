@@ -168,7 +168,7 @@ def test_get_feed_config():
         custom_fields_mapping=custom_fields_mapping
     )
     # Check that if an empty .get_feed_config is called, an empty dict returned
-    assert {} == client.get_feed_config()
+    assert client.get_feed_config() == {}
 
 
 def test_feed_main_fetch_indicators(mocker, requests_mock):
@@ -236,18 +236,18 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
 
     # verify one of the expected indicators
     assert {
-               'rawJSON': {
-                   'asndrop_country': 'US',
-                   'asndrop_org': 'LAKSH CYBERSECURITY AND DEFENSE LLC',
-                   'tags': tags.split(','),
-                   'trafficlightprotocol': 'AMBER',
-                   'type': indicator_type,
-                   'value': 'AS397539'
-               },
-               'type': indicator_type,
-               'value': 'AS397539',
-               'fields': {'tags': ['tag1', 'tag2'], 'trafficlightprotocol': 'AMBER'}
-           } in indicators
+        'rawJSON': {
+            'asndrop_country': 'US',
+            'asndrop_org': 'LAKSH CYBERSECURITY AND DEFENSE LLC',
+            'tags': tags.split(','),
+            'trafficlightprotocol': 'AMBER',
+            'type': indicator_type,
+            'value': 'AS397539'
+        },
+        'type': indicator_type,
+        'value': 'AS397539',
+        'fields': {'tags': ['tag1', 'tag2'], 'trafficlightprotocol': 'AMBER'}
+    } in indicators
 
 
 def test_feed_main_test_module(mocker, requests_mock):

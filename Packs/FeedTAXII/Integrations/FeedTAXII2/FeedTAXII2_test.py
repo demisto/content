@@ -1,5 +1,4 @@
 import json
-from unittest.mock import patch
 
 import pytest
 from FeedTAXII2 import *

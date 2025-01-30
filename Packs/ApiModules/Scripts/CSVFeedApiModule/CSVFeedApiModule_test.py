@@ -1,4 +1,3 @@
-from unittest.mock import patch
 
 import requests_mock
 from CSVFeedApiModule import *
@@ -240,7 +239,7 @@ class TestTagsParam:
                 feedTags=[]
             )
             _, _, indicators = get_indicators_command(client, args)
-            assert [] == indicators[0]['fields']['tags']
+            assert indicators[0]['fields']['tags'] == []
 
 
 def util_load_json(path):
