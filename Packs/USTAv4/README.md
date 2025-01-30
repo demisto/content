@@ -19,4 +19,5 @@ Additionally, the pack offers integration with the USTA Threat Intelligence modu
 - IPV4
 
 ## How to Use It?
+
 To get started, simply install the pack and configure the USTA integration instances within XSOAR. During configuration, you will need an active API key, which can be generated from the USTA platform.

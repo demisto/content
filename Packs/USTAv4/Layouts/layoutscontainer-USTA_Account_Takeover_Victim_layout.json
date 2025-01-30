@@ -555,6 +555,8 @@
     "name": "USTA Account Takeover Victim Layout",
     "system": false,
     "version": -1,
-    "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
 }
