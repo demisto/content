@@ -1,16 +1,4 @@
-
-#### Triggers Recommendations
-
-##### New: Azure AD account unlock or password reset
-
-- New: This trigger is responsible for handling the 'Azure AD account unlock/successful password reset' alert
-
-
-#### Playbooks
-
-##### New: Azure AD account unlock or password reset
-
-- New: **This playbook addresses the following alert**:
+**This playbook addresses the following alert**:
 - Azure AD account unlock/successful password reset
 
 **Playbook Stages**:
@@ -44,3 +32,52 @@ For the best results, it's recommended to ensure these integrations are configur
 - `Microsoft 365 Defender` for advanced hunting queries and Azure security alerts.
 - `Microsoft Graph User` for disabling accounts and revoking sessions.
 
+## Dependencies
+
+This playbook uses the following sub-playbooks, integrations, and scripts.
+
+### Sub-playbooks
+
+This playbook does not use any sub-playbooks.
+
+### Integrations
+
+* Cortex Core - Investigation and Response
+* Azure Risky Users
+* Microsoft 365 Defender
+* Microsoft Graph User
+
+### Scripts
+
+* GetTime
+* MatchRegexV2
+* SearchAlertsV2
+* SetAndHandleEmpty
+
+### Commands
+
+* azure-risky-users-list
+* azure-risky-users-risk-detections-list
+* closeInvestigation
+* core-get-cloud-original-alerts
+* core-list-risky-users
+* ip
+* microsoft-365-defender-advanced-hunting
+* msgraph-user-account-disable
+* msgraph-user-session-revoke
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Azure AD account unlock or password reset](../doc_files/Azure_AD_account_unlock_or_password_reset.png)
