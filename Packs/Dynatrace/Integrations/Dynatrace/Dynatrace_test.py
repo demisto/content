@@ -219,40 +219,44 @@ def test_get_events_command__Audit_logs(mocker):
     
 events_query_expected_calls_apm = [
     (CLIENT, {"apm_limit": 100, "apm_from": 1000}, "APM"),
-    (CLIENT, {"apm_limit": 100, "apm_from": 1001}, "APM"),
-    (CLIENT, {"apm_limit": 97, "apm_from": 1002}, "APM"),
-    (CLIENT, {"apm_limit": 94, "apm_next_page_key": "AAAA"}, "APM"),
-    (CLIENT, {"apm_limit": 91, "apm_next_page_key": "BBBB"}, "APM"),
-    (CLIENT, {"apm_limit": 88, "apm_from": 2001}, "APM"),
-    (CLIENT, {"apm_limit": 85, "apm_from": 2002}, "APM"),
+    (CLIENT, {"apm_limit": 97, "apm_from": 1000}, "APM"),
+    (CLIENT, {"apm_limit": 96, "apm_next_page_key": "AAAA"}, "APM"),
+    (CLIENT, {"apm_limit": 93, "apm_from": 1002}, "APM"),
+    (CLIENT, {"apm_limit": 92, "apm_from": 1002}, "APM"),
 ]
 events_query_responses_apm = [
-    {"events": [], "totalCount": 0},  # No events returned
-    {"events": [{"startTime": 1001}, {"startTime": 1000}, {"startTime": 1000}], "totalCount": 3}, # No next page key
-    {"events": [{"startTime": 1002}, {"startTime": 1002}, {"startTime": 1002}], "totalCount": 3, "nextPageKey": "AAAA"}, # NextPageKey exists
-    {"events": [{"startTime": 1004}, {"startTime": 1003}, {"startTime": 1002}], "totalCount": 3, "nextPageKey": "BBBB"}, # NextPageKey exists
-    {"events": [{"startTime": 2000}, {"startTime": 2000}, {"startTime": 2000}], "totalCount": 3},  # No nextPageKey
-    {"events": [{"startTime": 2001}, {"startTime": 2001}, {"startTime": 2001}], "totalCount": 3},  # No nextPageKey
-    {"events": [{"startTime": 2002}, {"startTime": 2002}, {"startTime": 2002}], "totalCount": 3},  # No nextPageKey
+    # No next page key
+    {"events": [{"startTime": 1000, "eventId": "id3"}, {"startTime": 1000, "eventId": "id2"},
+                {"startTime": 999, "eventId": "id1"}], "totalCount": 3},
+    # 2 events deduped, nextPageKey exists
+    {"events": [{"startTime": 1001, "eventId": "id4"}, {"startTime": 1000, "eventId": "id3"},
+                {"startTime": 1000, "eventId": "id2"}], "totalCount": 3, "nextPageKey": "AAAA"},
+    # No events deduped, no nextPageKey
+    {"events": [{"startTime": 1002, "eventId": "id6"}, {"startTime": 1002, "eventId": "id5"},
+                {"startTime": 1001, "eventId": "id0"}], "totalCount": 3},
+    # 2 events deduped, no nextPageKey
+    {"events": [{"startTime": 1002, "eventId": "id7"}, {"startTime": 1002, "eventId": "id6"},
+                {"startTime": 1002, "eventId": "id5"}], "totalCount": 3},
+    # All events deduped, no nextPageKey, while loop breaks
+    {"events": [{"startTime": 1002, "eventId": "id7"}, {"startTime": 1002, "eventId": "id6"},
+                {"startTime": 1002, "eventId": "id5"}], "totalCount": 3},
 ]
 add_fields_to_events_expected_calls_apm = [
-    ([], "APM"),
-    ([{"startTime": 1001}, {"startTime": 1000}, {"startTime": 1000}], "APM"),
-    ([{"startTime": 1002}, {"startTime": 1002}, {"startTime": 1002}], "APM"),
-    ([{"startTime": 1004}, {"startTime": 1003}, {"startTime": 1002}], "APM"),
-    ([{"startTime": 2000}, {"startTime": 2000}, {"startTime": 2000}], "APM"),
-    ([{"startTime": 2001}, {"startTime": 2001}, {"startTime": 2001}], "APM"),
-    ([{"startTime": 2002}, {"startTime": 2002}, {"startTime": 2002}], "APM")
-]
+    ([{"startTime": 1000, "eventId": "id3"}, {"startTime": 1000, "eventId": "id2"},
+                {"startTime": 999, "eventId": "id1"}], "APM"),
+    ([{"startTime": 1001, "eventId": "id4"}], "APM"),
+    ([{"startTime": 1002, "eventId": "id6"}, {"startTime": 1002, "eventId": "id5"},
+                {"startTime": 1001, "eventId": "id0"}], "APM"),
+    ([{"startTime": 1002, "eventId": "id7"}], "APM")
+    ]
 add_fields_to_events_responses_apm = [
-    [],
-    [{"startTime": 1001}, {"startTime": 1000}, {"startTime": 1000}],
-    [{"startTime": 1002}, {"startTime": 1002}, {"startTime": 1002}],
-    [{"startTime": 1004}, {"startTime": 1003}, {"startTime": 1002}],
-    [{"startTime": 2000}, {"startTime": 2000}, {"startTime": 2000}],
-    [{"startTime": 2001}, {"startTime": 2001}, {"startTime": 2001}],
-    [{"startTime": 2002}, {"startTime": 2002}, {"startTime": 2002}]
-]
+    [{"startTime": 1000, "eventId": "id3"}, {"startTime": 1000, "eventId": "id2"},
+                {"startTime": 999, "eventId": "id1"}],
+    [{"startTime": 1001, "eventId": "id4"}],
+    [{"startTime": 1002, "eventId": "id6"}, {"startTime": 1002, "eventId": "id5"},
+                {"startTime": 1001, "eventId": "id0"}],
+    [{"startTime": 1002, "eventId": "id7"}],
+    ]
 def test_fetch_apm_events(mocker):
     """
     Given: A client, a higher limit then events to be returned and a fetch_start_time
@@ -260,16 +264,15 @@ def test_fetch_apm_events(mocker):
     Then:
         - The function receives exactly all the relevant events.
         - The events_query function is called 5 times every time with the right arguments
-        - the add_fields_to_events function is called 5 times every time with the right arguments
+        - the add_fields_to_events function is called 4 times every time with the right arguments
         - The set_integration_context function is called with the right cnx to set.
         
     This test checks these use cases: (next test will check other use cases)
-        - First time fetching (the first loop iteration will have no last_apm_run)
+        - First response from api has no nexPgaKey
         - Limit of events isn't reached
-        - First time calling api to get events returns no events
-        - A case where response has a next page key in one of the middle loop times
-        - A case when there is no nextPage key in one of the middle loops
-        - the last iteration of the loop receives a response with no nextPageKey
+        - Last iteration dedupes all events
+        - Some events are deduped
+        - No events are deduped(cause got a nextPagekey in the last run)
     """
     from Dynatrace import fetch_apm_events
     mocker.patch("Dynatrace.demisto.getIntegrationContext", return_value={})
@@ -277,41 +280,52 @@ def test_fetch_apm_events(mocker):
     add_fields_to_events_mock = mocker.patch("Dynatrace.add_fields_to_events", side_effect=add_fields_to_events_responses_apm)
     set_integration_context_mock = mocker.patch("Dynatrace.set_integration_context")
     fetch_apm_events(CLIENT, 100, 1000)
-    assert events_query_mock.call_count == 7
-    assert [events_query_mock.call_args_list[i][0] for i in range(7)] == events_query_expected_calls_apm
-    assert add_fields_to_events_mock.call_count == 7
-    assert [add_fields_to_events_mock.call_args_list[i][0] for i in range(7)] == add_fields_to_events_expected_calls_apm
-    set_integration_context_mock.assert_called_with({'last_apm_run': {'last_timestamp': 2002, 'nextPageKey': None}})
+    assert events_query_mock.call_count == 5
+    assert [events_query_mock.call_args_list[i][0] for i in range(5)] == events_query_expected_calls_apm
+    assert add_fields_to_events_mock.call_count == 4
+    assert [add_fields_to_events_mock.call_args_list[i][0] for i in range(4)] == add_fields_to_events_expected_calls_apm
+    set_integration_context_mock.assert_called_with({'last_apm_run': {'last_timestamp': 1002, 'nextPageKey': None, "last_events_ids": ["id7", "id6", "id5"]}})
     
-    
+
 events_query_expected_calls_audit = [ #"audit_next_page_key"
    (CLIENT, {"audit_limit": 100, "audit_from": 1000}, "Audit logs"),
-   (CLIENT, {"audit_limit": 97, "audit_from": 1001}, "Audit logs"),
-   (CLIENT, {"audit_limit": 97, "audit_from": 1001}, "Audit logs"),
-   (CLIENT, {"audit_limit": 94, "audit_next_page_key": "AAAA"}, "Audit logs"),
-   (CLIENT, {"audit_limit": 91, "audit_from": 2001}, "Audit logs")
+   (CLIENT, {"audit_limit": 97, "audit_from": 1000}, "Audit logs"),
+   (CLIENT, {"audit_limit": 96, "audit_next_page_key": "AAAA"}, "Audit logs"),
+   (CLIENT, {"audit_limit": 93, "audit_from": 1002}, "Audit logs"),
+   (CLIENT, {"audit_limit": 92, "audit_from": 1002}, "Audit logs")
 ]
 events_query_responses_audit = [
-    {"auditLogs": [{"timestamp": 1000}, {"timestamp": 1000}, {"timestamp": 1000}], "totalCount": 3},  # Events are returned, no nextPageKey
-    {"auditLogs": [], "totalCount": 0}, # No events are returned
-    {"auditLogs": [{"timestamp": 2000}, {"timestamp": 2000}, {"timestamp": 2000}], "totalCount": 3, "nextPageKey": "AAAA"}, # NextPageKey exists
-    {"auditLogs": [{"timestamp": 2000}, {"timestamp": 2000}, {"timestamp": 2000}], "totalCount": 3,}, # no NextPageKey
-    {"auditLogs": [{"timestamp": 3000}, {"timestamp": 3000}, {"timestamp": 3000}], "totalCount": 3, "nextPageKey": "BBBB"}  # NextPageKey exists
+    # No next page key
+    {"auditLogs": [{"timestamp": 1000, "logId": "id3"}, {"timestamp": 1000, "logId": "id2"},
+                {"timestamp": 999, "logId": "id1"}], "totalCount": 3},
+    # 2 events deduped, nextPageKey exists
+    {"auditLogs": [{"timestamp": 1001, "logId": "id4"}, {"timestamp": 1000, "logId": "id3"},
+                {"timestamp": 1000, "logId": "id2"}], "totalCount": 3, "nextPageKey": "AAAA"},
+    # No events deduped, no nextPageKey
+    {"auditLogs": [{"timestamp": 1002, "logId": "id6"}, {"timestamp": 1002, "logId": "id5"},
+                {"timestamp": 1001, "logId": "id0"}], "totalCount": 3},
+    # 2 events deduped, no nextPageKey
+    {"auditLogs": [{"timestamp": 1002, "logId": "id7"}, {"timestamp": 1002, "logId": "id6"},
+                {"timestamp": 1002, "logId": "id5"}], "totalCount": 3},
+    # All events deduped, no nextPageKey, while loop breaks
+    {"auditLogs": [{"timestamp": 1002, "logId": "id7"}, {"timestamp": 1002, "logId": "id6"},
+                {"timestamp": 1002, "logId": "id5"}], "totalCount": 3},
 ]
 add_fields_to_events_responses_audit = [
-    [{"timestamp": 1000}, {"timestamp": 1000}, {"timestamp": 1000}],
-    [],
-    [{"timestamp": 2000}, {"timestamp": 2000}, {"timestamp": 2000}],
-    [{"timestamp": 2000}, {"timestamp": 2000}, {"timestamp": 2000}],
-    [{"timestamp": 3000}, {"timestamp": 3000}, {"timestamp": 3000}]
-]
+    ([{"timestamp": 1000, "logId": "id3"}, {"timestamp": 1000, "logId": "id2"},
+                {"timestamp": 999, "logId": "id1"}], "APM"),
+    ([{"timestamp": 1001, "logId": "id4"}], "APM"),
+    ([{"timestamp": 1002, "logId": "id6"}, {"timestamp": 1002, "logId": "id5"},
+                {"timestamp": 1001, "logId": "id0"}], "APM"),
+    ([{"timestamp": 1002, "logId": "id7"}], "APM")
+    ]
 add_fields_to_events_expected_calls_audit = [
-    ([{"timestamp": 1000}, {"timestamp": 1000}, {"timestamp": 1000}], "Audit logs"),
-    ([], "Audit logs"),
-    ([{"timestamp": 2000}, {"timestamp": 2000}, {"timestamp": 2000}], "Audit logs"),
-    ([{"timestamp": 2000}, {"timestamp": 2000}, {"timestamp": 2000}], "Audit logs"),
-    ([{"timestamp": 3000}, {"timestamp": 3000}, {"timestamp": 3000}], "Audit logs")
-]
+    ([{"timestamp": 1000, "logId": "id3"}, {"timestamp": 1000, "logId": "id2"},
+                {"timestamp": 999, "logId": "id1"}], "Audit logs"),
+    ([{"timestamp": 1001, "logId": "id4"}], "Audit logs"),
+    ([{"timestamp": 1002, "logId": "id6"}, {"timestamp": 1002, "logId": "id5"},
+                {"timestamp": 1001, "logId": "id0"}], "Audit logs"),
+    ([{"timestamp": 1002, "logId": "id7"}], "Audit logs")]
 def test_fetch_audit_log_events(mocker):
     """
     Given: A client, a higher limit then events to be returned and a fetch_start_time
@@ -322,10 +336,7 @@ def test_fetch_audit_log_events(mocker):
         - the add_fields_to_events function is called 5 times every time with the right arguments
         - The set_integration_context function is called with the right cnx to set.
         
-        This test checks these use cases: (apm test test will check other use cases)
-        - No events returned in one of the middle loop iterations.
-        - No nextPageKey in the first time
-        - Last iteration has a nextPageKey
+        This test checks the same use cases as the test_fetch_apm_events test but for audit logs events
     """
     from Dynatrace import fetch_audit_log_events
     mocker.patch("Dynatrace.demisto.getIntegrationContext", return_value={})
@@ -335,21 +346,21 @@ def test_fetch_audit_log_events(mocker):
     fetch_audit_log_events(CLIENT, 100, 1000)
     assert events_query_mock.call_count == 5
     assert [events_query_mock.call_args_list[i][0] for i in range(5)] == events_query_expected_calls_audit
-    assert add_fields_to_events_mock.call_count == 5
-    assert [add_fields_to_events_mock.call_args_list[i][0] for i in range(5)] == add_fields_to_events_expected_calls_audit
-    set_integration_context_mock.assert_called_with({'last_audit_run': {'last_timestamp': None, 'nextPageKey': "BBBB"}})
+    assert add_fields_to_events_mock.call_count == 4
+    assert [add_fields_to_events_mock.call_args_list[i][0] for i in range(4)] == add_fields_to_events_expected_calls_audit
+    set_integration_context_mock.assert_called_with({'last_audit_run': {'last_timestamp': 1002, 'nextPageKey': None, "last_events_ids": ["id7", "id6", "id5"]}})
 
 add_fields_return_value = [
-            {"timestamp": 1000},
-            {"timestamp": 1000},
-            {"timestamp": 1000}
+            {"timestamp": 1000, "logId": "id3"},
+            {"timestamp": 1000, "logId": "id2"},
+            {"timestamp": 1000, "logId": "id1"}
             ]
 events_query_mock_return_value = {
     "auditLogs":
         [
-            {"timestamp": 1000},
-            {"timestamp": 1000},
-            {"timestamp": 1000}
+            {"timestamp": 1000, "logId": "id3"},
+            {"timestamp": 1000, "logId": "id2"},
+            {"timestamp": 1000, "logId": "id1"}
             ],
         "totalCount": 3
         }
