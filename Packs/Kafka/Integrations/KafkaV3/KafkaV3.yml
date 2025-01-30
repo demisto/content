@@ -130,6 +130,17 @@ script:
       required: true
     - description: Message partition (number).
       name: partitioning_key
+    - auto: PREDEFINED
+      defaultValue: None
+      description: Value schema type. If set to None, no schema is used, and schema-related arguments are ignored. Default is None.
+      name: value_schema_type
+      predefined:
+      - None
+      - AVRO
+    - description: Value schema in string format. Used only if `schema_type` is not None and `schema_subject_name` is not provided. Mutually exclusive with `schema_subject_name`.
+      name: value_schema_str
+    - description:  Value schema subject name to retrieve the latest schema version from the registry. Used only if `schema_type` is not None and `schema_str` is not provided. Mutually exclusive with `schema_str`.
+      name: value_schema_subject_name
     description: Publishes a message to Kafka.
     name: kafka-publish-msg
   - arguments:

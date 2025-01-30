@@ -1,5 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
+from confluent_kafka.serialization import SerializationContext, MessageField
+from confluent_kafka.schema_registry.avro import AvroSerializer
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, TIMESTAMP_NOT_AVAILABLE, Message
 from collections.abc import Callable
@@ -295,20 +297,57 @@ class KafkaCommunicator:
         partition = TopicPartition(topic=topic, partition=partition)
         return kafka_consumer.get_watermark_offsets(partition=partition, timeout=self.REQUESTS_TIMEOUT)
 
-    def produce(self, topic: str, value: str, partition: int) -> None:
+    def produce(
+            self,
+            topic: str,
+            value: Union[str, dict],
+            value_schema_type: Optional[str],
+            value_schema_str: Optional[str],
+            value_schema_subject_name: Optional[str],
+            partition: int
+        ) -> None:
         """Produce in to kafka
 
         Args:
             topic: The topic to produce to
-            value: The message/value to write
+            value: The message/object to write
+            value_schema_type: The schema type of the value
+            value_schema_str: The schema str of the value
+            value_schema_subject_name: The schema subject name of the value
             partition: The partition to produce to.
 
         The delivery_report is called after production.
         """
         kafka_producer = self.get_kafka_producer()
+        kafka_schema_registry_client = self.get_kafka_schema_registry()
+        serialized_value = value
+
+        if value_schema_type:
+            if not value_schema_str and not value_schema_subject_name:
+                raise DemistoException(f"Schema is not provided. Please provide one.")
+            if value_schema_str and value_schema_subject_name:
+                raise DemistoException(f"Both value_schema_str and value_schema_subject_name are provided. Please provide only one.")
+
+            resolved_schema_str = value_schema_str
+            # Retrieve schema from schema registry
+            if value_schema_subject_name:
+                registered_schema = kafka_schema_registry_client.get_latest_version(subject_name=value_schema_subject_name)
+                if registered_schema.schema.schema_type != value_schema_type:
+                    raise DemistoException(
+                        f"The schema type '{registered_schema.schema.schema_type}' is not supported. Expected '{value_schema_type}'."
+                    )
+                resolved_schema_str = registered_schema.schema.schema_str
+               
+            if value_schema_type == 'AVRO':
+                avro_serializer = AvroSerializer(
+                    schema_str=resolved_schema_str,
+                    schema_registry_client=kafka_schema_registry_client
+                )
+                serialized_value = avro_serializer(json.loads(value), SerializationContext(topic, MessageField.VALUE))
+
         kafka_producer.produce(
             topic=topic,
-            value=value,
+            value=serialized_value,
             partition=partition if partition is not None else None,
             on_delivery=self.delivery_report
         )
@@ -606,8 +645,14 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     """
     topic = demisto_args.get('topic')
     value = demisto_args.get('value')
+    value_schema_type = demisto_args.get('value_schema_type', 'None')
+    value_schema_str = demisto_args.get('value_schema_str', None)
+    value_schema_subject_name = demisto_args.get('value_schema_subject_name', None)
     partition_arg = demisto_args.get('partitioning_key', '0')
 
+    if value_schema_type == 'None':
+        value_schema_type = None
+    
     partition_str = str(partition_arg)
     if partition_str.isdigit():
         partition = int(partition_str)
@@ -618,6 +663,9 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
         kafka.produce(
             value=str(value),
             topic=str(topic),
+            value_schema_type=value_schema_type,
+            value_schema_str=value_schema_str,
+            value_schema_subject_name=value_schema_subject_name,
             partition=partition
         )
     except Exception as e:
