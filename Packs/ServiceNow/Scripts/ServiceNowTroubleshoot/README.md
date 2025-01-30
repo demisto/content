@@ -1,4 +1,4 @@
-Troubleshot ServiceNow v2 integration by displaying health information of enabled instances and old and active incidents of disabled instances.
+Troubleshoot the ServiceNow v2 integration by displaying the health information of enabled instances along with old and active incidents of disabled instances.
 
 
 ## Script Data
