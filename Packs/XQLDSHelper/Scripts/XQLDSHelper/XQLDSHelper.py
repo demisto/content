@@ -368,7 +368,7 @@ class QueryParams:
             )
 
         self.__query_name = query_name
-        self.__query_string = '\n'.join(x.strip() for x in query_string.splitlines())
+        self.__query_string = '\n'.join(x.strip() for x in query_string.splitlines()).strip()
         self.__earliest_time = earliest_time
         self.__latest_time = latest_time
 
