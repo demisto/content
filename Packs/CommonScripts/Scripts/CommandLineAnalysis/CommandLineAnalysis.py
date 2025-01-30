@@ -158,7 +158,7 @@ def reverse_command(command_line: str) -> Tuple[str, bool]:
 # 2) PATTERN-CHECKING FUNCTIONS
 # -----------------------------------------------------------------------------
 
-def suspicious_macos_applescript_commands(command_line: str) -> Dict[str, List[List[str]]]:
+def check_suspicious_macos_applescript_commands(command_line: str) -> Dict[str, List[List[str]]]:
     """
     Checks for suspicious macOS/AppleScript commands by grouping multiple sets
     of required substrings under a category. If all required substrings appear,
@@ -742,7 +742,7 @@ def analyze_command_line(command_line: str, custom_patterns: List[str] | None = 
 
     # Handle macOS
     if 'osascript' in command_line.lower():
-        original_analysis["macOS_suspicious_commands"] = suspicious_macos_applescript_commands(command_line)
+        original_analysis["macOS_suspicious_commands"] = check_suspicious_macos_applescript_commands(command_line)
 
     results["analysis"]["original"] = original_analysis
 
