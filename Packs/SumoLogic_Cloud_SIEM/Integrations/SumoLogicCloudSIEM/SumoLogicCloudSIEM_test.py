@@ -8,10 +8,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-import io
 
-from datetime import datetime
-from datetime import timezone
+from datetime import datetime, UTC
 
 MOCK_URL = 'https://test.com/api'
 RECORD_SUMMARY_FIELDS_DEFAULT = (
@@ -21,7 +19,7 @@ RECORD_SUMMARY_FIELDS_DEFAULT = (
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -76,7 +74,7 @@ def test_insight_get_comments(requests_mock):
     insight_id = 'INSIGHT-116'
     comments = mock_response['data']['comments']
 
-    requests_mock.get('{}/sec/v1/insights/{}/comments'.format(MOCK_URL, insight_id), json=mock_response)
+    requests_mock.get(f'{MOCK_URL}/sec/v1/insights/{insight_id}/comments', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -141,7 +139,7 @@ def test_signal_get_details(requests_mock):
     del signal['allRecords']
     signal = insight_signal_to_readable(signal)
 
-    requests_mock.get('{}/sec/v1/signals/{}'.format(MOCK_URL, signal_id), json=mock_response)
+    requests_mock.get(f'{MOCK_URL}/sec/v1/signals/{signal_id}', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -172,7 +170,7 @@ def test_entity_get_details(requests_mock):
     entity_id = '_hostname-win10--admin.b.test.com'
     entity = entity_to_readable(mock_response.get('data'))
 
-    requests_mock.get('{}/sec/v1/entities/{}'.format(MOCK_URL, entity_id), json=mock_response)
+    requests_mock.get(f'{MOCK_URL}/sec/v1/entities/{entity_id}', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -203,7 +201,7 @@ def test_insight_search(requests_mock):
     for insight in mock_response['data']['objects']:
         insights.append(insight_signal_to_readable(insight))
 
-    requests_mock.get('{}/sec/v1/insights?limit=2'.format(MOCK_URL), json=mock_response)
+    requests_mock.get(f'{MOCK_URL}/sec/v1/insights?limit=2', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -234,7 +232,7 @@ def test_entity_search(requests_mock):
     for entity in mock_response['data']['objects']:
         entities.append(entity_to_readable(entity))
 
-    requests_mock.get('{}/sec/v1/entities?q=hostname:matchesWildcard(\"*test*\")&limit=2'.format(MOCK_URL), json=mock_response)
+    requests_mock.get(f'{MOCK_URL}/sec/v1/entities?q=hostname:matchesWildcard(\"*test*\")&limit=2', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -267,7 +265,7 @@ def test_signal_search(requests_mock):
         del signal['allRecords']
         signals.append(insight_signal_to_readable(signal))
 
-    requests_mock.get('{}/sec/v1/signals?q=contentType:\"ANOMALY\"&limit=2'.format(MOCK_URL), json=mock_response)
+    requests_mock.get(f'{MOCK_URL}/sec/v1/signals?q=contentType:\"ANOMALY\"&limit=2', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -301,7 +299,7 @@ def test_insight_set_status(requests_mock):
         del signal['allRecords']
     insight = insight_signal_to_readable(mock_response.get('data'))
 
-    requests_mock.put('{}/sec/v1/insights/{}/status'.format(MOCK_URL, insight_id), json=mock_response)
+    requests_mock.put(f'{MOCK_URL}/sec/v1/insights/{insight_id}/status', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -334,7 +332,7 @@ def test_match_list_get(requests_mock):
     for match_list in mock_response['data']['objects']:
         match_lists.append({(k[0].capitalize() + k[1:]): v for k, v in match_list.items()})
 
-    requests_mock.get('{}/sec/v1/match-lists?limit=5'.format(MOCK_URL), json=mock_response)
+    requests_mock.get(f'{MOCK_URL}/sec/v1/match-lists?limit=5', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -362,7 +360,7 @@ def test_match_list_update(requests_mock):
 
     mock_response = util_load_json('test_data/update_result.json')
     match_list_id = '166'
-    requests_mock.post('{}/sec/v1/match-lists/{}/items'.format(MOCK_URL, match_list_id), json=mock_response)
+    requests_mock.post(f'{MOCK_URL}/sec/v1/match-lists/{match_list_id}/items', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -396,7 +394,7 @@ def test_threat_intel_search_indicators(requests_mock):
     for threat_intel_indicator in mock_response['data']['objects']:
         threat_intel_indicators.append({(k[0].capitalize() + k[1:]): v for k, v in threat_intel_indicator.items()})
 
-    requests_mock.get('{}/sec/v1/threat-intel-indicators?value=11.22.33.44&sourceIds=54'.format(MOCK_URL), json=mock_response)
+    requests_mock.get(f'{MOCK_URL}/sec/v1/threat-intel-indicators?value=11.22.33.44&sourceIds=54', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -428,7 +426,7 @@ def test_threat_intel_get_sources(requests_mock):
     for threat_intel_source in mock_response['data']['objects']:
         threat_intel_sources.append({(k[0].capitalize() + k[1:]): v for k, v in threat_intel_source.items()})
 
-    requests_mock.get('{}/sec/v1/threat-intel-sources?limit=5'.format(MOCK_URL), json=mock_response)
+    requests_mock.get(f'{MOCK_URL}/sec/v1/threat-intel-sources?limit=5', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -456,7 +454,7 @@ def test_threat_intel_update_source(requests_mock):
 
     mock_response = util_load_json('test_data/update_result.json')
     threat_intel_source_id = '54'
-    requests_mock.post('{}/sec/v1/threat-intel-sources/{}/items'.format(MOCK_URL, threat_intel_source_id), json=mock_response)
+    requests_mock.post(f'{MOCK_URL}/sec/v1/threat-intel-sources/{threat_intel_source_id}/items', json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -522,7 +520,7 @@ def test_fetch_incidents(requests_mock):
     assert incidents[1].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
     assert incidents[1].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[1].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
-    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=UTC).timestamp())
 
 
 def test_fetch_incidents_with_signals(requests_mock):
@@ -588,7 +586,7 @@ def test_fetch_incidents_with_signals(requests_mock):
     assert incidents[13].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
     assert incidents[13].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[13].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
-    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=UTC).timestamp())
 
 
 DEMISTO_ARGS = {'api_endpoint': MOCK_URL,

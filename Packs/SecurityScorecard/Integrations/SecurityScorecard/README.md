@@ -1,31 +1,27 @@
 Provides commands to access SecurityScorecard's API.
 This integration was integrated and tested with the latest version of SecurityScorecard's API as of August 2024.
 
-## Configure SecurityScorecard on Cortex XSOAR
+## Configure SecurityScorecard in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SecurityScorecard.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | SecurityScorecard API Base URL |  | True |
-    | Username/Email | The SecurityScorecard username/email. | True |
-    | API Token |  | True |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval | SecurityScorecard is updated on a daily basis therefore there's no need to modify this value. | False |
-    | Fetch Limit | Maximum number of alerts per fetch. The maximum is 50. | False |
-    | First fetch | First fetch query \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days. | False |
-    | Incident type |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Portfolio ID |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| SecurityScorecard API Base URL |  | True |
+| Username/Email | The SecurityScorecard username/email. | True |
+| API Token |  | True |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval | SecurityScorecard is updated on a daily basis therefore there's no need to modify this value. | False |
+| Fetch Limit | Maximum number of alerts per fetch. The maximum is 50. | False |
+| First fetch | First fetch query \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days. | False |
+| Incident type |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Portfolio ID |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### securityscorecard-portfolios-list
@@ -213,8 +209,8 @@ Create alert based on grade.
 | --- | --- | --- |
 | change_direction | Direction of change. Possible values are: rises, drops. | Required | 
 | score_types | Comma-separated list of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. | Required | 
-| target | What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified. Possible values are: my_scorecard, any_followed_company. | Optional | 
-| portfolios | A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. | Optional | 
+| target | What do you want to monitor with this alert. This argument is required if the `portfolio` argument is not specified. Possible values are: my_scorecard, any_followed_company. | Optional | 
+| portfolio | A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. | Optional | 
 
 #### Context Output
 
@@ -238,8 +234,8 @@ Create alert based threshold met.
 | change_direction | Direction of change. Possible values are: rises_above, drops_below. | Required | 
 | threshold | The numeric score used as the threshold to trigger the alert. | Required | 
 | score_types | Comma separated list of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple factors, provide comma-separated list, i.e. leaked_information,social_engineering. | Required | 
-| target | What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified. Possible values are: my_scorecard, any_followed_company. | Optional | 
-| portfolios | A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. | Optional | 
+| target | What do you want to monitor with this alert. This argument is required if the `portfolio` argument is not specified. Possible values are: my_scorecard, any_followed_company. | Optional | 
+| portfolio | A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. | Optional | 
 
 #### Context Output
 
@@ -261,7 +257,6 @@ Delete an alert.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | Alert ID. | Required | 
-| alert_type | Type of Alert to delete. Possible values are: score, grade. | Required | 
 
 #### Context Output
 

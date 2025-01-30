@@ -5,7 +5,7 @@ comment: 'Dynamic display script to display a list of useful Analyst Tools on an
 commonfields:
   id: CaseMgmtAnalystTools
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: CaseMgmtAnalystTools
 runas: DBotWeakRole

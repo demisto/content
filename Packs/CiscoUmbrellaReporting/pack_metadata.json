@@ -2,7 +2,7 @@
     "name": "Cisco Umbrella Reporting",
     "description": "Use Cisco Umbrella's Reporting to monitor your Umbrella integration and gain a better understanding of your Umbrella usage. Gain insights into request activity and blocked activity, determining which of your identities are generating blocked requests. Reports help build actionable intelligence in addressing security threats including changes in usage trends over time. The Umbrella Reporting v2 API provides visibility into your core network and security activities and Umbrella logs. This integration was integrated and tested with version 2 of Cisco-umbrella-reporting.",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

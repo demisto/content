@@ -66,6 +66,15 @@ class Client(CoreClient):
                                    url_suffix='/analytics_apis/')
         return reply
 
+    def get_asset_details(self, asset_id):
+        reply = self._http_request(
+            method="POST",
+            json_data={"asset_id": asset_id},
+            headers=self._headers,
+            url_suffix="/unified-asset-inventory/get_asset/",
+        )
+        return reply
+
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get('file_hash')
@@ -139,6 +148,32 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.AnalyticsPrevalence.{command_type.title()}',
         outputs=res,
         raw_response=res,
+    )
+
+
+def get_asset_details_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves details of a specific asset by its ID and formats the response.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_id (str): The ID of the asset to retrieve.
+
+    Returns:
+        CommandResults: Object containing the formatted asset details,
+                        raw response, and outputs for integration context.
+    """
+    client._base_url = "/api/webapp/data-platform"
+    asset_id = args.get("asset_id")
+    response = client.get_asset_details(asset_id)
+    parsed = response.get("reply") if response else "An empty response was returned."
+    return CommandResults(
+        readable_output=tableToMarkdown("Asset Details", parsed, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAsset",
+        outputs=parsed,
+        raw_response=parsed,
     )
 
 
@@ -242,7 +277,7 @@ def main():  # pragma: no cover
                                                stop_polling=True))
 
         elif command == 'core-get-distribution-url':
-            return_outputs(*get_distribution_url_command(client, args))
+            return_results(get_distribution_url_command(client, args))
 
         elif command == 'core-get-create-distribution-status':
             return_outputs(*get_distribution_status_command(client, args))
@@ -477,7 +512,7 @@ def main():  # pragma: no cover
         elif command == 'core-terminate-process':
             if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
                                          build_number=TERMINATE_BUILD_NUM):
-                raise DemistoException('This command is only available for XSIAM 2.4')
+                raise DemistoException('This command is only available for XSIAM 2.4 and above')
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-process",
@@ -497,7 +532,7 @@ def main():  # pragma: no cover
         elif command == 'core-terminate-causality':
             if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
                                          build_number=TERMINATE_BUILD_NUM):
-                raise DemistoException("This command is only available for XSIAM 2.4")
+                raise DemistoException("This command is only available for XSIAM 2.4 and above")
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-causality",
@@ -513,6 +548,10 @@ def main():  # pragma: no cover
                                                                    "ABORTED",
                                                                    "CANCELED"]
                                                ))
+
+        elif command == "core-get-asset-details":
+            return_results(get_asset_details_command(client, args))
+
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
 

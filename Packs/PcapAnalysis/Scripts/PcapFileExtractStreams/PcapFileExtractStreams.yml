@@ -36,7 +36,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/pcap-miner:1.0.0.78355
+dockerimage: demisto/pcap-miner:1.0.0.2020843
 enabled: true
 name: PcapFileExtractStreams
 outputs:

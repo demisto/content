@@ -2,7 +2,7 @@
     "name": "UBIRCH",
     "description": "Integration to handle Ubirch incidents.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Ubirch GmbH",
     "url": "https://ubirch.com/helpdesk",
     "email": "support@ubirch.com",

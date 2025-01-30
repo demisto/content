@@ -2,7 +2,7 @@
     "name": "AWS-ILM",
     "description": "IAM Integration for AWS-ILM. This pack handles user account auto-provisioning",
     "support": "xsoar",
-    "currentVersion": "1.0.25",
+    "currentVersion": "1.0.27",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

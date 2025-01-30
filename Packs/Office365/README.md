@@ -11,10 +11,13 @@ To access the Office 365 Native Collector on your Cortex XSIAM tenant:
 2.  At the top-right corner, click **Add Data Source**
 3.  Search for **Office 365** and click **Connect**.
 
-![Office_365_Collector_Settings](https://raw.githubusercontent.com/demisto/content/cd66df26a298fa4abc7cb2c1a8bbeb12eafaad0b/Packs/Office365/doc_files/Office_365_Collector_Settings.png)
+**Pay Attention**:
+In order to normalize **Azure AD** (msft_azure_ad_raw) and **Azure AD Audit** (msft_azure_ad_audit_raw) logs, install the Microsoft Entra ID pack.
 
-**Pay Attention:**
-Timestamp ingestion for Office 365 logs is currently available for the following datasets:
+![Office_365_Collector_Settings](doc_files/Office_365_Collector_Settings.png)
+
+**Timestamp Ingestion:**
+Ingestion for Office 365 logs is currently available for the following datasets:
 * General &rarr; `msft_o365_general_raw`
 * Exchange Online &rarr; `msft_o365_exchange_online_raw`
 * SharePoint Online &rarr; `msft_o365_sharepoint_online_raw`

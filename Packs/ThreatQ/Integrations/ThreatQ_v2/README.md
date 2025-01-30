@@ -129,7 +129,7 @@
 <h5>Command Example</h5>
 <pre>  !threatq-search-by-name name=test limit=6</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/search-by-name.png" alt="search-by-name.png"></p>
+<p><img src="../../doc_files/search-by-name.png" alt="search-by-name.png"></p>
 <h3 id="h_5c96228f-eae9-4b47-81e4-c20a53bf1abb">2. Check an IP address</h3>
 <hr>
 <p>Checks the reputation of an IP address in ThreatQ.</p>
@@ -270,7 +270,7 @@
 <pre>  !ip ip=91.140.64.113
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/ip.png" alt="ip.png"></p>
+<p><img src="../../doc_files/ip.png" alt="ip.png"></p>
 <h3 id="h_7f270f17-e535-4e39-b67c-fb5d1edd2f14">3. Check a URL</h3>
 <hr>
 <p>Checks the reputation of a URL in ThreatQ.</p>
@@ -412,7 +412,7 @@
 <pre>  !url url=https://www.paloaltonetworks.com/
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/url.png" alt="url.png"></p>
+<p><img src="../../doc_files/url.png" alt="url.png"></p>
 <h3 id="h_5b5547cf-b3da-4260-9a6c-bae7fca952f9">4. Check a file</h3>
 <hr>
 <p>Checks the reputation of a file in ThreatQ.</p>
@@ -578,7 +578,7 @@
 <pre>  !file file=a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/file.png" alt="file.png"></p>
+<p><img src="../../doc_files/file.png" alt="file.png"></p>
 <h3 id="h_5e78e31d-2bf9-4abe-8e27-ee85872ad1fc">5. Check an email</h3>
 <hr>
 <p>Checks the reputation of an email in ThreatQ.</p>
@@ -718,7 +718,7 @@
 <h5>Command Example</h5>
 <pre>  !email email=example.gmail.com</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/email.png" alt="email.png"></p>
+<p><img src="../../doc_files/email.png" alt="email.png"></p>
 <h3 id="h_e60fe097-2ce1-4ec1-87da-d54bb142782f">6. Check a domain</h3>
 <hr>
 <p>Checks the reputation of a domain in ThreatQ.</p>
@@ -859,7 +859,7 @@
 <h5>Command Example</h5>
 <pre>!domain domain=www.testdomain.com</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/domain.png" alt="domain.png"></p>
+<p><img src="../../doc_files/domain.png" alt="domain.png"></p>
 <h3 id="h_c11d4407-2ffd-4a6b-8a33-8314dfd9bec8">7. Create an indicator</h3>
 <hr>
 <p>Creates a new indicator in ThreatQ.</p>
@@ -990,7 +990,7 @@
 <pre>  !threatq-create-indicator value=232.12.34.135 status=Review type="IP Address" attributes_names=TestAttr1,TestAttr2 attributes_values=Val1,Val2 sources=arian@demisto.com
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/create-indicator.png" alt="create-indicator.png"></p>
+<p><img src="../../doc_files/create-indicator.png" alt="create-indicator.png"></p>
 <h3 id="h_cf2edcaf-a119-4fb5-b3f3-5086677de3f6">8. Add an attribute </h3>
 <hr>
 <p>Adds an attribute to an object in ThreatQ.</p>
@@ -1036,7 +1036,7 @@
 <pre>  !threatq-add-attribute obj_type=indicator obj_id=173317 name=TestAttr3 value=Val3
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/add-attribute.png" alt="add-attribute.png"></p>
+<p><img src="../../doc_files/add-attribute.png" alt="add-attribute.png"></p>
 <h3 id="h_5a4ccc85-fdae-4228-9303-a4c138330cde">9. Modify an attribute</h3>
 <hr>
 <p>Modifies an attribute for an object in ThreatQ.</p>
@@ -1079,7 +1079,7 @@
 <pre>  !threatq-modify-attribute attribute_id=996895 attribute_value=NewVal obj_id=173317 obj_type=indicator
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/modify-attribute.png" alt="modify-attribute.png"></p>
+<p><img src="../../doc_files/modify-attribute.png" alt="modify-attribute.png"></p>
 <h3 id="h_bb1fc6e4-bfff-4a16-8e14-16e1d2afe03c">10. Link two objects</h3>
 <hr>
 <p>Links two objects together in ThreatQ.</p>
@@ -1122,7 +1122,7 @@
 <pre>  !threatq-link-objects obj1_id=173317 obj1_type=indicator obj2_id=1 obj2_type=adversary
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/link-objects.png" alt="link-objects.png"></p>
+<p><img src="../../doc_files/link-objects.png" alt="link-objects.png"></p>
 <h3 id="h_b1e1201d-47ed-484d-b83f-a400214bd380">11. Create an adversary</h3>
 <hr>
 <p>Creates a new adversary in ThreatQ.</p>
@@ -1223,7 +1223,7 @@
 <pre>  !threatq-create-adversary name="Reut Shalem"
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/create-adversary.png" alt="create-adversary.png"></p>
+<p><img src="../../doc_files/create-adversary.png" alt="create-adversary.png"></p>
 <h3 id="h_0b6f091e-b262-4b33-8e96-d287830fc660">12. Create an event</h3>
 <hr>
 <p>Creates a new event in ThreatQ.</p>
@@ -1348,7 +1348,7 @@
 <h5>Command Example</h5>
 <pre>  !threatq-create-event date="2019-09-30 20:00:00" title="Offra Alta" type=Incident</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/create-event.png" alt="create-event.png"></p>
+<p><img src="../../doc_files/create-event.png" alt="create-event.png"></p>
 <h3 id="h_2698ff3c-e47d-4f00-bd0c-76e92a7211de">13. Get related indicators</h3>
 <hr>
 <p>Retrieves related indicators for an object in ThreatQ.</p>
@@ -1603,7 +1603,7 @@
 <h5>Command Example</h5>
 <pre>  !threatq-get-related-indicators obj_id=1 obj_type=adversary</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-related-indicators.png" alt="get-related-indicators.png"></p>
+<p><img src="../../doc_files/get-related-indicators.png" alt="get-related-indicators.png"></p>
 <h3 id="h_132eb50e-014e-46e5-88a6-d21e6d5e9554">14. Update an indicator status</h3>
 <hr>
 <p>Updates an indicator status in ThreatQ.</p>
@@ -1659,7 +1659,7 @@
 <pre>  !threatq-update-status id=173317 status=Whitelisted
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/update-status.png" alt="update-status.png"></p>
+<p><img src="../../doc_files/update-status.png" alt="update-status.png"></p>
 <h3 id="h_8da98151-77a4-4f98-8e4e-6993182c9a75">15. Get related events</h3>
 <hr>
 <p>Retrieves related events of an object in ThreatQ.</p>
@@ -1899,7 +1899,7 @@
 <h5>Command Example</h5>
 <pre>  !threatq-get-related-events obj_id=1 obj_type=adversary</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-related-events.png" alt="get-related-events.png"></p>
+<p><img src="../../doc_files/get-related-events.png" alt="get-related-events.png"></p>
 <h3 id="h_65255efc-6d1e-4d5d-a94a-b92106b7e614">16. Get related adversaries</h3>
 <hr>
 <p>Retrieve related adversaries from an object in ThreatQ.</p>
@@ -2095,7 +2095,7 @@
 <pre>  !threatq-get-related-adversaries obj_id=1 obj_type=adversary
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-related-adversaries.png" alt="get-related-adversaries.png"></p>
+<p><img src="../../doc_files/get-related-adversaries.png" alt="get-related-adversaries.png"></p>
 <h3 id="h_954537b3-b7ea-466b-b51e-752d67fe4281">17. Upload a-file</h3>
 <hr>
 <p>Uploads a file to ThreatQ.</p>
@@ -2226,7 +2226,7 @@
 <pre>  !threatq-upload-file entry_id=5379@9da8d636-cf30-42c2-8263-d09f5268be8a file_category="Generic Text" title="File Title"
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/upload-file.png" alt="upload-file.png"></p>
+<p><img src="../../doc_files/upload-file.png" alt="upload-file.png"></p>
 <h3 id="h_3a356804-dbae-46a8-9185-2e7e74e1a81e">18. Search by Object type and ID</h3>
 <hr>
 <p>Searches for an object by object type and ID. </p>
@@ -2517,7 +2517,7 @@
 <pre>  !threatq-search-by-id obj_id=173317 obj_type=indicator
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/search-by-id.png" alt="search-by-id.png"></p>
+<p><img src="../../doc_files/search-by-id.png" alt="search-by-id.png"></p>
 <h3 id="h_58713dca-ce21-473b-9777-42ae33761cb5">19. Unlink two objects</h3>
 <hr>
 <p>Unlinks two objects in ThreatQ.</p>
@@ -2560,7 +2560,7 @@
 <pre>  !threatq-unlink-objects obj1_id=173317 obj1_type=indicator obj2_id=1 obj2_type=adversary
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/unlink-objects.png" alt="unlink-objects.png"></p>
+<p><img src="../../doc_files/unlink-objects.png" alt="unlink-objects.png"></p>
 <h3 id="h_f73a0c2a-eb69-42c2-992e-17a5dc6a5906">20. Delete an object</h3>
 <hr>
 <p>Deletes an object in ThreatQ.</p>
@@ -2593,7 +2593,7 @@
 <pre>  !threatq-delete-object obj_id=104 obj_type=event
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/delete-object.png" alt="delete-object.png"></p>
+<p><img src="../../doc_files/delete-object.png" alt="delete-object.png"></p>
 <h3 id="h_d51d027d-646e-4e39-a880-fe38347bce70">21. Add a source to an object</h3>
 <hr>
 <p>Adds a source to an object in ThreatQ.</p>
@@ -2631,7 +2631,7 @@
 <pre>  !threatq-add-source obj_id=173317 obj_type=indicator source="AlienVault OTX"
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/add-source.png" alt="add-source.png"></p>
+<p><img src="../../doc_files/add-source.png" alt="add-source.png"></p>
 <h3 id="h_85f58464-1e5c-4d3c-b735-77103ccf63a7">22. Delete a source from an object</h3>
 <hr>
 <p>Deletes a source from an object in ThreatQ.</p>
@@ -2669,7 +2669,7 @@
 <pre>  !threatq-delete-source obj_id=173317 obj_type=indicator source_id=3333819
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/delete-source.png" alt="delete-source.png"></p>
+<p><img src="../../doc_files/delete-source.png" alt="delete-source.png"></p>
 <h3 id="h_f2e5a3eb-79bd-4d1d-ac57-9fd32dcb9866">23. Delete an attribute</h3>
 <hr>
 <p>Deletes an attribute from an object in ThreatQ.</p>
@@ -2707,7 +2707,7 @@
 <pre>  !threatq-delete-attribute attribute_id=996896 obj_id=173317 obj_type=indicator
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/delete-attribute.png" alt="delete-attribute.png"></p>
+<p><img src="../../doc_files/delete-attribute.png" alt="delete-attribute.png"></p>
 <h3 id="h_ff4038d6-4c8b-4e89-a586-1d4a8c1168d6">24. Edit an adversary</h3>
 <hr>
 <p>Updates an adversary name in ThreatQ.</p>
@@ -2798,7 +2798,7 @@
 <pre>  !threatq-edit-adversary id=23 name="New Adversary Name"
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/edit-adversary.png" alt="edit-adversary.png"></p>
+<p><img src="../../doc_files/edit-adversary.png" alt="edit-adversary.png"></p>
 <h3 id="h_49ca05ae-876c-486b-ac66-4fafc8411cd9">25. Edit an indicator</h3>
 <hr>
 <p>Updates an indicator in ThreatQ.</p>
@@ -2919,7 +2919,7 @@
 <pre>  !threatq-edit-indicator id=173317 description="This is a new description" type="Email Address" value=goo@test.com
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/edit-indicator.png" alt="edit-indicator.png"></p>
+<p><img src="../../doc_files/edit-indicator.png" alt="edit-indicator.png"></p>
 <h3 id="h_d4a85aa5-245f-4b06-bffc-632140561a98">26. Edit an event</h3>
 <hr>
 <p>Updates an event in ThreatQ.</p>
@@ -3040,7 +3040,7 @@
 <pre>  !threatq-edit-event id=1 date="2019-09-30 21:00:00" description="The event will take place in Expo Tel Aviv" type="Command and Control"
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/edit-event.png" alt="edit-event.png"></p>
+<p><img src="../../doc_files/edit-event.png" alt="edit-event.png"></p>
 <h3 id="h_7ed2b520-8db0-44e1-9e90-8f30463bd743">27. Update a score of an indicator</h3>
 <hr>
 <p>Modifies an indicator's score in ThreatQ. The final indicator score is the highest of the manual and generated scores.</p>
@@ -3151,7 +3151,7 @@
 <pre>  !threatq-update-score id=173317 score=2
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/update-score.png" alt="update-score.png"></p>
+<p><img src="../../doc_files/update-score.png" alt="update-score.png"></p>
 <h3 id="h_eeb24165-a887-4df8-8b01-43a054abcedf">28. Download a file to Cortex XSOAR</h3>
 <hr>
 <p>Downloads a file from ThreatQ to Cortex XSOAR.</p>
@@ -3179,7 +3179,7 @@
 <pre>  !threatq-download-file id=88
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/download-file.png" alt="download-file.png"></p>
+<p><img src="../../doc_files/download-file.png" alt="download-file.png"></p>
 <h3 id="h_6b58f4f4-da5f-4f94-b9b6-2d4acf482aed">29. Get all indicators</h3>
 <hr>
 <p>Retrieves all indicators in ThreatQ.</p>
@@ -3291,7 +3291,7 @@
   !threatq-get-all-indicators limit=30 page=10
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-all-indicators.png" alt="get-all-indicators.png"></p>
+<p><img src="../../doc_files/get-all-indicators.png" alt="get-all-indicators.png"></p>
 <h3 id="h_4b89672e-4c43-4ebc-bd2b-c0ee3450df54">30. Get a list of events</h3>
 <hr>
 <p>Retrieves all events in ThreatQ.</p>
@@ -3397,7 +3397,7 @@
 <pre>  !threatq-get-all-events limit=30 page=10
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-all-events.png" alt="get-all-events.png"></p>
+<p><img src="../../doc_files/get-all-events.png" alt="get-all-events.png"></p>
 <h3 id="h_940ef125-9750-463d-8b8b-3a057eac841b">31. Get a list of all adversaries</h3>
 <hr>
 <p>Returns all adversaries in ThreatQ.</p>
@@ -3488,4 +3488,4 @@
 <pre>  !threatq-get-all-events limit=30 page=10
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-all-adversaries.png" alt="get-all-adversaries.png"></p>
+<p><img src="../../doc_files/get-all-adversaries.png" alt="get-all-adversaries.png"></p>

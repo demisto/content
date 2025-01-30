@@ -3,28 +3,24 @@ VMware Carbon Black App Control (formerly known as Carbon Black Enterprise Prote
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-vmware-carbon-black-app-control-v2).
 
-## Configure VMware Carbon Black App Control v2 on Cortex XSOAR
+## Configure VMware Carbon Black App Control v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VMware Carbon Black App Control v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | True |
-    | API Token | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Max incidents per fetch | False |
-    | Fetch query | False |
-    | API Token | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://192.168.0.1) | True |
+| API Token | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+| Max incidents per fetch | False |
+| Fetch query | False |
+| API Token | False |
+| Fetch incidents | False |
+| Incident type | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cbp-fileCatalog-search
 ***
@@ -845,4 +841,3 @@ Creates or updates a file rule. For more information, see the Carbon Black docum
 | CBP.FileRule.Name | String | The rule name. | 
 | CBP.FileRule.PolicyIDs | String | The policies this rule belongs to. | 
 | CBP.FileRule.ReportOnly | String | Is this rule "reporting only" or is it also "enforcing". | 
-

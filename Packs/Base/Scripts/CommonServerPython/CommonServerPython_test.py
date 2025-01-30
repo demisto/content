@@ -31,7 +31,8 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
-                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config
+                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
+                                get_engine_base_url, is_integration_instance_running_on_engine
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -3821,6 +3822,26 @@ def test_b64_encode(_input, expected_output):
     assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
 
 
+B64_STR = 'This is a test!'
+DECODED_B64 = b'N\x18\xac\x8a\xc6\xadz\xcb'
+CASE_NO_PADDING = (B64_STR, DECODED_B64)
+CASE_LESS_PADDING = (B64_STR + '=', DECODED_B64)
+CASE_WITH_PADDING = (B64_STR + '==', DECODED_B64)
+CASE_TOO_MUCH_PADDING = (B64_STR + '===', DECODED_B64)
+
+
+@pytest.mark.parametrize('str_to_decode, expected_encoded',
+                         (CASE_NO_PADDING, CASE_WITH_PADDING, CASE_LESS_PADDING, CASE_TOO_MUCH_PADDING))
+def test_b64_decode(str_to_decode, expected_encoded):
+    """
+    Given: A base 64 encoded str that represents an image, with different paddings.
+    When: Decoding it to an image file.
+    Then: The str is decoded to binary.
+    """
+    encoded = b64_decode(str_to_decode)
+    assert encoded == expected_encoded
+
+
 def test_traceback_in_return_error_debug_mode_on(mocker):
     mocker.patch.object(demisto, 'command', return_value="test-command")
     mocker.spy(demisto, 'results')
@@ -5819,6 +5840,7 @@ class TestCommonTypes:
             dns='dns.somedomain',
             detection_engines=10,
             positive_detections=5,
+            first_seen_by_source='2024-10-06T09:50:50.555Z',
             organization='Some Organization',
             admin_phone='18000000',
             admin_email='admin@test.com',
@@ -5896,6 +5918,7 @@ class TestCommonTypes:
                         'Registrar': {'Name': 'Mr Registrar', 'AbuseEmail': 'registrar@test.com', 'AbusePhone': None},
                         'Registrant': {'Name': 'Mr Registrant', 'Email': None, 'Phone': None, 'Country': None},
                         'Admin': {'Name': None, 'Email': 'admin@test.com', 'Phone': '18000000', 'Country': None},
+                        'FirstSeenBySource': '2024-10-06T09:50:50.555Z',
                         'Organization': 'Some Organization',
                         'Subdomains': ['sub-domain1.somedomain.com', 'sub-domain2.somedomain.com',
                                        'sub-domain3.somedomain.com'], 'DomainStatus': 'ACTIVE',
@@ -5994,6 +6017,7 @@ class TestCommonTypes:
             certificates=None,
             description='description test',
             stix_id='stix_id',
+            organization_first_seen='2024-11-04T14:48:23.456Z',
         )
 
         results = CommandResults(
@@ -6033,6 +6057,7 @@ class TestCommonTypes:
                         'ASOwner': 'test_as_owner',
                         'Geo': {'Country': 'test_geo_country'},
                         'Organization': 'test_organization',
+                        'OrganizationFirstSeen': '2024-11-04T14:48:23.456Z',
                         'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
                         'Publications': [
                             {'source': 'source',
@@ -6118,7 +6143,8 @@ class TestCommonTypes:
             creation_date='test_creation_date',
             description='test_description',
             hashes=None,
-            stix_id='test_stix_id'
+            stix_id='test_stix_id',
+            organization_prevalence=0,
         )
 
         results = CommandResults(
@@ -6164,6 +6190,7 @@ class TestCommonTypes:
                                       'threatcategoryconfidence': 'threat_category_confidence'}],
                      'Imphash': 'test_imphash',
                      'Organization': 'test_organization',
+                     'OrganizationPrevalence': 0,
                      'Malicious': {'Vendor': 'Test', 'Description': 'malicious!'}
                      }
                 ],
@@ -6302,7 +6329,8 @@ class TestCommonTypes:
             user_id='test_user_id',
             manager_email='test_manager_email@test.com',
             manager_display_name='test_manager_display_name',
-            risk_level='test_risk_level'
+            risk_level='test_risk_level',
+            **{'some_undefinedKey': 'value'}
         )
 
         results = CommandResults(
@@ -6345,7 +6373,8 @@ class TestCommonTypes:
                          'Email': 'test_manager_email@test.com',
                          'DisplayName': 'test_manager_display_name'
                      },
-                     'RiskLevel': 'test_risk_level'
+                     'RiskLevel': 'test_risk_level',
+                     'some_undefinedKey': 'value'
                      }
                 ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
@@ -9725,10 +9754,26 @@ def test_create_clickable_test_wrong_text_value():
         "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer <XX_REPLACED>\\r\\n"
     ),
     (
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: JWT token123\\r\\n",
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: JWT <XX_REPLACED>\\r\\n"
+    ),
+    (
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'",
         str("send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'")
     ),
-])
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\apiKey: 1234\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\apiKey: <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\credentials: {'good':'day'}\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\credentials: <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\client_name: client\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\client_name: <XX_REPLACED>\\r\\n'"
+    ),],
+    ids=["Bearer", "Cookie", "Authorization", "Bearer", "JWT", "No change", "Key", "credential", "client"],)
 def test_censor_request_logs(request_log, expected_output):
     """
     Given:
@@ -9906,3 +9951,62 @@ def test_get_server_config_fail(mocker):
     mocked_error = mocker.patch.object(demisto, 'error')
     assert get_server_config() == {}
     assert mocked_error.call_args[0][0] == 'Error decoding JSON: Expecting value: line 1 column 1 (char 0)'
+
+
+@pytest.mark.parametrize('instance_name, expected_result',
+                         [('instance_name1', 'engine_id'),
+                          ('instance_name2', '')
+                          ], ids=[
+                              "Test-instanec-with-xsoar-engine-configures",
+                              "Test-instanec-without-xsoar-engine-configures"
+                         ])
+def test_is_integration_instance_running_on_engine(mocker, instance_name, expected_result):
+    """ Tests the 'is_integration_instance_running_on_engine' function's logic. 
+
+        Given:  
+                1. A name of an instance that has an engine configured (and relevant mocked responses).
+                2. A name of an instance that doesn't have an engine configured (and relevant mocked responses).
+
+        When:  
+            - Running the 'is_integration_instance_running_on_engine' funcution. 
+
+        Then:
+            - Verify that: 
+                1. The result is the engine's id. 
+                2. The result is an empty string.
+    """
+    mock_response = {
+        'body': """{"instances": [
+            {"id": "1111", "name": "instance_name1", "engine": "engine_id"},
+            {"id": "2222", "name": "instance_name2", "engine": ""}
+        ]}""",
+    }
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    mocker.patch.object(demisto, 'integrationInstance', return_value=instance_name)
+    res = is_integration_instance_running_on_engine()
+    assert res == expected_result
+
+
+def test_get_engine_base_url(mocker):
+    """ Tests the 'get_engine_base_url' function's logic. 
+
+        Given:  
+            - Mocked response of the internalHttpRequest call for the '/engines' endpoint, including 2 engines.
+            - An id of an engine. 
+
+        When:  
+            - Running the 'is_integration_instance_running_on_engine' funcution. 
+
+        Then:
+            - Verify that base url of the given engine id was returened.
+
+    """
+    mock_response = {
+        'body': """{"engines": [
+            {"id": "1111", "baseUrl": "11.111.111.33:443"},
+            {"id": "2222", "baseUrl": "11.111.111.44:443"}
+        ]}""",
+    }
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    res = get_engine_base_url('1111')
+    assert res == '11.111.111.33:443'

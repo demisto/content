@@ -1,22 +1,18 @@
 Cisco Email Security protects against ransomware, business email compromise, spoofing, and phishing
-## Configure Cisco Email Security Appliance (IronPort) on Cortex XSOAR
+## Configure Cisco Email Security Appliance (IronPort) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Email Security Appliance (IronPort).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | True |
-    | Port | True |
-    | Credentials | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://192.168.0.1) | True |
+| Port | True |
+| Credentials | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ironport-report
 ***
@@ -70,4 +66,3 @@ There is no context output for this command.
 > Received Auth| Received Conn Auth Fail| Received Conn Auth Success| Received Conn Cert Fail| Received Conn Cert Success| Received Conn Noauth| Received Conn Total| Received Noauth| Received Total
 >---|---|---|---|---|---|---|---|---
 >0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
-

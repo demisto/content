@@ -21,6 +21,7 @@ configuration:
   options:
   - ElasticSearch
   - OpenSearch
+  - Elasticsearch_v8
   type: 15
   required: false
   section: Connect
@@ -145,21 +146,21 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- additionalinfo: Source field that contains the indicator value in the index.  Relevant for generic feed type only. 
+- additionalinfo: Source field that contains the indicator value in the index.  Relevant for generic feed type only.
   display: Indicator Value Field
   name: src_val
   type: 0
   required: false
   section: Collect
   advanced: true
-- additionalinfo: Source field that contains the indicator type in the index.  Relevant for generic feed type only. 
+- additionalinfo: Source field that contains the indicator type in the index.  Relevant for generic feed type only.
   display: Indicator Type Field
   name: src_type
   type: 0
   required: false
   section: Collect
   advanced: true
-- additionalinfo: Default indicator type used in case no "Indicator Type Field" was provided.  Relevant for generic feed type only. 
+- additionalinfo: Default indicator type used in case no "Indicator Type Field" was provided.  Relevant for generic feed type only.
   display: Indicator Type
   name: default_type
   type: 0
@@ -184,7 +185,7 @@ configuration:
   - Timestamp-Milliseconds
   section: Collect
   advanced: true
-- additionalinfo: Used for sorting and limiting data. If empty, results are not sorted. Relevant for generic feed type only. 
+- additionalinfo: Used for sorting and limiting data. If empty, results are not sorted. Relevant for generic feed type only.
   display: Index Time Field
   name: time_field
   type: 0
@@ -229,7 +230,7 @@ script:
       required: true
     description: Gets indicators available in the configured Elasticsearch database.
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.87483
+  dockerimage: demisto/elasticsearch:1.0.0.117175
   feed: true
   runonce: false
   script: '-'

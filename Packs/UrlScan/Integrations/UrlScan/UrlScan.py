@@ -349,6 +349,9 @@ def format_results(client, uuid, use_url_as_name, scan_lists_attempts=True):
             cert_ec.append(ec_info)
         CERT_HEADERS = ['Subject Name', 'Issuer', 'Validity']
         cont['Certificates'] = cert_ec
+    else:
+        CERT_HEADERS = []
+        demisto.debug(f"certificates isn't in {scan_lists=}. {CERT_HEADERS=}")
     url_cont['Data'] = url_query
     if 'urls' in scan_lists:
         url_cont['Data'] = demisto.args().get('url')
@@ -460,22 +463,26 @@ def format_results(client, uuid, use_url_as_name, scan_lists_attempts=True):
     processors_data = scan_meta['processors']
     if 'download' in processors_data and len(scan_meta['processors']['download']['data']) > 0:
         meta_data = processors_data['download']['data'][0]
-        sha256 = meta_data['sha256']
-        filename = meta_data['filename']
-        filesize = meta_data['filesize']
-        filetype = meta_data['mimeType']
-        human_readable['File']['Hash'] = sha256
-        cont['File']['Hash'] = sha256
-        file_context['SHA256'] = sha256
-        human_readable['File']['Name'] = filename
-        cont['File']['FileName'] = filename
-        file_context['Name'] = filename
-        human_readable['File']['Size'] = filesize
-        cont['File']['FileSize'] = filesize
-        file_context['Size'] = filesize
-        human_readable['File']['Type'] = filetype
-        cont['File']['FileType'] = filetype
-        file_context['Type'] = filetype
+        sha256 = meta_data.get('sha256')
+        filename = meta_data.get('filename')
+        filesize = meta_data.get('filesize')
+        filetype = meta_data.get('mimeType')
+        if sha256:
+            human_readable['File']['Hash'] = sha256
+            cont['File']['Hash'] = sha256
+            file_context['SHA256'] = sha256
+        if filename:
+            human_readable['File']['Name'] = filename
+            cont['File']['FileName'] = filename
+            file_context['Name'] = filename
+        if filesize:
+            human_readable['File']['Size'] = filesize
+            cont['File']['FileSize'] = filesize
+            file_context['Size'] = filesize
+        if filetype:
+            human_readable['File']['Type'] = filetype
+            cont['File']['FileType'] = filetype
+            file_context['Type'] = filetype
         file_context['Hostname'] = demisto.args().get('url')
     if feed_related_indicators:
         related_indicators = []
@@ -743,23 +750,27 @@ def urlscan_search_command(client):
         if 'files' in res_dict:
             HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date', 'File']
             files = res_dict['files'][0]
-            sha256 = files['sha256']
-            filename = files['filename']
-            filesize = files['filesize']
-            filetype = files['mimeType']
+            sha256 = files.get('sha256')
+            filename = files.get('filename')
+            filesize = files.get('filesize')
+            filetype = files.get('mimeType')
             url = res_tasks['url']
-            human_readable['File']['Hash'] = sha256
-            cont['Hash'] = sha256
-            file_context['SHA256'] = sha256
-            human_readable['File']['Name'] = filename
-            cont['FileName'] = filename
-            file_context['File']['Name'] = filename
-            human_readable['File']['Size'] = filesize
-            cont['FileSize'] = filesize
-            file_context['Size'] = filesize
-            human_readable['File']['Type'] = filetype
-            cont['FileType'] = filetype
-            file_context['File']['Type'] = filetype
+            if sha256:
+                human_readable['File']['Hash'] = sha256
+                cont['Hash'] = sha256
+                file_context['SHA256'] = sha256
+            if filename:
+                human_readable['File']['Name'] = filename
+                cont['FileName'] = filename
+                file_context['File']['Name'] = filename
+            if filesize:
+                human_readable['File']['Size'] = filesize
+                cont['FileSize'] = filesize
+                file_context['Size'] = filesize
+            if filetype:
+                human_readable['File']['Type'] = filetype
+                cont['FileType'] = filetype
+                file_context['File']['Type'] = filetype
             file_context['File']['Hostname'] = url
 
         ec[outputPaths['file']] = file_context

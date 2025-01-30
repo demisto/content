@@ -57,4 +57,4 @@ script:
       description: Additional parseable fields from the script output.
     description: Scan targets with the given parameters
     execution: true
-  dockerimage: demisto/netutils:1.0.0.86390
+  dockerimage: demisto/netutils:1.0.0.118055

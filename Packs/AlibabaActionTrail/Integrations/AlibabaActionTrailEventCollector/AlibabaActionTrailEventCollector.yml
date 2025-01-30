@@ -81,7 +81,7 @@ script:
       - "True"
       - "False"
       required: true
-  dockerimage: demisto/auth-utils:1.0.0.94075
+  dockerimage: demisto/auth-utils:1.0.0.1968974
   isfetchevents: true
   subtype: python3
 marketplaces:

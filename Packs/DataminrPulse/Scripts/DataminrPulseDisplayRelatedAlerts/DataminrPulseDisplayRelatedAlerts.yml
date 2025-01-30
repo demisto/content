@@ -14,7 +14,7 @@ dependson:
   must:
   - Dataminr Pulse|||dataminrpulse-related-alerts-get
   - '|||dataminrpulse-related-alerts-get'
-dockerimage: demisto/python3:3.10.14.90585
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

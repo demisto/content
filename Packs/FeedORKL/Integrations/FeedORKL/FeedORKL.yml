@@ -124,7 +124,7 @@ script:
       - desc
     description: Retrieves latest Threat Reports from ORKL.
     name: orkl-get-reports
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   isFetchSamples: true
   runonce: false

@@ -12,7 +12,7 @@ args:
 - name: ip
   required: true
   default: true
-  description: The IP to check
+  description: The IP to check.
 outputs:
 - contextPath: Endpoint
   description: The endpoint object.
@@ -24,6 +24,6 @@ outputs:
   type: string
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.11.1940698
 tests:
 - IPToHost - Test

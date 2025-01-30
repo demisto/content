@@ -8,6 +8,7 @@ import dateutil.parser
 from typing import Any
 
 ENTRY_TYPE_USER = "ENTRY_TYPE_USER"
+ENTRY_TYPE_IDENTITY = "ENTRY_TYPE_IDENTITY"
 
 LABEL_STATUS_ACTIVE = "LABEL_STATUS_ACTIVE"
 
@@ -25,7 +26,7 @@ PAGE_SIZE = 1000
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 RECO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEMISTO_INFORMATIONAL = 0.5
-RECO_API_TIMEOUT_IN_SECONDS = 30  # Increase timeout for RECO API
+RECO_API_TIMEOUT_IN_SECONDS = 180  # Increase timeout for RECO API
 RECO_ACTIVE_INCIDENTS_VIEW = "active_incidents_view"
 RECO_ACTIVE_ALERTS_VIEW = "alerts"
 RECO_INCIDENT_ID_FIELD = "incident_id"
@@ -33,6 +34,10 @@ RECO_TIMELINE_EVENT_TYPE = "TIMELINE_EVENT_TYPE_USER_COMMENT"
 CREATED_AT_FIELD = "created_at"
 STEP_FETCH = "fetch"
 STEP_INIT = "init"
+
+
+def create_filter(field, value):
+    return {"field": field, "stringContains": {"value": value}}
 
 
 def extract_response(response: Any) -> list[dict[str, Any]]:
@@ -317,18 +322,68 @@ class RecoClient(BaseClient):
 
     def get_risky_users(self) -> list[dict[str, Any]]:
         """Get risky users. Returns a list of risky users with analysis."""
-        params = {
+        return self.get_identities(email_address=None, label=RISKY_USER)
+
+    def get_identities(self, email_address: Optional[str] = None, label: Optional[str] = None) -> list[dict[str, Any]]:
+        """
+        Get identities from Reco with specified filters.
+
+        :param email_address: Optional email substring to filter identities.
+        :param label: Optional label value to filter identities.
+        :return: A dictionary representing the getTableRequest payload.
+        """
+        params: Dict[str, Any] = {
             "getTableRequest": {
-                "tableName": "RISK_MANAGEMENT_VIEW_USER_LIST",
-                "pageSize": 200,
+                "tableName": "RISK_MANAGEMENT_VIEW_IDENTITIES",
+                "pageSize": 50,
                 "fieldSorts": {
                     "sorts": [
-                        {"sortBy": "risk_level", "sortDirection": "SORT_DIRECTION_DESC"}
+                        {"sortBy": "primary_email_address", "sortDirection": "SORT_DIRECTION_ASC"}
                     ]
                 },
-                "fieldFilters": {},
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": []
+                    },
+                    "forceEstimateSize": True
+                },
             }
         }
+
+        # Add label filter if provided
+        if label is not None:
+            label_filter = {
+                "relationship": "FILTER_RELATIONSHIP_OR",
+                "filters": {
+                    "filters": [
+                        {
+                            "field": "labels",
+                            "labelNameEquals": {
+                                "keys": ["identity_id"],
+                                "value": [label],
+                                "filterColumn": "label_name",
+                                "entryTypes": ["ENTRY_TYPE_IDENTITY"]
+                            }
+                        }
+                    ]
+                }
+            }
+            params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"]["fieldFilters"].append(label_filter)
+
+        # Add email address filter if provided
+        if email_address:
+            email_filter = {
+                "relationship": "FILTER_RELATIONSHIP_OR",
+                "filters": {
+                    "filters": [
+                        create_filter("full_name", email_address),
+                        create_filter("primary_email_address", email_address)
+                    ]
+                }
+            }
+            params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"]["fieldFilters"].append(email_filter)
+
         try:
             response = self._http_request(
                 method="PUT",
@@ -343,7 +398,7 @@ class RecoClient(BaseClient):
 
     def get_exposed_publicly_files_at_risk(self) -> list[dict[str, Any]]:
         """Get exposed publicly files at risk. Returns a list of exposed publicly files at risk with analysis."""
-        params = {
+        params: Dict[str, Any] = {
             "getTableRequest": {
                 "tableName": "DATA_RISK_MANAGEMENT_VIEW_BREAKDOWN_EXPOSED_PUBLICLY",
                 "pageSize": PAGE_SIZE,
@@ -457,7 +512,8 @@ class RecoClient(BaseClient):
                     "relationship": "FILTER_RELATIONSHIP_AND",
                     "fieldFilterGroups": {
                         "fieldFilters": []
-                    }
+                    },
+                    "forceEstimateSize": True
                 }
             }
         }
@@ -512,7 +568,8 @@ class RecoClient(BaseClient):
                                 }
                             }
                         ]
-                    }
+                    },
+                    "forceEstimateSize": True
                 }
             }
         }
@@ -577,7 +634,8 @@ class RecoClient(BaseClient):
                                 }
                             }
                         ]
-                    }
+                    },
+                    "forceEstimateSize": True
                 }
             }
         }
@@ -647,8 +705,8 @@ class RecoClient(BaseClient):
             )
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
+                method="PUT",
+                url_suffix="/asset-management/query",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
@@ -702,14 +760,15 @@ class RecoClient(BaseClient):
                                 }
                             }
                         ]
-                    }
-                }
+                    },
+                    "forceEstimateSize": True
+                },
             }
         }
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
+                method="PUT",
+                url_suffix="/asset-management/query",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
@@ -722,38 +781,45 @@ class RecoClient(BaseClient):
         self, email_address: str
     ) -> list[dict[str, Any]]:
         """ Get user context by email address. Returns a dict of user context. """
-        params: dict[str, Any] = {
+        identities = self.get_identities(email_address=email_address)
+        if not identities:
+            return []
+        identity_ids = []
+        for user in identities:
+            user_as_dict = parse_table_row_to_dict(user.get("cells", {}))
+            identity_id = user_as_dict.get("identity_id")
+            if identity_id:
+                identity_ids.append(identity_id)
+
+        params: Dict[str, Any] = {
             "getTableRequest": {
-                "tableName": "enriched_users_view",
+                "tableName": "RISK_MANAGEMENT_VIEW_IDENTITIES",
                 "pageSize": 1,
                 "fieldSorts": {
                     "sorts": []
                 },
                 "fieldFilters": {
                     "relationship": "FILTER_RELATIONSHIP_OR",
-                    "fieldFilterGroups": {
-                        "fieldFilters": [
-                            {
-                                "relationship": "FILTER_RELATIONSHIP_OR",
-                                "filters": {
-                                    "filters": [
-                                        {
-                                            "field": "email_account",
-                                            "stringEquals": {
-                                                "value": f"{email_address}"
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
-                }
+                    "forceEstimateSize": True,
+                    "filters": {"filters": []} if identity_ids else {},
+                },
             }
         }
+
+        # Add filters for multiple identity_ids
+        if identity_ids:
+            identity_filters = [
+                {
+                    "field": "identity_id",
+                    "stringEquals": {"value": identity_id}
+                }
+                for identity_id in identity_ids
+            ]
+            params["getTableRequest"]["fieldFilters"]["filters"]["filters"] = identity_filters
+
         response = self._http_request(
-            method="POST",
-            url_suffix="/asset-management",
+            method="PUT",
+            url_suffix="/risk-management/get-risk-management-table",
             timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
             data=json.dumps(params),
         )
@@ -816,8 +882,8 @@ class RecoClient(BaseClient):
             )
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
+                method="PUT",
+                url_suffix="/asset-management/query",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
@@ -849,7 +915,7 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-        demisto.info(f"Got link: {link}")
+        demisto.info(f"Got link: {link}")  # pylint: disable=E0606
         return link
 
     def add_exclusion_filter(self, key_to_add: str, values_to_add: list[str]):
@@ -1029,10 +1095,10 @@ def get_risky_users_from_reco(reco_client: RecoClient) -> CommandResults:
         readable_output=tableToMarkdown(
             "Risky Users",
             users,
-            headers=["email_account", "risk_level", "labels", "status"],
+            headers=user_as_dict.keys(),
         ),
         outputs_prefix="Reco.RiskyUsers",
-        outputs_key_field="email_account",
+        outputs_key_field="primary_email_address",
         outputs=users,
         raw_response=risky_users,
     )
@@ -1040,9 +1106,14 @@ def get_risky_users_from_reco(reco_client: RecoClient) -> CommandResults:
 
 def add_risky_user_label(reco_client: RecoClient, email_address: str) -> CommandResults:
     """Add a risky user to Reco."""
-    raw_response = reco_client.set_entry_label_relations(
-        email_address, RISKY_USER, LABEL_STATUS_ACTIVE, ENTRY_TYPE_USER
-    )
+
+    users = reco_client.get_identities(email_address)
+    for user in users:
+        user_as_dict = parse_table_row_to_dict(user.get("cells", {}))
+        raw_response = reco_client.set_entry_label_relations(
+            user_as_dict["identity_id"], RISKY_USER, LABEL_STATUS_ACTIVE, ENTRY_TYPE_IDENTITY
+        )
+
     return CommandResults(
         raw_response=raw_response,
         readable_output=f"User {email_address} labeled as risky",
@@ -1051,9 +1122,13 @@ def add_risky_user_label(reco_client: RecoClient, email_address: str) -> Command
 
 def add_leaving_org_user(reco_client: RecoClient, email_address: str) -> CommandResults:
     """Tag user as leaving org."""
-    raw_response = reco_client.set_entry_label_relations(
-        email_address, LEAVING_ORG_USER, LABEL_STATUS_ACTIVE, ENTRY_TYPE_USER
-    )
+    users = reco_client.get_identities(email_address)
+    for user in users:
+        user_as_dict = parse_table_row_to_dict(user.get("cells", {}))
+        raw_response = reco_client.set_entry_label_relations(
+            user_as_dict["identity_id"], LEAVING_ORG_USER, LABEL_STATUS_ACTIVE, ENTRY_TYPE_IDENTITY
+        )
+
     return CommandResults(
         raw_response=raw_response,
         readable_output=f"User {email_address} labeled as leaving org user",

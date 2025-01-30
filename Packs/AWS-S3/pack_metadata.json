@@ -2,7 +2,7 @@
     "name": "AWS - S3",
     "description": "Amazon Web Services Simple Storage Service (S3)",
     "support": "xsoar",
-    "currentVersion": "1.2.27",
+    "currentVersion": "1.2.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

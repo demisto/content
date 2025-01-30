@@ -674,6 +674,17 @@ def get_urls_to_run(
     else:
         urls_only = urls_argument.split()
     urls = list(set(urls_email_body + urls_only + urls_email_html))
+
+    # create a list with all the paths that start with "mailto:"
+    mailto_urls = [url for url in urls if url.startswith("mailto:")]
+
+    # remove the mailto urls from urls list
+    urls = [item for item in urls if item not in mailto_urls]
+
+    if mailto_urls:
+        return_results(CommandResults(
+            readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_urls}'))
+
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_results(MSG_NO_URL_GIVEN)
@@ -728,7 +739,6 @@ def update_and_load_model(
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
         msg_list.append(MSG_UPDATE_LOGO.format(MAJOR_VERSION, model_docker_minor, model.major, model.minor))
-        model = load_demisto_model()
     else:
         msg_list.append(MSG_WRONG_CONFIG_MODEL)
         raise DemistoException(MSG_WRONG_CONFIG_MODEL)

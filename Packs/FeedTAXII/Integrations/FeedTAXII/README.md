@@ -12,7 +12,7 @@ The TAXII Feed integration ingests indicator feeds from TAXII 1.x servers.
     * __Traffic Light Protocol Color__: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __Discovery Service__: TAXII discovery service endpoint. For example: `http://hailataxii.com/taxii-discovery-service`
+    * __Discovery Service__: TAXII discovery service endpoint. For example: `http://example.com/taxii-discovery-service`
     * __Collection__: Collection name to fetch indicators from.
     * __Subscription ID__: Subscription ID for the TAXII consumer.
     * __Username__: Username/Password (if required)
@@ -34,7 +34,7 @@ As an example, we'll use the public TAXII threat intelligence feed by Abuse_ch a
 
 **Feed Fetch Interval** - For this example, we can leave the default value here.
 
-**Discovery Service** - Enter `http://hailataxii.com/taxii-discovery-service`.
+**Discovery Service** - Enter `http://example.com/taxii-discovery-service`.
 
 **Collection** - Enter `guest.Abuse_ch`.
 

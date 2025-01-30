@@ -1,8 +1,8 @@
 {
-    "name": "CyberArk AIM",
+    "name": "CyberArk Central Credential Provider (CCP)",
     "description": "Securely pull hard-coded and embedded privileged credentials from the CyberArk Vault using CyberArk Secrets Manager.",
     "support": "partner",
-    "currentVersion": "1.0.19",
+    "currentVersion": "1.0.22",
     "author": "CyberArk",
     "url": "https://www.cyberark.com/products/secrets-management/",
     "email": "https://www.cyberark.com/services-support/technical-support-contact/",

@@ -111,7 +111,7 @@
 </table>
 <h4> </h4>
 <h4>Human Readable Output</h4>
-<h4> <img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip0.png">
+<h4> <img src="../../doc_files/integration-ReversingLabs_A1000_mceclip0.png">
 </h4>
 <h4>Raw Output</h4>
 <pre>{
@@ -154,7 +154,7 @@
 </table>
 <h4> </h4>
 <h4>Human Readable Output</h4>
-<pre> <img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip1.png"></pre>
+<pre> <img src="../../doc_files/integration-ReversingLabs_A1000_mceclip1.png"></pre>
 <h4>Raw Output</h4>
 <pre>{
      "code": 200,
@@ -193,7 +193,7 @@
 </table>
 <h4>  </h4>
 <h4>Human Readable Output</h4>
-<p> <img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip2.png"></p>
+<p> <img src="../../doc_files/integration-ReversingLabs_A1000_mceclip2.png"></p>
 <h4>Raw Output</h4>
 <p>There is no raw output for this command.</p>
 <p>When the command runs successfully, you get a downloadable file.</p>
@@ -232,7 +232,7 @@
 </table>
 <h4> </h4>
 <h4>Human Readable Output</h4>
-<h4> <img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip3.png">
+<h4> <img src="../../doc_files/integration-ReversingLabs_A1000_mceclip3.png">
 </h4>
 <h4>Raw Output</h4>
 <p>There is no raw output for this command.</p>
@@ -272,7 +272,7 @@
 </table>
 <h4> </h4>
 <h4>Human Readable Output</h4>
-<p> <img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip4.png"></p>
+<p> <img src="../../doc_files/integration-ReversingLabs_A1000_mceclip4.png"></p>
 <h4>Raw Output</h4>
 <pre>{
  "count": 5,
@@ -358,7 +358,7 @@ ReversingLabs
 </table>
 <h4>  </h4>
 <h4>Human Readable Output</h4>
-<p> <img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip5.png"></p>
+<p> <img src="../../doc_files/integration-ReversingLabs_A1000_mceclip5.png"></p>
 <h4>Raw Output</h4>
 <pre>{
      "code": 200,
@@ -399,7 +399,7 @@ ReversingLabs
 </table>
 <h4> </h4>
 <h4>Human Readable Output</h4>
-<p> <img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip6.png"></p>
+<p> <img src="../../doc_files/integration-ReversingLabs_A1000_mceclip6.png"></p>
 <h4>Context Output</h4>
 <table border="2" width="624" cellpadding="6">
 <tbody>

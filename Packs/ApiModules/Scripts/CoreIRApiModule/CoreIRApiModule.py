@@ -244,7 +244,7 @@ class CoreClient(BaseClient):
         try:
             decoder = base64.b64decode if response_data_type == "bin" else json.loads
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
-            return decoder(response['data'])   # type: ignore[operator]
+            return decoder(response['data'])  # type: ignore[operator]
         except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
@@ -1363,7 +1363,7 @@ class CoreClient(BaseClient):
             resp_type='response',
         )
 
-    def action_status_get(self, action_id) -> Dict[str, Any]:
+    def action_status_get(self, action_id) -> Dict[str, Dict[str, Any]]:
         request_data: Dict[str, Any] = {
             'group_action_id': action_id,
         }
@@ -1376,7 +1376,7 @@ class CoreClient(BaseClient):
         )
         demisto.debug(f"action_status_get = {reply}")
 
-        return reply.get('reply').get('data')
+        return reply.get('reply')
 
     @logger
     def get_file(self, file_link):
@@ -1757,6 +1757,7 @@ def run_polling_command(client: CoreClient,
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
     if values_raise_error and result in values_raise_error:
+        return_results(command_results)
         raise DemistoException(f"The command {cmd} failed. Received status {result}")
     if cond:
         # schedule next poll
@@ -1959,22 +1960,36 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
     demisto.debug(f'action_status_get_command {action_id_list=}')
     result = []
     for action_id in action_id_list:
-        data = client.action_status_get(action_id)
+        reply = client.action_status_get(action_id)
+        data = reply.get('data') or {}
+        error_reasons = reply.get('errorReasons', {})
 
         for endpoint_id, status in data.items():
-            result.append({
+            action_result = {
                 'action_id': action_id,
                 'endpoint_id': endpoint_id,
                 'status': status,
-            })
+            }
+            if error_reason := error_reasons.get(endpoint_id):
+                action_result['ErrorReasons'] = error_reason
+                action_result['error_description'] = (error_reason.get('errorDescription')
+                                                      or get_missing_files_description(error_reason.get('missing_files'))
+                                                      or 'An error occurred while processing the request.')
+            result.append(action_result)
 
     return CommandResults(
-        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
+                                        headers=['action_id', 'endpoint_id', 'status', 'error_description']),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
                        f'GetActionStatus(val.action_id == obj.action_id)',
         outputs=result,
         raw_response=result
     )
+
+
+def get_missing_files_description(missing_files):
+    if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):
+        return missing_files[0].get('description')
 
 
 def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
@@ -2416,11 +2431,50 @@ def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandRe
     )
 
 
+def form_powershell_command(unescaped_string: str) -> str:
+    """
+    Builds a Powershell command using prefix and a shell-escaped string.
+
+    Args:
+        unescaped_string (str): An unescaped command string.
+
+    Returns:
+        str: Prefixed and escaped command.
+    """
+    escaped_string = ''
+
+    for i, char in enumerate(unescaped_string):
+        if char == "'":
+            escaped_string += "''"
+
+        elif char == '"':
+            backslash_count = 0
+            for j in range(i - 1, -1, -1):
+                if unescaped_string[j] != '\\':
+                    break
+                backslash_count += 1
+
+            escaped_string += ('\\' * backslash_count) + '\\"'
+
+        else:
+            escaped_string += char
+
+    return f"powershell -Command '{escaped_string}'"
+
+
 def run_script_execute_commands_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'commands_list': argToList(args.get('commands'))}
+
+    commands = args.get('commands')
+    is_raw_command = argToBoolean(args.get('is_raw_command', False))
+    commands_list = remove_empty_elements([commands]) if is_raw_command else argToList(commands)
+
+    if args.get('command_type') == 'powershell':
+        commands_list = [form_powershell_command(command) for command in commands_list]
+    parameters = {'commands_list': commands_list}
+
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)
     reply = response.get('reply')
     return CommandResults(
@@ -2748,19 +2802,29 @@ def get_audit_agent_reports_command(client, args):
 def get_distribution_url_command(client, args):
     distribution_id = args.get('distribution_id')
     package_type = args.get('package_type')
+    download_package = argToBoolean(args.get('download_package', False))
 
     url = client.get_distribution_url(distribution_id, package_type)
 
-    return (
-        f'[Distribution URL]({url})',
-        {
-            f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution(val.id == obj.id)': {
+    if download_package and package_type not in ['x64', 'x86']:
+        raise DemistoException("`download_package` argument can be used only for package_type 'x64' or 'x86'.")
+
+    if not download_package:
+        return CommandResults(
+            outputs={
                 'id': distribution_id,
                 'url': url
-            }
-        },
-        url
-    )
+            },
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution',
+            outputs_key_field='id',
+            readable_output=f'[Distribution URL]({url})'
+        )
+
+    return download_installation_package(client,
+                                         url,
+                                         package_type,
+                                         distribution_id,
+                                         args.get("integration_context_brand", "CoreApiModule"))
 
 
 def get_distribution_status_command(client, args):
@@ -2782,6 +2846,32 @@ def get_distribution_status_command(client, args):
         },
         distribution_list
     )
+
+
+def download_installation_package(client, url: str, package_type: str, distribution_id: str, brand: str):
+    dist_file_contents = client._http_request(
+        method='GET',
+        full_url=url,
+        resp_type="content"
+    )
+    if package_type in ["x64", "x86"]:
+        file_ext = "msi"
+    else:
+        file_ext = "zip"
+    file_result = fileResult(
+        filename=f"xdr-agent-install-package.{file_ext}",
+        data=dist_file_contents
+    )
+    result = CommandResults(
+        outputs={
+            'id': distribution_id,
+            'url': url
+        },
+        outputs_prefix=f'{brand}.Distribution',
+        outputs_key_field='id',
+        readable_output="Installation package downloaded successfully."
+    )
+    return [file_result, result]
 
 
 def get_process_context(alert, process_type):
@@ -3160,33 +3250,39 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     return xdr_close_reason
 
 
-def handle_outgoing_issue_closure(remote_args):
-    incident_id = remote_args.remote_incident_id
-    demisto.debug(f"handle_outgoing_issue_closure {incident_id=}")
-    update_args = remote_args.delta
-    current_remote_status = remote_args.data.get('status') if remote_args.data else None
-    close_reason = update_args.get('close_reason') or update_args.get('closeReason')
-    demisto.debug(f'{current_remote_status=} {remote_args.data=} {remote_args.inc_status=} {close_reason=}')
-    # force closing remote incident only if:
-    #   The XSOAR incident is closed
-    #   and the remote incident isn't already closed
-    if remote_args.inc_status == 2 and current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR and close_reason:
-        if close_notes := update_args.get('closeNotes'):
-            demisto.debug(f"handle_outgoing_issue_closure {incident_id=} {close_notes=}")
-            update_args['resolve_comment'] = close_notes
+def handle_outgoing_issue_closure(parsed_args: UpdateRemoteSystemArgs):
+    """
+    Handle closure of an outgoing issue by updating the delta field in the parsed_args object. The closed_reason will
+    be determined based on whether it exists in XSOAR or XDR. If the XSOAR incident is closed and the remote incident isn't
+    already closed, update the delta with resolve comment or xsoar close-reason.
 
-        xdr_close_reason = resolve_xdr_close_reason(close_reason)
-        update_args['status'] = xdr_close_reason
-        demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident {incident_id=} with status {update_args['status']}")
+    Args:
+        parsed_args (object): An object of type UpdateRemoteSystemArgs, containing the parsed arguments.
+    """
+
+    close_reason_fields = ['close_reason', 'closeReason', 'closeNotes', 'resolve_comment', 'closingUserId']
+    closed_reason = (next((parsed_args.delta.get(key) for key in close_reason_fields if parsed_args.delta.get(key)), None)
+                     or next((parsed_args.data.get(key) for key in close_reason_fields if parsed_args.data.get(key)), None))
+    demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {closed_reason=}")
+    remote_xdr_status = parsed_args.data.get('status') if parsed_args.data else None
+    if parsed_args.inc_status == IncidentStatus.DONE and closed_reason and remote_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug("handle_outgoing_issue_closure: XSOAR is closed, xdr is open. updating delta")
+        if close_notes := parsed_args.delta.get('closeNotes'):
+            demisto.debug(f"handle_outgoing_issue_closure: adding resolve comment to the delta. {close_notes}")
+            parsed_args.delta['resolve_comment'] = close_notes
+
+        parsed_args.delta['status'] = resolve_xdr_close_reason(closed_reason)
+        demisto.debug(
+            f"handle_outgoing_issue_closure Closing Remote incident ID: {parsed_args.remote_incident_id}"
+            f" with status {parsed_args.delta['status']}")
 
 
-def get_update_args(remote_args):
+def get_update_args(parsed_args):
     """Change the updated field names to fit the update command"""
-
-    handle_outgoing_issue_closure(remote_args)
-    handle_outgoing_incident_owner_sync(remote_args.delta)
-    handle_user_unassignment(remote_args.delta)
-    return remote_args.delta
+    handle_outgoing_issue_closure(parsed_args)
+    handle_outgoing_incident_owner_sync(parsed_args.delta)
+    handle_user_unassignment(parsed_args.delta)
+    return parsed_args.delta
 
 
 def get_distribution_versions_command(client, args):
@@ -3724,6 +3820,13 @@ def filter_vendor_fields(alert: dict):
 
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    for alert_id in alert_id_list:
+        if alert_id and re.match(r'^[a-fA-F0-9-]{32,36}\$&\$.+$', alert_id):
+            raise DemistoException(f"Error: Alert ID {alert_id} is invalid. This issue arises because the playbook is running in"
+                                   f" debug mode, which replaces the original alert ID with a debug alert ID, causing the task to"
+                                   f" fail. To run this playbook in debug mode, please update the 'alert_ids' value to the real "
+                                   f"alert ID in the relevant task. Alternatively, run the playbook on the actual alert "
+                                   f"(not in debug mode) to ensure task success.")
     events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
@@ -4403,7 +4506,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
 
     else:
-        list_limit = int(args.get('limit', 50))
+        list_limit = int(args.get('limit', 10))
 
         try:
             outputs = get_func().get('reply', [])[:list_limit]

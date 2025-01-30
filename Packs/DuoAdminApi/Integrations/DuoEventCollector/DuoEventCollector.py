@@ -66,7 +66,8 @@ class Client:
                 elif request_order[0] == LogType.TELEPHONY:
                     events = self.handle_telephony_logs_v1()
 
-                elif request_order[0] == LogType.ADMINISTRATION:
+                else:  # request_order[0] == LogType.ADMINISTRATION:
+                    demisto.debug(f"{request_order[0]=} should be LogType.ADMINISTRATION")
                     events = self.handle_administration_logs()
 
                 return events, response_metadata
@@ -94,9 +95,9 @@ class Client:
         """
         demisto.debug(f'check_window_before_call {mintime=}')
         mintime_dt = datetime.fromtimestamp(mintime)
-        if self.params.fetch_delay != '0' and self.params.end_window <= mintime_dt:
+        if self.params.fetch_delay != '0' and self.params.end_window - timedelta(seconds=5) <= mintime_dt:
             demisto.debug(f"check_window_before_call, don't perform API call {self.params.fetch_delay=} and "
-                          f"{self.params.end_window=} <= {mintime_dt=}")
+                          f"{(self.params.end_window - timedelta(seconds=5))=} <= {mintime_dt=}")
             return False
         demisto.debug('check_window_before_call, perform API call')
         return True

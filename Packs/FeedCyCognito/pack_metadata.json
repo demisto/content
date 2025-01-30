@@ -2,7 +2,7 @@
     "name": "CyCognito Feed",
     "description": "Provides a feed integration to retrieve the discovered assets.",
     "support": "partner",
-    "currentVersion": "1.0.23",
+    "currentVersion": "1.0.25",
     "author": "CyCognito",
     "url": "",
     "email": "support@cycognito.com",

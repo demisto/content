@@ -119,7 +119,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.108110
+  dockerimage: demisto/auth-utils:1.0.0.115527
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2

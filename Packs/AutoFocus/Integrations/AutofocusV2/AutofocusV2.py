@@ -15,8 +15,7 @@ API_KEY = AutoFocusKeyRetriever(PARAMS.get('credentials', {}).get('password') or
 
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'
-# Should we use SSL
-USE_SSL = not PARAMS.get('insecure', False)
+
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
 VENDOR_NAME = 'AutoFocus V2'
@@ -280,8 +279,8 @@ API_POINTS_TABLE = CommandResults(
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, verify: bool = True):
-        super().__init__(base_url=url, verify=verify)
+    def __init__(self, url: str, verify: bool = True, proxy: bool = False):
+        super().__init__(base_url=url, verify=verify, proxy=proxy)
 
     def parse_response(self, resp: requests.Response, err_operation: str | None) -> dict:
         try:
@@ -998,6 +997,9 @@ def build_indicator_children_query(used_indicator, indicators_values):
         field_api_name = API_PARAM_DICT['search_arguments'][used_indicator]['api_name']  # type: ignore
         operator = API_PARAM_DICT['search_arguments'][used_indicator]['operator']  # type: ignore
         children_list = children_list_generator(field_api_name, operator, indicators_values)
+    else:
+        children_list = []
+        demisto.debug(f"{indicators_values=} -> {children_list=}")
     return children_list
 
 
@@ -1972,14 +1974,14 @@ def main():
     demisto.debug(f'Command being called is {command}')
     reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
     create_relationships = PARAMS.get('create_relationships', True)
+    proxy = PARAMS.get('proxy', False)
+    USE_SSL = not PARAMS.get('insecure', False)     # Should we use SSL
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         raise Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
-    client = Client(url=BASE_URL, verify=USE_SSL)
-    # Remove proxy if not set to true in params
-    handle_proxy()
+    client = Client(url=BASE_URL, verify=USE_SSL, proxy=proxy)
     args = demisto.args() | {
         'reliability': reliability,
         'create_relationships': create_relationships,

@@ -1,4 +1,7 @@
 category: Messaging and Conferencing
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Zoom
   version: -1
@@ -8,24 +11,29 @@ configuration:
   type: 0
   defaultvalue: "https://api.zoom.us/v2/"
   required: true
+  section: Connect
 - display: Account ID (OAuth)
   name: account_id
   type: 0
   required: true
+  section: Connect
 - display: Client ID (OAuth)
   name: credentials
   type: 9
   displaypassword: Client Secret (OAuth)
   required: true
+  section: Connect
 - display: Bot JID
   name: botJID
   type: 0
   required: false
   hiddenpassword: true
   additionalinfo: The BotJID in the Chat subscription section on the Features page of your App Dashboard.
+  section: Connect
 - display: Bot Client ID ((Team Chat App))
   name: bot_credentials
   type: 9
+  section: Connect
   displaypassword: Bot Client Secret (Team Chat App)
 - name: secret_token
   type: 9
@@ -33,35 +41,39 @@ configuration:
   required: false
   displaypassword: Secret Token(Team Chat App)
   additionalinfo: You must provide this token for mirror-investigation.
+  section: Connect
 - name: verification_token
   type: 9
   hiddenusername: true
   required: false
   displaypassword: Verification Token(Team Chat App)
   additionalinfo: Token to verify the messages from Zoom.
+  section: Connect
 - display: Long running instance
   name: longRunning
-  section: Collect
+  section: Connect
   type: 8
+- display: Listen Port
+  name: longRunningPort
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: Required when choosing an external engine. You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - defaultvalue: 'false'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
   section: Collect
   additionalinfo: You most enable or run mirror-investigation.
-- display: Listen Port
-  name: longRunningPort
-  type: 0
-  section: Collect
-  required: false
-  additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Certificate (Required for HTTPS)
   additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are supported only using engine.
   name: certificate
@@ -1290,7 +1302,7 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:0.111.0.101615
+  dockerimage: demisto/fastapi:0.115.5.117397
   script: "-"
   subtype: python3
   type: python

@@ -52,6 +52,11 @@ configuration:
   name: benign_tag_ids
   type: 12
   required: false
+- display: Should the warninglists be considered when searching for an attribute
+  name: search_warninglists
+  defaultvalue: "false"
+  type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -2712,7 +2717,7 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:2.4.198.112027
+  dockerimage: demisto/pymisp2:2.5.4.1858064
   runonce: false
   script: ''
   subtype: python3

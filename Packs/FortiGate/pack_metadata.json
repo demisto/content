@@ -2,7 +2,7 @@
     "name": "FortiGate",
     "description": "Manage FortiGate Firewall",
     "support": "xsoar",
-    "currentVersion": "2.0.6",
+    "currentVersion": "2.0.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

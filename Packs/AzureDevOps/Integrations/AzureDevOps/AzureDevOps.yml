@@ -2987,7 +2987,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.111961
+  dockerimage: demisto/crypto:1.0.0.117163
   isremotesyncout: true
   ismappable: true
   isfetch: true

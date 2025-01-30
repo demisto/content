@@ -10,7 +10,7 @@ comment: XCLOUD dynamic section, showing the top ten resource types in a pie cha
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.80014
+dockerimage: demisto/python3:3.11.10.116439
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

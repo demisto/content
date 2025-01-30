@@ -287,13 +287,13 @@ class MsGraphMailBaseClient(MicrosoftClient):
             if not attachment_name.isascii():
                 try:
                     demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
-                    attachment_name = base64.b64decode(attachment_name)  # type: ignore
+                    attachment_name = b64_decode(attachment_name)  # type: ignore
                 except Exception as e:
                     demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
 
             if attachment_type == self.FILE_ATTACHMENT:
                 try:
-                    attachment_content = base64.b64decode(attachment.get('contentBytes', ''))
+                    attachment_content = b64_decode(attachment.get('contentBytes', ''))
                 except Exception as e:  # skip the uploading file step
                     demisto.info(f"failed in decoding base64 file attachment with error {str(e)}")
                     continue
@@ -1163,7 +1163,7 @@ class GraphMailUtils:
                 att = {
                     'maintype': maintype,
                     'subtype': subtype,
-                    'data': base64.b64decode(m.group(3)),
+                    'data': b64_decode(m.group(3)),
                     'name': name,
                     'cid': f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}',
                 }
@@ -1215,7 +1215,7 @@ class GraphMailUtils:
         elif command == 'reply-to':
             return {
                 'to_recipients': argToList(args.get('to')),
-                'message_id': args.get('ID') or args.get('message_id') or '',
+                'message_id': GraphMailUtils.handle_message_id(args.get('ID') or args.get('message_id') or ''),
                 'comment': args.get('body') or args.get('comment'),
                 'attach_ids': argToList(args.get('attachIDs') or args.get('attach_ids')),
                 'attach_names': argToList(args.get('attachNames') or args.get('attach_names')),
@@ -1226,7 +1226,7 @@ class GraphMailUtils:
             return {
                 'user_id': args.get('user_id'),
                 'folder_id': args.get('folder_id'),
-                'message_id': args.get('message_id'),
+                'message_id': GraphMailUtils.handle_message_id(args.get('message_id', '')),
                 'odata': args.get('odata')
             }
 
@@ -1298,7 +1298,7 @@ class GraphMailUtils:
             if return_message_attachment_as_downloadable_file:
                 # return the message attachment as a file result
                 attachment_content = client._get_attachment_mime(
-                    args.get('message_id'),
+                    GraphMailUtils.handle_message_id(args.get('message_id', '')),
                     args.get('attachment_id'),
                     user_id, False)
                 attachment_name: str = (item.get("name") or item.get('subject')
@@ -1345,7 +1345,7 @@ class GraphMailUtils:
             name = f"{content_id}-attachmentName-{name}"
         data = raw_attachment.get('contentBytes')
         try:
-            data = base64.b64decode(data)  # type: ignore
+            data = b64_decode(data)  # type: ignore
             return fileResult(name, data)
         except binascii.Error:
             raise DemistoException('Attachment could not be decoded')
@@ -1705,6 +1705,16 @@ class GraphMailUtils:
             'attachments': GraphMailUtils.build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
         }
 
+    @staticmethod
+    def handle_message_id(message_id: str) -> str:
+        """
+        Handle a Microsoft Graph API message ID by replacing forward slashes with hyphens.
+        """
+        if '/' in message_id:
+            message_id = message_id.replace('/', '-')
+            demisto.debug(f'Handling message_id: {message_id}')
+        return message_id
+
 
 # COMMANDS
 def list_mails_command(client: MsGraphMailBaseClient, args) -> CommandResults | dict:
@@ -1824,7 +1834,11 @@ def get_message_command(client: MsGraphMailBaseClient, args) -> CommandResults:
 
 
 def delete_mail_command(client: MsGraphMailBaseClient, args) -> CommandResults:
-    delete_mail_args = {arg_key: args.get(arg_key) for arg_key in ['user_id', 'folder_id', 'message_id']}
+    delete_mail_args = {
+        'user_id': args.get('user_id'),
+        'message_id': GraphMailUtils.handle_message_id(args.get('message_id', '')),
+        'folder_id': args.get('folder_id')
+    }
     client.delete_mail(**delete_mail_args)
 
     human_readable = tableToMarkdown('Message has been deleted successfully', delete_mail_args, removeNull=True)
@@ -1834,7 +1848,7 @@ def delete_mail_command(client: MsGraphMailBaseClient, args) -> CommandResults:
 
 def list_attachments_command(client: MsGraphMailBaseClient, args) -> CommandResults:
     user_id = args.get('user_id')
-    message_id = args.get('message_id')
+    message_id = GraphMailUtils.handle_message_id(args.get('message_id', ''))
     folder_id = args.get('folder_id')
     raw_response = client.list_attachments(user_id, message_id, folder_id)
     if not (attachments := raw_response.get('value')):
@@ -1864,8 +1878,12 @@ def list_attachments_command(client: MsGraphMailBaseClient, args) -> CommandResu
 
 
 def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandResults | dict]:
-    kwargs = {arg_key: args.get(arg_key) for arg_key in ['message_id', 'folder_id', 'attachment_id']}
-    kwargs['user_id'] = args.get('user_id', client._mailbox_to_fetch)
+    kwargs = {
+        'message_id': GraphMailUtils.handle_message_id(args.get('message_id', '')),
+        'user_id': args.get('user_id', client._mailbox_to_fetch),
+        'folder_id': args.get('folder_id'),
+        'attachment_id': args.get('attachment_id'),
+    }
     raw_response = client.get_attachment(**kwargs)
     return [GraphMailUtils.create_attachment(raw_attachment=attachment, user_id=kwargs['user_id'], args=args, client=client,
                                              legacy_name=client.legacy_name) for attachment in raw_response]
@@ -1951,7 +1969,7 @@ def delete_folder_command(client: MsGraphMailBaseClient, args):
 
 def move_email_command(client: MsGraphMailBaseClient, args):
     user_id = args.get('user_id')
-    message_id = args.get('message_id')
+    message_id = GraphMailUtils.handle_message_id(args.get('message_id', ''))
     destination_folder_id = args.get('destination_folder_id')
 
     raw_response = client.move_email(user_id, message_id, destination_folder_id)
@@ -1974,7 +1992,7 @@ def move_email_command(client: MsGraphMailBaseClient, args):
 
 def get_email_as_eml_command(client: MsGraphMailBaseClient, args):
     user_id = args.get('user_id')
-    message_id = args.get('message_id')
+    message_id = GraphMailUtils.handle_message_id(args.get('message_id', ''))
 
     eml_content = client.get_email_as_eml(user_id, message_id)
     file_result = fileResult(f'{message_id}.eml', eml_content)
@@ -1997,7 +2015,7 @@ def send_draft_command(client: MsGraphMailBaseClient, args):
 def update_email_status_command(client: MsGraphMailBaseClient, args) -> CommandResults:
     user_id = args.get('user_id')
     folder_id = args.get('folder_id')
-    message_ids = argToList(args['message_ids'])
+    message_ids = argToList(args['message_ids'], transform=GraphMailUtils.handle_message_id)
     status: str = args['status']
     mark_as_read = (status.lower() == 'read')
 

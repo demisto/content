@@ -1,0 +1,44 @@
+{
+    "shodan_banner_raw": {
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "expiration": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "size": {
+            "type": "int",
+            "is_array": false
+        },
+        "created": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "expires": {
+            "type": "int",
+            "is_array": false
+        },
+        "filters": {
+            "type": "string",
+            "is_array": false
+        },
+        "triggers": {
+            "type": "string",
+            "is_array": false
+        },
+        "notifiers": {
+            "type": "string",
+            "is_array": false
+        },
+        "has_triggers": {
+            "type": "boolean",
+            "is_array": false
+        }
+    }
+}

@@ -150,7 +150,7 @@ script:
       name: limit
     description: Gets the feed indicators.
     name: acti-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.102774
+  dockerimage: demisto/py3-tools:1.0.0.114656
   feed: true
   runonce: false
   script: '-'

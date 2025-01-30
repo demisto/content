@@ -77,7 +77,7 @@ script:
       name: md5Secret
     description: Retrieve screenshot
     name: screenshot-machine-get-screenshot
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.11.10.116439
   runonce: false
   script: ''
   subtype: python3

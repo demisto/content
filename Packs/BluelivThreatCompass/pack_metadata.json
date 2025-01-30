@@ -2,7 +2,7 @@
     "name": "Blueliv ThreatCompass",
     "description": "Blueliv ThreatCompass systematically looks for information about companies,products, people, brands, logos, assets, technology and other information, depending on your needs. Blueliv ThreatCompass allows you to monitor and track all this information to keep your data, your organization and its employees safe",
     "support": "community",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Oriol Campderrós",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

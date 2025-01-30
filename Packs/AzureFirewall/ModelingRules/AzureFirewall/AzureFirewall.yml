@@ -1,0 +1,6 @@
+fromversion: 8.7.0
+id: Azure_Firewall_ModelingRule
+name: Azure Firewall Modeling Rule
+rules: ''
+schema: ''
+tags:

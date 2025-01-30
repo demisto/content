@@ -47,7 +47,7 @@ type: python
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
-dockerimage: demisto/python3:3.10.14.99865
+dockerimage: demisto/python3:3.11.10.115186
 marketplaces:
 - xsoar
 - xsoar_on_prem

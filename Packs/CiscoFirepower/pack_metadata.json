@@ -2,7 +2,7 @@
     "name": "Cisco Firepower",
     "description": "Use the CiscoFirepower integration for unified management of firewalls, application control",
     "support": "xsoar",
-    "currentVersion": "1.2.4",
+    "currentVersion": "1.2.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

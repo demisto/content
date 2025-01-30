@@ -1,23 +1,19 @@
 Continuous Breach And Attack Simulation
 
-## Configure PICUS on Cortex XSOAR
+## Configure PICUS in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PICUS.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | PICUS URL | For example : https://192.168.100.100/ | True |
-    | API Key - Refresh Token | Picus Interface  - SETTINGS -  ADVANCED - API TOKEN - Generate and Show Token | True |
-    | Trust any certificate (not secure) |  |  |
-    | Use system proxy settings |  |  |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| PICUS URL | For example : https://192.168.100.100/ | True |
+| API Key - Refresh Token | Picus Interface  - SETTINGS -  ADVANCED - API TOKEN - Generate and Show Token | True |
+| Trust any certificate (not secure) |  |  |
+| Use system proxy settings |  |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### picus-vector-compare

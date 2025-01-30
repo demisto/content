@@ -21,6 +21,7 @@ class TempFile:
             temp_file.write(data)
 
     def __del__(self):
+        import os
         os.remove(self.path)
 
 
@@ -321,7 +322,7 @@ def build_generic_object(template_name: str, args: list[dict]) -> GenericObjectG
 def build_custom_object(template_name: str, args: list[dict]):
     obj = PYMISP.object_templates()
     for entry in obj:
-        if str(entry.get('ObjectTemplate', {}).get('name')).lower() == template_name:
+        if str(entry.get('ObjectTemplate', {}).get('name')).lower() == template_name:  # type: ignore[union-attr]
 
             custom_obj = PYMISP.get_raw_object_template(template_name)
 
@@ -409,10 +410,10 @@ def limit_tag_output_to_id_and_name(attribute_dict, is_event_level):
         is_event_tag = tag.get('inherited', 0)  # field doesn't exist when this is an attribute level, default is '0'
         tag_id = tag.get('id')
         if is_event_level:
-            tag_set_ids.add(tag_id)
+            tag_set_ids.add(str(tag_id))
         else:  # attribute level
             if not is_event_tag:
-                tag_set_ids.add(tag_id)
+                tag_set_ids.add(str(tag_id))
         output.append({'ID': tag_id, 'Name': tag.get('name')})
     return output, tag_set_ids
 
@@ -562,7 +563,7 @@ def get_new_misp_event_object(args):
         event.threat_level_id = THREAT_LEVELS_TO_ID[threat_level_id_arg]
 
     analysis_arg = args.get('analysis')
-    event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg) if analysis_arg in MISP_ANALYSIS_TO_IDS else analysis_arg
+    event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg, analysis_arg)
     event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
     event.date = datetime.strptime(args.get('creation_date'), "%Y-%m-%d") if args.get('creation_date') else datetime.today()
     event.published = argToBoolean(args.get('published', 'False'))
@@ -622,8 +623,8 @@ def get_organizations_info():
     organizations = PYMISP.organisations()
     org_info = []
     for organization in organizations:
-        org_id = organization.get('Organisation', {}).get('id')
-        org_name = organization.get('Organisation', {}).get('name')
+        org_id = organization.get('Organisation', {}).get('id')  # type: ignore[union-attr]
+        org_name = organization.get('Organisation', {}).get('name')  # type: ignore[union-attr]
         if org_id and org_name:
             org_info.append({'name': org_name, 'id': org_id})
     if org_info:
@@ -645,8 +646,8 @@ def get_role_info():
     roles = PYMISP.roles()
     role_info = []
     for role in roles:
-        role_name = role.get('Role', {}).get('name')
-        role_id = role.get('Role', {}).get('id')
+        role_name = role.get('Role', {}).get('name')  # type: ignore[union-attr]
+        role_id = role.get('Role', {}).get('id')  # type: ignore[union-attr]
         if role_name and role_id:
             role_info.append({'name': role_name, 'id': role_id})
     if role_info:
@@ -698,7 +699,7 @@ def add_attribute(
         if not response:
             raise DemistoException(
                 f"Error: An event with the given id: {event_id} was not found in MISP. please check it once again")
-        new_event = response[0]  # type: ignore[assignment]
+        new_event = response[0]  # type: ignore[assignment,index]
         # response[0] is MISP event
 
     if not isinstance(new_event, MISPEvent):
@@ -721,13 +722,13 @@ def add_attribute(
 
 
 def generic_reputation_command(demisto_args, reputation_type, dbot_type, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
-                               reliability, attributes_limit):
+                               reliability, attributes_limit, search_warninglists: bool = False):
     reputation_value_list = argToList(demisto_args.get(reputation_type), ',')
     command_results = []
     for value in reputation_value_list:
         command_results.append(
             get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, reliability,
-                                  attributes_limit))
+                                  attributes_limit, search_warninglists))
     return command_results
 
 
@@ -754,7 +755,8 @@ def get_indicator_results(
     suspicious_tag_ids: set,
     benign_tag_ids: set,
     reliability: DBotScoreReliability,
-    attributes_limit: int
+    attributes_limit: int,
+    search_warninglists: bool = False
 ):
     """
     This function searches for the given attribute value in MISP and then calculates it's dbot score.
@@ -767,6 +769,7 @@ def get_indicator_results(
         benign_tag_ids (set): Tag ids should be recognised as benign
         reliability (DBotScoreReliability): integration reliability score.
         attributes_limit (int) : Limits the number of attributes that will be written to the context
+        search_warninglists: (optional, bool): Should the warninglists be included?
 
     Returns:
         CommandResults includes all the indicator results.
@@ -776,22 +779,41 @@ def get_indicator_results(
     if TO_IDS:
         # to_ids flag represents whether the attribute is meant to be actionable
         # Actionable defined attributes can be used in automated processes as a pattern for detection
-        misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
-                                      include_correlations=True, include_event_tags=True, enforce_warninglist=True,
-                                      include_decay_score=True, includeSightings=True, to_ids=TO_IDS, org=ALLOWED_ORGS)
+        misp_response = PYMISP.search(
+            value=value,
+            controller='attributes',
+            include_context=True,
+            include_correlations=True,
+            include_event_tags=True,
+            enforce_warninglist=not search_warninglists,
+            include_decay_score=True,
+            includeSightings=True,
+            to_ids=TO_IDS,
+            org=ALLOWED_ORGS
+        )
     else:
-        misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
-                                      include_correlations=True, include_event_tags=True, enforce_warninglist=True,
-                                      include_decay_score=True, includeSightings=True, org=ALLOWED_ORGS)
+        misp_response = PYMISP.search(
+            value=value,
+            controller='attributes',
+            include_context=True,
+            include_correlations=True,
+            include_event_tags=True,
+            enforce_warninglist=not search_warninglists,
+            include_decay_score=True,
+            includeSightings=True,
+            org=ALLOWED_ORGS
+        )
 
     indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')  # type: ignore[union-attr]
     if is_indicator_found:
-        outputs, score, found_tag, found_related_events = parse_response_reputation_command(misp_response,
-                                                                                            malicious_tag_ids,
-                                                                                            suspicious_tag_ids,
-                                                                                            benign_tag_ids,
-                                                                                            attributes_limit)
+        outputs, score, found_tag, found_related_events = parse_response_reputation_command(
+            misp_response,  # type: ignore[arg-type]
+            malicious_tag_ids,
+            suspicious_tag_ids,
+            benign_tag_ids,
+            attributes_limit
+        )
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
@@ -807,7 +829,49 @@ def get_indicator_results(
                               outputs_prefix='MISP.Attribute',
                               outputs_key_field='ID',
                               readable_output=readable_output)
+
     else:
+        if search_warninglists:
+            res: list = []
+            human_readable: str = ""
+            misp_warninglists_response = PYMISP.values_in_warninglist([value])
+            if 'errors' in misp_warninglists_response:
+                raise DemistoException(
+                    f'Unable to validate against MISP warninglists!\nError message: {misp_warninglists_response}')
+            if (misp_warninglists_response and isinstance(misp_warninglists_response, dict)
+                    and len(misp_warninglists_response.items()) > 0):
+                lists = list(misp_warninglists_response.values())[0]
+                list_names: str = ",".join([x["name"] for x in lists])
+                dbot = Common.DBotScore(
+                    indicator=value,
+                    indicator_type=indicator_type,
+                    score=Common.DBotScore.GOOD, reliability=reliability,
+                    malicious_description=f"Match found in MISP warninglist{list_names}"
+                )
+                res.append(
+                    {
+                        "Value": value,
+                        "Count": len(lists),
+                        "Lists": list_names,
+                    }
+                )
+                human_readable = tableToMarkdown(
+                    "MISP Warninglist matchings:",
+                    res,
+                    headers=["Value", "Lists", "Count"],
+                )
+                warninglist_indicator: Optional[Common.Indicator] = get_dbot_indicator(dbot_type, dbot, value)
+                if not warninglist_indicator:
+                    raise DemistoException(f'The indicator type {dbot_type} is unknown!')
+                return CommandResults(
+                    indicator=warninglist_indicator,
+                    raw_response=misp_warninglists_response,
+                    outputs="",
+                    outputs_prefix='MISP.Attribute',
+                    outputs_key_field='ID',
+                    readable_output=human_readable
+                )
+
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 score=Common.DBotScore.NONE, reliability=reliability,
                                 malicious_description="No results were found in MISP")
@@ -858,7 +922,7 @@ def search_events_with_scored_tag(object_data_dict, found_tag, event_name):
     related_events = []
     object_tags_list = object_data_dict.get('Tag', [])
     for tag in object_tags_list:
-        if tag.get('ID') == found_tag:
+        if (tag_id := tag.get('ID')) and str(tag_id) == found_tag:
             event_id = get_event_id(object_data_dict)
             tag_name = tag.get('Name')
             related_events.append({'Event_ID': event_id, 'Event_Name': event_name,
@@ -874,7 +938,22 @@ def get_event_id(data_dict):
     return data_dict.get('Event', {}).get('ID')
 
 
-def get_dbot_indicator(dbot_type, dbot_score, value):
+def get_dbot_indicator(
+    dbot_type: str,
+    dbot_score: Common.DBotScore,
+    value: Any
+) -> Optional[Common.Indicator]:
+    """Converts dbot indicator information to an indicator object
+
+    Args:
+        dbot_type (str): The object type
+        dbot_score (Common.DBotScore): The score of the indicator
+        value (Any): The value of the indicator
+
+    Returns:
+        Optional[Common.Indicator]: The indicator object
+    """
+
     if dbot_type == "FILE":
         hash_type = get_hash_type(value)
         if hash_type == 'md5':
@@ -1347,7 +1426,7 @@ def remove_tag(demisto_args: dict, is_attribute=False):
     tag = demisto_args['tag']
     try:
         response = PYMISP.untag(uuid, tag)
-        if response and response.get('errors'):
+        if response and response.get('errors'):  # type: ignore[union-attr]
             raise DemistoException(f'Error in `{demisto.command()}` command: {response}')
     except PyMISPError:
         raise DemistoException("Removing the required tag was failed. Please make sure the UUID and tag exist.")
@@ -1359,7 +1438,7 @@ def remove_tag(demisto_args: dict, is_attribute=False):
             readable_output=human_readable,
             outputs_prefix='MISP.Attribute',
             outputs_key_field='ID',
-            outputs=build_attributes_search_response(response),
+            outputs=build_attributes_search_response(response),  # type: ignore[arg-type]
             raw_response=response
         )
     # event's uuid
@@ -1369,7 +1448,7 @@ def remove_tag(demisto_args: dict, is_attribute=False):
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='ID',
-        outputs=build_events_search_response(response),
+        outputs=build_events_search_response(response),  # type: ignore[arg-type]
         raw_response=response
     )
 
@@ -1772,7 +1851,7 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
             readable_output="No value is on a MISP warning list!",
             raw_response=response,
         )
-    for value, lists in response.items():
+    for value, lists in response.items():  # type: ignore[union-attr]
         if len(lists) > 0:
             res.append(
                 {
@@ -1800,6 +1879,7 @@ def main():
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
     suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
     benign_tag_ids = argToList(params.get('benign_tag_ids'))
+    search_warninglists: bool = argToBoolean(params.get('search_warninglists', False))
     reliability = params.get('integrationReliability', 'B - Usually reliable')
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
@@ -1842,22 +1922,22 @@ def main():
         elif command == 'file':
             return_results(
                 generic_reputation_command(args, 'file', 'FILE', malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
-                                           reliability, attributes_limit))
+                                           reliability, attributes_limit, search_warninglists))
         elif command == 'url':
             return_results(
                 generic_reputation_command(args, 'url', 'URL', malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, reliability,
-                                           attributes_limit))
+                                           attributes_limit, search_warninglists))
         elif command == 'ip':
             return_results(
                 generic_reputation_command(args, 'ip', 'IP', malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
-                                           reliability, attributes_limit))
+                                           reliability, attributes_limit, search_warninglists))
         elif command == 'domain':
             return_results(
                 generic_reputation_command(args, 'domain', 'DOMAIN', malicious_tag_ids, suspicious_tag_ids,
-                                           benign_tag_ids, reliability, attributes_limit))
+                                           benign_tag_ids, reliability, attributes_limit, search_warninglists))
         elif command == 'email':
             return_results(generic_reputation_command(args, 'email', 'EMAIL', malicious_tag_ids, suspicious_tag_ids,
-                                                      benign_tag_ids, reliability, attributes_limit))
+                                                      benign_tag_ids, reliability, attributes_limit, search_warninglists))
         elif command == 'misp-add-file-object':
             return_results(add_file_object(args))
         elif command == 'misp-add-email-object':

@@ -6,16 +6,16 @@
         "TIM_REVIEWER": "The GitHub username for TIM reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
-        "tcarmeli1",
-        "yaakovpraisler",
-        "aaron1535"
+        "mayyagoldman",
+        "ilaredo",
+        "talzich"
     ],
-    "CONTRIBUTION_TL": "jbabazadeh",
-    "CONTRIBUTION_SECURITY_REVIEWER": ["idovandijk"],
+    "CONTRIBUTION_TL": "JudahSchwartz",
+    "CONTRIBUTION_SECURITY_REVIEWER": ["karinafishman"],
     "ON_CALL_DEVS": [
-        "sshuker",
-        "yhayun"
+        "mwienfeld",
+        "okarkkatz"
     ],
-    "DOC_REVIEWER": "richardbluestone",
+    "DOC_REVIEWER": "ShirleyDenkberg",
     "TIM_REVIEWER": "MLainer1"
 }

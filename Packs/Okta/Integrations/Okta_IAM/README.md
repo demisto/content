@@ -4,11 +4,8 @@ Integrate with Okta's Identity Access Management service to execute CRUD operati
 This integration was integrated and tested with version v1 of the Okta integration.
 For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
-## Configure Okta IAM on Cortex XSOAR
+## Configure Okta IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for Okta IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -33,7 +30,6 @@ For more information, refer to the [Identity Lifecycle Management article](https
 
 * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
 
-4. Click **Test** to check that you are able to connect to the integration.
 
 ## Fetch incidents using an "IAM - Configuration" incident
 When the "Query only application events configured in IAM Configuration" checkbox is selected, add or remove event types for the applications you configured in the **IAM Configuration** incident are retrieved.  You must have at least one application configured in XSOAR to fetch incidents from Okta.
@@ -46,7 +42,7 @@ You may also use the advanced search in Okta's System Logs to generate the filte
 For more details, visit [Okta API reference](https://developer.okta.com/docs/reference/api/system-log/#expression-filter).
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***
@@ -288,9 +284,9 @@ Returns a list of Okta applications data.
 ##### Okta Applications (1 - 3)
 |ID|Name|Label|Logo|
 |---|---|---|---|
-| 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
-| 0oabz0ozy5dDpEKyA0h7 | workday | Workday - Prod - DryRun | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
-| 0oae3ioe51sQ64Aui2h7 | workday | Workday - Impl1 | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
+| 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview | ![](../../doc_files/gfsnda403rf16Qe790h7) |
+| 0oabz0ozy5dDpEKyA0h7 | workday | Workday - Prod - DryRun | ![](../../doc_files/gfsnda403rf16Qe790h7) |
+| 0oae3ioe51sQ64Aui2h7 | workday | Workday - Impl1 | ![](../../doc_files/gfsnda403rf16Qe790h7) |
 
 
 ### okta-list-user-applications
@@ -359,7 +355,7 @@ There are no input arguments for this command.
 ##### Okta IAM Configuration
 |ApplicationID|Instance|Label|Logo|Name|
 |---|---|---|---|---|
-| 0oc8zlypk6GVPRr2G0h7 | ServiceNow IAM_instance_1 | ServiceNow | ![](https://op1static.oktacdn.com/fs/bcg/4/gfskliw1i51ScX6pf0h7) | servicenow |
+| 0oc8zlypk6GVPRr2G0h7 | ServiceNow IAM_instance_1 | ServiceNow | ![](../../doc_files/gfskliw1i51ScX6pf0h7) | servicenow |
 
 
 ### okta-iam-set-configuration

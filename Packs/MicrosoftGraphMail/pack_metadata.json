@@ -2,13 +2,14 @@
     "name": "Microsoft Graph Mail",
     "description": "Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.",
     "support": "xsoar",
-    "currentVersion": "1.6.18",
+    "currentVersion": "1.6.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Cloud Service Provider"
+        "Cloud Service Provider",
+        "Email"
     ],
     "tags": [],
     "useCases": [],

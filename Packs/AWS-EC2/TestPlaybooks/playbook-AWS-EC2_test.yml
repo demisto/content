@@ -47,9 +47,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "12"
-      - "13"
-      - "14"
+      - "47"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -84,9 +82,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "15"
-      - "16"
-      - "17"
+      - "48"
     scriptarguments:
       owners:
         simple: self
@@ -121,15 +117,14 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "18"
-      - "19"
+      - "49"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 895
+          "y": 885
         }
       }
     note: false
@@ -154,9 +149,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "20"
-      - "21"
-      - "22"
+      - "50"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -188,14 +181,10 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "23"
-      - "24"
-      - "25"
+      - "51"
     scriptarguments:
-      filters:
-        simple: name=snapshot-id,values=snap-21b17358
       ownerIds:
-        simple: "099720109477"
+        simple: 364390758643
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -227,9 +216,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "26"
-      - "27"
-      - "28"
+      - "52"
     scriptarguments:
       LaunchTemplateIds:
         simple: ${AWS.EC2.LaunchTemplates.LaunchTemplateId}
@@ -264,8 +251,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "29"
-      - "30"
+      - "53"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -297,9 +283,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "31"
-      - "32"
-      - "33"
+      - "54"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -331,9 +315,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "34"
-      - "35"
-      - "36"
+      - "55"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -365,9 +347,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "37"
-      - "39"
-      - "43"
+      - "56"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -399,1247 +379,14 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "40"
-      - "41"
-      - "42"
+      - "57"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 4025
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: b5bf22f8-b809-4158-8bda-114d1df758f1
-    type: regular
-    task:
-      id: b5bf22f8-b809-4158-8bda-114d1df758f1
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Instances.Monitoring.State
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: b14c8d16-8fa0-46ef-8126-432d41f01c66
-    type: regular
-    task:
-      id: b14c8d16-8fa0-46ef-8126-432d41f01c66
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Instances.LaunchTime
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: bd6e7e99-cc99-4a4e-8d91-558e6693fb90
-    type: regular
-    task:
-      id: bd6e7e99-cc99-4a4e-8d91-558e6693fb90
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Instances.InstanceId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 40ae3958-e69a-40cc-890c-67c330af4e0d
-    type: regular
-    task:
-      id: 40ae3958-e69a-40cc-890c-67c330af4e0d
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Images.ImageId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 69b86082-e31b-4ab9-8d74-e410f4f27cc6
-    type: regular
-    task:
-      id: 69b86082-e31b-4ab9-8d74-e410f4f27cc6
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Images.Name
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 13e746d6-ea63-40af-88c3-55731c447909
-    type: regular
-    task:
-      id: 13e746d6-ea63-40af-88c3-55731c447909
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Images.Architecture
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: ea17bd1f-eec7-4b03-851c-51347347c0e9
-    type: regular
-    task:
-      id: ea17bd1f-eec7-4b03-851c-51347347c0e9
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      path:
-        simple: AWS.Regions.RegionName
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 551a38a6-7126-47d8-8eae-881089a6660b
-    type: regular
-    task:
-      id: 551a38a6-7126-47d8-8eae-881089a6660b
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      path:
-        simple: AWS.Regions.Endpoint
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: f7bde11d-ea36-4efa-89e9-64a30bbe372a
-    type: regular
-    task:
-      id: f7bde11d-ea36-4efa-89e9-64a30bbe372a
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.ElasticIPs.AllocationId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: e904d211-ffcf-4ec2-8eaa-351abfe015ae
-    type: regular
-    task:
-      id: e904d211-ffcf-4ec2-8eaa-351abfe015ae
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.ElasticIPs.AllocationId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 1776952d-65be-402b-8587-0d75a05c2612
-    type: regular
-    task:
-      id: 1776952d-65be-402b-8587-0d75a05c2612
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.ElasticIPs.Region
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 2037ba00-374d-420a-853a-85cef9015b58
-    type: regular
-    task:
-      id: 2037ba00-374d-420a-853a-85cef9015b58
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "44"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Snapshots.StartTime
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 5a1a2c77-380e-4406-81ad-f4cdef33ac5c
-    type: regular
-    task:
-      id: 5a1a2c77-380e-4406-81ad-f4cdef33ac5c
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "44"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Snapshots.VolumeId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: fcf09c1e-040b-4a4c-8e68-2fdac49ac0e1
-    type: regular
-    task:
-      id: fcf09c1e-040b-4a4c-8e68-2fdac49ac0e1
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "44"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Snapshots.SnapshotId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: a1f1fd0b-4d5d-4f30-8c5d-71bd24041e09
-    type: regular
-    task:
-      id: a1f1fd0b-4d5d-4f30-8c5d-71bd24041e09
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "45"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.LaunchTemplates.LaunchTemplateId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: f61449af-ebef-403c-8da8-95bf76b76006
-    type: regular
-    task:
-      id: f61449af-ebef-403c-8da8-95bf76b76006
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "45"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.LaunchTemplates.LaunchTemplateName
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: ccee82c7-0fa3-48ce-8538-c69319d6e04c
-    type: regular
-    task:
-      id: ccee82c7-0fa3-48ce-8538-c69319d6e04c
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "45"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.LaunchTemplates.CreateTime
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 5c1eb4d2-1151-45b7-8a23-af180c3d525b
-    type: regular
-    task:
-      id: 5c1eb4d2-1151-45b7-8a23-af180c3d525b
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.KeyPairs.KeyFingerprint
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 1152a445-c37e-45d3-818d-f8943a3113ee
-    type: regular
-    task:
-      id: 1152a445-c37e-45d3-818d-f8943a3113ee
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.KeyPairs.KeyName
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 4f3ce2cb-a080-43b3-816f-51ecdd9751ab
-    type: regular
-    task:
-      id: 4f3ce2cb-a080-43b3-816f-51ecdd9751ab
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Volumes.AvailabilityZone
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: f659d7a3-6858-4764-852f-c78f028f5bf1
-    type: regular
-    task:
-      id: f659d7a3-6858-4764-852f-c78f028f5bf1
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Volumes.VolumeType
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 3150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 998d5565-0c35-4ceb-81bc-ae8ac3129d5c
-    type: regular
-    task:
-      id: 998d5565-0c35-4ceb-81bc-ae8ac3129d5c
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Volumes.Size
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 3150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 9cef0dfe-d6f5-4ba1-818b-bf6db64c9d4f
-    type: regular
-    task:
-      id: 9cef0dfe-d6f5-4ba1-818b-bf6db64c9d4f
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Vpcs.IsDefault
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 953f2fa2-2104-4dda-8c4b-dd59583b068f
-    type: regular
-    task:
-      id: 953f2fa2-2104-4dda-8c4b-dd59583b068f
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Vpcs.CidrBlock
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 3500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 385429c3-65e3-4b89-81b5-90146294d392
-    type: regular
-    task:
-      id: 385429c3-65e3-4b89-81b5-90146294d392
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Vpcs.VpcId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 3500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: ab9ff5e4-81ce-4614-8935-7856398c17af
-    type: regular
-    task:
-      id: ab9ff5e4-81ce-4614-8935-7856398c17af
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Subnets.SubnetId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: 46047ac0-bd97-4863-86dc-022c67d82399
-    type: regular
-    task:
-      id: 46047ac0-bd97-4863-86dc-022c67d82399
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Subnets.AvailabilityZone
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 3850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 5c6d1e7e-5842-4d5d-8dc3-c6131d26be8d
-    type: regular
-    task:
-      id: 5c6d1e7e-5842-4d5d-8dc3-c6131d26be8d
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      path:
-        simple: AWS.EC2.SecurityGroups.GroupName
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: dd99c39f-c033-49e4-8043-842b7f759fac
-    type: regular
-    task:
-      id: dd99c39f-c033-49e4-8043-842b7f759fac
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      path:
-        simple: AWS.EC2.SecurityGroups.GroupId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 4200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: aec1e6b0-42e2-486c-8bd8-a2a37d45ae76
-    type: regular
-    task:
-      id: aec1e6b0-42e2-486c-8bd8-a2a37d45ae76
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      path:
-        simple: AWS.EC2.SecurityGroups.VpcId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 4200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
-    taskid: 421b1aaa-534c-4498-8195-f97c3b679642
-    type: regular
-    task:
-      id: 421b1aaa-534c-4498-8195-f97c3b679642
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      path:
-        simple: AWS.EC2.Subnets.VpcId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 3850
+          "y": 4015
         }
       }
     note: false
@@ -1651,10 +398,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 8f4d2f53-552e-4253-8324-e2edb583f1e3
+    taskid: bdbbc50c-8fbe-469a-8dd9-7c9e2176cf66
     type: regular
     task:
-      id: 8f4d2f53-552e-4253-8324-e2edb583f1e3
+      id: bdbbc50c-8fbe-469a-8dd9-7c9e2176cf66
       version: -1
       name: aws-ec2-create-launch-template
       description: Creates a launch template. A launch template contains the parameters
@@ -1667,16 +414,16 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      ImageId:
-        simple: ami-088e71edb8795252f
       LaunchTemplateName:
-        simple: test
-      roleArn:
-        simple: arn:aws:iam::123456789012:role/EC2_SG_API_CRTX-91813_AssumeRole
-      roleSessionDuration:
-        simple: "1000"
-      roleSessionName:
-        simple: test
+        simple: nightly-build-test
+      deviceName:
+        simple: /dev/xvda
+      ebsEncrypted:
+        simple: "True"
+      ebsVolumeSize:
+        simple: "10"
+      ebsVolumeType:
+        simple: gp2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1695,10 +442,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 9c0673c1-8f27-463e-8deb-8decdbd6c042
+    taskid: 6d72ab6b-d3d9-4c47-8a1a-d5f1e7d0ccc2
     type: regular
     task:
-      id: 9c0673c1-8f27-463e-8deb-8decdbd6c042
+      id: 6d72ab6b-d3d9-4c47-8a1a-d5f1e7d0ccc2
       version: -1
       name: aws-ec2-delete-launch-template
       description: Deletes a launch template. Deleting a launch template deletes all
@@ -1711,14 +458,8 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      LaunchTemplateId:
-        simple: ${AWS.EC2.LaunchTemplates.LaunchTemplateId}
-      roleArn:
-        simple: arn:aws:iam::794065701450:role/EC2_SG_API_CRTX-91813_AssumeRole
-      roleSessionDuration:
-        simple: "1000"
-      roleSessionName:
-        simple: test
+      LaunchTemplateName:
+        simple: nightly-build-test
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1737,10 +478,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: b4c272d6-d0dd-4440-809d-e7d420797c2f
+    taskid: 64a7f820-0743-4a6c-8e9e-a552b25dbaf3
     type: regular
     task:
-      id: b4c272d6-d0dd-4440-809d-e7d420797c2f
+      id: 64a7f820-0743-4a6c-8e9e-a552b25dbaf3
       version: -1
       name: DeleteContext
       description: |-
@@ -1748,7 +489,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1775,14 +518,592 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 331e110e-b532-4e97-81fb-aaddc6ee5378
+    type: condition
+    task:
+      id: 331e110e-b532-4e97-81fb-aaddc6ee5378
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Instances.Monitoring.State}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Instances.LaunchTime}
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Instances.InstanceId}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 93515bf7-df5e-4188-84dc-00979a61b332
+    type: condition
+    task:
+      id: 93515bf7-df5e-4188-84dc-00979a61b332
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Images.ImageId}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Images.Name}
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Images.Architecture}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 4d82d945-32ac-4930-8a9d-3ed5fa1d25fc
+    type: condition
+    task:
+      id: 4d82d945-32ac-4930-8a9d-3ed5fa1d25fc
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.Regions.RegionName}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.Regions.Endpoint}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: ba536048-99be-4fc2-874d-1c01535cd1e8
+    type: condition
+    task:
+      id: ba536048-99be-4fc2-874d-1c01535cd1e8
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.ElasticIPs.AllocationId}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.ElasticIPs.Region}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 8511ccc7-e268-4e60-8cc5-8fc9ad0eeaef
+    type: condition
+    task:
+      id: 8511ccc7-e268-4e60-8cc5-8fc9ad0eeaef
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Snapshots.StartTime}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Snapshots.VolumeId}
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Snapshots.SnapshotId}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 48e9e140-a04c-43e6-8bc7-8ae773434ed7
+    type: condition
+    task:
+      id: 48e9e140-a04c-43e6-8bc7-8ae773434ed7
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.LaunchTemplates.LaunchTemplateId}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.LaunchTemplates.LaunchTemplateName}
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.LaunchTemplates.CreateTime}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 885c22e5-5035-49e6-8c87-1aa5ea08670c
+    type: condition
+    task:
+      id: 885c22e5-5035-49e6-8c87-1aa5ea08670c
+      version: -1
+      name: Verify contex
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.KeyPairs.KeyFingerprint}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.KeyPairs.KeyName}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: c5a49be8-edbf-4587-85f0-7c99a7df8a38
+    type: condition
+    task:
+      id: c5a49be8-edbf-4587-85f0-7c99a7df8a38
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Volumes.AvailabilityZone}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Volumes.VolumeType}
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Volumes.Size}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 2cf6ebb7-1375-4ff6-8196-1911e09e4e0b
+    type: condition
+    task:
+      id: 2cf6ebb7-1375-4ff6-8196-1911e09e4e0b
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Vpcs.IsDefault}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Vpcs.CidrBlock}
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Vpcs.VpcId}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 7abae19a-11bc-4f2c-8206-00a7adb75a77
+    type: condition
+    task:
+      id: 7abae19a-11bc-4f2c-8206-00a7adb75a77
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Subnets.SubnetId}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Subnets.AvailabilityZone}
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.Subnets.VpcId}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: fd6fa62e-fb62-4079-80b2-856a904c9b49
+    type: condition
+    task:
+      id: fd6fa62e-fb62-4079-80b2-856a904c9b49
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.SecurityGroups.GroupName}
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.SecurityGroups.GroupId}
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${AWS.EC2.SecurityGroups.VpcId}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 450ec10f-c299-4f91-8a0e-6f93436325f8
+    type: title
+    task:
+      id: 450ec10f-c299-4f91-8a0e-6f93436325f8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4395,
-        "width": 1240,
-        "x": 50,
+        "height": 4525,
+        "width": 380,
+        "x": 480,
         "y": -100
       }
     }

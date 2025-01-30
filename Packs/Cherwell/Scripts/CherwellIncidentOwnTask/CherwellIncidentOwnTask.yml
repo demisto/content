@@ -10,7 +10,7 @@ commonfields:
   id: CherwellIncidentOwnTask
   version: -1
 name: CherwellIncidentOwnTask
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 subtype: python3
 script: '-'
 timeout: '0'

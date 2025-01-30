@@ -35,6 +35,7 @@
 /Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
 /Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
+/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py @RosenbergYehuda @demisto/content-leaders
 
 # Common Packs
 /Packs/CommonTypes/ @altmannyarden @idovandijk
@@ -58,12 +59,9 @@
 validation_config.toml @YuvHayun
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @maimorag
-/Packs/Core/Integrations/ @maimorag
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @maimorag
-
-# Dependencies
-poetry.lock @dorschw
+/Packs/CortexXDR/Integrations/ @tcarmeli1
+/Packs/Core/Integrations/ @tcarmeli1
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @tcarmeli1
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori

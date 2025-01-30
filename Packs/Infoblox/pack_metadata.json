@@ -2,7 +2,7 @@
     "name": "Infoblox NIOS",
     "description": "Infoblox is a comprehensive solution that consolidates DNS, DHCP, and IP address management into a single platform. It is designed to simplify network management by automating these critical functions and providing a centralized console for managing them.",
     "support": "xsoar",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

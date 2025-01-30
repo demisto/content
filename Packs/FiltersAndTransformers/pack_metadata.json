@@ -2,7 +2,7 @@
     "name": "Filters And Transformers",
     "description": "Frequently used filters and transformers pack.",
     "support": "xsoar",
-    "currentVersion": "1.2.79",
+    "currentVersion": "1.2.89",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -12,6 +12,7 @@ import threading
 import time
 import traceback
 import websocket
+import uuid
 import json
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
@@ -65,8 +66,9 @@ PAGES_LIMITATION = 20
 # chrome instance data keys
 INSTANCE_ID = "instance_id"
 CHROME_INSTANCE_OPTIONS = "chrome_options"
-RASTERIZETION_COUNT = "rasteriztion_count"
+RASTERIZATION_COUNT = "rasterization_count"
 
+BLOCKED_URLS = argToList(demisto.params().get('blocked_urls', '').lower())
 
 try:
     env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
@@ -235,6 +237,25 @@ class PychromeEventHandler:
         '''Triggered when a request is sent by the browser, catches mailto URLs.'''
         demisto.debug(f'PychromeEventHandler.network_request_will_be_sent, {documentURL=}')
         self.is_mailto = documentURL.lower().startswith('mailto:')
+
+        request_url = kwargs.get('request', {}).get('url', '')
+
+        if any(value in request_url for value in BLOCKED_URLS):
+            self.tab.Fetch.enable()
+            demisto.debug('Fetch events enabled.')
+
+    def handle_request_paused(self, **kwargs):
+        request_id = kwargs.get("requestId")
+        request_url = kwargs.get("request", {}).get("url")
+
+        # abort the request if the url inside blocked_urls param and its redirect request
+        if any(value in request_url for value in BLOCKED_URLS) and not self.request_id:
+            self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
+            demisto.debug(f"Request paused: {request_url=} , {request_id=}")
+            self.tab.Fetch.disable()
+            demisto.debug('Fetch events disabled.')
+
+
 # endregion
 
 
@@ -318,7 +339,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ''):
     existing_data = read_json_file()
 
     if chrome_port in existing_data:
-        existing_data[chrome_port][RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1
+        existing_data[chrome_port][RASTERIZATION_COUNT] = existing_data[chrome_port].get(RASTERIZATION_COUNT, 0) + 1
         write_chrome_instances_file(existing_data)
     else:
         demisto.info(f"Chrome port '{chrome_port}' not found.")
@@ -426,7 +447,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
                     chrome_port: {
                         INSTANCE_ID: instance_id,
                         CHROME_INSTANCE_OPTIONS: chrome_options,
-                        RASTERIZETION_COUNT: 0
+                        RASTERIZATION_COUNT: 0
                     }
                 }
                 add_new_chrome_instance(new_chrome_instance_content=new_chrome_instance)
@@ -540,6 +561,58 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     return browser, chrome_port
 
 
+def chrome_manager_one_port() -> tuple[Any | None, str | None]:
+    """
+    Manages Chrome instances based on user-specified chrome options and integration instance ID.
+    ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
+
+
+    This function performs the following steps:
+    1. Retrieves the Chrome options set by the user.
+    2. Checks if the  Chrome options has been used previously.
+        - If the Chrome options wasn't used and the file is empty, generates a new Chrome instance with
+        the specified Chrome options.
+        - If the  Chrome options exists in the dictionary- it reuses the existing Chrome instance.
+        -  If the Chrome options wasn't used and the file isn't empty- it terminates all the use port and
+        generates a new one with the new options.
+
+    Returns:
+        tuple[Any | None, int | None]: A tuple containing:
+            - The Browser or None if an error occurred.
+            - The chrome port or None if an error occurred.
+    """
+    # If instance_id or chrome_options are not set, assign 'None' to these variables.
+    # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
+    # it can compare between the fetched 'None' string and the 'None' that assigned.
+    instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
+    chrome_options = demisto.params().get('chrome_options', 'None')
+    chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+    demisto.debug(f' chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}')
+    chrome_options_dict = {
+        options[CHROME_INSTANCE_OPTIONS]: {
+            'chrome_port': port
+        }
+        for port, options in chrome_instances_contents.items()
+    }
+    chrome_port = chrome_options_dict.get(chrome_options, {}).get('chrome_port', '')
+    if not chrome_instances_contents:  # or instance_id not in chrome_options_dict.keys():
+        demisto.debug('chrome_manager: condition chrome_instances_contents is empty')
+        return generate_new_chrome_instance(instance_id, chrome_options)
+    if chrome_options in chrome_options_dict:
+        demisto.debug('chrome_manager: condition chrome_options in chrome_options_dict is true'
+                      f'{chrome_options in chrome_options_dict}')
+        browser = get_chrome_browser(chrome_port)
+        return browser, chrome_port
+    for chrome_port_ in chrome_instances_contents:
+        if chrome_port_ == 'None':
+            terminate_port_chrome_instances_file(chrome_port_)
+            demisto.debug(f"chrome_manager {chrome_port_=}, removing the port from chrome_instances file")
+            continue
+        demisto.debug(f"chrome_manager {chrome_port_=}, terminating the port")
+        terminate_chrome(chrome_port=chrome_port_)
+    return generate_new_chrome_instance(instance_id, chrome_options)
+
+
 def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
     return start_chrome_headless(chrome_port, instance_id, chrome_options)
@@ -556,7 +629,7 @@ def generate_chrome_port() -> str | None:
 
         if len_running_chromes == 0:
             # There's no Chrome listening on that port, Start a new Chrome there
-            demisto.debug(f"No Chrome found on port {chrome_port}, using it.")
+            demisto.debug(f"No Chrome found on port {chrome_port}, using the port.")
             return str(chrome_port)
 
         # There's already a Chrome listening on that port, Don't use it
@@ -576,6 +649,8 @@ def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[Pychr
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
     tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
+
+    tab.Fetch.requestPaused = tab_event_handler.handle_request_paused
 
     return tab_event_handler, tab_ready_event
 
@@ -597,13 +672,8 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
             tab.Page.navigate(url=path)
 
         demisto.debug(f'Waiting for tab_ready_event on {tab.id=}')
-        success_flag = tab_ready_event.wait(navigation_timeout)
+        tab_ready_event.wait(navigation_timeout)
         demisto.debug(f'After waiting for tab_ready_event on {tab.id=}')
-
-        if not success_flag:
-            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
-            demisto.error(message)
-            return_error(message)
 
         if wait_time > 0:
             demisto.info(f'Sleeping before capturing screenshot, {wait_time=}')
@@ -776,6 +846,24 @@ def rasterize_thread(browser, chrome_port, path: str,
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
 
+def kill_zombie_processes():
+    # Iterate over all running processes
+    try:
+        for proc in psutil.process_iter(['pid', 'name', 'status']):
+            try:
+                # Check if the process is a zombie
+                if proc.info['status'] == psutil.STATUS_ZOMBIE:
+                    demisto.info(f'found zombie process with pid {proc.pid}')
+                    waitres = os.waitpid(int(proc.pid), os.WNOHANG)
+                    demisto.info(f"waitpid result: {waitres}")
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                # Handle cases where process may have already terminated or access is denied
+                demisto.info(f"failed to kill zombie with pid {proc.pid}")
+                continue
+    except Exception as e:
+        demisto.debug(f'Failed to iterate over processes. Error: {e}')
+
+
 def perform_rasterize(path: str | list[str],
                       rasterize_type: RasterizeType = RasterizeType.PNG,
                       wait_time: int = DEFAULT_WAIT_TIME,
@@ -819,7 +907,9 @@ def perform_rasterize(path: str | list[str],
         return None
 
     demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
-    browser, chrome_port = chrome_manager()
+
+    # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
+    browser, chrome_port = chrome_manager_one_port()
 
     if browser:
         support_multithreading()
@@ -848,15 +938,16 @@ def perform_rasterize(path: str | list[str],
                 f"active tabs len: {len(browser.list_tab())}")
 
             chrome_instances_file_content: dict = read_json_file()  # CR fix name
-            rasterizations_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZETION_COUNT, 0) + len(
+
+            rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
                 rasterization_threads)
 
             demisto.debug(f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
-                          f"{rasterizations_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
+                          f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
             if not chrome_port:
                 demisto.debug("perform_rasterize: the chrome port was not found")
-            elif rasterizations_count >= MAX_RASTERIZATIONS_COUNT:
-                demisto.info(f"perform_rasterize: terminating Chrome after {rasterizations_count=} rasterizations")
+            elif rasterization_count >= MAX_RASTERIZATIONS_COUNT:
+                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization")
                 terminate_chrome(chrome_port=chrome_port)
             else:
                 increase_counter_chrome_instances_file(chrome_port=chrome_port)
@@ -913,21 +1004,27 @@ def rasterize_email_command():  # pragma: no cover
     offline = demisto.args().get('offline', 'false') == 'true'
 
     rasterize_type_arg = demisto.args().get('type', 'png').lower()
-    file_name = demisto.args().get('file_name', 'email')
+    file_name = demisto.args().get('file_name', uuid.uuid4())
     file_name = f'{file_name}.{rasterize_type_arg}'
     rasterize_type = RasterizeType(rasterize_type_arg)
 
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
-    with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
-        f.write(f'<html style="background:white";>{html_body}</html>')
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', encoding='utf-8-sig') as tf:
+            demisto.debug(f'rasterize-email, {html_body=}')
+            tf.write(f'<html style="background:white";>{html_body}</html>')
+            tf.flush()
+            path = f'file://{os.path.realpath(tf.name)}'
+            demisto.debug(f'rasterize-email, rasterizing {path=}')
+            rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
+                                                 offline_mode=offline, navigation_timeout=navigation_timeout,
+                                                 full_screen=full_screen)
 
-    path = f'file://{os.path.realpath(f.name)}'
-
-    rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
-                                         offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
-
-    res = fileResult(filename=file_name, data=rasterize_output[0][0])
+            res = fileResult(filename=file_name, data=rasterize_output[0][0])
+    except Exception as err:
+        demisto.error(str(err))
+        return_error(f'Failed to rasterize email: {err}')
 
     if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
         res['Type'] = entryTypes['image']
@@ -1044,6 +1141,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg('url')
+    # Do not remove this line, as rasterize does not support array in `url`.
     urls = [urls] if isinstance(urls, str) else urls
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
@@ -1112,8 +1210,8 @@ def get_width_height(args: dict):
 def main():  # pragma: no cover
     demisto.debug(f"main, {demisto.command()=}")
     demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
-
     threading.excepthook = excepthook_recv_loop
+
     try:
         if demisto.command() == 'test-module':
             module_test()
@@ -1138,6 +1236,8 @@ def main():  # pragma: no cover
 
     except Exception as ex:
         return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+    finally:
+        kill_zombie_processes()
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:

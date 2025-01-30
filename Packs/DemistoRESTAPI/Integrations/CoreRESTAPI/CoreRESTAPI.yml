@@ -281,4 +281,5 @@ script:
       contextPath: IsFileExists
 tests:
 - TestDemistoRestAPI
+- UploadFile Test
 fromversion: 5.0.0

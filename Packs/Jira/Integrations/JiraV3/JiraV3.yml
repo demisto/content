@@ -1691,7 +1691,7 @@ script:
     - contextPath: Jira.IssueField.Schema.configuration
       description: If the field is a custom field, the configuration of the field.
       type: Object
-  dockerimage: demisto/btfl-soup:1.0.1.111953
+  dockerimage: demisto/btfl-soup:1.0.1.117589
   isfetch: true
   ismappable: true
   isremotesyncin: true
