@@ -192,7 +192,7 @@ configuration:
   section: Collect
   defaultvalue: 'true'
   advanced: true
-- additionalinfo: "Whether to fetch only the essential alert fields in order to minimize the incident's information. Possible values: null_values to remove all null values from incidents, or any other field of an alert."
+- additionalinfo: "Whether to fetch only the essential alert fields in order to minimize the incident's information. Possible values: null_values to remove all null values from alerts data, or any other field of an alert."
   display: Minimize Alert Information
   name: excluded_alert_fields
   required: false
