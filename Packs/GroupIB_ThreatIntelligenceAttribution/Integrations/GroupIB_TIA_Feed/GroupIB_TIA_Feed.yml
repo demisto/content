@@ -156,11 +156,11 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
 - display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
 description: Use Group-IB Threat Intelligence Feed integration to fetch IOCs from various Group-IB collections.
 display: Group-IB Threat Intelligence Feed
 name: Group-IB Threat Intelligence & Attribution Feed
