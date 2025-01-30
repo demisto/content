@@ -62,6 +62,8 @@ def test_identify_and_decode_base64(sample_malicious_command):
     assert is_double_encoded is True
 
 # Test reverse_command
+
+
 def test_reverse_command():
     reversed_string = "llehSrewoP"
     result, was_reversed = reverse_command(reversed_string)
@@ -127,6 +129,8 @@ def test_check_suspicious_macos_applescript_commands():
     assert ["to set visible", "false"] in matches["infostealer_characteristics"]
 
 # Test analyze_command_line
+
+
 def test_analyze_command_line():
     result = analyze_command_line(MALICIOUS_COMMAND_LINE)
     assert result["risk"] == "Medium Risk"
