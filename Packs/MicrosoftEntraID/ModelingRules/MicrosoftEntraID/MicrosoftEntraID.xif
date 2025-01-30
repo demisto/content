@@ -12,7 +12,6 @@ filter category in("AuditLogs", "SignInLogs", "NonInteractiveUserSignInLogs", "M
         xdm.source.ipv6 = if(caller_ipv6 ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", caller_ipv6, json_extract_scalar(properties, "$.ipAddress") ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", json_extract_scalar(properties, "$.ipAddress"), null),
         xdm.source.user_agent = properties -> userAgent;
 
-
 [RULE: msft_azure_resource_logs_map_common_fields] 
 /*  This rule normalizes the top-level schema that is common to all resource logs that are sent to an event hub.  
         Schema: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/resource-logs-schema#top-level-common-schema */
@@ -63,7 +62,8 @@ filter category = "AuditLogs"
         xdm.observer.type = json_extract_scalar(properties, "$.loggedByService"),
         xdm.source.user.upn = json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName"),
         xdm.source.user.identifier = json_extract_scalar(properties, "$.initiatedBy.user.id"),
-        xdm.source.user.username = if(json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName") != null,json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName"),json_extract_scalar(properties, "$.initiatedBy.user.displayName")),
+        xdm.source.user.username = if(json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName") != null and json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName") != "",json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName"),json_extract_scalar(properties, "$.initiatedBy.user.displayName")),
+        xdm.source.user.first_name = json_extract_scalar(properties, "$.initiatedBy.user.displayName"),
         xdm.source.application.name = coalesce(json_extract_scalar(properties, "$.initiatedBy.app.displayName"),json_extract_scalar(properties, "$.initiatedBy.app.servicePrincipalName")),
         xdm.target.resource.sub_type = json_extract_scalar(properties, "$.category"),
         xdm.target.resource.id = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if(json_extract_scalar("@element", "$.id") != null, json_extract_scalar("@element", "$.id"), "-")), ", "),
@@ -83,7 +83,8 @@ filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrinci
         xdm.source.cloud.project_id = coalesce(json_extract_scalar(properties, "$.homeTenantId"), tenantId),
         xdm.event.outcome_reason = concat(resultDescription, " Error Code: ", resultType),
         xdm.event.outcome = if(resultType = "0", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
-        xdm.source.user.username = if(json_extract_scalar(properties, "$.userPrincipalName") != null,json_extract_scalar(properties, "$.userPrincipalName"),json_extract_scalar(properties, "$.userDisplayName")),
+        xdm.source.user.username = if(json_extract_scalar(properties, "$.userPrincipalName") != null and json_extract_scalar(properties, "$.userPrincipalName") != "",json_extract_scalar(properties, "$.userPrincipalName"),json_extract_scalar(properties, "$.userDisplayName")),
+        xdm.source.user.first_name = json_extract_scalar(properties, "$.userDisplayName"),
         xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
         xdm.source.user.identifier = json_extract_scalar(properties, "$.userId"),
         xdm.source.application.name = if(json_extract_scalar(properties, "$.appDisplayName") != null, json_extract_scalar(properties, "$.appDisplayName"), json_extract_scalar(properties, "$.servicePrincipalName") != null, json_extract_scalar(properties, "$.servicePrincipalName"), null),
@@ -96,6 +97,7 @@ filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrinci
         xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
         xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
         xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
+        xdm.source.host.device_category  = if(json_extract_scalar(properties, "$.deviceDetail.trustType") != null and json_extract_scalar(properties, "$.deviceDetail.trustType") != "", json_extract_scalar(properties, "$.deviceDetail.trustType"), null),
         xdm.logon.type = if(category = "SignInLogs", XDM_CONST.LOGON_TYPE_INTERACTIVE, category = "NonInteractiveUserSignInLogs", "non-interactive", category = "ServicePrincipalSignInLogs" or category = "ManagedIdentitySignInLogs", XDM_CONST.LOGON_TYPE_SERVICE, null),
         xdm.alert.severity = if(json_extract_scalar(properties, "$.riskLevelDuringSignIn") = "none", null, json_extract_scalar(properties, "$.riskLevelDuringSignIn")),
         xdm.alert.risks = if(array_length(json_extract_scalar_array(properties, "$.riskEventTypes_v2")) > 0, json_extract_scalar_array(properties, "$.riskEventTypes_v2"), null),
@@ -137,11 +139,13 @@ filter category = "ProvisioningLogs"
 filter category in ("RiskyUsers", "RiskyServicePrincipals")
 | alter
         xdm.event.original_event_type = category,
+        xdm.alert.description = json_extract_scalar(properties, "$.riskState"),
         xdm.session_context_id = correlationId,
         xdm.source.cloud.project_id = tenantId,
         xdm.event.type = operationName,
         xdm.event.id = json_extract_scalar(properties, "$.id"),
-        xdm.source.user.username = if(json_extract_scalar(properties, "$.userPrincipalName") != null,json_extract_scalar(properties, "$.userPrincipalName"),json_extract_scalar(properties, "$.userDisplayName")),
+        xdm.source.user.username = if(json_extract_scalar(properties, "$.userPrincipalName") != null and json_extract_scalar(properties, "$.userPrincipalName") != "",json_extract_scalar(properties, "$.userPrincipalName"),json_extract_scalar(properties, "$.userDisplayName")),
+        xdm.source.user.first_name = json_extract_scalar(properties, "$.userDisplayName"),
         xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
         xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
         xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
@@ -168,7 +172,8 @@ filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
         xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
         xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
         xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
-        xdm.source.user.username = if(json_extract_scalar(properties, "$.userPrincipalName") != null,json_extract_scalar(properties, "$.userPrincipalName"),json_extract_scalar(properties, "$.userDisplayName")),
+        xdm.source.user.first_name = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.username = if(json_extract_scalar(properties, "$.userPrincipalName") != null and json_extract_scalar(properties, "$.userPrincipalName") != "",json_extract_scalar(properties, "$.userPrincipalName"),json_extract_scalar(properties, "$.userDisplayName")),
         xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
         xdm.source.user.identifier = json_extract_scalar(properties, "$.userId"),
         xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
@@ -257,7 +262,7 @@ alter
                                             and not incidr("@element", "100.64.0.0/10")),
   xdm.event.outcome = if(conditionalAccessStatus = "success", XDM_CONST.OUTCOME_SUCCESS, conditionalAccessStatus = "failure", XDM_CONST.OUTCOME_FAILED, conditionalAccessStatus = "notApplied", XDM_CONST.OUTCOME_UNKNOWN),
   xdm.event.id = coalesce(id, originalRequestId),
-  xdm.source.user.username = userDisplayName,
+  xdm.source.user.username = userPrincipalName,
   xdm.source.user.upn = userPrincipalName,
   xdm.source.user.identifier = userId,
   xdm.source.application.name = coalesce(servicePrincipalName, appDisplayName),
