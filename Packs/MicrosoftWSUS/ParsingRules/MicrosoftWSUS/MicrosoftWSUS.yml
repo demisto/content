@@ -1,5 +1,5 @@
-name: MicrosoftWSUS Parsing Rule
-id: MicrosoftWSUS Parsing Rule
+name: Microsoft WSUS Parsing Rule
+id: Microsoft_WSUS_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''
