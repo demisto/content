@@ -70,11 +70,11 @@ def test_azure_nsg_public_ip_addresses_list(mocker):
     assert res.get('name') == 'testDNS-ip'
     assert res.get('id') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/testDNS-ip'
     assert res.get('etag') == 'etag'
-    assert res.get('properties.provisioningState') == 'Succeeded'
-    assert res.get('properties.publicIPAddressVersion') == 'IPv4'
-    assert res.get('properties.ipAddress') == '40.85.154.247'
-    assert res.get('properties.dnsSettings.domainNameLabel') == 'testlbl'
-    assert res.get('properties.dnsSettings.fqdn') == 'testlbl.westus.cloudapp.azure.com'
+    assert res.get('provisioningState') == 'Succeeded'
+    assert res.get('publicIPAddressVersion') == 'IPv4'
+    assert res.get('ipAddress') == '40.85.154.247'
+    assert res.get('domainNameLabel') == 'testlbl'
+    assert res.get('fqdn') == 'testlbl.westus.cloudapp.azure.com'
     
 
 def test_azure_nsg_virtual_networks_list(mocker):
@@ -90,10 +90,10 @@ def test_azure_nsg_virtual_networks_list(mocker):
     assert res.get('name') == 'vnet1'
     assert res.get('etag') == 'etag'
     assert res.get('location') == 'westus'
-    assert res.get('properties.addressSpace.addressPrefixes') == ["10.0.0.0/8"]
-    assert res.get('properties.subnets.name') == ['test-1']
-    assert res.get('properties.subnets.properties.addressPrefix') == ['10.0.0.0/24']
-    assert res.get('properties.subnets.properties.ipConfigurations') == {
+    assert res.get('addressPrefixes') == ["10.0.0.0/8"]
+    assert res.get('subnetName') == ['test-1']
+    assert res.get('subnetAdrdressPrefix') == ['10.0.0.0/24']
+    assert res.get('subnetIPConfigurations') == {
                     "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/testDNS649/\
 ipConfigurations/ipconfig1"}
                             
@@ -109,16 +109,16 @@ def test_azure_nsg_networks_interfaces_list(mocker):
     res = results.outputs[0]
     assert res.get('name') == 'test-nic'
     assert res.get('id') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic'
-    assert res.get('properties.provisioningState') == 'Succeeded'
-    assert res.get('properties.ipConfigurations.name') == ["ipconfig1"]
-    assert res.get('properties.ipConfigurations.id') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic/ipConfigurations/ipconfig1']
-    assert res.get('properties.ipConfigurations.properties.privateIPAddress') == ['172.20.2.4']
-    assert res.get('properties.ipConfigurations.properties.publicIPAddress.id') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip']
-    assert res.get('properties.dnsSettings.dnsServers') == []
-    assert res.get('properties.dnsSettings.appliedDnsServers') == []
-    assert res.get('properties.dnsSettings.internalDomainNameSuffix') == 'test.bx.internal.cloudapp.net'
-    assert res.get('properties.macAddress') == '00-0D-3A-1B-C7-21'
-    assert res.get('properties.virtualMachine.id') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Compute/virtualMachines/vm1'
+    assert res.get('provisioningState') == 'Succeeded'
+    assert res.get('ipConfigurationName') == ["ipconfig1"]
+    assert res.get('ipConfigurationID') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic/ipConfigurations/ipconfig1']
+    assert res.get('ipConfigurationPrivateIPAddress') == ['172.20.2.4']
+    assert res.get('ipConfigurationPublicIPAddressName') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip']
+    assert res.get('dnsServers') == []
+    assert res.get('appliedDnsServers') == []
+    assert res.get('internalDomainNameSuffix') == 'test.bx.internal.cloudapp.net'
+    assert res.get('macAddress') == '00-0D-3A-1B-C7-21'
+    assert res.get('virtualMachineId') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Compute/virtualMachines/vm1'
     assert res.get('location') == 'eastus'
     assert res.get('kind') == 'kind'
     

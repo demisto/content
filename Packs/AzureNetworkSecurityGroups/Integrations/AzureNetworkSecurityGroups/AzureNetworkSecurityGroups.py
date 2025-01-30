@@ -208,16 +208,15 @@ def extract_inner_dict(data: Dict, inner_dict_keys: List, fields: List = []) -> 
         fields (List, optional): specific fields from the inner dict to extract. Defaults to [].
 
     Returns:
-        Dict: reformat data: {'key1': 'value1', 'key2.key3': 'value3'}
+        Dict: reformat data: {'key1': 'value1', 'key3': 'value3'}
     """
     for inner_dict_key in inner_dict_keys:
         inner_dict = data.get(inner_dict_key, {})
         for key in inner_dict:
             if not fields or key in fields:
-                data[f'{inner_dict_key}.{key}'] = inner_dict.get(key)
-    return data
+                data[key] = inner_dict.get(key)
 
-def extract_list(data: Dict, list_key: str, property_name: str) -> Dict:
+def extract_list(data: Dict, list_key: str, property_name: str, field_name: str = '') -> Dict:
     """
     reformat data: from {'key': [{'k': 'val1'}, {'k': 'val2'}]} to {'key': 'k':['val1', 'val2']}
     
@@ -225,6 +224,7 @@ def extract_list(data: Dict, list_key: str, property_name: str) -> Dict:
         data (Dict): dict with list of dict that contains the same 'property_name' field
         list_key (str): the key of the list
         property_name (str): the property to extract
+        field_name (str, optional): new name for the dict key
 
     Returns:
         Dict: the reformated data
@@ -236,8 +236,9 @@ def extract_list(data: Dict, list_key: str, property_name: str) -> Dict:
         if val:
             properties.append(val)
     if properties:
-        data[f'{list_key}.{property_name}'] = properties
-    return data
+        if field_name:
+            property_name = field_name
+        data[property_name] = properties
 
 ''' COMMAND FUNCTIONS '''
 
@@ -591,16 +592,15 @@ def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, arg
     
     response = client.list_public_ip_addresses(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get('value', [])
-    for data in data_from_response:
-        data = extract_inner_dict(data, ['properties'])
-        data = extract_inner_dict(data, ['properties.dnsSettings'])
-    
+    outputs = [data.copy() for data in data_from_response]
+    for output in outputs:
+        extract_inner_dict(output, ['properties'])
+        extract_inner_dict(output, ['dnsSettings'])
     readable_output = tableToMarkdown('Public IP Addresses List',
-                                      data_from_response,
+                                      outputs,
                                       [
-                                       'name', 'id', 'etag', 'properties.provisioningState', 'properties.publicIPAddressVersion',
-                                       'properties.ipAddress', 'properties.dnsSettings.domainNameLabel',
-                                       'properties.dnsSettings.fqdn',
+                                       'name', 'id', 'etag', 'provisioningState', 'publicIPAddressVersion',
+                                       'ipAddress', 'domainNameLabel', 'fqdn',
                                        ],
                                       removeNull=True, headerTransform=string_to_table_header)
     if not all_results:
@@ -608,7 +608,7 @@ def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, arg
     return CommandResults(
         outputs_prefix='AzureNSG.PublicIPAdress',
         outputs_key_field='id',
-        outputs=data_from_response,
+        outputs=outputs,
         raw_response=response,
         readable_output=readable_output,
     )
@@ -633,24 +633,23 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
     
     response = client.list_virtual_networks(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get('value', [])
-    for data in data_from_response:
-        data = extract_inner_dict(data, ['properties'])
-        data = extract_inner_dict(data, ['properties.addressSpace'])
-        data = extract_list(data, 'properties.subnets', 'name')
-        data = extract_inner_dict(data, ['properties.addressSpace.properties'])
-        data = extract_list(data, 'properties.subnets', 'properties')
-        data = extract_list(data, 'properties.subnets.properties', 'addressPrefix')
-        
-    properties = data_from_response[0].get('properties.subnets.properties')[0]
+    outputs = [data.copy() for data in data_from_response]
+    for output in outputs:
+        extract_inner_dict(output, ['properties'])
+        extract_inner_dict(output, ['addressSpace'])
+        extract_list(output, 'subnets', 'name', 'subnetName')
+        extract_list(output, 'subnets', 'properties', 'subnetProperties')
+        extract_list(output, 'subnetProperties', 'addressPrefix', 'subnetAdrdressPrefix')
+
+    properties = outputs[0].get('subnetProperties')[0]
     if properties:
-        data_from_response[0]['properties.subnets.properties.ipConfigurations'] = properties.get('ipConfigurations')
+        outputs[0]['subnetIPConfigurations'] = properties.get('ipConfigurations')
         
     readable_output = tableToMarkdown('Virtual Networks List',
-                                      data_from_response,
+                                      outputs,
                                       [
-                                       'name', 'etag', 'location', 'properties.addressSpace.addressPrefixes',
-                                       'properties.subnets.name', 'properties.subnets.properties.addressPrefix',
-                                       'properties.subnets.properties.ipConfigurations',
+                                       'name', 'etag', 'location', 'addressPrefixes',
+                                       'subnetName', 'subnetAdrdressPrefix', 'subnetIPConfigurations',
                                        ],
                                       removeNull=True, headerTransform=string_to_table_header)
     if not all_results:
@@ -658,7 +657,7 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
     return CommandResults(
         outputs_prefix='AzureNSG.VirtualNetwork',
         outputs_key_field='id',
-        outputs=data_from_response,
+        outputs=outputs,
         raw_response=response,
         readable_output=readable_output,
     )
@@ -684,16 +683,17 @@ def azure_nsg_security_group_create(client: AzureNSGClient, params: Dict, args: 
     
     response = client.create_or_update_security_group(subscription_id=subscription_id, resource_group_name=resource_group_name,
                                                       security_group_name=security_group_name, location=location)
-    data_from_response = extract_inner_dict(response, ['properties'], 'securityRules')
+    outputs = response.copy()
+    extract_inner_dict(outputs, ['properties'], 'securityRules')
     readable_output = tableToMarkdown('Security Group List',
-                                      data_from_response,
-                                      ['name', 'etag', 'location', 'properties.securityRules',],
+                                      outputs,
+                                      ['name', 'etag', 'location', 'securityRules',],
                                       removeNull=True, headerTransform=string_to_table_header)
     
     return CommandResults(
         outputs_prefix='AzureNSG.SecurityGroup',
         outputs_key_field='id',
-        outputs=data_from_response,
+        outputs=outputs,
         raw_response=response,
         readable_output=readable_output,
     )
@@ -718,29 +718,30 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
     
     response = client.list_networks_interfaces(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get('value', [])
-    for data in data_from_response:
-        data = extract_inner_dict(data, ['properties'])
-        data = extract_inner_dict(data, ['properties.dnsSettings'])
-        data = extract_list(data, 'properties.ipConfigurations', 'name')
-        data = extract_list(data, 'properties.ipConfigurations', 'id')
-        data = extract_list(data, 'properties.ipConfigurations', 'properties')
-        data = extract_list(data, 'properties.ipConfigurations.properties', 'privateIPAddress')
-        data = extract_list(data, 'properties.ipConfigurations.properties', 'publicIPAddress')
-        data = extract_list(data, 'properties.ipConfigurations.properties.publicIPAddress', 'id')
-        vm = data.get('properties.virtualMachine')
+    outputs = [data.copy() for data in data_from_response]
+    for output in outputs:
+        extract_inner_dict(output, ['properties'])
+        extract_inner_dict(output, ['dnsSettings'])
+        extract_list(output, 'ipConfigurations', 'name', 'ipConfigurationName')
+        extract_list(output, 'ipConfigurations', 'id', 'ipConfigurationID')
+        extract_list(output, 'ipConfigurations', 'properties', 'ipConfigurationsProperties')
+        extract_list(output, 'ipConfigurationsProperties', 'privateIPAddress', 'ipConfigurationPrivateIPAddress')
+        extract_list(output, 'ipConfigurationsProperties', 'publicIPAddress', 'ipConfigurationPublicIPAddress')
+        extract_list(output, 'ipConfigurationPublicIPAddress', 'id', 'ipConfigurationPublicIPAddressName')
+        vm = output.get('virtualMachine')
         if vm:
-            data['properties.virtualMachine.id'] = vm.get('id')
+            output['virtualMachineId'] = vm.get('id')
 
     readable_output = tableToMarkdown('Network Interfaces List',
-                                      data_from_response,
+                                      outputs,
                                       [
-                                       'name', 'id', 'properties.provisioningState', 'properties.ipConfigurations.name',
-                                       'properties.ipConfigurations.id',
-                                       'properties.ipConfigurations.properties.privateIPAddress',
-                                       'properties.ipConfigurations.properties.publicIPAddress.id',
-                                       'properties.dnsSettings.dnsServers', 'properties.dnsSettings.appliedDnsServers',
-                                       'properties.dnsSettings.internalDomainNameSuffix', 'properties.macAddress',
-                                       'properties.virtualMachine.id', 'location', 'kind'
+                                       'name', 'id', 'provisioningState', 'ipConfigurationName',
+                                       'ipConfigurationID',
+                                       'ipConfigurationPrivateIPAddress',
+                                       'ipConfigurationPublicIPAddressName',
+                                       'dnsServers', 'appliedDnsServers',
+                                       'internalDomainNameSuffix', 'macAddress',
+                                       'virtualMachineId', 'location', 'kind'
                                        ],
                                       removeNull=True, headerTransform=string_to_table_header)
     if not all_results:
@@ -748,7 +749,7 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
     return CommandResults(
         outputs_prefix='AzureNSG.NetworkInterfaces',
         outputs_key_field='id',
-        outputs=data_from_response,
+        outputs=outputs,
         raw_response=response,
         readable_output=readable_output,
     )
@@ -802,28 +803,30 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
     
     response = client.create_or_update_network_interface(subscription_id=subscription_id, resource_group_name=resource_group_name,
                                                         nic_name=nic_name, data=data)
-    data_from_response = extract_inner_dict(response, ['properties'])
-    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations', 'name')
-    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations', 'properties')
-    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties', 'privateIPAddress')
-    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties', 'publicIPAddress')
-    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties.publicIPAddress', 'id')
-    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties', 'subnet')
-    data_from_response = extract_list(data_from_response, 'properties.ipConfigurations.properties.subnet', 'id')
-        
+    outputs = response.copy()
+    extract_inner_dict(outputs, ['properties'])
+    extract_list(outputs, 'ipConfigurations', 'name', 'ipConfigurationName')
+    extract_list(outputs, 'ipConfigurations', 'properties', 'ipConfigurationProperties')
+    extract_list(outputs, 'ipConfigurationProperties', 'privateIPAddress',
+                            'ipConfigurationPrivateIPAddress')
+    extract_list(outputs, 'ipConfigurationProperties', 'publicIPAddress',
+                            'ipConfigurationPublicIPAddress')
+    extract_list(outputs, 'ipConfigurationPublicIPAddress', 'id',
+                            'ipConfigurationPublicIPAddressName')
+    extract_list(outputs, 'ipConfigurationProperties', 'subnet', 'ipConfigurationSub')
+    extract_list(outputs, 'ipConfigurationSub', 'subnetId')
+    print(response)
     readable_output = tableToMarkdown('Network Interface',
-                                      data_from_response,
+                                      outputs,
                                       [
-                                       'name', 'etag', 'properties.provisioningState', 'properties.ipConfigurations.name',
-                                       'properties.ipConfigurations.properties.privateIPAddress',
-                                       'properties.ipConfigurations.properties.publicIPAddress.id',
-                                       'properties.ipConfigurations.properties.subnet.id',
+                                       'name', 'etag', 'provisioningState', 'ipConfigurationName',
+                                       'ipConfigurationPrivateIPAddress', 'ipConfigurationPublicIPAddressName', 'subnetId',
                                        ],
                                       removeNull=True, headerTransform=string_to_table_header)
     return CommandResults(
         outputs_prefix='AzureNSG.NetworkInterface',
         outputs_key_field='id',
-        outputs=data_from_response,
+        outputs=outputs,
         raw_response=response,
         readable_output=readable_output,
     )
