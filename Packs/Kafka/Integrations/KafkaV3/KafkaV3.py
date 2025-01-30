@@ -295,7 +295,7 @@ class KafkaCommunicator:
         partition = TopicPartition(topic=topic, partition=partition)
         return kafka_consumer.get_watermark_offsets(partition=partition, timeout=self.REQUESTS_TIMEOUT)
 
-    def produce(self, topic: str, value: str, partition: Optional[int]) -> None:
+    def produce(self, topic: str, value: str, partition: int) -> None:
         """Produce in to kafka
 
         Args:
@@ -306,12 +306,12 @@ class KafkaCommunicator:
         The delivery_report is called after production.
         """
         kafka_producer = self.get_kafka_producer()
-        if partition is not None:
-            kafka_producer.produce(topic=topic, value=value, partition=partition,
-                                   on_delivery=self.delivery_report)
-        else:
-            kafka_producer.produce(topic=topic, value=value,
-                                   on_delivery=self.delivery_report)
+        kafka_producer.produce(
+            topic=topic,
+            value=value,
+            partition=partition if partition is not None else None,
+            on_delivery=self.delivery_report
+        )
         kafka_producer.flush()
 
     def consume(self, poll_timeout: float, topic: str, partition: int = -1, offset: str = '0') -> Message:
@@ -606,13 +606,14 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     """
     topic = demisto_args.get('topic')
     value = demisto_args.get('value')
-    partition_arg = demisto_args.get('partitioning_key')
+    partition_arg = demisto_args.get('partitioning_key', '0')
 
     partition_str = str(partition_arg)
     if partition_str.isdigit():
-        partition: Optional[int] = int(partition_str)
+        partition = int(partition_str)
     else:
-        partition = None
+        partition = 0
+    
     try:
         kafka.produce(
             value=str(value),
