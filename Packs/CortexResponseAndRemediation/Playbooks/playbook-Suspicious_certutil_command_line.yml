@@ -14,7 +14,7 @@ description: |-
   - Checks if the URL reputation is suspicious.
   - Checks if any process in the causality chain is unsigned.
   - Checks if any process in the causality chain is non-prevalent.
-  - Searches for Cortex XSIAM agent alerts related to file drops using certutil.
+  - Searches for Cortex XDR agent alerts related to file drops using certutil.
   - Checks for any suspicious parameters in the command line (if the command line risk score is medium or higher).
 
   If the playbook detects any of these conditions, it will proceed to the early containment stage; otherwise, it will close the alert.
@@ -25,7 +25,7 @@ description: |-
 
   Verdict:
 
-  - Based on the URL's reputation, if it is found to be malicious, the playbook will perform remediation actions; otherwise, it will close the alert.
+  - Based on the URL's reputation, if found to be malicious, the playbook will perform remediation actions; otherwise, it will close the alert.
 
   Remediation:
 
@@ -188,7 +188,7 @@ tasks:
       id: 0c3f09bd-ab2b-42d5-84f9-06399154c231
       version: -1
       name: Terminate Causality (CGO)
-      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available from Cortex XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -302,11 +302,11 @@ tasks:
       name: Is the URL, process, or command suspicious?
       description: |-
         This task checks the following to determine if process termination is needed:
-        - Checks if the URL reputation is suspicious.
-        - Checks if any process in the causality chain is unsigned.
-        - Checks if any process in the causality chain is non-prevalent.
-        - Checks for Cortex XSIAM agent alerts related to file drops using certutil.
-        - Checks for any suspicious parameters in the command line (if the command line risk score is medium or higher).
+        - If the URL reputation is suspicious.
+        - If any process in the causality chain is unsigned.
+        - If any process in the causality chain is non-prevalent.
+        - If Cortex XDR agent alerts related to file drops using certutil are found.
+        - If any suspicious parameters are found in the command line (if the command line risk score is medium or higher).
       type: condition
       iscommand: false
       brand: ""
