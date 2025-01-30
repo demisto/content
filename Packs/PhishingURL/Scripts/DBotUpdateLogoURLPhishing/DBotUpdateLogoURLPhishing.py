@@ -80,6 +80,14 @@ def save_model_data(model_data: ModelData):
     demisto.debug(f'Saved data: {res}')
 
 
+def model_to_data(model: Model) -> ModelData:
+    return {
+        'top_domains': model.top_domains,
+        'logos_dict': model.logos_dict,
+        'custom_logo_associated_domain': model.custom_logo_associated_domain
+    }
+
+
 def load_data_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH) -> ModelData:
     """
     Load model from docker
@@ -88,14 +96,6 @@ def load_data_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH) -> ModelData:
     """
     with open(path, 'rb') as f:
         return model_to_data(cast(Model, dill.load(f)))  # guardrails-disable-line
-
-
-def model_to_data(model: Model) -> ModelData:
-    return {
-        'top_domains': model.top_domains,
-        'logos_dict': model.logos_dict,
-        'custom_logo_associated_domain': model.custom_logo_associated_domain
-    }
 
 
 def load_data_from_xsoar() -> Optional[ModelData]:
@@ -110,7 +110,7 @@ def load_data_from_xsoar() -> Optional[ModelData]:
     if isinstance(extra_data, dict) and 'minor' in extra_data:  # this means the old model exists as a pickled object
         demisto.debug(f'Old model found. {extra_data=}')
         return load_old_model_data(model_data)
-    return json.loads(model_data)
+    return cast(ModelData, json.loads(model_data))
 
 
 def image_from_base64_to_bytes(base64_message: str):
