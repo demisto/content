@@ -1,4 +1,4 @@
-Troubleshoot the ServiceNow v2 integration by displaying the health information of enabled instances along with old and active incidents of disabled instances.
+Troubleshoot ServiceNow v2 integration by displaying health information.
 
 
 ## Script Data
@@ -10,20 +10,27 @@ Troubleshoot the ServiceNow v2 integration by displaying the health information 
 | Tags | ServiceNow,ServiceNowv2 |
 | Cortex XSOAR Version | 3.5.0+ |
 
+## Inputs
+---
+None
 
-### Open Instances Health Information
+## Outputs
+---
 
-|Instance Name|Last Pull Time|Number of Incidents Pulled|Open Incidents 30 days|Query|Size In Bytes|
+Open Instances Health Information
+
+|**Instance Name**|**Last Pull Time**|**Number of Incidents Pulled**|**Open Incidents 30 days**|**Total Open Incidents 30 days**|**Query**|**Size In Bytes**|
 |---|---|---|---|---|---|
 | ServiceNow_v2_instance_1 | 2025-01-28T12:29:45.140651734Z | 1 | ServiceNow Incident INC001111, ServiceNow Incident INC002222 | stateNOT IN6,7 | 3083 |
 
-### Closed instances with open incidents
+Closed instances with open incidents
 
-|Instance Name| Incidents|
-|---|---|
-| ServiceNow_v2_instance_disabled | ServiceNow Incident INC001111 |
+|**Instance Name**|**Incidents**|**Total**|
+|---|---|---|
+| ServiceNow_v2_instance_disabled | ServiceNow Incident INC001111 | 1 |
 
 
 ### Example
+---
 
 ![image](../../doc_files/ServiceNowTroubleshotScript.png)
