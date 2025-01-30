@@ -10,6 +10,8 @@ import urllib3
 from typing import Any
 import hmac
 
+from authlib.jose import JsonWebSignature
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -35,18 +37,19 @@ STRING_TO_SIGN_ALGORITHM = "ABS1-HMAC-SHA-256"
 STRING_TO_SIGN_SIGNATURE_VERSION = "abs1"
 DATE_FORMAT = '%Y%m%dT%H%M%SZ'
 DATE_FORMAT_CREDENTIAL_SCOPE = '%Y%m%d'
+DEFAULT_API_PAGE_SIZE = 100
 
 DEVICE_LIST_RETURN_FIELDS = [
-    "id",
+    "deviceUid",
     "esn",
-    "lastConnectedUtc",
-    "systemName",
+    "lastConnectedDateTimeUtc",
+    "deviceName",
     "systemModel",
     "fullSystemName",
     "agentStatus",
-    "os.name",
+    "operatingSystem.name",
     "systemManufacturer",
-    "serial",
+    "serialNumber",
     "systemType",
     "localIp",
     "publicIp",
@@ -54,25 +57,26 @@ DEVICE_LIST_RETURN_FIELDS = [
 ]
 
 DEVICE_GET_COMMAND_RETURN_FIELDS = [
-    "id",
+    "deviceUid",
     "esn",
     "domain",
-    "lastConnectedUtc",
-    "systemName",
+    "lastConnectedDateTimeUtc",
+    "deviceName",
     "systemModel",
     "systemType",
     "fullSystemName",
     "agentStatus",
-    "os.name",
-    "os.version",
-    "os.currentBuild",
-    "os.architecture",
-    "os.installDate",
-    "os.productKey",
-    "os.serialNumber",
-    "os.lastBootTime",
+    "operatingSystem.name",
+    "operatingSystem.version",
+    "operatingSystem.currentBuild",
+    "operatingSystem.architecture",
+    "operatingSystem.installDate",
+    "operatingSystem.productKey",
+    "operatingSystem.serialNumber",
+    "operatingSystem.lastBootTime",
     "systemManufacturer",
     "serial",
+    "serialNumber",
     "localIp",
     "publicIp",
     "username",
@@ -87,7 +91,7 @@ DEVICE_GET_COMMAND_RETURN_FIELDS = [
     "isStolen",
     "deviceStatus.type",
     "deviceStatus.reported",
-    "networkAdapters.networkSSID"
+    "networkSSID"
 ]
 
 DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
@@ -100,6 +104,12 @@ DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
     "geoData.location.accuracy",
     "geoData.location.lastUpdateDateTimeUtc",
 ]
+
+SEIM_EVENTS_PAGE_SIZE = 1000
+CLIENT_V3_JWS_VALIDATION_URL = "https://api.absolute.com/jws/validate"
+VENDOR = 'Absolute'
+PRODUCT = 'Secure Endpoint'
+HEADERS_V3: dict = {"content-type": "text/plain"}
 
 
 class Client(BaseClient):
@@ -279,8 +289,38 @@ class Client(BaseClient):
         return f'{STRING_TO_SIGN_ALGORITHM} Credential={self._token_id}/{credential_scope}, ' \
                f'SignedHeaders={canonical_headers}, Signature={signing_signature}'
 
+    def add_pagination(self, next_page: str, page_size: str):
+        """
+        Add pagination query format to the existing query
+        """
+        if next_page:
+            return f"&nextPage={next_page}&pageSize={page_size}"
+        return f"&pageSize={page_size}"
+
+    def get_specific_page_data(self, url_suffix: str, page_to_return: int, page_size: str):
+        current_page = 0  # the first page number to fetch
+        next_page = ''
+        while current_page <= page_to_return:
+
+            url_suffix_next_page = f"{url_suffix}{self.add_pagination(next_page, page_size)}"
+            response = self._http_request(method='GET', url_suffix=url_suffix_next_page, headers=self._headers,
+                                          return_empty_response=True)
+            data = response.get('data')
+            current_page += 1
+
+            next_page = response.get('metadata').get('pagination').get('nextPage')
+            if not next_page:
+                break
+
+        if current_page <= page_to_return and not next_page:
+            # no more results in the API
+            return {}
+
+        return data
+
     def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code=None,
-                             query_string: str = ''):
+                             query_string: str = '', page: int = 0, page_size: int = DEFAULT_API_PAGE_SIZE,
+                             specific_page: bool = false):
         """
         Makes an HTTP request to the Absolute API.
         Args:
@@ -304,8 +344,18 @@ class Client(BaseClient):
         if method == 'GET':
             if query_string:
                 url_suffix = f'{url_suffix}?{self.prepare_query_string_for_canonical_request(query_string)}'
-            return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
-                                      return_empty_response=True)
+            if specific_page:
+                data = self.get_specific_page_data(url_suffix, page, page_size)
+            else:
+                response = self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
+                                              return_empty_response=True)
+                data = response.get('data')
+                while next_page := response.get('metadata').get('pagination').get('nextPage'):
+                    url_suffix_next_page = f'{url_suffix}{self.add_pagination(next_page, page_size)}'
+                    response = self._http_request(method=method, url_suffix=url_suffix_next_page, headers=self._headers,
+                                                  return_empty_response=True)
+                    data += response.get('data')
+            return data
 
         elif method == 'DELETE':
             return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
@@ -321,8 +371,200 @@ class Client(BaseClient):
             res = requests.post(full_url, data=body, headers=self._headers, verify=self._verify)
             if res.status_code not in success_status_code:
                 raise DemistoException(f'{INTEGRATION} error: the operation was failed due to: {res.json()}')
-            return res.json()
+            return res.json().get('data')
         return None
+
+
+class ClientV3(BaseClient):
+    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, proxy: bool, headers: dict):
+        """
+        Client to use in the Absolute integration for API v3. Overrides BaseClient.
+        Args:
+            base_url (str): URL to access when doing a http request.
+            token_id (str): The Absolute token id
+            secret_key (str): User's Absolute secret key
+            verify (bool): Whether to check for SSL certificate validity.
+            proxy (bool): Whether the client should use proxies.
+            headers (dict): Dictionary of HTTP headers to send with the Request.
+        """
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._token_id = token_id
+        self._headers = headers
+        self._secret_key = secret_key
+        self._jws = JsonWebSignature()
+
+    def prepare_request(self, method: str, url_suffix: str, query_string: str, payload: dict) -> bytes:
+        """
+        Prepares the signed HTTP request data for making an API call.
+        Args:
+            method (str): The HTTP method to be used for the request.
+            url_suffix (str): The endpoint URL suffix for the API call.
+            query_string (str): The query string parameters for the API call.
+        Returns:
+            bytes: The prepared signed HTTP request data.
+        """
+        if payload:
+            request_payload_data = {"data": payload}
+        else:
+            request_payload_data = {}
+
+        headers = {
+            "alg": "HS256",
+            "kid": self._token_id,
+            "method": method,
+            "content-type": "application/json",
+            "uri": url_suffix,
+            "query-string": query_string,
+            "issuedAt": round(time.time() * 1000)
+        }
+
+        return self._jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
+
+    def prepare_query_string_for_canonical_request(self, query_string: str) -> str:
+        """
+        Query is given as a string represents the filter query. For example,
+        query_string = "$top=10 $skip=20"
+        1. Splitting into a list (by space as a separator).
+        2. Sorting arguments in ascending order; for example, 'A' is before 'a'.
+        3. URI encode the parameter name and value using URI generic syntax.
+        4. Reassembling the list into a string.
+        """
+        if not query_string:
+            return ""
+        return urllib.parse.quote(query_string, safe='=&')
+
+    def send_request_to_api(self, method: str, url_suffix: str, query_string: str, payload: dict, ok_codes: tuple):
+        signed = self.prepare_request(method=method, url_suffix=url_suffix, query_string=query_string, payload=payload)
+        return self._http_request(method=method, data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
+                                  return_empty_response=True, ok_codes=ok_codes)
+
+    def add_pagination(self, next_page: str, page_size: str):
+        """
+        Add pagination query format to the existing query
+        """
+        if next_page:
+            return f"&nextPage={next_page}&pageSize={page_size}"
+        return f"&pageSize={page_size}"
+
+    def get_specific_page_data(self, url_suffix: str, page_to_return: str, page_size: str, query_string: str):
+        current_page = 0  # the first page number to fetch
+        next_page = ''
+        while current_page <= page_to_return:
+            response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size))
+            data = response.get('data')
+            current_page += 1
+
+            next_page = response.get('metadata').get('pagination').get('nextPage')
+            if not next_page:
+                break
+
+        if current_page <= page_to_return and not next_page:
+            # no more results in the API
+            return {}
+
+        return data
+
+    def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code=None,
+                             query_string: str = '', page: int = 0, page_size: int = DEFAULT_API_PAGE_SIZE,
+                             specific_page: bool = false):
+        """
+        Makes an HTTP request to the Absolute API.
+        Args:
+            method (str): HTTP request method (GET/PUT/POST/DELETE).
+            url_suffix (str): The API endpoint.
+            body (str): The body to set.
+            success_status_code (int): an HTTP status code of success.
+            query_string (str): The query to filter results by.
+
+        Note: As on the put and post requests we should pass a body from type str, we couldn't use the _http_request
+              function in CSP (as it does not receive body from type str).
+        """
+        demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
+
+        if success_status_code is None:
+            success_status_code = [200]
+        query_string = self.prepare_query_string_for_canonical_request(query_string)
+
+        if method == 'GET':
+            if specific_page:
+                data = self.get_specific_page_data(url_suffix, page, page_size, query_string)
+            else:
+                response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size))
+                data = response.get('data')
+                while next_page := response.get('metadata').get('pagination').get('nextPage'):
+                    response = self.send_request_to_api('GET', url_suffix,
+                                                        query_string + self.add_pagination(next_page, page_size))
+                    data += response.get('data')
+            return data
+
+        elif method == 'DELETE':
+            response = self.send_request_to_api('DELETE', url_suffix, query_string, ok_codes=tuple(success_status_code))
+            return response
+
+        elif method == 'PUT':
+            response = self.send_request_to_api('PUT', url_suffix, query_string,
+                                                payload=body, ok_codes=tuple(success_status_code))
+            return response
+
+        elif method == 'POST':
+            response = self.send_request_to_api('POST', url_suffix, query_string,
+                                                payload=body, ok_codes=tuple(success_status_code))
+            return response.get('data')
+        return None
+
+    def fetch_events_request(self, query_string: str) -> dict[str, Any]:
+        """
+        Performs the HTTP request using the signed request data.
+        Args:
+            query_string (str): The query string parameters for the events to be fetched.
+        Returns:
+            dict: A dictionary containing the response object from the HTTP request.
+        """
+        signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
+        return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL)
+
+    def fetch_events_between_dates(self, fetch_limit: int, start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
+        """
+        Helper function to fetch events with time window from the API based on the provided parameters.
+        Args:
+            fetch_limit (int): The maximum number of events to fetch.
+            start_date (datetime): The start date for the events to be fetched.
+            end_date (datetime): The end date for the events to be fetched.
+        Returns:
+            list: A list of fetched events.
+        """
+        all_events = []
+        while len(all_events) < fetch_limit:
+            page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
+            query_string = self.prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date,
+                                                                      end_date=end_date)
+            response = self.fetch_events_request(query_string=query_string)
+            all_events.extend(response.get('data', []))
+            next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
+            if not next_page_token:
+                break
+
+        demisto.debug(f'fetch_events_between_dates: Fetched {len(all_events)} events')
+        return all_events
+
+    def prepare_query_string_for_fetch_events(self, page_size: int = None, start_date: datetime = None,
+                                              end_date: datetime = None) -> str:
+        """
+        Prepares the query string for fetching events based on the provided parameters.
+        Args:
+            page_size (int, optional): The size of each page to fetch. Defaults to None.
+            start_date (datetime, optional): The start date of the events to fetch. Defaults to None.
+            end_date (datetime, optional): The end date of the events to fetch. Defaults to None.
+        Returns:
+            str: The prepared query string for fetching events.
+        """
+        from_date_time_utc = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+        to_date_time_utc = f'toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+        query = f'{from_date_time_utc}&{to_date_time_utc}'
+        if page_size:
+            query += f'&pageSize={page_size}'
+        demisto.debug(f'Query string for fetching events: {query}')
+        return query
 
 
 def sign(key, msg):
@@ -330,7 +572,7 @@ def sign(key, msg):
 
 
 def validate_absolute_api_url(base_url):
-    if base_url not in ABSOLUTE_URL_TO_API_URL.keys():
+    if base_url not in ABSOLUTE_URL_TO_API_URL:
         raise_demisto_exception(
             f"The Absolute server url {base_url} in not a valid url. "
             f"Possible options: {list(ABSOLUTE_URL_TO_API_URL.keys())}")
@@ -350,9 +592,9 @@ def test_module(client: Client) -> str:
     return message
 
 
-def parse_device_field_list_response(response: dict) -> dict[str, Any]:
-    parsed_data = {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'), 'CDFValues': []}  # type: ignore
-    for cdf_item in response.get('cdfValues', []):
+def parse_device_field_list_response(response: dict, device_id: str) -> dict[str, Any]:
+    parsed_data = {'DeviceUID': device_id, 'CDFValues': []}  # type: ignore
+    for cdf_item in response.get('data', []):
         parsed_data['CDFValues'].append({  # type: ignore
             'CDFUID': cdf_item.get('cdfUid'),
             'FieldKey': cdf_item.get('fieldKey'),
@@ -377,8 +619,11 @@ def parse_device_field_list_response_human_readable(outputs):
 
 def get_custom_device_field_list_command(args, client) -> CommandResults:
     device_id = args.get('device_id')
-    res = client.api_request_absolute('GET', f'/v2/devices/{device_id}/cdf')
-    outputs = parse_device_field_list_response(res)
+    page = arg_to_number(args.get('page', 0))
+    limit = arg_to_number(args.get('limit', 50))
+    res = client.api_request_absolute('GET', f'/v3/configurations/customfields/devices/{device_id}', query_string=query_string,
+                                      page=page, page_size=limit, specific_page=True)
+    outputs = parse_device_field_list_response(res, device_id)
     human_readable = tableToMarkdown(f'{INTEGRATION} Custom device field list',
                                      parse_device_field_list_response_human_readable(outputs),
                                      removeNull=True)
@@ -394,7 +639,7 @@ def update_custom_device_field_command(args, client) -> CommandResults:
     field_value = args.get('value')
 
     payload = json.dumps({"cdfValues": [{'cdfUid': cdf_uid, 'fieldValue': field_value}]})
-    client.api_request_absolute('PUT', f'/v2/devices/{device_id}/cdf', body=payload)
+    client.api_request_absolute('PUT', f'/v3/configurations/customfields/devices/{device_id}', body=payload)
     return CommandResults(readable_output=f"Device {device_id} with value {field_value} was updated successfully.")
 
 
@@ -439,8 +684,8 @@ def validate_passcode_type_args(passcode_type, passcode, passcode_length, payloa
     return payload
 
 
-def parse_freeze_device_response(response: dict):
-    outputs = {'RequestUID': response.get('requestUid'), 'SucceededDeviceUIDs': response.get('deviceUids')}
+def parse_freeze_device_response(response: dict, device_ids: str):
+    outputs = {'RequestUID': response.get('requestUid'), 'SucceededDeviceUIDs': device_ids}
     errors = response.get('errors', [])
     human_readable_errors = []
     if errors:
@@ -454,9 +699,9 @@ def parse_freeze_device_response(response: dict):
 
 def device_freeze_request_command(args, client) -> CommandResults:
     payload = prepare_payload_to_freeze_request(args)
-    res = client.api_request_absolute('POST', '/v2/device-freeze/requests', body=json.dumps(payload),
+    res = client.api_request_absolute('POST', '/v3/actions/requests/freeze', body=payload,
                                       success_status_code=[201])
-    outputs = parse_freeze_device_response(res)
+    outputs = parse_freeze_device_response(res, args.get('device_ids'))
     human_readable = tableToMarkdown(f'{INTEGRATION} device freeze requests results', outputs,
                                      headers=['FailedDeviceUIDs', 'RequestUID', 'SucceededDeviceUIDs'], removeNull=True,
                                      json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()},)
@@ -476,7 +721,7 @@ def prepare_payload_to_freeze_request(args):
     passcode_type = args.get('passcode_type')
 
     payload = {
-        "name": request_name,
+        "requestTitle": request_name,
         "message": html_message,
         "messageName": message_name,
         "freezeDefinition":
@@ -511,12 +756,10 @@ def remove_device_freeze_request_command(args, client) -> CommandResults:
     remove_scheduled = args.get('remove_scheduled')
     remove_offline = args.get('remove_offline')
 
-    # from the API docs: unfreeze - Make frozen devices usable immediately, Applies to all Freeze types.
-    # Always set to true
-    payload = {"deviceUids": device_ids, "unfreeze": "true", "removeScheduled": remove_scheduled,
+    payload = {"deviceUids": device_ids, "removeScheduled": remove_scheduled,
                "removeOffline": remove_offline}
 
-    client.api_request_absolute('PUT', '/v2/device-freeze/requests', body=json.dumps(payload),
+    client.api_request_absolute('POST', '/v3/actions/freeze/remove-freeze', body=payload,
                                 success_status_code=[204])
     return CommandResults(
         readable_output=f"Successfully removed freeze request for devices ids: {args.get('device_ids')}.")
@@ -527,22 +770,20 @@ def parse_get_device_freeze_response(response: List):
     for freeze_request in response:
         parsed_data.append({
             'ID': freeze_request.get('id'),
-            'AccountUid': freeze_request.get('accountUid'),
-            'ActionRequestUid': freeze_request.get('actionRequestUid'),
+            'ActionRequestUid': freeze_request.get('requestUid'),
             'DeviceUid': freeze_request.get('deviceUid'),
-            'Name': freeze_request.get('name'),
+            'Name': freeze_request.get('requestTitle'),
             'Statuses': freeze_request.get('statuses', []),
             'Configuration': freeze_request.get('configuration', {}),
             'Requester': freeze_request.get('requester'),
-            'RequesterUid': freeze_request.get('requesterUid'),
-            'CreatedUTC': freeze_request.get('createdUTC'),
-            'ChangedUTC': freeze_request.get('changedUTC'),
+            'CreatedUTC': freeze_request.get('createdDateTimeUtc'),
+            'ChangedUTC': freeze_request.get('changedDateTimeUtc'),
             'NotificationEmails': freeze_request.get('notificationEmails'),
             'EventHistoryId': freeze_request.get('eventHistoryId'),
             'PolicyGroupUid': freeze_request.get('policyGroupUid'),
             'PolicyConfigurationVersion': freeze_request.get('policyConfigurationVersion'),
             'FreezePolicyUid': freeze_request.get('freezePolicyUid'),
-            'Downloaded': freeze_request.get('downloaded'),
+            'Downloaded': freeze_request.get('isDownloaded'),
             'IsCurrent': freeze_request.get('isCurrent'),
             # for the freeze message command
             'Content': freeze_request.get('content'),
@@ -559,10 +800,10 @@ def parse_device_freeze_message_response(response):
     parsed_data = []
     for freeze_request in response:
         parsed_data.append({
-            'ID': freeze_request.get('id'),
+            'ID': freeze_request.get('messageUid'),
             'Name': freeze_request.get('name'),
-            'CreatedUTC': freeze_request.get('createdUTC'),
-            'ChangedUTC': freeze_request.get('changedUTC'),
+            'CreatedUTC': freeze_request.get('createdDateTimeUtc'),
+            'ChangedUTC': freeze_request.get('changedDateTimeUtc'),
             'Content': freeze_request.get('content'),
             'CreatedBy': freeze_request.get('createdBy'),
             'ChangedBy': freeze_request.get('changedBy'),
@@ -572,12 +813,12 @@ def parse_device_freeze_message_response(response):
 
 def get_device_freeze_request_command(args, client) -> CommandResults:
     request_uid = args.get('request_uid')
-    res = client.api_request_absolute('GET', f'/v2/device-freeze/requests/{request_uid}')
+    res = client.api_request_absolute('GET', f'/v3/actions/freeze/requests/{request_uid}')
     outputs = parse_get_device_freeze_response(res)
 
     human_readable = tableToMarkdown(f'{INTEGRATION} Freeze request details for: {request_uid}', outputs,
-                                     headers=['ID', 'Name', 'AccountUid', 'ActionRequestUid', 'EventHistoryId',
-                                              'FreezePolicyUid', 'CreatedUTC', 'ChangedUTC', 'Requester'],
+                                     headers=['ID', 'Name', 'ActionRequestUid', 'EventHistoryId',
+                                              'CreatedUTC', 'ChangedUTC', 'Requester'],
                                      removeNull=True)
     return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeRequestDetail", outputs_key_field='ID',
                           readable_output=human_readable, raw_response=res)
@@ -586,9 +827,9 @@ def get_device_freeze_request_command(args, client) -> CommandResults:
 def list_device_freeze_message_command(args, client) -> CommandResults:
     message_id = args.get('message_id')
     if message_id:
-        res = client.api_request_absolute('GET', f'/v2/device-freeze/messages/{message_id}')
+        res = client.api_request_absolute('GET', f'/v3/actions/freeze/messages/{messageUid}')
     else:
-        res = client.api_request_absolute('GET', '/v2/device-freeze/messages', success_status_code=(200, 204))
+        res = client.api_request_absolute('GET', '/v3/actions/freeze/messages', success_status_code=(200, 204))
 
     if isinstance(res, list):
         outputs = parse_device_freeze_message_response(res)
@@ -608,10 +849,11 @@ def create_device_freeze_message_command(args, client) -> CommandResults:
 
     payload = {"name": message_name, "content": html_message}
 
-    res = client.api_request_absolute('POST', '/v2/device-freeze/messages', body=json.dumps(payload),
+    res = client.api_request_absolute('POST', '/v3/actions/freeze/messages', body=payload,
                                       success_status_code=(200, 201))
-    human_readable = f"{INTEGRATION} New freeze message was created with ID: {res.get('id')}"
-    return CommandResults(outputs={'ID': res.get('id')}, outputs_prefix="Absolute.FreezeMessage",
+    message_id = res.get('data', {}).get('id', '')
+    human_readable = f"{INTEGRATION} New freeze message was created with ID: {message_id}"
+    return CommandResults(outputs={'ID': message_id}, outputs_prefix="Absolute.FreezeMessage",
                           outputs_key_field='ID',
                           readable_output=human_readable, raw_response=res)
 
@@ -621,40 +863,85 @@ def update_device_freeze_message_command(args, client) -> CommandResults:
     html_message = args.get('html_message')
     message_name = args.get('message_name')
     payload = {"name": message_name, "content": html_message}
-    client.api_request_absolute('PUT', f'/v2/device-freeze/messages/{message_id}', body=json.dumps(payload))
+    client.api_request_absolute('PUT', f'/v3/actions/freeze/messages/{message_id}', body=payload)
     return CommandResults(readable_output=f'{INTEGRATION} Freeze message: {message_id} was updated successfully')
 
 
 def delete_device_freeze_message_command(args, client) -> CommandResults:
     message_id = args.get('message_id')
-    client.api_request_absolute('DELETE', f'/v2/device-freeze/messages/{message_id}', success_status_code=[204])
+    client.api_request_absolute('DELETE', f'/v3/actions/freeze/messages/{message_id}', success_status_code=[204])
     return CommandResults(readable_output=f'{INTEGRATION} Freeze message: {message_id} was deleted successfully')
 
 
-def parse_device_unenroll_response(response):
+def parse_device_unenroll_request_data_response(response):
     parsed_data = []
-    for device in response:
+    for data in response:
         parsed_data.append({
-            'DeviceUid': device.get('deviceUid'),
-            'SystemName': device.get('systemName'),
-            'Username': device.get('username'),
-            'EligibleStatus': device.get('eligibleStatus'),
-            'Serial': device.get('serial'),
-            'ESN': device.get('esn'),
+            'TotalDevices': data.get('totalDevices'),
+            'Pending': data.get('pending'),
+            'Processing': data.get('processing'),
+            'Completed': data.get('completed'),
+            'Canceled': data.get('canceled'),
+            'Failed': data.get('failed'),
+            'RequestId': data.get('requestId'),
+            'RequestUid': data.get('requestUid'),
+            'RequestStatus': data.get('requestStatus'),
+            'CreatedDateTimeUtc': data.get('createdDateTimeUtc'),
+            'UpdatedDateTimeUtc': data.get('updatedDateTimeUtc'),
+            'Requester': data.get('requester'),
+            'ExcludeMissingDevices': data.get('excludeMissingDevices'),
         })
     return parsed_data
 
 
+def parse_device_unenroll_response(response: dict):
+    parsed_devices_data = []
+    for device in response:
+        parsed_devices_data.append({
+            'DeviceUid': device.get('deviceUid'),
+            'ActionUid': device.get('actionUid'),
+            'RequestUid': device.get('requestUid'),
+            'DeviceName': device.get('deviceName'),
+            'ActionStatus': device.get('actionStatus'),
+            'ESN': device.get('esn'),
+            'CreatedDateTimeUtc': device.get('createdDateTimeUtc'),
+            'UpdatedDateTimeUtc': device.get('updatedDateTimeUtc'),
+        })
+    return parsed_devices_data
+
+
 def device_unenroll_command(args, client) -> CommandResults:
     device_ids = argToList(args.get('device_ids'))
-    payload = [{'deviceUid': device_id} for device_id in device_ids]
-    res = client.api_request_absolute('POST', '/v2/device-unenrollment/unenroll', body=json.dumps(payload))
-    outputs = parse_device_unenroll_response(res)
-    human_readable = tableToMarkdown(f'{INTEGRATION} unenroll devices:', outputs, removeNull=True)
+    exclude_missing_devices = args.get('exclude_missing_devices', 'false')
+    payload = {'deviceUids': device_ids, 'excludeMissingDevices': exclude_missing_devices}
+
+    # getting the requestUid from API 1
+    res_1 = client.api_request_absolute('POST', '/v3/actions/requests/unenroll ', body=payload)
+    request_uid = res_1.get('data', {}).get('requestUid', '')
+
+    # getting data from API 2
+    res_2 = client.api_request_absolute('GET', f'v3/actions/requests/unenroll/{request_uid}')
+    request_data_outputs = parse_device_unenroll_request_data_response(res_2)
+
+    # getting data from API 3
+    payload = {'deviceUids': device_ids}
+    res_3 = client.api_request_absolute('POST', 'post/actions/unenroll/get-actions', body=payload)
+
+    devices_data_outputs = parse_device_unenroll_response(res_3)
+    human_readable = tableToMarkdown(f'{INTEGRATION} Unenroll request data:', request_data_outputs,
+                                     headers=['RequestId', 'RequestStatus'],
+                                     removeNull=True)
+
+    human_readable += tableToMarkdown(f'{INTEGRATION} unenrolled devices:', devices_data_outputs,
+                                      headers=['DeviceUid', 'DeviceName', 'ESN'],
+                                      removeNull=True)
+
+    outputs = request_data_outputs
+    outputs['Devices'] = devices_data_outputs
     return CommandResults(outputs_prefix='Absolute.DeviceUnenroll',
                           outputs=outputs,
                           readable_output=human_readable,
-                          raw_response=res)
+                          raw_response=outputs)
 
 
 def add_list_to_filter_string(field_name, list_of_values, query):
@@ -707,6 +994,7 @@ def create_filter_query_from_args(args: dict, change_device_name_to_system=False
     query = create_filter_query_from_args_helper(args, 'app_names', "appName", query)
     query = create_filter_query_from_args_helper(args, 'app_publishers', "appPublisher", query)
     query = create_filter_query_from_args_helper(args, 'user_names', "userName", query)
+    query = create_filter_query_from_args_helper(args, 'user_names', "username", query)
     query = create_filter_query_from_args_helper(args, 'os', "osName", query)
     query = create_filter_query_from_args_helper(args, 'esn', "esn", query)
     query = create_filter_query_from_args_helper(args, 'local_ips', "localIp", query)
@@ -729,10 +1017,10 @@ def create_filter_query_from_args(args: dict, change_device_name_to_system=False
         query = add_value_to_filter_string("agentStatus", agent_status, query)
 
     os_name = args.get('os_name')
-    query = add_value_to_filter_string("osName", os_name, query)
+    query = add_value_to_filter_string("operatingSystem.name", os_name, query)
 
     os_version = args.get('os_version')
-    query = add_value_to_filter_string("osVersion", os_version, query)
+    query = add_value_to_filter_string("operatingSystem.version", os_version, query)
 
     manufacturer = args.get('manufacturer')
     query = add_value_to_filter_string("systemManufacturer", manufacturer, query)
@@ -756,15 +1044,6 @@ def parse_return_fields(return_fields: str, query: str):
     return f"$select={return_fields}"
 
 
-def parse_paging(page: int, limit: int, query: str) -> str:
-    """
-    Add pagination query format to the existing query
-    """
-    if query:
-        return f'{query}&$skip={page}&$top={limit}'
-    return f"$skip={page}&$top={limit}"
-
-
 def parse_device_list_response(response, keep_os_in_list=True):
     parsed_response = []
     for device in response:
@@ -782,6 +1061,48 @@ def parse_device_list_response(response, keep_os_in_list=True):
     if len(parsed_response) == 1:
         return parsed_response[0]
     return parsed_response
+
+
+def parse_new_values_for_device_application_outputs(outputs, response):
+    outputs["installDate"] = response.get('installDateTimeUtc')
+    outputs["firstDetectUtc"] = response.get('firstDetectDateTimeUtc')
+    outputs["lastScanTimeUtc"] = response.get('lastScanDateTimeUtc')
+
+    return outputs
+
+
+def parse_new_values_for_device_list_outputs(outputs, response):
+    outputs["Id"] = response.get('deviceUid')
+    outputs["LastConnectedUtc"] = response.get('lastConnectedDateTimeUtc')
+    outputs["Serial"] = response.get('serialNumber')
+    outputs["encryptionStatus"] = response.get('espInfo', {}).get('encryptionStatus')
+    outputs["osName"] = response.get('operatingSystem', {}).get('name')
+
+    return outputs
+
+
+def parse_new_values_for_get_device_outputs(outputs, response):
+    outputs["Id"] = response.get('deviceUid')
+    outputs["LastConnectedUtc"] = response.get('lastConnectedDateTimeUtc')
+    outputs["Serial"] = response.get('serialNumber')
+    outputs["PublicIp"] = response.get('publicIp')
+    outputs["LocalIp"] = response.get('localIp')
+    outputs["Username"] = response.get('username')
+    outputs["encryptionStatus"] = response.get('espInfo', {}).get('encryptionStatus')
+
+    os_data = response.get('operatingSystem', {})
+    outputs_os_data = {"architecture": os_data.get('architecture'),
+                       "currentBuild": os_data.get('currentBuild'),
+                       "installDate": os_data.get('installDateTimeUtc'),
+                       "lastBootTime": os_data.get('lastBootDateTimeUtc'),
+                       "name": os_data.get('name'),
+                       "productKey": os_data.get('productKey'),
+                       "serialNumber": os_data.get('serialNumber'),
+                       "version": os_data.get('version')}
+
+    outputs["Os"] = outputs_os_data
+
+    return outputs
 
 
 def parse_geo_location_outputs(response):
@@ -812,11 +1133,12 @@ def get_device_application_list_command(args, client) -> CommandResults:
 
     query_string = create_filter_query_from_args(args)
     query_string = parse_return_fields(args.get('return_fields'), query_string)
-    query_string = parse_paging(page, limit, query_string)  # type: ignore
 
-    res = client.api_request_absolute('GET', '/v2/sw/deviceapplications', query_string=query_string)
+    res = client.api_request_absolute('GET', '/v3/reporting/applications-advanced', query_string=query_string,
+                                      page=page, page_size=limit, specific_page=True)
     if res:
         outputs = parse_device_list_response(res)
+        outputs = parse_new_values_for_device_application_outputs(outputs, res)
         human_readable = tableToMarkdown(f'{INTEGRATION} device applications list:', outputs, removeNull=True)
         human_readable += f"Above results are with page number: {page} and with size: {limit}."
         return CommandResults(outputs_prefix='Absolute.DeviceApplication',
@@ -834,12 +1156,15 @@ def device_list_command(args, client) -> CommandResults:
 
     query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
     query_string = parse_return_fields(",".join(DEVICE_LIST_RETURN_FIELDS), query_string)
-    query_string = parse_paging(page, limit, query_string)  # type: ignore
 
-    res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
+    res = client.api_request_absolute('GET', '/v3/reporting/devices', query_string=query_string,
+                                      page=page, page_size=limit, specific_page=True)
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res), keep_os_in_list=False)
-        human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
+        outputs = parse_new_values_for_device_list_outputs(outputs, res)
+        human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs,
+                                         headers=['Id', 'LastConnectedUtc', 'LocalIp', 'AgentStatus', 'Esn', 'FullSystemName'],
+                                         removeNull=True)
         human_readable += f"Above results are with page number: {page} and with size: {limit}."
         return CommandResults(outputs_prefix='Absolute.Device',
                               outputs=outputs,
@@ -855,7 +1180,7 @@ def get_device_command(args, client) -> CommandResults:
         raise_demisto_exception(
             "at least one of the commands args (device_ids, device_names, local_ips, public_ips must be provided.")
 
-    query_string = create_filter_query_from_args(args, change_device_name_to_system=True, change_device_id=True)
+    query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
     custom_fields_to_return = remove_duplicates_from_list_arg(args, 'fields')
     if custom_fields_to_return:
         custom_fields_to_return.extend(DEVICE_GET_COMMAND_RETURN_FIELDS)
@@ -863,9 +1188,10 @@ def get_device_command(args, client) -> CommandResults:
     else:
         query_string = parse_return_fields(",".join(DEVICE_GET_COMMAND_RETURN_FIELDS), query_string)
 
-    res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
+    res = client.api_request_absolute('GET', '/v3/reporting/devices', query_string=query_string)
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res))
+        outputs = parse_new_values_for_get_device_outputs(outputs, res)
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
         return CommandResults(outputs_prefix='Absolute.Device',
                               outputs=outputs,
@@ -880,7 +1206,7 @@ def get_device_location_command(args, client) -> CommandResults:
     query_string = create_filter_query_from_args(args, change_device_id=True)
     query_string = parse_return_fields(",".join(DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS), query_string)
 
-    res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
+    res = client.api_request_absolute('GET', '/v3/reporting/devices', query_string=query_string)
     if res:
         outputs = parse_geo_location_outputs(copy.deepcopy(res))
         human_readable = tableToMarkdown(f'{INTEGRATION} devices location:', outputs, removeNull=True)
