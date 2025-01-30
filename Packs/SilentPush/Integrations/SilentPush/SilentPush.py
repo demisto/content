@@ -21,6 +21,7 @@ JOB_STATUS = "explore/job"
 NAMESERVER_REPUTATION = "explore/nsreputation/nameserver"
 SUBNET_REPUTATION = "explore/ipreputation/history/subnet"
 ASNS_DOMAIN = "explore/padns/lookup/domain/asns"
+DENSITY_LOOKUP = "explore/padns/lookup/density"
 
 ''' COMMANDS INPUTS '''
 
@@ -62,7 +63,16 @@ ASNS_DOMAIN_INPUTS = [
                                 description='Domain name to search ASNs for. Retrieves ASNs associated with A records for the specified domain and its subdomains in the last 30 days.',
                                 required=True)
                     ]
-
+DENSITY_LOOKUP_INPUTS = [
+                InputArgument(name='qtype',
+                            description='Query type.',
+                            required=True),
+                InputArgument(name='query',
+                            description='Value to query.',
+                            required=True),
+                InputArgument(name='scope',
+                            description='Match level (optional).')
+            ]
 
 
 ''' COMMANDS OUTPUTS '''
@@ -93,6 +103,10 @@ ASNS_DOMAIN_OUTPUTS = [
                         OutputArgument(name='domain', output_type=str, description='The domain name for which ASNs are retrieved.'),
                         OutputArgument(name='domain_asns', output_type=dict, description='Dictionary of Autonomous System Numbers (ASNs) associated with the domain.')
                     ]
+DENSITY_LOOKUP_OUTPUTS = [
+    OutputArgument(name='density', output_type=int, description='The density value associated with the query result.'),
+    OutputArgument(name='nssrv', output_type=str, description='The name server (NS) for the query result.')
+]
 
 
 
@@ -303,6 +317,27 @@ class Client(BaseClient):
         # Send the request and return the response directly
         return self._http_request(method="GET", url_suffix=url_suffix)
 
+    def density_lookup(self, qtype: str, query: str, **kwargs) -> Dict[str, Any]:
+        """
+        Perform a density lookup based on various query types and optional parameters.
+
+        Args:
+            qtype (str): Query type to perform the lookup. Options include: nssrv, mxsrv, nshash, mxhash, ipv4, ipv6, asn, chv.
+            query (str): The value to look up.
+            **kwargs: Optional parameters (e.g., filters) for scoping the lookup.
+
+        Returns:
+            Dict[str, Any]: The results of the density lookup, containing relevant information based on the query.
+        """
+        url_suffix = f"{DENSITY_LOOKUP}/{qtype}/{query}"
+
+        params = filter_none_values(kwargs)
+
+        return self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=params
+        )
 
 ''' HELPER FUNCTIONS '''
 def filter_none_values(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -553,6 +588,53 @@ def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
         raw_response=raw_response
     )
 
+@metadata_collector.command(
+    command_name="silentpush-density-lookup",
+    inputs_list=DENSITY_LOOKUP_INPUTS,
+    outputs_prefix="SilentPush.DensityLookup",
+    outputs_list=DENSITY_LOOKUP_OUTPUTS,
+    description="This command query granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information."
+)
+def density_lookup_command(client: Client, args: dict) -> CommandResults:
+    """
+    Command function to perform a density lookup on the SilentPush API.
+
+    Args:
+        client (Client): SilentPush API client.
+        args (dict): Command arguments containing 'qtype' and 'query', and optionally 'scope'.
+
+    Returns:
+        CommandResults: Formatted results of the density lookup, including either the density records or an error message.
+    """
+    qtype = args.get('qtype')
+    query = args.get('query')
+
+    if not qtype or not query:
+        raise DemistoException("Both 'qtype' and 'query' are required parameters.")
+
+    scope = args.get('scope')
+
+    raw_response = client.density_lookup(qtype=qtype, query=query, scope=scope)
+
+    records = raw_response.get('response', {}).get('records', [])
+
+    readable_output = (
+        f"No density records found for {qtype} {query}"
+        if not records
+        else tableToMarkdown(f"Density Lookup Results for {qtype} {query}", records, removeNull=True)
+    )
+
+    return CommandResults(
+        outputs_prefix='SilentPush.DensityLookup',
+        outputs_key_field='query',
+        outputs={'qtype': qtype, 'query': query, 'records': records},
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
+
+
+
 
 ''' MAIN FUNCTION '''
 
@@ -593,6 +675,9 @@ def main() -> None:
 
         elif demisto.command() == 'silentpush-get-asns-for-domain':
             return_results(get_asns_for_domain_command(client, demisto.args()))
+        
+        elif demisto.command() == 'silentpush-density-lookup':
+            return_results(density_lookup_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
