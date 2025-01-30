@@ -15,6 +15,7 @@ args:
   required: true
   default: true
   description: The IP to enrich.
+  isArray: true
 - auto: PREDEFINED
   defaultValue: 'false'
   description: 'If set to false, bring the data from TIM only.'

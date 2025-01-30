@@ -21,6 +21,7 @@ PRIVATE_SUBNETS = [
     '255.255.255.255/32'
 ]
 
+
 class Command:
     def __init__(
         self,
@@ -126,6 +127,7 @@ def get_command_results(command: Command, results: list[dict[str, Any]], args: d
             command_human_readable_outputs.append(entry.get("HumanReadable") or "")
     return command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs
 
+
 class IPCommandRunner:
     def __init__(self, verbose: bool) -> None:
         """
@@ -152,9 +154,6 @@ class IPCommandRunner:
         """Check if a brand is active and available."""
         return brand in self.enabled_brands
 
-
-
-
     def run_command(self, command: Command, args: dict[str, list[str] | str]):
         """
             Runs the given command with the provided arguments and returns the results.
@@ -170,7 +169,8 @@ class IPCommandRunner:
         demisto.debug(f'run command {command.name} with args={args}')
 
         raw_outputs = run_execute_command(command, args)
-        command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = get_command_results(command, raw_outputs, args, self.verbose)
+        command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = get_command_results(
+            command, raw_outputs, args, self.verbose)
         if self.verbose:
             human_readable = "\n".join(command_human_readable_outputs)
             human_readable = [hr] if (hr := hr_to_command_results(command.name, args, human_readable)) else []
@@ -180,8 +180,6 @@ class IPCommandRunner:
         return command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs
 
 
-
-
 def to_list(var):
     """
     Converts the input variable to a list if it is not already a list.
@@ -189,6 +187,7 @@ def to_list(var):
     if not var:
         return []
     return [var] if not isinstance(var, list) else var
+
 
 ######################## OUTPUT PROCESSING FUNCTIONS ########################
 
@@ -227,6 +226,7 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
             )
     return full_output_key
 
+
 def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
     """
     Extracts and processes the outputs from the raw context based on the given output key.
@@ -246,6 +246,8 @@ def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
         return {}
     context = raw_context.get(full_output_key, {})
     return context
+
+
 def enrich_data_with_source(data: dict, source: str):
     """
     Enrich the provided data with source information.
@@ -275,7 +277,6 @@ def enrich_data_with_source(data: dict, source: str):
         else:
             result[key] = {"Value": value, "Source": source}
     return result
-
 
 
 def merge_ips(ips: list[dict[str, str]]) -> dict[str, Any]:
@@ -319,8 +320,7 @@ def merge_ips(ips: list[dict[str, str]]) -> dict[str, Any]:
     )
 
 
-
-######### IP ENRICHMENT FUNCTIONS #########
+######### IP ENRICHMENT HELPER FUNCTIONS #########
 
 def get_private_ips() -> list[str]:
     """Retrieve the list of private IP subnets."""
@@ -357,20 +357,95 @@ def separate_ips(ip_list: list[str]) -> tuple[list[str], list[str]]:
     external_ips = set(ip_list) - internal_ips
     return list(internal_ips), list(external_ips)
 
+#################################################################################################
 
-def enrich_internal_ip_address(ip_command_runner, ips: list[str]) -> CommandResults:
-    """Handle internal IP enrichment."""
-    demisto.debug(f"Internal IP detected: {ips}")
-    print("INTERNAL IP")
-    joined_ips = ",".join(ips)
-    get_endpoint_data_command = Command(
-        name="get-endpoint-data",
-        output_keys=["Contents"],
-        output_mapping=lambda x: x.get("Contents", [])
+
+
+########################### search indicators #################################
+def generate_common_ip_from_ip_indicator(ip_address :str, ip_type : str, custom_fields : dict) -> dict:
+    """
+    CustomFields
+    asn
+    detectionengines
+feedrelatedindicators
+geocountry
+geolocation
+hostname
+organization
+organizationtype
+positivedetections
+tags
+    """
+    return Common.IP(
+        ip = ip_address,
+        ip_type= ip_type,
+        asn=custom_fields.get('')
+
     )
-    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(get_endpoint_data_command, {"agent_ip": joined_ips})
-    get_outputs("Core.AnalyticsPrevalence.Ip", command_context_outputs[0])
 
+
+
+
+
+def get_search_indicators_outputs(iocs: list[dict]):
+    outputs = []
+    for ip_indicator in iocs:
+        #todo - which fields should be excluded?
+        common_ip = generate_common_ip_from_ip_indicator(ip_address = ip_indicator.get('value'),
+                                                        ip_type = ip_indicator.get('indicator_type'),
+                                                        custom_fields =  ip_indicator.get('CustomFields', {}))
+
+
+def search_indicators(ips: list[str]):
+    """Retrieve TIM data for IP indicators."""
+    ips_value_query = " or ".join([f"value:{ip}" for ip in ips])
+    query = f"(type:IPv6 or type:IPv6CIDR or type:IP) and ({ips_value_query})"
+    raw_results = demisto.searchIndicators(query=query)
+    #todo: wrap in command_results
+    outputs = get_search_indicators_outputs(raw_results.get('iocs', []))
+    return raw_results , outputs
+
+
+    # command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(find_indicators_command, {
+    #     "query": query})  #RETURNS A LIST OF DICTIONARIES PER INDICATOR, TODO: IF MISSING? IF EMPTY EMPTY LIST IS RETUNRED. WHAT TO DO IF MULTIPLE RESULTS FOR ONE IP?
+    # demisto.debug(f"IPEnrichment: searchIndicators {command_contents=}")
+    # # raw_content = command_contents[0] if isinstance(command_contents, list) else {}
+    # for content in command_contents:
+    #     scores = content.get("insightCache", {}).get("scores", {})
+    #     ips_context = []
+    #     dbot_scores_context = []
+    #     integration_ips_context = []
+    #     for score_source, score_value in scores.items():
+    #         context = score_value.get("context", {})
+    #         for key, value in context.items():
+    #             if key == "IP(val.Address && val.Address == obj.Address)":
+    #                 enrich_data_with_source(value[0], score_source)
+    #                 ips_context.append(value)
+    #                 continue
+    #             if key == "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)":
+    #                 enrich_data_with_source(value[0], score_source)
+    #                 dbot_scores_context.append(value)
+    #                 continue
+    #             else:
+    #                 #parse the integration name from this format: 'Whois.IP(val.query && val.query == obj.query)'
+    #                 integration_prefix = key.split(".")[0]
+    #                 enrich_data_with_source(value, integration_prefix)
+    #                 integration_ips_context.append(value)
+    #
+    #     # # merge the context of the same type
+    #     # ips_context = merge_ips(ips_context)
+
+    #
+    #
+    # enriched_data = enrich_data_with_source(raw_content, "TIM")
+    #
+    # demisto.debug(f"IPEnrichment: searchIndicators {enriched_data=}")
+
+    # tim_indicators = demisto.searchIndicators(query)
+
+
+######################################## internal flow #######################################
+######################################## external flow #######################################
 def check_reputation(ip_command_runner: IPCommandRunner, ips: str):
     """Check the reputation of an IP address."""
     print("REPUTATION")
@@ -379,10 +454,10 @@ def check_reputation(ip_command_runner: IPCommandRunner, ips: str):
         output_keys=["Contents"],
         output_mapping=lambda x: x.get("Contents", [])
     )
-    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(ip_command, {"ip": ips})
-    command_context_outputs = command_context_outputs[0] if isinstance(command_context_outputs , list) else command_context_outputs
+    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(
+        ip_command, {"ip": ips})
+    command_context_outputs = command_context_outputs[0] if isinstance(command_context_outputs, list) else command_context_outputs
     enriched_data = enrich_data_with_source(command_context_outputs, "Reputation")
-
 
 
 def get_analytics_prevalence(ip_command_runner: IPCommandRunner, ips: str) -> dict:
@@ -396,90 +471,57 @@ def get_analytics_prevalence(ip_command_runner: IPCommandRunner, ips: str) -> di
         output_keys=["Contents"],
         output_mapping=lambda x: x.get("Contents", [])
     )
-    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(prevalence_command, {"ip_address": ips})
+    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(
+        prevalence_command, {"ip_address": ips})
 
-
-def get_indicator_tim_data(ip_command_runner: IPCommandRunner, ips: list[str]) -> tuple[dict[str, Any], CommandResults]:
-    """Retrieve TIM data for IP indicators."""
-    find_indicators_command = Command(
-        name="findIndicators",
+######################################### general flow #######################################
+def enrich_internal_ip_address(ip_command_runner, ips: list[str]):
+    """Handle internal IP enrichment."""
+    raw_results , outputs = [] , []
+    demisto.debug(f"Internal IP detected: {ips}")
+    print("INTERNAL IP")
+    joined_ips = ",".join(ips)
+    get_endpoint_data_command = Command(
+        name="get-endpoint-data",
         output_keys=["Contents"],
-        output_mapping=lambda x: x.get("Contents", []),
+        output_mapping=lambda x: x.get("Contents", [])
     )
-    ips_value_query = " or ".join([f"value:{ip}" for ip in ips])
-    query = f"(type:IPv6 or type:IPv6CIDR or type:IP) and ({ips_value_query})"
-    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(find_indicators_command, {
-        "query": query})  #RETURNS A LIST OF DICTIONARIES PER INDICATOR, TODO: IF MISSING? IF EMPTY EMPTY LIST IS RETUNRED. WHAT TO DO IF MULTIPLE RESULTS FOR ONE IP?
-    demisto.debug(f"IPEnrichment: get_indicator_tim_data {command_contents=}")
-    # raw_content = command_contents[0] if isinstance(command_contents, list) else {}
-    for content in command_contents:
-        scores = content.get("insightCache", {}).get("scores", {})
-        ips_context = []
-        dbot_scores_context = []
-        integration_ips_context = []
-        for score_source, score_value in scores.items():
-            context = score_value.get("context", {})
-            for key, value in context.items():
-                if key == "IP(val.Address && val.Address == obj.Address)":
-                    enrich_data_with_source(value[0], score_source)
-                    ips_context.append(value)
-                    continue
-                if key == "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)":
-                    enrich_data_with_source(value[0], score_source)
-                    dbot_scores_context.append(value)
-                    continue
-                else:
-                    #parse the integration name from this format: 'Whois.IP(val.query && val.query == obj.query)'
-                    integration_prefix = key.split(".")[0]
-                    enrich_data_with_source(value, integration_prefix)
-                    integration_ips_context.append(value)
+    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(
+        get_endpoint_data_command, {"agent_ip": joined_ips})
+    get_outputs("Core.AnalyticsPrevalence.Ip", command_context_outputs[0])
+    return raw_results , outputs
 
-        # # merge the context of the same type
-        # ips_context = merge_ips(ips_context)
-
-
-
-
-
-
-
-
-
-
-    enriched_data = enrich_data_with_source(raw_content, "TIM")
-
-    demisto.debug(f"IPEnrichment: get_indicator_tim_data {enriched_data=}")
-
-    # tim_indicators = demisto.searchIndicators(query)
-
-
-
-
-
-
-def enrich_external_ip_address(ip_command_runner, ips: list[str]) -> CommandResults:
+def enrich_external_ip_address(ip_command_runner, ips: list[str]):
     """Handle external IP enrichment."""
+    raw_results, outputs = [], []
     demisto.debug(f"External IPs detected: {ips}")
     print("EXTERNAL IP")
     joined_ips = ",".join(ips)
     check_reputation(ip_command_runner, joined_ips)
     if is_xsiam():
         get_analytics_prevalence(ip_command_runner, joined_ips)
+    return raw_results, outputs
+
+def gather_enrichment_data(ips: list[str], third_enrichment: bool, ip_command_runner):
+    search_indicators_raw_results, search_indicators_outputs  = search_indicators(ips)
+    if not third_enrichment:
+        return
+    internal_ips, external_ips = separate_ips(ips)
+    print(f"Internal IPs: {internal_ips}")
+    print(f"External IPs: {external_ips}")
+    if internal_ips:
+        enrich_internal_ip_address(ip_command_runner, internal_ips)
+    if external_ips:
+        enrich_external_ip_address(ip_command_runner, external_ips)
 
 
-def ip_enrichment(ip_command_runner, ips: list[str], third_enrichment: bool):
+
+def merge_enrichment_data():
+    pass
+def ip_enrichment(ip_command_runner, ):
     """Perform IP enrichment with validation."""
     try:
-        get_indicator_tim_data(ip_command_runner, ips)
-        if not third_enrichment:
-            return
-        internal_ips, external_ips = separate_ips(ips)
-        print(f"Internal IPs: {internal_ips}")
-        print(f"External IPs: {external_ips}")
-        if internal_ips:
-            enrich_internal_ip_address(ip_command_runner, internal_ips)
-        if external_ips:
-            enrich_external_ip_address(ip_command_runner, external_ips)
+
 
 
     except Exception as e:
