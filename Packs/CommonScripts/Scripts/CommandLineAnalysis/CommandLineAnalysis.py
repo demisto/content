@@ -705,8 +705,6 @@ def analyze_command_line(command_line: str, custom_patterns=None) -> Dict[str, A
       - "Double Encoding Detected" (bool)
       - "score", "findings", "risk"
     """
-    results: Dict[str, Any] = {}
-    results["analysis"] = {}
     reversed_command_line, is_reversed = reverse_command(command_line)
     if is_reversed:
         command_line = reversed_command_line  # Use the reversed command line for further analysis
