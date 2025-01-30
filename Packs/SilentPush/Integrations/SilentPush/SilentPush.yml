@@ -1,109 +1,153 @@
+category: Data Enrichment & Threat Intelligence
+description: The Silent Push Platform uses first-party data and a proprietary scanning engine to enrich global DNS data with risk and reputation scoring, giving security teams the ability to join the dots across the entire IPv4 and IPv6 range, and identify adversary infrastructure before an attack is launched. The content pack integrates with the Silent Push system to gain insights into domain/IP information, reputations, enrichment, and infratag-related details. It also provides functionality to live-scan URLs and take screenshots of them. Additionally, it allows fetching future attack feeds from the Silent Push system.
 commonfields:
   id: SilentPush
   version: -1
-  name: SilentPush
+name: SilentPush
+display: SilentPush
+configuration:
+- display: Base URL
+  name: url
+  type: 0
+  required: true
+  defaultvalue: https://api.silentpush.com
+- display: API Key
+  name: credentials
+  type: 14
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  commands:
+  - deprecated: false
+    description: This command retrieve status of running job or results from completed job.
+    name: silentpush-get-job-status
+    arguments:
+    - name: job_id
+      isArray: false
+      description: ID of the job returned by Silent Push actions.
+      required: true
+      secret: false
+      default: false
+    - name: max_wait
+      isArray: false
+      description: Number of seconds to wait for results (0-25 seconds).
+      required: false
+      secret: false
+      default: false
+    - name: result_type
+      isArray: false
+      description: Type of result to include in the response.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.JobStatus.get
+      description: URL to retrieve the job status.
+      type: String
+    - contextPath: SilentPush.JobStatus.job_id
+      description: Unique identifier for the job.
+      type: String
+    - contextPath: SilentPush.JobStatus.status
+      description: Current status of the job.
+      type: String
+  - deprecated: false
+    description: This command retrieve historical reputation data for a specified nameserver, including reputation scores and optional detailed calculation information.
+    name: silentpush-get-nameserver-reputation
+    arguments:
+    - name: nameserver
+      isArray: false
+      description: Nameserver name for which information needs to be retrieved
+      required: true
+      secret: false
+      default: false
+    - name: explain
+      isArray: false
+      description: Show the information used to calculate the reputation score
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of reputation history to retrieve
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.SubnetReputation.date
+      description: Date of the reputation history entry (in YYYYMMDD format).
+      type: Number
+    - contextPath: SilentPush.SubnetReputation.ns_server
+      description: Name of the nameserver associated with the reputation history entry.
+      type: String
+    - contextPath: SilentPush.SubnetReputation.ns_server_reputation
+      description: Reputation score of the nameserver on the specified date.
+      type: Number
+    - contextPath: SilentPush.SubnetReputation.ns_server_reputation_explain
+      description: Explanation of the reputation score, including domain density and listed domains.
+      type: Unknown
+    - contextPath: SilentPush.SubnetReputation.ns_server_domain_density
+      description: Number of domains associated with the nameserver.
+      type: Number
+    - contextPath: SilentPush.SubnetReputation.ns_server_domains_listed
+      description: Number of domains listed in reputation databases.
+      type: Number
+  - deprecated: false
+    description: This command retrieves the reputation history for a specific subnet.
+    name: silentpush-get-subnet-reputation
+    arguments:
+    - name: subnet
+      isArray: false
+      description: IPv4 subnet for which reputation information needs to be retrieved.
+      required: true
+      secret: false
+      default: false
+    - name: explain
+      isArray: false
+      description: Show the detailed information used to calculate the reputation score.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: Maximum number of reputation history entries to retrieve.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.NameserverReputation.date
+      description: The date of the subnet reputation record.
+      type: Number
+    - contextPath: SilentPush.NameserverReputation.subnet
+      description: The subnet associated with the reputation record.
+      type: String
+    - contextPath: SilentPush.NameserverReputation.subnet_reputation
+      description: The reputation score of the subnet.
+      type: Number
+    - contextPath: SilentPush.NameserverReputation.ips_in_subnet
+      description: Total number of IPs in the subnet.
+      type: Number
+    - contextPath: SilentPush.NameserverReputation.ips_num_active
+      description: Number of active IPs in the subnet.
+      type: Number
+    - contextPath: SilentPush.NameserverReputation.ips_num_listed
+      description: Number of listed IPs in the subnet.
+      type: Number
+  script: '-'
   type: python
-  subType: python3
-  description: |
-    This integration allows fetching domain information from the SilentPush API. It includes commands to get domain-related information such as WHOIS data, domain age, and risk scores.
-  tags: []
-  enabled: true
-  manufacturer: SilentPush
-  comment: ''
-  minVersion: -1
-  dependencies:
-    - CommonServerPython
-    - CommonServerUserPython
-
-scripts:
-  - path: SilentPush.py
-    comment: |
-      Integration for SilentPush that enables fetching domain information, including WHOIS data, domain age, and risk scores.
-
-commands:
-  - name: test-module
-    description: |
-      Tests the connectivity to the SilentPush API and checks the authentication status.
-    isArray: false
-    argContext:
-      - id: base_url
-        type: string
-        description: The base URL for the SilentPush API.
-      - id: api_key
-        type: string
-        description: The API key used to authenticate requests.
-      - id: verify_ssl
-        type: boolean
-        description: Flag to determine whether SSL verification is enabled.
-    examples: |
-      !test-module
-
-  - name: silentpush-list-domain-information
-    description: |
-      Fetches domain information, such as WHOIS data, domain age, and risk scores.
-    isArray: false
-    argContext:
-      - id: domain
-        type: string
-        description: The domain name to fetch information for.
-    examples: |
-      !silentpush-list-domain-information domain=example.com
-
-args:
-  - id: domain
-    isArray: false
-    description: |
-      The domain to fetch information for.
-    type: string
-
-outputs:
-  - id: SilentPush.Domain
-    type: complex
-    description: |
-      The domain information fetched from SilentPush API, including WHOIS data, domain age, and risk scores.
-    contents:
-      - name: domain
-        type: string
-      - name: whois_data
-        type: string
-      - name: domain_age
-        type: integer
-      - name: risk_score
-        type: float
-
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.116949
+  feed: false
+  isfetch: false
+  runonce: false
+  longRunning: false
+  longRunningPort: false
+fromversion: 5.0.0
 tests:
-  - name: Test SilentPush Integration
-    description: Test the integration with the SilentPush API.
-    steps:
-      - script: test-module
-        name: Test SilentPush API Connectivity
-        args:
-          base_url: https://api.silentpush.com
-          api_key: 'your_api_key'
-
-# Optional: Adding the configuration section for any configuration-related parameters
-configurations:
-  - default: true
-    isArray: false
-    description: The configuration parameters required for connecting to SilentPush API.
-    context:
-      - id: base_url
-        type: string
-        description: The base URL for the SilentPush API.
-      - id: api_key
-        type: string
-        description: The API key used to authenticate requests.
-      - id: verify_ssl
-        type: boolean
-        description: Flag to determine whether SSL verification is enabled.
-      - id: proxy
-        type: boolean
-        description: Flag to determine whether to use a proxy.
-
-errorHandling:
-  - errorCode: 403
-    description: |
-      If an authorization error is encountered, it could indicate an incorrect or expired API key.
-  - errorCode: 400
-    description: |
-      Bad Request error, likely due to incorrect input format or invalid parameters in the request.
+- No tests
