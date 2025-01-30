@@ -23,11 +23,11 @@ def wrap_internal_http_request(method: str, url: str, body: dict | None = None):
         dict: Parsed JSON response or an empty dictionary if parsing fails.
     """
     http_result = demisto.internalHttpRequest(method, url, body=json.dumps(body))
-    http_result_body_raw_response = http_result.get('body', '{}')
+    http_result_body_raw_response = cast(dict, http_result).get('body', '{}')
     try:
-        http_result_body_response = json.loads(http_result_body_raw_response)  # type: ignore
-    except json.JSONDecodeError:  # type: ignore[attr-defined]
-        demisto.debug(f'Unable to load response {http_result_body_raw_response}')
+        http_result_body_response = json.loads(http_result_body_raw_response)
+    except json.JSONDecodeError as e:
+        demisto.debug(f'Unable to load response {http_result_body_raw_response}: {str(e)}')
         http_result_body_response = {}
     return http_result_body_response
 

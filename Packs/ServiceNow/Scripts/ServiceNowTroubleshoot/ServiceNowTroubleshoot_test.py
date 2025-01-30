@@ -7,7 +7,8 @@ import demistomock as demisto
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         res = json.loads(f.read())
-        res['body'] = json.dumps(res['body'])
+        if 'body' in res:
+            res['body'] = json.dumps(res.get('body'))
         return res
 
 
@@ -23,7 +24,7 @@ def test_get_integrations_details(mocker):
         - Each integration entry should contain a 'health' field.
     """
     http_response = util_load_json("test_data/setting_integration_search_http_response.json")
-    mocker.patch.object(demisto, 'internalHttpRequest', side_effect=http_response)
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=http_response)
     res = get_integrations_details()
     assert len(res) == 2
     assert list(res.keys()) == ['ServiceNow v2_instance_2', 'ServiceNow v2_instance_1']
@@ -61,7 +62,7 @@ def test_categorize_active_incidents(mocker):
     """
     disabled_instances = ['ServiceNow v2_instance_1']
     http_response = util_load_json("test_data/incidents_search_http_response.json")
-    mocker.patch.object(demisto, 'internalHttpRequest', side_effect=http_response)
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=http_response)
     res_enabled_incidents_instances, res_disabled_incidents_instances = categorize_active_incidents(disabled_instances)
     assert res_enabled_incidents_instances == {'ServiceNow v2_instance_2': ['ServiceNow Incident INC0011111']}
     assert res_disabled_incidents_instances == {'ServiceNow v2_instance_1': ['ServiceNow Incident INC0022222']}
@@ -126,6 +127,6 @@ def test_parse_enabled_instances():
                 'Number of Incidents Pulled in Last Fetch|Query|Size In Bytes|Total Active Incidents Created 30 days ago|\n'
                 '|---|---|---|---|---|---|---|\n| ServiceNow v2_instance_2 | 2025-01-27T09:26:45.226409678Z |'
                 ' ServiceNow Incident INC0011111 | 10 | stateNOT IN6,7 | 3066 | 1 |\n'
-    )
+                )
     res = parse_enabled_instances(enabled_instances_health, enabled_incidents_instances)
     assert res == expected
