@@ -379,7 +379,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: Subnet reputation history information.
         """
-        url_suffix = f"/{subnet}"
+        url_suffix = f"{SUBNET_REPUTATION}/{subnet}"
 
         params = {
             "explain": str(explain).lower() if explain else None,
@@ -665,7 +665,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
         CommandResults: The command results containing nameserver reputation data.
     """
     nameserver = args.get("nameserver")
-    explain = argToBoolean(args.get("explain", "false"))
+    explain = argToBoolean(args.get("explain", False))
     limit = arg_to_number(args.get("limit"))
 
     if not nameserver:
