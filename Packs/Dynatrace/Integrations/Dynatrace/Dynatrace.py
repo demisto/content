@@ -261,7 +261,7 @@ def fetch_audit_log_events(client, limit, fetch_start_time):
                 demisto.debug("We deduped all events. Since we have no nextPageKey,\
                     we will reach an endless loop so we are breaking while loop")
             else:
-                demisto.debug("Got no eevents in response, breaking while loop")
+                demisto.debug("Got no events in response, breaking while loop")
             break
         
         events = add_fields_to_events(events, "Audit logs")
