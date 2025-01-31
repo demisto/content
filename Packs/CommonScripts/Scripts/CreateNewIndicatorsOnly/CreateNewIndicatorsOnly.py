@@ -67,7 +67,7 @@ def add_new_indicator(indicator_value: Any,
     if indicators := execute_command('findIndicators', {'value': escaped_indicator_value}):
         indicator = indicators[0]
         indicator[KEY_CREATION_STATUS] = STATUS_EXISTING
-        
+
         # findIndicators might find an indicator with different letter case.
         # Unfortunately associate_indicator_to_incident does not ignore case
         # and as a result in some cases is unable to associate indicator.
