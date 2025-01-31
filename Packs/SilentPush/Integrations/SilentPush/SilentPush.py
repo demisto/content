@@ -31,6 +31,7 @@ WHOIS = "explore/domain/whois"
 DOMAIN_CERTIFICATE = "explore/domain/certificates"
 ENRICHMENT = "explore/enrich"
 LIST_IP = "explore/bulk/ip2asn"
+ASN_REPUTATION = "explore/ipreputation/history/asn"
 
 ''' COMMANDS INPUTS '''
 
@@ -168,6 +169,16 @@ LIST_IP_INPUTS = [
             InputArgument(name='sparse', 
                         description='Specific data to return (asn/asname/sp_risk_score).')
         ]
+ASN_REPUTATION_INPUTS = [
+            InputArgument(name='asn', 
+                        description='The ASN to lookup.',
+                        required=True),
+            InputArgument(name='explain', 
+                        description='Show the information used to calculate the reputation score.'),
+            InputArgument(name='limit', 
+                        description='The maximum number of reputation history records to retrieve.')
+        ]
+
 
 
 
@@ -382,6 +393,13 @@ LIST_IP_OUTPUTS = [
                         OutputArgument(name='ip_is_tor_exit_node', output_type=bool, description='Indicates if the IP is a TOR exit node.'),
                         OutputArgument(name='asn_takedown_reputation_score', output_type=int, description='Reputation score of ASN takedown.')
                     ]
+ASN_REPUTATION_OUTPUTS = [
+                        OutputArgument(name='asn', output_type=str, description='The Autonomous System Number (ASN).'),
+                        OutputArgument(name='reputation_data.asn_reputation', output_type=int, description='Reputation score of the ASN.'),
+                        OutputArgument(name='reputation_data.asname', output_type=str, description='Name of the Autonomous System (AS).'),
+                        OutputArgument(name='reputation_data.date', output_type=int, description='Date the reputation data was recorded (YYYYMMDD).')
+                    ]
+
 
 
 
@@ -930,6 +948,31 @@ class Client(BaseClient):
         
         return self._http_request("POST", url_suffix, data=ip_data)
 
+    def get_asn_reputation(self, asn: int, limit: Optional[int] = None, explain: Optional[bool] = False) -> Dict[str, Any]:
+        """
+        Retrieve reputation history for a specific Autonomous System Number (ASN).
+
+        Args:
+            asn (int): The Autonomous System Number to query.
+            limit (int, optional): Maximum number of results to return. Defaults to None.
+            explain (bool, optional): Whether to include explanation for reputation score. Defaults to False.
+
+        Returns:
+            Dict[str, Any]: ASN reputation history information.
+        """
+        url_suffix = f"{ASN_REPUTATION}/{asn}"
+        query_params = {}
+
+        if limit:
+            query_params['limit'] = limit
+        if explain:
+            query_params['explain'] = explain
+
+        return self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=query_params
+        )
 
 
 
@@ -1725,6 +1768,126 @@ def gather_ip_information(client: Client, ip_addresses: list, resource: str) -> 
     ip_info = client.list_ip_information(ip_addresses, resource=resource)
     return ip_info.get("response", {}).get("ip2asn", [])
 
+@metadata_collector.command(
+    command_name="silentpush-get-asn-reputation",
+    inputs_list=ASN_REPUTATION_INPUTS,
+    outputs_prefix="SilentPush.ASNReputation",
+    outputs_list=ASN_REPUTATION_OUTPUTS,
+    description="This command retrieve the reputation information for an IPv4."
+)
+def get_asn_reputation_command(client: Client, args: dict) -> CommandResults:
+    """
+    Command handler for retrieving ASN reputation data.
+
+    Args:
+        client (Client): The API client instance
+        args (dict): Command arguments containing:
+            - asn: ASN number
+            - limit (optional): Maximum results to return
+            - explain (optional): Whether to include explanation
+
+    Returns:
+        CommandResults: Formatted command results for XSOAR
+    """
+    asn = args.get("asn")
+    limit = arg_to_number(args.get("limit", None))
+    explain = argToBoolean(args.get("explain", False))
+
+    if not asn:
+        raise ValueError("ASN is required.")
+
+    raw_response = client.get_asn_reputation(asn, limit, explain)
+    asn_reputation = extract_and_sort_asn_reputation(raw_response, explain)
+
+    if not asn_reputation:
+        return generate_no_reputation_response(asn, raw_response)
+
+    data_for_table = prepare_asn_reputation_table(asn_reputation, explain)
+    readable_output = tableToMarkdown(f'ASN Reputation for {asn}', data_for_table, headers=get_table_headers(explain))
+
+    return CommandResults(
+        outputs_prefix="SilentPush.ASNReputation",
+        outputs_key_field="asn",
+        outputs={'asn': asn, 'reputation_data': asn_reputation},
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
+def extract_and_sort_asn_reputation(raw_response: dict, explain: bool) -> list:
+    """
+    Extract ASN reputation data and sort by date.
+
+    Args:
+        raw_response (dict): Raw response data from API.
+        explain (bool): Whether to include explanations.
+
+    Returns:
+        list: Sorted ASN reputation data.
+    """
+    response_data = raw_response.get('response', {})
+    asn_reputation = response_data.get('asn_reputation') or response_data.get('asn_reputation_history', [])
+
+    # Sort by date in descending order
+    return sorted(asn_reputation, key=lambda x: x.get('date', ''), reverse=True)
+
+def generate_no_reputation_response(asn: str, raw_response: dict) -> CommandResults:
+    """
+    Generate a response when no ASN reputation data is found.
+
+    Args:
+        asn (str): The ASN for which data was searched.
+        raw_response (dict): Raw response data from the API.
+
+    Returns:
+        CommandResults: The no data response.
+    """
+    return CommandResults(
+        readable_output=f"No reputation data found for ASN {asn}.",
+        outputs_prefix="SilentPush.ASNReputation",
+        outputs_key_field="asn",
+        outputs=[],
+        raw_response=raw_response
+    )
+
+def prepare_asn_reputation_table(asn_reputation: list, explain: bool) -> list:
+    """
+    Prepare the data for the ASN reputation table.
+
+    Args:
+        asn_reputation (list): List of ASN reputation entries.
+        explain (bool): Whether to include explanations in the table.
+
+    Returns:
+        list: Data formatted for the table.
+    """
+    data_for_table = []
+    for entry in asn_reputation:
+        row = {
+            'ASN': entry.get('asn'),
+            'Reputation': entry.get('asn_reputation'),
+            'ASName': entry.get('asname'),
+            'Date': entry.get('date')
+        }
+        if explain and entry.get('explanation'):
+            row['Explanation'] = entry.get('explanation')
+        data_for_table.append(row)
+    return data_for_table
+
+def get_table_headers(explain: bool) -> list:
+    """
+    Get the table headers based on the explain flag.
+
+    Args:
+        explain (bool): Whether to include explanations in the table.
+
+    Returns:
+        list: List of table headers.
+    """
+    headers = ['ASN', 'Reputation', 'ASName', 'Date']
+    if explain:
+        headers.append('Explanation')
+    return headers
+
 
 ''' MAIN FUNCTION '''
 
@@ -1785,8 +1948,11 @@ def main() -> None:
             return_results(get_enrichment_data_command(client, demisto.args()))
 
         elif demisto.command() == 'silentpush-list-ip-information':
-            return_results(list_ip_information_command(client, demisto.args()))            
-    
+            return_results(list_ip_information_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-get-asn-reputation ':
+            return_results(get_asn_reputation_command(client, demisto.args()))
+     
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

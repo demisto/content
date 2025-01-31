@@ -55,6 +55,41 @@ script:
       description: The name server (NS) for the query result.
       type: String
   - deprecated: false
+    description: This command retrieve the reputation information for an IPv4.
+    name: silentpush-get-asn-reputation
+    arguments:
+    - name: asn
+      isArray: false
+      description: The ASN to lookup.
+      required: true
+      secret: false
+      default: false
+    - name: explain
+      isArray: false
+      description: Show the information used to calculate the reputation score.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of reputation history records to retrieve.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.ASNReputation.asn
+      description: The Autonomous System Number (ASN).
+      type: String
+    - contextPath: SilentPush.ASNReputation.reputation_data.asn_reputation
+      description: Reputation score of the ASN.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.reputation_data.asname
+      description: Name of the Autonomous System (AS).
+      type: String
+    - contextPath: SilentPush.ASNReputation.reputation_data.date
+      description: Date the reputation data was recorded (YYYYMMDD).
+      type: Number
+  - deprecated: false
     description: This command retrieves Autonomous System Numbers (ASNs) associated with a domain.
     name: silentpush-get-asns-for-domain
     arguments:
@@ -520,7 +555,7 @@ script:
       description: The match string associated with the domains in the tag cluster with score 100.
       type: String
   - deprecated: false
-    description: This command retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
+    description: This command get IP information for multiple IPv4s and IPv6s.
     name: silentpush-list-ip-information
     arguments:
     - name: ips
