@@ -1790,7 +1790,7 @@ class Main:
         if isinstance(templates, str):
             if argToBoolean(args.get('triple_quotes_to_string', 'true')):
                 templates = re.sub(
-                    r"""(\"{3}|'{3})(.*?)\1""",
+                    r"""(\"{3}|'{3}|`{3})(.*?)\1""",
                     lambda m: json.dumps(m.group(2)),
                     templates,
                     flags=re.DOTALL

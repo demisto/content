@@ -24,7 +24,7 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | earliest_time | The earliest time at which the time range of the query starts \(Default = 24 hours ago\). |
 | latest_time | The latest time at which the time range of the query ends \(Default = now\). |
 | variable_substitution | The pair of default opening and closing markers that enclose a variable name \(Default = $\{,\}\). |
-| triple_quotes_to_string | Set to true to convert a string within triple quotes in the templates to a JSON string if it is of type string. Set to false to use the templates as they are, without any conversion. Both triple single quotes and triple double quotes are supported. \(Default = true\) |
+| triple_quotes_to_string | Set to true to convert a string within triple quotes in the templates to a JSON string if it is of type string. Set to false to use the templates as they are, without any conversion. Both triple single quotes, triple double quotes and triple backquotes are supported. \(Default = true\) |
 | cache_type | The name of the type that defines which data is stored and retrieved from the cache to create the entry \(Default = recordset\). |
 | max_retries | The maximum number of retries to query XQL for recoverable errors \(Default = 10\). |
 | retry_interval | The wait time \(in seconds\) between retries \(Default = 10\). |
