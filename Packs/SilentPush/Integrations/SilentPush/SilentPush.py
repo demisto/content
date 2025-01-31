@@ -1,3 +1,4 @@
+import ipaddress
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -28,6 +29,7 @@ DOMAIN_INFO = "explore/bulk/domaininfo"
 RISK_SCORE = "explore/bulk/domain/riskscore"
 WHOIS = "explore/domain/whois"
 DOMAIN_CERTIFICATE = "explore/domain/certificates"
+ENRICHMENT = "explore/enrich"
 
 ''' COMMANDS INPUTS '''
 
@@ -141,6 +143,18 @@ DOMAIN_CERTIFICATE_INPUTS = [
                             description='Filter certificates issued on or after this date.'),
                 InputArgument(name='date_max',
                             description='Filter certificates issued on or before this date.')
+            ]
+ENRICHMENT_INPUTS = [
+                InputArgument(name='resource', 
+                            description='The resource to query (domain/IP).', 
+                            required=True),
+                InputArgument(name='value', 
+                            description='Type of resource (domain/ipv4/ipv6).', 
+                            required=True),
+                InputArgument(name='explain', 
+                            description='Include explanation of data calculations.'),
+                InputArgument(name='scan_data', 
+                            description='Include scan data (IPv4 only).')
             ]
 
 
@@ -258,8 +272,49 @@ DOMAIN_CERTIFICATE_OUTPUTS = [
                         OutputArgument(name='subject', output_type=str, description='Subject details of the certificate.'),
                         OutputArgument(name='wildcard', output_type=int, description='Indicates if the certificate is a wildcard certificate.')
                     ]
-
-
+ENRICHMENT_OUTPUTS = [
+                        OutputArgument(name='ip_is_dsl_dynamic', output_type=bool, description='Indicates if the IP is DSL dynamic.'),
+                        OutputArgument(name='ip_has_expired_certificate', output_type=bool, description='Indicates if the IP has an expired certificate.'),
+                        OutputArgument(name='subnet_allocation_age', output_type=str, description='Age of the subnet allocation.'),
+                        OutputArgument(name='asn_rank_score', output_type=int, description='Score of the ASN rank.'),
+                        OutputArgument(name='asn_allocation_age', output_type=int, description='Age of the ASN allocation.'),
+                        OutputArgument(name='sp_risk_score', output_type=int, description='Risk score for the service provider.'),
+                        OutputArgument(name='ip_reputation_score', output_type=int, description='Reputation score of the IP.'),
+                        OutputArgument(name='ip', output_type=str, description='The IP address.'),
+                        OutputArgument(name='density', output_type=int, description='Density value for the IP address.'),
+                        OutputArgument(name='benign_info.actor', output_type=str, description='Actor associated with the benign information.'),
+                        OutputArgument(name='benign_info.known_benign', output_type=bool, description='Indicates if the resource is known to be benign.'),
+                        OutputArgument(name='benign_info.tags', output_type=object, description='Tags associated with the benign information.'),
+                        OutputArgument(name='asn_allocation_date', output_type=int, description='Date of ASN allocation in YYYYMMDD format.'),
+                        OutputArgument(name='subnet_allocation_date', output_type=str, description='Date of subnet allocation or UNKNOWN if unavailable.'),
+                        OutputArgument(name='asn_takedown_reputation', output_type=int, description='Reputation score for ASN takedown.'),
+                        OutputArgument(name='ip_location.continent_code', output_type=str, description='Continent code where the IP is located.'),
+                        OutputArgument(name='ip_location.continent_name', output_type=str, description='Continent name where the IP is located.'),
+                        OutputArgument(name='ip_location.country_code', output_type=str, description='Country code of the IP location.'),
+                        OutputArgument(name='ip_location.country_is_in_european_union', output_type=bool, description='Indicates if the country is in the European Union.'),
+                        OutputArgument(name='ip_location.country_name', output_type=str, description='Country name where the IP is located.'),
+                        OutputArgument(name='date', output_type=int, description='Date of the record in YYYYMMDD format.'),
+                        OutputArgument(name='subnet_reputation_score', output_type=int, description='Reputation score of the subnet.'),
+                        OutputArgument(name='asn_rank', output_type=int, description='Rank of the ASN.'),
+                        OutputArgument(name='asn_reputation_score', output_type=int, description='Reputation score of the ASN.'),
+                        OutputArgument(name='ip_is_ipfs_node', output_type=bool, description='Indicates if the IP is an IPFS node.'),
+                        OutputArgument(name='value', output_type=str, description='The value associated with the IP or subnet.'),
+                        OutputArgument(name='ip_reputation', output_type=int, description='Reputation score of the IP address.'),
+                        OutputArgument(name='ip_is_dsl_dynamic_score', output_type=int, description='Score indicating if the IP is DSL dynamic.'),
+                        OutputArgument(name='ip_has_open_directory', output_type=bool, description='Indicates if the IP has an open directory.'),
+                        OutputArgument(name='ip_ptr', output_type=str, description='Pointer record (PTR) of the IP address.'),
+                        OutputArgument(name='listing_score', output_type=int, description='Listing score of the IP address or resource.'),
+                        OutputArgument(name='malscore', output_type=int, description='Malware score for the IP address.'),
+                        OutputArgument(name='sinkhole_info.known_sinkhole_ip', output_type=bool, description='Indicates if the IP is associated with a known sinkhole.'),
+                        OutputArgument(name='sinkhole_info.tags', output_type=object, description='Tags associated with the sinkhole information.'),
+                        OutputArgument(name='subnet_reputation', output_type=int, description='Reputation score of the subnet.'),
+                        OutputArgument(name='asn_reputation', output_type=int, description='Reputation score of the ASN.'),
+                        OutputArgument(name='asn', output_type=int, description='Autonomous System Number (ASN) of the IP or subnet.'),
+                        OutputArgument(name='asname', output_type=str, description='Name of the ASN associated with the IP or subnet.'),
+                        OutputArgument(name='subnet', output_type=str, description='Subnet associated with the IP address.'),
+                        OutputArgument(name='ip_is_tor_exit_node', output_type=bool, description='Indicates if the IP is a TOR exit node.'),
+                        OutputArgument(name='asn_takedown_reputation_score', output_type=int, description='Reputation score for ASN takedown.')
+                    ]
 
 
 
@@ -376,7 +431,6 @@ class Client(BaseClient):
                 return response.text
         except Exception as e:
             raise DemistoException(f'Error in API call: {str(e)}')
-
 
     def get_job_status(self, job_id: str, max_wait: Optional[int] = None, result_type: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -717,6 +771,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
             params=params
         )
+    
     def parse_subject(self, subject: Any) -> Dict[str, Any]:
         """
         Parse the subject of a certificate or domain record.
@@ -734,6 +789,58 @@ class Client(BaseClient):
             parsed_subject = json.loads(subject.replace("'", '"')) if subject else {'CN': 'N/A'}
             return parsed_subject if isinstance(parsed_subject, dict) else {'CN': subject}
         return {'CN': 'N/A'}
+
+    def validate_ip_address(self, ip: str, allow_ipv6: bool = True) -> bool:
+            """
+            Validate an IP address.
+
+            Args:
+                self: The instance of the class.
+                ip (str): IP address to validate.
+                allow_ipv6 (bool, optional): Whether to allow IPv6 addresses. Defaults to True.
+
+            Returns:
+                bool: True if valid IP address, False otherwise.
+            """
+            try:
+                ip = ip.strip()
+                ip_obj = ipaddress.ip_address(ip)
+
+                return not (not allow_ipv6 and ip_obj.version == 6)
+            except ValueError:
+                return False
+
+    def get_enrichment_data(self, resource: str, value: str, explain: Optional[bool] = False, scan_data: Optional[bool] = False) -> dict:
+        """
+        Retrieve enrichment data for a specific resource.
+
+        Args:
+            resource (str): Type of resource (e.g., 'ip', 'domain').
+            value (str): The specific value to enrich.
+            explain (bool, optional): Whether to include detailed explanations. Defaults to False.
+            scan_data (bool, optional): Whether to include scan data. Defaults to False.
+
+        Returns:
+            dict: Enrichment data for the specified resource.
+        """
+        endpoint = f"{ENRICHMENT}/{resource}/{value}"
+
+        query_params =  {
+            "explain": int(explain) if explain else 0,
+            "scan_data": int(scan_data) if scan_data else 0
+        }
+        response = self._http_request(
+            method="GET",
+            url_suffix=endpoint,
+            params=query_params
+        )
+        # Handle the response based on resource type
+        if resource in ["ip", "ipv4", "ipv6"]:
+            ip2asn_data = response.get("response", {}).get("ip2asn", [])
+            return ip2asn_data[0] if isinstance(ip2asn_data, list) and ip2asn_data else {}
+        return response.get("response", {}).get("domaininfo", {})
+
+
 
 
 
@@ -1177,7 +1284,7 @@ def list_domain_infratags_command(client: Client, args: dict) -> CommandResults:
     inputs_list=LIST_DOMAIN_INPUTS,
     outputs_prefix="SilentPush.Domain",
     outputs_list=LIST_DOMAIN_OUTPUTS,
-    description="This command get infratags for multiple domains with optional clustering."
+    description="This command get domain information along with Silent Push risk score and live whois information for multiple domains."
 )
 def list_domain_information_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
@@ -1273,9 +1380,9 @@ def format_domain_information(response: Dict[str, Any], fetch_risk_score: bool, 
 @metadata_collector.command(
     command_name="silentpush-get-domain-certificates",
     inputs_list=LIST_DOMAIN_INPUTS,
-    outputs_prefix="SilentPush.Domain",
+    outputs_prefix="SilentPush.Certificate",
     outputs_list=LIST_DOMAIN_OUTPUTS,
-    description="This command get infratags for multiple domains with optional clustering."
+    description="This command get certificate data collected from domain scanning."
 )
 def get_domain_certificates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
@@ -1362,6 +1469,79 @@ def format_certificate_info(cert: Dict[str, Any], client: Client) -> Dict[str, s
         'Fingerprint SHA256': cert.get('fingerprint_sha256', 'N/A'),
     }
 
+@metadata_collector.command(
+    command_name="silentpush-get-enrichment-data",
+    inputs_list=ENRICHMENT_INPUTS,
+    outputs_prefix="SilentPush.Certificate",
+    outputs_list=ENRICHMENT_OUTPUTS,
+    description="This command retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6)."
+)
+def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieve enrichment data for a specific resource and value.
+
+    Args:
+        client (Client): The client object to interact with the enrichment service.
+        args (dict): Arguments containing the resource type, value, explain flag, and scan_data flag.
+
+    Returns:
+        CommandResults: The results of the enrichment data retrieval, including readable output and raw response.
+    """
+    # Retrieve arguments
+    resource = args.get("resource")
+    value = args.get("value")
+    explain = argToBoolean(args.get("explain", False))
+    scan_data = argToBoolean(args.get("scan_data", False))
+
+    if not resource or not value:
+        raise ValueError("Both 'resource' and 'value' arguments are required.")
+
+    if resource in ["ipv4", "ipv6"]:
+        validate_ip(client, resource, value)
+
+    # Retrieve enrichment data
+    enrichment_data = client.get_enrichment_data(resource, value, explain, scan_data)
+
+    # Return results based on data availability
+    if not enrichment_data:
+        return CommandResults(
+            readable_output=f"No enrichment data found for resource: {value}",
+            outputs_prefix="SilentPush.Enrichment",
+            outputs_key_field="value",
+            outputs={"value": value, "data": enrichment_data},
+            raw_response=enrichment_data
+        )
+
+    readable_output = tableToMarkdown(f"Enrichment Data for {value}", enrichment_data, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="SilentPush.Enrichment",
+        outputs_key_field="value",
+        outputs={"value": value, **enrichment_data},
+        readable_output=readable_output,
+        raw_response=enrichment_data
+    )
+
+
+def validate_ip(client: Client, resource: str, value: str) -> None:
+    """
+    Validate the IP address based on the resource type.
+
+    Args:
+        client (Client): The client object to interact with the enrichment service.
+        resource (str): The resource type (ipv4 or ipv6).
+        value (str): The IP address to validate.
+
+    Raises:
+        DemistoException: If the IP address is invalid for the given resource type.
+    """
+    is_valid_ip = client.validate_ip_address(value, allow_ipv6=(resource == "ipv6"))
+    if not is_valid_ip:
+        raise DemistoException(f"Invalid {resource.upper()} address: {value}")
+
+
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1416,6 +1596,9 @@ def main() -> None:
 
         elif demisto.command() == 'silentpush-get-domain-certificates':
             return_results(get_domain_certificates_command(client, demisto.args()))
+        
+        elif demisto.command() == 'silentpush-get-enrichment-data':
+            return_results(get_enrichment_data_command(client, demisto.args()))
     
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
