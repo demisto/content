@@ -35,6 +35,7 @@ ASN_REPUTATION = "explore/ipreputation/history/asn"
 ASN_TAKEDOWN_REPUTATION = "explore/takedownreputation/asn"
 IPV4_REPUTATION = "explore/ipreputation/history/ipv4"
 FORWARD_PADNS = "explore/padns/lookup/query"
+REVERSE_PADNS = "explore/padns/lookup/answer"
 
 ''' COMMANDS INPUTS '''
 
@@ -239,11 +240,46 @@ FORWARD_PADNS_INPUTS = [
             InputArgument(name='limit', 
                         description='Maximum number of results to return.')
         ]
-
-
-
-
-
+REVERSE_PADNS_INPUTS = [
+            InputArgument(name='qtype',
+                        description='Type of DNS record.',
+                        required=True),
+            InputArgument(name='qname',
+                        description='The DNS record name to lookup.',
+                        required=True),
+            InputArgument(name='netmask',
+                        description='The netmask for the lookup.'),
+            InputArgument(name='subdomains',
+                        description='Whether to include subdomains in the lookup.'),
+            InputArgument(name='regex',
+                        description='Regular expression to filter the DNS records.'),
+            InputArgument(name='match',
+                        description='Matching condition for the DNS records.'),
+            InputArgument(name='first_seen_after',
+                        description='Filter for records first seen after a specific date/time.'),
+            InputArgument(name='first_seen_before',
+                        description='Filter for records first seen before a specific date/time.'),
+            InputArgument(name='last_seen_after',
+                        description='Filter for records last seen after a specific date/time.'),
+            InputArgument(name='last_seen_before',
+                        description='Filter for records last seen before a specific date/time.'),
+            InputArgument(name='as_of',
+                        description='Specify a date/time for the PADNS lookup.'),
+            InputArgument(name='sort',
+                        description='Sort the results by specified criteria.'),
+            InputArgument(name='output_format',
+                        description='Format for the output (e.g., JSON, XML).'),
+            InputArgument(name='prefer',
+                        description='Preference for certain record types during the lookup.'),
+            InputArgument(name='with_metadata',
+                        description='Include metadata in the results.'),
+            InputArgument(name='max_wait',
+                        description='Maximum wait time in seconds for the lookup results.'),
+            InputArgument(name='skip',
+                        description='Number of results to skip in pagination.'),
+            InputArgument(name='limit',
+                        description='Limit the number of results returned.')
+        ]
 
 
 ''' COMMANDS OUTPUTS '''
@@ -506,6 +542,38 @@ FORWARD_PADNS_OUTPUTS = [
                                         output_type=str, 
                                         description='The type of the DNS record (e.g., NS).')
                     ]
+REVERSE_PADNS_OUTPUTS = [
+                        OutputArgument(name='qname', 
+                                    output_type=str, 
+                                    description='The DNS record name looked up.'),
+                        OutputArgument(name='qtype', 
+                                    output_type=str, 
+                                    description='The type of the DNS record.'),
+                        OutputArgument(name='records.answer', 
+                                        output_type=str, 
+                                        description='The answer for the DNS query.'),
+                        OutputArgument(name='records.count', 
+                                        output_type=int, 
+                                        description='The number of occurrences of the DNS record.'),
+                        OutputArgument(name='records.first_seen', 
+                                        output_type=str, 
+                                        description='Timestamp of when the record was first seen.'),
+                        OutputArgument(name='records.last_seen', 
+                                        output_type=str, 
+                                        description='Timestamp of the most recent occurrence of the record.'),
+                        OutputArgument(name='records.nshash', 
+                                        output_type=str, 
+                                        description='The hash of the NS record.'),
+                        OutputArgument(name='records.query', 
+                                        output_type=str, 
+                                        description='The DNS query associated with the record.'),
+                        OutputArgument(name='records.ttl', 
+                                        output_type=int, 
+                                        description='Time-to-live (TTL) of the DNS record.'),
+                        OutputArgument(name='records.type', 
+                                        output_type=str, 
+                                        description='The type of DNS record (e.g., NS).')]
+
 
 
 
@@ -1158,6 +1226,26 @@ class Client(BaseClient):
             params=params
         )
 
+
+    def reverse_padns_lookup(self, qtype: str, qname: str, **kwargs) -> Dict[str, Any]:
+        """
+        Perform a reverse PADNS lookup using various filtering parameters.
+
+        Args:
+            qtype (str): Type of DNS record.
+            qname (str): The DNS record name to lookup.
+            **kwargs: Optional parameters for filtering and pagination.
+
+        Returns:
+            Dict[str, Any]: Reverse PADNS lookup results.
+        """
+        url_suffix = f"{REVERSE_PADNS}/{qtype}/{qname}"
+
+        return self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=kwargs
+        )
 
 ''' HELPER FUNCTIONS '''
 def filter_none_values(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -2216,7 +2304,7 @@ def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> Command
     inputs_list=FORWARD_PADNS_INPUTS,
     outputs_prefix="SilentPush.PADNSLookup",
     outputs_list=FORWARD_PADNS_OUTPUTS,
-    description="This command Performs a forward PADNS lookup using various filtering parameters."
+    description="This command performs a forward PADNS lookup using various filtering parameters."
 )
 def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     """
@@ -2300,6 +2388,59 @@ def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+@metadata_collector.command(
+    command_name="silentpush-reverse-padns-lookup",
+    inputs_list=REVERSE_PADNS_INPUTS,
+    outputs_prefix="SilentPush.ReversePADNSLookup",
+    outputs_list=REVERSE_PADNS_OUTPUTS,
+    description="This command retrieve reverse Passive DNS data for specific DNS record types."
+)
+def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
+    """
+    Command function to perform reverse PADNS lookup.
+
+    Args:
+        client (Client): SilentPush API client.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: Formatted results of the reverse PADNS lookup.
+    """
+    qtype = args.get('qtype')
+    qname = args.get('qname')
+
+    if not qtype or not qname:
+        raise DemistoException("Both 'qtype' and 'qname' are required parameters.")
+
+    filtered_args = filter_none_values({key: value for key, value in args.items() if key not in ('qtype', 'qname')})
+
+    raw_response = client.reverse_padns_lookup(
+        qtype=qtype,
+        qname=qname,
+        **filtered_args
+    )
+
+    if raw_response.get('error'):
+        raise DemistoException(f"API Error: {raw_response.get('error')}")
+
+    records = raw_response.get('response', {}).get('records', [])
+    if not records:
+        readable_output = f"No records found for {qtype} {qname}"
+    else:
+        readable_output = tableToMarkdown(
+            f"Reverse PADNS Lookup Results for {qtype} {qname}",
+            records,
+            removeNull=True
+        )
+
+    return CommandResults(
+        outputs_prefix='SilentPush.ReversePADNSLookup',
+        outputs_key_field='qname',
+        outputs={'qtype': qtype, 'qname': qname, 'records': records},
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -2373,7 +2514,10 @@ def main() -> None:
         
         elif demisto.command() == 'silentpush-forward-padns-lookup':
             return_results(forward_padns_lookup_command(client, demisto.args()))
-     
+
+        elif demisto.command() == 'silentpush-reverse-padns-lookup':
+            return_results(reverse_padns_lookup_command(client, demisto.args()))
+
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
