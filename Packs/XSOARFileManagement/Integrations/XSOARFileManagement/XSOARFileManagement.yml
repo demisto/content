@@ -1,4 +1,6 @@
 category: Utilities
+sectionOrder:
+- Connect
 commonfields:
   id: XSOAR File Management
   version: -1
@@ -7,27 +9,32 @@ configuration:
   display: Server URL (e.g. https://example.net)
   name: url
   type: 0
-  required: false
-- display: ""
-  displaypassword: XSOAR Server API Key
-  hiddenusername: true
-  name: creds_apikey
-  type: 9
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
+  section: Connect
   required: false
 - display: ''
   displaypassword: XSOAR Server API Key ID
   hiddenusername: true
   name: creds_apikey_id
+  section: Connect
   required: false
   type: 9
+- display: ""
+  displaypassword: XSOAR Server API Key
+  hiddenusername: true
+  name: creds_apikey
+  type: 9
+  section: Connect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  required: false
 description: This integration uses the XSOAR API to perform basic but essentials actions on files.
 display: XSOAR File Management
 name: XSOAR File Management
@@ -94,6 +101,18 @@ script:
         by default it's the incident attachment (incident.attachment) field.
     description: Delete the attachment from the incident and from the XSOAR server.
     execution: true
+  - name: file-management-delete-custom-attachment
+    arguments:
+    - name: filePath
+      required: true
+      description: File path of the file.
+    - name: incidentID
+      description: ID of the incident to delete attachment.
+    - name: fieldName
+      required: true
+      description: Name of the custom field (type attachment) you want to remove the attachment.
+    description: Delete the custom field attachment from the incident and from the
+      XSOAR server.
   - name: file-management-rename-file
     arguments:
     - name: entryID
