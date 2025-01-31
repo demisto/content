@@ -1773,6 +1773,29 @@ def test_zoom_get_user_id_by_email(mocker):
     assert result == expected_user_id
 
 
+def test_zoom_get_user_email_by_id(mocker):
+    """
+    Given -
+        client
+    When -
+        get user email address by their user ID
+    Then -
+        Validate that the get_user_email_by_id function is called with the correct arguments
+        Validate the command results
+    """
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    user_id = "user_id"
+    expected_user_email = "user@example.com"
+    expected_response = {"email": expected_user_email}
+
+    mock_zoom_list_users = mocker.patch.object(client, 'zoom_list_users', return_value=expected_response)
+    from Zoom import get_user_email_by_id
+    result = get_user_email_by_id(client, user_id)
+    mock_zoom_list_users.assert_called_with(page_size=50, url_suffix=f'users/{user_id}')
+    assert result == expected_user_email
+
+
 def test_zoom_send_notification_command(mocker):
     """
     Given -
@@ -1966,10 +1989,11 @@ async def test_check_and_handle_entitlement(mocker):
     text = "Entitlement Text"
     message_id = "MessageID123"
     user_name = "User123"
+    user_id = "user123@example.com"
 
     # Call the async function and await its result
     from Zoom import check_and_handle_entitlement
-    result = await check_and_handle_entitlement(text, message_id, user_name)
+    result = await check_and_handle_entitlement(text, message_id, user_name, user_id)
 
     assert result == 'thanks'  # Adjust the expected reply as needed
 
