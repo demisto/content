@@ -499,6 +499,74 @@ script:
       description: Reputation score for ASN takedown.
       type: Number
   - deprecated: false
+    description: This command fetch indicators of potential future attacks using a feed UUID.
+    name: silentpush-get-future-attack-indicators
+    arguments:
+    - name: feed_uuid
+      isArray: false
+      description: Unique ID for the feed.
+      required: true
+      secret: false
+      default: false
+    - name: page_no
+      isArray: false
+      description: The page number to fetch results from.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: The number of indicators to fetch per page.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.FutureAttackIndicators.feed_uuid
+      description: Unique ID for the feed.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.total_ioc
+      description: Total number of IOC for the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.total
+      description: Total number of occurrences for the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.total_source_score
+      description: Total score from the source for the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.name
+      description: Name associated with the indicator (e.g., domain name).
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.total_custom
+      description: Total custom indicators for the specific entry.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_name
+      description: Name of the source that generated the indicator.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.first_seen_on
+      description: Timestamp when the indicator was first seen.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.last_seen_on
+      description: Timestamp when the indicator was last seen.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.type
+      description: Type of the indicator (e.g., domain).
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.uuid
+      description: Unique identifier for the indicator.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ioc_template
+      description: Template type for the indicator (e.g., domain).
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ioc_uuid
+      description: Unique identifier for the IOC associated with the indicator.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_vendor_name
+      description: Name of the vendor source (e.g., Silent Push).
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_uuid
+      description: Unique ID for the source of the indicator.
+      type: String
+  - deprecated: false
     description: This command retrieve the reputation information for an IPv4.
     name: silentpush-get-ipv4-reputation
     arguments:
@@ -956,6 +1024,320 @@ script:
       description: Reputation score of ASN takedown.
       type: Number
   - deprecated: false
+    description: This command scan a URL to retrieve hosting metadata..
+    name: silentpush-live-url-scan
+    arguments:
+    - name: url
+      isArray: false
+      description: URL to scan.
+      required: true
+      secret: false
+      default: false
+    - name: platform
+      isArray: false
+      description: Platform to scan the URL on.
+      required: false
+      secret: false
+      default: false
+    - name: os
+      isArray: false
+      description: Operating system to scan the URL on.
+      required: false
+      secret: false
+      default: false
+    - name: browser
+      isArray: false
+      description: Browser to scan the URL on.
+      required: false
+      secret: false
+      default: false
+    - name: region
+      isArray: false
+      description: Region to scan the URL in.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.URLScan.HHV
+      description: Unique identifier for HHV.
+      type: String
+    - contextPath: SilentPush.URLScan.adtech.ads_txt
+      description: Indicates if ads_txt is present.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.adtech.app_ads_txt
+      description: Indicates if app_ads_txt is present.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.adtech.sellers_json
+      description: Indicates if sellers_json is present.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.datahash
+      description: Hash value of the data.
+      type: String
+    - contextPath: SilentPush.URLScan.domain
+      description: The domain name.
+      type: String
+    - contextPath: SilentPush.URLScan.favicon2_avg
+      description: Hash value for favicon2 average.
+      type: String
+    - contextPath: SilentPush.URLScan.favicon2_md5
+      description: MD5 hash for favicon2.
+      type: String
+    - contextPath: SilentPush.URLScan.favicon2_murmur3
+      description: Murmur3 hash for favicon2.
+      type: Number
+    - contextPath: SilentPush.URLScan.favicon2_path
+      description: Path to favicon2 image.
+      type: String
+    - contextPath: SilentPush.URLScan.favicon_avg
+      description: Hash value for favicon average.
+      type: String
+    - contextPath: SilentPush.URLScan.favicon_md5
+      description: MD5 hash for favicon.
+      type: String
+    - contextPath: SilentPush.URLScan.favicon_murmur3
+      description: Murmur3 hash for favicon.
+      type: String
+    - contextPath: SilentPush.URLScan.favicon_path
+      description: Path to favicon image.
+      type: String
+    - contextPath: SilentPush.URLScan.favicon_urls
+      description: List of favicon URLs.
+      type: Unknown
+    - contextPath: SilentPush.URLScan.header.cache-control
+      description: Cache control header value.
+      type: String
+    - contextPath: SilentPush.URLScan.header.content-encoding
+      description: Content encoding header value.
+      type: String
+    - contextPath: SilentPush.URLScan.header.content-type
+      description: Content type header value.
+      type: String
+    - contextPath: SilentPush.URLScan.header.server
+      description: Server header value.
+      type: String
+    - contextPath: SilentPush.URLScan.header.x-powered-by
+      description: X-Powered-By header value.
+      type: String
+    - contextPath: SilentPush.URLScan.hostname
+      description: The hostname of the server.
+      type: String
+    - contextPath: SilentPush.URLScan.html_body_length
+      description: Length of the HTML body.
+      type: Number
+    - contextPath: SilentPush.URLScan.html_body_murmur3
+      description: Murmur3 hash for the HTML body.
+      type: Number
+    - contextPath: SilentPush.URLScan.html_body_sha256
+      description: SHA256 hash for the HTML body.
+      type: String
+    - contextPath: SilentPush.URLScan.html_body_similarity
+      description: Similarity score of the HTML body.
+      type: Number
+    - contextPath: SilentPush.URLScan.html_body_ssdeep
+      description: ssdeep hash for the HTML body.
+      type: String
+    - contextPath: SilentPush.URLScan.htmltitle
+      description: The HTML title of the page.
+      type: String
+    - contextPath: SilentPush.URLScan.ip
+      description: IP address associated with the domain.
+      type: String
+    - contextPath: SilentPush.URLScan.jarm
+      description: JARM (TLS fingerprint) value.
+      type: String
+    - contextPath: SilentPush.URLScan.mobile_enabled
+      description: Indicates if the mobile version is enabled.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.opendirectory
+      description: Indicates if open directory is enabled.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.origin_domain
+      description: Origin domain of the server.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_hostname
+      description: Origin hostname of the server.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ip
+      description: Origin IP address of the server.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_jarm
+      description: JARM (TLS fingerprint) value for the origin.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_path
+      description: Origin path for the URL.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_port
+      description: Port used for the origin server.
+      type: Number
+    - contextPath: SilentPush.URLScan.origin_ssl.CHV
+      description: SSL Certificate Chain Value (CHV).
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.SHA1
+      description: SHA1 hash of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.SHA256
+      description: SHA256 hash of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.authority_key_id
+      description: Authority Key Identifier for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.expired
+      description: Indicates if the SSL certificate is expired.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.origin_ssl.issuer.common_name
+      description: Issuer common name for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.issuer.country
+      description: Issuer country for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.issuer.organization
+      description: Issuer organization for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.not_after
+      description: Expiration date of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.not_before
+      description: Start date of the SSL certificate validity.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.sans
+      description: List of Subject Alternative Names (SANs) for the SSL certificate.
+      type: Unknown
+    - contextPath: SilentPush.URLScan.origin_ssl.sans_count
+      description: Count of SANs for the SSL certificate.
+      type: Number
+    - contextPath: SilentPush.URLScan.origin_ssl.serial_number
+      description: Serial number of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.sigalg
+      description: Signature algorithm used for the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.subject.common_name
+      description: Subject common name for the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.subject_key_id
+      description: Subject Key Identifier for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_ssl.valid
+      description: Indicates if the SSL certificate is valid.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.origin_ssl.wildcard
+      description: Indicates if the SSL certificate is a wildcard.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.origin_subdomain
+      description: Subdomain of the origin.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_tld
+      description: Top-level domain of the origin.
+      type: String
+    - contextPath: SilentPush.URLScan.origin_url
+      description: Complete URL of the origin.
+      type: String
+    - contextPath: SilentPush.URLScan.path
+      description: Path for the URL.
+      type: String
+    - contextPath: SilentPush.URLScan.port
+      description: Port for the URL.
+      type: Number
+    - contextPath: SilentPush.URLScan.proxy_enabled
+      description: Indicates if the proxy is enabled.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.redirect
+      description: Indicates if a redirect occurs.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.redirect_count
+      description: Count of redirects.
+      type: Number
+    - contextPath: SilentPush.URLScan.redirect_list
+      description: List of redirect URLs.
+      type: Unknown
+    - contextPath: SilentPush.URLScan.resolves_to
+      description: List of IPs the domain resolves to.
+      type: Unknown
+    - contextPath: SilentPush.URLScan.response
+      description: HTTP response code.
+      type: Number
+    - contextPath: SilentPush.URLScan.scheme
+      description: URL scheme (e.g., https).
+      type: String
+    - contextPath: SilentPush.URLScan.screenshot
+      description: URL for the domain screenshot.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.CHV
+      description: SSL Certificate Chain Value (CHV).
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.SHA1
+      description: SHA1 hash of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.SHA256
+      description: SHA256 hash of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.authority_key_id
+      description: Authority Key Identifier for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.expired
+      description: Indicates if the SSL certificate is expired.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.ssl.issuer.common_name
+      description: Issuer common name for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.issuer.country
+      description: Issuer country for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.issuer.organization
+      description: Issuer organization for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.not_after
+      description: Expiration date of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.not_before
+      description: Start date of the SSL certificate validity.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.sans
+      description: List of Subject Alternative Names (SANs) for the SSL certificate.
+      type: Unknown
+    - contextPath: SilentPush.URLScan.ssl.sans_count
+      description: Count of SANs for the SSL certificate.
+      type: Number
+    - contextPath: SilentPush.URLScan.ssl.serial_number
+      description: Serial number of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.sigalg
+      description: Signature algorithm used for the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.subject.common_name
+      description: Subject common name for the SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.subject_key_id
+      description: Subject Key Identifier for SSL certificate.
+      type: String
+    - contextPath: SilentPush.URLScan.ssl.valid
+      description: Indicates if the SSL certificate is valid.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.ssl.wildcard
+      description: Indicates if the SSL certificate is a wildcard.
+      type: Boolean
+    - contextPath: SilentPush.URLScan.body_analysis.SHV
+      description: Unique identifier for body analysis.
+      type: String
+    - contextPath: SilentPush.URLScan.body_analysis.body_sha256
+      description: SHA-256 hash of the body content.
+      type: String
+    - contextPath: SilentPush.URLScan.body_analysis.google-GA4
+      description: List of Google GA4 tracking IDs.
+      type: Unknown
+    - contextPath: SilentPush.URLScan.body_analysis.google-UA
+      description: List of Google Universal Analytics tracking IDs.
+      type: Unknown
+    - contextPath: SilentPush.URLScan.body_analysis.google-adstag
+      description: List of Google Adstag tracking IDs.
+      type: Unknown
+    - contextPath: SilentPush.URLScan.body_analysis.js_sha256
+      description: List of SHA-256 hashes of JavaScript files.
+      type: Unknown
+    - contextPath: SilentPush.URLScan.body_analysis.js_ssdeep
+      description: List of ssdeep fuzzy hashes of JavaScript files.
+      type: Unknown
+  - deprecated: false
     description: This command retrieve reverse Passive DNS data for specific DNS record types.
     name: silentpush-reverse-padns-lookup
     arguments:
@@ -1099,6 +1481,41 @@ script:
       description: The type of DNS record (e.g., NS).
       type: String
   - deprecated: false
+    description: This commandGenerate screenshot of a URL.
+    name: silentpush-screenshot-url
+    arguments:
+    - name: url
+      isArray: false
+      description: URL for the screenshot.
+      required: true
+      secret: false
+      default: false
+    - name: description
+      isArray: false
+      description: Generate and store a screenshot of a URL in the vault.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.Screenshot.file_id
+      description: Unique identifier for the generated screenshot file.
+      type: String
+    - contextPath: SilentPush.Screenshot.file_name
+      description: Name of the screenshot file.
+      type: String
+    - contextPath: SilentPush.Screenshot.screenshot_url
+      description: URL to access the generated screenshot.
+      type: String
+    - contextPath: SilentPush.Screenshot.status
+      description: Status of the screenshot generation process.
+      type: String
+    - contextPath: SilentPush.Screenshot.status_code
+      description: HTTP status code of the response.
+      type: Number
+    - contextPath: SilentPush.Screenshot.url
+      description: The URL that was used to generate the screenshot.
+      type: String
+  - deprecated: false
     description: This command search for domains with optional filters.
     name: silentpush-search-domains
     arguments:
@@ -1187,6 +1604,197 @@ script:
     - contextPath: SilentPush.Domain.ip_diversity_groups
       description: The number of unique IP groups associated with the domain.
       type: Number
+  - deprecated: false
+    description: This command search Silent Push scan data repositories using SPQL queries.
+    name: silentpush-search-scan-data
+    arguments:
+    - name: query
+      isArray: false
+      description: SPQL query string.
+      required: true
+      secret: false
+      default: false
+    - name: fields
+      isArray: false
+      description: Fields to return in the response.
+      required: false
+      secret: false
+      default: false
+    - name: sort
+      isArray: false
+      description: Sorting criteria for results.
+      required: false
+      secret: false
+      default: false
+    - name: skip
+      isArray: false
+      description: Number of records to skip in the response.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: Maximum number of results to return.
+      required: false
+      secret: false
+      default: false
+    - name: with_metadata
+      isArray: false
+      description: Whether to include metadata in the response.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.ScanData.HHV
+      description: Unique identifier for the scan data entry.
+      type: String
+    - contextPath: SilentPush.ScanData.adtech
+      description: Adtech information for the scan data entry.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.adtech.ads_txt
+      description: Indicates if ads.txt is used.
+      type: Boolean
+    - contextPath: SilentPush.ScanData.adtech.app_ads_txt
+      description: Indicates if app_ads.txt is used.
+      type: Boolean
+    - contextPath: SilentPush.ScanData.adtech.sellers_json
+      description: Indicates if sellers.json is used.
+      type: Boolean
+    - contextPath: SilentPush.ScanData.body_analysis
+      description: Body analysis for the scan data entry.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.body_sha256
+      description: SHA256 hash of the body.
+      type: String
+    - contextPath: SilentPush.ScanData.body_analysis.language
+      description: Languages detected in the body.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.datahash
+      description: Hash of the data.
+      type: String
+    - contextPath: SilentPush.ScanData.datasource
+      description: Source of the scan data.
+      type: String
+    - contextPath: SilentPush.ScanData.domain
+      description: Domain associated with the scan data.
+      type: String
+    - contextPath: SilentPush.ScanData.geoip
+      description: GeoIP information related to the scan.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.geoip.city_name
+      description: City where the scan data was retrieved.
+      type: String
+    - contextPath: SilentPush.ScanData.geoip.country_name
+      description: Country name from GeoIP information.
+      type: String
+    - contextPath: SilentPush.ScanData.geoip.location
+      description: Geo-location coordinates.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.geoip.location.lat
+      description: Latitude from GeoIP location.
+      type: Number
+    - contextPath: SilentPush.ScanData.geoip.location.lon
+      description: Longitude from GeoIP location.
+      type: Number
+    - contextPath: SilentPush.ScanData.header
+      description: HTTP header information for the scan.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.header.content-length
+      description: Content length from HTTP response header.
+      type: String
+    - contextPath: SilentPush.ScanData.header.location
+      description: Location from HTTP response header.
+      type: String
+    - contextPath: SilentPush.ScanData.hostname
+      description: Hostname associated with the scan data.
+      type: String
+    - contextPath: SilentPush.ScanData.html_body_sha256
+      description: SHA256 hash of the HTML body.
+      type: String
+    - contextPath: SilentPush.ScanData.htmltitle
+      description: Title of the HTML page scanned.
+      type: String
+    - contextPath: SilentPush.ScanData.ip
+      description: IP address associated with the scan.
+      type: String
+    - contextPath: SilentPush.ScanData.jarm
+      description: JARM hash value.
+      type: String
+    - contextPath: SilentPush.ScanData.mobile_enabled
+      description: Indicates if the page is mobile-enabled.
+      type: Boolean
+    - contextPath: SilentPush.ScanData.origin_domain
+      description: Origin domain associated with the scan.
+      type: String
+    - contextPath: SilentPush.ScanData.origin_geoip
+      description: GeoIP information of the origin domain.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.origin_geoip.city_name
+      description: City of the origin domain from GeoIP information.
+      type: String
+    - contextPath: SilentPush.ScanData.origin_hostname
+      description: Origin hostname associated with the scan data.
+      type: String
+    - contextPath: SilentPush.ScanData.origin_ip
+      description: Origin IP address of the scan.
+      type: String
+    - contextPath: SilentPush.ScanData.origin_jarm
+      description: JARM hash value of the origin domain.
+      type: String
+    - contextPath: SilentPush.ScanData.origin_ssl
+      description: SSL certificate information for the origin domain.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.origin_ssl.SHA256
+      description: SHA256 of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.ScanData.origin_ssl.subject
+      description: Subject of the SSL certificate.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.origin_ssl.subject.common_name
+      description: Common name in the SSL certificate.
+      type: String
+    - contextPath: SilentPush.ScanData.port
+      description: Port used during the scan.
+      type: Number
+    - contextPath: SilentPush.ScanData.redirect
+      description: Indicates if a redirect occurred during the scan.
+      type: Boolean
+    - contextPath: SilentPush.ScanData.redirect_count
+      description: Count of redirects encountered.
+      type: Number
+    - contextPath: SilentPush.ScanData.redirect_list
+      description: List of redirect URLs encountered during the scan.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.response
+      description: HTTP response code received during the scan.
+      type: Number
+    - contextPath: SilentPush.ScanData.scan_date
+      description: Timestamp of the scan date.
+      type: String
+    - contextPath: SilentPush.ScanData.scheme
+      description: URL scheme used in the scan.
+      type: String
+    - contextPath: SilentPush.ScanData.ssl
+      description: SSL certificate details for the scan.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.ssl.SHA256
+      description: SHA256 of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.ScanData.ssl.subject
+      description: Subject of the SSL certificate.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.ssl.subject.common_name
+      description: Common name in the SSL certificate.
+      type: String
+    - contextPath: SilentPush.ScanData.subdomain
+      description: Subdomain associated with the scan data.
+      type: String
+    - contextPath: SilentPush.ScanData.tld
+      description: Top-level domain (TLD) of the scanned URL.
+      type: String
+    - contextPath: SilentPush.ScanData.url
+      description: The URL scanned.
+      type: String
   script: '-'
   type: python
   subtype: python3

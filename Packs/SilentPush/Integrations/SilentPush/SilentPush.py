@@ -1,4 +1,6 @@
 import ipaddress
+
+import requests
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -36,6 +38,10 @@ ASN_TAKEDOWN_REPUTATION = "explore/takedownreputation/asn"
 IPV4_REPUTATION = "explore/ipreputation/history/ipv4"
 FORWARD_PADNS = "explore/padns/lookup/query"
 REVERSE_PADNS = "explore/padns/lookup/answer"
+SEARCH_SCAN = "explore/scandata/search/raw"
+LIVE_SCAN_URL_OUTPUTS = "explore/tools/scanondemand"
+FUTURE_ATTACK_INDICATOR = "/api/v2/iocs/threat-ranking"
+SCREENSHOT_URL = "explore/tools/screenshotondemand"
 
 ''' COMMANDS INPUTS '''
 
@@ -280,6 +286,62 @@ REVERSE_PADNS_INPUTS = [
             InputArgument(name='limit',
                         description='Limit the number of results returned.')
         ]
+SEARCH_SCAN_INPUTS = [
+            InputArgument(name='query',
+                        description='SPQL query string.',
+                        required=True),
+            InputArgument(name='fields',
+                        description='Fields to return in the response.'),
+            InputArgument(name='sort',
+                        description='Sorting criteria for results.'),
+            InputArgument(name='skip',
+                        description='Number of records to skip in the response.'),
+            InputArgument(name='limit',
+                        description='Maximum number of results to return.'),
+            InputArgument(name='with_metadata',
+                        description='Whether to include metadata in the response.')
+        ]
+LIVE_SCAN_URL_INPUTS = [
+            InputArgument(
+                name='url',
+                description='URL to scan.',
+                required=True
+            ),
+            InputArgument(
+                name='platform',
+                description='Platform to scan the URL on.'
+            ),
+            InputArgument(
+                name='os',
+                description='Operating system to scan the URL on.'
+            ),
+            InputArgument(
+                name='browser',
+                description='Browser to scan the URL on.'
+            ),
+            InputArgument(
+                name='region',
+                description='Region to scan the URL in.'
+            )
+        ]
+FUTURE_ATTACK_INDICATOR_INPUTS = [
+            InputArgument(name='feed_uuid',
+                        description='Unique ID for the feed.',
+                        required=True),
+            InputArgument(name='page_no',
+                        description='The page number to fetch results from.'),
+            InputArgument(name='page_size',
+                        description='The number of indicators to fetch per page.')
+        ]
+SCREENSHOT_URL_INPUTS = [
+            InputArgument(name='url',  # option 1
+                        description='URL for the screenshot.',
+                        required=True),
+            InputArgument(name='description',
+                        description='Generate and store a screenshot of a URL in the vault.')
+        ]
+
+
 
 
 ''' COMMANDS OUTPUTS '''
@@ -573,12 +635,178 @@ REVERSE_PADNS_OUTPUTS = [
                         OutputArgument(name='records.type', 
                                         output_type=str, 
                                         description='The type of DNS record (e.g., NS).')]
-
-
-
-
-
-
+SEARCH_SCAN_OUTPUTS = [
+                        OutputArgument(name='HHV', output_type=str, description='Unique identifier for the scan data entry.'),
+                        OutputArgument(name='adtech', output_type=dict, description='Adtech information for the scan data entry.'),
+                        OutputArgument(name='adtech.ads_txt', output_type=bool, description='Indicates if ads.txt is used.'),
+                        OutputArgument(name='adtech.app_ads_txt', output_type=bool, description='Indicates if app_ads.txt is used.'),
+                        OutputArgument(name='adtech.sellers_json', output_type=bool, description='Indicates if sellers.json is used.'),
+                        OutputArgument(name='body_analysis', output_type=dict, description='Body analysis for the scan data entry.'),
+                        OutputArgument(name='body_analysis.body_sha256', output_type=str, description='SHA256 hash of the body.'),
+                        OutputArgument(name='body_analysis.language', output_type=list, description='Languages detected in the body.'),
+                        OutputArgument(name='datahash', output_type=str, description='Hash of the data.'),
+                        OutputArgument(name='datasource', output_type=str, description='Source of the scan data.'),
+                        OutputArgument(name='domain', output_type=str, description='Domain associated with the scan data.'),
+                        OutputArgument(name='geoip', output_type=dict, description='GeoIP information related to the scan.'),
+                        OutputArgument(name='geoip.city_name', output_type=str, description='City where the scan data was retrieved.'),
+                        OutputArgument(name='geoip.country_name', output_type=str, description='Country name from GeoIP information.'),
+                        OutputArgument(name='geoip.location', output_type=dict, description='Geo-location coordinates.'),
+                        OutputArgument(name='geoip.location.lat', output_type=float, description='Latitude from GeoIP location.'),
+                        OutputArgument(name='geoip.location.lon', output_type=float, description='Longitude from GeoIP location.'),
+                        OutputArgument(name='header', output_type=dict, description='HTTP header information for the scan.'),
+                        OutputArgument(name='header.content-length', output_type=str, description='Content length from HTTP response header.'),
+                        OutputArgument(name='header.location', output_type=str, description='Location from HTTP response header.'),
+                        OutputArgument(name='hostname', output_type=str, description='Hostname associated with the scan data.'),
+                        OutputArgument(name='html_body_sha256', output_type=str, description='SHA256 hash of the HTML body.'),
+                        OutputArgument(name='htmltitle', output_type=str, description='Title of the HTML page scanned.'),
+                        OutputArgument(name='ip', output_type=str, description='IP address associated with the scan.'),
+                        OutputArgument(name='jarm', output_type=str, description='JARM hash value.'),
+                        OutputArgument(name='mobile_enabled', output_type=bool, description='Indicates if the page is mobile-enabled.'),
+                        OutputArgument(name='origin_domain', output_type=str, description='Origin domain associated with the scan.'),
+                        OutputArgument(name='origin_geoip', output_type=dict, description='GeoIP information of the origin domain.'),
+                        OutputArgument(name='origin_geoip.city_name', output_type=str, description='City of the origin domain from GeoIP information.'),
+                        OutputArgument(name='origin_hostname', output_type=str, description='Origin hostname associated with the scan data.'),
+                        OutputArgument(name='origin_ip', output_type=str, description='Origin IP address of the scan.'),
+                        OutputArgument(name='origin_jarm', output_type=str, description='JARM hash value of the origin domain.'),
+                        OutputArgument(name='origin_ssl', output_type=dict, description='SSL certificate information for the origin domain.'),
+                        OutputArgument(name='origin_ssl.SHA256', output_type=str, description='SHA256 of the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.subject', output_type=dict, description='Subject of the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.subject.common_name', output_type=str, description='Common name in the SSL certificate.'),
+                        OutputArgument(name='port', output_type=int, description='Port used during the scan.'),
+                        OutputArgument(name='redirect', output_type=bool, description='Indicates if a redirect occurred during the scan.'),
+                        OutputArgument(name='redirect_count', output_type=int, description='Count of redirects encountered.'),
+                        OutputArgument(name='redirect_list', output_type=list, description='List of redirect URLs encountered during the scan.'),
+                        OutputArgument(name='response', output_type=int, description='HTTP response code received during the scan.'),
+                        OutputArgument(name='scan_date', output_type=str, description='Timestamp of the scan date.'),
+                        OutputArgument(name='scheme', output_type=str, description='URL scheme used in the scan.'),
+                        OutputArgument(name='ssl', output_type=dict, description='SSL certificate details for the scan.'),
+                        OutputArgument(name='ssl.SHA256', output_type=str, description='SHA256 of the SSL certificate.'),
+                        OutputArgument(name='ssl.subject', output_type=dict, description='Subject of the SSL certificate.'),
+                        OutputArgument(name='ssl.subject.common_name', output_type=str, description='Common name in the SSL certificate.'),
+                        OutputArgument(name='subdomain', output_type=str, description='Subdomain associated with the scan data.'),
+                        OutputArgument(name='tld', output_type=str, description='Top-level domain (TLD) of the scanned URL.'),
+                        OutputArgument(name='url', output_type=str, description='The URL scanned.')
+                    ]
+LIVE_SCAN_URL_OUTPUTS = [
+                        OutputArgument(name='HHV', output_type=str, description='Unique identifier for HHV.'),
+                        OutputArgument(name='adtech.ads_txt', output_type=bool, description='Indicates if ads_txt is present.'),
+                        OutputArgument(name='adtech.app_ads_txt', output_type=bool, description='Indicates if app_ads_txt is present.'),
+                        OutputArgument(name='adtech.sellers_json', output_type=bool, description='Indicates if sellers_json is present.'),
+                        OutputArgument(name='datahash', output_type=str, description='Hash value of the data.'),
+                        OutputArgument(name='domain', output_type=str, description='The domain name.'),
+                        OutputArgument(name='favicon2_avg', output_type=str, description='Hash value for favicon2 average.'),
+                        OutputArgument(name='favicon2_md5', output_type=str, description='MD5 hash for favicon2.'),
+                        OutputArgument(name='favicon2_murmur3', output_type=int, description='Murmur3 hash for favicon2.'),
+                        OutputArgument(name='favicon2_path', output_type=str, description='Path to favicon2 image.'),
+                        OutputArgument(name='favicon_avg', output_type=str, description='Hash value for favicon average.'),
+                        OutputArgument(name='favicon_md5', output_type=str, description='MD5 hash for favicon.'),
+                        OutputArgument(name='favicon_murmur3', output_type=str, description='Murmur3 hash for favicon.'),
+                        OutputArgument(name='favicon_path', output_type=str, description='Path to favicon image.'),
+                        OutputArgument(name='favicon_urls', output_type=list, description='List of favicon URLs.'),
+                        OutputArgument(name='header.cache-control', output_type=str, description='Cache control header value.'),
+                        OutputArgument(name='header.content-encoding', output_type=str, description='Content encoding header value.'),
+                        OutputArgument(name='header.content-type', output_type=str, description='Content type header value.'),
+                        OutputArgument(name='header.server', output_type=str, description='Server header value.'),
+                        OutputArgument(name='header.x-powered-by', output_type=str, description='X-Powered-By header value.'),
+                        OutputArgument(name='hostname', output_type=str, description='The hostname of the server.'),
+                        OutputArgument(name='html_body_length', output_type=int, description='Length of the HTML body.'),
+                        OutputArgument(name='html_body_murmur3', output_type=int, description='Murmur3 hash for the HTML body.'),
+                        OutputArgument(name='html_body_sha256', output_type=str, description='SHA256 hash for the HTML body.'),
+                        OutputArgument(name='html_body_similarity', output_type=int, description='Similarity score of the HTML body.'),
+                        OutputArgument(name='html_body_ssdeep', output_type=str, description='ssdeep hash for the HTML body.'),
+                        OutputArgument(name='htmltitle', output_type=str, description='The HTML title of the page.'),
+                        OutputArgument(name='ip', output_type=str, description='IP address associated with the domain.'),
+                        OutputArgument(name='jarm', output_type=str, description='JARM (TLS fingerprint) value.'),
+                        OutputArgument(name='mobile_enabled', output_type=bool, description='Indicates if the mobile version is enabled.'),
+                        OutputArgument(name='opendirectory', output_type=bool, description='Indicates if open directory is enabled.'),
+                        OutputArgument(name='origin_domain', output_type=str, description='Origin domain of the server.'),
+                        OutputArgument(name='origin_hostname', output_type=str, description='Origin hostname of the server.'),
+                        OutputArgument(name='origin_ip', output_type=str, description='Origin IP address of the server.'),
+                        OutputArgument(name='origin_jarm', output_type=str, description='JARM (TLS fingerprint) value for the origin.'),
+                        OutputArgument(name='origin_path', output_type=str, description='Origin path for the URL.'),
+                        OutputArgument(name='origin_port', output_type=int, description='Port used for the origin server.'),
+                        OutputArgument(name='origin_ssl.CHV', output_type=str, description='SSL Certificate Chain Value (CHV).'),
+                        OutputArgument(name='origin_ssl.SHA1', output_type=str, description='SHA1 hash of the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.SHA256', output_type=str, description='SHA256 hash of the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.authority_key_id', output_type=str, description='Authority Key Identifier for SSL certificate.'),
+                        OutputArgument(name='origin_ssl.expired', output_type=bool, description='Indicates if the SSL certificate is expired.'),
+                        OutputArgument(name='origin_ssl.issuer.common_name', output_type=str, description='Issuer common name for SSL certificate.'),
+                        OutputArgument(name='origin_ssl.issuer.country', output_type=str, description='Issuer country for SSL certificate.'),
+                        OutputArgument(name='origin_ssl.issuer.organization', output_type=str, description='Issuer organization for SSL certificate.'),
+                        OutputArgument(name='origin_ssl.not_after', output_type=str, description='Expiration date of the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.not_before', output_type=str, description='Start date of the SSL certificate validity.'),
+                        OutputArgument(name='origin_ssl.sans', output_type=list, description='List of Subject Alternative Names (SANs) for the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.sans_count', output_type=int, description='Count of SANs for the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.serial_number', output_type=str, description='Serial number of the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.sigalg', output_type=str, description='Signature algorithm used for the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.subject.common_name', output_type=str, description='Subject common name for the SSL certificate.'),
+                        OutputArgument(name='origin_ssl.subject_key_id', output_type=str, description='Subject Key Identifier for SSL certificate.'),
+                        OutputArgument(name='origin_ssl.valid', output_type=bool, description='Indicates if the SSL certificate is valid.'),
+                        OutputArgument(name='origin_ssl.wildcard', output_type=bool, description='Indicates if the SSL certificate is a wildcard.'),
+                        OutputArgument(name='origin_subdomain', output_type=str, description='Subdomain of the origin.'),
+                        OutputArgument(name='origin_tld', output_type=str, description='Top-level domain of the origin.'),
+                        OutputArgument(name='origin_url', output_type=str, description='Complete URL of the origin.'),
+                        OutputArgument(name='path', output_type=str, description='Path for the URL.'),
+                        OutputArgument(name='port', output_type=int, description='Port for the URL.'),
+                        OutputArgument(name='proxy_enabled', output_type=bool, description='Indicates if the proxy is enabled.'),
+                        OutputArgument(name='redirect', output_type=bool, description='Indicates if a redirect occurs.'),
+                        OutputArgument(name='redirect_count', output_type=int, description='Count of redirects.'),
+                        OutputArgument(name='redirect_list', output_type=list, description='List of redirect URLs.'),
+                        OutputArgument(name='resolves_to', output_type=list, description='List of IPs the domain resolves to.'),
+                        OutputArgument(name='response', output_type=int, description='HTTP response code.'),
+                        OutputArgument(name='scheme', output_type=str, description='URL scheme (e.g., https).'),
+                        OutputArgument(name='screenshot', output_type=str, description='URL for the domain screenshot.'),
+                        OutputArgument(name='ssl.CHV', output_type=str, description='SSL Certificate Chain Value (CHV).'),
+                        OutputArgument(name='ssl.SHA1', output_type=str, description='SHA1 hash of the SSL certificate.'),
+                        OutputArgument(name='ssl.SHA256', output_type=str, description='SHA256 hash of the SSL certificate.'),
+                        OutputArgument(name='ssl.authority_key_id', output_type=str, description='Authority Key Identifier for SSL certificate.'),
+                        OutputArgument(name='ssl.expired', output_type=bool, description='Indicates if the SSL certificate is expired.'),
+                        OutputArgument(name='ssl.issuer.common_name', output_type=str, description='Issuer common name for SSL certificate.'),
+                        OutputArgument(name='ssl.issuer.country', output_type=str, description='Issuer country for SSL certificate.'),
+                        OutputArgument(name='ssl.issuer.organization', output_type=str, description='Issuer organization for SSL certificate.'),
+                        OutputArgument(name='ssl.not_after', output_type=str, description='Expiration date of the SSL certificate.'),
+                        OutputArgument(name='ssl.not_before', output_type=str, description='Start date of the SSL certificate validity.'),
+                        OutputArgument(name='ssl.sans', output_type=list, description='List of Subject Alternative Names (SANs) for the SSL certificate.'),
+                        OutputArgument(name='ssl.sans_count', output_type=int, description='Count of SANs for the SSL certificate.'),
+                        OutputArgument(name='ssl.serial_number', output_type=str, description='Serial number of the SSL certificate.'),
+                        OutputArgument(name='ssl.sigalg', output_type=str, description='Signature algorithm used for the SSL certificate.'),
+                        OutputArgument(name='ssl.subject.common_name', output_type=str, description='Subject common name for the SSL certificate.'),
+                        OutputArgument(name='ssl.subject_key_id', output_type=str, description='Subject Key Identifier for SSL certificate.'),
+                        OutputArgument(name='ssl.valid', output_type=bool, description='Indicates if the SSL certificate is valid.'),
+                        OutputArgument(name='ssl.wildcard', output_type=bool, description='Indicates if the SSL certificate is a wildcard.'),
+                        OutputArgument(name='body_analysis.SHV', output_type=str, description='Unique identifier for body analysis.'),
+                        OutputArgument(name='body_analysis.body_sha256', output_type=str, description='SHA-256 hash of the body content.'),
+                        OutputArgument(name='body_analysis.google-GA4', output_type=list, description='List of Google GA4 tracking IDs.'),
+                        OutputArgument(name='body_analysis.google-UA', output_type=list, description='List of Google Universal Analytics tracking IDs.'),
+                        OutputArgument(name='body_analysis.google-adstag', output_type=list, description='List of Google Adstag tracking IDs.'),
+                        OutputArgument(name='body_analysis.js_sha256', output_type=list, description='List of SHA-256 hashes of JavaScript files.'),
+                        OutputArgument(name='body_analysis.js_ssdeep', output_type=list, description='List of ssdeep fuzzy hashes of JavaScript files.'),
+                    ]
+FUTURE_ATTACK_INDICATOR_OUTPUTS = [
+                        OutputArgument(name='feed_uuid', output_type=str, description='Unique ID for the feed.'),
+                        OutputArgument(name='indicators.total_ioc', output_type=int, description='Total number of IOC for the indicator.'),
+                        OutputArgument(name='indicators.total', output_type=int, description='Total number of occurrences for the indicator.'),
+                        OutputArgument(name='indicators.total_source_score', output_type=int, description='Total score from the source for the indicator.'),
+                        OutputArgument(name='indicators.name', output_type=str, description='Name associated with the indicator (e.g., domain name).'),
+                        OutputArgument(name='indicators.total_custom', output_type=int, description='Total custom indicators for the specific entry.'),
+                        OutputArgument(name='indicators.source_name', output_type=str, description='Name of the source that generated the indicator.'),
+                        OutputArgument(name='indicators.first_seen_on', output_type=str, description='Timestamp when the indicator was first seen.'),
+                        OutputArgument(name='indicators.last_seen_on', output_type=str, description='Timestamp when the indicator was last seen.'),
+                        OutputArgument(name='indicators.type', output_type=str, description='Type of the indicator (e.g., domain).'),
+                        OutputArgument(name='indicators.uuid', output_type=str, description='Unique identifier for the indicator.'),
+                        OutputArgument(name='indicators.ioc_template', output_type=str, description='Template type for the indicator (e.g., domain).'),
+                        OutputArgument(name='indicators.ioc_uuid', output_type=str, description='Unique identifier for the IOC associated with the indicator.'),
+                        OutputArgument(name='indicators.source_vendor_name', output_type=str, description='Name of the vendor source (e.g., Silent Push).'),
+                        OutputArgument(name='indicators.source_uuid', output_type=str, description='Unique ID for the source of the indicator.')
+                    ]
+SCREENSHOT_URL_OUTPUTS = [
+                        OutputArgument(name='file_id', output_type=str, description='Unique identifier for the generated screenshot file.'),
+                        OutputArgument(name='file_name', output_type=str, description='Name of the screenshot file.'),
+                        OutputArgument(name='screenshot_url', output_type=str, description='URL to access the generated screenshot.'),
+                        OutputArgument(name='status', output_type=str, description='Status of the screenshot generation process.'),
+                        OutputArgument(name='status_code', output_type=int, description='HTTP status code of the response.'),
+                        OutputArgument(name='url', output_type=str, description='The URL that was used to generate the screenshot.')
+                    ]
 
 
 metadata_collector = YMLMetadataCollector(
@@ -1226,7 +1454,6 @@ class Client(BaseClient):
             params=params
         )
 
-
     def reverse_padns_lookup(self, qtype: str, qname: str, **kwargs) -> Dict[str, Any]:
         """
         Perform a reverse PADNS lookup using various filtering parameters.
@@ -1246,6 +1473,137 @@ class Client(BaseClient):
             url_suffix=url_suffix,
             params=kwargs
         )
+
+    def search_scan_data(self, query: str) -> Dict[str, Any]:
+        """
+        Search the Silent Push scan data repositories.
+
+        Args:
+            query (str): Query in SPQL syntax to scan data (mandatory)
+
+        Returns:
+            Dict[str, Any]: Search results from scan data repositories
+
+        Raises:
+            DemistoException: If query is not provided or API call fails
+        """
+        if not query:
+            raise DemistoException("Query parameter is required for search scan data.")
+
+        url_suffix = SEARCH_SCAN
+
+        payload = {
+            "query": query
+        }
+
+        return self._http_request(
+            method="POST",
+            url_suffix=url_suffix,
+            data=payload
+        )
+        
+    def live_url_scan(self, url: str, platform: Optional[str] = None, os: Optional[str] = None,
+                  browser: Optional[str] = None, region: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Perform a live scan of a URL to get hosting metadata.
+
+        Args:
+            url (str): The URL to scan.
+            platform (str, optional): Device to perform scan with (Desktop, Mobile, Crawler).
+            os (str, optional): OS to perform scan with (Windows, Linux, MacOS, iOS, Android).
+            browser (str, optional): Browser to perform scan with (Firefox, Chrome, Edge, Safari).
+            region (str, optional): Region from where scan should be performed (US, EU, AS, TOR).
+
+        Returns:
+            Dict[str, Any]: The scan results including hosting metadata.
+        """
+        url_suffix = LIVE_SCAN_URL_OUTPUTS
+
+        params = {
+            'url': url,
+            'platform': platform,
+            'os': os,
+            'browser': browser,
+            'region': region
+        }
+
+        filtered_params = filter_none_values(params)
+
+        return self._http_request(
+            method='GET',
+            url_suffix=url_suffix,
+            params=filtered_params
+        )
+
+    def get_future_attack_indicators(self, feed_uuid: str, page_no: int = 1, page_size: int = 10000) -> Dict[str, Any]:
+        """
+        Retrieve indicators of future attack feed from SilentPush.
+
+        Args:
+            feed_uuid (str): Feed unique identifier to fetch records for.
+            page_no (int, optional): Page number for pagination. Defaults to 1.
+            page_size (int, optional): Number of records per page. Defaults to 10000.
+
+        Returns:
+            Dict[str, Any]: Response containing future attack indicators.
+        """
+        url_suffix = FUTURE_ATTACK_INDICATOR
+
+        params = filter_none_values({
+            'page': page_no,
+            'size': page_size,
+            'source_uuids': feed_uuid
+        })
+
+        return self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=params
+        )
+
+    def screenshot_url(self, url: str) -> Dict[str, Any]:
+        """
+        Generate a screenshot for a given URL and store it in the vault using GET request.
+
+        Args:
+            url (str): The URL to capture a screenshot of
+
+        Returns:
+            Dict[str, Any]: Response containing screenshot information and vault details
+        """
+        endpoint = SCREENSHOT_URL
+        params = filter_none_values({"url": url})  # Remove any None values from params
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=endpoint,
+            params=params
+        )
+
+        if response.get("error"):
+            return {"error": f"Failed to get screenshot: {response['error']}"}
+
+        screenshot_data = response.get("response", {}).get("screenshot", {})
+        if not screenshot_data:
+            return {"error": "No screenshot data returned from API"}
+
+        screenshot_url = screenshot_data.get("message")
+        if not screenshot_url:
+            return {"error": "No screenshot URL returned"}
+
+        image_response = requests.get(screenshot_url, verify=self.verify)
+        if image_response.status_code != 200:
+            return {"error": f"Failed to download screenshot image: HTTP {image_response.status_code}"}
+
+        filename = f"{url.split('://')[1].split('/')[0]}_screenshot.jpg"
+        
+        return {
+            "status_code": screenshot_data.get("response", 200),
+            "screenshot_url": screenshot_url,
+            "vault_info": fileResult(filename, image_response.content),
+            "filename": filename
+        }
+
 
 ''' HELPER FUNCTIONS '''
 def filter_none_values(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -2441,9 +2799,255 @@ def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
         raw_response=raw_response
     )
 
+@metadata_collector.command(
+    command_name="silentpush-search-scan-data",
+    inputs_list=SEARCH_SCAN_INPUTS,
+    outputs_prefix="SilentPush.ScanData",
+    outputs_list=SEARCH_SCAN_OUTPUTS,
+    description="This command search Silent Push scan data repositories using SPQL queries."
+)
+def search_scan_data_command(client: Client, args: dict) -> CommandResults:
+    """
+    Search scan data command handler.
+
+    Args:
+        client (Client): SilentPush API client
+        args (dict): Command arguments:
+            - query (str): Required. SPQL syntax query
+
+    Returns:
+        CommandResults: Command results with formatted output
+    """
+    query = args.get('query')
+    if not query:
+        raise ValueError('Query parameter is required')
+
+    raw_response = client.search_scan_data(query=query)
+    
+    scan_data = raw_response.get('response', {}).get('scandata_raw', [])
+
+    if not scan_data:
+        return CommandResults(
+            readable_output="No scan data records found",
+            outputs_prefix='SilentPush.ScanData',
+            outputs=None
+        )
+
+    readable_output = tableToMarkdown(
+        "Raw Scan Data Results",
+        scan_data,
+        removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix='SilentPush.ScanData',
+        outputs_key_field='domain',
+        outputs=filter_none_values({
+            'records': scan_data,
+            'query': query
+        }),
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
+@metadata_collector.command(
+    command_name="silentpush-live-url-scan",
+    inputs_list=LIVE_SCAN_URL_INPUTS,
+    outputs_prefix="SilentPush.URLScan",
+    outputs_list=LIVE_SCAN_URL_OUTPUTS,
+    description="This command scan a URL to retrieve hosting metadata.."
+)
+def live_url_scan_command(client: Client, args: dict) -> CommandResults:
+    """
+    Command handler for live URL scan command.
+
+    Args:
+        client (Client): The SilentPush API client
+        args (dict): Command arguments
+
+    Returns:
+        CommandResults: Results of the URL scan
+    """
+    url = args.get('url')
+    if not url:
+        raise DemistoException("URL is a required parameter")
+
+    platform = args.get('platform')
+    os = args.get('os')
+    browser = args.get('browser')
+    region = args.get('region')
+
+    # Validate platform, os, browser, and region
+    validation_errors = validate_parameters(platform, os, browser, region)
+    if validation_errors:
+        raise DemistoException(validation_errors)
+
+    # Call the client to get the scan results
+    raw_response = client.live_url_scan(url, platform, os, browser, region)
+    scan_results = raw_response.get('response', {}).get('scan', {})
+
+    # Generate the readable output
+    readable_output, scan_results = format_scan_results(scan_results, url)
+
+    return CommandResults(
+        outputs_prefix='SilentPush.URLScan',
+        outputs_key_field='url',
+        outputs={
+            'url': url,
+            'scan_results': scan_results
+        },
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
+def validate_parameters(platform: str, os: str, browser: str, region: str) -> str:
+    """Validate the platform, os, browser, and region values."""
+    valid_platforms = ['Desktop', 'Mobile', 'Crawler']
+    valid_os = ['Windows', 'Linux', 'MacOS', 'iOS', 'Android']
+    valid_browsers = ['Firefox', 'Chrome', 'Edge', 'Safari']
+    valid_regions = ['US', 'EU', 'AS', 'TOR']
+
+    errors = []
+    if platform and platform not in valid_platforms:
+        errors.append(f"Invalid platform. Must be one of: {', '.join(valid_platforms)}")
+    if os and os not in valid_os:
+        errors.append(f"Invalid OS. Must be one of: {', '.join(valid_os)}")
+    if browser and browser not in valid_browsers:
+        errors.append(f"Invalid browser. Must be one of: {', '.join(valid_browsers)}")
+    if region and region not in valid_regions:
+        errors.append(f"Invalid region. Must be one of: {', '.join(valid_regions)}")
+
+    return "\n".join(errors)
+
+def format_scan_results(scan_results: dict, url: str) -> tuple:
+    """Format the scan results for the output."""
+    if not isinstance(scan_results, dict):
+        readable_output = f"Unexpected response format for URL scan. Response: {scan_results}"
+        return readable_output, scan_results
+
+    if not scan_results:
+        readable_output = f"No scan results found for URL: {url}"
+        return readable_output, scan_results
+
+    headers = list(scan_results.keys())
+    readable_output = tableToMarkdown(
+        f"URL Scan Results for {url}",
+        [scan_results],
+        headers=headers,
+        removeNull=True
+    )
+    return readable_output, scan_results
+
+
+@metadata_collector.command(
+    command_name="silentpush-get-future-attack-indicators",
+    inputs_list=FUTURE_ATTACK_INDICATOR_INPUTS,
+    outputs_prefix="SilentPush.FutureAttackIndicators",
+    outputs_list=FUTURE_ATTACK_INDICATOR_OUTPUTS,
+    description="This command fetch indicators of potential future attacks using a feed UUID."
+)
+def get_future_attack_indicators_command(client: Client, args: dict) -> CommandResults:
+    """
+    Command handler for retrieving indicators of future attack feed.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (dict): Command arguments, should include 'feed_uuid', 'page_no', and 'page_size'.
+
+    Returns:
+        CommandResults: Results for XSOAR containing future attack indicators or error message.
+    
+    Raises:
+        ValueError: If required parameters are missing.
+    """
+    feed_uuid = args.get('feed_uuid')
+    if not feed_uuid:
+        raise ValueError("feed_uuid is a required parameter")
+
+    page_no = arg_to_number(args.get('page_no', 1))
+    page_size = arg_to_number(args.get('page_size', 10000))
+
+    raw_response = client.get_future_attack_indicators(
+        feed_uuid=feed_uuid,
+        page_no=page_no,
+        page_size=page_size
+    )
+
+    headers = list(raw_response[0].keys()) if raw_response else []
+    readable_output = tableToMarkdown(
+        f"# Future Attack Indicators\nFeed UUID: {feed_uuid}\n",
+        raw_response,
+        headers=headers,
+        removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix='SilentPush.FutureAttackIndicators',
+        outputs_key_field='feed_uuid',
+        outputs={
+            'feed_uuid': feed_uuid,
+            'page_no': page_no,
+            'page_size': page_size,
+            'indicators': raw_response
+        },
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-screenshot-url",
+    inputs_list=SCREENSHOT_URL_INPUTS,
+    outputs_prefix="SilentPush.Screenshot",
+    outputs_list=SCREENSHOT_URL_OUTPUTS,
+    description="This commandGenerate screenshot of a URL."
+)
+def screenshot_url_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command handler for taking URL screenshots.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'url' key.
+
+    Returns:
+        CommandResults: Results including screenshot data and vault info.
+    """
+    url = args.get("url")
+    if not url:
+        raise ValueError("URL is required")
+
+    result = client.screenshot_url(url)
+
+    readable_output = (
+        f"### Screenshot captured for {url}\n"
+        f"- Status: Success\n"
+        f"- Screenshot URL: {result['screenshot_url']}\n"
+        f"- File ID: {result['vault_info']['FileID']}\n"
+        f"- File Name: {result['filename']}"
+    )
+
+    result_data = {
+        "url": url,
+        "status": "success",
+        "status_code": result["status_code"],
+        "screenshot_url": result["screenshot_url"],
+        "file_id": result["vault_info"]["FileID"],
+        "file_name": result["filename"]
+    }
+
+    result_data = filter_none_values(result_data)
+
+    return CommandResults(
+        outputs_prefix="SilentPush.Screenshot",
+        outputs_key_field="url",
+        outputs=result_data,
+        readable_output=readable_output,
+        raw_response=result
+    )
+
 
 ''' MAIN FUNCTION '''
-
 
 def main() -> None:
     """main function, parses params and runs command functions
@@ -2517,6 +3121,18 @@ def main() -> None:
 
         elif demisto.command() == 'silentpush-reverse-padns-lookup':
             return_results(reverse_padns_lookup_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-search-scan-data':
+            return_results(search_scan_data_command(client, demisto.args()))
+        
+        elif demisto.command() == 'silentpush-live-url-scan':
+            return_results(live_url_scan_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-get-future-attack-indicators':
+            return_results(get_future_attack_indicators_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-screenshot-url':
+            return_results(screenshot_url_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
