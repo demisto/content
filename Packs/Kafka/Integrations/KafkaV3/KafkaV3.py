@@ -8,6 +8,7 @@ from collections.abc import Callable
 from io import StringIO
 
 ''' IMPORTS '''
+import json
 import tempfile
 import urllib3
 import traceback
@@ -183,7 +184,7 @@ class KafkaCommunicator:
         else:
             return KProducer(self.conf_producer)
 
-    def get_kafka_schema_registry(self) -> KSchemaRegistryClient:
+    def get_kafka_schema_registry(self) -> Optional[KSchemaRegistryClient]:
         if self.conf_schema_registry:
             return KSchemaRegistryClient(self.conf_schema_registry)
         else:
@@ -300,7 +301,7 @@ class KafkaCommunicator:
     def produce(
         self,
         topic: str,
-        value: Union[str, dict],
+        value: str,
         value_schema_type: Optional[str],
         value_schema_str: Optional[str],
         value_schema_subject_name: Optional[str],
