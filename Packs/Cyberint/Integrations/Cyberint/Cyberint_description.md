@@ -1,1 +1,1 @@
- 
+This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
