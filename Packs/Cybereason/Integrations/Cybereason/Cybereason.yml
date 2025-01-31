@@ -407,6 +407,7 @@ script:
       type: string
     - contextPath: Cybereason.Malops.MitreTechniques
       description: List of Mitre Techniques involved in this Malop.
+      type: string
     - contextPath: Cybereason.Malops.MalopCloserName
       description: List of Malop Closer Name involved in this Malop.
       type: string

@@ -29,6 +29,7 @@ This involves the mapping of response fields to XSOAR incidents, enhancing the a
 
 1. **Incident Mapping:** The integration maps specific response fields to corresponding incident fields within XSOAR, ensuring that all relevant information is captured accurately.
 2. **Custom Fields:** In addition to standard incident fields, custom fields have been introduced to accommodate unique data requirements specific to our workflow. These fields provide flexibility and enhance the granularity of the incident information.
+
 - `malopcreationtime`
 - `malopupdatetime`
 - `maloprootcauseelementname`
@@ -45,7 +46,7 @@ These custom fields provide flexibility and enhance the granularity of the incid
 
 The functionality for fetching MalOps is implemented through the `fetch_incidents` function. This function is responsible for retrieving MalOps and subsequently converting them into XSOAR incidents.
 
-* **Conversion Process:** The conversion from MalOps to incidents is handled by the `malop_to_incident` function. This function processes MalOps one by one, ensuring each is correctly mapped to its corresponding incident structure.
+- **Conversion Process:** The conversion from MalOps to incidents is handled by the `malop_to_incident` function. This function processes MalOps one by one, ensuring each is correctly mapped to its corresponding incident structure.
 
 ### Usage
 
@@ -1665,6 +1666,14 @@ Get the results related to machines.
 | Cybereason.Malops.LastUpdatedTime | string | Last updated time of malop | 
 | Cybereason.Malops.InvolvedHash | string | List of file hashes involved in this Malop | 
 | Cybereason.Malops.Status | string | Malop managemant status | 
+| Cybereason.Malops.MalopCloserName | string | List of Malop Closer Name involved in this Malop |
+| Cybereason.Malops.Machines | string | List of Machines involved in this Malop |
+| Cybereason.Malops.Severity | string | Severity of Malop |
+| Cybereason.Malops.MitreTechniques | string | List of Mitre Techniques involved in this Malop |
+| Cybereason.Malops.Users | string | List of Users involved in this Malop |
+| Cybereason.Malops.DetectionTypes | string | List of Detection Types involved in this Malop |
+| Cybereason.Malops.DecisionStatuses | string | List of Decision Statuses involved in this Malop |
+| Cybereason.Malops.DetectionEngines | string | List of Detection Engines involved in this Malop |
 
 #### Command example
 
