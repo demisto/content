@@ -7,7 +7,7 @@ import json
 import urllib3
 import dateparser
 import traceback
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,6 +24,9 @@ ASNS_DOMAIN = "explore/padns/lookup/domain/asns"
 DENSITY_LOOKUP = "explore/padns/lookup/density"
 SEARCH_DOMAIN = "explore/domain/search"
 DOMAIN_INFRATAGS = "explore/bulk/domain/infratags"
+DOMAIN_INFO = "explore/bulk/domaininfo"
+RISK_SCORE = "explore/bulk/domain/riskscore"
+WHOIS = "explore/domain/whois"
 
 ''' COMMANDS INPUTS '''
 
@@ -62,7 +65,7 @@ SUBNET_REPUTATION_INPUTS = [
                 ]
 ASNS_DOMAIN_INPUTS = [
                     InputArgument(name='domain',  # option 1
-                                description='Domain name to search ASNs for. Retrieves ASNs associated with A records for the specified domain and its subdomains in the last 30 days.',
+                                description='Domain name to search ASNs for. Retrieves ASNs associated with a records for the specified domain and its subdomains in the last 30 days.',
                                 required=True)
                     ]
 DENSITY_LOOKUP_INPUTS = [
@@ -113,6 +116,17 @@ DOMAIN_INFRATAGS_INPUTS = [
                 InputArgument(name='match', 
                             description='Handling of self-hosted infrastructure. Defaults to "self".', 
                             default='self')
+            ]
+LIST_DOMAIN_INPUTS = [
+                InputArgument(name='domains', 
+                            description='Comma-separated list of domains to query.', 
+                            required=True),
+                InputArgument(name='fetch_risk_score', 
+                            description='Whether to fetch risk scores for the domains.', 
+                            required=False),
+                InputArgument(name='fetch_whois_info', 
+                            description='Whether to fetch WHOIS information for the domains.', 
+                            required=False)
             ]
 
 
@@ -194,6 +208,21 @@ DOMAIN_INFRATAGS_OUTPUTS = [
                                     output_type=str, 
                                     description='The match string associated with the domains in the tag cluster with score 100.')
                     ]
+LIST_DOMAIN_OUTPUTS = [
+                        OutputArgument(name='domain', output_type=str, description='The domain name queried.'),
+                        OutputArgument(name='last_seen', output_type=int, description='The last seen date of the domain in YYYYMMDD format.'),
+                        OutputArgument(name='query', output_type=str, description='The domain name used for the query.'),
+                        OutputArgument(name='whois_age', output_type=int, description='The age of the domain in days based on WHOIS creation date.'),
+                        OutputArgument(name='first_seen', output_type=int, description='The first seen date of the domain in YYYYMMDD format.'),
+                        OutputArgument(name='is_new', output_type=bool, description='Indicates whether the domain is newly observed.'),
+                        OutputArgument(name='zone', output_type=str, description='The top-level domain (TLD) or zone of the queried domain.'),
+                        OutputArgument(name='registrar', output_type=str, description='The registrar responsible for the domain registration.'),
+                        OutputArgument(name='age_score', output_type=int, description='A risk score based on the domain\'s age.'),
+                        OutputArgument(name='whois_created_date', output_type=str, description='The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format.'),
+                        OutputArgument(name='is_new_score', output_type=int, description='A risk score indicating how new the domain is.'),
+                        OutputArgument(name='age', output_type=int, description='The age of the domain in days.')
+                    ]
+
 
 
 
@@ -541,6 +570,103 @@ class Client(BaseClient):
         return response
 
 
+    def fetch_bulk_domain_info(self, domains: List[str]) -> Dict[str, Any]:
+        """Fetch basic domain information for a list of domains."""
+        response = self._http_request(
+            method='POST',
+            url_suffix=DOMAIN_INFO,
+            data={'domains': domains}
+        )
+        domain_info_list = response.get('response', {}).get('domaininfo', [])
+        return {item['domain']: item for item in domain_info_list}
+
+
+    def fetch_risk_scores(self, domains: List[str]) -> Dict[str, Any]:
+        """Fetch risk scores for a list of domains."""
+        response = self._http_request(
+            method='POST',
+            url_suffix=RISK_SCORE,
+            data={'domains': domains}
+        )
+        risk_score_list = response.get('response', [])
+        return {item['domain']: item for item in risk_score_list}
+
+
+    def fetch_whois_info(self, domain: str) -> Dict[str, Any]:
+        """Fetch WHOIS information for a single domain."""
+        try:
+            response = self._http_request(
+                method='GET',
+                url_suffix=f'{WHOIS}/{domain}'
+            )
+            whois_data = response.get('response', {}).get('whois', [{}])[0]
+
+            return {
+                'Registrant Name': whois_data.get('name', 'N/A'),
+                'Registrant Organization': whois_data.get('org', 'N/A'),
+                'Registrant Address': ', '.join(whois_data.get('address', [])) if isinstance(whois_data.get('address'), list) else whois_data.get('address', 'N/A'),
+                'Registrant City': whois_data.get('city', 'N/A'),
+                'Registrant State': whois_data.get('state', 'N/A'),
+                'Registrant Country': whois_data.get('country', 'N/A'),
+                'Registrant Zipcode': whois_data.get('zipcode', 'N/A'),
+                'Creation Date': whois_data.get('created', 'N/A'),
+                'Updated Date': whois_data.get('updated', 'N/A'),
+                'Expiration Date': whois_data.get('expires', 'N/A'),
+                'Registrar': whois_data.get('registrar', 'N/A'),
+                'WHOIS Server': whois_data.get('whois_server', 'N/A'),
+                'Nameservers': ', '.join(whois_data.get('nameservers', [])),
+                'Emails': ', '.join(whois_data.get('emails', []))
+            }
+        except Exception as e:
+            return {'error': str(e)}
+
+
+    def list_domain_information(self, domains: List[str], fetch_risk_score: Optional[bool] = False, fetch_whois_info: Optional[bool] = False) -> Dict[str, Any]:
+        """
+        Retrieve domain information along with optional risk scores and WHOIS data.
+
+        Args:
+            http_request (function): HTTP request function for making API calls.
+            domains (List[str]): List of domains to get information for.
+            fetch_risk_score (bool, optional): Whether to fetch risk scores. Defaults to False.
+            fetch_whois_info (bool, optional): Whether to fetch WHOIS information. Defaults to False.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing domain information with optional risk scores and WHOIS data.
+
+        Raises:
+            ValueError: If more than 100 domains are provided.
+        """
+        if len(domains) > 100:
+            raise ValueError("Maximum of 100 domains can be submitted in a single request.")
+
+        domain_info_dict = self.fetch_bulk_domain_info(domains)
+
+        risk_score_dict = self.fetch_risk_scores(domains) if fetch_risk_score else {}
+
+        whois_info_dict = {domain: self.fetch_whois_info(domain) for domain in domains} if fetch_whois_info else {}
+
+        results = []
+        for domain in domains:
+            domain_info = {
+                'domain': domain,
+                **domain_info_dict.get(domain, {}),
+            }
+
+            if fetch_risk_score:
+                risk_data = risk_score_dict.get(domain, {})
+                domain_info.update({
+                    'risk_score': risk_data.get('sp_risk_score', 'N/A'),
+                    'risk_score_explanation': risk_data.get('sp_risk_score_explain', 'N/A')
+                })
+
+            if fetch_whois_info:
+                domain_info['whois_info'] = whois_info_dict.get(domain, {})
+
+            results.append(domain_info)
+
+        return {'domains': results}
+
 
 ''' HELPER FUNCTIONS '''
 def filter_none_values(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -697,7 +823,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
 @metadata_collector.command(
     command_name="silentpush-get-subnet-reputation",
     inputs_list=SUBNET_REPUTATION_INPUTS,
-    outputs_prefix="SilentPush.NameserverReputation",
+    outputs_prefix="SilentPush.SubnetReputation",
     outputs_list=SUBNET_REPUTATION_OUTPUTS,
     description="This command retrieves the reputation history for a specific subnet."
 )
@@ -796,7 +922,7 @@ def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
     inputs_list=DENSITY_LOOKUP_INPUTS,
     outputs_prefix="SilentPush.DensityLookup",
     outputs_list=DENSITY_LOOKUP_OUTPUTS,
-    description="This command query granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information."
+    description="This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information."
 )
 def density_lookup_command(client: Client, args: dict) -> CommandResults:
     """
@@ -977,6 +1103,104 @@ def list_domain_infratags_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+@metadata_collector.command(
+    command_name="silentpush-list-domain-information",
+    inputs_list=LIST_DOMAIN_INPUTS,
+    outputs_prefix="SilentPush.Domain",
+    outputs_list=LIST_DOMAIN_OUTPUTS,
+    description="This command get infratags for multiple domains with optional clustering."
+)
+def list_domain_information_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Handle the list-domain-information command execution.
+
+    Args:
+        client (Client): The client object for making API calls
+        args (Dict[str, Any]): Command arguments
+
+    Returns:
+        CommandResults: Results for XSOAR
+    """
+    domains, fetch_risk_score, fetch_whois_info = parse_arguments(args)
+    response = client.list_domain_information(domains, fetch_risk_score, fetch_whois_info)
+    markdown = format_domain_information(response, fetch_risk_score, fetch_whois_info)
+    
+    return CommandResults(
+        outputs_prefix='SilentPush.Domain',
+        outputs_key_field='domain',
+        outputs=response.get('domains', []),
+        readable_output=markdown,
+        raw_response=response
+    )
+
+def parse_arguments(args: Dict[str, Any]) -> Tuple[List[str], bool, bool]:
+    """
+    Parse and validate command arguments.
+
+    Args:
+        args (Dict[str, Any]): Command arguments
+
+    Returns:
+        Tuple[List[str], bool, bool]: Parsed domains, risk score flag, and WHOIS flag
+    """
+    domains_arg = args.get('domains', '')
+    if not domains_arg:
+        raise DemistoException('No domains provided')
+    
+    domains = [domain.strip() for domain in domains_arg.split(',') if domain.strip()]
+    fetch_risk_score = argToBoolean(args.get('fetch_risk_score', False))
+    fetch_whois_info = argToBoolean(args.get('fetch_whois_info', False))
+    
+    return domains, fetch_risk_score, fetch_whois_info
+
+def format_domain_information(response: Dict[str, Any], fetch_risk_score: bool, fetch_whois_info: bool) -> str:
+    """
+    Format the response data into markdown format.
+
+    Args:
+        response (Dict[str, Any]): API response data
+        fetch_risk_score (bool): Whether to include risk score data
+        fetch_whois_info (bool): Whether to include WHOIS data
+
+    Returns:
+        str: Markdown-formatted response
+    """
+    markdown = ['# Domain Information Results\n']
+    
+    for domain_data in response.get('domains', []):
+        domain = domain_data.get('domain', 'N/A')
+        markdown.append(f'## Domain: {domain}')
+        
+        basic_info = {
+            'Created Date': domain_data.get('whois_created_date', 'N/A'),
+            'Updated Date': domain_data.get('whois_updated_date', 'N/A'),
+            'Expiration Date': domain_data.get('whois_expiration_date', 'N/A'),
+            'Registrar': domain_data.get('registrar', 'N/A'),
+            'Status': domain_data.get('status', 'N/A'),
+            'Name Servers': domain_data.get('nameservers', 'N/A')
+        }
+        markdown.append(tableToMarkdown('Domain Information', [basic_info]))
+
+        if fetch_risk_score:
+            risk_info = {
+                'Risk Score': domain_data.get('risk_score', 'N/A'),
+                'Risk Score Explanation': domain_data.get('risk_score_explanation', 'N/A')
+            }
+            markdown.append(tableToMarkdown('Risk Assessment', [risk_info]))
+
+        if fetch_whois_info:
+            whois_info = domain_data.get('whois_info', {})
+            if whois_info and isinstance(whois_info, dict):
+                if 'error' in whois_info:
+                    markdown.append(f'WHOIS Error: {whois_info["error"]}')
+                else:
+                    markdown.append(tableToMarkdown('WHOIS Information', [whois_info]))
+        
+        markdown.append('\n---\n')
+    
+    return '\n'.join(markdown)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1025,6 +1249,9 @@ def main() -> None:
         
         elif demisto.command() == 'silentpush-list-domain-infratags':
             return_results(list_domain_infratags_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-list-domain-information':
+            return_results(list_domain_information_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

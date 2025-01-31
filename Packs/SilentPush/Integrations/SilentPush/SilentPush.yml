@@ -26,7 +26,7 @@ configuration:
 script:
   commands:
   - deprecated: false
-    description: This command query granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.
+    description: This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.
     name: silentpush-density-lookup
     arguments:
     - name: qtype
@@ -60,7 +60,7 @@ script:
     arguments:
     - name: domain
       isArray: false
-      description: Domain name to search ASNs for. Retrieves ASNs associated with A records for the specified domain and its subdomains in the last 30 days.
+      description: Domain name to search ASNs for. Retrieves ASNs associated with a records for the specified domain and its subdomains in the last 30 days.
       required: true
       secret: false
       default: false
@@ -167,23 +167,82 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.NameserverReputation.date
+    - contextPath: SilentPush.SubnetReputation.date
       description: The date of the subnet reputation record.
       type: Number
-    - contextPath: SilentPush.NameserverReputation.subnet
+    - contextPath: SilentPush.SubnetReputation.subnet
       description: The subnet associated with the reputation record.
       type: String
-    - contextPath: SilentPush.NameserverReputation.subnet_reputation
+    - contextPath: SilentPush.SubnetReputation.subnet_reputation
       description: The reputation score of the subnet.
       type: Number
-    - contextPath: SilentPush.NameserverReputation.ips_in_subnet
+    - contextPath: SilentPush.SubnetReputation.ips_in_subnet
       description: Total number of IPs in the subnet.
       type: Number
-    - contextPath: SilentPush.NameserverReputation.ips_num_active
+    - contextPath: SilentPush.SubnetReputation.ips_num_active
       description: Number of active IPs in the subnet.
       type: Number
-    - contextPath: SilentPush.NameserverReputation.ips_num_listed
+    - contextPath: SilentPush.SubnetReputation.ips_num_listed
       description: Number of listed IPs in the subnet.
+      type: Number
+  - deprecated: false
+    description: This command get infratags for multiple domains with optional clustering.
+    name: silentpush-list-domain-information
+    arguments:
+    - name: domains
+      isArray: false
+      description: Comma-separated list of domains to query.
+      required: true
+      secret: false
+      default: false
+    - name: fetch_risk_score
+      isArray: false
+      description: Whether to fetch risk scores for the domains.
+      required: false
+      secret: false
+      default: false
+    - name: fetch_whois_info
+      isArray: false
+      description: Whether to fetch WHOIS information for the domains.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.Domain.domain
+      description: The domain name queried.
+      type: String
+    - contextPath: SilentPush.Domain.last_seen
+      description: The last seen date of the domain in YYYYMMDD format.
+      type: Number
+    - contextPath: SilentPush.Domain.query
+      description: The domain name used for the query.
+      type: String
+    - contextPath: SilentPush.Domain.whois_age
+      description: The age of the domain in days based on WHOIS creation date.
+      type: Number
+    - contextPath: SilentPush.Domain.first_seen
+      description: The first seen date of the domain in YYYYMMDD format.
+      type: Number
+    - contextPath: SilentPush.Domain.is_new
+      description: Indicates whether the domain is newly observed.
+      type: Boolean
+    - contextPath: SilentPush.Domain.zone
+      description: The top-level domain (TLD) or zone of the queried domain.
+      type: String
+    - contextPath: SilentPush.Domain.registrar
+      description: The registrar responsible for the domain registration.
+      type: String
+    - contextPath: SilentPush.Domain.age_score
+      description: A risk score based on the domain's age.
+      type: Number
+    - contextPath: SilentPush.Domain.whois_created_date
+      description: The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format.
+      type: String
+    - contextPath: SilentPush.Domain.is_new_score
+      description: A risk score indicating how new the domain is.
+      type: Number
+    - contextPath: SilentPush.Domain.age
+      description: The age of the domain in days.
       type: Number
   - deprecated: false
     description: This command get infratags for multiple domains with optional clustering.
