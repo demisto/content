@@ -94,6 +94,18 @@ script:
         by default it's the incident attachment (incident.attachment) field.
     description: Delete the attachment from the incident and from the XSOAR server.
     execution: true
+  - name: file-management-delete-custom-attachment
+    arguments:
+    - name: filePath
+      required: true
+      description: File path of the file.
+    - name: incidentID
+      description: ID of the incident to delete attachment.
+    - name: fieldName
+      required: true
+      description: Name of the custom field (type attachment) you want to remove the attachment.
+    description: Delete the custom field attachment from the incident and from the
+      XSOAR server.
   - name: file-management-rename-file
     arguments:
     - name: entryID
