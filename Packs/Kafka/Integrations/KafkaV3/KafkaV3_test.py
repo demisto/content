@@ -1,7 +1,7 @@
 from CommonServerPython import DemistoException, demisto
 
-from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions, \
-    consume_message, produce_message, fetch_incidents
+from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, KSchemaRegistryClient, print_topics, \
+    fetch_partitions, consume_message, produce_message, fetch_incidents
 from confluent_kafka.admin import ClusterMetadata, TopicMetadata, PartitionMetadata
 from confluent_kafka import KafkaError, TopicPartition, TIMESTAMP_NOT_AVAILABLE, TIMESTAMP_CREATE_TIME
 
@@ -24,8 +24,10 @@ def test_passing_simple_test_module(mocker):
     """
     mocker.patch.object(KafkaV3, 'KConsumer')
     mocker.patch.object(KafkaV3, 'KProducer')
+    mocker.patch.object(KafkaV3, 'KSchemaRegistryClient')
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata())
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
+    mocker.patch.object(KSchemaRegistryClient, 'get_subjects', return_value=ClusterMetadata())
     assert command_test_module(KAFKA, {'isFetch': False}) == 'ok'
 
 
@@ -40,12 +42,15 @@ def test_failing_simple_test_module(mocker):
     """
     mocker.patch.object(KConsumer, '__init__', return_value=None)
     mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
 
     def raise_kafka_error():
         raise Exception('Some connection error')
 
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
+    mocker.patch.object(KSchemaRegistryClient, 'get_subjects', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
+
     with pytest.raises(DemistoException) as exception_info:
         command_test_module(KAFKA, {'isFetch': False})
     assert 'Error connecting to kafka' in str(exception_info.value)
@@ -92,9 +97,12 @@ def test_passing_test_module_with_fetch(mocker, demisto_params, cluster_tree):
     """
     mocker.patch.object(KConsumer, '__init__', return_value=None)
     mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KafkaV3, '__init__', return_value=None)
+
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
+    mocker.patch.object(KSchemaRegistryClient, 'get_subjects', return_value=cluster_metadata)
     assert command_test_module(KAFKA, demisto_params) == 'ok'
 
 
