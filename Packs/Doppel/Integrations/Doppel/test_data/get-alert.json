@@ -1,0 +1,35 @@
+{
+    "id": "TST-31",
+    "entity": "http://dummyrul.com",
+    "brand": "test_brand",
+    "queue_state": "doppel_review",
+    "entity_state": "active",
+    "severity": "medium",
+    "product": "domains",
+    "platform": "domains",
+    "source": "Analyst Upload",
+    "notes": null,
+    "created_at": "2024-11-27T06:51:50.357664",
+    "doppel_link": "https://app.doppel.com/alerts/TST-31222",
+    "entity_content": {
+      "root_domain": {
+        "domain": "dummyrul.com",
+        "registrar": null,
+        "ip_address": null,
+        "country_code": null,
+        "hosting_provider": null,
+        "contact_email": null
+      }
+    },
+    "audit_logs": [
+      {
+        "timestamp": "2024-11-27T06:51:50.357664",
+        "type": "alert_create",
+        "value": "needs_review",
+        "changed_by": "currentuser@doppel.com",
+        "metadata": {}
+      }
+    ],
+    "tags": [],
+    "uploaded_by": "currentuser@doppel.com"
+  }
