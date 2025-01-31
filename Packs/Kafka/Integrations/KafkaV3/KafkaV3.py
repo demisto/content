@@ -175,20 +175,17 @@ class KafkaCommunicator:
     def get_kafka_consumer(self) -> KConsumer:
         if self.kafka_logger:
             return KConsumer(self.conf_consumer, logger=self.kafka_logger)
-        else:
-            return KConsumer(self.conf_consumer)
+        return KConsumer(self.conf_consumer)
 
     def get_kafka_producer(self) -> KProducer:
         if self.kafka_logger:
             return KProducer(self.conf_producer, logger=self.kafka_logger)
-        else:
-            return KProducer(self.conf_producer)
+        return KProducer(self.conf_producer)
 
     def get_kafka_schema_registry(self) -> Optional[KSchemaRegistryClient]:
         if self.conf_schema_registry:
             return KSchemaRegistryClient(self.conf_schema_registry)
-        else:
-            return None
+        return None
 
     def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None):
         """Update consumer configurations for fetching messages
