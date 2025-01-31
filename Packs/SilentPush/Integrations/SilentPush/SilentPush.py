@@ -27,6 +27,7 @@ DOMAIN_INFRATAGS = "explore/bulk/domain/infratags"
 DOMAIN_INFO = "explore/bulk/domaininfo"
 RISK_SCORE = "explore/bulk/domain/riskscore"
 WHOIS = "explore/domain/whois"
+DOMAIN_CERTIFICATE = "explore/domain/certificates"
 
 ''' COMMANDS INPUTS '''
 
@@ -128,6 +129,20 @@ LIST_DOMAIN_INPUTS = [
                             description='Whether to fetch WHOIS information for the domains.', 
                             required=False)
             ]
+DOMAIN_CERTIFICATE_INPUTS = [
+                InputArgument(name='domain',
+                            description='The domain to query certificates for.',
+                            required=True),
+                InputArgument(name='domain_regex',
+                            description='Regular expression to match domains.'),
+                InputArgument(name='certificate_issuer',
+                            description='Filter by certificate issuer.'),
+                InputArgument(name='date_min',
+                            description='Filter certificates issued on or after this date.'),
+                InputArgument(name='date_max',
+                            description='Filter certificates issued on or before this date.')
+            ]
+
 
 
 
@@ -138,7 +153,6 @@ JOB_STATUS_OUTPUTS = [
                         OutputArgument(name='job_id', output_type=str, description='Unique identifier for the job.'),
                         OutputArgument(name='status', output_type=str, description='Current status of the job.')
                     ]
-
 NAMESERVER_REPUTATION_OUTPUTS = [
                         OutputArgument(name='date', output_type=int, description='Date of the reputation history entry (in YYYYMMDD format).'),
                         OutputArgument(name='ns_server', output_type=str, description='Name of the nameserver associated with the reputation history entry.'),
@@ -221,6 +235,28 @@ LIST_DOMAIN_OUTPUTS = [
                         OutputArgument(name='whois_created_date', output_type=str, description='The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format.'),
                         OutputArgument(name='is_new_score', output_type=int, description='A risk score indicating how new the domain is.'),
                         OutputArgument(name='age', output_type=int, description='The age of the domain in days.')
+                    ]
+DOMAIN_CERTIFICATE_OUTPUTS = [
+                        OutputArgument(name='cert_index', output_type=int, description='Index of the certificate.'),
+                        OutputArgument(name='chain', output_type=list, description='Certificate chain.'),
+                        OutputArgument(name='date', output_type=int, description='Certificate issue date.'),
+                        OutputArgument(name='domain', output_type=str, description='Primary domain of the certificate.'),
+                        OutputArgument(name='domains', output_type=list, description='List of domains covered by the certificate.'),
+                        OutputArgument(name='fingerprint', output_type=str, description='SHA-1 fingerprint of the certificate.'),
+                        OutputArgument(name='fingerprint_md5', output_type=str, description='MD5 fingerprint of the certificate.'),
+                        OutputArgument(name='fingerprint_sha1', output_type=str, description='SHA-1 fingerprint of the certificate.'),
+                        OutputArgument(name='fingerprint_sha256', output_type=str, description='SHA-256 fingerprint of the certificate.'),
+                        OutputArgument(name='host', output_type=str, description='Host associated with the certificate.'),
+                        OutputArgument(name='issuer', output_type=str, description='Issuer of the certificate.'),
+                        OutputArgument(name='not_after', output_type=str, description='Expiration date of the certificate.'),
+                        OutputArgument(name='not_before', output_type=str, description='Start date of the certificate validity.'),
+                        OutputArgument(name='serial_dec', output_type=str, description='Decimal representation of the serial number.'),
+                        OutputArgument(name='serial_hex', output_type=str, description='Hexadecimal representation of the serial number.'),
+                        OutputArgument(name='serial_number', output_type=str, description='Serial number of the certificate.'),
+                        OutputArgument(name='source_name', output_type=str, description='Source log name of the certificate.'),
+                        OutputArgument(name='source_url', output_type=str, description='URL of the certificate log source.'),
+                        OutputArgument(name='subject', output_type=str, description='Subject details of the certificate.'),
+                        OutputArgument(name='wildcard', output_type=int, description='Indicates if the certificate is a wildcard certificate.')
                     ]
 
 
@@ -569,7 +605,6 @@ class Client(BaseClient):
 
         return response
 
-
     def fetch_bulk_domain_info(self, domains: List[str]) -> Dict[str, Any]:
         """Fetch basic domain information for a list of domains."""
         response = self._http_request(
@@ -580,7 +615,6 @@ class Client(BaseClient):
         domain_info_list = response.get('response', {}).get('domaininfo', [])
         return {item['domain']: item for item in domain_info_list}
 
-
     def fetch_risk_scores(self, domains: List[str]) -> Dict[str, Any]:
         """Fetch risk scores for a list of domains."""
         response = self._http_request(
@@ -590,7 +624,6 @@ class Client(BaseClient):
         )
         risk_score_list = response.get('response', [])
         return {item['domain']: item for item in risk_score_list}
-
 
     def fetch_whois_info(self, domain: str) -> Dict[str, Any]:
         """Fetch WHOIS information for a single domain."""
@@ -619,7 +652,6 @@ class Client(BaseClient):
             }
         except Exception as e:
             return {'error': str(e)}
-
 
     def list_domain_information(self, domains: List[str], fetch_risk_score: Optional[bool] = False, fetch_whois_info: Optional[bool] = False) -> Dict[str, Any]:
         """
@@ -666,6 +698,43 @@ class Client(BaseClient):
             results.append(domain_info)
 
         return {'domains': results}
+
+    def get_domain_certificates(self, domain: str, **kwargs) -> Dict[str, Any]:
+        """
+        Retrieve SSL certificate details associated with a given domain.
+
+        Args:
+            domain (str): The domain for which SSL certificate details are retrieved.
+            **kwargs: Optional query parameters for filtering the results.
+
+        Returns:
+            Dict[str, Any]: SSL certificate details for the specified domain.
+        """
+        url_suffix = f"{DOMAIN_CERTIFICATE}/{domain}"
+        params = filter_none_values(kwargs)
+        return self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=params
+        )
+    def parse_subject(self, subject: Any) -> Dict[str, Any]:
+        """
+        Parse the subject of a certificate or domain record.
+
+        Args:
+            subject (Any): The subject to parse, which can be a dictionary, string, or other type.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the subject,
+            with a fallback to {'CN': subject} or {'CN': 'N/A'} if parsing fails.
+        """
+        if isinstance(subject, dict):
+            return subject
+        if isinstance(subject, str):
+            parsed_subject = json.loads(subject.replace("'", '"')) if subject else {'CN': 'N/A'}
+            return parsed_subject if isinstance(parsed_subject, dict) else {'CN': subject}
+        return {'CN': 'N/A'}
+
 
 
 ''' HELPER FUNCTIONS '''
@@ -1201,6 +1270,98 @@ def format_domain_information(response: Dict[str, Any], fetch_risk_score: bool, 
     return '\n'.join(markdown)
 
 
+@metadata_collector.command(
+    command_name="silentpush-get-domain-certificates",
+    inputs_list=LIST_DOMAIN_INPUTS,
+    outputs_prefix="SilentPush.Domain",
+    outputs_list=LIST_DOMAIN_OUTPUTS,
+    description="This command get infratags for multiple domains with optional clustering."
+)
+def get_domain_certificates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves SSL/TLS certificates for a given domain.
+
+    Args:
+        client (Client): The API client to interact with SilentPush.
+        args (Dict[str, Any]): Command arguments including:
+            - domain (str, required): The domain name to search for certificates.
+            - domain_regex (str, optional): RE2 regex pattern to match domains.
+            - certificate_issuer (str, optional): Filter certificates by issuer.
+            - date_min (str, optional): Minimum issuance date (YYYY-MM-DD).
+            - date_max (str, optional): Maximum issuance date (YYYY-MM-DD).
+            - prefer (str, optional): Preference parameter for API filtering.
+            - max_wait (int, optional): Maximum time to wait for results.
+            - with_metadata (bool, optional): Whether to include metadata.
+            - skip (int, optional): Number of records to skip.
+            - limit (int, optional): Maximum number of results to return.
+
+    Returns:
+        CommandResults: The results containing the retrieved certificates.
+    """
+    domain = args.get('domain')
+    if not domain:
+        raise DemistoException("The 'domain' parameter is required.")
+
+    params = filter_none_values({
+        'domain_regex': args.get('domain_regex'),
+        'certificate_issuer': args.get('certificate_issuer'),
+        'date_min': args.get('date_min'),
+        'date_max': args.get('date_max'),
+        'prefer': args.get('prefer'),
+        'max_wait': arg_to_number(args.get('max_wait')),
+        'with_metadata': argToBoolean(args.get('with_metadata')) if 'with_metadata' in args else None,
+        'skip': arg_to_number(args.get('skip')),
+        'limit': arg_to_number(args.get('limit'))
+    })
+
+    raw_response = client.get_domain_certificates(domain, **params)
+    certificates = raw_response.get('response', {}).get('domain_certificates', [])
+    metadata = raw_response.get('response', {}).get('metadata', {})
+
+    if not certificates:
+        return CommandResults(
+            readable_output=f"No certificates found for domain: {domain}",
+            outputs_prefix='SilentPush.Certificate',
+            outputs_key_field='domain',
+            outputs={'domain': domain, 'certificates': [], 'metadata': metadata},
+            raw_response=raw_response
+        )
+
+    markdown = [f"# SSL/TLS Certificate Information for Domain: {domain}\n"]
+    for cert in certificates:
+        cert_info = format_certificate_info(cert, client)
+        markdown.append(tableToMarkdown('Certificate Information', [cert_info]))
+
+    return CommandResults(
+        outputs_prefix='SilentPush.Certificate',
+        outputs_key_field='domain',
+        outputs={'domain': domain, 'certificates': certificates, 'metadata': metadata},
+        readable_output='\n'.join(markdown),
+        raw_response=raw_response
+    )
+
+def format_certificate_info(cert: Dict[str, Any], client: Client) -> Dict[str, str]:
+    """
+    Formats certificate information into a structured dictionary.
+
+    Args:
+        cert (Dict[str, Any]): Certificate details from the API response.
+        client (Client): API client used for parsing the subject.
+
+    Returns:
+        Dict[str, str]: Formatted certificate details.
+    """
+    subject = client.parse_subject(cert.get('subject', {}))
+    return {
+        'Issuer': cert.get('issuer', 'N/A'),
+        'Issued On': cert.get('not_before', 'N/A'),
+        'Expires On': cert.get('not_after', 'N/A'),
+        'Common Name': subject.get('CN', 'N/A'),
+        'Subject Alternative Names': ', '.join(cert.get('domains', [])),
+        'Serial Number': cert.get('serial_number', 'N/A'),
+        'Fingerprint SHA256': cert.get('fingerprint_sha256', 'N/A'),
+    }
+
 ''' MAIN FUNCTION '''
 
 
@@ -1253,6 +1414,9 @@ def main() -> None:
         elif demisto.command() == 'silentpush-list-domain-information':
             return_results(list_domain_information_command(client, demisto.args()))
 
+        elif demisto.command() == 'silentpush-get-domain-certificates':
+            return_results(get_domain_certificates_command(client, demisto.args()))
+    
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

@@ -72,6 +72,65 @@ script:
       description: Dictionary of Autonomous System Numbers (ASNs) associated with the domain.
       type: Unknown
   - deprecated: false
+    description: This command get infratags for multiple domains with optional clustering.
+    name: silentpush-get-domain-certificates
+    arguments:
+    - name: domains
+      isArray: false
+      description: Comma-separated list of domains to query.
+      required: true
+      secret: false
+      default: false
+    - name: fetch_risk_score
+      isArray: false
+      description: Whether to fetch risk scores for the domains.
+      required: false
+      secret: false
+      default: false
+    - name: fetch_whois_info
+      isArray: false
+      description: Whether to fetch WHOIS information for the domains.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.Domain.domain
+      description: The domain name queried.
+      type: String
+    - contextPath: SilentPush.Domain.last_seen
+      description: The last seen date of the domain in YYYYMMDD format.
+      type: Number
+    - contextPath: SilentPush.Domain.query
+      description: The domain name used for the query.
+      type: String
+    - contextPath: SilentPush.Domain.whois_age
+      description: The age of the domain in days based on WHOIS creation date.
+      type: Number
+    - contextPath: SilentPush.Domain.first_seen
+      description: The first seen date of the domain in YYYYMMDD format.
+      type: Number
+    - contextPath: SilentPush.Domain.is_new
+      description: Indicates whether the domain is newly observed.
+      type: Boolean
+    - contextPath: SilentPush.Domain.zone
+      description: The top-level domain (TLD) or zone of the queried domain.
+      type: String
+    - contextPath: SilentPush.Domain.registrar
+      description: The registrar responsible for the domain registration.
+      type: String
+    - contextPath: SilentPush.Domain.age_score
+      description: A risk score based on the domain's age.
+      type: Number
+    - contextPath: SilentPush.Domain.whois_created_date
+      description: The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format.
+      type: String
+    - contextPath: SilentPush.Domain.is_new_score
+      description: A risk score indicating how new the domain is.
+      type: Number
+    - contextPath: SilentPush.Domain.age
+      description: The age of the domain in days.
+      type: Number
+  - deprecated: false
     description: This command retrieve status of running job or results from completed job.
     name: silentpush-get-job-status
     arguments:
