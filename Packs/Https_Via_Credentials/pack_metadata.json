@@ -1,0 +1,21 @@
+{
+    "name": "Https_via_Credentials",
+    "description": "This is meant to utilize the credentials feature for https requests. More or less using the HttpV2 base script with this feature.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "WillRuzicka",
+    "url": "",
+    "email": "",
+    "created": "2025-01-31T21:25:45Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "WillRuzicka"
+    ]
+}
