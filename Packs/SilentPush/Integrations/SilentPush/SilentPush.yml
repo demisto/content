@@ -159,127 +159,127 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.Certificate.ip_is_dsl_dynamic
+    - contextPath: SilentPush.Enrichment.ip_is_dsl_dynamic
       description: Indicates if the IP is DSL dynamic.
       type: Boolean
-    - contextPath: SilentPush.Certificate.ip_has_expired_certificate
+    - contextPath: SilentPush.Enrichment.ip_has_expired_certificate
       description: Indicates if the IP has an expired certificate.
       type: Boolean
-    - contextPath: SilentPush.Certificate.subnet_allocation_age
+    - contextPath: SilentPush.Enrichment.subnet_allocation_age
       description: Age of the subnet allocation.
       type: String
-    - contextPath: SilentPush.Certificate.asn_rank_score
+    - contextPath: SilentPush.Enrichment.asn_rank_score
       description: Score of the ASN rank.
       type: Number
-    - contextPath: SilentPush.Certificate.asn_allocation_age
+    - contextPath: SilentPush.Enrichment.asn_allocation_age
       description: Age of the ASN allocation.
       type: Number
-    - contextPath: SilentPush.Certificate.sp_risk_score
+    - contextPath: SilentPush.Enrichment.sp_risk_score
       description: Risk score for the service provider.
       type: Number
-    - contextPath: SilentPush.Certificate.ip_reputation_score
+    - contextPath: SilentPush.Enrichment.ip_reputation_score
       description: Reputation score of the IP.
       type: Number
-    - contextPath: SilentPush.Certificate.ip
+    - contextPath: SilentPush.Enrichment.ip
       description: The IP address.
       type: String
-    - contextPath: SilentPush.Certificate.density
+    - contextPath: SilentPush.Enrichment.density
       description: Density value for the IP address.
       type: Number
-    - contextPath: SilentPush.Certificate.benign_info.actor
+    - contextPath: SilentPush.Enrichment.benign_info.actor
       description: Actor associated with the benign information.
       type: String
-    - contextPath: SilentPush.Certificate.benign_info.known_benign
+    - contextPath: SilentPush.Enrichment.benign_info.known_benign
       description: Indicates if the resource is known to be benign.
       type: Boolean
-    - contextPath: SilentPush.Certificate.benign_info.tags
+    - contextPath: SilentPush.Enrichment.benign_info.tags
       description: Tags associated with the benign information.
       type: Unknown
-    - contextPath: SilentPush.Certificate.asn_allocation_date
+    - contextPath: SilentPush.Enrichment.asn_allocation_date
       description: Date of ASN allocation in YYYYMMDD format.
       type: Number
-    - contextPath: SilentPush.Certificate.subnet_allocation_date
+    - contextPath: SilentPush.Enrichment.subnet_allocation_date
       description: Date of subnet allocation or UNKNOWN if unavailable.
       type: String
-    - contextPath: SilentPush.Certificate.asn_takedown_reputation
+    - contextPath: SilentPush.Enrichment.asn_takedown_reputation
       description: Reputation score for ASN takedown.
       type: Number
-    - contextPath: SilentPush.Certificate.ip_location.continent_code
+    - contextPath: SilentPush.Enrichment.ip_location.continent_code
       description: Continent code where the IP is located.
       type: String
-    - contextPath: SilentPush.Certificate.ip_location.continent_name
+    - contextPath: SilentPush.Enrichment.ip_location.continent_name
       description: Continent name where the IP is located.
       type: String
-    - contextPath: SilentPush.Certificate.ip_location.country_code
+    - contextPath: SilentPush.Enrichment.ip_location.country_code
       description: Country code of the IP location.
       type: String
-    - contextPath: SilentPush.Certificate.ip_location.country_is_in_european_union
+    - contextPath: SilentPush.Enrichment.ip_location.country_is_in_european_union
       description: Indicates if the country is in the European Union.
       type: Boolean
-    - contextPath: SilentPush.Certificate.ip_location.country_name
+    - contextPath: SilentPush.Enrichment.ip_location.country_name
       description: Country name where the IP is located.
       type: String
-    - contextPath: SilentPush.Certificate.date
+    - contextPath: SilentPush.Enrichment.date
       description: Date of the record in YYYYMMDD format.
       type: Number
-    - contextPath: SilentPush.Certificate.subnet_reputation_score
+    - contextPath: SilentPush.Enrichment.subnet_reputation_score
       description: Reputation score of the subnet.
       type: Number
-    - contextPath: SilentPush.Certificate.asn_rank
+    - contextPath: SilentPush.Enrichment.asn_rank
       description: Rank of the ASN.
       type: Number
-    - contextPath: SilentPush.Certificate.asn_reputation_score
+    - contextPath: SilentPush.Enrichment.asn_reputation_score
       description: Reputation score of the ASN.
       type: Number
-    - contextPath: SilentPush.Certificate.ip_is_ipfs_node
+    - contextPath: SilentPush.Enrichment.ip_is_ipfs_node
       description: Indicates if the IP is an IPFS node.
       type: Boolean
-    - contextPath: SilentPush.Certificate.value
+    - contextPath: SilentPush.Enrichment.value
       description: The value associated with the IP or subnet.
       type: String
-    - contextPath: SilentPush.Certificate.ip_reputation
+    - contextPath: SilentPush.Enrichment.ip_reputation
       description: Reputation score of the IP address.
       type: Number
-    - contextPath: SilentPush.Certificate.ip_is_dsl_dynamic_score
+    - contextPath: SilentPush.Enrichment.ip_is_dsl_dynamic_score
       description: Score indicating if the IP is DSL dynamic.
       type: Number
-    - contextPath: SilentPush.Certificate.ip_has_open_directory
+    - contextPath: SilentPush.Enrichment.ip_has_open_directory
       description: Indicates if the IP has an open directory.
       type: Boolean
-    - contextPath: SilentPush.Certificate.ip_ptr
+    - contextPath: SilentPush.Enrichment.ip_ptr
       description: Pointer record (PTR) of the IP address.
       type: String
-    - contextPath: SilentPush.Certificate.listing_score
+    - contextPath: SilentPush.Enrichment.listing_score
       description: Listing score of the IP address or resource.
       type: Number
-    - contextPath: SilentPush.Certificate.malscore
+    - contextPath: SilentPush.Enrichment.malscore
       description: Malware score for the IP address.
       type: Number
-    - contextPath: SilentPush.Certificate.sinkhole_info.known_sinkhole_ip
+    - contextPath: SilentPush.Enrichment.sinkhole_info.known_sinkhole_ip
       description: Indicates if the IP is associated with a known sinkhole.
       type: Boolean
-    - contextPath: SilentPush.Certificate.sinkhole_info.tags
+    - contextPath: SilentPush.Enrichment.sinkhole_info.tags
       description: Tags associated with the sinkhole information.
       type: Unknown
-    - contextPath: SilentPush.Certificate.subnet_reputation
+    - contextPath: SilentPush.Enrichment.subnet_reputation
       description: Reputation score of the subnet.
       type: Number
-    - contextPath: SilentPush.Certificate.asn_reputation
+    - contextPath: SilentPush.Enrichment.asn_reputation
       description: Reputation score of the ASN.
       type: Number
-    - contextPath: SilentPush.Certificate.asn
+    - contextPath: SilentPush.Enrichment.asn
       description: Autonomous System Number (ASN) of the IP or subnet.
       type: Number
-    - contextPath: SilentPush.Certificate.asname
+    - contextPath: SilentPush.Enrichment.asname
       description: Name of the ASN associated with the IP or subnet.
       type: String
-    - contextPath: SilentPush.Certificate.subnet
+    - contextPath: SilentPush.Enrichment.subnet
       description: Subnet associated with the IP address.
       type: String
-    - contextPath: SilentPush.Certificate.ip_is_tor_exit_node
+    - contextPath: SilentPush.Enrichment.ip_is_tor_exit_node
       description: Indicates if the IP is a TOR exit node.
       type: Boolean
-    - contextPath: SilentPush.Certificate.asn_takedown_reputation_score
+    - contextPath: SilentPush.Enrichment.asn_takedown_reputation_score
       description: Reputation score for ASN takedown.
       type: Number
   - deprecated: false
@@ -519,6 +519,194 @@ script:
     - contextPath: SilentPush.InfraTags.tag_clusters.100.match
       description: The match string associated with the domains in the tag cluster with score 100.
       type: String
+  - deprecated: false
+    description: This command retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
+    name: silentpush-list-ip-information
+    arguments:
+    - name: ips
+      isArray: false
+      description: Comma-separated list of IP addresses.
+      required: true
+      secret: false
+      default: false
+    - name: explain
+      isArray: false
+      description: Include explanation of calculations.
+      required: false
+      secret: false
+      default: false
+    - name: scan_data
+      isArray: false
+      description: Include scan data (IPv4 only).
+      required: false
+      secret: false
+      default: false
+    - name: sparse
+      isArray: false
+      description: Specific data to return (asn/asname/sp_risk_score).
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.IPInformation.ip_is_dsl_dynamic
+      description: Indicates if the IP is a DSL dynamic IP.
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.ip_has_expired_certificate
+      description: Indicates if the IP has an expired certificate.
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.subnet_allocation_age
+      description: Age of the subnet allocation.
+      type: String
+    - contextPath: SilentPush.IPInformation.asn_rank_score
+      description: Rank score of the ASN.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_allocation_age
+      description: Age of the ASN allocation in days.
+      type: Number
+    - contextPath: SilentPush.IPInformation.sp_risk_score
+      description: Risk score of the service provider (SP).
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_takedown_reputation_explain.ips_active
+      description: Number of active IPs in the ASN takedown reputation.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_takedown_reputation_explain.ips_in_asn
+      description: Total number of IPs in the ASN.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_takedown_reputation_explain.ips_num_listed
+      description: Number of IPs listed in the ASN takedown reputation.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_takedown_reputation_explain.items_num_listed
+      description: Number of items listed in the ASN takedown reputation.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_takedown_reputation_explain.lifetime_avg
+      description: Average lifetime of items in the ASN takedown reputation.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_takedown_reputation_explain.lifetime_max
+      description: Maximum lifetime of items in the ASN takedown reputation.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_takedown_reputation_explain.lifetime_total
+      description: Total lifetime of items in the ASN takedown reputation.
+      type: Number
+    - contextPath: SilentPush.IPInformation.ip_reputation_score
+      description: Reputation score of the IP.
+      type: Number
+    - contextPath: SilentPush.IPInformation.listing_score_feeds_explain
+      description: Explanation of the listing score feeds.
+      type: String
+    - contextPath: SilentPush.IPInformation.ip
+      description: The IP address being evaluated.
+      type: String
+    - contextPath: SilentPush.IPInformation.density
+      description: Density score of the IP.
+      type: Number
+    - contextPath: SilentPush.IPInformation.benign_info.actor
+      description: Actor associated with the benign info.
+      type: String
+    - contextPath: SilentPush.IPInformation.benign_info.known_benign
+      description: Indicates if the IP is known benign.
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.benign_info.tags
+      description: Tags associated with the benign info.
+      type: String
+    - contextPath: SilentPush.IPInformation.ip_reputation_explain
+      description: Explanation of the IP reputation.
+      type: String
+    - contextPath: SilentPush.IPInformation.asn_allocation_date
+      description: The ASN allocation date.
+      type: Number
+    - contextPath: SilentPush.IPInformation.subnet_allocation_date
+      description: The subnet allocation date.
+      type: String
+    - contextPath: SilentPush.IPInformation.asn_takedown_reputation
+      description: Reputation score of ASN takedown.
+      type: Number
+    - contextPath: SilentPush.IPInformation.ip_location.continent_code
+      description: Continent code of the IP location.
+      type: String
+    - contextPath: SilentPush.IPInformation.ip_location.continent_name
+      description: Continent name of the IP location.
+      type: String
+    - contextPath: SilentPush.IPInformation.ip_location.country_code
+      description: Country code of the IP location.
+      type: String
+    - contextPath: SilentPush.IPInformation.ip_location.country_is_in_european_union
+      description: Indicates if the country is in the European Union.
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.ip_location.country_name
+      description: Country name of the IP location.
+      type: String
+    - contextPath: SilentPush.IPInformation.date
+      description: Date associated with the IP data.
+      type: Number
+    - contextPath: SilentPush.IPInformation.subnet_reputation_score
+      description: Reputation score of the subnet.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_rank
+      description: Rank of the ASN.
+      type: Number
+    - contextPath: SilentPush.IPInformation.listing_score_explain
+      description: Explanation of the listing score.
+      type: String
+    - contextPath: SilentPush.IPInformation.asn_reputation_score
+      description: Reputation score of the ASN.
+      type: Number
+    - contextPath: SilentPush.IPInformation.ip_is_ipfs_node
+      description: Indicates if the IP is an IPFS node.
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.ip_reputation
+      description: Reputation score of the IP.
+      type: Number
+    - contextPath: SilentPush.IPInformation.subnet_reputation_explain
+      description: Explanation of the subnet reputation.
+      type: String
+    - contextPath: SilentPush.IPInformation.ip_is_dsl_dynamic_score
+      description: Score indicating if the IP is a DSL dynamic IP.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_reputation_explain
+      description: Explanation of the ASN reputation.
+      type: String
+    - contextPath: SilentPush.IPInformation.ip_has_open_directory
+      description: Indicates if the IP has an open directory.
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.ip_ptr
+      description: Pointer (PTR) record for the IP.
+      type: String
+    - contextPath: SilentPush.IPInformation.listing_score
+      description: Listing score of the IP.
+      type: Number
+    - contextPath: SilentPush.IPInformation.malscore
+      description: Malware score associated with the IP.
+      type: Number
+    - contextPath: SilentPush.IPInformation.sinkhole_info.known_sinkhole_ip
+      description: Indicates if the IP is a known sinkhole IP.
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.sinkhole_info.tags
+      description: Tags associated with the sinkhole information.
+      type: String
+    - contextPath: SilentPush.IPInformation.subnet_reputation
+      description: Reputation score of the subnet.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn_reputation
+      description: Reputation score of the ASN.
+      type: Number
+    - contextPath: SilentPush.IPInformation.asn
+      description: Autonomous System Number (ASN) of the IP.
+      type: Number
+    - contextPath: SilentPush.IPInformation.sp_risk_score_explain.sp_risk_score_decider
+      description: Decider for the service provider risk score.
+      type: String
+    - contextPath: SilentPush.IPInformation.asname
+      description: Name of the ASN.
+      type: String
+    - contextPath: SilentPush.IPInformation.subnet
+      description: The subnet the IP belongs to.
+      type: String
+    - contextPath: SilentPush.IPInformation.ip_is_tor_exit_node
+      description: Indicates if the IP is a TOR exit node.
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.asn_takedown_reputation_score
+      description: Reputation score of ASN takedown.
+      type: Number
   - deprecated: false
     description: This command search for domains with optional filters.
     name: silentpush-search-domains

@@ -30,6 +30,7 @@ RISK_SCORE = "explore/bulk/domain/riskscore"
 WHOIS = "explore/domain/whois"
 DOMAIN_CERTIFICATE = "explore/domain/certificates"
 ENRICHMENT = "explore/enrich"
+LIST_IP = "explore/bulk/ip2asn"
 
 ''' COMMANDS INPUTS '''
 
@@ -156,6 +157,17 @@ ENRICHMENT_INPUTS = [
                 InputArgument(name='scan_data', 
                             description='Include scan data (IPv4 only).')
             ]
+LIST_IP_INPUTS = [
+            InputArgument(name='ips', 
+                        description='Comma-separated list of IP addresses.',
+                        required=True),
+            InputArgument(name='explain', 
+                        description='Include explanation of calculations.'),
+            InputArgument(name='scan_data', 
+                        description='Include scan data (IPv4 only).'),
+            InputArgument(name='sparse', 
+                        description='Specific data to return (asn/asname/sp_risk_score).')
+        ]
 
 
 
@@ -314,6 +326,61 @@ ENRICHMENT_OUTPUTS = [
                         OutputArgument(name='subnet', output_type=str, description='Subnet associated with the IP address.'),
                         OutputArgument(name='ip_is_tor_exit_node', output_type=bool, description='Indicates if the IP is a TOR exit node.'),
                         OutputArgument(name='asn_takedown_reputation_score', output_type=int, description='Reputation score for ASN takedown.')
+                    ]
+LIST_IP_OUTPUTS = [
+                        OutputArgument(name='ip_is_dsl_dynamic', output_type=bool, description='Indicates if the IP is a DSL dynamic IP.'),
+                        OutputArgument(name='ip_has_expired_certificate', output_type=bool, description='Indicates if the IP has an expired certificate.'),
+                        OutputArgument(name='subnet_allocation_age', output_type=str, description='Age of the subnet allocation.'),
+                        OutputArgument(name='asn_rank_score', output_type=int, description='Rank score of the ASN.'),
+                        OutputArgument(name='asn_allocation_age', output_type=int, description='Age of the ASN allocation in days.'),
+                        OutputArgument(name='sp_risk_score', output_type=int, description='Risk score of the service provider (SP).'),
+                        OutputArgument(name='asn_takedown_reputation_explain.ips_active', output_type=int, description='Number of active IPs in the ASN takedown reputation.'),
+                        OutputArgument(name='asn_takedown_reputation_explain.ips_in_asn', output_type=int, description='Total number of IPs in the ASN.'),
+                        OutputArgument(name='asn_takedown_reputation_explain.ips_num_listed', output_type=int, description='Number of IPs listed in the ASN takedown reputation.'),
+                        OutputArgument(name='asn_takedown_reputation_explain.items_num_listed', output_type=int, description='Number of items listed in the ASN takedown reputation.'),
+                        OutputArgument(name='asn_takedown_reputation_explain.lifetime_avg', output_type=int, description='Average lifetime of items in the ASN takedown reputation.'),
+                        OutputArgument(name='asn_takedown_reputation_explain.lifetime_max', output_type=int, description='Maximum lifetime of items in the ASN takedown reputation.'),
+                        OutputArgument(name='asn_takedown_reputation_explain.lifetime_total', output_type=int, description='Total lifetime of items in the ASN takedown reputation.'),
+                        OutputArgument(name='ip_reputation_score', output_type=int, description='Reputation score of the IP.'),
+                        OutputArgument(name='listing_score_feeds_explain', output_type=str, description='Explanation of the listing score feeds.'),
+                        OutputArgument(name='ip', output_type=str, description='The IP address being evaluated.'),
+                        OutputArgument(name='density', output_type=int, description='Density score of the IP.'),
+                        OutputArgument(name='benign_info.actor', output_type=str, description='Actor associated with the benign info.'),
+                        OutputArgument(name='benign_info.known_benign', output_type=bool, description='Indicates if the IP is known benign.'),
+                        OutputArgument(name='benign_info.tags', output_type=str, description='Tags associated with the benign info.'),
+                        OutputArgument(name='ip_reputation_explain', output_type=str, description='Explanation of the IP reputation.'),
+                        OutputArgument(name='asn_allocation_date', output_type=int, description='The ASN allocation date.'),
+                        OutputArgument(name='subnet_allocation_date', output_type=str, description='The subnet allocation date.'),
+                        OutputArgument(name='asn_takedown_reputation', output_type=int, description='Reputation score of ASN takedown.'),
+                        OutputArgument(name='ip_location.continent_code', output_type=str, description='Continent code of the IP location.'),
+                        OutputArgument(name='ip_location.continent_name', output_type=str, description='Continent name of the IP location.'),
+                        OutputArgument(name='ip_location.country_code', output_type=str, description='Country code of the IP location.'),
+                        OutputArgument(name='ip_location.country_is_in_european_union', output_type=bool, description='Indicates if the country is in the European Union.'),
+                        OutputArgument(name='ip_location.country_name', output_type=str, description='Country name of the IP location.'),
+                        OutputArgument(name='date', output_type=int, description='Date associated with the IP data.'),
+                        OutputArgument(name='subnet_reputation_score', output_type=int, description='Reputation score of the subnet.'),
+                        OutputArgument(name='asn_rank', output_type=int, description='Rank of the ASN.'),
+                        OutputArgument(name='listing_score_explain', output_type=str, description='Explanation of the listing score.'),
+                        OutputArgument(name='asn_reputation_score', output_type=int, description='Reputation score of the ASN.'),
+                        OutputArgument(name='ip_is_ipfs_node', output_type=bool, description='Indicates if the IP is an IPFS node.'),
+                        OutputArgument(name='ip_reputation', output_type=int, description='Reputation score of the IP.'),
+                        OutputArgument(name='subnet_reputation_explain', output_type=str, description='Explanation of the subnet reputation.'),
+                        OutputArgument(name='ip_is_dsl_dynamic_score', output_type=int, description='Score indicating if the IP is a DSL dynamic IP.'),
+                        OutputArgument(name='asn_reputation_explain', output_type=str, description='Explanation of the ASN reputation.'),
+                        OutputArgument(name='ip_has_open_directory', output_type=bool, description='Indicates if the IP has an open directory.'),
+                        OutputArgument(name='ip_ptr', output_type=str, description='Pointer (PTR) record for the IP.'),
+                        OutputArgument(name='listing_score', output_type=int, description='Listing score of the IP.'),
+                        OutputArgument(name='malscore', output_type=int, description='Malware score associated with the IP.'),
+                        OutputArgument(name='sinkhole_info.known_sinkhole_ip', output_type=bool, description='Indicates if the IP is a known sinkhole IP.'),
+                        OutputArgument(name='sinkhole_info.tags', output_type=str, description='Tags associated with the sinkhole information.'),
+                        OutputArgument(name='subnet_reputation', output_type=int, description='Reputation score of the subnet.'),
+                        OutputArgument(name='asn_reputation', output_type=int, description='Reputation score of the ASN.'),
+                        OutputArgument(name='asn', output_type=int, description='Autonomous System Number (ASN) of the IP.'),
+                        OutputArgument(name='sp_risk_score_explain.sp_risk_score_decider', output_type=str, description='Decider for the service provider risk score.'),
+                        OutputArgument(name='asname', output_type=str, description='Name of the ASN.'),
+                        OutputArgument(name='subnet', output_type=str, description='The subnet the IP belongs to.'),
+                        OutputArgument(name='ip_is_tor_exit_node', output_type=bool, description='Indicates if the IP is a TOR exit node.'),
+                        OutputArgument(name='asn_takedown_reputation_score', output_type=int, description='Reputation score of ASN takedown.')
                     ]
 
 
@@ -840,6 +907,28 @@ class Client(BaseClient):
             return ip2asn_data[0] if isinstance(ip2asn_data, list) and ip2asn_data else {}
         return response.get("response", {}).get("domaininfo", {})
 
+    def validate_ips(self, ips: List[str]) -> None:
+        """Validates the number of IPs in the list."""
+        if len(ips) > 100:
+            raise DemistoException("Maximum of 100 IPs can be submitted in a single request.")
+
+    def list_ip_information(self, ips: List[str], resource: str) -> Dict:
+        """
+        Retrieve information for multiple IP addresses.
+
+        Args:
+            ips (List[str]): List of IPv4 or IPv6 addresses to fetch information for.
+            resource (str): The resource type ('ipv4' or 'ipv6').
+
+        Returns:
+            Dict: API response containing IP information.
+        """
+        self.validate_ips(ips)
+
+        ip_data = {"ips": ips}
+        url_suffix = f"{LIST_IP}/{resource}"
+        
+        return self._http_request("POST", url_suffix, data=ip_data)
 
 
 
@@ -1472,7 +1561,7 @@ def format_certificate_info(cert: Dict[str, Any], client: Client) -> Dict[str, s
 @metadata_collector.command(
     command_name="silentpush-get-enrichment-data",
     inputs_list=ENRICHMENT_INPUTS,
-    outputs_prefix="SilentPush.Certificate",
+    outputs_prefix="SilentPush.Enrichment",
     outputs_list=ENRICHMENT_OUTPUTS,
     description="This command retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6)."
 )
@@ -1522,7 +1611,6 @@ def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
         raw_response=enrichment_data
     )
 
-
 def validate_ip(client: Client, resource: str, value: str) -> None:
     """
     Validate the IP address based on the resource type.
@@ -1539,7 +1627,103 @@ def validate_ip(client: Client, resource: str, value: str) -> None:
     if not is_valid_ip:
         raise DemistoException(f"Invalid {resource.upper()} address: {value}")
 
+@metadata_collector.command(
+    command_name="silentpush-list-ip-information",
+    inputs_list=LIST_IP_INPUTS,
+    outputs_prefix="SilentPush.IPInformation",
+    outputs_list=LIST_IP_OUTPUTS,
+    description="This command get IP information for multiple IPv4s and IPv6s."
+)
+def list_ip_information_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command to list IP information for a given set of IP addresses, categorized by IPv4 and IPv6.
 
+    Args:
+        client (Client): The client instance to interact with the IP data.
+        args (Dict[str, Any]): Dictionary of command arguments.
+
+    Returns:
+        CommandResults: Command results containing the IP information.
+    """
+    ips = argToList(args.get("ips", ""))
+
+    if not ips:
+        return CommandResults(
+            readable_output="The 'ips' parameter is required.",
+            outputs_prefix="SilentPush.IPInformation",
+            outputs_key_field="ip",
+            outputs=[],
+            raw_response={"ips": ips},
+        )
+
+    ipv4_addresses, ipv6_addresses = validate_ips(ips, client)
+
+    results = []
+    if ipv4_addresses:
+        results.extend(gather_ip_information(client, ipv4_addresses, resource="ipv4"))
+
+    if ipv6_addresses:
+        results.extend(gather_ip_information(client, ipv6_addresses, resource="ipv6"))
+
+    if not results:
+        return CommandResults(
+            readable_output=f"No information found for IPs: {', '.join(ips)}",
+            outputs_prefix="SilentPush.IPInformation",
+            outputs_key_field="ip",
+            outputs=[],
+            raw_response={"ips": ips, "results": results},
+        )
+
+    readable_output = tableToMarkdown(
+        "Comprehensive IP Information",
+        results,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="SilentPush.IPInformation",
+        outputs_key_field="ip",
+        outputs=results,
+        readable_output=readable_output,
+        raw_response={"ips": ips, "results": results},
+    )
+
+def validate_ips(ips: list, client: Client) -> tuple:
+    """
+    Validates and categorizes the IPs into IPv4 and IPv6 addresses.
+
+    Args:
+        ips (list): List of IPs to validate.
+        client (Client): The client instance to use for validation.
+
+    Returns:
+        tuple: A tuple containing two lists: (ipv4_addresses, ipv6_addresses)
+    """
+    ipv4_addresses = []
+    ipv6_addresses = []
+
+    for ip in ips:
+        if client.validate_ip_address(ip, allow_ipv6=False):  # IPv4
+            ipv4_addresses.append(ip)
+        elif client.validate_ip_address(ip, allow_ipv6=True):  # IPv6
+            ipv6_addresses.append(ip)
+
+    return ipv4_addresses, ipv6_addresses
+
+def gather_ip_information(client: Client, ip_addresses: list, resource: str) -> list:
+    """
+    Gathers IP information for a given list of IP addresses.
+
+    Args:
+        client (Client): The client instance to query IP information.
+        ip_addresses (list): The list of IPs to gather information for.
+        resource (str): The resource type ('ipv4' or 'ipv6').
+
+    Returns:
+        list: A list of IP to ASN information.
+    """
+    ip_info = client.list_ip_information(ip_addresses, resource=resource)
+    return ip_info.get("response", {}).get("ip2asn", [])
 
 
 ''' MAIN FUNCTION '''
@@ -1599,6 +1783,9 @@ def main() -> None:
         
         elif demisto.command() == 'silentpush-get-enrichment-data':
             return_results(get_enrichment_data_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-list-ip-information':
+            return_results(list_ip_information_command(client, demisto.args()))            
     
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
