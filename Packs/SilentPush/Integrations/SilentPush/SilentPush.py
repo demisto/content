@@ -33,6 +33,7 @@ ENRICHMENT = "explore/enrich"
 LIST_IP = "explore/bulk/ip2asn"
 ASN_REPUTATION = "explore/ipreputation/history/asn"
 ASN_TAKEDOWN_REPUTATION = "explore/takedownreputation/asn"
+IPV4_REPUTATION = "explore/ipreputation/history/ipv4"
 
 ''' COMMANDS INPUTS '''
 
@@ -187,6 +188,15 @@ ASN_TAKEDOWN_REPUTATION_INPUTS = [
                         description='Show the information used to calculate the reputation score.'),
             InputArgument(name='limit', 
                         description='The maximum number of reputation history records to retrieve.')
+        ]
+IPV4_REPUTATION_INPUTS = [
+            InputArgument(name='ipv4',  # option 1
+                        description='IPv4 address for which information needs to be retrieved',
+                        required=True),
+            InputArgument(name='explain',
+                        description='Show the information used to calculate the reputation score'),
+            InputArgument(name='limit',
+                        description='The maximum number of reputation history to retrieve')
         ]
 
 
@@ -417,6 +427,12 @@ ASN_TAKEDOWN_REPUTATION_OUTPUTS = [
                         OutputArgument(name='Allocation_Date', output_type=int, description='The date when the ASN was allocated (YYYYMMDD).'),
                         OutputArgument(name='Takedown_Reputation', output_type=int, description='The takedown reputation score for the ASN.')
                     ]
+IPV4_REPUTATION_OUTPUTS = [
+                        OutputArgument(name='Date', output_type=int, description='Date when the reputation information was retrieved.'),
+                        OutputArgument(name='IP', output_type=str, description='IPv4 address for which the reputation is calculated.'),
+                        OutputArgument(name='Reputation.Score', output_type=int, description='Reputation score for the given IP address.')
+                    ]
+
 
 
 
@@ -1024,6 +1040,26 @@ class Client(BaseClient):
         )
 
         return response.get('response', {}).get('takedown_reputation', {})
+
+    def get_ipv4_reputation(self, ipv4: str, explain: bool = False, limit: int = None) -> List[Dict[str, Any]]:
+        """
+        Retrieve reputation information for an IPv4 address.
+        """
+        url_suffix = f"{IPV4_REPUTATION}/{ipv4}"
+        query_params = {}
+
+        if explain:
+            query_params['explain'] = 'true'
+        if limit:
+            query_params['limit'] = limit
+
+        raw_response = self._http_request(
+            method='GET',
+            url_suffix=url_suffix,
+            params=query_params
+        )
+        ipv4_reputation = raw_response.get('response', {}).get('ip_reputation_history', [])
+        return ipv4_reputation
 
 
 ''' HELPER FUNCTIONS '''
@@ -1941,9 +1977,9 @@ def get_table_headers(explain: bool) -> list:
 @metadata_collector.command(
     command_name="silentpush-get-asn-takedown-reputation",
     inputs_list=ASN_TAKEDOWN_REPUTATION_INPUTS,
-    outputs_prefix="SilentPush.",
+    outputs_prefix="SilentPush.ASNTakedownReputation",
     outputs_list=ASN_TAKEDOWN_REPUTATION_OUTPUTS,
-    description="This command Retrieve the takedown reputation information for an Autonomous System Number (ASN)."
+    description="This command retrieve the takedown reputation information for an Autonomous System Number (ASN)."
 )
 def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandResults:
     """
@@ -2017,6 +2053,67 @@ def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandRe
         raw_response=response
     )
 
+@metadata_collector.command(
+    command_name="silentpush-get-ipv4-reputation",
+    inputs_list=IPV4_REPUTATION_INPUTS,
+    outputs_prefix="SilentPush.",
+    outputs_list=IPV4_REPUTATION_OUTPUTS,
+    description="This command retrieve the reputation information for an IPv4."
+)
+def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the reputation data for a given IPv4 address from the client.
+
+    Args:
+        client (Client): The client to interact with the reputation service.
+        args (Dict[str, Any]): Arguments passed to the command, including the IPv4 address, explain flag, and limit.
+
+    Returns:
+        CommandResults: The results of the command including the IPv4 reputation data.
+    """
+    ipv4 = args.get('ipv4')
+    
+    if not ipv4:
+        raise DemistoException("IPv4 address is required")
+
+    explain = argToBoolean(args.get('explain', "false"))
+    limit = arg_to_number(args.get('limit'))
+
+    raw_response = client.get_ipv4_reputation(ipv4, explain, limit)
+
+    # If no data is found for the provided IPv4 address, return a message
+    if not raw_response:
+        return CommandResults(
+            readable_output=f"No reputation data found for IPv4: {ipv4}",
+            outputs_prefix='SilentPush.IPv4Reputation',
+            outputs_key_field='ip',
+            outputs={'ip': ipv4},
+            raw_response=raw_response
+        )
+
+    latest_reputation = raw_response[0]
+    
+    # Prepare reputation data for output
+    reputation_data = {
+        'IP': latest_reputation.get('ip', ipv4),
+        'Date': latest_reputation.get('date'),
+        'Reputation Score': latest_reputation.get('ip_reputation')
+    }
+
+    # Convert data to markdown table for readable output
+    readable_output = tableToMarkdown(
+        f'IPv4 Reputation Information for {ipv4}',
+        [reputation_data]
+    )
+
+    return CommandResults(
+        outputs_prefix='SilentPush.IPv4Reputation',
+        outputs_key_field='ip',
+        outputs=reputation_data,
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -2084,6 +2181,9 @@ def main() -> None:
 
         elif demisto.command() == 'silentpush-get-asn-takedown-reputation':
             return_results(get_asn_takedown_reputation_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-get-ipv4-reputation':
+            return_results(get_ipv4_reputation_command(client, demisto.args()))
      
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
