@@ -32,6 +32,7 @@ DOMAIN_CERTIFICATE = "explore/domain/certificates"
 ENRICHMENT = "explore/enrich"
 LIST_IP = "explore/bulk/ip2asn"
 ASN_REPUTATION = "explore/ipreputation/history/asn"
+ASN_TAKEDOWN_REPUTATION = "explore/takedownreputation/asn"
 
 ''' COMMANDS INPUTS '''
 
@@ -178,6 +179,16 @@ ASN_REPUTATION_INPUTS = [
             InputArgument(name='limit', 
                         description='The maximum number of reputation history records to retrieve.')
         ]
+ASN_TAKEDOWN_REPUTATION_INPUTS = [
+            InputArgument(name='asn', 
+                        description='The ASN to lookup.', 
+                        required=True),
+            InputArgument(name='explain', 
+                        description='Show the information used to calculate the reputation score.'),
+            InputArgument(name='limit', 
+                        description='The maximum number of reputation history records to retrieve.')
+        ]
+
 
 
 
@@ -399,6 +410,14 @@ ASN_REPUTATION_OUTPUTS = [
                         OutputArgument(name='reputation_data.asname', output_type=str, description='Name of the Autonomous System (AS).'),
                         OutputArgument(name='reputation_data.date', output_type=int, description='Date the reputation data was recorded (YYYYMMDD).')
                     ]
+ASN_TAKEDOWN_REPUTATION_OUTPUTS = [
+                        OutputArgument(name='AS_Name', output_type=str, description='The name of the Autonomous System (AS).'),
+                        OutputArgument(name='ASN', output_type=str, description='The Autonomous System Number (ASN).'),
+                        OutputArgument(name='Allocation_Age', output_type=int, description='The age of the ASN allocation in days.'),
+                        OutputArgument(name='Allocation_Date', output_type=int, description='The date when the ASN was allocated (YYYYMMDD).'),
+                        OutputArgument(name='Takedown_Reputation', output_type=int, description='The takedown reputation score for the ASN.')
+                    ]
+
 
 
 
@@ -974,6 +993,37 @@ class Client(BaseClient):
             params=query_params
         )
 
+    def get_asn_takedown_reputation(self, asn: str, limit: Optional[int] = None, explain: bool = False) -> Dict[str, Any]:
+        """
+        Retrieve takedown reputation for a specific Autonomous System Number (ASN).
+
+        Args:
+            asn (str): The ASN number to query.
+            limit (Optional[int]): Maximum results to return (default is None).
+            explain (bool): Whether to include an explanation for the reputation score (default is False).
+
+        Returns:
+            Dict[str, Any]: Takedown reputation information for the specified ASN. 
+                            Returns an empty dictionary if no takedown reputation is found.
+
+        Raises:
+            ValueError: If ASN is not provided.
+            DemistoException: If the API call fails.
+        """
+        if not asn:
+            raise ValueError('ASN is required.')
+
+        params = {'limit': limit} if limit else {}
+        if explain:
+            params['explain'] = explain
+
+        response = self._http_request(
+            method='GET',
+            url_suffix=f'{ASN_TAKEDOWN_REPUTATION}/{asn}',
+            params=params
+        )
+
+        return response.get('response', {}).get('takedown_reputation', {})
 
 
 ''' HELPER FUNCTIONS '''
@@ -1888,6 +1938,85 @@ def get_table_headers(explain: bool) -> list:
         headers.append('Explanation')
     return headers
 
+@metadata_collector.command(
+    command_name="silentpush-get-asn-takedown-reputation",
+    inputs_list=ASN_TAKEDOWN_REPUTATION_INPUTS,
+    outputs_prefix="SilentPush.",
+    outputs_list=ASN_TAKEDOWN_REPUTATION_OUTPUTS,
+    description="This command Retrieve the takedown reputation information for an Autonomous System Number (ASN)."
+)
+def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandResults:
+    """
+    Command handler for retrieving ASN takedown reputation.
+
+    Args:
+        client (Client): The API client instance to interact with the external service.
+        args (dict): Command arguments, containing:
+            - 'asn' (str): The ASN (Autonomous System Number).
+            - 'limit' (int, optional): Limit for the number of results.
+            - 'explain' (bool, optional): Flag to request explanation of the reputation.
+
+    Returns:
+        CommandResults: Command results formatted for XSOAR, containing the ASN takedown reputation data.
+
+    Raises:
+        ValueError: If 'asn' is not provided or 'limit' is not a valid integer.
+        DemistoException: If an error occurs while retrieving the data from the API.
+    """
+    # Parameter validation
+    asn = args.get('asn')
+    if not asn:
+        raise ValueError('ASN is a required parameter')
+
+    # Convert 'limit' to an integer if provided
+    limit = args.get('limit')
+    if limit is not None:
+        try:
+            limit = int(limit)
+        except ValueError:
+            raise ValueError('Limit must be a valid number')
+
+    # Convert 'explain' argument to a boolean
+    explain = argToBoolean(args.get('explain', False))
+
+    # Fetch ASN takedown reputation data
+    response = client.get_asn_takedown_reputation(asn=asn, limit=limit, explain=explain)
+
+    # If no data is returned, construct and return the response
+    if not response:
+        return CommandResults(
+            readable_output=f'No takedown reputation data found for ASN {asn}',
+            outputs_prefix='SilentPush.ASNTakedownReputation',
+            outputs=None
+        )
+
+    # Prepare reputation data for output
+    reputation_data = {
+        'ASN': response.get('asn', asn),
+        'AS Name': response.get('asname', 'N/A'),
+        'Allocation Date': response.get('asn_allocation_date', 'N/A'),
+        'Takedown Reputation': response.get('asn_takedown_reputation', 'N/A'),
+        'Allocation Age': response.get('asn_allocation_age', 'N/A')
+    }
+
+    headers = ['ASN', 'AS Name', 'Allocation Date', 'Takedown Reputation', 'Allocation Age']
+
+    # Format the data as a markdown table
+    readable_output = tableToMarkdown(
+        f'ASN Takedown Reputation Information for {asn}',
+        [reputation_data],
+        headers=headers,
+        removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SilentPush.ASNTakedownReputation',
+        outputs_key_field='asn',
+        outputs=reputation_data,
+        raw_response=response
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -1950,8 +2079,11 @@ def main() -> None:
         elif demisto.command() == 'silentpush-list-ip-information':
             return_results(list_ip_information_command(client, demisto.args()))
 
-        elif demisto.command() == 'silentpush-get-asn-reputation ':
+        elif demisto.command() == 'silentpush-get-asn-reputation':
             return_results(get_asn_reputation_command(client, demisto.args()))
+
+        elif demisto.command() == 'silentpush-get-asn-takedown-reputation':
+            return_results(get_asn_takedown_reputation_command(client, demisto.args()))
      
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

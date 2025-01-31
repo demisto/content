@@ -90,6 +90,44 @@ script:
       description: Date the reputation data was recorded (YYYYMMDD).
       type: Number
   - deprecated: false
+    description: This command Retrieve the takedown reputation information for an Autonomous System Number (ASN).
+    name: silentpush-get-asn-takedown-reputation
+    arguments:
+    - name: asn
+      isArray: false
+      description: The ASN to lookup.
+      required: true
+      secret: false
+      default: false
+    - name: explain
+      isArray: false
+      description: Show the information used to calculate the reputation score.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of reputation history records to retrieve.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush..AS_Name
+      description: The name of the Autonomous System (AS).
+      type: String
+    - contextPath: SilentPush..ASN
+      description: The Autonomous System Number (ASN).
+      type: String
+    - contextPath: SilentPush..Allocation_Age
+      description: The age of the ASN allocation in days.
+      type: Number
+    - contextPath: SilentPush..Allocation_Date
+      description: The date when the ASN was allocated (YYYYMMDD).
+      type: Number
+    - contextPath: SilentPush..Takedown_Reputation
+      description: The takedown reputation score for the ASN.
+      type: Number
+  - deprecated: false
     description: This command retrieves Autonomous System Numbers (ASNs) associated with a domain.
     name: silentpush-get-asns-for-domain
     arguments:
