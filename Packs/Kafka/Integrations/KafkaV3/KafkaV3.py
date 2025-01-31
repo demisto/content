@@ -139,7 +139,7 @@ class KafkaCommunicator:
                     client_cert_descriptor.write(client_cert)
                 client_dict.update({'ssl.certificate.location': self.client_cert_path})
 
-               # temporary creating client certification's key file
+                # temporary creating client certification's key file
                 with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
                     self.client_key_path = client_key_descriptor.name
                     client_key_descriptor.write(client_cert_key)
@@ -330,15 +330,17 @@ class KafkaCommunicator:
                 raise DemistoException(
                     "Both value_schema_str and value_schema_subject_name are provided. Please provide only one.")
             if not kafka_schema_registry_client:
-                raise DemistoException("Kafka Schema Registry client is not configured. Please configure one to use schema validation.")
-            
+                raise DemistoException(
+                    "Kafka Schema Registry client is not configured. Please configure one to use schema validation.")
+
             resolved_schema_str = value_schema_str
             # Retrieve schema from schema registry
             if value_schema_subject_name:
                 registered_schema = kafka_schema_registry_client.get_latest_version(subject_name=value_schema_subject_name)
                 if registered_schema.schema.schema_type != value_schema_type:
                     raise DemistoException(
-                        f"The schema type '{registered_schema.schema.schema_type}' is not supported. Expected '{value_schema_type}'."
+                        f"Unsupported schema type '{registered_schema.schema.schema_type}'. "
+                        f"Expected '{value_schema_type}'."
                     )
                 resolved_schema_str = registered_schema.schema.schema_str
 
