@@ -24,23 +24,17 @@ from exchangelib import (
     EWSTimeZone,
     ExtendedProperty,
     FileAttachment,
-    Folder,
     HTMLBody,
     ItemAttachment,
 )
 from exchangelib.errors import (
     ErrorFolderNotFound,
-    ErrorInvalidIdMalformed,
     ErrorMailboxMoveInProgress,
     ErrorMailboxStoreUnavailable,
-    ErrorNameResolutionNoResults,
     MalformedResponseError,
     RateLimitError,
-    ResponseMessageError,
 )
 from exchangelib.items import Contact, Message
-from exchangelib.services.common import EWSAccountService, EWSService
-from exchangelib.util import MNS, TNS, add_xml_child, create_element
 from requests.exceptions import ConnectionError
 
 import demistomock as demisto  # noqa: F401
@@ -113,6 +107,8 @@ LEGACY_NAME = argToBoolean(demisto.params().get('legacy_name', False))
 UTF_8 = 'utf-8'
 
 # If you are modifying this probably also need to modify in other files
+
+
 def exchangelib_cleanup():  # pragma: no cover
     key_protocols = list(exchangelib.protocol.CachingProtocol._protocol_cache.items())
     try:
@@ -1832,12 +1828,12 @@ def sub_main():  # pragma: no cover
             "ews-get-folder": get_folder,
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
+            "ews-delete-attachment": delete_attachments_for_message,
         }
 
         # commands that may return multiple results or non-note result
         special_output_commands = {
             "ews-get-attachment": fetch_attachments_for_message,
-            "ews-delete-attachment": delete_attachments_for_message,
             "ews-get-items-as-eml": get_item_as_eml,
             "reply-mail": reply_mail,
         }
@@ -1870,7 +1866,7 @@ def sub_main():  # pragma: no cover
         # normal commands
         else:
             output = normal_commands[command](client, **args)  # type: ignore[operator]
-            if isinstance(output, tuple): # Legacy, some commands return a tuple for return outputs
+            if isinstance(output, tuple):  # Legacy, some commands return a tuple for return outputs
                 return_outputs(*output)
             else:
                 return_results(output)

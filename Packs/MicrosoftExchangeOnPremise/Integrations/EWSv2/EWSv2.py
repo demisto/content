@@ -16,7 +16,6 @@ from exchangelib import (
     EWSDateTime,
     EWSTimeZone,
     FileAttachment,
-    Folder,
     FolderCollection,
     HTMLBody,
     ItemAttachment,
@@ -24,7 +23,6 @@ from exchangelib import (
 )
 from exchangelib.errors import (
     ErrorFolderNotFound,
-    ErrorInvalidIdMalformed,
     ErrorInvalidPropertyRequest,
     ErrorIrresolvableConflict,
     ErrorMailboxMoveInProgress,
@@ -32,13 +30,11 @@ from exchangelib.errors import (
     ErrorMimeContentConversionFailed,
     ErrorNameResolutionNoResults,
     RateLimitError,
-    ResponseMessageError,
     TransportError,
     ErrorCannotOpenFileAttachment,
 )
 from exchangelib.items import Contact, Item, Message
 from exchangelib.services import EWSService
-from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (
     EXCHANGE_2007,
@@ -410,19 +406,19 @@ def search_mailboxes(client: EWSClient, filter, limit=100, mailbox_search_scope=
         raise Exception("Use one of the arguments - mailbox-search-scope or email-addresses, not both")
     if email_addresses:
         email_addresses = email_addresses.split(",")
-        all_mailboxes = get_searchable_mailboxes(client)[ENTRY_CONTEXT]['EWS.Mailboxes']
+        all_mailboxes = GetSearchableMailboxes(protocol=client.get_protocol()).call()
         for email_address in email_addresses:
             for mailbox in all_mailboxes:
-                if MAILBOX in mailbox and email_address.lower() == mailbox[MAILBOX].lower():
+                addr = mailbox.get(MAILBOX, None)
+                if addr and email_address.lower() == addr.lower():
                     mailbox_ids.append(mailbox[MAILBOX_ID])
         if len(mailbox_ids) == 0:
             raise Exception("No searchable mailboxes were found for the provided email addresses.")
     elif mailbox_search_scope:
         mailbox_ids = mailbox_search_scope if type(mailbox_search_scope) is list else [mailbox_search_scope]
     else:
-        entry = get_searchable_mailboxes(client)
-        mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in list(x.keys())]
-        mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
+        all_mailboxes = GetSearchableMailboxes(protocol=client.get_protocol()).call()
+        mailbox_ids = [x[MAILBOX_ID] for x in all_mailboxes if x.get(MAILBOX_ID, None)]
     try:
         search_results = SearchMailboxes(protocol=client.get_protocol(), limit=limit_argument).call(filter, mailbox_ids)
     except TransportError as e:
