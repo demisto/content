@@ -535,6 +535,7 @@ def main():
     # Parse PR reviewers from JSON and assign them
     # Exit if JSON doesn't exist or not parsable
     content_roles = get_content_roles()
+    print(f"{content_roles=}")
 
     if not content_roles:
         print("Unable to retrieve the content roles. Exiting...")
