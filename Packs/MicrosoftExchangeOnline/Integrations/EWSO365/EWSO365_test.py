@@ -974,7 +974,13 @@ class TestEmailModule(unittest.TestCase):
     @patch('EWSO365.HTMLBody')
     @patch('EWSO365.Body')
     @patch('EWSO365.Message')
-    def test_create_message_with_html_body_inline_image_no_handle_html(self, mock_message, mock_body, mock_html_body, mock_file_attachment):
+    def test_create_message_with_html_body_inline_image_no_handle_html(
+        self,
+        mock_message,
+        mock_body,
+        mock_html_body,
+        mock_file_attachment
+    ):
         """
         Test create_message function with an HTML body.
         The handle_inline_image parameter is set to False, so the HTML body containing an inline image should be left as is.
