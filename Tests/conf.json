@@ -696,12 +696,14 @@
         {
             "integrations": "AzureFeed",
             "playbookID": "AzureFeed - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "Cofense Feed",
@@ -5918,6 +5920,7 @@
         }
     ],
     "skipped_tests": {
+        "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "Okta IAM - Test Playbook": "Credentials issue CRTX-116483",
         "ThreatCrowd - Test": "The pack is deprecated",
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
