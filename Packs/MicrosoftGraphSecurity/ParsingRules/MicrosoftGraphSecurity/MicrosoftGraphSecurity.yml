@@ -1,5 +1,5 @@
 name: Microsoft Graph Security Parsing Rules
-id: Microsoft_Graph_Security_Parsing_Rules
+id: Microsoft_Graph_Security_ParsingRule
 fromversion: 8.2.0
 tags: []
 rules: ''
