@@ -2,13 +2,13 @@
     "name": "XQLDSHelper",
     "description": "Run an XQL query and creates an entry for the General Purpose Dynamic Section to display a graph or table widget based on the results. The query is executed by the 'xdr-xql-generic-query' command.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
     "created": "2025-01-07T07:15:32Z",
     "categories": [
-	    "Utilities"
+        "Utilities"
     ],
     "tags": [],
     "useCases": [],
