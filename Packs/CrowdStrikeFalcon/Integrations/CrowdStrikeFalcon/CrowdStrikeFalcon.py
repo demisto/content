@@ -344,11 +344,11 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 ''' HELPER FUNCTIONS '''
 
 
-def validate_supported_cortex_platform():
+def disable_for_xsiam():
     """Validates if command is not running on an unsupported Cortex platform.
 
     Raises:
-        DemistoException: If command is being run on Cortex XSIAM.
+        DemistoException: If command is being run on XSIAM.
     """
     if is_xsiam():
         raise DemistoException("This command is not supported on this Cortex platform.")
@@ -7094,7 +7094,7 @@ def main():
             result = module_test()
             return_results(result)
         elif command == 'fetch-incidents':
-            validate_supported_cortex_platform()
+            disable_for_xsiam()
             demisto.incidents(fetch_incidents())
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
@@ -7252,16 +7252,16 @@ def main():
             return_results(get_detection_for_incident_command(args.get('incident_id')))
         # Mirroring commands
         elif command == 'get-remote-data':
-            validate_supported_cortex_platform()
+            disable_for_xsiam()
             return_results(get_remote_data_command(args))
         elif command == 'get-modified-remote-data':
-            validate_supported_cortex_platform()
+            disable_for_xsiam()
             return_results(get_modified_remote_data_command(args))
         elif command == 'update-remote-system':
-            validate_supported_cortex_platform()
+            disable_for_xsiam()
             return_results(update_remote_system_command(args))
         elif command == 'get-mapping-fields':
-            validate_supported_cortex_platform()
+            disable_for_xsiam()
             return_results(get_mapping_fields_command())
         elif command == 'cs-falcon-spotlight-search-vulnerability':
             return_results(cs_falcon_spotlight_search_vulnerability_command(args))
