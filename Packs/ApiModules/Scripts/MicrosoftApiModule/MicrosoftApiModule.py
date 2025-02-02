@@ -188,7 +188,7 @@ MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS = {
 }
 
 MICROSOFT_365_DEFENDER_SCOPES = {
-    'com': "https://security.microsoft.com",
+    'com': "https://security.microsoft.com/mtp",
     'geo-us': 'https://security.microsoft.com',
     'geo-eu': 'https://security.microsoft.com',
     'geo-uk': 'https://security.microsoft.com',
