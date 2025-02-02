@@ -1026,44 +1026,39 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
             Tuple[List[Dict[str, Any]], Dict[str, Any]]: A tuple containing the fetched events and the updated last run
                 information.
         """
-    last_run_latest_events_id = last_run.get('latest_events_id', [])
     latest_events_time = last_run.get('latest_events_time')
     end_date = datetime.utcnow()
     start_date: datetime = datetime.strptime(latest_events_time, "%Y-%m-%dT%H:%M:%S.%fZ") if latest_events_time else (
         end_date - timedelta(minutes=1))
     demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {last_run=}')
 
-    if fetch_limit == len(last_run_latest_events_id):
-        demisto.debug(f'fetch_limit ({fetch_limit}) equally to the number of last_run_latest_events_id. doubling the fetch_limit')
-        fetch_limit *= 2
+    # manipulate fetch_limit in purpose to make sure the number of events fetched is what the user desire.
+    fetch_limit += len(last_run.get('latest_events_id', []))
 
     all_events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
-    events, latest_events_id_and_time_tuple = process_events(all_events, last_run_latest_events_id)
-    latest_events_id, latest_events_time = latest_events_id_and_time_tuple
-    demisto.debug(f'fetch_events: {latest_events_id=}, {latest_events_time=}')
+    events, updated_last_run = process_events(all_events, last_run)  # TODO: send process events the last run, also if no events last run should keep being the same last run
+    demisto.debug(f'fetch_events: {updated_last_run.get("latest_events_id")=}, {updated_last_run.get("latest_events_time")=}')
 
-    return events, {
-        'latest_events_id': latest_events_id,
-        'latest_events_time': latest_events_time
-    }
+    return events, updated_last_run
 
 
-def process_events(events: List[Dict[str, Any]], last_run_latest_events_id: List[str], should_get_latest_events: bool = True) -> \
-    tuple[List[Dict[str, Any]], tuple[List[str], str]]:
+def process_events(events: List[Dict[str, Any]], last_run: Dict[str, Any], should_get_latest_events: bool = True) -> \
+    tuple[List[Dict[str, Any]], [Dict[str, Any]]]:
     """
     Processes events by handling duplication, adding a time field, and optionally getting the latest events ID and time.
 
     Args:
         events (List[Dict[str, Any]]): The list of events to be processed.
-        last_run_latest_events_id (List[str]): The list of latest events ID from the last run.
+        last_run (Dict[str, Any]): The updated last run data.
         should_get_latest_events (bool, optional): A flag indicating whether to get the latest events ID. Defaults to True.
 
     Returns:
-        Tuple[List[Dict[str, Any]], List[str]]: A tuple containing the processed events and the latest events ID.
+        Tuple[List[Dict[str, Any]], [Dict[str, Any]]]: A tuple containing the processed events and the updated last run.
 
     """
     demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id and time")
-    earliest_event_time = events[0].get('eventDateTimeUtc') if events else None
+    last_run_latest_events_id = last_run.get('latest_events_id', [])
+    earliest_event_time = last_run.get('latest_events_time', '')
     latest_event_time = events[-1].get('eventDateTimeUtc') if events else ''
     latest_events_id = []
     filtered_events = []
@@ -1079,9 +1074,7 @@ def process_events(events: List[Dict[str, Any]], last_run_latest_events_id: List
             latest_events_id.append(event.get('id'))
         filtered_events.append(event)
 
-    if not filtered_events:
-        latest_event_time = ''
-    return filtered_events, (latest_events_id, latest_event_time)
+    return filtered_events, {'latest_events_id': latest_events_id, 'latest_events_time': latest_event_time}
 
 
 def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
