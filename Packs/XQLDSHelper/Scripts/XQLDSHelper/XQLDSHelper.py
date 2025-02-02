@@ -1916,17 +1916,17 @@ class Main:
     @staticmethod
     def __get_base_time(
         args: dict[Hashable, Any],
-        template: dict[Hashable, Any],
+        query_node: dict[Hashable, Any],
         context: ContextData,
     ) -> tuple[datetime, datetime]:
         """ Get the base time of earliest_time and latest_time
 
         :param args: The argument parameters.
-        :param template: The template.
+        :param query_node: The `.query` node of the template.
         :param context: The context data.
         :return: The base time of earliest_time and latest_time.
         """
-        round_time = demisto.get(template, 'query.time_range.round_time')
+        round_time = demisto.get(query_node, 'time_range.round_time')
         if round_time is None:
             round_time = argToList(args.get('round_time'))
             if len(round_time) == 0:
@@ -1996,30 +1996,32 @@ class Main:
         :param context: The context data.
         :return: Query parameters.
         """
+        query_node = formatter.build(
+            template=demisto.get(template, 'query'),
+            context=context,
+        )
+
         earliest_time_base, latest_time_base = Main.__get_base_time(
             args=args,
-            template=template,
+            query_node=query_node,
             context=context,
         )
 
         return QueryParams(
             query_name=query_name,
-            query_string=formatter.build(
-                template=demisto.get(template, 'query.xql'),
-                context=context,
-            ),
+            query_string=query_node.get('xql'),
             earliest_time=Main.__parse_date_time(
                 demisto.get(
-                    template,
-                    'query.time_range.earliest_time',
+                    query_node,
+                    'time_range.earliest_time',
                     args.get('earliest_time', '24 hours ago')
                 ),
                 earliest_time_base
             ),
             latest_time=Main.__parse_date_time(
                 demisto.get(
-                    template,
-                    'query.time_range.latest_time',
+                    query_node,
+                    'time_range.latest_time',
                     args.get('latest_time', 'now')
                 ),
                 latest_time_base

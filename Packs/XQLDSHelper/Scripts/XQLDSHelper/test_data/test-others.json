@@ -441,6 +441,46 @@
       }
     }
   },
+  "######### earliest_time - overwritten by settings (vars)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "time_range": {
+              "earliest_time": "${earliest_time}"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "round_time": "0",
+      "earliest_time": "2026-01-01T00:00:00Z",
+      "latest_time": "2025-02-01T00:00:00Z"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "earliest_time": "2025-01-01T01:23:45Z"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2025-01-01T01:23:45.000+00:00",
+        "latest_time": "2025-02-01T00:00:00.000+00:00"
+      }
+    }
+  },
   "######### latest_time - overwritten by settings",
   {
     "args": {
@@ -468,6 +508,46 @@
     },
     "xql": {
       "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2025-01-01T00:00:00.000+00:00",
+        "latest_time": "2025-01-01T01:23:45.000+00:00"
+      }
+    }
+  },
+  "######### latest_time - overwritten by settings (vars)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "time_range": {
+              "latest_time": "${latest_time}"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "round_time": "0",
+      "earliest_time": "2025-01-01T00:00:00Z",
+      "latest_time": "2024-01-01T00:00:00Z"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "latest_time": "2025-01-01T01:23:45Z"
     },
     "results": {
       "QueryParams": {
