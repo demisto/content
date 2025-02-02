@@ -65,7 +65,9 @@ def main():
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {}
+        headers = {
+
+        }
 
         client = Client(
             base_url=base_url,
