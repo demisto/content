@@ -3376,7 +3376,6 @@ def fetch_relevant_tickets_by_ticket_type(
     incidents = []
 
     for alert in alert_list:
-        demisto.debug(f"{alert=}")
         alert_time = dateparser.parse(alert['created_at'])
         alert_id = alert.get('id')
 
