@@ -1,5 +1,5 @@
 fromversion: 6.8.0
-id: zscaler_private_access_modeling_rule
+id: ZscalerZPA_ModelingRule
 name: Zscaler Private Access Modeling Rule
 rules: ''
 schema: ''
