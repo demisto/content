@@ -1935,7 +1935,7 @@ def manual_get_team_members_command():
     Retrieves and updates in context the team members of given a team_name
     :return: List of team members
     """
-    team_name = demisto.args().get('team_name', '')
+    team_name = demisto.args().get('team_name')
     integration_context: dict = get_integration_context()
     service_url: str = integration_context.get('service_url', '')
     team_id = None
@@ -1950,7 +1950,8 @@ def manual_get_team_members_command():
             team['team_members'] = team_members
             integration_context['teams'] = json.dumps(teams)
             set_integration_context(integration_context)
-            return_results(json.dumps(teams))
+            return_results(integration_context['teams'])
+            break
     if not team_id:
         demisto.error(f'Did not find a team for team name: {team_name}')
         return_results(f'Did not find a team for team name: {team_name}')

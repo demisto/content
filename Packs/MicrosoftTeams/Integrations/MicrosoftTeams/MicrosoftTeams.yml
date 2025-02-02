@@ -742,6 +742,7 @@ script:
     arguments:
     - description: Specify in which team to pull members from.
       name: team_name
+      required: true
   dockerimage: demisto/teams:1.0.0.1860894
   longRunning: true
   longRunningPort: true
