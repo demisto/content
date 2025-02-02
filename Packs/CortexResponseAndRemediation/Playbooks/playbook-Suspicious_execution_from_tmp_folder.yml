@@ -523,7 +523,7 @@ tasks:
       id: 1a8ad8be-1a27-4f30-895b-0244fec589db
       version: -1
       name: File quarantine
-      description: 'Quarantines a file on selected endpoints. '
+      description: 'Quarantines a file on selected endpoints.'
       script: '|||core-quarantine-files'
       type: regular
       iscommand: true
