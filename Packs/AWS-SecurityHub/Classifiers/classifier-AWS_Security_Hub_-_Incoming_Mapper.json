@@ -19,7 +19,7 @@
                     "simple": "Confidence"
                 },
                 "AWS Security Hub Criticality": {
-                    "simple": "Criticality"
+                    "simple": "Criticality-test"
                 },
                 "AWS Security Hub Generator Id": {
                     "simple": "GeneratorId"
