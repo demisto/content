@@ -1,8 +1,3 @@
-
-#### Playbooks
-
-##### New: Suspicious certutil command line
-
 This playbook handles "Suspicious certutil command line" alerts.
 
 Playbook Stages:
@@ -22,7 +17,7 @@ If the playbook detects any of these conditions, it will proceed to the early co
 
 Early Containment:
 
-- Identify if an agent prevention rule was triggered. If triggered in block mode, proceed with the URL reputation check; otherwise, terminate the causality process tree.
+- Identify if an agent prevention rule was triggered. If triggered in **block mode**, proceed with the URL reputation check; otherwise, terminate the causality process tree.
 
 Verdict:
 
@@ -44,9 +39,50 @@ For response actions, you need the following integrations:
 - Palo Alto Networks PAN-OS
 - XQL Query Engine.
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: Suspicious certutil command line
+### Sub-playbooks
 
-New: Added a new triggers recommendation- Suspicious certutil command line that This trigger is responsible for handling 'Suspicious certutil command line' alert.
+* PAN-OS - Block URL - Custom URL Category
+
+### Integrations
+
+This playbook does not use any integrations.
+
+### Scripts
+
+* CommandLineAnalysis
+* IsIntegrationAvailable
+* SearchIncidentsV2
+* Set
+
+### Commands
+
+* closeInvestigation
+* core-get-endpoints
+* core-get-process-analytics-prevalence
+* core-get-quarantine-status
+* core-isolate-endpoint
+* core-quarantine-files
+* core-terminate-causality
+* url
+* wildfire-get-verdict
+* xdr-xql-generic-query
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Suspicious certutil command line](../doc_files/Suspicious_certutil_command_line.png)
