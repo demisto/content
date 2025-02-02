@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: FreshworksFreshservice - test 27/01/2025
+  id: FreshworksFreshservice
   version: -1
 configuration:
 - additionalinfo: Freshservice URL (make sure your URL includes your unique environment name).
@@ -160,8 +160,8 @@ configuration:
   required: false
   type: 19
 description: Freshservice is a service management solution that allows customers to manage service requests, incidents, change requests tasks, and problem investigation.
-display: Freshworks Freshservice - test 27/01/2025
-name: FreshworksFreshservice - test 27/01/2025
+display: Freshworks Freshservice
+name: FreshworksFreshservice
 script:
   commands:
   - arguments:
