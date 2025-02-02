@@ -398,15 +398,15 @@ class ClientV3(BaseClient):
             fetch_limit (int): The maximum number of events to fetch.
             start_date (datetime): The start date for the events to be fetched.
             end_date (datetime): The end date for the events to be fetched.
-
         Returns:
             list: A list of fetched events.
         """
         all_events = []
+        next_page_token = ''
         while len(all_events) < fetch_limit:
             page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
             query_string = self.prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date,
-                                                                      end_date=end_date)
+                                                                      end_date=end_date, next_page=next_page_token)
             response = self.fetch_events_request(query_string=query_string)
             all_events.extend(response.get('data', []))
             next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
@@ -417,7 +417,7 @@ class ClientV3(BaseClient):
         return all_events
 
     def prepare_query_string_for_fetch_events(self, page_size: int = None, start_date: datetime = None,
-                                              end_date: datetime = None) -> str:
+                                              end_date: datetime = None, next_page: str = None) -> str:
         """
         Prepares the query string for fetching events based on the provided parameters.
 
@@ -425,6 +425,7 @@ class ClientV3(BaseClient):
             page_size (int, optional): The size of each page to fetch. Defaults to None.
             start_date (datetime, optional): The start date of the events to fetch. Defaults to None.
             end_date (datetime, optional): The end date of the events to fetch. Defaults to None.
+            next_page (str, optional): The next page token. Defaults to None.
 
         Returns:
             str: The prepared query string for fetching events.
@@ -435,6 +436,8 @@ class ClientV3(BaseClient):
         query = f'{from_date_time_utc}&{to_date_time_utc}'
         if page_size:
             query += f'&pageSize={page_size}'
+        if next_page:
+            query += f'&nextPage={next_page}'
         demisto.debug(f'Query string for fetching events: {query}')
         return query
 
@@ -1019,8 +1022,8 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
         Args:
             client (ClientV3): The client object used for fetching events.
             fetch_limit (int): The maximum number of events to fetch.
-            last_run (Dict[str, Any]): A dictionary containing the last run information, including the latest events time,
-                latest events ID, and end date.
+            last_run (Dict[str, Any]): A dictionary containing the last run information, including the latest events time and
+                latest events ID.
 
         Returns:
             Tuple[List[Dict[str, Any]], Dict[str, Any]]: A tuple containing the fetched events and the updated last run
@@ -1030,13 +1033,13 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
     end_date = datetime.utcnow()
     start_date: datetime = datetime.strptime(latest_events_time, "%Y-%m-%dT%H:%M:%S.%fZ") if latest_events_time else (
         end_date - timedelta(minutes=1))
+
+    # Adjust fetch_limit to ensure that the number of events fetched matches the user's desired amount.
+    fetch_limit += len(last_run.get('latest_events_id', []))
     demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {last_run=}')
 
-    # manipulate fetch_limit in purpose to make sure the number of events fetched is what the user desire.
-    fetch_limit += len(last_run.get('latest_events_id', []))
-
     all_events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
-    events, updated_last_run = process_events(all_events, last_run)  # TODO: send process events the last run, also if no events last run should keep being the same last run
+    events, updated_last_run = process_events(all_events, last_run)
     demisto.debug(f'fetch_events: {updated_last_run.get("latest_events_id")=}, {updated_last_run.get("latest_events_time")=}')
 
     return events, updated_last_run
@@ -1049,11 +1052,11 @@ def process_events(events: List[Dict[str, Any]], last_run: Dict[str, Any], shoul
 
     Args:
         events (List[Dict[str, Any]]): The list of events to be processed.
-        last_run (Dict[str, Any]): The updated last run data.
+        last_run (Dict[str, Any]): The updated last run information.
         should_get_latest_events (bool, optional): A flag indicating whether to get the latest events ID. Defaults to True.
 
     Returns:
-        Tuple[List[Dict[str, Any]], [Dict[str, Any]]]: A tuple containing the processed events and the updated last run.
+        Tuple[List[Dict[str, Any]], [Dict[str, Any]]]: A tuple containing the processed events and the updated last run object.
 
     """
     demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id and time")
@@ -1074,7 +1077,8 @@ def process_events(events: List[Dict[str, Any]], last_run: Dict[str, Any], shoul
             latest_events_id.append(event.get('id'))
         filtered_events.append(event)
 
-    return filtered_events, {'latest_events_id': latest_events_id, 'latest_events_time': latest_event_time}
+    return filtered_events, {'latest_events_id': latest_events_id if latest_events_id else last_run_latest_events_id,
+                             'latest_events_time': latest_event_time}
 
 
 def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
@@ -1087,7 +1091,7 @@ def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
     events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
     demisto.debug(f'get_events: Found {len(events)} events.')
     if events:
-        events, _ = process_events(events, [], should_get_latest_events=False)
+        events, _ = process_events(events, {}, should_get_latest_events=False)
     return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
 
 
