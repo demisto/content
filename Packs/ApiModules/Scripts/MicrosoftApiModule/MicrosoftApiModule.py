@@ -699,7 +699,7 @@ def microsoft_defender_get_base_url(base_url: str, endpoint_type: str) -> str:
         url = base_url
     else:
         endpoint = MICROSOFT_365_DEFENDER_TYPE.get(endpoint_type, 'com')
-        url = MICROSOFT_365_DEFENDER_API_ENDPOINTS.get(endpoint, 'https://login.windows.net')
+        url = MICROSOFT_365_DEFENDER_API_ENDPOINTS.get(endpoint, 'https://api.security.microsoft.com')
     return url
 
 
