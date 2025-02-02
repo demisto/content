@@ -235,7 +235,7 @@ tasks:
       - "69"
     scriptarguments:
       query:
-        simple: let _start = now(-5h); AlertEvidence | where Timestamp >= _start | where AccountUpn == "${AzureRiskyUsers.RiskDetection.userPrincipalName}"
+        simple: let _start = now(-5h); AlertEvidence | where Timestamp >= _start | where AccountUpn == "${Core.OriginalAlert.raw_abioc.event.identity_name}"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -582,7 +582,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1262,7 +1262,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1304,7 +1304,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1346,7 +1346,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1955,7 +1955,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
