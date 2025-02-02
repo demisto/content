@@ -998,8 +998,9 @@ def get_searchable_mailboxes(client: EWSClient) -> CommandResults:
                                 searchable_mailboxes, ['displayName', 'mailbox'])
 
 
-def move_item_between_mailboxes(client: EWSClient, item_id, destination_mailbox: str, destination_folder_path: str,
-                                source_mailbox: Optional[str] = None, is_public: Optional[bool] = None) -> CommandResults:
+def move_item_between_mailboxes(src_client: EWSClient, item_id, destination_mailbox: str, destination_folder_path: str,
+                                dest_client: Optional[EWSClient] = None, source_mailbox: Optional[str] = None,
+                                is_public: Optional[bool] = None) -> CommandResults:
     """
     Moves item between mailboxes
     :param client: EWS Client
@@ -1010,12 +1011,15 @@ def move_item_between_mailboxes(client: EWSClient, item_id, destination_mailbox:
     :param (Optional) is_public: is the destination folder public
     :return: result object
     """
-    source_account = client.get_account(source_mailbox)
-    destination_account = client.get_account(destination_mailbox)
-    is_public = client.is_default_folder(destination_folder_path, is_public)
-    destination_folder = client.get_folder_by_path(destination_folder_path, destination_account, is_public)
+    if dest_client is None:
+        dest_client = src_client
 
-    item = client.get_item_from_mailbox(source_account, item_id)
+    source_account = src_client.get_account(source_mailbox)
+    destination_account = dest_client.get_account(destination_mailbox)
+    is_public = dest_client.is_default_folder(destination_folder_path, is_public)
+    destination_folder = dest_client.get_folder_by_path(destination_folder_path, destination_account, is_public)
+
+    item = src_client.get_item_from_mailbox(source_account, item_id)
     exported_items = source_account.export([item])
     destination_account.upload([(destination_folder, exported_items[0])])
     source_account.bulk_delete([item])

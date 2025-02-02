@@ -182,7 +182,8 @@ def get_client_from_params(params: dict) -> EWSClient:
     is_public_folder = argToBoolean(params.get('is_public_folder', False))
     request_timeout = int(params.get('request_timeout', 120))
     mark_as_read = params.get('mark_as_read', False)
-    incident_filter = IncidentFilter(params.get('incidentFilter', IncidentFilter.RECEIVED_FILTER))
+    incident_filter = IncidentFilter(params.get('incidentFilter', IncidentFilter.RECEIVED_FILTER)
+                                     or IncidentFilter.RECEIVED_FILTER)
     self_deployed = argToBoolean(params.get('self_deployed', False))
     insecure = argToBoolean(params.get('insecure', False))
     proxy = params.get('proxy', False)
@@ -1813,7 +1814,6 @@ def sub_main():  # pragma: no cover
         # commands that return a single note result
         normal_commands = {
             "ews-get-searchable-mailboxes": get_searchable_mailboxes,
-            "ews-move-item-between-mailboxes": move_item_between_mailboxes,
             "ews-move-item": move_item,
             "ews-delete-items": delete_items,
             "ews-search-mailbox": search_items_in_mailbox,
@@ -1855,6 +1855,20 @@ def sub_main():  # pragma: no cover
         elif command == "send-mail":
             commands_res = send_email(client, **args)
             return_results(commands_res)
+
+        elif command == "ews-move-item-between-mailboxes":
+            # Needs a client configured for each one of the mailboxes
+            dest_params = params.copy()
+            dest_params['default_target_mailbox'] = args.get('destination_mailbox')
+            dest_client = get_client_from_params(dest_params)
+            return_results(move_item_between_mailboxes(src_client=client,
+                                                       item_id=args.get('item_id', ''),
+                                                       destination_mailbox=args.get('destination_mailbox', ''),
+                                                       destination_folder_path=args.get('destination_folder_path', ''),
+                                                       dest_client=dest_client,
+                                                       source_mailbox=args.get('source_mailbox', None),
+                                                       is_public=args.get('is_public', None),
+                                                       ))
 
         # special outputs commands
         elif command in special_output_commands:
