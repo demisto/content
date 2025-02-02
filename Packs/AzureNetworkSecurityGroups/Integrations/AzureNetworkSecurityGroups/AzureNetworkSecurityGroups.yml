@@ -613,7 +613,7 @@ script:
     - contextPath: AzureNSG.ResourceGroup.tags.type
       description: 'The type tag associated with the Azure Network Security Groups resource group.'
       type: String
-  - description: Get all public IP addresses in a resource group.
+  - description: Gets public IP addresses in a resource group.
     name: azure-nsg-public-ip-addresses-list
     outputs:
     - contextPath: AzureNSG.PublicIPAdress.name
@@ -663,7 +663,7 @@ script:
       predefined:
       - "false"
       - "true"
-  - description: Gets all virtual networks in a resource group.
+  - description: Gets virtual networks in a resource group.
     name: azure-nsg-virtual-networks-list
     outputs:
     - contextPath: AzureNSG.VirtualNetwork.name
@@ -710,7 +710,7 @@ script:
       predefined:
       - "false"
       - "true"
-  - description: Creates or updates a network security group in the specified resource group.
+  - description: Creates a network security group in the specified resource group.
     name: azure-nsg-security-group-create
     outputs:
     - contextPath: AzureNSG.SecurityGroup.name
@@ -750,7 +750,7 @@ script:
       type: String
       isArray: false
       required: true
-  - description: Gets all network interfaces in a resource group.
+  - description: Gets network interfaces in a resource group.
     name: azure-nsg-network-interfaces-list
     outputs:
     - contextPath: AzureNSG.NetworkInterfaces.name
