@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: silent-MFA was disabled for an Azure identity
-description: "**This playbook addresses the following alert**:\n- MFA was disabled for an Azure identity\n- MFA was disabled for an Azure identity from a new country\n\n**Playbook Stages**:\n\n**Triage**:\n- Gather initial information about the initiating user.\n**Investigation**:\n- **IP Enrichment**:\n  - Analyze the reputation of the initiating user IP addresses.\n- **Azure Detection Analysis**:\n  - Investigate recent Azure security alerts for the initiating user to detect additional suspicious activity.\n  - If any detections found, investigate the related user agent. \n- **User Risk Analysis**:\n  - Assess the risk level of the initiating user based on XSIAM Core and Azure risk score.\n  - Investigate reasons behind any identified risks, including recent detections.\n- **Attacker Geolocation Analysis**:\n  - Investigate the initiating user connection geolocation.\n- **Insights Analysis**:\n  - Investigate the XSIAM insights that related to the initiating user to detect additional suspicious activity.\n\n**Verdict & Containment**:\n- If any suspicious evidence found during the investigation phase and the integration \"Microsoft Graph User\" integration is enabled, the playbook will revoke the sessions of the initiating user and the destination user. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n- If the initiating user IP is malicious, or the initiating user risk is HIGH, or more than one suspicious evidence found during the Azure detection analysis, Attacker geolocation analysis and Insight analysis investigations, and the integration \"Microsoft Graph User\" is enabled, the playbook will revoke the sessions of the initiating user and the destination user and will recommend manually to disable either one of the users or both of the users. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n\n**Requirements**:\n- `Azure Risky Users` for retrieving user risk scores.\n- `Microsoft 365 Defender` for advanced hunting queries and Azure security alerts.\n- `Microsoft Graph User` for disabling accounts and revoking sessions."
+description: "**This playbook addresses the following alerts**:\n- MFA was disabled for an Azure identity\n- MFA was disabled for an Azure identity from a new country\n\n**Playbook Stages**:\n\n**Triage**:\n- Gather initial information about the initiating user.\n**Investigation**:\n- **IP Enrichment**:\n  - Analyze the reputation of the initiating user IP addresses.\n- **Azure Detection Analysis**:\n  - Investigate recent Azure security alerts for the initiating user to detect additional suspicious activity.\n  - If any detections found, investigate the related user agent. \n- **User Risk Analysis**:\n  - Assess the risk level of the initiating user based on XSIAM Core and Azure risk score.\n  - Investigate reasons behind any identified risks, including recent detections.\n- **Attacker Geolocation Analysis:**:\n  - Investigate the initiating user connection geolocation.\n- **Insights Analysis**:\n  - Investigate the XSIAM insights that related to the initiating user to detect additional suspicious activity.\n\n**Verdict & Containment**:\n- If any suspicious evidence is found during the investigation phase and the integration \"Microsoft Graph User\" integration is enabled, the playbook will revoke the sessions of the initiating user and the destination user. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n- If any suspicious evidence found during the Azure detection analysis, Attacker geolocation analysis and Insight analysis investigations, and the integration \"Microsoft Graph User\" is enabled, the playbook will revoke the sessions of the initiating user and the destination user and will recommend manually to disable either one of the users or both of the users. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n\n**Requirements:**:\n- `Azure Risky Users` for retrieving user risk scores.\n- `Microsoft 365 Defender` for advanced hunting queries and Azure security alerts.\n- `Microsoft Graph User` for disabling accounts and revoking sessions."
 issilent: true
 tags:
 - TA0003 - Persistence
@@ -118,7 +118,7 @@ tasks:
     task:
       id: 474143cf-c989-4506-8882-3932c2e185d2
       version: -1
-      name: Get initiator user risk score
+      name: Get initiating user risk score
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
       script: '|||core-list-risky-users'
       type: regular
@@ -154,7 +154,7 @@ tasks:
     task:
       id: cce928e7-4f00-4fee-8666-3c105368b87c
       version: -1
-      name: Get initiator user Azure risk score
+      name: Get initiating user Azure risk score
       description: Returns a list of all risky users and their properties.
       script: '|||azure-risky-users-list'
       type: regular
