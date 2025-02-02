@@ -1,0 +1,54 @@
+category: Analytics & SIEM
+commonfields:
+  id: Celonis
+  version: -1
+configuration:
+- defaultvalue: https://<teamname>.<realm>.celonis.cloud
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Client ID
+  additionalinfo: The Client ID to use for connection.
+  name: credentials
+  required: true
+  type: 4
+  section: Connect
+  hiddenusername: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- additionalinfo: 'Defines the maximum number of audits events per fetch cycle. Default value: 2000.'
+  defaultvalue: "2000"
+  display: Maximum number of events per fetch
+  name: max_events_per_fetch
+  required: true
+  type: 0
+  section: Collect
+  advanced: true
+description: ''
+display: Celonis
+name: Celonis
+script:
+  commands:
+  - arguments:
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
