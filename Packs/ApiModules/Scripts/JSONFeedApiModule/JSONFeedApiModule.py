@@ -111,6 +111,9 @@ class Client:
             return headers
 
     def build_iterator(self, feed: dict, feed_name: str, **kwargs) -> Tuple[List, bool]:
+        demisto.debug("In build_iterator")
+        demisto.debug(f"feed_name is: {feed_name}")
+        demisto.debug(f"feed is: {feed}")
         url = feed.get('url', self.url)
 
         if is_demisto_version_ge('6.5.0'):
@@ -122,6 +125,10 @@ class Client:
             etag = last_run.get(prefix_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
             last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')  # noqa: E501
             last_updated = last_run.get(prefix_feed_name, {}).get('last_updated') or last_run.get(feed_name, {}).get('last_updated')  # noqa: E501
+            demisto.debug(f"last_run is: {last_run}")
+            demisto.debug(f"etag is: {etag}")
+            demisto.debug(f"last_modified is: {last_modified}")
+            demisto.debug(f"last_updated is: {last_updated}")
             # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
             # we'll refresh the indicators to ensure their expiration time is updated.
             # For further details, refer to : https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Json+Api+Module
@@ -160,10 +167,18 @@ class Client:
 
         try:
             r.raise_for_status()
+            
             if r.content:
                 demisto.debug(f'JSON: found content for {feed_name}')
                 data = r.json()
                 result = jmespath.search(expression=feed.get('extractor'), data=data)
+                if not result:
+                    demisto.debug(f"result is: {result}")
+                    demisto.debug(f"r.content is: {r.content}")
+                    demisto.debug(f"r.status_code is: {r.status_code}")
+                    demisto.debug(f"data is: {data}")
+                    #result = []
+                    
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
@@ -253,21 +268,30 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     indicators: List[dict] = []
     feeds_results = {}
     no_update = False
+    demisto.debug(f"client.feed_name_to_config.items() are: {client.feed_name_to_config.items()}")
     for feed_name, feed in client.feed_name_to_config.items():
+        demisto.debug(f"feed_name is: {feed_name}")
+        demisto.debug(f"feed is: {feed}")
         custom_build_iterator = feed.get('custom_build_iterator')
         if custom_build_iterator:
+            demisto.debug("in custom build iterator")
             indicators_from_feed = custom_build_iterator(client, feed, limit, **kwargs)
             if not isinstance(indicators_from_feed, list):
                 raise Exception("Custom function to handle with pagination must return a list type")
             feeds_results[feed_name] = indicators_from_feed
         else:
             feeds_results[feed_name], no_update = client.build_iterator(feed, feed_name, **kwargs)
+            #demisto.debug(f"feeds_results are: {feeds_results}")
+            #demisto.debug(f"feeds_results[feed_name] are: {feeds_results[feed_name]}")
 
     indicators_values: Set[str] = set()
     indicators_values_indexes = {}
 
     for service_name, items in feeds_results.items():
+        demisto.debug(f"service_name is: {service_name}")
+        #demisto.debug(f"items are: {items}")
         feed_config = client.feed_name_to_config.get(service_name, {})
+        demisto.debug(f"feed_config is: {feed_config}")
         indicator_field = str(feed_config.get('indicator') if feed_config.get('indicator') else 'indicator')
         indicator_type = str(feed_config.get('indicator_type', indicator_type))
         use_prefix_flat = bool(feed_config.get('flat_json_with_prefix', False))
@@ -276,7 +300,10 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         create_relationships_function = feed_config.get('create_relations_function')
         service_name = get_formatted_feed_name(service_name)
 
+        # if not items:
+        #     demisto.debug(f"Service Name: {service_name} - No indicators was fetched.")
         for item in items:
+            #demisto.debug(f"item is: {item}")
             if isinstance(item, str):
                 item = {indicator_field: item}
 
