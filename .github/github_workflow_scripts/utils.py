@@ -22,7 +22,7 @@ TIM_REVIEWER_KEY = "TIM_REVIEWER"
 
 CONTENT_ROLES_FILENAME = "content_roles.json"
 GITHUB_HIDDEN_DIR = ".github"
-CONTENT_ROLES_BLOB_MASTER_URL = f"https://raw.githubusercontent.com/demisto/content/master/{GITHUB_HIDDEN_DIR}/{CONTENT_ROLES_FILENAME}"
+CONTENT_ROLES_BLOB_MASTER_URL = f"https://raw.githubusercontent.com/demisto/content/update_the_security_reviewer/{GITHUB_HIDDEN_DIR}/{CONTENT_ROLES_FILENAME}"
 
 LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
 
@@ -297,18 +297,14 @@ def get_content_roles(path: Path | None = None) -> dict[str, Any] | None:
     - `dict[str, Any]` representing the content roles.
     """
 
-    # print(f"Attempting to retrieve '{CONTENT_ROLES_FILENAME}' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")
-    # roles = get_content_roles_from_blob()
-    #
-    # if not roles:
-    #     print(f"Unable to retrieve '{CONTENT_ROLES_FILENAME}' from blob. Attempting to retrieve from the filesystem...")
-    #     repo_root_path = get_repo_path(str(path))
-    #     content_roles_path = repo_root_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
-    #     roles = load_json(content_roles_path)
-    print(f"Unable to retrieve '{CONTENT_ROLES_FILENAME}' from blob. Attempting to retrieve from the filesystem...")
-    repo_root_path = get_repo_path(str(path))
-    content_roles_path = repo_root_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
-    roles = load_json(content_roles_path)
+    print(f"Attempting to retrieve '{CONTENT_ROLES_FILENAME}' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")
+    roles = get_content_roles_from_blob()
+
+    if not roles:
+        print(f"Unable to retrieve '{CONTENT_ROLES_FILENAME}' from blob. Attempting to retrieve from the filesystem...")
+        repo_root_path = get_repo_path(str(path))
+        content_roles_path = repo_root_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
+        roles = load_json(content_roles_path)
 
     return roles
 
