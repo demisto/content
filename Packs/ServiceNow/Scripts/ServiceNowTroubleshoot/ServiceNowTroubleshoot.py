@@ -65,7 +65,7 @@ def filter_instances_data(instances_data: dict[str, Any]) -> tuple[dict, list]:
     filtered_data = {}
     disabled_instances = []
     for instance_name, data in instances_data.items():
-        if data['enabled'] == 'true':
+        if data.get('enabled') == 'true':
             filtered_data[instance_name] = data
             continue
         if (int(data.get('health', {}).get('incidentsPulled', 0)) > 0
@@ -104,7 +104,7 @@ def categorize_active_incidents(disabled_instances: list[str]) -> tuple[dict, di
             category = "disabled" if source_instance in disabled_instances else "enabled"
             categorized_incidents[category][source_instance].append(incident_name)
 
-    return categorized_incidents["enabled"], categorized_incidents["disabled"]
+    return categorized_incidents.get("enabled", {}), categorized_incidents.get("disabled", {})
 
 
 def parse_disabled_instances(disabled_incidents_instances: dict[str, Any]) -> str:
