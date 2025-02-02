@@ -518,9 +518,10 @@ tasks:
       version: -1
       name: Approve XQL search & quarantine & Block URL & Isolation
       description: |-
-        Endpoint isolation is recommended since the following verdict has been confirmed:
-
-         - MSI package was installed from a malicious remote URL.
+        Analyst approval is required for the following actions:
+        - Blocking the malicious URL.
+        - Executing an XQL query to identify files downloaded via the malicious URL.
+        - Isolating the endpoint.
       type: collection
       iscommand: false
       brand: ""
@@ -1356,10 +1357,7 @@ tasks:
       id: 4616c7a0-eb85-4ed3-82ec-f4417441326a
       version: -1
       name: Approve the URL block using PAN-OS
-      description: |-
-        Endpoint isolation is recommended since the following verdict has been confirmed:
-
-         - MSI package was installed from a malicious remote URL.
+      description: Analyst approval is required to block the malicious URL.
       type: collection
       iscommand: false
       brand: ""
