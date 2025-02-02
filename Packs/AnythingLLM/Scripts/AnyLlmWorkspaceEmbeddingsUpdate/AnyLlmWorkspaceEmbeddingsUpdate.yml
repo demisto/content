@@ -1,0 +1,27 @@
+args:
+- description: field new value.
+  name: new
+- description: field old value.
+  name: old
+comment: Executes the actions taken on an embedded document in the grid field. "Pin" adds the entire document to the LLM's conversation context. Care should be taken not to pin  very large documents that may impact the conversation's context negatively. "Unpin" removes the pinning of the document to the workspace. "Remove" removes the document's embedding from the workspace.
+commonfields:
+  id: AnyLlmWorkspaceEmbeddingsUpdate
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmWorkspaceEmbeddingsUpdate
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

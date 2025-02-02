@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: ZeroFox
   version: -1
@@ -7,28 +10,34 @@ configuration:
   display: URL (e.g., https://api.zerofox.com/)
   name: url
   required: true
+  section: Connect
   type: 0
 - display: Username
   name: credentials
   required: true
+  section: Connect
   type: 9
 - display: Fetch only escalated alerts
   name: only_escalated
   type: 8
   required: false
   defaultvalue: "false"
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: "3 days"
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
+  section: Collect
   type: 0
 - display: Fetch Limit
   name: fetch_limit
@@ -36,21 +45,25 @@ configuration:
   required: false
   hidden: true
   defaultvalue: "100"
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   required: false
   additionalinfo: This controls how often the integration will perform a fetch_incidents command
   defaultvalue: "10"
+  section: Collect
   advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 description: Cloud-based SaaS to detect risks found on social media and digital channels.
 display: ZeroFox
 name: ZeroFox
