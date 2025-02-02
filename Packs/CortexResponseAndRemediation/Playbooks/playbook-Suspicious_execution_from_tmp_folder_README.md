@@ -33,7 +33,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-This playbook does not use any sub-playbooks.
+* Entity Enrichment - Generic v3
 
 ### Integrations
 
@@ -53,8 +53,6 @@ This playbook does not use any integrations.
 * core-quarantine-files
 * core-run-script-execute-commands
 * core-terminate-causality
-* createNewIndicator
-* enrichIndicators
 * extractIndicators
 * file
 
