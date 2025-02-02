@@ -128,6 +128,17 @@ class PlaceHolders(enum.Enum):
     FIRST_FETCH_DATETIME = "@first_fetch_datetime"
 
 
+class IdTypes(enum.Enum):
+    INTEGER = "INTEGER"
+    STRING = "STRING"
+
+
+ALL_ID_TYPES = [
+    IdTypes.INTEGER.value,
+    IdTypes.STRING.value,
+]
+
+
 def datetime_to_timestamp_format(dt: datetime, timestamp_format: str) -> str:
     if timestamp_format == "epoch":
         return str(dt.timestamp())
@@ -332,7 +343,13 @@ def fetch_events(client: Client,
     # region Gets events & Searches for pagination
     all_events_list: list[dict[str, Any]] = []
     pagination_needed: bool = True
+    id_type: str | None = None
     id_keys: list[str] = argToList(params.get('id_keys'), '.')
+    if id_keys:
+        id_type: str = params.get('id_type')
+        if not id_type or id_type not in ALL_ID_TYPES:
+            return_error(f"ID type was {id_type} but must be one of {', '.join(ALL_ID_TYPES)}")
+            return {}, []
     while pagination_needed:
 
         raw_events = client.search_events(endpoint=endpoint,
@@ -350,7 +367,7 @@ def fetch_events(client: Client,
 
     # region Collect all events based on their last fetch time.
     latest_created_datetime: datetime = last_fetched_datetime
-    last_fetched_id: str | None = None
+    last_fetched_id: Any | None = None
     returned_event_list: list[dict[str, Any]] = []
     for event in all_events_list:
 
@@ -367,11 +384,15 @@ def fetch_events(client: Client,
 
         # Handle the last event id.
         if id_keys:
-            current_id: str = dict_safe_get(event, id_keys)  # noqa
+            current_id: Any = dict_safe_get(event, id_keys)
             if last_fetched_id is None:
                 last_fetched_id = current_id
             else:
-                last_fetched_id = max(last_fetched_id, current_id)
+                if id_type == IdTypes.INTEGER.value:
+                    last_fetched_id = max(last_fetched_id, current_id)  # noqa
+                else:
+                    # We assume the last event contains the last id.
+                    last_fetched_id = current_id
 
     # region Saves important parameters here to Integration context / last run
     demisto.debug(f'next run:{latest_created_datetime}')
@@ -381,7 +402,7 @@ def fetch_events(client: Client,
         PlaceHolders.FIRST_FETCH_DATETIME.value: last_run[PlaceHolders.FIRST_FETCH_DATETIME.value],
     }
     if last_fetched_id is not None:
-        next_run[PlaceHolders.LAST_FETCHED_ID.value] = last_fetched_id
+        next_run[PlaceHolders.LAST_FETCHED_ID.value] = str(last_fetched_id)
     # endregion
 
     return next_run, returned_event_list
