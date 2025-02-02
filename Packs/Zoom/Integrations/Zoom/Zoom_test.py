@@ -2182,7 +2182,7 @@ async def test_handle_zoom_response(event_type, expected_status,
     mocker.patch('Zoom.check_and_handle_entitlement')
     mocker.patch('Zoom.process_entitlement_reply')
     mocker.patch('Zoom.handle_mirroring')
-    mocker.patch('Zoom.zoom_get_user_email_by_id' , return_value="mock_user_email")
+    mocker.patch('Zoom.zoom_get_user_email_by_id', return_value="mock_user_email")
     mocker.patch.object(demisto, 'params', return_value={'credentials': {'identifier': 'test', 'password': 'testpass'}})
 
     # Create a mock HTTPBasicCredentials object
@@ -2279,7 +2279,7 @@ def test_save_entitlement():
     }
     # Mock the required functions (get_integration_context, set_to_integration_context_with_retries) and any other dependencies
     with patch('Zoom.get_integration_context') as mock_get_integration_context, \
-        patch('Zoom.set_to_integration_context_with_retries') as mock_set_integration_context:
+            patch('Zoom.set_to_integration_context_with_retries') as mock_set_integration_context:
         # Mock the return values of the mocked functions
         mock_get_integration_context.return_value = {'messages': []}
         fixed_timestamp = '2023-09-09 20:08:50'
