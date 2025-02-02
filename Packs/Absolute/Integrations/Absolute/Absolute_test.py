@@ -520,12 +520,11 @@ def test_fetch_events_case_no_events_exist(mocker, absolute_client_v3):
 
     Then:
         - The events list should be empty.
-        - The last_run object should contain end_date.
     """
     from Absolute import fetch_events
     mock_response = {'data': [], 'metadata': {}}
     mocker.patch('Absolute.ClientV3.fetch_events_between_dates', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ([], '')))
+    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), {}))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
 
@@ -540,12 +539,11 @@ def test_fetch_events_first_fetch(mocker, absolute_client_v3):
 
     Then:
         - The events list should contain the fetched events.
-        - The last_run object should contain end_date.
     """
     from Absolute import fetch_events
     mock_response = util_load_json('test_data/siem_events.json')
     mocker.patch('Absolute.ClientV3.fetch_events_between_dates', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ([], '')))
+    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), {}))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
 
@@ -665,7 +663,7 @@ def test_add_time_field(absolute_client_v3):
     from Absolute import process_events
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
-    all_events, _ = process_events(events=events, last_run_latest_events_id=[])
+    all_events, _ = process_events(events=events, last_run={})
     for event in all_events:
         assert event.get('_time')
 
@@ -687,12 +685,12 @@ def test_get_latest_events(absolute_client_v3):
     from Absolute import process_events
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
-    _, latest_events_id_and_time_tuple = process_events(events=events, last_run_latest_events_id=[])
-    latest_events_id, latest_event_time = latest_events_id_and_time_tuple
-    assert len(latest_events_id) == 2
-    assert len(set(latest_events_id)) == 2
-    assert latest_events_id == ['id14', 'id15']
-    assert events[13].get('eventDateTimeUtc') == events[14].get('eventDateTimeUtc') == latest_event_time
+    _, last_run = process_events(events=events, last_run={})
+    #latest_events_id, latest_event_time = latest_events_id_and_time_tuple
+    assert len(last_run.get('latest_events_id')) == 2
+    assert len(set(last_run.get('latest_events_id'))) == 2
+    assert last_run.get('latest_events_id') == ['id14', 'id15']
+    assert events[13].get('eventDateTimeUtc') == events[14].get('eventDateTimeUtc') == last_run.get('latest_event_time')
 
 
 def test_get_events_command(mocker, absolute_client_v3):
