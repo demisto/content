@@ -1,6 +1,6 @@
 {
-    "name": "GenericEventCollector",
-    "description": "This pack provides a generic event collector integration that can be used to collect events from various sources.",
+    "name": "GenericAPIEventCollector",
+    "description": "This pack provides a generic API event collector integration that can be used to collect events from various sources.",
     "support": "xsoar",
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
@@ -19,5 +19,5 @@
     "marketplaces": [
         "marketplacev2"
     ],
-    "defaultDataSource": "GenericEventCollector"
+    "defaultDataSource": "GenericAPIEventCollector"
 }
