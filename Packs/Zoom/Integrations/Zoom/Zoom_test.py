@@ -1793,7 +1793,7 @@ def test_zoom_get_user_email_by_id(mocker):
     mock_zoom_list_users = mocker.patch.object(client, 'zoom_list_users', return_value=expected_response)
     from Zoom import zoom_get_user_email_by_id
     result = zoom_get_user_email_by_id(client, user_id)
-    mock_zoom_list_users.assert_called_with(page_size=50, url_suffix=f'users/{user_id}')
+    mock_zoom_list_users.assert_called_with(page_size=1, url_suffix=f'users/{user_id}')
     assert result == expected_user_email
 
 
