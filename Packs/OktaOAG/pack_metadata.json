@@ -2,7 +2,7 @@
     "name": "Okta Access Gateway",
     "description": "Okta Access Gateway is a reverse proxy based virtual application, designed to secure web applications that don't natively support SAML or OIDC.",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
