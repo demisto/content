@@ -7,7 +7,6 @@ from typing import Any
 from pytest_mock import MockerFixture
 import pytest
 
-import demistomock
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
