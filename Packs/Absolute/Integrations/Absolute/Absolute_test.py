@@ -1,7 +1,6 @@
 import json
 import re
 from datetime import datetime
-from freezegun import freeze_time
 
 import pytest
 from pytest import raises
@@ -156,65 +155,11 @@ def test_invalid_absolute_api_url(url):
         validate_absolute_api_url(url)
 
 
-@pytest.mark.parametrize('method, canonical_uri ,query_string, payload, expected_canonical_request',
-                         [
-                             ('GET', '/v2/reporting/devices', '', '', EXPECTED_CANONICAL_GET_REQ_NO_PAYLOAD_NO_QUERY),
-                             ('PUT', '/v2/devices/e93f2464-2766-4a6b-8f00-66c8fb13e23a/cdf',
-                              "substringof('760001', esn) eq true", '',
-                              EXPECTED_CANONICAL_PUT_REQ_NO_PAYLOAD_WITH_QUERY),
-                             ('POST', '/v2/devices/e93f2464-2766-4a6b-8f00-66c8fb13e23a/cdf',
-                              "substringof('760001', esn) eq true or availablePhysicalMemroyBytes lt 1073741824",
-                              json.dumps([{'deviceUid': 'e93f2464-2766-4a6b-8f00-66c8fb13e23a'}]),
-                              EXPECTED_CANONICAL_POST_REQ_WITH_PAYLOAD_WITH_QUERY),
-                         ])
-def test_create_canonical_request(method, canonical_uri, query_string, payload, expected_canonical_request):
-    client = absolute_client_v3()
-    canonical_res = client.create_canonical_request(method=method, canonical_uri=canonical_uri,
-                                                    query_string=query_string,
-                                                    payload=payload)
-    assert canonical_res == expected_canonical_request
-
-
-@pytest.mark.parametrize('canonical_req, expected_signing_string',
-                         [(EXPECTED_CANONICAL_GET_REQ_NO_PAYLOAD_NO_QUERY, EXPECTED_SIGNING_STRING_GET),
-                          (EXPECTED_CANONICAL_PUT_REQ_NO_PAYLOAD_WITH_QUERY, EXPECTED_SIGNING_STRING_PUT),
-                          (EXPECTED_CANONICAL_POST_REQ_WITH_PAYLOAD_WITH_QUERY, EXPECTED_SIGNING_STRING_POST)])
-@freeze_time("2017-09-26 17:22:13 UTC")
-def test_create_signing_string(canonical_req, expected_signing_string):
-    client = absolute_client_v3()
-    assert client.create_signing_string(canonical_req) == expected_signing_string
-
-
-@freeze_time("2017-09-26 17:22:13 UTC")
-def test_create_signing_key():
-    client = absolute_client_v3()
-    assert client.create_signing_key() == SIGNING_KEY
-
-
-@pytest.mark.parametrize('signing_string, expected_signature',
-                         [(EXPECTED_SIGNING_STRING_GET, GET_REQUEST_SIGNATURE),
-                          (EXPECTED_SIGNING_STRING_PUT, PUT_REQUEST_SIGNATURE),
-                          (EXPECTED_SIGNING_STRING_POST, POST_REQUEST_SIGNATURE)])
-def test_create_signature(signing_string, expected_signature):
-    client = absolute_client_v3()
-    assert client.create_signature(signing_string, SIGNING_KEY) == expected_signature
-
-
-@pytest.mark.parametrize('signature, expected_authorization_header',
-                         [(GET_REQUEST_SIGNATURE, GET_REQUEST_AUTH_HEADER),
-                          (PUT_REQUEST_SIGNATURE, PUT_REQUEST_AUTH_HEADER),
-                          (POST_REQUEST_SIGNATURE, POST_REQUEST_AUTH_HEADER)])
-@freeze_time("2017-09-26 17:22:13 UTC")
-def test_add_authorization_header(signature, expected_authorization_header):
-    client = absolute_client_v3()
-    assert client.add_authorization_header(signature) == expected_authorization_header
-
-
-def test_get_custom_device_field_list_command(mocker, absolute_client):
+def test_get_custom_device_field_list_command(mocker, absolute_client_v3):
     from Absolute import get_custom_device_field_list_command
     response = util_load_json('test_data/custom_device_field_list_response.json')
-    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
-    command_result = get_custom_device_field_list_command(client=absolute_client,
+    mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
+    command_result = get_custom_device_field_list_command(client=absolute_client_v3,
                                                           args={'device_id': '02b9daa4-8e60-4640-8b15-76d41ecf6a94'})
     assert command_result.outputs == {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'),
                                       'CDFValues': [{'CDFUID': 'njazpLrEQwqeFDqk4yQCfg', 'FieldName': 'Asset Number',

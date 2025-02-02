@@ -957,6 +957,97 @@ def get_device_location_command(args, client) -> CommandResults:
             readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
 
 
+''' EVENT COLLECTOR '''
+
+
+def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """
+        Fetches events from the API client, with time window and duplication handling.
+        The function using the client to fetch events, and then helper function to handle duplication,
+        add time field and calculate the new latest events.
+
+        Args:
+            client (ClientV3): The client object used for fetching events.
+            fetch_limit (int): The maximum number of events to fetch.
+            last_run (Dict[str, Any]): A dictionary containing the last run information, including the latest events time,
+                latest events ID, and end date.
+
+        Returns:
+            Tuple[List[Dict[str, Any]], Dict[str, Any]]: A tuple containing the fetched events and the updated last run
+                information.
+        """
+    last_run_latest_events_id = last_run.get('latest_events_id', [])
+    latest_events_time = last_run.get('latest_events_time')
+    end_date = datetime.utcnow()
+    start_date: datetime = datetime.strptime(latest_events_time, "%Y-%m-%dT%H:%M:%S.%fZ") if latest_events_time else (
+        end_date - timedelta(minutes=1))
+    demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {last_run=}')
+
+    if fetch_limit == len(last_run_latest_events_id):
+        demisto.debug(f'fetch_limit ({fetch_limit}) equally to the number of last_run_latest_events_id. doubling the fetch_limit')
+        fetch_limit *= 2
+
+    all_events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
+    events, latest_events_id_and_time_tuple = process_events(all_events, last_run_latest_events_id)
+    latest_events_id, latest_events_time = latest_events_id_and_time_tuple
+    demisto.debug(f'fetch_events: {latest_events_id=}, {latest_events_time=}')
+
+    return events, {
+        'latest_events_id': latest_events_id,
+        'latest_events_time': latest_events_time
+    }
+
+
+def process_events(events: List[Dict[str, Any]], last_run_latest_events_id: List[str], should_get_latest_events: bool = True) -> \
+        tuple[List[Dict[str, Any]], tuple[List[str], str]]:
+    """
+    Processes events by handling duplication, adding a time field, and optionally getting the latest events ID and time.
+
+    Args:
+        events (List[Dict[str, Any]]): The list of events to be processed.
+        last_run_latest_events_id (List[str]): The list of latest events ID from the last run.
+        should_get_latest_events (bool, optional): A flag indicating whether to get the latest events ID. Defaults to True.
+
+    Returns:
+        Tuple[List[Dict[str, Any]], List[str]]: A tuple containing the processed events and the latest events ID.
+
+    """
+    demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id and time")
+    earliest_event_time = events[0].get('eventDateTimeUtc') if events else None
+    latest_event_time = events[-1].get('eventDateTimeUtc') if events else ''
+    latest_events_id = []
+    filtered_events = []
+    for event in events:
+        event_time = event.get('eventDateTimeUtc')
+        # handle duplication
+        if event_time == earliest_event_time and event.get('id') in last_run_latest_events_id:
+            continue
+        # adding time field
+        event['_time'] = event_time
+        # latest events batch
+        if should_get_latest_events and event_time == latest_event_time:
+            latest_events_id.append(event.get('id'))
+        filtered_events.append(event)
+
+    if not filtered_events:
+        latest_event_time = ''
+    return filtered_events, (latest_events_id, latest_event_time)
+
+
+def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
+    start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
+    end_date = arg_to_datetime(args.get('end_date', "now"))
+    fetch_limit = int(args.get('limit', 50))
+    if start_date > end_date:
+        raise ValueError("Start date is greater than the end date. Please provide valid dates.")
+
+    events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
+    demisto.debug(f'get_events: Found {len(events)} events.')
+    if events:
+        events, _ = process_events(events, [], should_get_latest_events=False)
+    return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
+
+
 ''' MAIN FUNCTION '''
 
 
