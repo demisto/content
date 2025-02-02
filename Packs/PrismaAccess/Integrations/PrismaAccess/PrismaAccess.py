@@ -230,7 +230,7 @@ def http_request(uri: str, method: str, headers: dict = {},
         uri,
         headers=headers,
         data=body,
-        verify=USE_SSL,
+        verify=USE_SSL,  # pylint: disable=E0606
         params=params,
         files=files
     )
@@ -327,11 +327,11 @@ def prisma_access_test():
             params = {
                 'type': 'op',
                 'cmd': '<show><system><info></info></system></show>',
-                'key': API_KEY
+                'key': API_KEY  # pylint: disable=E0606
             }
 
             http_request(
-                URL,
+                URL,  # pylint: disable=E0606
                 'GET',
                 params=params
             )

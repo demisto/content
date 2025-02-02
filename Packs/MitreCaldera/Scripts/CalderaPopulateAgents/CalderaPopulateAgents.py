@@ -18,6 +18,8 @@ if res:
             "EXE name": x.get('exe_name'),
             "Location": x.get('location')
         }for x in res]
+else:
+    agents = []
 command_results = CommandResults(
     readable_output=tableToMarkdown('Agents', agents)
 )

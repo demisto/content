@@ -56,6 +56,7 @@ SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
+HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -6778,7 +6779,7 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
             ms = ms / 1000.0
 
         if is_utc:
-            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
+            return datetime.fromtimestamp(ms, tz=timezone.utc)
         else:
             return datetime.fromtimestamp(ms)
     if isinstance(arg, str):
@@ -8828,7 +8829,8 @@ def censor_request_logs(request_log):
     :return: The censored request log
     :rtype: ``str``
     """
-    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username", "password", "apiKey"]
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username",
+                          "password", "Key", "identifier", "credential", "client"]
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
@@ -8840,8 +8842,8 @@ def censor_request_logs(request_log):
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
-                # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
-                if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
+                # If the next word is "Bearer", "JWT" or "Basic" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "jwt", "basic"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
                     request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
@@ -10761,6 +10763,10 @@ def support_multithreading():  # pragma: no cover
     :return: No data returned
     :rtype: ``None``
     """
+    global HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE
+    if HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
+        return
+    HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = True
     global demisto
     prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
     demisto.lock = Lock()  # type: ignore[attr-defined]
