@@ -1,9 +1,6 @@
 [file:GroupIBTIA.yml]
 ignore=BA108,BA109,BC104,BC102,ST111,RM110
 
-[file:GroupIBTIA.yml]
-ignore=BA108,BA109,BC104,BC102,ST111,RM110
-
 [file:GroupIB_TIA_Feed.yml]
 ignore=BA108,BA109
 
