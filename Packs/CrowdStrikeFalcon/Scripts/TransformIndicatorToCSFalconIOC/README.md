@@ -1,5 +1,5 @@
-Transform a XSOAR indicator into a Crowd Strike Falcon IOC.
-The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path) is a JSON, which represents the indicators in CS Falcon format.
+Transform an indicator in Cortex into a CrowdStrike Falcon IOC.
+The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path) is a JSON, which represents the indicators in CrowdStrike Falcon format.
 This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* command. (Available from Cortex XSOAR 6.0.0).
 
 ## Script Data
@@ -64,7 +64,7 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
                 "platforms": [
                     "linux"
                 ],
-                "source": "Cortex XSOAR",
+                "source": "Cortex",
                 "type": "ipv4",
                 "value": "9.6.3.5"
             },
@@ -76,7 +76,7 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
                 "platforms": [
                     "linux"
                 ],
-                "source": "Cortex XSOAR",
+                "source": "Cortex",
                 "type": "ipv4",
                 "value": "4.6.8.7"
             },
@@ -88,7 +88,7 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
                 "platforms": [
                     "linux"
                 ],
-                "source": "Cortex XSOAR",
+                "source": "Cortex",
                 "type": "ipv4",
                 "value": "4.7.8.7"
             },
@@ -100,7 +100,7 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
                 "platforms": [
                     "linux"
                 ],
-                "source": "Cortex XSOAR",
+                "source": "Cortex",
                 "type": "ipv4",
                 "value": "9.1.4.8"
             },
@@ -112,7 +112,7 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
                 "platforms": [
                     "linux"
                 ],
-                "source": "Cortex XSOAR",
+                "source": "Cortex",
                 "type": "ipv4",
                 "value": "2.1.4.8"
             },
@@ -124,12 +124,12 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
                 "platforms": [
                     "linux"
                 ],
-                "source": "Cortex XSOAR",
+                "source": "Cortex",
                 "type": "ipv4",
                 "value": "4.5.8.9"
             }
         ],
-        "JsonOutput": "[{\"expiration\": \"2022-02-16T13:02:26Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"Tags\": [\"test\"], \"value\": \"9.6.3.5\", \"action\": \"no_action\", \"source\": \"Cortex XSOAR\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-22T13:36:02.776329896Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"4.6.8.7\", \"action\": \"no_action\", \"source\": \"Cortex XSOAR\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-22T13:41:02.960974457Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"4.7.8.7\", \"action\": \"no_action\", \"source\": \"Cortex XSOAR\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-22T13:41:02.960919913Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"9.1.4.8\", \"action\": \"no_action\", \"source\": \"Cortex XSOAR\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-22T13:36:02.776389915Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"2.1.4.8\", \"action\": \"no_action\", \"source\": \"Cortex XSOAR\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-16T13:02:46Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"4.5.8.9\", \"action\": \"no_action\", \"source\": \"Cortex XSOAR\", \"platforms\": [\"linux\"], \"applied_globally\": true}]"
+        "JsonOutput": "[{\"expiration\": \"2022-02-16T13:02:26Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"Tags\": [\"test\"], \"value\": \"9.6.3.5\", \"action\": \"no_action\", \"source\": \"Cortex\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-22T13:36:02.776329896Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"4.6.8.7\", \"action\": \"no_action\", \"source\": \"Cortex\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-22T13:41:02.960974457Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"4.7.8.7\", \"action\": \"no_action\", \"source\": \"Cortex\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-22T13:41:02.960919913Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"9.1.4.8\", \"action\": \"no_action\", \"source\": \"Cortex\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-22T13:36:02.776389915Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"2.1.4.8\", \"action\": \"no_action\", \"source\": \"Cortex\", \"platforms\": [\"linux\"], \"applied_globally\": true}, {\"expiration\": \"2022-02-16T13:02:46Z\", \"type\": \"ipv4\", \"Severity\": \"Informational\", \"value\": \"4.5.8.9\", \"action\": \"no_action\", \"source\": \"Cortex\", \"platforms\": [\"linux\"], \"applied_globally\": true}]"
     }
 }
 ```
