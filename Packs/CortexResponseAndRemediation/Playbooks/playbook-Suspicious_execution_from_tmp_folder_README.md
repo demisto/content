@@ -23,7 +23,8 @@ If no suspicious reputation is found in the analysis stage, but suspicious insig
 Remediation:
 
 - Terminate causality process
-- Quarantine the malicious process image file.
+- Quarantine the malicious process image file (requires manual approval).
+- Disable the suspicious cron job task (requires manual action).
 
 This structure ensures swift action for known threats while allowing for deeper investigation when the initial analysis is inconclusive.
 
