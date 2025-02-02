@@ -47,8 +47,7 @@ class Client:
 
             # used for device code flow
             resource=MICROSOFT_365_DEFENDER_API_ENDPOINTS.get(endpoint) if not client_credentials else None,
-            token_retrieval_url=f'{MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
-                                f'/organizations/oauth2/v2.0/token',
+            token_retrieval_url=f'{MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}/organizations/oauth2/v2.0/token',
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,

@@ -188,7 +188,7 @@ MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS = {
 }
 
 MICROSOFT_365_DEFENDER_SCOPES = {
-    'com': 'https://security.microsoft.com/mtp',
+    'com': "https://security.microsoft.com",
     'geo-us': 'https://security.microsoft.com',
     'geo-eu': 'https://security.microsoft.com',
     'geo-uk': 'https://security.microsoft.com',
@@ -1457,7 +1457,7 @@ class MicrosoftClient(BaseClient):
             if self.tenant_id:
                 url = f'{self.azure_ad_endpoint}/{self.tenant_id}/oauth2/v2.0/devicecode'
             else:
-                url = f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
+                url = f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode'
             response = requests.post(
                 url=url,
                 data={
