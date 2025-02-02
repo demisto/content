@@ -7,7 +7,7 @@ import pytest
 from pytest import raises
 
 from CommonServerPython import DemistoException
-from Absolute import Client, DATE_FORMAT, INTEGRATION
+from Absolute import INTEGRATION, ClientV3
 
 EXPECTED_CANONICAL_GET_REQ_NO_PAYLOAD_NO_QUERY = """GET
 /v2/reporting/devices
@@ -133,17 +133,15 @@ FREEZE_REQ_EXPECTED_OUTPUT = [{'AccountUid': 'e7a9fb73-44b0-4f5d-990b-39ff884425
                                              'updatedUTC': 1548294707085}]}]
 
 
-def create_client(base_url: str = 'https://api.absolute.com', token_id: str = 'token',
-                  secret_key: str = 'secret', verify: bool = False, proxy: bool = False):
-    x_abs_date = datetime.strptime('20170926T172213Z', DATE_FORMAT).strftime(DATE_FORMAT)
-    headers = {"host": base_url.split('https://')[-1], "content-type": "application/json", "x-abs-date": x_abs_date}
-    return Client(proxy=proxy, verify=verify, base_url=base_url, token_id=token_id,
-                  secret_key=secret_key, headers=headers, x_abs_date=x_abs_date)
-
-
 @pytest.fixture
-def absolute_client():
-    return create_client()
+def absolute_client_v3():
+    return ClientV3(proxy=False,
+                    verify=False,
+                    base_url='https://api.absolute.com',
+                    token_id='token',
+                    secret_key='secret',
+                    headers={}
+                    )
 
 
 def util_load_json(path):
@@ -170,7 +168,7 @@ def test_invalid_absolute_api_url(url):
                               EXPECTED_CANONICAL_POST_REQ_WITH_PAYLOAD_WITH_QUERY),
                          ])
 def test_create_canonical_request(method, canonical_uri, query_string, payload, expected_canonical_request):
-    client = create_client()
+    client = absolute_client_v3()
     canonical_res = client.create_canonical_request(method=method, canonical_uri=canonical_uri,
                                                     query_string=query_string,
                                                     payload=payload)
@@ -183,13 +181,13 @@ def test_create_canonical_request(method, canonical_uri, query_string, payload, 
                           (EXPECTED_CANONICAL_POST_REQ_WITH_PAYLOAD_WITH_QUERY, EXPECTED_SIGNING_STRING_POST)])
 @freeze_time("2017-09-26 17:22:13 UTC")
 def test_create_signing_string(canonical_req, expected_signing_string):
-    client = create_client()
+    client = absolute_client_v3()
     assert client.create_signing_string(canonical_req) == expected_signing_string
 
 
 @freeze_time("2017-09-26 17:22:13 UTC")
 def test_create_signing_key():
-    client = create_client()
+    client = absolute_client_v3()
     assert client.create_signing_key() == SIGNING_KEY
 
 
@@ -198,7 +196,7 @@ def test_create_signing_key():
                           (EXPECTED_SIGNING_STRING_PUT, PUT_REQUEST_SIGNATURE),
                           (EXPECTED_SIGNING_STRING_POST, POST_REQUEST_SIGNATURE)])
 def test_create_signature(signing_string, expected_signature):
-    client = create_client()
+    client = absolute_client_v3()
     assert client.create_signature(signing_string, SIGNING_KEY) == expected_signature
 
 
@@ -208,7 +206,7 @@ def test_create_signature(signing_string, expected_signature):
                           (POST_REQUEST_SIGNATURE, POST_REQUEST_AUTH_HEADER)])
 @freeze_time("2017-09-26 17:22:13 UTC")
 def test_add_authorization_header(signature, expected_authorization_header):
-    client = create_client()
+    client = absolute_client_v3()
     assert client.add_authorization_header(signature) == expected_authorization_header
 
 
@@ -286,19 +284,19 @@ def test_prepare_payload_to_freeze_request_valid_args(args, expected_payload):
     assert prepare_payload_to_freeze_request(args) == expected_payload
 
 
-def test_get_device_freeze_request_command(mocker, absolute_client):
+def test_get_device_freeze_request_command(mocker, absolute_client_v3):
     from Absolute import get_device_freeze_request_command
     response = util_load_json('test_data/custom_get_device_freeze_request_response.json')
-    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
-    command_results = get_device_freeze_request_command(args={'request_uid': '1'}, client=absolute_client)
+    mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
+    command_results = get_device_freeze_request_command(args={'request_uid': '1'}, client=absolute_client_v3)
     assert command_results.outputs == FREEZE_REQ_EXPECTED_OUTPUT
 
 
-def test_list_device_freeze_message_command(mocker, absolute_client):
+def test_list_device_freeze_message_command(mocker, absolute_client_v3):
     from Absolute import list_device_freeze_message_command
     response = util_load_json('test_data/device_freeze_message_list_response.json')
-    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
-    command_results = list_device_freeze_message_command(args={'message_id': "1"}, client=absolute_client)
+    mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
+    command_results = list_device_freeze_message_command(args={'message_id': "1"}, client=absolute_client_v3)
     assert command_results.outputs == [{'ChangedBy': 'example2@test.com',
                                         'ChangedUTC': '2020-12-14T09:14:52.148+00:00',
                                         'Content': '<html><body>This device has been frozen by '
@@ -309,11 +307,11 @@ def test_list_device_freeze_message_command(mocker, absolute_client):
                                         'Name': 'On-demand Freeze message'}]
 
 
-def test_device_unenroll_command(mocker, absolute_client):
+def test_device_unenroll_command(mocker, absolute_client_v3):
     from Absolute import device_unenroll_command
     response = util_load_json('test_data/unenroll_device_response.json')
-    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
-    outputs = device_unenroll_command(args={'device_ids': "1,2"}, client=absolute_client).outputs
+    mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
+    outputs = device_unenroll_command(args={'device_ids': "1,2"}, client=absolute_client_v3).outputs
     assert outputs == [{'DeviceUid': '1',
                         'ESN': '2BU2PJD28VAA1UYL0008',
                         'EligibleStatus': 0,
@@ -328,7 +326,7 @@ def test_device_unenroll_command(mocker, absolute_client):
                         'Username': 'example2@test.com'}]
 
 
-def test_list_device_freeze_message_command_no_id(mocker, absolute_client):
+def test_list_device_freeze_message_command_no_id(mocker, absolute_client_v3):
     """
     Given:
         - All relevant arguments for the command that is executed
@@ -340,13 +338,13 @@ def test_list_device_freeze_message_command_no_id(mocker, absolute_client):
         - The http request is called with the right arguments
     """
     from Absolute import list_device_freeze_message_command
-    http_request = mocker.patch.object(absolute_client, '_http_request', return_value=[])
-    list_device_freeze_message_command(client=absolute_client, args={})
+    http_request = mocker.patch.object(absolute_client_v3, '_http_request', return_value=[])
+    list_device_freeze_message_command(client=absolute_client_v3, args={})
     assert http_request.call_args.kwargs['method'] == 'GET'
     assert http_request.call_args.kwargs['url_suffix'] == '/v2/device-freeze/messages'
 
 
-def test_delete_device_freeze_message_command(mocker, absolute_client):
+def test_delete_device_freeze_message_command(mocker, absolute_client_v3):
     """
     Given:
         - All relevant arguments for the command that is executed
@@ -359,13 +357,13 @@ def test_delete_device_freeze_message_command(mocker, absolute_client):
     """
     from Absolute import delete_device_freeze_message_command
     message_id = '1'
-    http_request = mocker.patch.object(absolute_client, '_http_request', return_value=[])
-    delete_device_freeze_message_command(client=absolute_client, args={'message_id': message_id})
+    http_request = mocker.patch.object(absolute_client_v3, '_http_request', return_value=[])
+    delete_device_freeze_message_command(client=absolute_client_v3, args={'message_id': message_id})
     assert http_request.call_args.kwargs['method'] == 'DELETE'
     assert http_request.call_args.kwargs['url_suffix'] == f'/v2/device-freeze/messages/{message_id}'
 
 
-def test_update_device_freeze_message_command(mocker, absolute_client):
+def test_update_device_freeze_message_command(mocker, absolute_client_v3):
     """
     Given:
         - All relevant arguments for the command that is executed
@@ -378,13 +376,13 @@ def test_update_device_freeze_message_command(mocker, absolute_client):
     """
     from Absolute import update_device_freeze_message_command
     message_id = '1'
-    http_request = mocker.patch.object(absolute_client, 'api_request_absolute', return_value=[])
+    http_request = mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=[])
     args = {'message_id': message_id, 'html_message': 'text', 'message_name': 'name'}
-    update_device_freeze_message_command(client=absolute_client, args=args)
+    update_device_freeze_message_command(client=absolute_client_v3, args=args)
     assert http_request.call_args.args == ('PUT', f'/v2/device-freeze/messages/{message_id}')
 
 
-def test_create_device_freeze_message_command(mocker, absolute_client):
+def test_create_device_freeze_message_command(mocker, absolute_client_v3):
     """
     Given:
         - All relevant arguments for the command that is executed
@@ -396,9 +394,9 @@ def test_create_device_freeze_message_command(mocker, absolute_client):
         - The http request is called with the right arguments
     """
     from Absolute import create_device_freeze_message_command
-    http_request = mocker.patch.object(absolute_client, 'api_request_absolute', return_value={})
+    http_request = mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value={})
     args = {'html_message': 'text', 'message_name': 'name'}
-    create_device_freeze_message_command(client=absolute_client, args=args)
+    create_device_freeze_message_command(client=absolute_client_v3, args=args)
     assert http_request.call_args.args == ('POST', '/v2/device-freeze/messages')
 
 
@@ -474,11 +472,11 @@ def test_parse_paging(page, limit, query, expected_query):
     assert parse_paging(page, limit, query) == expected_query
 
 
-def test_get_device_location_command(mocker, absolute_client):
+def test_get_device_location_command(mocker, absolute_client_v3):
     from Absolute import get_device_location_command
     response = util_load_json('test_data/device_location_get.json')
-    mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
-    outputs = get_device_location_command(args={'device_ids': "1,2"}, client=absolute_client).outputs
+    mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
+    outputs = get_device_location_command(args={'device_ids': "1,2"}, client=absolute_client_v3).outputs
     assert outputs == [{'Accuracy': 10,
                         'City': 'TLV',
                         'Coordinates': [-123.13202, 49.288162],
@@ -497,3 +495,284 @@ def test_get_device_location_command(mocker, absolute_client):
                         'LastUpdate': 1605747972853,
                         'LocationTechnology': 'gps',
                         'State': 'Israel'}]
+
+
+def test_fetch_events_case_no_events_exist(mocker, absolute_client_v3):
+    """
+    Given:
+        - No events.
+
+    When:
+        - Running the fetch_events function.
+
+    Then:
+        - The events list should be empty.
+        - The last_run object should contain end_date.
+    """
+    from Absolute import fetch_events
+    mock_response = {'data': [], 'metadata': {}}
+    mocker.patch('Absolute.ClientV3.fetch_events_between_dates', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ([], '')))
+    events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
+    assert events == mock_response.get('data')
+
+
+def test_fetch_events_first_fetch(mocker, absolute_client_v3):
+    """
+    Given:
+        - No previous events have been fetched.
+
+    When:
+        - Running the fetch_events function.
+
+    Then:
+        - The events list should contain the fetched events.
+        - The last_run object should contain end_date.
+    """
+    from Absolute import fetch_events
+    mock_response = util_load_json('test_data/siem_events.json')
+    mocker.patch('Absolute.ClientV3.fetch_events_between_dates', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ([], '')))
+    events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
+    assert events == mock_response.get('data')
+
+
+def test_fetch_events_with_last_run_object_and_handle_deduplication(mocker, absolute_client_v3):
+    """
+    Given:
+        - A last_run_object containing information about the previous fetch.
+        - The need to handle deduplication of fetched events.
+
+    When:
+        - Running the fetch_events function to fetch events in batches.
+
+    Then:
+        - The events list should contain all the fetched events, without duplicated events.
+        - The last_run_object should be updated based on the fetched events.
+    """
+    from Absolute import fetch_events
+    import Absolute
+    mock_response = util_load_json('test_data/siem_events.json')
+    Absolute.SEIM_EVENTS_PAGE_SIZE = 8
+    first_mock_response = mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE]
+    second_mock_response = mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:]
+    mocker.patch.object(ClientV3, 'fetch_events_between_dates', return_value=first_mock_response)
+    events_first_batch, last_run_object = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, {})
+    mocker.patch.object(ClientV3, 'fetch_events_between_dates', return_value=second_mock_response)
+    events_second_batch, _ = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, last_run_object)
+    all_events = events_first_batch + events_second_batch
+    assert all_events == mock_response.get('data')
+
+
+def test_fetch_events_between_dates_one_fetch(mocker, absolute_client_v3):
+    """
+    Given:
+        - The fetch_events_between_dates function is called with no previous last run.
+
+    When:
+        - The fetch_events function is run.
+
+    Then:
+        - The fetched events list should contain the expected events.
+    """
+    from Absolute import ClientV3
+    from datetime import timedelta
+    mock_response = util_load_json('test_data/siem_events.json')
+    mock_response['metadata']['pagination']['nextPage'] = ''
+    mocker.patch.object(absolute_client_v3, 'fetch_events_request', return_value=mock_response)
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(minutes=1)
+    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events_request')
+    all_events = ClientV3.fetch_events_between_dates(absolute_client_v3, 10000, start_date, end_date)
+    assert all_events == mock_response.get('data')
+    fetch_events_spy.assert_called_once()
+
+
+def test_fetch_events_between_dates_multiple_fetches(mocker, absolute_client_v3):
+    """
+    Given:
+        - The fetch_events_between_dates function is called with multiple fetches. It happens when the amount of events
+        is greater than the fetch limit.
+
+    When:
+        - The fetch_events function is called with different fetches.
+
+    Then:
+        - The fetched events list should contain the expected events.
+        - The fetch_events_between_dates method should be called multiple times.
+    """
+    from Absolute import ClientV3
+    from datetime import timedelta
+    import Absolute
+
+    Absolute.SEIM_EVENTS_PAGE_SIZE = 10
+    mock_response = util_load_json('test_data/siem_events.json')
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(minutes=1)
+
+    def fetch_events_side_effect(query_string):
+        if fetch_events_side_effect.call_count == 1:
+            fetch_events_side_effect.call_count += 1
+            return {
+                'data': mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE],
+                'metadata': {
+                    'pagination': {
+                        'nextPage': 'next_token'
+                    }
+                }
+            }
+        else:
+            return {
+                'data': mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE:],
+                'metadata': {
+                    'pagination': {}
+                }
+            }
+
+    fetch_events_side_effect.call_count = 1
+    mocker.patch.object(absolute_client_v3, 'fetch_events_request', side_effect=fetch_events_side_effect)
+    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events_request')
+    all_events = ClientV3.fetch_events_between_dates(absolute_client_v3, 10000, start_date, end_date)
+
+    assert all_events == mock_response.get('data')
+    assert fetch_events_spy.call_count == 2
+
+
+def test_add_time_field(absolute_client_v3):
+    """
+    Given:
+        - The add_time_field_to_events_and_get_latest_events function is called.
+
+    When:
+        - The function is invoked with a list of events.
+
+    Then:
+        - All the events in the list should have a "_time" field.
+    """
+    from Absolute import process_events
+    mock_response = util_load_json('test_data/siem_events.json')
+    events = mock_response.get('data')
+    all_events, _ = process_events(events=events, last_run_latest_events_id=[])
+    for event in all_events:
+        assert event.get('_time')
+
+
+def test_get_latest_events(absolute_client_v3):
+    """
+    Given:
+        - The add_time_field_to_events_and_get_latest_events function is called.
+
+    When:
+        - The function is invoked with a list of events.
+
+    Then:
+        - The function should return the latest events based on the 'eventDateTimeUtc' field.
+        - The latest_events_id list should contain the IDs of the latest events.
+        - The IDs in the latest_events_id list should be unique.
+        - The IDs in the latest_events_id list should match the expected IDs.
+    """
+    from Absolute import process_events
+    mock_response = util_load_json('test_data/siem_events.json')
+    events = mock_response.get('data')
+    _, latest_events_id_and_time_tuple = process_events(events=events, last_run_latest_events_id=[])
+    latest_events_id, latest_event_time = latest_events_id_and_time_tuple
+    assert len(latest_events_id) == 2
+    assert len(set(latest_events_id)) == 2
+    assert latest_events_id == ['id14', 'id15']
+    assert events[13].get('eventDateTimeUtc') == events[14].get('eventDateTimeUtc') == latest_event_time
+
+
+def test_get_events_command(mocker, absolute_client_v3):
+    """
+    Given:
+        - The get_events function is called.
+
+    When:
+        - The function is invoked with an empty input and an Absolute client instance.
+
+    Then:
+        - The function should retrieve events using fetch_events_between_dates and process_events the events.
+        - The retrieved events should match the expected events from 'test_data/siem_events.json'.
+    """
+    from Absolute import get_events
+    mock_response = util_load_json('test_data/siem_events.json')
+    mocker.patch('Absolute.ClientV3.fetch_events_between_dates', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.process_events', return_value=(mock_response.get('data'), ''))
+    events, _ = get_events(absolute_client_v3, {})
+    assert events == mock_response.get('data')
+
+
+def test_get_events_command_wrong_dates(mocker, absolute_client_v3):
+    """
+    Given:
+        - The get_events function is called with invalid dates.
+
+    When:
+        - The function is invoked with start_date being "now" and end_date being "one minute ago",
+        and an Absolute client instance.
+
+    Then:
+        - The function should raise a ValueError.
+    """
+    from Absolute import get_events
+    start_date = "now"
+    end_date = "one minute ago"
+    args = {'start_date': start_date, 'end_date': end_date}
+    try:
+        _, _ = get_events(absolute_client_v3, args)
+    except ValueError as e:
+        assert str(e) == "Start date is greater than the end date. Please provide valid dates."
+
+
+def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
+    """
+    Given:
+        - The prepare_query_string_for_fetch_events function is called.
+
+    When:
+        - The function is invoked with page_size, start_date, end_date, and next_page.
+
+    Then:
+        - The function should return a query string for fetching events.
+    """
+    from Absolute import ClientV3
+    from datetime import timedelta
+    mock_response = util_load_json('test_data/siem_events.json')
+    event = mock_response.get('data')[0]
+    start_date = datetime.strptime(event.get('createdDateTimeUtc'), "%Y-%m-%dT%H:%M:%S.%fZ")
+    end_date = start_date + timedelta(minutes=1)
+    page_size = 1000
+    query = ClientV3.prepare_query_string_for_fetch_events(None,
+                                                           page_size=page_size,
+                                                           start_date=start_date,
+                                                           end_date=end_date)
+    expected_query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}'
+    assert query == expected_query
+
+
+def test_fetch_events_case_fetch_limit_equal_last_run_events_id(mocker, absolute_client_v3):
+    """
+    Given:
+        - The fetch_events function is called.
+
+    When:
+        - The fetch limit is equal to the amount of last run events ID.
+
+    Then:
+        - The function should double the fetch limit.
+    """
+    from Absolute import ClientV3
+    from Absolute import fetch_events
+    mock_response = util_load_json('test_data/siem_events_test_fetch_limit.json')
+    fetch_limit = 2
+    first_mock_response = {'data': mock_response.get('data')[:fetch_limit]}
+    second_mock_response = {'data': mock_response.get('data')[fetch_limit:]}
+    mocker.patch.object(ClientV3, 'prepare_query_string_for_fetch_events', return_value='')
+    mocker.patch.object(ClientV3, 'fetch_events_request', return_value=first_mock_response)
+    events_first_batch, last_run_object = fetch_events(absolute_client_v3, fetch_limit, {})
+    mocker.patch.object(ClientV3, 'fetch_events_request', return_value=second_mock_response)
+    events_second_batch, _ = fetch_events(absolute_client_v3, fetch_limit, last_run_object)
+    all_events = events_first_batch + events_second_batch
+    assert len(events_first_batch) == 2
+    assert len(events_second_batch) == 4
+    assert all_events == mock_response.get('data')

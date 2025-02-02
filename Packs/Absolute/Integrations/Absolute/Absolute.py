@@ -5,7 +5,6 @@ import hashlib
 
 from CommonServerUserPython import *  # noqa
 import urllib.parse
-import requests
 import urllib3
 from typing import Any
 import hmac
@@ -112,271 +111,8 @@ PRODUCT = 'Secure Endpoint'
 HEADERS_V3: dict = {"content-type": "text/plain"}
 
 
-class Client(BaseClient):
-    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool,
-                 x_abs_date: str):
-        """
-        Client to use in the Absolute integration. Overrides BaseClient.
-
-        Args:
-            base_url (str): URL to access when doing a http request.
-            token_id (str): The Absolute token id
-            secret_key (str): User's Absolute secret key
-            verify (bool): Whether to check for SSL certificate validity.
-            proxy (bool): Whether the client should use proxies.
-            headers (dict): Headers to set when doing a http request.
-            x_abs_date (str): The automatically generated header that indicates the time (in UTC) the request was made.
-        """
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self._payload = None
-        self._base_url = base_url
-        self._token_id = token_id
-        self._secret_key = secret_key
-        self._headers = headers
-        self._x_abs_date = x_abs_date
-
-    def prepare_request_for_api(self, method: str, canonical_uri: str, query_string: str, payload: str):
-        """
-        The Absolute v2 API requires following 5 steps in order to properly authorize the API request.
-        We must follow the steps:
-        1. Create a canonical request
-        2. Create a signing string
-        3. Create a signing key
-        4. Create a signature
-        5. Add the authorization header
-
-        For more info https://www.absolute.com/media/2221/abt-api-working-with-absolute.pdf
-        """
-        canonical_req = self.create_canonical_request(method, canonical_uri, query_string, payload)
-        signing_string = self.create_signing_string(canonical_req)
-        signing_key = self.create_signing_key()
-        signing_signature = self.create_signature(signing_string, signing_key)
-        self._headers['Authorization'] = self.add_authorization_header(signing_signature)
-
-    def create_canonical_request(self, method: str, canonical_uri: str, query_string: str, payload: str) -> str:
-        """
-        The canonical request should look like (for example):
-
-        GET
-        /v2/reporting/devices
-        %24filter=substringof%28%2760001%27%2C%20esn%29%20eq%20true
-        host:api.absolute.com
-        content-type:application/json
-        x-abs-date:20170926T172213Z
-        e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-        """
-        canonical_request = [method, canonical_uri, self.prepare_query_string_for_canonical_request(query_string),
-                             self.prepare_canonical_headers(), self.prepare_canonical_hash_payload(payload)]
-        return "\n".join(canonical_request).rstrip()
-
-    def prepare_query_string_for_canonical_request(self, query_string: str) -> str:
-        """
-        Query is given as a string represents the filter query. For example,
-        query_string = "$top=10 $skip=20"
-        1. Splitting into a list (by space as a separator).
-        2. Sorting arguments in ascending order; for example, 'A' is before 'a'.
-        3. URI encode the parameter name and value using URI generic syntax.
-        4. Reassembling the list into a string.
-        """
-        if not query_string:
-            return ""
-        return urllib.parse.quote(query_string, safe='=&')
-
-    def prepare_canonical_headers(self) -> str:
-        """
-        Create the canonical headers and signed headers. Header names must be trimmed and lowercase,
-        and sorted in code point order from low to high. Note that there is a trailing \n.
-        """
-        canonical_headers = ""
-        for header, value in self._headers.items():
-            canonical_headers += f'{header.lower()}:{value.strip()}\n'
-        return canonical_headers.rstrip()
-
-    def prepare_canonical_hash_payload(self, payload: str) -> str:
-        """
-        According to the API we should do:
-        Hash the entire body using SHA-256 algorithm, HexEncode.
-        Create payload hash (hash of the request body content).
-        For GET requests, the payload is an empty string ("").
-        """
-        return hashlib.sha256(payload.encode('utf-8')).hexdigest()
-
-    def create_signing_string(self, canonical_req: str) -> str:
-        """
-        The signing string should look like (for example):
-
-        ABS1-HMAC-SHA-256
-        20170926T172032Z
-        20170926/cadc/abs1
-        63f83d2c7139b6119d4954e6766ce90871e41334c3f29b6d64201639d273fa19
-
-        Algorithm: The string used to identify the algorithm. For example, ABS1-HMAC-SHA-256
-
-        RequestedDateTime: The date and time (in UTC) from XAbs-Date. Format: <YYYY><MM><DD>T<HH><MM><SS>Z
-
-        CredentialScope: The CredentialScope is defined in three parts:
-                        1. The date (in UTC) of the request. Format: YYYYMMDD
-                        2. Region or data center (must be in lowercase) Possible values: cadc, usdc, eudc
-                        3. Version or type of signature. Always abs1
-
-        HashedCanonicalRequest: The hashed, hex-converted, and lowercase value of the canonical request.
-        """
-        credential_scope = self.create_credential_scope()
-        canonical_req_hashed = hashlib.sha256(canonical_req.encode('utf-8')).hexdigest()
-        return "\n".join([STRING_TO_SIGN_ALGORITHM, self._x_abs_date, credential_scope, canonical_req_hashed])
-
-    def create_credential_scope(self) -> str:
-        """
-        CredentialScope: The CredentialScope is defined in three parts:
-                1. The date (in UTC) of the request. Format: YYYYMMDD
-                2. Region or data center (must be in lowercase) Possible values: cadc, usdc, eudc
-                3. Version or type of signature. Always abs1
-        """
-        credential_scope_date = datetime.utcnow().date().strftime(DATE_FORMAT_CREDENTIAL_SCOPE)
-        region = ABSOLUTE_URL_REGION[self._base_url]
-        return f'{credential_scope_date}/{region}/{STRING_TO_SIGN_SIGNATURE_VERSION}'
-
-    def create_signing_key(self):
-        """
-        HMAC-SHA256 is used for authentication.
-        The signing key should be created by:
-
-        kSecret: The kSecret value is calculated by concatenating the static string “ABS1” with the value of the
-                secret key from your API token and then encoding the resulting string using UTF8.
-                The secret is the secret key value from the token that you created in the Absolute console.
-
-        kDate: The date (in UTC) of the request. Format: <YYYY><MM><DD>. The result is a byte array.
-
-        kSigning: Use the binary hash to get a pure binary kSigning key. The result is a byte array.
-                    Note:Do not use a hex digest method.
-
-        """
-        credential_scope_date = datetime.now().date().strftime(DATE_FORMAT_CREDENTIAL_SCOPE)
-        k_date = sign((STRING_TO_SIGN_SIGNATURE_VERSION.upper() + self._secret_key).encode('utf-8'),
-                      credential_scope_date)
-        return sign(k_date, 'abs1_request')
-
-    def create_signature(self, signing_string, signing_key):
-        """
-        As a result of creating a signing key, kSigning is used as the key for hashing.
-        The StringToSign is the string  data to be hashed.
-
-        The signature should look like this:
-
-        signature = lowercase(hexencode(HMAC(kSigning, StringToSign)))
-        """
-        return hmac.new(signing_key, signing_string.encode('utf-8'), hashlib.sha256).hexdigest()
-
-    def add_authorization_header(self, signing_signature: str) -> str:
-        """
-        Use the standard HTTP Authorization header. Should look like this:
-        Authorization: <algorithm> Credential=<token id>/<CredentialScope>,
-        SignedHeaders=<SignedHeaders>, Signature=<signature>
-
-        Authorization: The string used to identify the algorithm
-
-        Credential: The token ID
-
-        CredentialScope: the same as described in the create_credential_scope func.
-
-        SignedHeaders: Semi-colon ; delimited list of lowercase headers used in CanonicalHeaders
-
-        Signature: The fully calculated resulting signature from the signing key and the signature
-        """
-        credential_scope = self.create_credential_scope()
-        canonical_headers = ";".join([header.lower() for header in self._headers])
-        # There is a space after each comma in the authorization header
-        return f'{STRING_TO_SIGN_ALGORITHM} Credential={self._token_id}/{credential_scope}, ' \
-               f'SignedHeaders={canonical_headers}, Signature={signing_signature}'
-
-    def add_pagination(self, next_page: str, page_size: str):
-        """
-        Add pagination query format to the existing query
-        """
-        if next_page:
-            return f"&nextPage={next_page}&pageSize={page_size}"
-        return f"&pageSize={page_size}"
-
-    def get_specific_page_data(self, url_suffix: str, page_to_return: int, page_size: str):
-        current_page = 0  # the first page number to fetch
-        next_page = ''
-        while current_page <= page_to_return:
-
-            url_suffix_next_page = f"{url_suffix}{self.add_pagination(next_page, page_size)}"
-            response = self._http_request(method='GET', url_suffix=url_suffix_next_page, headers=self._headers,
-                                          return_empty_response=True)
-            data = response.get('data')
-            current_page += 1
-
-            next_page = response.get('metadata').get('pagination').get('nextPage')
-            if not next_page:
-                break
-
-        if current_page <= page_to_return and not next_page:
-            # no more results in the API
-            return {}
-
-        return data
-
-    def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code=None,
-                             query_string: str = '', page: int = 0, page_size: int = DEFAULT_API_PAGE_SIZE,
-                             specific_page: bool = false):
-        """
-        Makes an HTTP request to the Absolute API.
-        Args:
-            method (str): HTTP request method (GET/PUT/POST/DELETE).
-            url_suffix (str): The API endpoint.
-            body (str): The body to set.
-            success_status_code (int): an HTTP status code of success.
-            query_string (str): The query to filter results by.
-
-        Note: As on the put and post requests we should pass a body from type str, we couldn't use the _http_request
-              function in CSP (as it does not receive body from type str).
-        """
-        demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
-        full_url = urljoin(self._base_url, url_suffix)
-
-        if success_status_code is None:
-            success_status_code = [200]
-
-        self.prepare_request_for_api(method=method, canonical_uri=url_suffix, query_string=query_string, payload=body)
-
-        if method == 'GET':
-            if query_string:
-                url_suffix = f'{url_suffix}?{self.prepare_query_string_for_canonical_request(query_string)}'
-            if specific_page:
-                data = self.get_specific_page_data(url_suffix, page, page_size)
-            else:
-                response = self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
-                                              return_empty_response=True)
-                data = response.get('data')
-                while next_page := response.get('metadata').get('pagination').get('nextPage'):
-                    url_suffix_next_page = f'{url_suffix}{self.add_pagination(next_page, page_size)}'
-                    response = self._http_request(method=method, url_suffix=url_suffix_next_page, headers=self._headers,
-                                                  return_empty_response=True)
-                    data += response.get('data')
-            return data
-
-        elif method == 'DELETE':
-            return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
-                                      ok_codes=tuple(success_status_code), resp_type='response')
-
-        elif method == 'PUT':
-            res = requests.put(full_url, data=body, headers=self._headers, verify=self._verify)
-            if res.status_code not in success_status_code:
-                raise DemistoException(f'{INTEGRATION} error: the operation was failed due to: {res.json()}')
-            return None
-
-        elif method == 'POST':
-            res = requests.post(full_url, data=body, headers=self._headers, verify=self._verify)
-            if res.status_code not in success_status_code:
-                raise DemistoException(f'{INTEGRATION} error: the operation was failed due to: {res.json()}')
-            return res.json().get('data')
-        return None
-
-
 class ClientV3(BaseClient):
-    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, proxy: bool, headers: dict):
+    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, proxy: bool, headers: dict = HEADERS_V3):
         """
         Client to use in the Absolute integration for API v3. Overrides BaseClient.
         Args:
@@ -393,7 +129,7 @@ class ClientV3(BaseClient):
         self._secret_key = secret_key
         self._jws = JsonWebSignature()
 
-    def prepare_request(self, method: str, url_suffix: str, query_string: str, payload: dict) -> bytes:
+    def prepare_request(self, method: str, url_suffix: str, query_string: str, payload: dict = {}) -> bytes:
         """
         Prepares the signed HTTP request data for making an API call.
         Args:
@@ -433,12 +169,12 @@ class ClientV3(BaseClient):
             return ""
         return urllib.parse.quote(query_string, safe='=&')
 
-    def send_request_to_api(self, method: str, url_suffix: str, query_string: str, payload: dict, ok_codes: tuple):
+    def send_request_to_api(self, method: str, url_suffix: str, query_string: str, ok_codes: tuple, payload: dict = {}):
         signed = self.prepare_request(method=method, url_suffix=url_suffix, query_string=query_string, payload=payload)
         return self._http_request(method=method, data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
                                   return_empty_response=True, ok_codes=ok_codes)
 
-    def add_pagination(self, next_page: str, page_size: str):
+    def add_pagination(self, next_page: str, page_size: int) -> str:
         """
         Add pagination query format to the existing query
         """
@@ -446,14 +182,15 @@ class ClientV3(BaseClient):
             return f"&nextPage={next_page}&pageSize={page_size}"
         return f"&pageSize={page_size}"
 
-    def get_specific_page_data(self, url_suffix: str, page_to_return: str, page_size: str, query_string: str):
+    def get_specific_page_data(self, url_suffix: str, page_to_return: int, page_size: int, query_string: str, ok_codes: tuple):
         current_page = 0  # the first page number to fetch
         next_page = ''
         while current_page <= page_to_return:
-            response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size))
+            response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size),
+                                                ok_codes=ok_codes)
             data = response.get('data')
-            current_page += 1
 
+            current_page += 1
             next_page = response.get('metadata').get('pagination').get('nextPage')
             if not next_page:
                 break
@@ -464,9 +201,9 @@ class ClientV3(BaseClient):
 
         return data
 
-    def api_request_absolute(self, method: str, url_suffix: str, body: str = "", success_status_code=None,
+    def api_request_absolute(self, method: str, url_suffix: str, body: dict = {}, success_status_code=None,
                              query_string: str = '', page: int = 0, page_size: int = DEFAULT_API_PAGE_SIZE,
-                             specific_page: bool = false):
+                             specific_page: bool = False):
         """
         Makes an HTTP request to the Absolute API.
         Args:
@@ -487,13 +224,16 @@ class ClientV3(BaseClient):
 
         if method == 'GET':
             if specific_page:
-                data = self.get_specific_page_data(url_suffix, page, page_size, query_string)
+                data = self.get_specific_page_data(url_suffix, page, page_size, query_string, ok_codes=success_status_code)
             else:
-                response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size))
+                next_page = ''
+                response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size),
+                                                    ok_codes=success_status_code)
                 data = response.get('data')
-                while next_page := response.get('metadata').get('pagination').get('nextPage'):
+                while next_page := response.get('metadata', {}).get('pagination', {}).get('nextPage', ''):
                     response = self.send_request_to_api('GET', url_suffix,
-                                                        query_string + self.add_pagination(next_page, page_size))
+                                                        query_string + self.add_pagination(next_page, page_size),
+                                                        ok_codes=success_status_code)
                     data += response.get('data')
             return data
 
@@ -533,7 +273,7 @@ class ClientV3(BaseClient):
         Returns:
             list: A list of fetched events.
         """
-        all_events = []
+        all_events[list] = []
         while len(all_events) < fetch_limit:
             page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
             query_string = self.prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date,
@@ -579,7 +319,7 @@ def validate_absolute_api_url(base_url):
     return ABSOLUTE_URL_TO_API_URL[base_url]
 
 
-def test_module(client: Client) -> str:
+def test_module(client: ClientV3) -> str:
     """Tests API connectivity to Absolute """
     try:
         client.api_request_absolute('GET', '/v2/device-freeze/messages', success_status_code=(200, 204))
@@ -621,7 +361,7 @@ def get_custom_device_field_list_command(args, client) -> CommandResults:
     device_id = args.get('device_id')
     page = arg_to_number(args.get('page', 0))
     limit = arg_to_number(args.get('limit', 50))
-    res = client.api_request_absolute('GET', f'/v3/configurations/customfields/devices/{device_id}', query_string=query_string,
+    res = client.api_request_absolute('GET', f'/v3/configurations/customfields/devices/{device_id}',
                                       page=page, page_size=limit, specific_page=True)
     outputs = parse_device_field_list_response(res, device_id)
     human_readable = tableToMarkdown(f'{INTEGRATION} Custom device field list',
@@ -827,7 +567,7 @@ def get_device_freeze_request_command(args, client) -> CommandResults:
 def list_device_freeze_message_command(args, client) -> CommandResults:
     message_id = args.get('message_id')
     if message_id:
-        res = client.api_request_absolute('GET', f'/v3/actions/freeze/messages/{messageUid}')
+        res = client.api_request_absolute('GET', f'/v3/actions/freeze/messages/{message_id}')
     else:
         res = client.api_request_absolute('GET', '/v3/actions/freeze/messages', success_status_code=(200, 204))
 
@@ -874,23 +614,21 @@ def delete_device_freeze_message_command(args, client) -> CommandResults:
 
 
 def parse_device_unenroll_request_data_response(response):
-    parsed_data = []
-    for data in response:
-        parsed_data.append({
-            'TotalDevices': data.get('totalDevices'),
-            'Pending': data.get('pending'),
-            'Processing': data.get('processing'),
-            'Completed': data.get('completed'),
-            'Canceled': data.get('canceled'),
-            'Failed': data.get('failed'),
-            'RequestId': data.get('requestId'),
-            'RequestUid': data.get('requestUid'),
-            'RequestStatus': data.get('requestStatus'),
-            'CreatedDateTimeUtc': data.get('createdDateTimeUtc'),
-            'UpdatedDateTimeUtc': data.get('updatedDateTimeUtc'),
-            'Requester': data.get('requester'),
-            'ExcludeMissingDevices': data.get('excludeMissingDevices'),
-        })
+    parsed_data = {
+        'TotalDevices': response.get('totalDevices'),
+        'Pending': response.get('pending'),
+        'Processing': response.get('processing'),
+        'Completed': response.get('completed'),
+        'Canceled': response.get('canceled'),
+        'Failed': response.get('failed'),
+        'RequestId': response.get('requestId'),
+        'RequestUid': response.get('requestUid'),
+        'RequestStatus': response.get('requestStatus'),
+        'CreatedDateTimeUtc': response.get('createdDateTimeUtc'),
+        'UpdatedDateTimeUtc': response.get('updatedDateTimeUtc'),
+        'Requester': response.get('requester'),
+        'ExcludeMissingDevices': response.get('excludeMissingDevices'),
+    }
     return parsed_data
 
 
@@ -1232,64 +970,60 @@ def main() -> None:  # pragma: no cover
         proxy = params.get('proxy', False)
 
         demisto.debug(f'Command being called is {demisto.command()}')
-        host = base_url.split('https://')[-1]
-        x_abs_date = datetime.utcnow().strftime(DATE_FORMAT)
-        headers: dict = {"host": host, "content-type": "application/json", "x-abs-date": x_abs_date}
 
-        client = Client(
+        client_v3 = ClientV3(
             base_url=base_url,
             verify=verify_certificate,
-            headers=headers,
             proxy=proxy,
             token_id=token_id,
-            secret_key=secret_key,
-            x_abs_date=x_abs_date,
+            secret_key=secret_key
         )
+
         args = demisto.args()
         if demisto.command() == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client_v3))
 
         elif demisto.command() == 'absolute-custom-device-field-list':
-            return_results(get_custom_device_field_list_command(args=args, client=client))
+            return_results(get_custom_device_field_list_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-custom-device-field-update':
-            return_results(update_custom_device_field_command(args=args, client=client))
+            return_results(update_custom_device_field_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-freeze-request':
-            return_results(device_freeze_request_command(args=args, client=client))
+            return_results(device_freeze_request_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-remove-freeze-request':
-            return_results(remove_device_freeze_request_command(args=args, client=client))
+            return_results(remove_device_freeze_request_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-freeze-request-get':
-            return_results(get_device_freeze_request_command(args=args, client=client))
+            return_results(get_device_freeze_request_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-freeze-message-list':
-            return_results(list_device_freeze_message_command(args=args, client=client))
+            return_results(list_device_freeze_message_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-freeze-message-create':
-            return_results(create_device_freeze_message_command(args=args, client=client))
+            return_results(create_device_freeze_message_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-freeze-message-update':
-            return_results(update_device_freeze_message_command(args=args, client=client))
+            return_results(update_device_freeze_message_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-freeze-message-delete':
-            return_results(delete_device_freeze_message_command(args=args, client=client))
+            return_results(delete_device_freeze_message_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-unenroll':
-            return_results(device_unenroll_command(args=args, client=client))
+            return_results(device_unenroll_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-application-list':
-            return_results(get_device_application_list_command(args=args, client=client))
+            return_results(get_device_application_list_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-list':
-            return_results(device_list_command(args=args, client=client))
+            return_results(device_list_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-get':
-            return_results(get_device_command(args=args, client=client))
+            return_results(get_device_command(args=args, client=client_v3))
 
         elif demisto.command() == 'absolute-device-location-get':
-            return_results(get_device_location_command(args=args, client=client))
+            return_results(get_device_location_command(args=args, client=client_v3))
 
         else:
             raise NotImplementedError(f'{demisto.command()} is not an existing {INTEGRATION} command.')
