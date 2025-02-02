@@ -81,7 +81,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
-  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Endpoint Incidents fetch query
   name: incidents_fetch_query
   required: false
@@ -90,7 +90,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
-  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: IDP Detections fetch query
   name: idp_detections_fetch_query
   type: 0
@@ -99,7 +99,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
-  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Mobile Detections fetch query
   name: mobile_detections_fetch_query
   type: 0
@@ -108,7 +108,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
-  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: IOM fetch query
   name: iom_fetch_query
   type: 0
@@ -117,7 +117,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
-  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: IOA fetch query
   name: ioa_fetch_query
   type: 0
@@ -135,7 +135,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
-  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: OFP Detections fetch query
   name: ofp_detection_fetch_query
   type: 0
@@ -144,7 +144,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
-  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Fetch incidents
   name: isFetch
   type: 8
