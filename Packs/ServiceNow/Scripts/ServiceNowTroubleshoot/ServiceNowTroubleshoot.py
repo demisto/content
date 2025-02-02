@@ -28,7 +28,7 @@ def http_request_wrapper(method: str, url: str, body: dict | None = None):
     try:
         http_result_body_response = json.loads(http_result_body_raw_response)
     except json.JSONDecodeError as e:
-        demisto.debug(f'Unable to load response {http_result_body_raw_response}: {str(e)}')
+        raise DemistoException(f'Unable to load response {http_result_body_raw_response}: {str(e)}')
         http_result_body_response = {}
     return http_result_body_response
 
