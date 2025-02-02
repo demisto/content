@@ -292,9 +292,6 @@ ignore=IF115
 [file:incidentfield-GIB_Socks_Proxy_Source.json]
 ignore=IF115
 
-[file:incidentfield-GIB_Phishing_Date_Updated.json]
-ignore=IF115
-
 [file:incidentfield-GIB_Nation-State_Cybercriminals_Threat_Langs.json]
 ignore=IF115
 
@@ -384,7 +381,7 @@ ignore=GR103
 ignore=BA116
 
 [file:incidentfield-GIB_Phishing_Date_Updated.json]
-ignore=BA116
+ignore=BA116,IF115
 
 [file:layoutscontainer-GIB_OSI_Git_Leak_Layout.json]
 ignore=LO107
