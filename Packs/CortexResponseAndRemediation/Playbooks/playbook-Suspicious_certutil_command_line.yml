@@ -518,9 +518,9 @@ tasks:
       version: -1
       name: Approve XQL search & quarantine & Block URL & Isolation
       description: |-
-        Endpoint Isolation is recommended since the following verdicts have been confirmed:
+        Endpoint isolation is recommended since the following verdict has been confirmed:
 
-         - MSI package was installed from a malicious remote URL
+         - MSI package was installed from a malicious remote URL.
       type: collection
       iscommand: false
       brand: ""
@@ -1090,7 +1090,7 @@ tasks:
       id: c0cdf2a4-84df-438b-8bee-9dc890500d75
       version: -1
       name: File quarantine
-      description: 'Quarantines a file on selected endpoints. '
+      description: 'Quarantines a file on selected endpoints.'
       script: '|||core-quarantine-files'
       type: regular
       iscommand: true
@@ -1357,9 +1357,9 @@ tasks:
       version: -1
       name: Approve the URL block using PAN-OS
       description: |-
-        Endpoint Isolation is recommended since the following verdicts have been confirmed:
+        Endpoint isolation is recommended since the following verdict has been confirmed:
 
-         - MSI package was installed from a malicious remote URL
+         - MSI package was installed from a malicious remote URL.
       type: collection
       iscommand: false
       brand: ""
@@ -1847,7 +1847,7 @@ tasks:
       id: 04eb7a8f-2192-48c7-8aa3-10e2aef1894c
       version: -1
       name: Is the URL reputation malicious?
-      description: Checks if the Url reputation is malicious
+      description: Checks if the URL reputation is malicious
       type: condition
       iscommand: false
       brand: ""
