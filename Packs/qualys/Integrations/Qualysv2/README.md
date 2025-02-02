@@ -69,7 +69,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
     | Event Fetch Limit | Available in Cortex XSIAM only. Maximum number of events to fetch per fetch iteration. | False |
     | Events Fetch Interval | Available in Cortex XSIAM only. | False |
     | Fetch Assets and Vulnerabilities | Available in Cortex XSIAM only. Whether to fetch host list detections (assets) and vulnerabilites. | False |
-    | Assets and Vulnerabilities Fetch Interval | Available in Cortex XSIAM only. The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours, and the minimum interval is 1 hour. | False |
+    | Assets and Vulnerabilities Fetch Interval | Available in Cortex XSIAM only. The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours. Interval lower then 1 hour is not supported. Default is 1 day. | False |
     | Fetch Vulnerabilities Behavior | Available in Cortex XSIAM only. Default is Fetch by last modified date. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.

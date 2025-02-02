@@ -2910,25 +2910,28 @@ def send_assets_and_vulnerabilities_to_xsiam(
     has_next_page: bool,
     snapshot_id: str,
 ) -> None:
-    """Sends assets and vulnerabilities to their respective snapshot datasets.
+    """Sends assets and vulnerabilities to their respective snapshot datasets without updating module health.
+    `demisto.updateModuleHealth()` should be called seperately afterwards uisng the cumulative counts.
 
     Args:
         assets (list): List of host detections (assets) dictionaries.
         vulnerabilities (list): List of vulnerabilities dictionaries.
         cumulative_assets_count (int): Total count of assets collected since resetting last run object.
         cumulative_vulns_count (int): Total count of vulnerabilities collected since resetting last run object.
-        has_assets_next_page (bool): Whether there is a next assets page url (indicates more results).
+        has_next_page (bool): Whether there is a next assets page url (indicates not done pulling all results).
         snapshot_id (str): Snapshot ID of the dataset (use the same snapshot ID to add more data to the same dataset snapshot).
     """
+    # Set to 1 if not done pulling to signal to the server that the dataset snapshot is not yet complete
+    total_assets_to_report = 1 if has_next_page else cumulative_assets_count
+    total_vulns_to_report = 1 if has_next_page else cumulative_vulns_count
+
     demisto.debug(f'Sending {len(assets)} assets to XSIAM. '
                   f'Total assets collected so far: {cumulative_assets_count}')
 
-    total_assets_to_report = 1 if has_next_page else cumulative_assets_count   # set 1 if not done pulling
     send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
                        snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
                        should_update_health_module=False)
 
-    total_vulns_to_report = 1 if has_next_page else cumulative_vulns_count  # set 1 if not done pulling
     demisto.debug(f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM. '
                   f'Total vulnerabilities collected so far: {cumulative_vulns_count}')
 
