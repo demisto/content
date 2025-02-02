@@ -1046,7 +1046,7 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
 
 
 def process_events(events: List[Dict[str, Any]], last_run: Dict[str, Any], should_get_latest_events: bool = True) -> \
-    tuple[List[Dict[str, Any]], [Dict[str, Any]]]:
+        tuple[List[Dict[str, Any]], [Dict[str, Any]]]:
     """
     Processes events by handling duplication, adding a time field, and optionally getting the latest events ID and time.
 

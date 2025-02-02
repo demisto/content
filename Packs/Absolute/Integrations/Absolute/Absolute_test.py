@@ -686,11 +686,10 @@ def test_get_latest_events(absolute_client_v3):
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
     _, last_run = process_events(events=events, last_run={})
-    #latest_events_id, latest_event_time = latest_events_id_and_time_tuple
     assert len(last_run.get('latest_events_id')) == 2
     assert len(set(last_run.get('latest_events_id'))) == 2
     assert last_run.get('latest_events_id') == ['id14', 'id15']
-    assert events[13].get('eventDateTimeUtc') == events[14].get('eventDateTimeUtc') == last_run.get('latest_event_time')
+    assert events[13].get('eventDateTimeUtc') == events[14].get('eventDateTimeUtc') == last_run.get('latest_events_time')
 
 
 def test_get_events_command(mocker, absolute_client_v3):
@@ -756,8 +755,9 @@ def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
     query = ClientV3.prepare_query_string_for_fetch_events(None,
                                                            page_size=page_size,
                                                            start_date=start_date,
-                                                           end_date=end_date)
-    expected_query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}'
+                                                           end_date=end_date,
+                                                           next_page="next_page_token")
+    expected_query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}&nextPage=next_page_token'
     assert query == expected_query
 
 
