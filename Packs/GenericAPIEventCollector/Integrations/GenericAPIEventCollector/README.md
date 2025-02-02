@@ -2,7 +2,7 @@ Collect logs from 3rd party vendors.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Generic Event Collector (Beta) in Cortex
+## Configure Generic API Event Collector (Beta) in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
@@ -38,14 +38,14 @@ This is the default integration for this content pack when configured by the Dat
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### generic-event-collector-get-events
+### generic-api-event-collector-get-events
 
 ***
 Gets events from 3rd party vendor.
 
 #### Base Command
 
-`generic-event-collector-get-events`
+`generic-api-event-collector-get-events`
 
 #### Input
 

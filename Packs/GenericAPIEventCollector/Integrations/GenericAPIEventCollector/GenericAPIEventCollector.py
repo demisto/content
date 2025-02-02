@@ -415,6 +415,13 @@ def setup_search_events(first_fetch_datetime, last_run, params, timestamp_field_
             query_params = parse_json_param(params.get('initial_query_params'), 'initial_query_params')
         if params.get('initial_pagination_params'):
             pagination_logic = extract_pagination_params(params.get('initial_pagination_params'))
+        if params.get('initial_request_data'):
+            request_data = parse_json_param(params.get('initial_request_data'), 'initial_request_data')
+        if params.get('initial_request_json'):
+            request_json = parse_json_param(params.get('initial_request_json'), 'initial_request_json')
+        if params.get('initial_query_params'):
+            query_params = parse_json_param(params.get('initial_query_params'), 'initial_query_params')
+
     # endregion
     # region Handle substitutions
     substitutions: list[tuple[str, str]] = [
@@ -594,6 +601,24 @@ def get_events_command(client: Client,
     )
 
 
+def extract_pagination_params(params):
+    pagination_needed: bool = argToBoolean(params.get('pagination_needed', False))
+    pagination_field_name: str | None = params.get('pagination_field_name')
+    pagination_flag: str | None = params.get('pagination_flag')
+    pagination_logic = PaginationLogic(pagination_needed, pagination_field_name, pagination_flag)
+    if pagination_logic.pagination_needed:
+        demisto.debug("Pagination logic - Pagination Needed, "
+                      f"pagination_field_name: {pagination_logic.pagination_field_name}, "
+                      f"pagination_flag: {pagination_logic.pagination_flag}")
+        if not pagination_logic.pagination_field_name:
+            return_error('Pagination field name is missing')
+        if not pagination_logic.pagination_flag:
+            return_error('Pagination flag is missing')
+    else:
+        demisto.debug("Pagination logic - Pagination Not Needed")
+    return pagination_logic
+
+
 def main() -> None:
     """
     main function, parses params and runs command functions.
@@ -687,7 +712,8 @@ def main() -> None:
             # saves next_run for the time fetch-incidents are invoked.
             demisto.debug(f"setting last run:{next_run}")
             demisto.setLastRun(next_run)
-        elif command == "generic-event-collector-get-events":
+
+        elif command == "generic-api-event-collector-get-events":
             args: dict[Any, Any] = demisto.args()
             should_push_events: bool = argToBoolean(args.get("should_push_events"))
             limit: int = arg_to_number(args.get("limit", DEFAULT_LIMIT), "limit", True)  # type: ignore[assignment]
@@ -700,27 +726,10 @@ def main() -> None:
             if should_push_events:
                 events = organize_events_to_xsiam_format(raw_events, events_keys)
                 send_events_to_xsiam(events, vendor=vendor, product=product)  # noqa
-    # Log exceptions and return errors
+
     except Exception as e:
+        # Log exceptions and return errors
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
-
-
-def extract_pagination_params(params):
-    pagination_needed: bool = argToBoolean(params.get('pagination_needed', False))
-    pagination_field_name: str | None = params.get('pagination_field_name')
-    pagination_flag: str | None = params.get('pagination_flag')
-    pagination_logic = PaginationLogic(pagination_needed, pagination_field_name, pagination_flag)
-    if pagination_logic.pagination_needed:
-        demisto.debug("Pagination logic - Pagination Needed, "
-                      f"pagination_field_name: {pagination_logic.pagination_field_name}, "
-                      f"pagination_flag: {pagination_logic.pagination_flag}")
-        if not pagination_logic.pagination_field_name:
-            return_error('Pagination field name is missing')
-        if not pagination_logic.pagination_flag:
-            return_error('Pagination flag is missing')
-    else:
-        demisto.debug("Pagination logic - Pagination Not Needed")
-    return pagination_logic
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
