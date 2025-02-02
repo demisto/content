@@ -592,6 +592,8 @@ def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, arg
     
     response = client.list_public_ip_addresses(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get('value', [])
+    if not all_results:
+        data_from_response = data_from_response[:limit]
     outputs = [data.copy() for data in data_from_response]
     for output in outputs:
         extract_inner_dict(output, ['properties'])
@@ -602,11 +604,9 @@ def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, arg
                                        'name', 'id', 'etag', 'provisioningState', 'publicIPAddressVersion',
                                        'ipAddress', 'domainNameLabel', 'fqdn',
                                        ],
-                                      removeNull=True, headerTransform=string_to_table_header)
-    if not all_results:
-        readable_output = readable_output[:limit]
+                                      removeNull=True, headerTransform=pascalToSpace)
     return CommandResults(
-        outputs_prefix='AzureNSG.PublicIPAdress',
+        outputs_prefix='AzureNSG.PublicIPAddress',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response,
@@ -633,6 +633,8 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
     
     response = client.list_virtual_networks(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get('value', [])
+    if not all_results:
+        data_from_response = data_from_response[:limit]
     outputs = [data.copy() for data in data_from_response]
     for output in outputs:
         extract_inner_dict(output, ['properties'])
@@ -651,9 +653,7 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
                                        'name', 'etag', 'location', 'addressPrefixes',
                                        'subnetName', 'subnetAdrdressPrefix', 'subnetIPConfigurations',
                                        ],
-                                      removeNull=True, headerTransform=string_to_table_header)
-    if not all_results:
-        readable_output = readable_output[:limit]
+                                      removeNull=True, headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix='AzureNSG.VirtualNetwork',
         outputs_key_field='id',
@@ -688,7 +688,7 @@ def azure_nsg_security_group_create(client: AzureNSGClient, params: Dict, args: 
     readable_output = tableToMarkdown('Security Group List',
                                       outputs,
                                       ['name', 'etag', 'location', 'securityRules',],
-                                      removeNull=True, headerTransform=string_to_table_header)
+                                      removeNull=True, headerTransform=pascalToSpace)
     
     return CommandResults(
         outputs_prefix='AzureNSG.SecurityGroup',
@@ -718,6 +718,8 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
     
     response = client.list_networks_interfaces(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get('value', [])
+    if not all_results:
+        data_from_response = data_from_response[:limit]
     outputs = [data.copy() for data in data_from_response]
     for output in outputs:
         extract_inner_dict(output, ['properties'])
@@ -743,9 +745,8 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
                                        'internalDomainNameSuffix', 'macAddress',
                                        'virtualMachineId', 'location', 'kind'
                                        ],
-                                      removeNull=True, headerTransform=string_to_table_header)
-    if not all_results:
-        readable_output = readable_output[:limit]
+                                      removeNull=True, headerTransform=pascalToSpace)
+    
     return CommandResults(
         outputs_prefix='AzureNSG.NetworkInterfaces',
         outputs_key_field='id',
@@ -795,11 +796,11 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
 }
     
     if nsg_name:
-        data['properties']['networkSecurityGroup'] = {'id': f'{prefix}/networkSecurityGroups/{nsg_name}'}
+        data['properties']['networkSecurityGroup'] = {'id': f'{prefix}networkSecurityGroups/{nsg_name}'}
     if private_ip:
         data['properties']['ipConfigurations'][0]['properties']['privateIPAddress'] = private_ip
     if public_ip_address_name:
-        data['properties']['ipConfigurations'][0]['properties']['publicIPAddress'] = {'name': public_ip_address_name}
+        data['properties']['ipConfigurations'][0]['properties']['publicIPAddress'] = {'id': public_ip_address_name}
     
     response = client.create_or_update_network_interface(subscription_id=subscription_id, resource_group_name=resource_group_name,
                                                         nic_name=nic_name, data=data)
@@ -814,15 +815,14 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
     extract_list(outputs, 'ipConfigurationPublicIPAddress', 'id',
                             'ipConfigurationPublicIPAddressName')
     extract_list(outputs, 'ipConfigurationProperties', 'subnet', 'ipConfigurationSub')
-    extract_list(outputs, 'ipConfigurationSub', 'subnetId')
-    print(response)
+    extract_list(outputs, 'ipConfigurationSub', 'id', 'subnetId')
     readable_output = tableToMarkdown('Network Interface',
                                       outputs,
                                       [
                                        'name', 'etag', 'provisioningState', 'ipConfigurationName',
                                        'ipConfigurationPrivateIPAddress', 'ipConfigurationPublicIPAddressName', 'subnetId',
                                        ],
-                                      removeNull=True, headerTransform=string_to_table_header)
+                                      removeNull=True, headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix='AzureNSG.NetworkInterface',
         outputs_key_field='id',
