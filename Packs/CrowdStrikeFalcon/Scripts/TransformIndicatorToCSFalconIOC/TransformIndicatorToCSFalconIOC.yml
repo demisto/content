@@ -39,7 +39,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: Transform a XSOAR indicator into a Crowd Strike Falcon IOC. The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path) is a JSON, which represents the indicators in CS Falcon format. This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* command.
+comment: Transform an indicator in Cortex into a CrowdStrike Falcon IOC. The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path) is a JSON, which represents the indicators in CrowdStrike Falcon format. This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* command.
 commonfields:
   id: TransformIndicatorToCSFalconIOC
   version: -1
