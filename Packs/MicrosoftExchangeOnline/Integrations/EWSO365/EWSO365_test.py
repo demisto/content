@@ -936,7 +936,13 @@ class TestEmailModule(unittest.TestCase):
     @patch('EWSO365.HTMLBody')
     @patch('EWSO365.Body')
     @patch('EWSO365.Message')
-    def test_create_message_with_html_body_inline_image_with_handle_html(self, mock_message, mock_body, mock_html_body, mock_file_attachment):
+    def test_create_message_with_html_body_inline_image_with_handle_html(
+        self,
+        mock_message,
+        mock_body,
+        mock_html_body,
+        mock_file_attachment
+    ):
         """
         Test create_message function with an HTML body.
         """
@@ -947,7 +953,7 @@ class TestEmailModule(unittest.TestCase):
         original_html_body = '<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
         new_html_body = '<p><img src="cid:image0@11111111_11111111"/></p>'
         attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
-        
+
         mock_message.return_value = MagicMock()
         mock_html_body.return_value = MagicMock()
         mock_file_attachment.return_value = MagicMock(spec=FileAttachment)
@@ -979,7 +985,7 @@ class TestEmailModule(unittest.TestCase):
         subject = "Test Subject"
         html_body = '<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
         attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
-        
+
         mock_message.return_value = MagicMock()
         mock_html_body.return_value = MagicMock()
         mock_file_attachment.return_value = MagicMock(spec=FileAttachment)
@@ -995,6 +1001,7 @@ class TestEmailModule(unittest.TestCase):
             mock_html_body.assert_called_once_with(html_body)
             mock_message.assert_called_once()
             assert isinstance(result[0], MagicMock)
+
 
 @pytest.mark.parametrize("headers, expected_formatted_headers", [
     pytest.param([("Message-ID", '<valid_header>')], [("Message-ID", '<valid_header>')], id="valid header"),
