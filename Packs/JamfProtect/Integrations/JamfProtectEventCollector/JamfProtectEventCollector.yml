@@ -60,10 +60,12 @@ configuration:
   name: isFetchEvents
   type: 8
   required: false
+  section: Collect
 - display: Fetch Assets
   name: isFetchAssets
   type: 8
   required: false
+  section: Collect
 description: Use this integration to fetch audit logs events, alerts events and computer assets from Jamf Protect to Cortex XSIAM.
 display: Jamf Protect Event Collector
 name: Jamf Protect Event Collector
