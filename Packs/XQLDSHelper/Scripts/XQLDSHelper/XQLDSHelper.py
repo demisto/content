@@ -433,7 +433,7 @@ class Cache:
         query_hash: str,
         cache_node: str,
     ) -> Any:
-        cache = demisto.get(demisto.context(), self.__key)
+        cache = self.__context.get(self.__key)
         if not isinstance(cache, dict):
             return None
 
@@ -481,9 +481,11 @@ class Cache:
     def __init__(
         self,
         name: str,
+        context: ContextData,
     ) -> None:
         name = urllib.parse.quote(name).replace('.', '%2E')
         self.__key = f'XQLDSHelperCache.{name}'
+        self.__context = context
 
     def save_recordset(
         self,
@@ -2105,8 +2107,15 @@ class Main:
         fields = dict(fields, **(fields.get('CustomFields') or {}))
         fields.pop('CustomFields', None)
 
+        context = args.get('context_data') or demisto.context()
+        if isinstance(context, str):
+            context = json.loads(context)
+
+        assert context is None or isinstance(context, dict), (
+            f'Context data must be of type str, dict, or null - {type(context)}'
+        )
         self.__context: ContextData = ContextData(
-            context=demisto.context(),
+            context=context,
             alert=fields if is_xsiam() else None,
             incident=None if is_xsiam() else fields,
         )
@@ -2157,8 +2166,10 @@ class Main:
             formatter=formatter,
             context=self.__context,
         )
-        cache = Cache(self.__template_name)
-
+        cache = Cache(
+            name=self.__template_name,
+            context=self.__context
+        )
         entry = cache.load_entry(
             query_params.query_hash()
         ) if self.__cache_type == CacheType.ENTRY else None
