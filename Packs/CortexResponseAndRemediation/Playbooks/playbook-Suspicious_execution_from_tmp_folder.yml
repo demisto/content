@@ -1033,7 +1033,7 @@ tasks:
       id: 8dbf40b2-645f-417f-89f3-b31dc85d2279
       version: -1
       name: Check if cronjob alert
-      description: Check if alert is the cronjob variant
+      description: Check if alert is the cronjob variant.
       type: condition
       iscommand: false
       brand: ""
