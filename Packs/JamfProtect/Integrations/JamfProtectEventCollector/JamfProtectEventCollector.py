@@ -455,7 +455,7 @@ def fetch_events(client: Any, max_fetch_alerts: int, max_fetch_audits: int, last
 
 def fetch_assets(client, assets_last_run={}, max_fetch=COMPUTER_MAX_FETCH):
     """
-    Fetches assets from the Jamf Protect API.
+    Fetches computers assets from the Jamf Protect API.
 
     Args:
         client (Any): API client instance.
