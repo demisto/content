@@ -2182,6 +2182,7 @@ async def test_handle_zoom_response(event_type, expected_status,
     mocker.patch('Zoom.check_and_handle_entitlement')
     mocker.patch('Zoom.process_entitlement_reply')
     mocker.patch('Zoom.handle_mirroring')
+    mocker.patch('Zoom.zoom_get_user_email_by_id' , return_value="mock_user_email")
     mocker.patch.object(demisto, 'params', return_value={'credentials': {'identifier': 'test', 'password': 'testpass'}})
 
     # Create a mock HTTPBasicCredentials object
