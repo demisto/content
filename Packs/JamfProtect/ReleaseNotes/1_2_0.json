@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Jamf Protect Event Collector updated the **fetch computer events** to **fetch computer assets** instead."
+    "breakingChangesNotes": "the Fetch all computers was removed from the fetch events command, now you can fetch computers using the Fetch assets and vulnerabilities."
 }

@@ -313,18 +313,29 @@ class Client(BaseClient):
         return self.graphql(query, variables)
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params) -> str:
     """
-    This method is used to test the connectivity and functionality of the client.
+    Tests the connectivity and functionality of the client.
 
     Args:
-        client (Client): The client object with methods for interacting with the API.
+        client (Client): The client object used to interact with the API.
+        params (dict): Configuration parameters.
 
     Returns:
-        str: Returns "ok" if the client is able to interact with the API successfully, raises an exception otherwise.
+        str: "ok" if the client can interact with the API successfully, otherwise raises an exception.
     """
-    fetch_events(client, max_fetch_audits=1, max_fetch_alerts=1)
-    fetch_assets(client, max_fetch=1)
+    is_fetch_events = params.get("isFetchEvents", False)
+    is_fetch_assets = params.get("isFetchAssets", False)
+
+    if not (is_fetch_events or is_fetch_assets):
+        raise DemistoException("At least one option must be enabled: 'Fetch Events' or 'Fetch Assets'.")
+
+    if is_fetch_events:
+        fetch_events(client, max_fetch_audits=1, max_fetch_alerts=1)
+
+    if is_fetch_assets:
+        fetch_assets(client, max_fetch=1)
+
     return "ok"
 
 
@@ -476,7 +487,8 @@ def fetch_assets(client, assets_last_run={}, max_fetch=COMPUTER_MAX_FETCH):
     next_run = {
         'next_page': page_info.get("next"),
         'snapshot_id': snapshot_id,
-        'nextTrigger': "0"
+        'nextTrigger': "0",
+        'type': 1
     } if page_info.get("next") else {}
 
     return assets, next_run, page_info.get("total", 0), snapshot_id
@@ -532,6 +544,20 @@ def get_events_command(
         command_results.append(CommandResults(readable_output="No events found."))
 
     return all_fetched_events, command_results
+
+
+def get_assets_command(client: Client, args: dict[str, str]):
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+
+    fetched_assets, _, _, _ = fetch_assets(client, max_fetch=limit)
+    assets = fetched_assets[:limit]
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Jamf Protect Computers Assets", assets),
+        raw_response=assets
+    ) if assets else CommandResults(readable_output="No computer assets found.")
+
+    return assets, command_results
 
 
 def parse_response(response: dict) -> tuple:
@@ -661,14 +687,20 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, params))
 
         elif command == 'jamf-protect-get-events':
-            events, results = get_events_command(client=client,
-                                                 args=args)
+            events, results = get_events_command(client=client, args=args)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+
+        elif command == 'jamf-protect-get-computer-assets':
+            assets, results = get_assets_command(client=client, args=args)
+            return_results(results)
+            if argToBoolean(args.get("should_push_events")):
+                send_data_to_xsiam(data=assets, vendor=VENDOR, product=ASSETS_PRODUCT, data_type='assets',
+                                   items_count=str(len(assets)))
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
@@ -692,7 +724,7 @@ def main() -> None:  # pragma: no cover
 
             assets, new_last_run, total_assets_to_report, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
 
-            demisto.debug(f"Sending {len(assets)} assets to XSIAM API"
+            demisto.debug(f"Sending {len(assets)} assets to XSIAM API "
                           f"with snapshot_id: {snapshot_id} and items_count: {total_assets_to_report}")
 
             send_data_to_xsiam(data=assets, vendor=VENDOR, product=ASSETS_PRODUCT, data_type='assets',

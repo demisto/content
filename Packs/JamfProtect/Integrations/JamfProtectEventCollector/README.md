@@ -41,3 +41,23 @@ Gets events from Jamf Protect.
 #### Context Output
 
 There is no context output for this command.
+
+### jamf-protect-get-computer-assets
+
+***
+Gets computer assets from Jamf Protect.
+
+#### Base Command
+
+`jamf-protect-get-computer-assets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The number of computer assets to return. Default is 10. | Optional | 
+| should_push_events | Set this argument to True in order to create assets, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

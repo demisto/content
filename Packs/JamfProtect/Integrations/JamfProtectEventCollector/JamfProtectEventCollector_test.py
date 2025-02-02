@@ -32,6 +32,32 @@ def client(mocker: MockerFixture, with_alert_next_page=False, with_audit_next_pa
 """*****COMMAND FUNCTIONS****"""
 
 
+def test_test_module(client, mocker: MockerFixture):
+    """
+    Given: A mock JamfProtect client.
+    When: Running test_module with different parameter configurations.
+    Then: Ensure the function returns "ok" when at least one fetch option is enabled,
+          and raises an exception when neither option is selected.
+    """
+    from JamfProtectEventCollector import test_module, DemistoException
+
+    mocker.patch('JamfProtectEventCollector.fetch_events')
+    mocker.patch('JamfProtectEventCollector.fetch_assets')
+
+    params = {"isFetchEvents": True, "isFetchAssets": True}
+    assert test_module(client, params) == "ok"
+
+    params = {"isFetchEvents": True, "isFetchAssets": False}
+    assert test_module(client, params) == "ok"
+
+    params = {"isFetchEvents": False, "isFetchAssets": True}
+    assert test_module(client, params) == "ok"
+
+    params = {"isFetchEvents": False, "isFetchAssets": False}
+    with pytest.raises(DemistoException, match="At least one option must be enabled: 'Fetch Events' or 'Fetch Assets'."):
+        test_module(client, params)
+
+
 def test_get_events_with_limit(client):
     """
     Given: A mock JamfProtect client.
@@ -68,6 +94,23 @@ def test_get_events_wrong_dates(client):
         get_events_command(client=client, args=args)
     assert error_msg in e1.value.args[0]
     assert error_msg in e2.value.args[0]
+
+
+def test_get_assets_command(client, mocker):
+    """
+    Given: A mock JamfProtect client.
+    When: Running get_assets_command with a limit of 2, while there are three assets.
+    Then: Ensure only two assets are returned.
+    """
+    from JamfProtectEventCollector import get_assets_command
+
+    limit = 2
+    args = {"limit": str(limit)}
+
+    assets, command_results = get_assets_command(client=client, args=args)
+
+    assert len(assets) == limit
+    assert "Jamf Protect Computers Assets" in command_results.readable_output
 
 
 @freeze_time(MOCK_TIME_UTC_NOW)
