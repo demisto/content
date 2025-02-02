@@ -11,14 +11,14 @@ filter CreatedDate ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{4}"
 
 
 [INGEST:vendor="salesforce", product="eventlogfile", target_dataset="salesforce_eventlogfile_raw", no_hit = keep]
-filter to_string(_TIMESTAMP_DERIVED_) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"
-| alter tmp_time_string = arrayindex(regextract(to_string(_TIMESTAMP_DERIVED_) , "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"),0)
-| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_time_string )
+filter to_string(TIMESTAMP_DERIVED) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"
+| alter tmp_time_string = arrayindex(regextract(to_string(TIMESTAMP_DERIVED), "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"),0)
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_time_string)
 | fields -tmp_time_string;
 
 
 [INGEST:vendor="salesforce", product="login", target_dataset="salesforce_login_raw", no_hit = keep]
-filter to_string(_TIMESTAMP_DERIVED_) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"
-| alter tmp_time_string = arrayindex(regextract(to_string(_TIMESTAMP_DERIVED_) , "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"),0)
-| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_time_string )
+filter to_string(TIMESTAMP_DERIVED) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"
+| alter tmp_time_string = arrayindex(regextract(to_string(TIMESTAMP_DERIVED), "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"),0)
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_time_string)
 | fields -tmp_time_string;
