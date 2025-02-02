@@ -378,7 +378,7 @@ def get_events_for_type(
     client: Client, last_run: dict, event_type: str, max_fetch: int, start_date: str = "", end_date: str = ""
 ) -> tuple[list[dict], dict]:
     """
-    Fetches computer type events from the Jamf Protect API within a specified date range.
+    Fetches events from the Jamf Protect API within a specified date range.
 
     This function fetches computer type events from the Jamf Protect API based on the provided start date.
     It fetches events up to the maximum number specified by max_fetch.
