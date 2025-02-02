@@ -1,12 +1,12 @@
 
-The Generic Event Collector allows you to ingest data from any API endpoint into XSIAM.
+The Generic API Event Collector allows you to ingest data from any API endpoint into XSIAM.
 By configuring this collector, you can gather data from various systems and bring it into the XSIAM ecosystem for better analysis and correlation.
 Please note that this integration is currently in Beta, and as such, it may be subject to future changes.
 Configuration Guide
-To successfully set up the Generic Event Collector, you need to provide the following mandatory configuration fields:
+To successfully set up the Generic API Event Collector, you need to provide the following mandatory configuration fields:
 1. Vendor and Product
    This information is required to define the dataset name for storing the collected data. It is crucial that the correct
-   Vendor and Product values are added so that data can be ingested and categorized properly.
+   Vendor and Product values are added so that data can be ingested and categorized properly. The name of the ingested dataset will be in the format: `{Vendor}_{Product}_generic`
 2. Server URL
    This is the URL of the server to which the collector will connect to gather data. Ensure that the URL is accessible and correct to enable proper data retrieval.
 3. API Endpoint

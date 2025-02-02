@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: GenericEventCollector
+  id: GenericAPIEventCollector
   version: -1
 configuration:
   - section: Connect
@@ -68,86 +68,6 @@ configuration:
     a need to add more then one use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - section: Connect
-    display: 'Request Data'
-    name: request_data
-    type: 0
-    required: false
-    advanced: true
-    additionalinfo: 'If the product authentication requires more fields to add to the
-    DATA please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
-    ''field-2'': value_2, ''field-3'': value_3}'
-  - section: Connect
-    display: 'Request JSON Parameters'
-    name: request_json
-    type: 0
-    required: false
-    advanced: true
-    additionalinfo: 'If the product authentication requires more fields to add to the
-    body as JSON please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
-    ''field-2'': value_2, ''field-3'': value_3}'
-  - section: Connect
-    display: 'Query Parameters'
-    name: query_params
-    type: 0
-    required: false
-    advanced: true
-    additionalinfo: 'If the product authentication allows to filter the results using query Parameters
-   please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
-    ''field-2'': value_2, ''field-3'': value_3}'
-  - section: Connect
-    display: 'Initial Query Parameters'
-    name: initial_query_params
-    type: 0
-    required: false
-    advanced: true
-    additionalinfo: 'If the product requires a different initial query parameters for the first fetch call,
-   please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
-    ''field-2'': value_2, ''field-3'': value_3}'
-  - section: Connect
-    display: 'Is pagination Needed'
-    name: pagination_needed
-    type: 8
-  - section: Connect
-    display: Pagination Field Name
-    name: pagination_field_name
-    type: 0
-    required: false
-    additionalinfo: 'Next page field in JSON response, e.g., "cursor", "next_page"'
-  - section: Connect
-    display: Pagination Flag
-    name: pagination_flag
-    type: 0
-    required: false
-    additionalinfo: 'Next page existence in JSON response e.g., "has_more", "next"'
-  - section: Connect
-    display: Timestamp format of the event creation time.
-    name: timestamp_format
-    type: 0
-    required: false
-    additionalinfo: 'Python compatible datetime formatting (e.g. "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S") or "epoch" to use UNIX epoch time.'
-  - section: Connect
-    display: Timestamp field
-    name: timestamp_field_name
-    type: 0
-    required: true
-    additionalinfo: 'The name of the event creation time in the response data, e.g. "timestamp" or "created_at".'
-  - section: Connect
-    display: 'Events lookup path in the response JSON, dot seperated, e.g. "data.items".'
-    name: events_keys
-    type: 0
-    required: false
-    additionalinfo: 'Where within the response object to find the events list.'
-  - section: Connect
-    display: 'Event id lookup path in the event response JSON, dot seperated, e.g. "id".'
-    name: id_keys
-    type: 0
-    required: false
-    additionalinfo: 'Where within the event object to find the events id.'
-  - section: Connect
     display: Use system proxy settings
     name: proxy
     defaultvalue: "false"
@@ -173,6 +93,86 @@ configuration:
     required: true
     additionalinfo: 'Enter product name for dataset'
   - section: Collect
+    display: Request data
+    name: request_data
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product authentication requires more fields to add to the
+    DATA please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Collect
+    display: Request JSON parameters
+    name: request_json
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product authentication requires more fields to add to the
+    body as JSON please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Collect
+    display: Query parameters
+    name: query_params
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product authentication allows to filter the results using query Parameters
+   please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Collect
+    display: Initial query parameters
+    name: initial_query_params
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product requires a different initial query parameters for the first fetch call,
+   please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Collect
+    display: Is pagination needed
+    name: pagination_needed
+    type: 8
+  - section: Collect
+    display: Pagination field name
+    name: pagination_field_name
+    type: 0
+    required: false
+    additionalinfo: 'Next page field in JSON response, e.g., "cursor", "next_page"'
+  - section: Collect
+    display: Pagination flag
+    name: pagination_flag
+    type: 0
+    required: false
+    additionalinfo: 'Next page existence in JSON response e.g., "has_more", "next"'
+  - section: Collect
+    display: Timestamp format of the event creation time.
+    name: timestamp_format
+    type: 0
+    required: false
+    additionalinfo: 'Python compatible datetime formatting (e.g. "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S") or "epoch" to use UNIX epoch time.'
+  - section: Collect
+    display: Timestamp field
+    name: timestamp_field_name
+    type: 0
+    required: true
+    additionalinfo: 'The name of the event creation time in the response data, e.g. "timestamp" or "created_at".'
+  - section: Collect
+    display: 'Events lookup path in the response JSON, dot seperated, e.g. "data.items".'
+    name: events_keys
+    type: 0
+    required: false
+    additionalinfo: 'Where within the response object to find the events list.'
+  - section: Collect
+    display: 'Event id lookup path in the event response JSON, dot seperated, e.g. "id".'
+    name: id_keys
+    type: 0
+    required: false
+    additionalinfo: 'Where within the event object to find the events id.'
+  - section: Collect
     display: First fetch time
     name: first_fetch
     defaultvalue: 3 days
@@ -191,9 +191,9 @@ configuration:
     defaultvalue: "1"
     type: 19
     required: false
-description: Collect logs from 3rd party vendors.
-display: Generic Event Collector (Beta)
-name: GenericEventCollector
+description: Collect logs from 3rd party vendors using API.
+display: Generic API Event Collector (Beta)
+name: GenericAPIEventCollector
 beta: true
 script:
   commands:
