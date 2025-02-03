@@ -1,7 +1,4 @@
 category: Endpoint
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Absolute
   version: -1
@@ -772,3 +769,6 @@ script:
 fromversion: 6.0.0
 tests:
 - Absolute_TestPlaybook
+sectionOrder:
+- Connect
+- Collect
