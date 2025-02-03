@@ -32,9 +32,9 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
 | TransformIndicatorToCSFalconIOC | Json output of the indicators. Should be the input for the \*cs-falcon-batch-upload-custom-ioc\*. | String |
 | TransformIndicatorToCSFalconIOC.Indicators.value | The value of the Indicator. | String |
 | TransformIndicatorToCSFalconIOC.Indicators.expiration | The date on which the indicator will become inactive. | String |
-| TransformIndicatorToCSFalconIOC.Indicators.description | Descriptive label for the indicator | String |
+| TransformIndicatorToCSFalconIOC.Indicators.description | Descriptive label for the indicator. | String |
 | TransformIndicatorToCSFalconIOC.Indicators.tags | List of tags of the indicator. | Unknown |
-| TransformIndicatorToCSFalconIOC.Indicators.source | The source where this indicator originated.  | String |
+| TransformIndicatorToCSFalconIOC.Indicators.source | The source where this indicator originated. | String |
 | TransformIndicatorToCSFalconIOC.Indicators.id | The ID of the indicator. | String |
 | TransformIndicatorToCSFalconIOC.Indicators.type | Type of the indicator. Possible values are: md5, sha256, ipv4, ipv6 and domain. | String |
 | TransformIndicatorToCSFalconIOC.Indicators.severity | The severity of the indicator. possible values are: Informational, Low, Medium, High and Critical. | String |

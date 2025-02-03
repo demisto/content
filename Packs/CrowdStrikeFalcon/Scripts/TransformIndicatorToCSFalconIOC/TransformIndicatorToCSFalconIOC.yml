@@ -58,10 +58,10 @@ outputs:
   description: Descriptive label for the indicator.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.tags
-  description: List of tags of the indicator
+  description: List of tags of the indicator.
   type: Unknown
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.source
-  description: 'The source where this indicator originated. '
+  description: The source where this indicator originated.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.id
   description: The ID of the indicator.
