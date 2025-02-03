@@ -401,7 +401,7 @@ class ClientV3(BaseClient):
         Returns:
             list: A list of fetched events.
         """
-        all_events = []
+        all_events: List[Dict[str, Any]] = []
         next_page_token = ''
         while len(all_events) < fetch_limit:
             page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
@@ -416,15 +416,15 @@ class ClientV3(BaseClient):
         demisto.debug(f'fetch_events_between_dates: Fetched {len(all_events)} events')
         return all_events
 
-    def prepare_query_string_for_fetch_events(self, page_size: int = None, start_date: datetime = None,
-                                              end_date: datetime = None, next_page: str = None) -> str:
+    def prepare_query_string_for_fetch_events(self, start_date: datetime, end_date: datetime, page_size: int = None,
+                                              next_page: str = None) -> str:
         """
         Prepares the query string for fetching events based on the provided parameters.
 
         Args:
+            start_date (datetime): The start date of the events to fetch.
+            end_date (datetime): The end date of the events to fetch.
             page_size (int, optional): The size of each page to fetch. Defaults to None.
-            start_date (datetime, optional): The start date of the events to fetch. Defaults to None.
-            end_date (datetime, optional): The end date of the events to fetch. Defaults to None.
             next_page (str, optional): The next page token. Defaults to None.
 
         Returns:
@@ -447,7 +447,7 @@ def sign(key, msg):
 
 
 def validate_absolute_api_url(base_url):
-    if base_url not in ABSOLUTE_URL_TO_API_URL.keys():
+    if base_url not in ABSOLUTE_URL_TO_API_URL:
         raise_demisto_exception(
             f"The Absolute server url {base_url} in not a valid url. "
             f"Possible options: {list(ABSOLUTE_URL_TO_API_URL.keys())}")
@@ -1046,7 +1046,7 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
 
 
 def process_events(events: List[Dict[str, Any]], last_run: Dict[str, Any], should_get_latest_events: bool = True) -> \
-        tuple[List[Dict[str, Any]], [Dict[str, Any]]]:
+        tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
     Processes events by handling duplication, adding a time field, and optionally getting the latest events ID and time.
 
@@ -1085,7 +1085,7 @@ def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
     start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
     end_date = arg_to_datetime(args.get('end_date', "now"))
     fetch_limit = int(args.get('limit', 50))
-    if start_date > end_date:
+    if (start_date and end_date) and (start_date > end_date):
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
 
     events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
@@ -1177,7 +1177,7 @@ def main() -> None:  # pragma: no cover
             return_results(get_device_location_command(args=args, client=client))
 
         elif demisto.command() == 'fetch-events':
-            max_events_per_fetch = int(arg_to_number(params.get('max_events_per_fetch', 10000)))
+            max_events_per_fetch = arg_to_number(params.get('max_events_per_fetch', 10000)) or 10000
             events, last_run_object = fetch_events(client_v3, max_events_per_fetch, demisto.getLastRun())
             if events:
                 send_events_to_xsiam(events=events, vendor="Absolute", product="Secure Endpoint")

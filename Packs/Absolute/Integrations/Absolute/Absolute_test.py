@@ -4,7 +4,6 @@ from datetime import datetime
 from freezegun import freeze_time
 
 import pytest
-from pytest import raises
 
 from CommonServerPython import DemistoException
 from Absolute import Client, DATE_FORMAT, INTEGRATION, ClientV3
@@ -165,7 +164,7 @@ def util_load_json(path):
 @pytest.mark.parametrize('url', ['https://absolute.com', 'absolute.com'])
 def test_invalid_absolute_api_url(url):
     from Absolute import validate_absolute_api_url
-    with raises(DemistoException):
+    with pytest.raises(DemistoException):
         validate_absolute_api_url(url)
 
 
@@ -260,7 +259,7 @@ def test_get_custom_device_field_list_command(mocker, absolute_client):
                           ])
 def test_prepare_payload_to_freeze_request_with_invalid_args(args, expected_error):
     from Absolute import prepare_payload_to_freeze_request
-    with raises(DemistoException, match=re.escape(f'{INTEGRATION} error: {expected_error}')):
+    with pytest.raises(DemistoException, match=re.escape(f'{INTEGRATION} error: {expected_error}')):
         prepare_payload_to_freeze_request(args)
 
 
@@ -757,7 +756,8 @@ def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
                                                            start_date=start_date,
                                                            end_date=end_date,
                                                            next_page="next_page_token")
-    expected_query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}&nextPage=next_page_token'
+    expected_query = (f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc='
+                      f'{end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}&nextPage=next_page_token')
     assert query == expected_query
 
 
