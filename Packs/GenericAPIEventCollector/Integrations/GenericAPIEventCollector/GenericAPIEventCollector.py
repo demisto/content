@@ -129,8 +129,8 @@ class PlaceHolders(enum.Enum):
 
 
 class IdTypes(enum.Enum):
-    INTEGER = "INTEGER"
-    STRING = "STRING"
+    INTEGER = "integer"
+    STRING = "string"
 
 
 ALL_ID_TYPES = [
@@ -343,13 +343,20 @@ def fetch_events(client: Client,
     # region Gets events & Searches for pagination
     all_events_list: list[dict[str, Any]] = []
     pagination_needed: bool = True
-    id_type: str | None = None
+    id_type_lower: str | None = None
     id_keys: list[str] = argToList(params.get('id_keys'), '.')
     if id_keys:
         id_type: str = params.get('id_type')
-        if not id_type or id_type not in ALL_ID_TYPES:
-            return_error(f"ID type was {id_type} but must be one of {', '.join(ALL_ID_TYPES)}")
+        if id_type:
+            id_type_lower = id_type.lower()
+            if id_type_lower not in ALL_ID_TYPES:
+                return_error(f"ID type was {id_type_lower} but must be one of {', '.join(ALL_ID_TYPES)}")
+                return {}, []
+            demisto.debug(f"ID type:{id_type_lower}")
+        else:
+            return_error("ID type was not specified")
             return {}, []
+
     while pagination_needed:
 
         raw_events = client.search_events(endpoint=endpoint,
@@ -367,7 +374,7 @@ def fetch_events(client: Client,
 
     # region Collect all events based on their last fetch time.
     latest_created_datetime: datetime = last_fetched_datetime
-    last_fetched_id: Any | None = None
+    last_fetched_id: Any | None = last_run.get(PlaceHolders.LAST_FETCHED_ID.value)
     returned_event_list: list[dict[str, Any]] = []
     for event in all_events_list:
 
@@ -388,8 +395,8 @@ def fetch_events(client: Client,
             if last_fetched_id is None:
                 last_fetched_id = current_id
             else:
-                if id_type == IdTypes.INTEGER.value:
-                    last_fetched_id = max(last_fetched_id, current_id)  # noqa
+                if id_type_lower == IdTypes.INTEGER.value:
+                    last_fetched_id = str(max(int(last_fetched_id), int(current_id)))  # noqa
                 else:
                     # We assume the last event contains the last id.
                     last_fetched_id = current_id
@@ -726,9 +733,9 @@ def main() -> None:
                 timestamp_field_config=timestamp_field_config,
             )
 
-            # Fix The JSON Format to send to XSIAM dataset.
-            events_to_xsiam = organize_events_to_xsiam_format(events, events_keys)
-            send_events_to_xsiam(events_to_xsiam, vendor=vendor, product=product)  # noqa
+            # Send to XSIAM dataset.
+            demisto.debug(f"Sending {len(events)} events from fetch")
+            send_events_to_xsiam(events, vendor=vendor, product=product)  # noqa
 
             # saves next_run for the time fetch-incidents are invoked.
             demisto.debug(f"setting last run:{next_run}")
