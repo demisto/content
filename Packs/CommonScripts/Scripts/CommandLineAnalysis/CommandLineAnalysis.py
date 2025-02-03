@@ -6,11 +6,15 @@ import ipaddress
 import json
 from typing import Any
 
+# -----------------------------------------------------------------------------
+# 1) BASE64 & RELATED UTILITY FUNCTIONS
+# -----------------------------------------------------------------------------
+
 
 def is_base64(possible_base64: str | bytes) -> bool:
     """
     Validates if the provided string is a Base64-encoded string.
-    For strings of length 16 or less, require that the string must contain '+', '/' or '='.
+    For strings of length 20 or less, require that the string must contain '+', '/' or '='.
     For longer strings, rely solely on strict base64 decoding.
     """
     try:
@@ -25,11 +29,9 @@ def is_base64(possible_base64: str | bytes) -> bool:
         if len(possible_base64) % 4 != 0:
             return False
 
-        # Apply heuristic for short strings
-        if len(possible_base64) <= 16:
-            # For shorter strings, require at least one '+' or '/' or '='
-            if b'=' not in possible_base64:
-                return False
+        # Apply heuristic for short strings: must contain '=' if <= 20
+        if len(possible_base64) <= 20 and b'=' not in possible_base64:
+            return False
 
         # Attempt strict decoding
         base64.b64decode(possible_base64, validate=True)
@@ -61,88 +63,87 @@ def remove_null_bytes(decoded_str: str) -> str:
 
 
 def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: bool = False) -> tuple[str, bool]:
-    try:
-        recursion_depth = 0
-        result = encoded_str
+    """
+    Recursively decodes Base64 segments found in the **entire** string `encoded_str`.
+    Returns (decoded_string, double_encoded_detected).
+    """
+    recursion_depth = 0
+    result = encoded_str
 
-        while recursion_depth < max_recursions:
-            base64_pattern = re.compile(r'([A-Za-z0-9+/]{4,}(?:={0,2}))')
-            matches = base64_pattern.findall(result)
+    while recursion_depth < max_recursions:
+        base64_pattern = re.compile(r'([A-Za-z0-9+/]{4,}(?:={0,2}))')
+        matches = base64_pattern.findall(result)
 
-            if not matches:
-                break  # No potential base64 strings found
+        if not matches:
+            break  # No potential Base64 strings found
 
-            decoded_any = False
-            for match in matches:
-                # Check if the match is actually valid Base64 before decoding
-                if is_base64(match):
-                    cleaned_input = clean_non_base64_chars(match)
-                    try:
-                        decoded_bytes = base64.b64decode(cleaned_input, validate=True)
-                        decoded_str = (decoded_bytes.decode('utf-16-le', errors='replace')
-                                       if force_utf16_le else
-                                       decoded_bytes.decode('utf-8', errors='replace'))
+        decoded_any = False
+        for match in matches:
+            if is_base64(match):
+                try:
+                    decoded_bytes = base64.b64decode(match, validate=True)
+                    decoded_str = (
+                        decoded_bytes.decode('utf-16-le', errors='strict')
+                        if force_utf16_le else
+                        decoded_bytes.decode('utf-8', errors='strict')
+                    )
 
-                        # If decoded string differs from the original match, then a decode happened
-                        if decoded_str != match:
-                            result = result.replace(match, decoded_str, 1)
-                            decoded_any = True
-                    except Exception:
-                        # If decoding fails despite is_base64 check, just continue
-                        continue
+                    # If decoded string differs from the original match, replace
+                    if decoded_str != match:
+                        result = result.replace(match, decoded_str, 1)
+                        decoded_any = True
+                except Exception as e:
+                    demisto.debug(f"Decoding failed for match: {match}. Error: {e}")
+                    continue
 
-            if not decoded_any:
-                # No successful decoding occurred this recursion, so stop
-                break
+        if not decoded_any:
+            break  # No successful decoding occurred this pass
 
-            recursion_depth += 1
+        recursion_depth += 1
 
-        # Double encoding is detected if we performed more than one decoding recursion
-        double_encoded_detected = (recursion_depth > 1)
-        return result, double_encoded_detected
-
-    except Exception as e:
-        demisto.debug(f"Error decoding Base64: {e}")
-        return "", False
+    double_encoded_detected = (recursion_depth > 1)
+    return result, double_encoded_detected
 
 
 def identify_and_decode_base64(command_line: str) -> tuple[str, bool]:
     """
-    Identifies and decodes all Base64 occurrences in a command line,
-    returning the decoded content and a flag indicating if any double encoding was detected.
-    If `-EncodedCommand` is detected, the base64 payload after it will be considered UTF-16-LE.
+    Identifies and decodes all Base64 occurrences in a command line.
+    Specifically targets encodedCommand flags commonly used in PowerShell.
     """
-    try:
-        double_encoded_detected = False
 
-        # Check if `-EncodedCommand` is in the original command line
-        # If so, we will force UTF-16-LE decoding on any base64 following it.
-        encoded_command_present = "-EncodedCommand" in command_line or "-enc " in command_line
+    # Look for -encodedCommand followed by Base64 string, possibly enclosed in quotes
+    encoded_command_pattern = re.compile(r'-encodedCommand\s+["\']?([A-Za-z0-9+/]{4,}(?:={0,2}))["\']?', re.IGNORECASE)
+    matches = encoded_command_pattern.findall(command_line)
 
-        # First, check if the entire command_line is Base64
-        if is_base64(command_line):
-            decoded_str, is_double_encoded = decode_base64(command_line, force_utf16_le=encoded_command_present)
-            return decoded_str, is_double_encoded
+    if matches:
+        demisto.debug(f"Detected -encodedCommand matches: {matches}")
 
-        # If not pure Base64, extract Base64 portions using regex
+    if not matches:
+        # Fallback to general Base64 detection
         base64_pattern = re.compile(r'([A-Za-z0-9+/]{4,}(?:={0,2}))')
         matches = base64_pattern.findall(command_line)
+        if matches:
+            demisto.debug(f"Detected general Base64 matches: {matches}")
 
-        if not matches:
-            return command_line, False  # No Base64 content found
+    valid_matches = [m for m in matches if is_base64(m)]
 
-        result = command_line
-        for match in matches:
-            if is_base64(match):
-                decoded_str, is_double_encoded = decode_base64(match, force_utf16_le=encoded_command_present)
-                result = result.replace(match, decoded_str, 1)
-                double_encoded_detected = double_encoded_detected or is_double_encoded
+    if not valid_matches:
+        demisto.debug("No valid Base64 matches found.")
+        return "", False
 
-        return result, double_encoded_detected
+    result = command_line
+    double_encoded_detected = False
 
-    except Exception as e:
-        demisto.debug(f"Error identifying and decoding Base64: {e}")
-        return command_line, False
+    for match in valid_matches:
+        decoded_segment, is_double = decode_base64(match)
+        demisto.debug(f"Decoded segment: {decoded_segment}")
+        # Replace only if decoding actually changed the text
+        if decoded_segment != match:
+            result = result.replace(match, decoded_segment, 1)
+            if is_double:
+                double_encoded_detected = True
+
+    return result, double_encoded_detected
 
 
 def reverse_command(command_line: str) -> tuple[str, bool]:
@@ -154,7 +155,49 @@ def reverse_command(command_line: str) -> tuple[str, bool]:
     return command_line, False
 
 
-def check_malicious_commands(command_line: str) -> list[str]:
+# -----------------------------------------------------------------------------
+# 2) PATTERN-CHECKING FUNCTIONS
+# -----------------------------------------------------------------------------
+
+def check_suspicious_macos_applescript_commands(command_line: str) -> Dict[str, List[List[str]]]:
+    """
+    Checks for suspicious macOS/AppleScript commands by grouping multiple sets
+    of required substrings under a category. If all required substrings appear,
+    that combination is recorded under its category.
+    """
+    text = command_line.lower()
+
+    # Define categories and the sets of required substrings belonging to each
+    patterns_by_category = {
+        "infostealer_characteristics": [
+            ["telegram", "deskwallet"],
+            ["to set visible", "false"],
+            ["chflags hidden"],
+            ["osascript -e", "system_profiler", "hidden answer"],
+            ["tell application finder", "duplicate"]
+        ],
+        "possible_exfiltration": [
+            ["display dialog", "curl -"],
+            ["osascript -e", "curl -x", "system_profiler"],
+            ["osascript -e", "curl -"]
+        ]
+    }
+
+    results: Dict[str, List[List[str]]] = {}
+    for category, pattern_groups in patterns_by_category.items():
+        matched_combinations = []
+        for required_phrases in pattern_groups:
+            # If all required substrings appear in text
+            if all(phrase in text for phrase in required_phrases):
+                matched_combinations.append(required_phrases)
+        # Store only if we found matches
+        if matched_combinations:
+            results[category] = matched_combinations
+
+    return results
+
+
+def check_malicious_commands(command_line: str) -> List[str]:
     patterns = [
         r'\bmimikatz\b',
         r'\bLaZagne\.exe\b',
@@ -203,14 +246,14 @@ def check_malicious_commands(command_line: str) -> list[str]:
         r'\bInvoke\-KickoffAtomicRunner\b'
     ]
 
-    matches: list[Any] = []
+    matches: List[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_reconnaissance_temp(command_line: str) -> list[str]:
+def check_reconnaissance_temp(command_line: str) -> List[str]:
     patterns = [
         r'\bipconfig\b',
         r'\bnetstat\b',
@@ -237,14 +280,14 @@ def check_reconnaissance_temp(command_line: str) -> list[str]:
         r'\breg\s+query\b'
     ]
 
-    matches: list[Any] = []
+    matches: List[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_windows_temp_paths(command_line: str) -> list[str]:
+def check_windows_temp_paths(command_line: str) -> List[str]:
     """
     Identifies all occurrences of temporary paths in the given command line.
     """
@@ -262,14 +305,14 @@ def check_windows_temp_paths(command_line: str) -> list[str]:
         r'\\Windows\\Temp\b'
     ]
 
-    matches: list[Any] = []
+    matches: List[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_suspicious_content(command_line: str) -> list[str]:
+def check_suspicious_content(command_line: str) -> List[str]:
     patterns = [
         r'\-w\s+hidden\b',
         r'\-WindowStyle\s+Hidden\b',
@@ -297,14 +340,14 @@ def check_suspicious_content(command_line: str) -> list[str]:
         r'wevtutil\s+cl\b'
     ]
 
-    matches: list[Any] = []
+    matches: List[str] = []
     for pattern in patterns:
         matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_amsi(command_line: str) -> list[str]:
+def check_amsi(command_line: str) -> List[str]:
     patterns = [
         r'\bSystem\.Management\.Automation\.AmsiUtils\b',
         r'\bamsiInitFailed\b',
@@ -312,14 +355,14 @@ def check_amsi(command_line: str) -> list[str]:
         r'\bAmsiScanBuffer\(\)\b'
     ]
 
-    matches: list[Any] = []
+    matches: List[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_mixed_case_powershell(command_line: str) -> list[str]:
+def check_mixed_case_powershell(command_line: str) -> List[str]:
     mixed_case_powershell_regex = re.compile(
         r'\b(?=.*[a-z])(?=.*[A-Z])[pP][oO][wW][eE][rR][sS][hH][eE][lL]{2}(\.exe)?\b'
     )
@@ -332,7 +375,7 @@ def check_mixed_case_powershell(command_line: str) -> list[str]:
     ]
 
 
-def check_powershell_suspicious_patterns(command_line: str) -> list[str]:
+def check_powershell_suspicious_patterns(command_line: str) -> List[str]:
     """
     Detects potential obfuscation, backdoor mechanisms and Command-and-Control (C2) communication
     implemented using PowerShell.
@@ -363,14 +406,14 @@ def check_powershell_suspicious_patterns(command_line: str) -> list[str]:
         r'powershell.*?\b(iex.*?2>&1)\b'
     ]
 
-    matches: list[Any] = []
+    matches: List[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_credential_dumping(command_line: str) -> list[str]:
+def check_credential_dumping(command_line: str) -> List[str]:
     """
     Detects credential dumping techniques.
     """
@@ -398,14 +441,14 @@ def check_credential_dumping(command_line: str) -> list[str]:
         r'\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*'
     ]
 
-    matches: list[Any] = []
+    matches: List[str] = []
     for pattern in patterns:
         matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_lateral_movement(command_line: str) -> list[str]:
+def check_lateral_movement(command_line: str) -> List[str]:
     """
     Detects potential lateral movement techniques from a given command line.
     """
@@ -430,14 +473,14 @@ def check_lateral_movement(command_line: str) -> list[str]:
         r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b'
     ]
 
-    matches: list[Any] = []
+    matches: List[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_data_exfiltration(command_line: str) -> list[str]:
+def check_data_exfiltration(command_line: str) -> List[str]:
     """
     Detects potential data exfiltration techniques from a given command line.
     """
@@ -454,15 +497,15 @@ def check_data_exfiltration(command_line: str) -> list[str]:
         r'\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b'
     ]
 
-    matches: list[Any] = []
+    matches: List[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_custom_patterns(command_line: str, custom_patterns: list[str] | None = None) -> list[str]:
-    matches: list[str] = []
+def check_custom_patterns(command_line: str, custom_patterns: List[str] | None = None) -> List[str]:
+    matches: List[str] = []
     if custom_patterns:
         # Ensure custom_patterns is a list
         if isinstance(custom_patterns, str):
@@ -471,6 +514,10 @@ def check_custom_patterns(command_line: str, custom_patterns: list[str] | None =
             matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
     return matches
 
+
+# -----------------------------------------------------------------------------
+# 3) IP & INDICATOR EXTRACTION
+# -----------------------------------------------------------------------------
 
 def is_reserved_ip(ip_str: str) -> bool:
     try:
@@ -486,37 +533,52 @@ def is_reserved_ip(ip_str: str) -> bool:
         return False
 
 
-def extract_indicators(command_line: str) -> list[str]:
-    extracted_indicators: list[str] = []
+def extract_indicators(command_line: str) -> Dict[str, List[str]]:
+    """
+    Extracts indicators by type (e.g., 'IP', 'Domain') and returns them as a dictionary.
+    """
+    extracted_by_type: Dict[str, List[str]] = {}
+
     try:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
 
         if indicators and isinstance(indicators, list):
             contents = indicators[0].get('Contents', {})
 
-            # Parse contents if it's a JSON string
             if isinstance(contents, str):
                 try:
                     contents = json.loads(contents)
                 except json.JSONDecodeError:
-                    return []
+                    return {}
 
-            # Process all keys in the contents dictionary
             if isinstance(contents, dict):
-                for key, values in contents.items():
+                for indicator_type, values in contents.items():
                     if isinstance(values, list):
                         for value in values:
                             if value == "::":
                                 continue
-                            if key == "IP" and is_reserved_ip(value):
+                            if indicator_type == "IP" and is_reserved_ip(value):
                                 continue  # Skip reserved IPs
-                            extracted_indicators.append(value)
+
+                            if indicator_type not in extracted_by_type:
+                                extracted_by_type[indicator_type] = []
+                            extracted_by_type[indicator_type].append(value)
+
     except Exception as e:
         demisto.debug(f"Failed to extract indicators: {str(e)}")
-    return extracted_indicators
 
+    return extracted_by_type
+
+
+# -----------------------------------------------------------------------------
+# 4) SCORING FUNCTION
+# -----------------------------------------------------------------------------
 
 def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Aggregates findings from the analysis and assigns a score (0-100).
+    Incorporates bonuses for certain risky combinations.
+    """
     # Define weights for base scoring
     weights: Dict[str, int] = {
         "mixed_case_powershell": 25,
@@ -527,6 +589,7 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
         "amsi_techniques": 25,
         "malicious_commands": 25,
         "custom_patterns": 25,
+        "suspicious_macos_applescript_commands": 25,
         "data_exfiltration": 15,
         "lateral_movement": 15,
         "windows_temp_path": 10,
@@ -537,14 +600,14 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     }
 
     # Initialize findings and scores for original and decoded
-    findings: Dict[str, list[Any]] = {"original": [], "decoded": []}
+    findings: Dict[str, List[Any]] = {"original": [], "decoded": []}
     scores: Dict[str, int] = {"original": 0, "decoded": 0}
 
     # Define risk groups and bonus scores
     high_risk_keys = {
         "mixed_case_powershell", "double_encoding", "amsi_techniques",
         "malicious_commands", "powershell_suspicious_patterns",
-        "credential_dumping", "reversed_command", "custom_patterns"
+        "credential_dumping", "reversed_command", "suspicious_macos_applescript_commands", "custom_patterns"
     }
     medium_risk_keys = {
         "data_exfiltration", "lateral_movement", "indicators",
@@ -563,10 +626,10 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     theoretical_max = 120
 
     # Helper function to calculate score and detect combinations
-    def process_context(context_name: str, context_results: Dict[str, Any]) -> tuple[int, list[str]]:
+    def process_context(context_results: Dict[str, Any]) -> tuple[int, List[str]]:
         context_score = 0
-        context_findings: list[str] = []
-        context_keys_detected: Set[str] = set()
+        context_findings: List[str] = []
+        context_keys_detected = set()
 
         # Calculate base score for each key (count each category once)
         for key, value in context_results.items():
@@ -594,18 +657,22 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
 
         return context_score, context_findings
 
-    # Process original and decoded findings
-    scores["original"], findings["original"] = process_context("original", results.get("analysis", {}).get("original", {}))
-    scores["decoded"], findings["decoded"] = process_context("decoded", results.get("analysis", {}).get("decoded", {}))
+    # Process original
+    original_results = results.get("analysis", {}).get("original", {})
+    scores["original"], findings["original"] = process_context(original_results)
 
-    # Check global combinations (e.g., double encoding globally)
+    # Process decoded
+    decoded_results = results.get("analysis", {}).get("decoded", {})
+    scores["decoded"], findings["decoded"] = process_context(decoded_results)
+
+    # Check global combinations (like double encoding globally)
     if results.get("Double Encoding Detected"):
-        # Add the double_encoding weight once if detected
         scores["decoded"] += weights["double_encoding"]
-        findings["decoded"].append("Double encoding detected")
+        findings["decoded"].append("Double Encoding Detected")
 
     # Calculate total raw score
     total_raw_score = scores["original"] + scores["decoded"]
+
     # Normalize the score to fit within 0-100 based on the fixed theoretical max
     normalized_score = (total_raw_score / theoretical_max) * 100
     normalized_score = min(normalized_score, 100)  # Cap at 100
@@ -626,9 +693,19 @@ def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def analyze_command_line(command_line, custom_patterns=None):
+# -----------------------------------------------------------------------------
+# 5) ANALYZER FUNCTION
+# -----------------------------------------------------------------------------
+
+def analyze_command_line(command_line: str, custom_patterns: List[str] | None = None) -> Dict[str, Any]:
     """
     Analyzes the given command line for suspicious patterns, indicators, and encodings.
+    Returns a dictionary containing:
+      - "original_command"
+      - "analysis" -> {"original": {...}, "decoded": {...}}
+      - "decoded_command" (if any)
+      - "Double Encoding Detected" (bool)
+      - "score", "findings", "risk"
     """
     reversed_command_line, is_reversed = reverse_command(command_line)
     if is_reversed:
@@ -636,13 +713,13 @@ def analyze_command_line(command_line, custom_patterns=None):
 
     decoded_command_line, double_encoded = identify_and_decode_base64(command_line)
 
-    results = {
+    results: Dict[str, Any] = {
         "original_command": command_line,
         "analysis": {"original": {}}
     }
 
     # Perform checks on the original command line
-    results["analysis"]["original"] = {
+    original_analysis = {
         "malicious_commands": check_malicious_commands(command_line),
         "windows_temp_path": check_windows_temp_paths(command_line),
         "suspicious_parameters": check_suspicious_content(command_line),
@@ -655,14 +732,23 @@ def analyze_command_line(command_line, custom_patterns=None):
         "data_exfiltration": check_data_exfiltration(command_line),
         "amsi_techniques": check_amsi(command_line),
         "indicators": extract_indicators(command_line),
-        "base64_encoding": decoded_command_line if decoded_command_line else []
     }
 
-    if is_reversed:
-        results["analysis"]["original"]["reversed_command"] = ["reversed_command"]
-
-    # Identify and analyze decoded Base64 command line if available
+    # Only set "base64_encoding" if we actually decoded something
     if decoded_command_line:
+        original_analysis["base64_encoding"] = decoded_command_line
+
+    if is_reversed:
+        original_analysis["reversed_command"] = ["reversed_command"]
+
+    # Handle macOS
+    if 'osascript' in command_line.lower():
+        original_analysis["macOS_suspicious_commands"] = check_suspicious_macos_applescript_commands(command_line)
+
+    results["analysis"]["original"] = original_analysis
+
+    # If we got a decoded command, analyze it
+    if decoded_command_line and decoded_command_line != command_line:
         results["decoded_command"] = decoded_command_line
         results["analysis"]["decoded"] = {
             "malicious_commands": check_malicious_commands(decoded_command_line),
@@ -697,6 +783,9 @@ def main():
 
     if isinstance(command_lines, str):
         command_lines = [command_lines]
+
+    if isinstance(custom_patterns, str):
+        custom_patterns = [custom_patterns]
 
     # Analyze each command line
     results = [analyze_command_line(cmd, custom_patterns) for cmd in command_lines]
