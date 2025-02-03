@@ -288,60 +288,6 @@ class ClientV3(BaseClient):
                 return response.get('data')
         return None
 
-    def fetch_events_request(self, query_string: str) -> dict[str, Any]:
-        """
-        Performs the HTTP request using the signed request data.
-        Args:
-            query_string (str): The query string parameters for the events to be fetched.
-        Returns:
-            dict: A dictionary containing the response object from the HTTP request.
-        """
-        signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
-        return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL)
-
-    def fetch_events_between_dates(self, fetch_limit: int, start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
-        """
-        Helper function to fetch events with time window from the API based on the provided parameters.
-        Args:
-            fetch_limit (int): The maximum number of events to fetch.
-            start_date (datetime): The start date for the events to be fetched.
-            end_date (datetime): The end date for the events to be fetched.
-        Returns:
-            list: A list of fetched events.
-        """
-        all_events[list] = []
-        while len(all_events) < fetch_limit:
-            page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
-            query_string = self.prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date,
-                                                                      end_date=end_date)
-            response = self.fetch_events_request(query_string=query_string)
-            all_events.extend(response.get('data', []))
-            next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
-            if not next_page_token:
-                break
-
-        demisto.debug(f'fetch_events_between_dates: Fetched {len(all_events)} events')
-        return all_events
-
-    def prepare_query_string_for_fetch_events(self, page_size: int = None, start_date: datetime = None,
-                                              end_date: datetime = None) -> str:
-        """
-        Prepares the query string for fetching events based on the provided parameters.
-        Args:
-            page_size (int, optional): The size of each page to fetch. Defaults to None.
-            start_date (datetime, optional): The start date of the events to fetch. Defaults to None.
-            end_date (datetime, optional): The end date of the events to fetch. Defaults to None.
-        Returns:
-            str: The prepared query string for fetching events.
-        """
-        from_date_time_utc = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
-        to_date_time_utc = f'toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
-        query = f'{from_date_time_utc}&{to_date_time_utc}'
-        if page_size:
-            query += f'&pageSize={page_size}'
-        demisto.debug(f'Query string for fetching events: {query}')
-        return query
-
 
 def sign(key, msg):
     return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
@@ -925,8 +871,6 @@ def parse_device_list_response(response: list, keep_os_in_list=True, application
                     parsed_device[key[0].upper() + key[1:]] = val
         parsed_response.append(parsed_device)
 
-    if len(parsed_response) == 1:
-        return parsed_response[0]
     return parsed_response
 
 
@@ -1072,6 +1016,7 @@ def get_device_location_command(args, client) -> CommandResults:
     else:
         return CommandResults(
             readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
+
 
 ''' MAIN FUNCTION '''
 

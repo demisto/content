@@ -2,7 +2,6 @@ import json
 import re
 
 import pytest
-from pytest import raises
 
 from CommonServerPython import DemistoException
 from Absolute import INTEGRATION, ClientV3
@@ -102,26 +101,27 @@ def util_load_json(path):
 @pytest.mark.parametrize('url', ['https://absolute.com', 'absolute.com'])
 def test_invalid_absolute_api_url(url):
     from Absolute import validate_absolute_api_url
-    with raises(DemistoException):
+    with pytest.raises(DemistoException):
         validate_absolute_api_url(url)
+
 
 def mock_http(method: str, url_suffix: str, body: dict = {}):
     if url_suffix == '/v3/actions/requests/unenroll':
         return {'requestUid': 'abdcef'}
     elif url_suffix == 'v3/actions/requests/unenroll/abdcef':
-        return{'totalDevices': 'totalDevices',
-               'pending': 'pending',
-               'processing': 'processing',
-               'completed': 'completed',
-               'canceled': 'canceled',
-               'failed': 'failed',
-               'requestId': 'abdcef',
-               'requestUid': 'abdcef',
-               'requestStatus': 'requestStatus',
-               'createdDateTimeUtc': 'createdDateTimeUtc',
-               'updatedDateTimeUtc': 'updatedDateTimeUtc',
-               'requester': 'requester',
-               'excludeMissingDevices': 'excludeMissingDevices'}
+        return {'totalDevices': 'totalDevices',
+                'pending': 'pending',
+                'processing': 'processing',
+                'completed': 'completed',
+                'canceled': 'canceled',
+                'failed': 'failed',
+                'requestId': 'abdcef',
+                'requestUid': 'abdcef',
+                'requestStatus': 'requestStatus',
+                'createdDateTimeUtc': 'createdDateTimeUtc',
+                'updatedDateTimeUtc': 'updatedDateTimeUtc',
+                'requester': 'requester',
+                'excludeMissingDevices': 'excludeMissingDevices'}
     else:
         return [{'deviceUid': 'deviceUid',
                  'actionUid': 'actionUid',
@@ -131,8 +131,6 @@ def mock_http(method: str, url_suffix: str, body: dict = {}):
                  'esn': 'esn',
                  'createdDateTimeUtc': 'createdDateTimeUtc',
                  'updatedDateTimeUtc': 'updatedDateTimeUtc'}]
-        
-    
 
 
 def test_get_custom_device_field_list_command(mocker, absolute_client_v3):
@@ -182,7 +180,7 @@ def test_prepare_payload_to_freeze_request_with_invalid_args(args, expected_erro
         - Validate the exceptions
     """
     from Absolute import prepare_payload_to_freeze_request
-    with raises(DemistoException, match=re.escape(f'{INTEGRATION} error: {expected_error}')):
+    with pytest.raises(DemistoException, match=re.escape(f'{INTEGRATION} error: {expected_error}')):
         prepare_payload_to_freeze_request(args)
 
 
@@ -260,7 +258,12 @@ def test_list_device_freeze_message_command(mocker, absolute_client_v3):
     response = util_load_json('test_data/device_freeze_message_list_response.json')
     mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
     command_results = list_device_freeze_message_command(args={'message_id': "1"}, client=absolute_client_v3)
-    assert command_results.outputs == [{'ID': '1', 'Name': 'On-demand Freeze message', 'CreatedUTC': '2020-11-26T22:29:17.687+00:00', 'ChangedUTC': '2020-12-14T09:14:52.148+00:00', 'Content': '<html><body>This device has been frozen by company.</body></html>', 'CreatedBy': 'example1@test.com', 'ChangedBy': 'example2@test.com'}]
+    assert command_results.outputs == [{'ID': '1', 'Name': 'On-demand Freeze message',
+                                        'CreatedUTC': '2020-11-26T22:29:17.687+00:00',
+                                        'ChangedUTC': '2020-12-14T09:14:52.148+00:00',
+                                        'Content': '<html><body>This device has been frozen by company.</body></html>',
+                                        'CreatedBy': 'example1@test.com',
+                                        'ChangedBy': 'example2@test.com'}]
 
 
 def test_device_unenroll_command(mocker, absolute_client_v3):
@@ -277,11 +280,31 @@ def test_device_unenroll_command(mocker, absolute_client_v3):
     from Absolute import device_unenroll_command
     mocker.patch.object(absolute_client_v3, 'api_request_absolute', side_effect=mock_http)
     outputs = device_unenroll_command(args={'device_ids': "1,2"}, client=absolute_client_v3).outputs
-    assert outputs == {'TotalDevices': 'totalDevices', 'Pending': 'pending', 'Processing': 'processing', 'Completed': 'completed', 'Canceled': 'canceled', 'Failed': 'failed', 'RequestId': 'abdcef', 'RequestUid': 'abdcef', 'RequestStatus': 'requestStatus', 'CreatedDateTimeUtc': 'createdDateTimeUtc', 'UpdatedDateTimeUtc': 'updatedDateTimeUtc', 'Requester': 'requester', 'ExcludeMissingDevices': 'excludeMissingDevices', 'Devices': [
-        {'DeviceUid': 'deviceUid', 'ActionUid': 'actionUid', 'RequestUid': 'abdcef', 'DeviceName': 'deviceName', 'ActionStatus': 'actionStatus', 'ESN': 'esn', 'CreatedDateTimeUtc': 'createdDateTimeUtc', 'UpdatedDateTimeUtc': 'updatedDateTimeUtc'
-        }
-    ]
-}   
+    assert outputs == {'TotalDevices': 'totalDevices',
+                       'Pending': 'pending',
+                       'Processing': 'processing',
+                       'Completed': 'completed',
+                       'Canceled': 'canceled',
+                       'Failed': 'failed',
+                       'RequestId': 'abdcef',
+                       'RequestUid': 'abdcef',
+                       'RequestStatus': 'requestStatus',
+                       'CreatedDateTimeUtc': 'createdDateTimeUtc',
+                       'UpdatedDateTimeUtc': 'updatedDateTimeUtc',
+                       'Requester': 'requester',
+                       'ExcludeMissingDevices': 'excludeMissingDevices',
+                       'Devices': [
+                                    {'DeviceUid': 'deviceUid',
+                                     'ActionUid': 'actionUid',
+                                     'RequestUid': 'abdcef',
+                                     'DeviceName': 'deviceName',
+                                     'ActionStatus': 'actionStatus',
+                                     'ESN': 'esn',
+                                     'CreatedDateTimeUtc': 'createdDateTimeUtc',
+                                     'UpdatedDateTimeUtc': 'updatedDateTimeUtc'
+                                     }
+                       ]
+                       }
 
 
 def test_list_device_freeze_message_command_no_id(mocker, absolute_client_v3):
@@ -298,7 +321,7 @@ def test_list_device_freeze_message_command_no_id(mocker, absolute_client_v3):
     from Absolute import list_device_freeze_message_command
     http_request = mocker.patch.object(absolute_client_v3, 'send_request_to_api', return_value={})
     list_device_freeze_message_command(client=absolute_client_v3, args={})
-    assert http_request.call_args.args == ('GET', f'/v3/actions/freeze/messages', '&pageSize=50')
+    assert http_request.call_args.args == ('GET', '/v3/actions/freeze/messages', '&pageSize=50')
 
 
 def test_delete_device_freeze_message_command(mocker, absolute_client_v3):
@@ -430,7 +453,7 @@ def test_add_pagination(absolute_client_v3):
     next_page = 'abcdefg'
     page_size = 5
     assert absolute_client_v3.add_pagination(next_page, page_size) == f"&nextPage={next_page}&pageSize={page_size}"
-    
+
     next_page = ''
     assert absolute_client_v3.add_pagination(next_page, page_size) == f"&pageSize={page_size}"
 
@@ -458,4 +481,3 @@ def test_get_device_location_command(mocker, absolute_client_v3):
                         'LastUpdate': 1605747972853,
                         'LocationTechnology': 'gps',
                         'State': 'Israel'}]
-
