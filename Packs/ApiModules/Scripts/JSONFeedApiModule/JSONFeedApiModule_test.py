@@ -363,7 +363,7 @@ def test_get_no_update_value_without_headers(mocker):
         status_code = 200
     no_update = get_no_update_value(MockResponse(), 'feed_name')
     assert not no_update
-    assert demisto.debug.call_args[0][0] == 'Last-Modified and Etag headers are not exists,' \
+    assert demisto.debug.call_args[0][0] == 'Last-Modified and Etag headers are not exists, ' \
                                             'createIndicators will be executed with noUpdate=False.'
 
 

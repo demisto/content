@@ -137,7 +137,7 @@ class Client:
             if last_modified:
                 self.headers['If-Modified-Since'] = last_modified
 
-        result = []
+        result: List[Dict] = []
         if not self.post_data:
             r = requests.get(
                 url=url,
@@ -166,7 +166,7 @@ class Client:
                 result = jmespath.search(expression=feed.get('extractor'), data=data) or []
                 if not result:
                     demisto.debug(f'No results found - retrieved data is: {data}')
-                    
+
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
         if is_demisto_version_ge('6.5.0'):
@@ -305,7 +305,8 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
-        demisto.debug(f"Service Name: {service_name} - {len(indicators)} indicators was fetched. NoUpdate value is: {no_update}")
+        demisto.debug(f"Service Name: {service_name} - {len(indicators)} indicators were retrieved."\
+                      f"NoUpdate value is: {no_update}")
     return indicators, no_update
 
 
@@ -488,11 +489,11 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
             create_relationships = params.get('create_relationships')
             indicators, _ = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
                                                      create_relationships, limit, remove_ports)
-            
+
             hr = tableToMarkdown(f'Indicators ({len(indicators)}):', indicators, headers=['value', 'type', 'rawJSON'])
             if not indicators:
                 hr = 'No indicators found.'
-            
+
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
     except Exception as err:
