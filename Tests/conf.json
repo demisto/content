@@ -696,7 +696,8 @@
         {
             "integrations": "AzureFeed",
             "playbookID": "AzureFeed - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "SpamhausFeed",
