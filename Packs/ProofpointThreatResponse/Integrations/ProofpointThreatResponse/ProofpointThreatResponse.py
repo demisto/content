@@ -810,6 +810,7 @@ def search_quarantine():
     }
 
     incidents_list = get_incidents_batch_by_time_request(request_params)
+    demisto.debug(f"{incidents_list=}")
 
     found = {'email': False, 'mid': False, 'quarantine': False}
     resQ = []
@@ -817,7 +818,9 @@ def search_quarantine():
     # Collecting emails inside alert to find those with same recipient and messageId
     for incident in incidents_list:
         for alert in incident.get('events'):
+            demisto.debug(f"{alert=}")
             for email in alert.get('emails'):
+                demisto.debug(f"{email=}")
                 message_delivery_time = email.get('messageDeliveryTime', {})
                 demisto.debug(f'PTR: Got {message_delivery_time=} with type {type(message_delivery_time)}')
                 if message_delivery_time and isinstance(message_delivery_time, dict):
@@ -851,6 +854,7 @@ def search_quarantine():
 
     # Go though the alert list, and check the quarantine results:
     for alert in lstAlert:
+        demisto.debug(f"After formatting {alert=}")
         for quarantine in alert.get('quarantine_results'):
             if quarantine.get('messageId') == mid and quarantine.get('recipient') == recipient:
                 found['quarantine'] = True
