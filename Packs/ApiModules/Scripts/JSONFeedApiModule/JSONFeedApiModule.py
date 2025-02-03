@@ -305,8 +305,6 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
-        demisto.debug(f"Service Name: {service_name} - {len(indicators)} indicators were retrieved."\
-                      f"NoUpdate value is: {no_update}")
     return indicators, no_update
 
 
