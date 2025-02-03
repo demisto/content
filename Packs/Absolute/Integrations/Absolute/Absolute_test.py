@@ -105,6 +105,35 @@ def test_invalid_absolute_api_url(url):
     with raises(DemistoException):
         validate_absolute_api_url(url)
 
+def mock_http(method: str, url_suffix: str, body: dict = {}):
+    if url_suffix == '/v3/actions/requests/unenroll':
+        return {'requestUid': 'abdcef'}
+    elif url_suffix == 'v3/actions/requests/unenroll/abdcef':
+        return{'totalDevices': 'totalDevices',
+               'pending': 'pending',
+               'processing': 'processing',
+               'completed': 'completed',
+               'canceled': 'canceled',
+               'failed': 'failed',
+               'requestId': 'abdcef',
+               'requestUid': 'abdcef',
+               'requestStatus': 'requestStatus',
+               'createdDateTimeUtc': 'createdDateTimeUtc',
+               'updatedDateTimeUtc': 'updatedDateTimeUtc',
+               'requester': 'requester',
+               'excludeMissingDevices': 'excludeMissingDevices'}
+    else:
+        return [{'deviceUid': 'deviceUid',
+                 'actionUid': 'actionUid',
+                 'requestUid': 'abdcef',
+                 'deviceName': 'deviceName',
+                 'actionStatus': 'actionStatus',
+                 'esn': 'esn',
+                 'createdDateTimeUtc': 'createdDateTimeUtc',
+                 'updatedDateTimeUtc': 'updatedDateTimeUtc'}]
+        
+    
+
 
 def test_get_custom_device_field_list_command(mocker, absolute_client_v3):
     from Absolute import get_custom_device_field_list_command
@@ -246,21 +275,13 @@ def test_device_unenroll_command(mocker, absolute_client_v3):
         - The http request is called with the right arguments
     """
     from Absolute import device_unenroll_command
-    response = util_load_json('test_data/unenroll_device_response.json')
-    mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
+    mocker.patch.object(absolute_client_v3, 'api_request_absolute', side_effect=mock_http)
     outputs = device_unenroll_command(args={'device_ids': "1,2"}, client=absolute_client_v3).outputs
-    assert outputs == [{'DeviceUid': '1',
-                        'ESN': '2BU2PJD28VAA1UYL0008',
-                        'EligibleStatus': 0,
-                        'Serial': 'CNF83051BN',
-                        'SystemName': 'user1',
-                        'Username': 'example@test.com'},
-                       {'DeviceUid': '2',
-                        'ESN': '2BU2PJ545L0008',
-                        'EligibleStatus': 1,
-                        'Serial': 'CNF43051BN',
-                        'SystemName': 'user2',
-                        'Username': 'example2@test.com'}]
+    assert outputs == {'TotalDevices': 'totalDevices', 'Pending': 'pending', 'Processing': 'processing', 'Completed': 'completed', 'Canceled': 'canceled', 'Failed': 'failed', 'RequestId': 'abdcef', 'RequestUid': 'abdcef', 'RequestStatus': 'requestStatus', 'CreatedDateTimeUtc': 'createdDateTimeUtc', 'UpdatedDateTimeUtc': 'updatedDateTimeUtc', 'Requester': 'requester', 'ExcludeMissingDevices': 'excludeMissingDevices', 'Devices': [
+        {'DeviceUid': 'deviceUid', 'ActionUid': 'actionUid', 'RequestUid': 'abdcef', 'DeviceName': 'deviceName', 'ActionStatus': 'actionStatus', 'ESN': 'esn', 'CreatedDateTimeUtc': 'createdDateTimeUtc', 'UpdatedDateTimeUtc': 'updatedDateTimeUtc'
+        }
+    ]
+}   
 
 
 def test_list_device_freeze_message_command_no_id(mocker, absolute_client_v3):

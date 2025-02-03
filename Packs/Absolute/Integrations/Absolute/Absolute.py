@@ -757,8 +757,8 @@ def device_unenroll_command(args, client) -> CommandResults:
     payload = {'deviceUids': device_ids, 'excludeMissingDevices': exclude_missing_devices}
 
     # getting the requestUid from API 1
-    res_1 = client.api_request_absolute('POST', '/v3/actions/requests/unenroll ', body=payload)
-    request_uid = res_1.get('data', {}).get('requestUid', '')
+    res_1 = client.api_request_absolute('POST', '/v3/actions/requests/unenroll', body=payload)
+    request_uid = res_1.get('requestUid', '')
 
     # getting data from API 2
     res_2 = client.api_request_absolute('GET', f'v3/actions/requests/unenroll/{request_uid}')
