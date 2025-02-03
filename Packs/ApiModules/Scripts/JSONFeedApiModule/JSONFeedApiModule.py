@@ -279,7 +279,6 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         service_name = get_formatted_feed_name(service_name)
 
         for item in items:
-            #demisto.debug(f"item is: {item}")
             if isinstance(item, str):
                 item = {indicator_field: item}
 
