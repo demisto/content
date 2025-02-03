@@ -64,7 +64,7 @@ outputs:
   description: 'The source where this indicator originated. '
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.id
-  description: The ID of the indicator
+  description: The ID of the indicator.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.type
   description: 'Type of the indicator. Possible values are: md5, sha256, ipv4, ipv6 and domain.'
