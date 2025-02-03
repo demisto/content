@@ -111,9 +111,6 @@ class Client:
             return headers
 
     def build_iterator(self, feed: dict, feed_name: str, **kwargs) -> Tuple[List, bool]:
-        demisto.debug("In build_iterator")
-        demisto.debug(f"feed_name is: {feed_name}")
-        demisto.debug(f"feed is: {feed}")
         url = feed.get('url', self.url)
 
         if is_demisto_version_ge('6.5.0'):
@@ -125,10 +122,6 @@ class Client:
             etag = last_run.get(prefix_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
             last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')  # noqa: E501
             last_updated = last_run.get(prefix_feed_name, {}).get('last_updated') or last_run.get(feed_name, {}).get('last_updated')  # noqa: E501
-            demisto.debug(f"last_run is: {last_run}")
-            demisto.debug(f"etag is: {etag}")
-            demisto.debug(f"last_modified is: {last_modified}")
-            demisto.debug(f"last_updated is: {last_updated}")
             # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
             # we'll refresh the indicators to ensure their expiration time is updated.
             # For further details, refer to : https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Json+Api+Module
@@ -146,6 +139,7 @@ class Client:
 
         result = []
         if not self.post_data:
+              
             r = requests.get(
                 url=url,
                 verify=self.verify,
@@ -171,15 +165,10 @@ class Client:
             if r.content:
                 demisto.debug(f'JSON: found content for {feed_name}')
                 data = r.json()
-                result = jmespath.search(expression=feed.get('extractor'), data=data)
+                result = jmespath.search(expression=feed.get('extractor'), data=data) or []
                 if not result:
-                    demisto.debug(f"result is: {result}")
-                    demisto.debug(f"r.content is: {r.content}")
-                    demisto.debug(f"r.status_code is: {r.status_code}")
-                    demisto.debug(f"data is: {data}")
-                    #result = []
+                    demisto.debug(f'No results found - retrieved data is: {data}')
                     
-
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
         if is_demisto_version_ge('6.5.0'):
@@ -212,7 +201,7 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
     last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
-        demisto.debug('Last-Modified and Etag headers are not exists,'
+        demisto.debug('Last-Modified and Etag headers are not exists, '
                       'createIndicators will be executed with noUpdate=False.')
         return False
 
@@ -281,17 +270,12 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             feeds_results[feed_name] = indicators_from_feed
         else:
             feeds_results[feed_name], no_update = client.build_iterator(feed, feed_name, **kwargs)
-            #demisto.debug(f"feeds_results are: {feeds_results}")
-            #demisto.debug(f"feeds_results[feed_name] are: {feeds_results[feed_name]}")
 
     indicators_values: Set[str] = set()
     indicators_values_indexes = {}
 
     for service_name, items in feeds_results.items():
-        demisto.debug(f"service_name is: {service_name}")
-        #demisto.debug(f"items are: {items}")
         feed_config = client.feed_name_to_config.get(service_name, {})
-        demisto.debug(f"feed_config is: {feed_config}")
         indicator_field = str(feed_config.get('indicator') if feed_config.get('indicator') else 'indicator')
         indicator_type = str(feed_config.get('indicator_type', indicator_type))
         use_prefix_flat = bool(feed_config.get('flat_json_with_prefix', False))
@@ -300,8 +284,6 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         create_relationships_function = feed_config.get('create_relations_function')
         service_name = get_formatted_feed_name(service_name)
 
-        # if not items:
-        #     demisto.debug(f"Service Name: {service_name} - No indicators was fetched.")
         for item in items:
             #demisto.debug(f"item is: {item}")
             if isinstance(item, str):
@@ -330,6 +312,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
+        demisto.debug(f"Service Name: {service_name} - {len(indicators)} indicators was fetched. NoUpdate value is: {no_update}")
     return indicators, no_update
 
 
@@ -489,6 +472,7 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
                                                              create_relationships,
                                                              remove_ports=remove_ports,
                                                              enrichment_excluded=enrichment_excluded)
+            demisto.debug(f"Received {len(indicators)} indicators, no_update={no_update}")
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
@@ -511,7 +495,11 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
             create_relationships = params.get('create_relationships')
             indicators, _ = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
                                                      create_relationships, limit, remove_ports)
-            hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
+            
+            hr = tableToMarkdown(f'Indicators ({len(indicators)}):', indicators, headers=['value', 'type', 'rawJSON'])
+            if not indicators:
+                hr = 'No indicators found.'
+            
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
     except Exception as err:
