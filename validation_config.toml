@@ -81,11 +81,11 @@ select = [
     "GR100", "GR101", "GR102", "GR103","GR104", "GR105", "GR107", "GR108",
     "CR102",
     "PR101",
-    "RM102", "RM108",
+    "RM102",
     "ST110",
     "TR100"
 ]
-warning = []
+warning = ["RM108"]
 
 
 [Custom_Categories]
