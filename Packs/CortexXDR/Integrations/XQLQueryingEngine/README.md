@@ -952,5 +952,5 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 ## Troubleshooting
 
 - **Datasets Access**: Ensure your API token role is set to at least 'investigator' to access all datasets.​
-- **Query Errors**: Review XQL syntax and dataset availability. For more information [Click here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/How-to-build-XQL-queries).
+- **Query Errors**: Review XQL syntax and dataset availability. For more information [Click here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/About-the-Query-Builder).
 - **Rate limit Errors**: Rate limit errors may occur when multiple queries are run on the same database simultaneously. Please review whether this level of multitasking is necessary or if it can be optimized.
