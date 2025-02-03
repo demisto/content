@@ -47,7 +47,42 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
-    pass
+    output: list = []
+
+    if get_events_args:
+        pass
+    else:
+        last_run = demisto.getLastRun() or {}
+        event_date = last_run.get('start_date', '')
+        if not event_date:
+            event_date = get_current_time().strftime(DATE_FORMAT)
+        end = get_current_time().strftime(DATE_FORMAT)
+
+    current_start_date = event_date
+    while True:
+        if rate_limit_reached():
+            send_message_to_client()
+        events = client.get_events(event_date, end, pageNum=0, pageSize=200)
+        if got_error_429_from_events:
+            client.regnerate_token
+            client.get_events(event_date, end, pageNum=0, pageSize=200)
+        if not events:
+            break
+
+        for event in events:
+            event['_TIME'] = event.get('date')
+            output.append(event)
+            event_date = get_and_parse_date(event)
+
+            if event_date != current_start_date:
+                current_start_date = event_date
+
+            if len(output) >= fetch_limit:
+                new_last_run = {'start_date': event_date}
+                return output, new_last_run
+
+    new_last_run = {'start_date': event_date}
+    return output, new_last_run
 
 
 def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
