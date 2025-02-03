@@ -7,11 +7,6 @@ commonfields:
   version: -1
 configuration:
   - section: Connect
-    display: Incident type
-    name: incidentType
-    type: 13
-    required: false
-  - section: Connect
     display: Server URL
     name: base_url
     type: 0
@@ -41,6 +36,7 @@ configuration:
     defaultvalue: GET
     type: 15
     required: true
+    additionalinfo: The HTTP method of the request to the API.
     options:
       - GET
       - POST
@@ -49,7 +45,7 @@ configuration:
     displaypassword: API Token
     hiddenusername: true
     required: false
-    additionalinfo: API Token
+    additionalinfo: "API Key to access the service REST API."
     section: Connect
   - display: Username
     name: credentials
@@ -57,6 +53,7 @@ configuration:
     required: false
     section: Connect
     displaypassword: Password
+    additionalinfo: Username & Password to use for basic authentication.
   - section: Connect
     display: Add Fields To header
     name: add_fields_to_header
@@ -103,6 +100,15 @@ configuration:
     a need to add more then one use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - section: Collect
+    display: Initial request data
+    name: initial_request_data
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product requires a different initial DATA,  please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Collect
     display: Request JSON parameters
     name: request_json
     type: 0
@@ -110,6 +116,15 @@ configuration:
     advanced: true
     additionalinfo: 'If the product authentication requires more fields to add to the
     body as JSON please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Collect
+    display: Initial request JSON parameters
+    name: initial_request_json
+    type: 0
+    required: false
+    advanced: true
+    additionalinfo: 'If the product requires a different initial request JSON, please add it here in a dictionary format {unique_field : 286} if there''s
     a need to add more then one use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - section: Collect
@@ -136,6 +151,7 @@ configuration:
     display: Is pagination needed
     name: pagination_needed
     type: 8
+    additionalinfo: 'If the API JSON response supports events pagination.'
   - section: Collect
     display: Pagination field name
     name: pagination_field_name
@@ -149,7 +165,7 @@ configuration:
     required: false
     additionalinfo: 'Next page existence in JSON response e.g., "has_more", "next"'
   - section: Collect
-    display: Timestamp format of the event creation time.
+    display: 'Timestamp format of the event creation time or "epoch".'
     name: timestamp_format
     type: 0
     required: false
@@ -167,11 +183,21 @@ configuration:
     required: false
     additionalinfo: 'Where within the response object to find the events list.'
   - section: Collect
-    display: 'Event id lookup path in the event response JSON, dot seperated, e.g. "id".'
+    display: 'Event ID lookup path in the event response JSON, dot seperated, e.g. "id".'
     name: id_keys
     type: 0
     required: false
     additionalinfo: 'Where within the event object to find the events id.'
+  - section: Collect
+    display: 'The type of ID field, either "integer" or "string"'
+    name: id_type
+    options:
+      - integer
+      - string
+    type: 15
+    required: false
+    additionalinfo: 'ID field of type integer are comparable and when last fetched id is the 
+    maximum ID between the fetched events, when the type is string, the last fetched ID is the last event returned from the API.'
   - section: Collect
     display: First fetch time
     name: first_fetch
@@ -209,13 +235,13 @@ script:
         - description: Maximum number of results to return.
           name: limit
       description: Gets events from 3rd party vendor.
-      name: generic-event-collector-get-events
+      name: generic-api-event-collector-get-events
   runonce: false
   isfetchevents: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
 fromversion: 6.8.0
 marketplaces:
   - marketplacev2
