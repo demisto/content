@@ -88,13 +88,16 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     current_start_date = event_date
 
     while True:
-        events = client.get_events(event_date, end, pageNum=0, pageSize=200)
+        events = client.get_events(event_date, end)
 
         if rate_limit_reached():
+            check_if_limit_more_than_0_and_wait_this_time
+            # TODO to add logs
             send_message_to_client_and_return_results()
-        if got_error_429_from_events:
+            return
+        if got_error_for_token:
             client.regnerate_token
-            client.get_events(event_date, end, pageNum=0, pageSize=200)
+            client.get_events(event_date, end)
 
         if not events:
             break
