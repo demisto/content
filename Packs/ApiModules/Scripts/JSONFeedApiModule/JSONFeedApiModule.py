@@ -139,7 +139,6 @@ class Client:
 
         result = []
         if not self.post_data:
-              
             r = requests.get(
                 url=url,
                 verify=self.verify,
@@ -161,7 +160,6 @@ class Client:
 
         try:
             r.raise_for_status()
-            
             if r.content:
                 demisto.debug(f'JSON: found content for {feed_name}')
                 data = r.json()
@@ -257,13 +255,9 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     indicators: List[dict] = []
     feeds_results = {}
     no_update = False
-    demisto.debug(f"client.feed_name_to_config.items() are: {client.feed_name_to_config.items()}")
     for feed_name, feed in client.feed_name_to_config.items():
-        demisto.debug(f"feed_name is: {feed_name}")
-        demisto.debug(f"feed is: {feed}")
         custom_build_iterator = feed.get('custom_build_iterator')
         if custom_build_iterator:
-            demisto.debug("in custom build iterator")
             indicators_from_feed = custom_build_iterator(client, feed, limit, **kwargs)
             if not isinstance(indicators_from_feed, list):
                 raise Exception("Custom function to handle with pagination must return a list type")
