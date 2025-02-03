@@ -48,7 +48,7 @@ tasks:
     task:
       id: 925d79fb-43a9-487b-8ca2-94c8b7e4aa62
       version: -1
-      name: Collect user information
+      name: Get user information
       description: Returns information about each alert ID.
       script: '|||core-get-cloud-original-alerts'
       type: regular
@@ -118,7 +118,7 @@ tasks:
     task:
       id: 474143cf-c989-4506-8882-3932c2e185d2
       version: -1
-      name: Get initiating user risk score
+      name: Get source user risk score
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
       script: '|||core-list-risky-users'
       type: regular
@@ -154,7 +154,7 @@ tasks:
     task:
       id: cce928e7-4f00-4fee-8666-3c105368b87c
       version: -1
-      name: Get initiating user Azure risk score
+      name: Get source user Azure risk score
       description: Returns a list of all risky users and their properties.
       script: '|||azure-risky-users-list'
       type: regular
@@ -661,7 +661,7 @@ tasks:
     task:
       id: af5f6743-c2e4-4ea4-8cec-208c6e89181e
       version: -1
-      name: Search for initiating user suspicious insights
+      name: Search for source user suspicious insights
       description: |-
         Searches Demisto alerts. A summarized version of this scrips is available with the summarizedversion argument.
 
@@ -707,7 +707,7 @@ tasks:
     task:
       id: 1cf9886a-9857-4317-8c6f-b24d68e89041
       version: -1
-      name: Get reputation for caller IP
+      name: Get IP Address reputation
       description: Checks the reputation of an IP address.
       script: '|||ip'
       type: regular
@@ -872,7 +872,7 @@ tasks:
     task:
       id: 7250a855-fc56-4bb2-8980-94ec1a931f77
       version: -1
-      name: Check if suspicious insights found
+      name: Check for suspicious insights
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
@@ -1052,7 +1052,7 @@ tasks:
       id: 49938488-eb3e-436e-844b-6e1dfca348ab
       version: -1
       name: Manual Remediation
-      description: "#### Initiating User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Initiating User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Initiating User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Initiating User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Initiating User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n\n### Action Required:\nSince the MSGraph integration is not enabled on this XSIAM tenant, we recommend performing the following steps manually:\n\n* re-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n* Revoke the session of both${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}\n* Disable the users ${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}\n\n"
+      description: "#### Source User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Source User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Source User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Source User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Source User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n\n### Action Required:\nSince the MSGraph integration is not enabled on this XSIAM tenant, we recommend performing the following steps manually:\n\n* re-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n* Revoke the session of both${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}\n* Disable the users ${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}\n\n"
       type: regular
       iscommand: false
       brand: ""
@@ -1124,7 +1124,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "#### Initiating User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Initiating User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Initiating User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Initiating User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Initiating User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n### Manual Actions Recommended:\n\nre-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n\n### Action Required:\nPlease choose the action you want to perform.\n"
+          simple: "#### Source User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Source User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Source User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Source User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Source User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n### Manual Actions Recommended:\n\nre-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n\n### Action Required:\nPlease choose the action you want to perform.\n"
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1167,11 +1167,11 @@ tasks:
       - "58"
       Disable Destination User:
       - "60"
-      Disable Initiating User:
+      Disable Source User:
       - "59"
     separatecontext: false
     conditions:
-    - label: Disable Initiating User
+    - label: Disable Source User
       condition:
       - - operator: containsString
           left:
@@ -1273,7 +1273,7 @@ tasks:
     task:
       id: a38ba4cd-5b39-43ec-8088-d63e085390fd
       version: -1
-      name: Disable initiating user
+      name: Disable source user
       description: |-
         Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
         but does not terminate an existing session. Supported only in a self deployed app flow with the
@@ -1476,7 +1476,7 @@ tasks:
       id: ffb9aac6-1a37-4444-849d-910e8465e27c
       version: -1
       name: Manual Remediation
-      description: "#### Initiating User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Initiating User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Initiating User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Initiating User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Initiating User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n\n### Action Required:\nSince the MSGraph integration is not enabled on this XSIAM tenant, we recommend performing the following steps manually:\n\n* re-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n\n* Revoke the session of both ${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}"
+      description: "#### Source User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Source User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Source User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Source User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Source User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n\n### Action Required:\nSince the MSGraph integration is not enabled on this XSIAM tenant, we recommend performing the following steps manually:\n\n* re-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n\n* Revoke the session of both ${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}"
       type: regular
       iscommand: false
       brand: ""
@@ -1537,7 +1537,7 @@ tasks:
     task:
       id: 6fcba35e-6b96-47aa-8408-9192ee3daefa
       version: -1
-      name: Check if the initiating user connected from a new country
+      name: Check if the source user connected from a new country
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
@@ -1966,7 +1966,6 @@ view: |-
       "19_39_yes": 0.4,
       "57_33_#default#": 0.26,
       "57_58_Disable Both": 0.61,
-      "57_59_Disable Initiating User": 0.6,
       "61_66_#default#": 0.3
     },
     "paper": {
