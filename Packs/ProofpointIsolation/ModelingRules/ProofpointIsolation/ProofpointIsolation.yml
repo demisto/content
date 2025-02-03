@@ -1,0 +1,6 @@
+fromversion: 8.3.0
+id: ProofpointIsolation_ModelingRule
+name: Proofpoint Isolation Modeling Rule
+rules: ''
+schema: ''
+tags: proofpoint

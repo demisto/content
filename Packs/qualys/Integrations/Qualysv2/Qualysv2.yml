@@ -30,6 +30,19 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Fetch Vulnerabilities Behavior
+  defaultvalue: Fetch by last modified date
+  name: fetch_vulnerabilities_behavior
+  options:
+  - Fetch by last modified date
+  - Fetch by unique QIDs of assets
+  section: Collect
+  advanced: true
+  required: false
+  type: 15
+  hidden:
+  - xsoar
+  - xpanse
 - defaultvalue: 3 days
   section: Collect
   display: Event first fetch time
@@ -62,7 +75,7 @@ configuration:
   hidden:
   - xsoar
   - xpanse
-- additionalinfo: The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour.
+- additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours. Interval lower then 1 hour is not supported.
   defaultvalue: 1440
   display: Assets and Vulnerabilities Fetch Interval
   name: assetsFetchInterval
@@ -2038,6 +2051,12 @@ script:
     - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.PROTOCOL
       description: Detection protocol.
       type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS
+      description: Detection score.
+      type: Object
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS_FACTORS
+      description: Factors affecting detection score.
+      type: Object
   - arguments:
     - description: A comma-separated list of host IDs/ranges to update. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. Either the `ips` or `ids` parameter must be supplied. IDs or IPs can be retrieved via running the `qualys-host-list-detection` command, using the ID field or IPs field.
       isArray: true
