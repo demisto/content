@@ -381,7 +381,7 @@ script:
     name: slack-rename-channel
   - arguments:
     - default: true
-      description: The Slack user (username or email).
+      description: The Slack user (username, email or user ID).
       name: user
       required: true
     description: Get details about a specified user.
