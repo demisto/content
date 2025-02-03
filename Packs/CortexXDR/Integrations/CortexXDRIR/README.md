@@ -88,6 +88,7 @@ The **Palo Alto Networks Cortex XDR - Investigation and Response** integration s
 
 1. **Incoming Mirroring**:
 Updates made in Cortex XDR (e.g., status changes, field updates) are synchronized into Cortex XSOAR.
+If an incident in Cortex XDR is reopened (Resolved status changed to New or Under Investigation), it will also be reopened in Cortex XSOAR.
 2. **Outgoing Mirroring**:
 Changes made to incidents in Cortex XSOAR are pushed back to Cortex XDR.
 3. **Bidirectional Mirroring**:
@@ -119,6 +120,7 @@ However, Field A cannot be mirrored in both directions simultaneously.
     | Auto                              |
 
 **Optional**: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both Cortex XDR and Cortex XSOAR. **Note**: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
+
   **Close-reason default mapping XSOAR -> XDR**: Other=Other, Duplicate=Duplicate Incident, False Positive=False Positive, Resolved=True Positive
 
   **Close-reason default mapping XDR -> XSOAR**: Known Issue=Other, Duplicate Incident=Duplicate, False Positive=False Positive, True Positive=Resolved, Other=Other, Auto resolved=Resolved
@@ -132,9 +134,9 @@ However, Field A cannot be mirrored in both directions simultaneously.
 - Only supported incident types with proper schema configuration will mirror successfully.
 - Newly fetched incidents will be mirrored in the chosen direction. Note that this will not effect existing incidents.
 
-### Migrating to the Mirroring
+### Configure Mirroring
 
-When enabling the mirroring feature for an existing instance or troubleshooting mirroring issues, ensure the following steps are taken:
+When enabling mirroring for an existing instance or troubleshooting mirroring issues, ensure the following:
 
 1. **Configure the Correct Mappers**: Set the incoming mapper for the Cortex XDR integration instance to **Cortex XDR - Incoming Mapper**.
 Set the outgoing mapper to **Cortex XDR - Outgoing Mapper**. This ensures proper synchronization of fields between Cortex XDR and Cortex XSOAR.
@@ -143,17 +145,17 @@ Set the outgoing mapper to **Cortex XDR - Outgoing Mapper**. This ensures proper
 ### Known Limitations:
 
 - **API Restrictions**:
-    - Cortex XDR API may have limitations, such as rate limits, which can delay incident updates during peak activity.
+  - Cortex XDR API may have limitations, such as rate limits, which can delay incident updates during peak activity.
 - **Latency**:
-    - Real-time mirroring may experience slight delays depending on system load and network connectivity.
+  - Real-time mirroring may experience slight delays depending on system load and network connectivity.
 - **Conflict Handling**:
-    - Simultaneous updates in both systems can lead to data conflicts. 
+  - Simultaneous updates in both systems can lead to data conflicts. 
 
-## Fetch Behavior vs Mirroring
+## Fetch Behavior
 
 ---
 
-### Fetch Behavior
+Primarily focuses on importing incidents as active to allow for automation and manual intervention, with flexibility to filter or preprocess incidents based on status.
 
 - All incidents, regardless of their status (including "resolved"), will be fetched into Cortex XSOAR as active incidents. This enables the execution of automations and workflows within Cortex XSOAR.
 - The original resolved status of incidents is retained in the incident details for reference, even though the incident is fetched as active.
@@ -161,16 +163,6 @@ Set the outgoing mapper to **Cortex XDR - Outgoing Mapper**. This ensures proper
     1. Use the "Incident Statuses to Fetch" filter during the integration configuration to exclude specific statuses (e.g., resolved incidents) from being imported.
     2. Apply pre-processing rules to automatically set certain types of imported incidents as closed based on predefined criteria.
 
-
-### Mirroring
-
-- When mirroring is enabled, changes to the incident status in Cortex XDR will synchronize with Cortex XSOAR:
-  - If an incident that has already been fetched into Cortex XSOAR is marked as resolved in Cortex XDR, the mirroring process will trigger and the incident in Cortex XSOAR will also be updated to a closed status.
-
-### Summary
-
-- **Fetch Behavior**: Primarily focuses on importing incidents as active to allow for automation and manual intervention, with flexibility to filter or preprocess incidents based on status.
-- **Mirroring**: Synchronizes incident status changes between Cortex XSOAR and Cortex XDR, ensuring alignment across both platforms.
 
 ## Commands
 

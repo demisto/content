@@ -196,6 +196,7 @@ There is no context output for this command.
 #### Base Command
 
 `xdr-iocs-to-keep-file`
+
 #### Input
 
 There are no input arguments for this command.
@@ -209,12 +210,12 @@ There is no context output for this command.
 ### Outgoing IOCs
 
 - **Performance Issues**:
-    - Reduce the frequency of indicators fetch to manage system load (recommended above 20 minutes).
-    - Review Cortex XDR API rate limit logs to ensure compliance with API thresholds.
+  - Reduce the frequency of indicators fetch to manage system load (recommended above 20 minutes).
+  - Review Cortex XDR API rate limit logs to ensure compliance with API thresholds.
 - **Missing IOCs**:
-    - Please make sure all IOC are in a supported format both in Cortex XSOAR and Cortex XDR.
-    - If using the **xdr-iocs-push** command, please go over the warnings in the war room.
+  - Please make sure all IOC are in a supported format both in Cortex XSOAR and Cortex XDR.
+  - If using the **xdr-iocs-push** command, please go over the warnings in the war room.
 - **Indicator Severity**:
-    - In order to override severity, please enable the ***Override severity*** parameter and also choose a severity under ***Overriding severity value***.
+  - In order to override severity, please enable the ***Override severity*** parameter and also choose a severity under ***Overriding severity value***.
 - **Severity update from Cortex XSOAR to Cortex XDR**:
-    - Due to Cortex XSOAR system limitations, once the severity is manually changed within Cortex XSOAR, it is excluded from being updated by the fetching process.
+  - Due to Cortex XSOAR system limitations, once the severity is manually changed within Cortex XSOAR, it is excluded from being updated by the mirroring process.
