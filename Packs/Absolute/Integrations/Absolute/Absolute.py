@@ -234,7 +234,7 @@ class ClientV3(BaseClient):
 
         return data
 
-    def api_request_absolute(self, method: str, url_suffix: str, body: dict = {}, success_status_code=None,
+    def api_request_absolute(self, method: str, url_suffix: str, body: dict = {}, success_status_code=(),
                              query_string: str = '', page: int = 0, page_size: int = DEFAULT_API_PAGE_SIZE,
                              specific_page: bool = False, resp_type: str = "json"):
         """Makes an HTTP request to the Absolute API.
@@ -258,16 +258,16 @@ class ClientV3(BaseClient):
         query_string = self.prepare_query_string_for_canonical_request(query_string)
         if method == 'GET':
             if specific_page:
-                data = self.get_specific_page_data(url_suffix, page, page_size, query_string, ok_codes=success_status_code)
+                data = self.get_specific_page_data(url_suffix, page, page_size, query_string, ok_codes=tuple(success_status_code))
             else:
                 next_page = ''
                 response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size),
-                                                    ok_codes=success_status_code)
+                                                    ok_codes=tuple(success_status_code))
                 data = response.get('data')
                 while next_page := response.get('metadata', {}).get('pagination', {}).get('nextPage', ''):
                     response = self.send_request_to_api('GET', url_suffix,
                                                         query_string + self.add_pagination(next_page, page_size),
-                                                        ok_codes=success_status_code)
+                                                        ok_codes=tuple(success_status_code))
                     data += response.get('data')
             return data
 
@@ -378,13 +378,13 @@ def test_module(client: ClientV3) -> str:
 def parse_device_field_list_response(response: dict, device_id: str) -> dict[str, Any]:
     """Parse the device field list response"""
     parsed_data = {'DeviceUID': device_id, 'CDFValues': []}  # type: ignore
-    for cdf_item in response.get('data', []):
+    for cdf_item in response:
         parsed_data['CDFValues'].append({  # type: ignore
             'CDFUID': cdf_item.get('cdfUid'),
-            'FieldKey': cdf_item.get('fieldKey'),
-            'FieldName': cdf_item.get('fieldName'),
+            'FieldKey': cdf_item.get('cdfFieldKey'),
+            'FieldName': cdf_item.get('cdfFieldName'),
             'CategoryCode': cdf_item.get('categoryCode'),
-            'FieldValue': cdf_item.get('fieldValue'),
+            'FieldValue': cdf_item.get('cdfFieldValue'),
             'Type': cdf_item.get('type'),
         })
     return parsed_data
@@ -432,7 +432,7 @@ def update_custom_device_field_command(args, client) -> CommandResults:
     return CommandResults(readable_output=f"Device {device_id} with value {field_value} was updated successfully.")
 
 
-def validate_device_freeze_type_offline(offline_time_seconds):
+def validate_device_freeze_type_offline(offline_time_seconds: Optional[int]) -> int:
     """Validate the Offline type arg
     """
     if not offline_time_seconds:
@@ -460,7 +460,7 @@ def validate_device_freeze_type_scheduled(scheduled_freeze_date: str) -> str:
     return scheduled_freeze_date
 
 
-def validate_passcode_type_args(passcode_type: str, passcode: str, passcode_length: int, payload: dict) -> dict:
+def validate_passcode_type_args(passcode_type: str, passcode: str, passcode_length: Optional[int], payload: dict) -> dict:
     """Validate the passcode type arguments, and return the payload
 
     Args:
@@ -484,7 +484,7 @@ def validate_passcode_type_args(passcode_type: str, passcode: str, passcode_leng
     return payload
 
 
-def parse_freeze_device_response(response: dict, device_ids: str):
+def parse_freeze_device_response(response: dict, device_ids: str) -> dict:
     """Parse the device freeze response
 
     Args:
@@ -551,7 +551,7 @@ def prepare_payload_to_freeze_request(args) -> dict:
         scheduled_freeze_date = validate_device_freeze_type_scheduled(scheduled_freeze_date)
         payload["freezeDefinition"].update({"scheduledFreezeDateTimeUtc": scheduled_freeze_date})
 
-    elif device_freeze_type == "Offline":
+    elif device_freeze_type == "OffLine":
         offline_time_seconds = validate_device_freeze_type_offline(offline_time_seconds)
         payload["freezeDefinition"].update({"offlineTimeSeconds": offline_time_seconds})
     passcode = args.get('passcode')
@@ -728,11 +728,11 @@ def parse_device_unenroll_request_data_response(response: dict) -> dict:
     return parsed_data
 
 
-def parse_device_unenroll_response(response: dict) -> dict:
+def parse_device_unenroll_response(response: list) -> list:
     """Parse the unenroll response
 
     Args:
-        response (dict): The response to parse
+        response (list): The response to parse
     """
     parsed_devices_data = []
     for device in response:
@@ -815,9 +815,9 @@ def create_filter_query_from_args_helper(args, arg_name, source_name, query):
     return query
 
 
-def create_filter_query_from_args(args: dict, change_device_name_to_system=False, change_device_id=False):
+def create_filter_query_from_args(args: dict, change_device_name_to_system: bool = False,
+                                  change_device_id: bool = False) -> str:
     """
-
     Args:
         args: args given from the user.
         change_device_name_to_system: True if to filter by "systemName" parameter and False to filter by "deviceName".
@@ -885,7 +885,12 @@ def parse_return_fields(return_fields: str, query: str):
     return f"$select={return_fields}"
 
 
-def parse_device_list_response(response, keep_os_in_list=True, application_list=False):
+def parse_device_list_response(response: list, keep_os_in_list=True, application_list=False) -> list:
+    """Parse the device list response
+
+    Args:
+        response (list): The response to parse
+    """
     parsed_response = []
     for device in response:
         parsed_device = {}

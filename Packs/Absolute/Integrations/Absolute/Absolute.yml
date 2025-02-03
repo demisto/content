@@ -30,30 +30,6 @@ configuration:
   type: 8
   required: false
   section: Connect
-- defaultvalue: '1'
-  display: Events Fetch Interval
-  name: eventFetchInterval
-  type: 19
-  required: false
-  advanced: true
-  section: Collect
-  hidden:
-  - xsoar
-- defaultvalue: 10000
-  section: Collect
-  display: Max number of events per fetch
-  name: max_events_per_fetch
-  required: false
-  type: 0
-  hidden:
-  - xsoar
-- defaultvalue: 'false'
-  name: isFetchEvents
-  type: 8
-  required: false
-  section: Collect
-  hidden:
-  - xsoar
 description: "Absolute is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints."
 display: Absolute
 name: Absolute

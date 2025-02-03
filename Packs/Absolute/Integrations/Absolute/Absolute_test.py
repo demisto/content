@@ -1,6 +1,5 @@
 import json
 import re
-from datetime import datetime
 
 import pytest
 from pytest import raises
@@ -63,30 +62,10 @@ POST_REQUEST_AUTH_HEADER = "ABS1-HMAC-SHA-256 Credential=token/20170926/cadc/abs
                            "SignedHeaders=host;content-type;x-abs-date, " \
                            "Signature=2355cede6fe99bf852ec7e4bc7dc450445fac9458814ef81d1a1b0906aac750b"
 
-FREEZE_REQ_EXPECTED_OUTPUT = [{'AccountUid': 'e7a9fb73-44b0-4f5d-990b-39ff884425eb',
-                               'ActionRequestUid': 'e416f97e-dc43-4ed0-88c3-b33ea66c660f',
+FREEZE_REQ_EXPECTED_OUTPUT = [{'ActionRequestUid': 'e416f97e-dc43-4ed0-88c3-b33ea66c660f',
                                'ChangedBy': None,
                                'ChangedUTC': '2021-11-03T07:33:55.966+00:00',
-                               'Configuration': {'action': 'DFZ',
-                                                 'conditions': [{}],
-                                                 'configurationUid': 'c132d6aa-03b5-483d-89ab-77f45f7346cc',
-                                                 'disableFileSharing': True,
-                                                 'disableRemoteLogin': True,
-                                                 'forceReboot': False,
-                                                 'freezeId': 'DeviceFreeze-0864',
-                                                 'freezeMessage': 'This device has been frozen by a Company',
-                                                 'html': None,
-                                                 'htmlClear': 'some html',
-                                                 'issuedUTC': '2021-11-03T07:33:55.966+00:00',
-                                                 'messageName': 'On-demand Freeze message',
-                                                 'passcodeClear': '12345678',
-                                                 'passcodeHashed': '+AG=',
-                                                 'passcodeLength': 8,
-                                                 'passcodeOption': 'RandomForEach',
-                                                 'passcodeSalt': 'P0efY',
-                                                 'preLoginEnabled': True,
-                                                 'serviceControlList': None,
-                                                 'type': 'OnDemand'},
+                               'Configuration': {},
                                'Content': None,
                                'CreatedBy': None,
                                'CreatedUTC': '2021-11-03T07:33:56.004+00:00',
@@ -101,35 +80,7 @@ FREEZE_REQ_EXPECTED_OUTPUT = [{'AccountUid': 'e7a9fb73-44b0-4f5d-990b-39ff884425
                                'PolicyConfigurationVersion': 0,
                                'PolicyGroupUid': None,
                                'Requester': 'example@test.com',
-                               'RequesterUid': '1abc2de3-fa45-67b8-9cde-0f12a34bc567',
-                               'Statuses': [{'ackClientTS': 1548265912126,
-                                             'ackClientUTC': 1548294712126,
-                                             'actionUid': None,
-                                             'eventType': None,
-                                             'instruction': '',
-                                             'message': None,
-                                             'messageKey': None,
-                                             'messageParams': None,
-                                             'scheduledFreezeDateUTC': 0,
-                                             'status': 'Launching',
-                                             'statusUid': '5336db35-ae66-435e-a29d-41ef2f10a86c',
-                                             'triggerActionUid': None,
-                                             'updatedBy': 'example@test.com',
-                                             'updatedUTC': '2021-11-03T07:33:55.966+00:00'},
-                                            {'ackClientTS': 0,
-                                             'ackClientUTC': 0,
-                                             'actionUid': None,
-                                             'eventType': None,
-                                             'instruction': None,
-                                             'message': None,
-                                             'messageKey': None,
-                                             'messageParams': None,
-                                             'scheduledFreezeDateUTC': 0,
-                                             'status': 'FreezeRequested',
-                                             'statusUid': None,
-                                             'triggerActionUid': None,
-                                             'updatedBy': 'example@test.com',
-                                             'updatedUTC': 1548294707085}]}]
+                               'Statuses': []}]
 
 
 @pytest.fixture
@@ -158,10 +109,10 @@ def test_invalid_absolute_api_url(url):
 def test_get_custom_device_field_list_command(mocker, absolute_client_v3):
     from Absolute import get_custom_device_field_list_command
     response = util_load_json('test_data/custom_device_field_list_response.json')
-    mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
+    mocker.patch.object(absolute_client_v3, 'send_request_to_api', return_value=response)
     command_result = get_custom_device_field_list_command(client=absolute_client_v3,
                                                           args={'device_id': '02b9daa4-8e60-4640-8b15-76d41ecf6a94'})
-    assert command_result.outputs == {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'),
+    assert command_result.outputs == {'DeviceUID': '02b9daa4-8e60-4640-8b15-76d41ecf6a94',
                                       'CDFValues': [{'CDFUID': 'njazpLrEQwqeFDqk4yQCfg', 'FieldName': 'Asset Number',
                                                      'FieldKey': 1, 'CategoryCode': 'ESNCOLUMN',
                                                      'FieldValue': 'No Asset Tag', 'Type': 'Text'},
@@ -174,7 +125,7 @@ def test_get_custom_device_field_list_command(mocker, absolute_client_v3):
                          [({'device_freeze_type': 'Scheduled'},
                            "When setting device_freeze_type to be Scheduled, you must specify the"
                            " scheduled_freeze_date arg."),  # type is Scheduled and 'scheduled_freeze_date' is missing
-                          ({'device_freeze_type': 'Offline', 'offline_time_seconds': '1'},
+                          ({'device_freeze_type': 'OffLine', 'offline_time_seconds': '1'},
                            "the offline_time_seconds arg is not valid. Must be between 1200 seconds "
                            "(20 minutes) and 172800000 seconds (2000 days)."),
                           # type is Offline and 'offline_time_seconds' is not valid
@@ -191,6 +142,16 @@ def test_get_custom_device_field_list_command(mocker, absolute_client_v3):
                           # passcode_type is RandomForAll and 'passcode_length' is not valid number
                           ])
 def test_prepare_payload_to_freeze_request_with_invalid_args(args, expected_error):
+    """
+    Given:
+        - All relevant arguments for preparing the freeze request
+
+    When:
+        - prepare_payload_to_freeze_request is executed
+
+    Then:
+        - Validate the exceptions
+    """
     from Absolute import prepare_payload_to_freeze_request
     with raises(DemistoException, match=re.escape(f'{INTEGRATION} error: {expected_error}')):
         prepare_payload_to_freeze_request(args)
@@ -204,55 +165,86 @@ def test_prepare_payload_to_freeze_request_with_invalid_args(args, expected_erro
                                'device_freeze_type': 'Scheduled', 'passcode_type': 'UserDefined', 'passcode': '5'},
                               {'deviceUids': ['1', '2'],
                                'freezeDefinition': {'deviceFreezeType': 'Scheduled',
-                                                    'scheduledFreezeDate': '2017-09-26T17:22:13Z'},
+                                                    'scheduledFreezeDateTimeUtc': '2017-09-26T17:22:13Z'},
                                'message': 'test',
                                'messageName': 'name',
-                               'name': 'name',
-                               'notificationEmails': [],
+                               'requestTitle': 'name',
                                'passcodeDefinition': {'option': 'UserDefined', 'passcode': '5'}}),
                              # Offline
                              ({'request_name': 'name', 'html_message': 'test', 'message_name': 'name',
                                'device_ids': ["1", "2"], 'offline_time_seconds': '1201',
-                               'device_freeze_type': 'Offline', 'passcode_type': 'RandomForEach',
+                               'device_freeze_type': 'OffLine', 'passcode_type': 'RandomForEach',
                                'passcode_length': '5'},
                               {'deviceUids': ['1', '2'],
-                               'freezeDefinition': {'deviceFreezeType': 'Offline',
+                               'freezeDefinition': {'deviceFreezeType': 'OffLine',
                                                     'offlineTimeSeconds': 1201},
                                'message': 'test',
                                'messageName': 'name',
-                               'name': 'name',
-                               'notificationEmails': [],
+                               'requestTitle': 'name',
                                'passcodeDefinition': {'option': 'RandomForEach', 'length': 5}})
                          ])
 def test_prepare_payload_to_freeze_request_valid_args(args, expected_payload):
+    """
+    Given:
+        - All relevant arguments for preparing the freeze request
+
+    When:
+        - prepare_payload_to_freeze_request is executed
+
+    Then:
+        - Validate the output
+    """
     from Absolute import prepare_payload_to_freeze_request
     assert prepare_payload_to_freeze_request(args) == expected_payload
 
 
 def test_get_device_freeze_request_command(mocker, absolute_client_v3):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - get_device_freeze_request_command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     from Absolute import get_device_freeze_request_command
     response = util_load_json('test_data/custom_get_device_freeze_request_response.json')
     mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
     command_results = get_device_freeze_request_command(args={'request_uid': '1'}, client=absolute_client_v3)
-    assert command_results.outputs == FREEZE_REQ_EXPECTED_OUTPUT
+    assert command_results.outputs[0] == FREEZE_REQ_EXPECTED_OUTPUT[0]
 
 
 def test_list_device_freeze_message_command(mocker, absolute_client_v3):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - list_device_freeze_message_command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     from Absolute import list_device_freeze_message_command
     response = util_load_json('test_data/device_freeze_message_list_response.json')
     mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
     command_results = list_device_freeze_message_command(args={'message_id': "1"}, client=absolute_client_v3)
-    assert command_results.outputs == [{'ChangedBy': 'example2@test.com',
-                                        'ChangedUTC': '2020-12-14T09:14:52.148+00:00',
-                                        'Content': '<html><body>This device has been frozen by '
-                                                   'company.</body></html>',
-                                        'CreatedBy': 'example1@test.com',
-                                        'CreatedUTC': '2020-11-26T22:29:17.687+00:00',
-                                        'ID': '1',
-                                        'Name': 'On-demand Freeze message'}]
+    assert command_results.outputs == [{'ID': '1', 'Name': 'On-demand Freeze message', 'CreatedUTC': '2020-11-26T22:29:17.687+00:00', 'ChangedUTC': '2020-12-14T09:14:52.148+00:00', 'Content': '<html><body>This device has been frozen by company.</body></html>', 'CreatedBy': 'example1@test.com', 'ChangedBy': 'example2@test.com'}]
 
 
 def test_device_unenroll_command(mocker, absolute_client_v3):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - device_unenroll_command command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     from Absolute import device_unenroll_command
     response = util_load_json('test_data/unenroll_device_response.json')
     mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=response)
@@ -283,10 +275,9 @@ def test_list_device_freeze_message_command_no_id(mocker, absolute_client_v3):
         - The http request is called with the right arguments
     """
     from Absolute import list_device_freeze_message_command
-    http_request = mocker.patch.object(absolute_client_v3, '_http_request', return_value=[])
+    http_request = mocker.patch.object(absolute_client_v3, 'send_request_to_api', return_value={})
     list_device_freeze_message_command(client=absolute_client_v3, args={})
-    assert http_request.call_args.kwargs['method'] == 'GET'
-    assert http_request.call_args.kwargs['url_suffix'] == '/v2/device-freeze/messages'
+    assert http_request.call_args.args == ('GET', f'/v3/actions/freeze/messages', '&pageSize=50')
 
 
 def test_delete_device_freeze_message_command(mocker, absolute_client_v3):
@@ -302,10 +293,10 @@ def test_delete_device_freeze_message_command(mocker, absolute_client_v3):
     """
     from Absolute import delete_device_freeze_message_command
     message_id = '1'
-    http_request = mocker.patch.object(absolute_client_v3, '_http_request', return_value=[])
+    http_request = mocker.patch.object(absolute_client_v3, 'send_request_to_api', return_value=[])
     delete_device_freeze_message_command(client=absolute_client_v3, args={'message_id': message_id})
-    assert http_request.call_args.kwargs['method'] == 'DELETE'
-    assert http_request.call_args.kwargs['url_suffix'] == f'/v2/device-freeze/messages/{message_id}'
+
+    assert http_request.call_args.args == ('DELETE', f'/v3/actions/freeze/messages/{message_id}', '')
 
 
 def test_update_device_freeze_message_command(mocker, absolute_client_v3):
@@ -324,7 +315,7 @@ def test_update_device_freeze_message_command(mocker, absolute_client_v3):
     http_request = mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value=[])
     args = {'message_id': message_id, 'html_message': 'text', 'message_name': 'name'}
     update_device_freeze_message_command(client=absolute_client_v3, args=args)
-    assert http_request.call_args.args == ('PUT', f'/v2/device-freeze/messages/{message_id}')
+    assert http_request.call_args.args == ('PUT', f'/v3/actions/freeze/messages/{message_id}')
 
 
 def test_create_device_freeze_message_command(mocker, absolute_client_v3):
@@ -342,7 +333,7 @@ def test_create_device_freeze_message_command(mocker, absolute_client_v3):
     http_request = mocker.patch.object(absolute_client_v3, 'api_request_absolute', return_value={})
     args = {'html_message': 'text', 'message_name': 'name'}
     create_device_freeze_message_command(client=absolute_client_v3, args=args)
-    assert http_request.call_args.args == ('POST', '/v2/device-freeze/messages')
+    assert http_request.call_args.args == ('POST', '/v3/actions/freeze/messages')
 
 
 @pytest.mark.parametrize('field_name, list_of_values, query, expected_query',
@@ -406,15 +397,21 @@ def test_parse_return_fields(return_fields, query, expected_query):
     assert parse_return_fields(return_fields, query) == expected_query
 
 
-@pytest.mark.parametrize('page, limit, query, expected_query',
-                         [
-                             (0, 50, "", "$skip=0&$top=50"),
-                             (0, 50, "$filter=accountUid eq '1'&$select=deviceUid",
-                              "$filter=accountUid eq '1'&$select=deviceUid&$skip=0&$top=50"),
-                         ])
-def test_parse_paging(page, limit, query, expected_query):
-    from Absolute import parse_paging
-    assert parse_paging(page, limit, query) == expected_query
+def test_add_pagination(absolute_client_v3):
+    """
+    Given:
+        page size and next page arguments
+    When:
+        Running the add_pagination client function
+    Then:
+        Validate the output
+    """
+    next_page = 'abcdefg'
+    page_size = 5
+    assert absolute_client_v3.add_pagination(next_page, page_size) == f"&nextPage={next_page}&pageSize={page_size}"
+    
+    next_page = ''
+    assert absolute_client_v3.add_pagination(next_page, page_size) == f"&pageSize={page_size}"
 
 
 def test_get_device_location_command(mocker, absolute_client_v3):
