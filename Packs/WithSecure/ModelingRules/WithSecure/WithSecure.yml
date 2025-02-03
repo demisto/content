@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: WithSecure_ModelingRule
-name: Endpoint Protection With Secure Modeling Rule
+id: Endpoint_Protection_WithSecure_ModelingRule
+name: Endpoint Protection WithSecure Modeling Rule
 rules: ''
 schema: ''
 tags: Endpoint_Protection
