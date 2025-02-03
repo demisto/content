@@ -104,6 +104,17 @@ DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
     "geoData.location.lastUpdateDateTimeUtc",
 ]
 
+DEVICE_OUTPUT_TO_XSOAR_CONTEXT_PATH = {
+    "installDateTimeUtc": 'InstallDate',
+    "firstDetectDateTimeUtc": 'FirstDetectUtc',
+    "lastScanDateTimeUtc": 'LastScanTimeUtc',
+    "deviceUid": "Id",
+    "lastConnectedDateTimeUtc": "LastConnectedUtc",
+    "serialNumber": "Serial",
+    "publicIp": 'PublicIp',
+    "localIp": 'LocalIp',
+    "username": "Username"}
+
 SEIM_EVENTS_PAGE_SIZE = 1000
 CLIENT_V3_JWS_VALIDATION_URL = "https://api.absolute.com/jws/validate"
 VENDOR = 'Absolute'
@@ -169,33 +180,55 @@ class ClientV3(BaseClient):
             return ""
         return urllib.parse.quote(query_string, safe='=&')
 
-    def send_request_to_api(self, method: str, url_suffix: str, query_string: str, ok_codes: tuple, payload: dict = {}):
+    def send_request_to_api(self, method: str, url_suffix: str, query_string: str, ok_codes: tuple, payload: dict = {},
+                            resp_type: str = "json"):
+        """Sends the request to Absolute
+
+        Args:
+            method (str): HTTP request method (GET/PUT/POST/DELETE).
+            url_suffix (str): The API endpoint.
+            query_string (str): The query to filter results by.
+            ok_codes (tuple): An HTTP status code of success
+            payload (dict, optional): The payload to send. Defaults to {}.
+            resp_type (str, optional): The response type of the request. Defaults to "json".
+        """
         signed = self.prepare_request(method=method, url_suffix=url_suffix, query_string=query_string, payload=payload)
-        return self._http_request(method=method, data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
-                                  return_empty_response=True, ok_codes=ok_codes)
+        return self._http_request(method="POST", data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
+                                  return_empty_response=True, ok_codes=ok_codes, resp_type=resp_type)
 
     def add_pagination(self, next_page: str, page_size: int) -> str:
         """
-        Add pagination query format to the existing query
+        Add pagination query format
         """
         if next_page:
             return f"&nextPage={next_page}&pageSize={page_size}"
         return f"&pageSize={page_size}"
 
     def get_specific_page_data(self, url_suffix: str, page_to_return: int, page_size: int, query_string: str, ok_codes: tuple):
+        """Return a specific page data
+
+        Args:
+            url_suffix (str): The url suffix to fetch from.
+            page_to_return (int): The page number to return.
+            page_size (int): The pga size to return.
+            query_string (str): The query to filter results by.
+            ok_codes (tuple): An HTTP status code of success.
+        """
         current_page = 0  # the first page number to fetch
         next_page = ''
         while current_page <= page_to_return:
             response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size),
                                                 ok_codes=ok_codes)
-            data = response.get('data')
+            data = response.get('data', {})
 
             current_page += 1
-            next_page = response.get('metadata').get('pagination').get('nextPage')
+            next_page = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
             if not next_page:
                 break
 
         if current_page <= page_to_return and not next_page:
+            demisto.debug('Abs: Returning empty data, as next_page is empty, and '
+                          f'current_page ({current_page}) <= page_to_return ({page_to_return})')
             # no more results in the API
             return {}
 
@@ -203,25 +236,26 @@ class ClientV3(BaseClient):
 
     def api_request_absolute(self, method: str, url_suffix: str, body: dict = {}, success_status_code=None,
                              query_string: str = '', page: int = 0, page_size: int = DEFAULT_API_PAGE_SIZE,
-                             specific_page: bool = False):
-        """
-        Makes an HTTP request to the Absolute API.
+                             specific_page: bool = False, resp_type: str = "json"):
+        """Makes an HTTP request to the Absolute API.
+
         Args:
             method (str): HTTP request method (GET/PUT/POST/DELETE).
             url_suffix (str): The API endpoint.
-            body (str): The body to set.
-            success_status_code (int): an HTTP status code of success.
-            query_string (str): The query to filter results by.
+            body (dict, optional): The body to set. Defaults to {}.
+            success_status_code (tuple, optional): An HTTP status code of success. Defaults to None.
+            query_string (str): The query to filter results by. Defaults to ''.
+            page (int): The specific page number to return. Defaults to 0.
+            page_size (int): The page size of the response. Defaults to DEFAULT_API_PAGE_SIZE.
+            specific_page (bool): Wether to return a specific page or not. Defaults to False.
+            resp_type (str): The response type of the request. Defaults to "json".
 
-        Note: As on the put and post requests we should pass a body from type str, we couldn't use the _http_request
-              function in CSP (as it does not receive body from type str).
         """
         demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
 
         if success_status_code is None:
             success_status_code = [200]
         query_string = self.prepare_query_string_for_canonical_request(query_string)
-
         if method == 'GET':
             if specific_page:
                 data = self.get_specific_page_data(url_suffix, page, page_size, query_string, ok_codes=success_status_code)
@@ -248,8 +282,10 @@ class ClientV3(BaseClient):
 
         elif method == 'POST':
             response = self.send_request_to_api('POST', url_suffix, query_string,
-                                                payload=body, ok_codes=tuple(success_status_code))
-            return response.get('data')
+                                                payload=body, ok_codes=tuple(success_status_code), resp_type=resp_type)
+            if isinstance(response, dict):
+                # response is not empty
+                return response.get('data')
         return None
 
     def fetch_events_request(self, query_string: str) -> dict[str, Any]:
@@ -311,7 +347,13 @@ def sign(key, msg):
     return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
 
 
-def validate_absolute_api_url(base_url):
+def validate_absolute_api_url(base_url: str) -> str:
+    """Validate the base url, and return the respective api url
+
+    Args:
+        base_url (str): The base url to validate
+
+    """
     if base_url not in ABSOLUTE_URL_TO_API_URL:
         raise_demisto_exception(
             f"The Absolute server url {base_url} in not a valid url. "
@@ -322,7 +364,8 @@ def validate_absolute_api_url(base_url):
 def test_module(client: ClientV3) -> str:
     """Tests API connectivity to Absolute """
     try:
-        client.api_request_absolute('GET', '/v2/device-freeze/messages', success_status_code=(200, 204))
+        client.api_request_absolute('GET', '/v3/reporting/devices', query_string='',
+                                    page=0, page_size=1, specific_page=True)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -333,6 +376,7 @@ def test_module(client: ClientV3) -> str:
 
 
 def parse_device_field_list_response(response: dict, device_id: str) -> dict[str, Any]:
+    """Parse the device field list response"""
     parsed_data = {'DeviceUID': device_id, 'CDFValues': []}  # type: ignore
     for cdf_item in response.get('data', []):
         parsed_data['CDFValues'].append({  # type: ignore
@@ -346,7 +390,8 @@ def parse_device_field_list_response(response: dict, device_id: str) -> dict[str
     return parsed_data
 
 
-def parse_device_field_list_response_human_readable(outputs):
+def parse_device_field_list_response_human_readable(outputs: dict) -> list:
+    """Parse the device field list response for the HR"""
     human_readable = []
     for cdf_values in outputs.get('CDFValues', []):
         human_readable.append({
@@ -358,6 +403,8 @@ def parse_device_field_list_response_human_readable(outputs):
 
 
 def get_custom_device_field_list_command(args, client) -> CommandResults:
+    """Gets custom device field
+    """
     device_id = args.get('device_id')
     page = arg_to_number(args.get('page', 0))
     limit = arg_to_number(args.get('limit', 50))
@@ -374,6 +421,8 @@ def get_custom_device_field_list_command(args, client) -> CommandResults:
 
 
 def update_custom_device_field_command(args, client) -> CommandResults:
+    """Updates custom device field
+    """
     device_id = args.get('device_id')
     cdf_uid = args.get('cdf_uid')
     field_value = args.get('value')
@@ -384,6 +433,8 @@ def update_custom_device_field_command(args, client) -> CommandResults:
 
 
 def validate_device_freeze_type_offline(offline_time_seconds):
+    """Validate the Offline type arg
+    """
     if not offline_time_seconds:
         # the default is 30 days
         offline_time_seconds = 22592000
@@ -400,20 +451,29 @@ def raise_demisto_exception(msg):
     raise DemistoException(f'{INTEGRATION} error: {msg}')
 
 
-def validate_device_freeze_type_scheduled(scheduled_freeze_date):
+def validate_device_freeze_type_scheduled(scheduled_freeze_date: str) -> str:
+    """Validate the scheduled type arg
+    """
     if not scheduled_freeze_date:
         raise_demisto_exception('When setting device_freeze_type to be Scheduled, you must specify the scheduled_'
                                 'freeze_date arg.')
     return scheduled_freeze_date
 
 
-def validate_passcode_type_args(passcode_type, passcode, passcode_length, payload):
+def validate_passcode_type_args(passcode_type: str, passcode: str, passcode_length: int, payload: dict) -> dict:
+    """Validate the passcode type arguments, and return the payload
+
+    Args:
+        passcode_type (str): The passcode type
+        passcode (str): The passcode
+        passcode_length (int): The passcode length
+        payload (dict): The payload
+    """
     if passcode_type == "UserDefined":
         if not passcode:
             raise_demisto_exception(
                 'when setting passcode_type to be UserDefined, you must specify the passcode arg.')
         payload["passcodeDefinition"].update({"passcode": passcode})
-
     elif passcode_type == "RandomForEach" or passcode_type == "RandomForAll":
         not_valid_passcode_length = not passcode_length or passcode_length > 8 or passcode_length < 4
         if not_valid_passcode_length:
@@ -425,6 +485,12 @@ def validate_passcode_type_args(passcode_type, passcode, passcode_length, payloa
 
 
 def parse_freeze_device_response(response: dict, device_ids: str):
+    """Parse the device freeze response
+
+    Args:
+        response (dict): The response to parse
+        device_ids (str): The device ids in the request
+    """
     outputs = {'RequestUID': response.get('requestUid'), 'SucceededDeviceUIDs': device_ids}
     errors = response.get('errors', [])
     human_readable_errors = []
@@ -438,9 +504,10 @@ def parse_freeze_device_response(response: dict, device_ids: str):
 
 
 def device_freeze_request_command(args, client) -> CommandResults:
+    """Requests to freeze devices
+    """
     payload = prepare_payload_to_freeze_request(args)
-    res = client.api_request_absolute('POST', '/v3/actions/requests/freeze', body=payload,
-                                      success_status_code=[201])
+    res = client.api_request_absolute('POST', '/v3/actions/requests/freeze', body=payload)
     outputs = parse_freeze_device_response(res, args.get('device_ids'))
     human_readable = tableToMarkdown(f'{INTEGRATION} device freeze requests results', outputs,
                                      headers=['FailedDeviceUIDs', 'RequestUID', 'SucceededDeviceUIDs'], removeNull=True,
@@ -451,7 +518,9 @@ def device_freeze_request_command(args, client) -> CommandResults:
                           outputs_key_field="RequestUID", raw_response=res)
 
 
-def prepare_payload_to_freeze_request(args):
+def prepare_payload_to_freeze_request(args) -> dict:
+    """prepares the pyload for the freeze request
+    """
     request_name = args.get('request_name')
     html_message = args.get('html_message')
     message_name = args.get('message_name')
@@ -480,7 +549,7 @@ def prepare_payload_to_freeze_request(args):
     offline_time_seconds = arg_to_number(args.get('offline_time_seconds'), required=False)
     if device_freeze_type == "Scheduled":
         scheduled_freeze_date = validate_device_freeze_type_scheduled(scheduled_freeze_date)
-        payload["freezeDefinition"].update({"scheduledFreezeDate": scheduled_freeze_date})
+        payload["freezeDefinition"].update({"scheduledFreezeDateTimeUtc": scheduled_freeze_date})
 
     elif device_freeze_type == "Offline":
         offline_time_seconds = validate_device_freeze_type_offline(offline_time_seconds)
@@ -488,10 +557,13 @@ def prepare_payload_to_freeze_request(args):
     passcode = args.get('passcode')
     passcode_length = arg_to_number(args.get('passcode_length'), required=False)
     payload = validate_passcode_type_args(passcode_type, passcode, passcode_length, payload)
+    remove_nulls_from_dictionary(payload)
     return payload
 
 
 def remove_device_freeze_request_command(args, client) -> CommandResults:
+    """Removes device freeze request
+    """
     device_ids = argToList(args.get('device_ids'))
     remove_scheduled = args.get('remove_scheduled')
     remove_offline = args.get('remove_offline')
@@ -500,12 +572,17 @@ def remove_device_freeze_request_command(args, client) -> CommandResults:
                "removeOffline": remove_offline}
 
     client.api_request_absolute('POST', '/v3/actions/freeze/remove-freeze', body=payload,
-                                success_status_code=[204])
+                                success_status_code=[202], resp_type="response")
     return CommandResults(
         readable_output=f"Successfully removed freeze request for devices ids: {args.get('device_ids')}.")
 
 
-def parse_get_device_freeze_response(response: List):
+def parse_get_device_freeze_response(response: list) -> list:
+    """Parse the device freeze response
+
+    Args:
+        response (list): The response to parse
+    """
     parsed_data = []
     for freeze_request in response:
         parsed_data.append({
@@ -533,9 +610,13 @@ def parse_get_device_freeze_response(response: List):
     return parsed_data
 
 
-def parse_device_freeze_message_response(response):
+def parse_device_freeze_message_response(response: list) -> list:
+    """Parse the device freeze message response
+
+    Args:
+        response (list): The response to parse
+    """
     if not isinstance(response, list):
-        # in case we got here from the f'/v2/device-freeze/messages/{message_id}' url, the response is a json
         response = [response]
     parsed_data = []
     for freeze_request in response:
@@ -552,6 +633,8 @@ def parse_device_freeze_message_response(response):
 
 
 def get_device_freeze_request_command(args, client) -> CommandResults:
+    """Gets a device freeze request
+    """
     request_uid = args.get('request_uid')
     res = client.api_request_absolute('GET', f'/v3/actions/freeze/requests/{request_uid}')
     outputs = parse_get_device_freeze_response(res)
@@ -565,25 +648,29 @@ def get_device_freeze_request_command(args, client) -> CommandResults:
 
 
 def list_device_freeze_message_command(args, client) -> CommandResults:
+    """Lists device freeze messages
+    """
     message_id = args.get('message_id')
     if message_id:
         res = client.api_request_absolute('GET', f'/v3/actions/freeze/messages/{message_id}')
     else:
-        res = client.api_request_absolute('GET', '/v3/actions/freeze/messages', success_status_code=(200, 204))
+        page = arg_to_number(args.get('page', 0))
+        limit = arg_to_number(args.get('limit', 50))
 
-    if isinstance(res, list):
-        outputs = parse_device_freeze_message_response(res)
-        human_readable = tableToMarkdown(f'{INTEGRATION} Device freeze message details:', outputs,
-                                         headers=['ID', 'Name', 'CreatedUTC', 'ChangedUTC', 'ChangedBy', 'CreatedBy'],
-                                         removeNull=True)
-        return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
-                              readable_output=human_readable, raw_response=res)
-    else:
-        # in this case the response is empty, no content in response, no messages found
-        return CommandResults(readable_output=f'{INTEGRATION}: your account has no existing Freeze messages.')
+        res = client.api_request_absolute('GET', '/v3/actions/freeze/messages',
+                                          page=page, page_size=limit, specific_page=True, success_status_code=(200, 204))
+
+    outputs = parse_device_freeze_message_response(res)
+    human_readable = tableToMarkdown(f'{INTEGRATION} Device freeze message details:', outputs,
+                                     headers=['ID', 'Name', 'CreatedUTC', 'ChangedUTC', 'ChangedBy', 'CreatedBy'],
+                                     removeNull=True)
+    return CommandResults(outputs=outputs, outputs_prefix="Absolute.FreezeMessage", outputs_key_field='ID',
+                          readable_output=human_readable, raw_response=res)
 
 
 def create_device_freeze_message_command(args, client) -> CommandResults:
+    """Creates device freeze message
+    """
     html_message = args.get('html_message')
     message_name = args.get('message_name')
 
@@ -591,7 +678,7 @@ def create_device_freeze_message_command(args, client) -> CommandResults:
 
     res = client.api_request_absolute('POST', '/v3/actions/freeze/messages', body=payload,
                                       success_status_code=(200, 201))
-    message_id = res.get('data', {}).get('id', '')
+    message_id = res.get('messageUid', '')
     human_readable = f"{INTEGRATION} New freeze message was created with ID: {message_id}"
     return CommandResults(outputs={'ID': message_id}, outputs_prefix="Absolute.FreezeMessage",
                           outputs_key_field='ID',
@@ -599,21 +686,30 @@ def create_device_freeze_message_command(args, client) -> CommandResults:
 
 
 def update_device_freeze_message_command(args, client) -> CommandResults:
+    """Updates device freeze message
+    """
     message_id = args.get('message_id')
     html_message = args.get('html_message')
     message_name = args.get('message_name')
     payload = {"name": message_name, "content": html_message}
-    client.api_request_absolute('PUT', f'/v3/actions/freeze/messages/{message_id}', body=payload)
+    client.api_request_absolute('PUT', f'/v3/actions/freeze/messages/{message_id}', body=payload, success_status_code=(200, 204))
     return CommandResults(readable_output=f'{INTEGRATION} Freeze message: {message_id} was updated successfully')
 
 
 def delete_device_freeze_message_command(args, client) -> CommandResults:
+    """Deletes device freeze request
+    """
     message_id = args.get('message_id')
     client.api_request_absolute('DELETE', f'/v3/actions/freeze/messages/{message_id}', success_status_code=[204])
     return CommandResults(readable_output=f'{INTEGRATION} Freeze message: {message_id} was deleted successfully')
 
 
-def parse_device_unenroll_request_data_response(response):
+def parse_device_unenroll_request_data_response(response: dict) -> dict:
+    """Parse the unenroll response
+
+    Args:
+        response (dict): The response to parse
+    """
     parsed_data = {
         'TotalDevices': response.get('totalDevices'),
         'Pending': response.get('pending'),
@@ -632,7 +728,12 @@ def parse_device_unenroll_request_data_response(response):
     return parsed_data
 
 
-def parse_device_unenroll_response(response: dict):
+def parse_device_unenroll_response(response: dict) -> dict:
+    """Parse the unenroll response
+
+    Args:
+        response (dict): The response to parse
+    """
     parsed_devices_data = []
     for device in response:
         parsed_devices_data.append({
@@ -649,6 +750,8 @@ def parse_device_unenroll_response(response: dict):
 
 
 def device_unenroll_command(args, client) -> CommandResults:
+    """Unenroll devices
+    """
     device_ids = argToList(args.get('device_ids'))
     exclude_missing_devices = args.get('exclude_missing_devices', 'false')
     payload = {'deviceUids': device_ids, 'excludeMissingDevices': exclude_missing_devices}
@@ -782,7 +885,7 @@ def parse_return_fields(return_fields: str, query: str):
     return f"$select={return_fields}"
 
 
-def parse_device_list_response(response, keep_os_in_list=True):
+def parse_device_list_response(response, keep_os_in_list=True, application_list=False):
     parsed_response = []
     for device in response:
         parsed_device = {}
@@ -790,8 +893,29 @@ def parse_device_list_response(response, keep_os_in_list=True):
             if val:
                 if key == 'os' and not keep_os_in_list:
                     parsed_device['osName'] = val.get('name')
+                elif key == 'deviceUid' and application_list:
+                    parsed_device['DeviceUid'] = val
+                elif key in DEVICE_OUTPUT_TO_XSOAR_CONTEXT_PATH:
+                    parsed_device[DEVICE_OUTPUT_TO_XSOAR_CONTEXT_PATH[key]] = val
                 elif key == 'espInfo':
                     parsed_device['encryptionStatus'] = val.get('encryptionStatus')
+                elif key == 'lastConnectedDateTimeUtc':
+                    parsed_device["LastConnectedUtc"] = val
+                elif key == 'installDateTimeUtc':
+                    parsed_device["InstallDate"] = val
+                elif key == 'firstDetectDateTimeUtc':
+                    parsed_device['FirstDetectUtc'] = val
+                elif key == 'lastScanDateTimeUtc':
+                    parsed_device['LastScanTimeUtc'] = val
+                elif key == "operatingSystem":
+                    parsed_device["Os"] = {"architecture": val.get('architecture'),
+                                           "currentBuild": val.get('currentBuild'),
+                                           "installDate": val.get('installDateTimeUtc'),
+                                           "lastBootTime": val.get('lastBootDateTimeUtc'),
+                                           "name": val.get('name'),
+                                           "productKey": val.get('productKey'),
+                                           "serialNumber": val.get('serialNumber'),
+                                           "version": val.get('version')}
                 else:
                     parsed_device[key[0].upper() + key[1:]] = val
         parsed_response.append(parsed_device)
@@ -799,24 +923,6 @@ def parse_device_list_response(response, keep_os_in_list=True):
     if len(parsed_response) == 1:
         return parsed_response[0]
     return parsed_response
-
-
-def parse_new_values_for_device_application_outputs(outputs, response):
-    outputs["installDate"] = response.get('installDateTimeUtc')
-    outputs["firstDetectUtc"] = response.get('firstDetectDateTimeUtc')
-    outputs["lastScanTimeUtc"] = response.get('lastScanDateTimeUtc')
-
-    return outputs
-
-
-def parse_new_values_for_device_list_outputs(outputs, response):
-    outputs["Id"] = response.get('deviceUid')
-    outputs["LastConnectedUtc"] = response.get('lastConnectedDateTimeUtc')
-    outputs["Serial"] = response.get('serialNumber')
-    outputs["encryptionStatus"] = response.get('espInfo', {}).get('encryptionStatus')
-    outputs["osName"] = response.get('operatingSystem', {}).get('name')
-
-    return outputs
 
 
 def parse_new_values_for_get_device_outputs(outputs, response):
@@ -866,6 +972,8 @@ def parse_geo_location_outputs(response):
 
 
 def get_device_application_list_command(args, client) -> CommandResults:
+    """Lists devices applications
+    """
     page = arg_to_number(args.get('page', 0))
     limit = arg_to_number(args.get('limit', 50))
 
@@ -875,10 +983,10 @@ def get_device_application_list_command(args, client) -> CommandResults:
     res = client.api_request_absolute('GET', '/v3/reporting/applications-advanced', query_string=query_string,
                                       page=page, page_size=limit, specific_page=True)
     if res:
-        outputs = parse_device_list_response(res)
-        outputs = parse_new_values_for_device_application_outputs(outputs, res)
+        outputs = parse_device_list_response(res, application_list=True)
+        # outputs = parse_new_values_for_device_application_outputs(outputs, res)
         human_readable = tableToMarkdown(f'{INTEGRATION} device applications list:', outputs, removeNull=True)
-        human_readable += f"Above results are with page number: {page} and with size: {limit}."
+        human_readable += f"\nAbove results are with page number: {page} and with size: {limit}."
         return CommandResults(outputs_prefix='Absolute.DeviceApplication',
                               outputs=outputs,
                               outputs_key_field='Appid',
@@ -889,6 +997,8 @@ def get_device_application_list_command(args, client) -> CommandResults:
 
 
 def device_list_command(args, client) -> CommandResults:
+    """Lists devices
+    """
     page = arg_to_number(args.get('page', 0))
     limit = arg_to_number(args.get('limit', 50))
 
@@ -899,11 +1009,11 @@ def device_list_command(args, client) -> CommandResults:
                                       page=page, page_size=limit, specific_page=True)
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res), keep_os_in_list=False)
-        outputs = parse_new_values_for_device_list_outputs(outputs, res)
+        # outputs = parse_new_values_for_device_list_outputs(outputs, res)
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs,
                                          headers=['Id', 'LastConnectedUtc', 'LocalIp', 'AgentStatus', 'Esn', 'FullSystemName'],
                                          removeNull=True)
-        human_readable += f"Above results are with page number: {page} and with size: {limit}."
+        human_readable += f"\nAbove results are with page number: {page} and with size: {limit}."
         return CommandResults(outputs_prefix='Absolute.Device',
                               outputs=outputs,
                               outputs_key_field="Id",
@@ -914,22 +1024,24 @@ def device_list_command(args, client) -> CommandResults:
 
 
 def get_device_command(args, client) -> CommandResults:
+    """Gets a device
+    """
+
     if not ('device_ids' in args or 'device_names' in args or 'local_ips' in args or 'public_ips' in args):
         raise_demisto_exception(
             "at least one of the commands args (device_ids, device_names, local_ips, public_ips must be provided.")
 
-    query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
+    query_string = create_filter_query_from_args(args, change_device_name_to_system=True, change_device_id=True)
     custom_fields_to_return = remove_duplicates_from_list_arg(args, 'fields')
     if custom_fields_to_return:
         custom_fields_to_return.extend(DEVICE_GET_COMMAND_RETURN_FIELDS)
         query_string = parse_return_fields(",".join(custom_fields_to_return), query_string)
     else:
         query_string = parse_return_fields(",".join(DEVICE_GET_COMMAND_RETURN_FIELDS), query_string)
-
     res = client.api_request_absolute('GET', '/v3/reporting/devices', query_string=query_string)
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res))
-        outputs = parse_new_values_for_get_device_outputs(outputs, res)
+        # outputs = parse_new_values_for_get_device_outputs(outputs, res)
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
         return CommandResults(outputs_prefix='Absolute.Device',
                               outputs=outputs,
@@ -955,98 +1067,6 @@ def get_device_location_command(args, client) -> CommandResults:
     else:
         return CommandResults(
             readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
-
-
-''' EVENT COLLECTOR '''
-
-
-def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    """
-        Fetches events from the API client, with time window and duplication handling.
-        The function using the client to fetch events, and then helper function to handle duplication,
-        add time field and calculate the new latest events.
-
-        Args:
-            client (ClientV3): The client object used for fetching events.
-            fetch_limit (int): The maximum number of events to fetch.
-            last_run (Dict[str, Any]): A dictionary containing the last run information, including the latest events time,
-                latest events ID, and end date.
-
-        Returns:
-            Tuple[List[Dict[str, Any]], Dict[str, Any]]: A tuple containing the fetched events and the updated last run
-                information.
-        """
-    last_run_latest_events_id = last_run.get('latest_events_id', [])
-    latest_events_time = last_run.get('latest_events_time')
-    end_date = datetime.utcnow()
-    start_date: datetime = datetime.strptime(latest_events_time, "%Y-%m-%dT%H:%M:%S.%fZ") if latest_events_time else (
-        end_date - timedelta(minutes=1))
-    demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {last_run=}')
-
-    if fetch_limit == len(last_run_latest_events_id):
-        demisto.debug(f'fetch_limit ({fetch_limit}) equally to the number of last_run_latest_events_id. doubling the fetch_limit')
-        fetch_limit *= 2
-
-    all_events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
-    events, latest_events_id_and_time_tuple = process_events(all_events, last_run_latest_events_id)
-    latest_events_id, latest_events_time = latest_events_id_and_time_tuple
-    demisto.debug(f'fetch_events: {latest_events_id=}, {latest_events_time=}')
-
-    return events, {
-        'latest_events_id': latest_events_id,
-        'latest_events_time': latest_events_time
-    }
-
-
-def process_events(events: List[Dict[str, Any]], last_run_latest_events_id: List[str], should_get_latest_events: bool = True) -> \
-        tuple[List[Dict[str, Any]], tuple[List[str], str]]:
-    """
-    Processes events by handling duplication, adding a time field, and optionally getting the latest events ID and time.
-
-    Args:
-        events (List[Dict[str, Any]]): The list of events to be processed.
-        last_run_latest_events_id (List[str]): The list of latest events ID from the last run.
-        should_get_latest_events (bool, optional): A flag indicating whether to get the latest events ID. Defaults to True.
-
-    Returns:
-        Tuple[List[Dict[str, Any]], List[str]]: A tuple containing the processed events and the latest events ID.
-
-    """
-    demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id and time")
-    earliest_event_time = events[0].get('eventDateTimeUtc') if events else None
-    latest_event_time = events[-1].get('eventDateTimeUtc') if events else ''
-    latest_events_id = []
-    filtered_events = []
-    for event in events:
-        event_time = event.get('eventDateTimeUtc')
-        # handle duplication
-        if event_time == earliest_event_time and event.get('id') in last_run_latest_events_id:
-            continue
-        # adding time field
-        event['_time'] = event_time
-        # latest events batch
-        if should_get_latest_events and event_time == latest_event_time:
-            latest_events_id.append(event.get('id'))
-        filtered_events.append(event)
-
-    if not filtered_events:
-        latest_event_time = ''
-    return filtered_events, (latest_events_id, latest_event_time)
-
-
-def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
-    start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
-    end_date = arg_to_datetime(args.get('end_date', "now"))
-    fetch_limit = int(args.get('limit', 50))
-    if start_date > end_date:
-        raise ValueError("Start date is greater than the end date. Please provide valid dates.")
-
-    events = client.fetch_events_between_dates(fetch_limit, start_date, end_date)
-    demisto.debug(f'get_events: Found {len(events)} events.')
-    if events:
-        events, _ = process_events(events, [], should_get_latest_events=False)
-    return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
-
 
 ''' MAIN FUNCTION '''
 

@@ -128,7 +128,7 @@ script:
       predefined:
       - 'OnDemand'
       - 'Scheduled'
-      - 'Offline'
+      - 'OffLine'
       required: true
     - description: 'The date and time (in UTC) when the device should be frozen in ISO 8601 format: YYYY-MM-DDThh:mm:ss.SSSZ. Required if device_freeze_type is Scheduled. For example, 2022-01-01T00:00:00.000Z.'
       name: scheduled_freeze_date
@@ -338,6 +338,12 @@ script:
   - arguments:
     - description: The system-defined, unique identifier of the Freeze message.
       name: message_id
+    - description: Maximum number of results to return. Default value is 50.
+      name: limit
+      defaultValue: '50'
+    - defaultValue: '0'
+      description: The page number of the results to retrieve. Minimum value is 0.
+      name: page
     description: Gets all the Freeze messages that are configured for the account by the given message_id. If message_id is not given all the messages will be returned.
     name: absolute-device-freeze-message-list
     outputs:
@@ -497,7 +503,7 @@ script:
     - description: A comma-separated list of the system-defined unique Electronic Serial Numbers (ESN) assigned to the Absolute agent installed on the device.
       isArray: true
       name: esn
-    - description: Maximum number of results to return.
+    - description: Maximum number of results to return. Default value is 50.
       name: limit
       defaultValue: '50'
     - defaultValue: '0'
@@ -782,29 +788,11 @@ script:
     - contextPath: Absolute.LocationReport.LastUpdate
       description: The date and time (in Unix epoch) when the device last changed its location.
       type: Number
-  - arguments:
-      - name: should_push_events
-        description: Set this argument to True in order to create events, otherwise the command will only display them.
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        defaultValue: "false"
-      - name: start_date
-        description: Filters the results to the records on or after the start date.
-      - name: end_date
-        description: Filters the results to the records until the end date.
-      - name: limit
-        description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
-    name: absolute-device-get-events
-    description: Retrieves a list of events from the Absolute instance.
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: devdemisto/python3:3.12.7.1902134
-  isfetchevents: true
-  isfetchevents:xsoar: false
 fromversion: 6.0.0
 tests:
 - Absolute_TestPlaybook
