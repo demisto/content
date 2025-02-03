@@ -55,6 +55,34 @@ POWERSHELL_COMMAND_CASES = [
     ),
 ]
 
+# params: commands, expected_commands, is_chained
+COMMAND_INJECTION_CASES = [
+    pytest.param(
+        ["echo hello"],
+        ["echo hello"],
+        False,
+        id='sanity',
+    ),
+    pytest.param(
+        ["ipconfig && hostname"],
+        [],
+        False,
+        id='chained',
+    ),
+    pytest.param(
+        ["ipconfig && hostname"],
+        ["ipconfig && hostname"],
+        True,
+        id='chained',
+    ),
+    pytest.param(
+        ["echo $(ifconfig)"],
+        [],
+        False,
+        id='chained',
+    ),
+]
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -2050,6 +2078,28 @@ def test_form_powershell_command(command_input: str, expected_command: str):
 
     assert not command_input.startswith('powershell -Command ')
     assert command == expected_command
+
+
+@pytest.mark.parametrize('commands, expected_commands, is_chained', COMMAND_INJECTION_CASES)
+def test_parse_command_injections(commands: list[str], expected_commands: str, is_chained: bool):
+    """
+    Given:
+        - A command with regexes used for injections
+
+    When:
+        - Calling the parse_command_injections function
+
+    Assert:
+        - The command passes the regex validation or raises an error if validation failed
+    """
+    from CoreIRApiModule import parse_command_injections
+
+    try:
+        command = parse_command_injections(commands, is_chained_command=is_chained)
+        assert command == expected_commands
+
+    except DemistoException:
+        assert not expected_commands
 
 
 def test_run_script_execute_commands_command(requests_mock):
