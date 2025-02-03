@@ -28,12 +28,39 @@ urllib3.disable_warnings()
 VENDOR = 'Celonis'
 PRODUCT = 'Celonis'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+PAGE_SIZE = 200
+PAGE_NUMBER = 0
+BEARER_PREFIX = 'Bearer '
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    pass
+    def __init__(self, base_url: str, verify: bool, client_id: str, client_secret: str):
+        super().__init__(base_url=base_url, verify=verify)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.token = None  # TODO
+        self.generate_token()
+
+    def generate_token(self):
+        results = self._http_request(
+            method="POST",
+            url_suffix=f"/oauth2/token?grant_type=client_credentials&scope=audit.log:read",
+        )
+        self.token = results['access_token']
+
+    def get_events(self, start_date: str, end_date: str) -> dict:
+        headers = {
+            'Authorization': f'{BEARER_PREFIX}{self.token}',
+        }
+        results = self._http_request(
+            method="GET",
+            url_suffix=f"/log/api/external/audit?pageNumber={PAGE_NUMBER}&pageSize={PAGE_SIZE}&from={start_date}&to={end_date}",
+            headers=headers
+        )
+        return results
+
 
 
 """ HELPER FUNCTIONS """
@@ -59,13 +86,16 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         end = get_current_time().strftime(DATE_FORMAT)
 
     current_start_date = event_date
+
     while True:
-        if rate_limit_reached():
-            send_message_to_client()
         events = client.get_events(event_date, end, pageNum=0, pageSize=200)
+
+        if rate_limit_reached():
+            send_message_to_client_and_return_results()
         if got_error_429_from_events:
             client.regnerate_token
             client.get_events(event_date, end, pageNum=0, pageSize=200)
+
         if not events:
             break
 
