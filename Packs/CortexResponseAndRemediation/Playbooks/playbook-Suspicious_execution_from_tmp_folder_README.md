@@ -16,7 +16,14 @@ The playbook will proceed directly to remediation if suspicious/Suspicious reput
 
 Investigation:
 
-- Search for suspicious insights/related alerts
+- Search for the following suspicious insights/related alerts:
+  - Suspicious access to shadow file
+  - UNIX LOLBIN process connected to a rare external host
+  - Persistence through service registration
+  - Adding execution privileges    
+  - Modification of systemd service files
+  - Adding execution privileges
+  - Local account discovery
 
 If no suspicious reputation is found in the analysis stage, but suspicious insights/related alerts are discovered during investigation, the playbook will then proceed to remediation.
 
