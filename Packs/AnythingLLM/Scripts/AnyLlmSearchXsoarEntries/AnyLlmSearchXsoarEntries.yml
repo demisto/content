@@ -1,0 +1,33 @@
+args:
+- description: CSV list of incident IDs to fetch war room entries.
+  name: ids
+  required: true
+- description: war room entry tags to include.
+  name: tags
+- description: war room entry categories to include.
+  name: categories
+- default: true
+  defaultValue: '64'
+  description: filter out large entries when the content size exceeds this value. This minimizes data added to the LLM's conversation context where they may be a size limit depending on the LLM model being used.
+  name: maxcontensize
+comment: Search war room entries for text results.  Results are placed in the search results buffer where they can be added to the LLM's conversation context.
+commonfields:
+  id: AnyLlmSearchXsoarEntries
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmSearchXsoarEntries
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

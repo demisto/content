@@ -27,8 +27,12 @@ FetchIncidentsStorage = TypedDict("FetchIncidentsStorage", {
 """ CLIENT """
 
 ALLOWED_SORT_FIELDS = ["timestamp", "last_modified"]
-ALLOWED_ALERT_FILTERS = ["last_modified_min_date",
-                         "min_timestamp", "max_timestamp"]
+ALLOWED_ALERT_FILTERS = [
+    "last_modified_min_date",
+    "escalated_min_date",
+    "min_timestamp",
+    "max_timestamp"
+]
 
 
 class ZFClient(BaseClient):
@@ -153,6 +157,11 @@ class ZFClient(BaseClient):
                         status_code=status_code,
                         text=raw_response.text
                     )
+                )
+            if raw_response.status_code == 429:
+                raise ZeroFoxAuthException(
+                    cause="The application is sending too many requests to ZeroFox API,\
+                          please contact support."
                 )
             response = raw_response.json()
             if non_field_errors := response.get("non_field_errors", []):
@@ -1301,15 +1310,26 @@ def _build_incidents_given_last_fetch(
     is_valid_alert: Callable[[dict[str, Any]], bool],
 ) -> tuple[list[dict[str, Any]], datetime, list[str]]:
 
-    alerts = [
-        alert for alert in client.get_alerts(
-            filter_by={
-                "min_timestamp": created_since.strftime(DATE_FORMAT)},
-            sort_by="timestamp",
-            sort_direction="asc"
-        )
-        if is_valid_alert(alert)
-    ]
+    if client.only_escalated:
+        alerts = [
+            alert for alert in client.get_alerts(
+                filter_by={
+                    "escalated_min_date": created_since.strftime(DATE_FORMAT)},
+                sort_by="timestamp",
+                sort_direction="asc"
+            )
+            if is_valid_alert(alert)
+        ]
+    else:
+        alerts = [
+            alert for alert in client.get_alerts(
+                filter_by={
+                    "min_timestamp": created_since.strftime(DATE_FORMAT)},
+                sort_by="timestamp",
+                sort_direction="asc"
+            )
+            if is_valid_alert(alert)
+        ]
     if not alerts:
         return [], created_since, []
 
