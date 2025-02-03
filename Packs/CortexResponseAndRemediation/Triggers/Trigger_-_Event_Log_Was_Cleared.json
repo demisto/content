@@ -46,8 +46,13 @@
                 "SEARCH_VALUE": "Windows event logs cleared using wmic.exe"
                 }
                 ]
-            }
-        ]    
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]
     }
   }
 }

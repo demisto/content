@@ -30,7 +30,12 @@
                 "SEARCH_VALUE": "Suspicious Kubernetes API call from a Tor exit node"
             }
           ]
-        }
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
       ]
     }
   }
