@@ -6,11 +6,11 @@ This integration was integrated and tested with version 1.0.0 of FeedDomainTools
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API Username |  | True |
-| API Key |  | True |
-| Session ID | The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days. | False |
-| After | The start of the query window in seconds, relative to the current time, inclusive. | False |
-| Top | Limits the number of results in the response payload. | False |
+| API Username | The DomainTools API Username to use. | True |
+| API Key | The DomainTools API Key to use. | True |
+| Session ID | The session id to serve as unique identifier. On it's initial use, it will retrieve data from the past 5 days. Defaults to 'dt-cortex-feeds'. | False |
+| After | The start of the query window in seconds, relative to the current time, inclusive. Defaults to -3600. | False |
+| Top | Limits the number of results in the response payload. Defaults to 5000. | False |
 | Feed Type | The DomainTools feed type fo fetch. Defaults to 'ALL'. | False |
 | Fetch indicators |  | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |

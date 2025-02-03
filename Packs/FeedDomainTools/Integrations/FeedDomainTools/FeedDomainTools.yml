@@ -8,32 +8,34 @@ configuration:
   required: true
   hidden: false
   type: 0
+  additionalinfo: The DomainTools API Username to use.
 - display: API Key
   name: api_key
   required: true
   hidden: false
   type: 4
+  additionalinfo: The DomainTools API Key to use.
 - display: Session ID
   name: session_id
   defaultvalue: dt-cortex-feeds
   required: false
   hidden: false
   type: 0
-  additionalinfo: The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days.
+  additionalinfo: The session id to serve as unique identifier. On it's initial use, it will retrieve data from the past 5 days. Defaults to 'dt-cortex-feeds'.
 - display: After
   name: after
   defaultvalue: "-3600"
   required: false
   hidden: false
   type: 0
-  additionalinfo: The start of the query window in seconds, relative to the current time, inclusive.
+  additionalinfo: The start of the query window in seconds, relative to the current time, inclusive. Defaults to -3600.
 - display: Top
   name: top
   defaultvalue: 5000
   required: false
   hidden: false
   type: 0
-  additionalinfo: Limits the number of results in the response payload.
+  additionalinfo: Limits the number of results in the response payload. Defaults to 5000.
 - display: Feed Type
   name: feed_type
   defaultvalue: ALL
@@ -173,7 +175,7 @@ script:
       default: false
       required: false
       secret: false
-  dockerimage: demisto/vendors-sdk:1.0.0.2073752
+  dockerimage: demisto/vendors-sdk:1.0.0.2121370
   feed: true
   isfetch: false
   longRunning: false
