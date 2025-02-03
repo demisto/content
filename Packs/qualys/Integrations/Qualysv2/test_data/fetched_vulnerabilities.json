@@ -1,0 +1,140 @@
+[
+    {
+        "QID": "10052",
+        "VULN_TYPE": "Vulnerability",
+        "SEVERITY_LEVEL": "3",
+        "TITLE": "Vtecrm Vtenext Multiple Security Vulnerabilities",
+        "CATEGORY": "CGI",
+        "LAST_SERVICE_MODIFICATION_DATETIME": "2023-12-19T12:02:30Z",
+        "PUBLISHED_DATETIME": "2021-01-21T12:51:22Z",
+        "PATCHABLE": "0",
+        "SOFTWARE_LIST": {
+            "SOFTWARE": {
+                "PRODUCT": "vtenext",
+                "VENDOR": "vtenext"
+            }
+        },
+        "CVE_LIST": {
+            "CVE": [
+                {
+                    "ID": "CVE-2020-10227"
+                },
+                {
+                    "ID": "CVE-2020-10228"
+                },
+                {
+                    "ID": "CVE-2020-10229"
+                }
+            ]
+        },
+        "CORRELATION": {
+            "EXPLOITS": {
+                "EXPLT_SRC": {
+                    "SRC_NAME": "nvd",
+                    "EXPLT_LIST": {
+                        "EXPLT": [
+                            {
+                                "REF": "CVE-2020-10229"
+                            },
+                            {
+                                "REF": null,
+                                "DESC": null,
+                                "LINK": null
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "PCI_FLAG": "1",
+        "THREAT_INTELLIGENCE": {
+            "THREAT_INTEL": [
+                {
+                    "@id": "2",
+                    "#text": "Exploit_Public"
+                },
+                {
+                    "@id": "8",
+                    "#text": "No_Patch"
+                },
+                {
+                    "@id": "13",
+                    "#text": "Privilege_Escalation"
+                },
+                {
+                    "@id": "15",
+                    "#text": "Remote_Code_Execution"
+                }
+            ]
+        },
+        "DISCOVERY": {
+            "REMOTE": "1",
+            "ADDITIONAL_INFO": "Exploit Available"
+        }
+    },
+    {
+        "QID": "10186",
+        "VULN_TYPE": "Vulnerability",
+        "SEVERITY_LEVEL": "2",
+        "TITLE": null,
+        "CATEGORY": "CGI",
+        "LAST_SERVICE_MODIFICATION_DATETIME": "2024-02-10T12:03:39Z",
+        "PUBLISHED_DATETIME": "2000-11-10T11:00:00Z",
+        "BUGTRAQ_LIST": {
+            "BUGTRAQ": {
+                "ID": "1881",
+                "URL": null
+            }
+        },
+        "PATCHABLE": "1",
+        "SOFTWARE_LIST": {
+            "SOFTWARE": {
+                "PRODUCT": null,
+                "VENDOR": "cgi"
+            }
+        },
+        "CVE_LIST": {
+            "CVE": {
+                "ID": null
+            }
+        },
+        "CORRELATION": {
+            "EXPLOITS": {
+                "EXPLT_SRC": [
+                    {
+                        "SRC_NAME": "The Exploit-DB",
+                        "EXPLT_LIST": {
+                            "EXPLT": null
+                        }
+                    },
+                    {
+                        "SRC_NAME": "exploitdb",
+                        "EXPLT_LIST": {
+                            "EXPLT": null
+                        }
+                    },
+                    {
+                        "SRC_NAME": "nvd",
+                        "EXPLT_LIST": {
+                            "EXPLT": null
+                        }
+                    },
+                    {
+                        "SRC_NAME": "seebug"
+                    }
+                ]
+            }
+        },
+        "PCI_FLAG": "1",
+        "THREAT_INTELLIGENCE": {
+            "THREAT_INTEL": {
+                "@id": "2",
+                "#text": "Exploit_Public"
+            }
+        },
+        "DISCOVERY": {
+            "REMOTE": "1",
+            "ADDITIONAL_INFO": "Patch Available, Exploit Available"
+        }
+    }
+]
