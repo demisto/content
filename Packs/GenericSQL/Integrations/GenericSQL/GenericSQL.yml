@@ -163,7 +163,7 @@ script:
     - description: 'A comma-separated list of value, for example: 7,"foo",3.'
       isArray: true
       name: bind_variables_values
-    - description: "blabla"
+    - description: blabla.
       name: blabla
     description: Running a sql query. fgbdb
     name: sql-command
