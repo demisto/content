@@ -1304,7 +1304,8 @@ inputs:
     When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used.
   playbookInputQuery:
 - key: limit
-  value: {}
+  value:
+    simple: "10"
   required: false
   description: "The maximum number of logs to return. \nDefault is 10."
   playbookInputQuery:
