@@ -12,7 +12,7 @@ Analysis:
 - Check target process hash reputation
 - Check commandline extracted indicators reputation
 
-The playbook will proceed directly to remediation if suspicious/malicious reputation is found during the analysis stage.
+The playbook will proceed directly to remediation if suspicious/Suspicious reputation is found during the analysis stage.
 
 Investigation:
 
@@ -23,7 +23,7 @@ If no suspicious reputation is found in the analysis stage, but suspicious insig
 Remediation:
 
 - Terminate causality process
-- Quarantine the malicious process image file (requires manual approval).
+- Quarantine the Suspicious process image file (requires manual approval).
 - Disable the suspicious cron job task (requires manual action).
 
 ## Dependencies

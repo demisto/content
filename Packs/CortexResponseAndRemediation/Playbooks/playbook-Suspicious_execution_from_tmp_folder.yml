@@ -16,7 +16,7 @@ description: |-
   - Check target process hash reputation
   - Check commandline extracted indicators reputation
 
-  The playbook will proceed directly to remediation if suspicious/malicious reputation is found during the analysis stage.
+  The playbook will proceed directly to remediation if suspicious/Suspicious reputation is found during the analysis stage.
 
   Investigation:
 
@@ -27,7 +27,7 @@ description: |-
   Remediation:
 
   - Terminate causality process
-  - Quarantine the malicious process image file (requires manual approval).
+  - Quarantine the Suspicious process image file (requires manual approval).
   - Disable the suspicious cron job task (requires manual action).
 
 tags:
@@ -175,8 +175,8 @@ tasks:
     task:
       id: fbda5eca-fb73-48e7-8e28-07a0f8b40f20
       version: -1
-      name: Malicious reputation found?
-      description: Check if malicious reputation of IOC is found
+      name: Suspicious reputation found?
+      description: Check if Suspicious reputation of IOC is found
       type: condition
       iscommand: false
       brand: ""
@@ -441,8 +441,8 @@ tasks:
     task:
       id: 94f8d78a-43ad-4af0-8d77-fe665c805bf8
       version: -1
-      name: Analyst approval for quarantine the malicious file
-      description: "Dear Analyst,\nShould we perform quarantine of the malicious file?\n\nfile name: ${SuspiciousFileName}\n\nfile hash: \n${SuspiciousFileHash}\n"
+      name: Analyst approval for quarantine the Suspicious file
+      description: "Dear Analyst,\nShould we perform quarantine of the Suspicious file?\n\nfile name: ${SuspiciousFileName}\n\nfile hash: \n${SuspiciousFileHash}\n"
       type: condition
       iscommand: false
       brand: ""
@@ -584,11 +584,11 @@ tasks:
     task:
       id: b97f5f22-2648-4924-8f0d-69f008fe4016
       version: -1
-      name: Manual action needed – Malicious file couldn't be quarantined
+      name: Manual action needed – Suspicious file couldn't be quarantined
       description: |-
         Dear Analyst,
 
-        The playbook was unable to quarantine the Malicious file due to the following possible reasons:
+        The playbook was unable to quarantine the Suspicious file due to the following possible reasons:
 
         - The file is not located on the local host.
         - The endpoint is currently disconnected.
@@ -736,7 +736,7 @@ tasks:
       - "67"
     scriptarguments:
       closeNotes:
-        simple: Malicious binary execution from /tmp directory detected
+        simple: Suspicious binary execution from /tmp directory detected
       closeReason:
         simple: Resolved - Handled by the playbook "Suspicious execution from tmp folder"
       id:
@@ -829,7 +829,7 @@ tasks:
     task:
       id: 7f5616f0-c5d3-42e3-888d-5abbc771d15f
       version: -1
-      name: Set Malicious File Hash to Context
+      name: Set Suspicious File Hash to Context
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
@@ -870,7 +870,7 @@ tasks:
     task:
       id: 5c009948-4810-4ae2-8863-6567a72a2141
       version: -1
-      name: Set Malicious File Path to Context
+      name: Set Suspicious File Path to Context
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
@@ -939,7 +939,7 @@ tasks:
     task:
       id: 9e2e71c9-af8d-491c-8e0e-d7a12c97332f
       version: -1
-      name: Set Malicious File Name to Context
+      name: Set Suspicious File Name to Context
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
@@ -984,9 +984,9 @@ tasks:
       description: |-
         Dear Analyst,
 
-        During the investigation process, the malicious process was found to be executed by a cronjob.
+        During the investigation process, the Suspicious process was found to be executed by a cronjob.
 
-        To complete all remediation steps, please consider disabling the malicious cronjob manually, in addition to the automatic remediation steps.
+        To complete all remediation steps, please consider disabling the Suspicious cronjob manually, in addition to the automatic remediation steps.
 
         Suspicious Process: ${SuspiciousFileName}
 
@@ -1136,7 +1136,7 @@ tasks:
     task:
       id: b37c4f99-d410-4337-8155-23cb450132be
       version: -1
-      name: Locate the malicious cronjob in crontab
+      name: Locate the Suspicious cronjob in crontab
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
