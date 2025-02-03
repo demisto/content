@@ -48,13 +48,26 @@ class OktaASAClient(BaseClient):
         # response expires_at time is UTC time.
         token_response: dict = self._http_request('POST', '/service_token', json_data=body,
                                                   headers={"Content-Type": "application/json"})
-        demisto.debug(f"{INTEGRATION_NAME}: token request was successfully executed")
         # We don't need to save the team name
         token_response.pop("team_name", None)
         return token_response
 
-    def get_audit_events_request(self, offset: Optional[str], count: Optional[int],
-                                 descending: Optional[bool], prev: Optional[bool]) -> list:
+    def get_audit_events_request(self, params: dict) -> list:
+        """Gets audit events request.
+
+        Args:
+            self (OktaASAClient): Okta ASA Client.
+            params (Dict): Request parameters.
+
+        Returns:
+            list: A list of events.
+        """
+        events_response: list = self._http_request('GET', '/auditsV2', params=params).get("list", [])
+
+        return events_response
+
+    def execute_audit_events_request(self, offset: Optional[str], count: Optional[int],
+                                     descending: Optional[bool], prev: Optional[bool]) -> list:
         """Gets audit events request.
 
         Args:
@@ -68,16 +81,23 @@ class OktaASAClient(BaseClient):
             Dict: The response.
         """
 
-        param = assign_params(offset=offset, count=count, descending=descending, prev=prev)
+        params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
         self.is_token_refresh_required()
-        events_response: list = self._http_request('GET', '/auditsV2', params=param).get("list", [])
+        try:
+            events_response = self.get_audit_events_request(params)
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 401 and "Authentication token expired" in e.res.text:
+                events_response = self.get_audit_events_request(params)
+            else:
+                raise e
         return events_response
 
-    def is_token_refresh_required(self) -> None:
+    def is_token_refresh_required(self, hard=False) -> None:
         """Checks if token refresh required and return the token.
 
             Args:
                 self (OktaASAClient): Okta ASA Client.
+                hard (bool): Refresh the token regardless of the expiration time.
             Returns:
                 Dict: The response.
         """
@@ -87,8 +107,9 @@ class OktaASAClient(BaseClient):
         if integration_context:
             now_utc = datetime.now(timezone.utc)
             expires_at_token = integration_context.get("expires_at", str(now_utc))
+            is_token_expired = has_passed_time_threshold(expires_at_token, TOKEN_LIFE_TIME_SECONDS) or hard
             token_response = (self.get_token_request()
-                              if has_passed_time_threshold(expires_at_token, TOKEN_LIFE_TIME_SECONDS)
+                              if is_token_expired
                               else integration_context)
         else:
             token_response = self.get_token_request()
@@ -115,7 +136,7 @@ class OktaASAClient(BaseClient):
         demisto.debug(f"{INTEGRATION_NAME}: count for the request is {count}")
         while limit and len(results) < limit:
             descending = bool(not offset)
-            events = self.get_audit_events_request(offset=offset, count=count, descending=descending, prev=None)
+            events = self.execute_audit_events_request(offset=offset, count=count, descending=descending, prev=None)
             if not events:
                 break
             event_offset = events[0] if descending else events[len(events) - 1]
