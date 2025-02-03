@@ -153,8 +153,9 @@ def test_convert_to_list_invalid_string():
     [
         ('12.1.0.1', 'Exception'),
         ('12.2.0.3770', None),
-        ('12.3', None),
+        ('12.3.0', None),
         ('12.1.12.2', 'Exception'),
+        ('12.2.0', None)
 
     ]
 )

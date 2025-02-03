@@ -178,7 +178,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. Note that the "On-Demand Scans Detection" option is not available in the legacy version.
+  additionalinfo: |-
+   Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
+   2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
   - Endpoint Incident
@@ -5061,7 +5063,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.117220
   isfetch: true
   ismappable: true
   isremotesyncin: true

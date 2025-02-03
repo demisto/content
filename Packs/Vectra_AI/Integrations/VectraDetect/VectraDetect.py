@@ -11,7 +11,7 @@
 
 # Standard libraries
 import json
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 from copy import deepcopy
 
 # Specific libraries
@@ -41,7 +41,7 @@ DATE_FORMAT: str = '%Y-%m-%dT%H:%M:%S.000Z'
 USER_AGENT = f"Vectra_AI-XSOAR-{PACK_VERSION}"
 MAX_RESULTS: int = 200
 DEFAULT_FIRST_FETCH: str = '7 days'
-DEFAULT_FETCH_ENTITY_TYPES: List = ['Hosts', 'Accounts']
+DEFAULT_FETCH_ENTITY_TYPES: list = ['Hosts', 'Accounts']
 DEFAULT_MAX_FETCH: int = 50
 
 ERRORS = {
@@ -127,7 +127,7 @@ MIRROR_DIRECTION = {
 
 # ####     #### #
 # ## GLOBALS ## #
-global_UI_URL: Optional[str] = None
+global_UI_URL: str | None = None
 
 
 # ####          #### #
@@ -168,7 +168,7 @@ class Client(BaseClient):
                           last_timestamp=None, state: str = None,  # type: ignore
                           search_query: str = None, search_query_only: str = None,  # type: ignore
                           max_results=None,  # type: ignore
-                          **kwargs) -> Dict[str, Any]:
+                          **kwargs) -> dict[str, Any]:
         """
         Gets Detections using the 'detections' API endpoint
 
@@ -178,13 +178,13 @@ class Client(BaseClient):
 
         # Default params
         demisto.debug("Forcing 'page', 'order_field' and 'page_size' query arguments")
-        query_params: Dict[str, Any] = {
+        query_params: dict[str, Any] = {
             'page': 1,
             'order_field': 'last_timestamp'
         }
         query_params['page_size'] = sanitize_max_results(max_results)
 
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
 
         if search_query_only:
             # Specific search query used
@@ -239,7 +239,7 @@ class Client(BaseClient):
         )
 
     def list_detections_by_host_id(self, host_id: str, state: str = 'active',
-                                   detection_category: str = '', detection_type: str = '') -> Dict:
+                                   detection_category: str = '', detection_type: str = '') -> dict:
         """
         Get Detections by Host ID.
 
@@ -263,7 +263,7 @@ class Client(BaseClient):
                         last_timestamp=None, state: str = None,  # type: ignore
                         search_query: str = None, search_query_only: str = None,  # type: ignore
                         page: int = None, max_results=None,  # type: ignore
-                        **kwargs) -> Dict[str, Any]:
+                        **kwargs) -> dict[str, Any]:
         """
         Gets Accounts using the 'Search Accounts' API endpoint.
 
@@ -273,13 +273,13 @@ class Client(BaseClient):
 
         # Default params
         demisto.debug("Forcing 'page', 'order_field' and 'page_size' query arguments")
-        query_params: Dict[str, Any] = {
+        query_params: dict[str, Any] = {
             'page': page if page else 1,
             'order_field': 'last_detection_timestamp'
         }
         query_params['page_size'] = sanitize_max_results(max_results)
 
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
 
         if search_query_only:
             # Specific search query used
@@ -340,7 +340,7 @@ class Client(BaseClient):
                      last_timestamp=None, state: str = None,  # type: ignore
                      search_query: str = None, search_query_only: str = None,  # type: ignore
                      page: int = None, max_results=None,  # type: ignore
-                     **kwargs) -> Dict[str, Any]:
+                     **kwargs) -> dict[str, Any]:
         """
         Gets Hosts using the 'hosts' API endpoint.
 
@@ -350,13 +350,13 @@ class Client(BaseClient):
 
         # Default params
         demisto.debug("Forcing 'page', 'order_field' and 'page_size' query arguments")
-        query_params: Dict[str, Any] = {
+        query_params: dict[str, Any] = {
             'page': page if page else 1,
             'order_field': 'last_detection_timestamp'
         }
         query_params['page_size'] = sanitize_max_results(max_results)
 
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
 
         if search_query_only:
             # Specific search query used
@@ -414,7 +414,7 @@ class Client(BaseClient):
                            account_ids=None, host_ids=None,
                            assignee_ids=None,
                            outcome_ids=None,
-                           resolved=None) -> Dict[str, Any]:
+                           resolved=None) -> dict[str, Any]:
         """
         Gets Assignments using the 'assignment' API endpoint.
 
@@ -424,7 +424,7 @@ class Client(BaseClient):
 
         # Default params
         # Assignment endpoint doesn't support pagination
-        query_params: Dict[str, Any] = {}
+        query_params: dict[str, Any] = {}
 
         url_addon = f'/{id}' if id else ''
 
@@ -468,7 +468,7 @@ class Client(BaseClient):
 
     def search_outcomes(self,
                         id=None,
-                        max_results=None) -> Dict[str, Any]:
+                        max_results=None) -> dict[str, Any]:
         """
         Gets Assignment outcomes using the 'assignment_outcomes' API endpoint.
 
@@ -477,7 +477,7 @@ class Client(BaseClient):
         """
         # Default params
         demisto.debug("Forcing 'page' and 'page_size' query arguments")
-        query_params: Dict[str, Any] = {
+        query_params: dict[str, Any] = {
             'page': 1
         }
         query_params['page_size'] = sanitize_max_results(max_results)
@@ -496,7 +496,7 @@ class Client(BaseClient):
                      last_login_datetime=None,
                      role=None,
                      type=None,
-                     username=None) -> Dict[str, Any]:
+                     username=None) -> dict[str, Any]:
         """
         Gets Vectra Users using the 'assignment_outcomes' API endpoint.
 
@@ -505,7 +505,7 @@ class Client(BaseClient):
         """
         # Default params
         # Users endpoint doesn't support pagination
-        query_params: Dict[str, Any] = {}
+        query_params: dict[str, Any] = {}
 
         url_addon = f'/{id}' if id else ''
 
@@ -574,7 +574,7 @@ class Client(BaseClient):
             json_data=json_payload
         )
 
-    def add_tags(self, id: str, type: str, tags: List[str]):
+    def add_tags(self, id: str, type: str, tags: list[str]):
         """
         Adds tags from Vectra entity
 
@@ -596,7 +596,7 @@ class Client(BaseClient):
             url_suffix=f'{API_TAGGING}/{type}/{id}'
         )
 
-        current_tags: List[str] = api_response.get('tags', [])
+        current_tags: list[str] = api_response.get('tags', [])
 
         json_payload = {
             'tags': list(set(current_tags).union(set(tags)))
@@ -609,7 +609,7 @@ class Client(BaseClient):
             json_data=json_payload
         )
 
-    def del_tags(self, id: str, type: str, tags: List[str]):
+    def del_tags(self, id: str, type: str, tags: list[str]):
         """
         Deletes tags from Vectra entity
 
@@ -774,7 +774,7 @@ class Client(BaseClient):
         except ValueError:
             raise ValueError('"outcome_id" value is invalid')
 
-        json_payload: Dict[str, Any] = {
+        json_payload: dict[str, Any] = {
             'outcome': outcome_id,
             'note': note,
         }
@@ -809,6 +809,7 @@ class Client(BaseClient):
             url_addon = f'/{assignment_id}'
             return self.http_request(method='DELETE', url_suffix=f'{API_ENDPOINT_ASSIGNMENT}{url_addon}',
                                      resp_type='response')
+        return None
 
     def markasfixed_by_detection_ids(self, ids_list: list):
         """
@@ -828,7 +829,7 @@ class Client(BaseClient):
         # Execute request
         return self.http_request(method='PATCH', url_suffix=API_ENDPOINT_DETECTIONS, json_data=json_payload)
 
-    def list_tags_request(self, entity_id: int = None, entity_type: str = None) -> Dict:  # type: ignore
+    def list_tags_request(self, entity_id: int = None, entity_type: str = None) -> dict:  # type: ignore
         """
         List tags for the specified entity.
 
@@ -842,7 +843,7 @@ class Client(BaseClient):
         res = self.http_request(method='GET', url_suffix=f'{API_TAGGING}/{entity_type}/{entity_id}')
         return res
 
-    def add_note_request(self, entity_id: int = None, entity_type: str = None, note: str = None) -> Dict:  # type: ignore
+    def add_note_request(self, entity_id: int = None, entity_type: str = None, note: str = None) -> dict:  # type: ignore
         """
         Add a note to an Account, Host or Detection.
 
@@ -860,7 +861,7 @@ class Client(BaseClient):
         return notes
 
     def update_note_request(self, entity_id: int = None, entity_type: str = None, note: str = None,  # type: ignore
-                            note_id: int = None) -> Dict:  # type: ignore
+                            note_id: int = None) -> dict:  # type: ignore
         """
         Updates the note of an Account, Host or Detection.
 
@@ -897,7 +898,7 @@ class Client(BaseClient):
             f'UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT'].format(entity_id, note_id))  # type: ignore
         return res
 
-    def list_note_request(self, entity_id: int = None, entity_type: str = None) -> Dict:  # type: ignore
+    def list_note_request(self, entity_id: int = None, entity_type: str = None) -> dict:  # type: ignore
         """
         List Account/Host/Detection notes.
 
@@ -912,7 +913,7 @@ class Client(BaseClient):
             f'ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT'].format(entity_id))  # type: ignore
         return notes
 
-    def get_account_by_account_id(self, account_id: Optional[str] = None):
+    def get_account_by_account_id(self, account_id: str | None = None):
         """
         Get Account by Account ID.
 
@@ -923,7 +924,7 @@ class Client(BaseClient):
         """
         return self.http_request(method='GET', url_suffix=f'{API_ENDPOINT_ACCOUNTS}/{account_id}')
 
-    def get_host_by_host_id(self, host_id: Optional[str] = None):
+    def get_host_by_host_id(self, host_id: str | None = None):
         """
         Get Host by Host ID.
 
@@ -934,7 +935,7 @@ class Client(BaseClient):
         """
         return self.http_request(method='GET', url_suffix=f'{API_ENDPOINT_HOSTS}/{host_id}')
 
-    def get_group_request(self, group_id: int = None) -> Dict:  # type: ignore
+    def get_group_request(self, group_id: int = None) -> dict:  # type: ignore
         """Get group by ID.
 
         Args:
@@ -945,7 +946,7 @@ class Client(BaseClient):
         """
         return self.http_request(method='GET', url_suffix=f"{API_ENDPOINT_GROUPS}/{group_id}")
 
-    def update_group_members_request(self, group_id: int = None, members: List = None) -> Dict:  # type: ignore
+    def update_group_members_request(self, group_id: int = None, members: list = None) -> dict:  # type: ignore
         """Update members in group.
 
         Args:
@@ -961,8 +962,8 @@ class Client(BaseClient):
         return self.http_request(method='PATCH', url_suffix=f"{API_ENDPOINT_GROUPS}/{group_id}",
                                  json_data=body)
 
-    def list_assignments_request(self, accounts: Optional[str] = None, hosts: Optional[str] = None,
-                                 page_size: Optional[int] = None) -> dict:
+    def list_assignments_request(self, accounts: str | None = None, hosts: str | None = None,
+                                 page_size: int | None = None) -> dict:
         """
         Get Assignments by Accounts and Hosts.
 
@@ -982,7 +983,7 @@ class Client(BaseClient):
             query_params['hosts'] = hosts  # type: ignore
         return self.http_request(method='GET', url_suffix=f'{API_ENDPOINT_ASSIGNMENT}', params=query_params)
 
-    def list_entity_tags_request(self, entity_id: Optional[str] = None, entity_type: Optional[str] = None):
+    def list_entity_tags_request(self, entity_id: str | None = None, entity_type: str | None = None):
         """
         Get Entity Tags by Entity ID and Entity Type.
 
@@ -994,8 +995,8 @@ class Client(BaseClient):
         """
         return self.http_request(method='GET', url_suffix=f'{API_TAGGING}/{entity_type}/{entity_id}')
 
-    def update_entity_tags_request(self, entity_id: Optional[str] = None, entity_type: Optional[str] = None,
-                                   tag_list: Optional[list] = None):
+    def update_entity_tags_request(self, entity_id: str | None = None, entity_type: str | None = None,
+                                   tag_list: list | None = None):
         """
         Update Entity Tags by Entity ID and Entity Type.
 
@@ -1009,9 +1010,9 @@ class Client(BaseClient):
         tags = {'tags': tag_list}
         return self.http_request(method='PATCH', url_suffix=f'{API_TAGGING}/{entity_type}/{entity_id}', json_data=tags)
 
-    def list_group_request(self, group_type: str = '', account_names: List[str] = [], domains: List[str] = [],
-                           host_ids: List[str] = [], host_names: List[str] = [], importance: str = '',
-                           ips: List[str] = [], description: str = '', last_modified_timestamp: Optional[datetime] = None,
+    def list_group_request(self, group_type: str = '', account_names: list[str] = [], domains: list[str] = [],
+                           host_ids: list[str] = [], host_names: list[str] = [], importance: str = '',
+                           ips: list[str] = [], description: str = '', last_modified_timestamp: datetime | None = None,
                            last_modified_by: str = '', group_name: str = ''):
         """
         List groups as per the specified parameters.
@@ -1046,7 +1047,7 @@ class Client(BaseClient):
 #                           #
 
 
-def str2bool(value: Optional[str]) -> Optional[bool]:
+def str2bool(value: str | None) -> bool | None:
     """
     Converts a string into a boolean
 
@@ -1087,7 +1088,7 @@ def sanitize_max_results(max_results=None) -> int:
         return max_results
 
 
-def scores_to_severity(threat: Optional[int], certainty: Optional[int]) -> str:
+def scores_to_severity(threat: int | None, certainty: int | None) -> str:
     """
     Converts Vectra scores to a severity String
 
@@ -1111,7 +1112,7 @@ def scores_to_severity(threat: Optional[int], certainty: Optional[int]) -> str:
     return unify_severity(severity)
 
 
-def severity_string_to_int(severity: Optional[str]) -> int:
+def severity_string_to_int(severity: str | None) -> int:
     """
     Converts a severity String to XSOAR severity value
 
@@ -1133,7 +1134,7 @@ def severity_string_to_int(severity: Optional[str]) -> int:
     return output
 
 
-def convert_date(date: Optional[str]) -> Optional[str]:
+def convert_date(date: str | None) -> str | None:
     """
     Converts a date format to an ISO8601 string
 
@@ -1157,13 +1158,13 @@ def convert_date(date: Optional[str]) -> Optional[str]:
 
 def remove_space_from_args(args):
     """Remove space from args."""
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
     return args
 
 
-def validate_argument(label: Optional[str], value: Any) -> int:
+def validate_argument(label: str | None, value: Any) -> int:
     """
     Validates a command argument based on its type
 
@@ -1238,14 +1239,13 @@ def validate_min_max(min_label: str = None, min_value: str = None, max_label: st
     if max_value:
         validate_argument(max_label, max_value)
 
-    if min_value and max_value:
-        if int(min_value) > int(max_value):
-            raise ValueError(f'"{max_label}" must be greater than or equal to "{min_label}"')
+    if min_value and max_value and int(min_value) > int(max_value):
+        raise ValueError(f'"{max_label}" must be greater than or equal to "{min_label}"')
 
     return True
 
 
-def validate_fetch_incident_params(integration_params: Dict):
+def validate_fetch_incident_params(integration_params: dict):
     """
     Validates the integration parameters for fetching incidents, including timestamps, entity types, fetch queries,
     and the maximum number of incidents per fetch. Raises ValueErrors for invalid parameters.
@@ -1327,7 +1327,7 @@ def build_search_query_for_detections(entity_id: str, fetch_type: str,
     return search_query
 
 
-def build_search_query_for_tags(fetch_query: str, fetch_type: str, tags: List[str]) -> str:
+def build_search_query_for_tags(fetch_query: str, fetch_type: str, tags: list[str]) -> str:
     """
     Builds a search query for tags.
 
@@ -1356,7 +1356,7 @@ def build_search_query_for_tags(fetch_query: str, fetch_type: str, tags: List[st
     return tag_query
 
 
-def sanitize_str_ids_list_to_set(list: Optional[str]) -> Optional[Set[int]]:
+def sanitize_str_ids_list_to_set(list: str | None) -> set[int] | None:
     """
     Sanitize the given list to ensure all IDs are valid
 
@@ -1365,7 +1365,7 @@ def sanitize_str_ids_list_to_set(list: Optional[str]) -> Optional[Set[int]]:
     - returns:
         Returns the sanitized list (only valid IDs)
     """
-    output: Set[int] = set()
+    output: set[int] = set()
     if list is not None and isinstance(list, str):
         ids_list = [id.strip() for id in list.split(',')]
         for id in ids_list:
@@ -1393,6 +1393,8 @@ def build_search_query(object_type, params: dict) -> str:
         The Lucene search query
     """
     query = ''
+    attribute = ''
+    operator = ''
 
     for key, value in params.items():
         if key.startswith('min_'):
@@ -1426,7 +1428,7 @@ def build_search_query(object_type, params: dict) -> str:
     return query.strip()
 
 
-def forge_entity_url(type: str, id: Optional[str]) -> str:
+def forge_entity_url(type: str, id: str | None) -> str:
     """
     Generate the UI pivot URL
 
@@ -1451,7 +1453,7 @@ def forge_entity_url(type: str, id: Optional[str]) -> str:
     return urljoin(urljoin(global_UI_URL, url_suffix), str(id)) + UTM_PIVOT
 
 
-def common_extract_data(entity: Dict[str, Any]) -> Dict[str, Any]:
+def common_extract_data(entity: dict[str, Any]) -> dict[str, Any]:
     """
     Extracts common information from Vectra object renaming attributes on the fly.
 
@@ -1471,7 +1473,7 @@ def common_extract_data(entity: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def extract_account_data(account: Dict[str, Any]) -> Dict[str, Any]:
+def extract_account_data(account: dict[str, Any]) -> dict[str, Any]:
     """
     Extracts useful information from Vectra Account object renaming attributes on the fly.
 
@@ -1491,7 +1493,7 @@ def extract_account_data(account: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
+def extract_detection_data(detection: dict[str, Any]) -> dict[str, Any]:
     """
     Extracts useful information from Vectra Detection object renaming attributes on the fly.
 
@@ -1539,7 +1541,7 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
     })
 
 
-def extract_host_data(host: Dict[str, Any]) -> Dict[str, Any]:
+def extract_host_data(host: dict[str, Any]) -> dict[str, Any]:
     """
     Extracts useful information from Vectra Host object renaming attributes on the fly.
 
@@ -1565,7 +1567,7 @@ def extract_host_data(host: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def extract_assignment_data(assignment: Dict[str, Any]) -> Dict[str, Any]:
+def extract_assignment_data(assignment: dict[str, Any]) -> dict[str, Any]:
     """
     Extracts useful information from Vectra Assignment object renaming attributes on the fly.
 
@@ -1596,7 +1598,7 @@ def extract_assignment_data(assignment: Dict[str, Any]) -> Dict[str, Any]:
         'AssignedTo': assigned_to_user,
         'HostID': assignment.get('host_id'),
         'ID': assignment.get('id'),
-        'IsResolved': True if assignment.get('resolved_by') is not None else False,
+        'IsResolved': assignment.get('resolved_by') is not None,
         'OutcomeCategory': convert_outcome_category_raw2text(outcome_category),
         'OutcomeTitle': outcome_title,
         'TriagedDetections': assignment.get('triaged_detections'),
@@ -1606,7 +1608,7 @@ def extract_assignment_data(assignment: Dict[str, Any]) -> Dict[str, Any]:
     })
 
 
-def extract_outcome_data(outcome: Dict[str, Any]) -> Dict[str, Any]:
+def extract_outcome_data(outcome: dict[str, Any]) -> dict[str, Any]:
     """
     Extracts useful information from Vectra Outcome object renaming attributes on the fly.
 
@@ -1623,7 +1625,7 @@ def extract_outcome_data(outcome: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def extract_user_data(user: Dict[str, Any]) -> Dict[str, Any]:
+def extract_user_data(user: dict[str, Any]) -> dict[str, Any]:
     """
     Extracts useful information from Vectra User object renaming attributes on the fly.
 
@@ -1642,7 +1644,7 @@ def extract_user_data(user: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def detection_to_incident(detection: Dict):
+def detection_to_incident(detection: dict):
     """
     Creates an incident of a Detection.
 
@@ -1682,7 +1684,7 @@ def detection_to_incident(detection: Dict):
     return incident, incident_last_run
 
 
-def host_to_incident(client: Client, host: Dict, detection_category: str = '', detection_type: str = ''):
+def host_to_incident(client: Client, host: dict, detection_category: str = '', detection_type: str = ''):
     """
     Creates an incident of a Host.
 
@@ -1758,7 +1760,7 @@ def host_to_incident(client: Client, host: Dict, detection_category: str = '', d
     return incident, incident_last_run
 
 
-def account_to_incident(client: Client, account: Dict, detection_category: str = '', detection_type: str = ''):
+def account_to_incident(client: Client, account: dict, detection_category: str = '', detection_type: str = ''):
     """
     Creates an incident of an Account.
 
@@ -1851,7 +1853,7 @@ def account_to_incident(client: Client, account: Dict, detection_category: str =
     return incident, incident_last_run
 
 
-def get_last_run_details(integration_params: Dict, is_test: bool = False) -> Dict:
+def get_last_run_details(integration_params: dict, is_test: bool = False) -> dict:
     """
     Extracts detail from the stored last_run variable or create them if needed
 
@@ -1872,14 +1874,14 @@ def get_last_run_details(integration_params: Dict, is_test: bool = False) -> Dic
     last_run = {} if is_test else demisto.getLastRun()
     demisto.debug(f"last run : {last_run}")
 
-    output_last_run: Dict = {}
+    output_last_run: dict = {}
     for entity_type in ENTITY_TYPES:
         if entity_type in fetch_entity_types:
             # This will return a relative TZaware datetime (in UTC)
             last_timestamp = dateparser.parse(fetch_first_time,  # type: ignore
                                               settings={'TO_TIMEZONE': 'UTC'}).isoformat()  # type: ignore
             last_id = 0
-            empty_last_run: Dict = {
+            empty_last_run: dict = {
                 'last_timestamp': last_timestamp,
                 'id': last_id,
                 'last_created_events': []
@@ -1926,8 +1928,8 @@ def iso_date_to_vectra_start_time(iso_date: str, look_back: str = BACK_IN_TIME_S
                 # Timedelta is imported from CommonServerPython
                 date = date - timedelta(minutes=look_back_int)  # type: ignore
                 backward_start_datetime = date.strftime('%Y-%m-%dT%H%M')  # type: ignore
-                demisto.debug(('Manipulated time as backward search. '
-                               f'Changed the Start time from : {start_datetime} to : {backward_start_datetime}'))
+                demisto.debug('Manipulated time as backward search. '
+                              f'Changed the Start time from : {start_datetime} to : {backward_start_datetime}')
                 start_datetime = backward_start_datetime
 
     else:
@@ -1936,7 +1938,7 @@ def iso_date_to_vectra_start_time(iso_date: str, look_back: str = BACK_IN_TIME_S
     return start_datetime
 
 
-def unify_severity(severity: Optional[str]) -> str:
+def unify_severity(severity: str | None) -> str:
     """
     Force severity string to be consistent across endpoints
 
@@ -1953,7 +1955,7 @@ def unify_severity(severity: Optional[str]) -> str:
     return output
 
 
-def convert_outcome_category_raw2text(category: Optional[str]) -> Optional[str]:
+def convert_outcome_category_raw2text(category: str | None) -> str | None:
     """
     Convert outcome category from raw to human readable text
 
@@ -1965,7 +1967,7 @@ def convert_outcome_category_raw2text(category: Optional[str]) -> Optional[str]:
     return OUTCOME_CATEGORIES.get(category) if category else None
 
 
-def convert_outcome_category_text2raw(category: str) -> Optional[str]:
+def convert_outcome_category_text2raw(category: str) -> str | None:
     """
     Convert outcome category from human readable text to raw
 
@@ -1979,7 +1981,7 @@ def convert_outcome_category_text2raw(category: str) -> Optional[str]:
     return category_text.get(category) if category else None
 
 
-def validate_positive_integer_arg(value: Optional[Any], arg_name: str, required: bool = False) -> bool:
+def validate_positive_integer_arg(value: Any | None, arg_name: str, required: bool = False) -> bool:
     """
     Validates whether the provided argument value is a valid positive integer.
 
@@ -2002,7 +2004,7 @@ def validate_positive_integer_arg(value: Optional[Any], arg_name: str, required:
     return True
 
 
-def validate_group_list_command_args(args: Dict[Any, Any]):
+def validate_group_list_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the group list command.
 
@@ -2053,7 +2055,7 @@ def validate_group_list_command_args(args: Dict[Any, Any]):
         raise ValueError(ERRORS['INVALID_SUPPORT_FOR_ARG'].format('group_type', 'ip', 'ips'))
 
 
-def get_group_list_command_hr(groups: List):
+def get_group_list_command_hr(groups: list):
     """
     Converts a list of groups into a human-readable table format.
 
@@ -2067,7 +2069,7 @@ def get_group_list_command_hr(groups: List):
     # Process members data from group and make HR for groups
     for group in groups:  # type: ignore
         group['group_id'] = group['id']
-        members: List = group.get('members')
+        members: list = group.get('members')
         members_hr = None
         if members and isinstance(members, list):
             # If the members are simple list of strings, then join them with comma.
@@ -2078,7 +2080,7 @@ def get_group_list_command_hr(groups: List):
                 members_list = []
                 for member in members:
                     if member.get('uid'):
-                        members_list.append((str(member.get('uid'))))  # type: ignore
+                        members_list.append(str(member.get('uid')))  # type: ignore
                     elif member.get('id'):
                         members_list.append(  # type: ignore
                             f'[{member.get("id")}]({forge_entity_url(group.get("type"), member.get("id"))})')
@@ -2120,7 +2122,7 @@ def validate_group_assign_and_unassign_command_args(args):
         raise ValueError(ERRORS['REQUIRED_ARGUMENT'].format('members'))
 
 
-def get_group_unassign_and_assign_command_hr(group: Dict, changed_members: List, assign_flag: bool = False):
+def get_group_unassign_and_assign_command_hr(group: dict, changed_members: list, assign_flag: bool = False):
     """
     Converts group into a human-readable table format.
 
@@ -2145,7 +2147,7 @@ def get_group_unassign_and_assign_command_hr(group: Dict, changed_members: List,
             members_list = []
             for member in members:
                 if member.get('uid'):
-                    members_list.append((str(member.get('uid'))))  # type: ignore
+                    members_list.append(str(member.get('uid')))  # type: ignore
                 elif member.get('id'):
                     members_list.append(  # type: ignore
                         f"[{member.get('id')}]({forge_entity_url(str(group.get('type')), member.get('id'))})")
@@ -2186,7 +2188,7 @@ def get_group_unassign_and_assign_command_hr(group: Dict, changed_members: List,
     return human_readable
 
 
-def validate_note_add_command_args(entity_id: Optional[int], note: str, entity_type: str):
+def validate_note_add_command_args(entity_id: int | None, note: str, entity_type: str):
     """
     Validates the arguments provided for the note add command.
 
@@ -2206,7 +2208,7 @@ def validate_note_add_command_args(entity_id: Optional[int], note: str, entity_t
         raise ValueError(ERRORS['REQUIRED_ARGUMENT'].format('note'))
 
 
-def validate_note_update_command_args(entity_id: Optional[int], note_id: Optional[int], note: str, entity_type: str):
+def validate_note_update_command_args(entity_id: int | None, note_id: int | None, note: str, entity_type: str):
     """
     Validates the arguments provided for the note update command.
 
@@ -2228,7 +2230,7 @@ def validate_note_update_command_args(entity_id: Optional[int], note_id: Optiona
         raise ValueError(ERRORS['REQUIRED_ARGUMENT'].format('note'))
 
 
-def validate_note_remove_command_args(entity_id: Optional[int], note_id: Optional[int], entity_type: str):
+def validate_note_remove_command_args(entity_id: int | None, note_id: int | None, entity_type: str):
     """
     Validates the arguments provided for the note remove command.
 
@@ -2250,7 +2252,7 @@ def validate_note_remove_command_args(entity_id: Optional[int], note_id: Optiona
     return True
 
 
-def get_list_notes_command_hr(notes: Dict, entity_id: Optional[int], entity_type: str) -> str:  # type: ignore
+def get_list_notes_command_hr(notes: dict, entity_id: int | None, entity_type: str) -> str:  # type: ignore
     """
     Returns the human-readable output for the Account, Host or Detection notes.
 
@@ -2318,7 +2320,7 @@ def reopen_in_xsoar(entries: list, entity_id_type: list):
     })
 
 
-def add_notes_to_new_entries(notes: list, command_last_run_dt: Optional[datetime]) -> list:
+def add_notes_to_new_entries(notes: list, command_last_run_dt: datetime | None) -> list:
     """
     Lists notes from vectra that to be added when mirrored on xsoar
 
@@ -2332,7 +2334,7 @@ def add_notes_to_new_entries(notes: list, command_last_run_dt: Optional[datetime
     if not notes:
         return []
 
-    new_entry_notes: List[Dict] = []
+    new_entry_notes: list[dict] = []
     for note in notes:
         if '[Mirrored From XSOAR]' in note.get('note'):
             demisto.debug(f"Skipping the note {note.get('id')} as it is mirrored from XSOAR.")
@@ -2376,7 +2378,7 @@ class VectraException(Exception):
 # ####               #### #
 # ## COMMAND FUNCTIONS ## #
 #                         #
-def test_module(client: Client, integration_params: Dict) -> str:
+def test_module(client: Client, integration_params: dict) -> str:
     """
     Tests API connectivity and authentication.
 
@@ -2417,7 +2419,7 @@ def test_module(client: Client, integration_params: Dict) -> str:
     return message
 
 
-def fetch_incidents(client: Client, integration_params: Dict, is_test: bool = False):
+def fetch_incidents(client: Client, integration_params: dict, is_test: bool = False):
     """
     Fetches incidents based on the provided client and integration parameters.
 
@@ -2435,16 +2437,16 @@ def fetch_incidents(client: Client, integration_params: Dict, is_test: bool = Fa
 
     detection_category = integration_params.get('detection_category', '')
     detection_type = integration_params.get('detection_type', '').strip()
-    api_response: Dict = {}
+    api_response: dict = {}
 
     # Get the last run and the last fetched value
     previous_last_run = get_last_run_details(integration_params, is_test)
 
     incidents = []
-    new_last_run: Dict = previous_last_run
+    new_last_run: dict = previous_last_run
 
     # We split the number of incidents to create into the number of remaining endpoints to call
-    remaining_fetch_types: Set = fetch_entity_types
+    remaining_fetch_types: set = fetch_entity_types
     max_fetch = arg_to_number(integration_params.get('max_fetch', DEFAULT_MAX_FETCH))
 
     if max_fetch > MAX_RESULTS:  # type: ignore
@@ -2457,7 +2459,7 @@ def fetch_incidents(client: Client, integration_params: Dict, is_test: bool = Fa
     max_created_incidents: int = max_fetch // len(remaining_fetch_types)  # type: ignore
 
     for entity_type in ENTITY_TYPES:
-        entity_incidents: List = []
+        entity_incidents: list = []
         if entity_type not in fetch_entity_types:
             continue
 
@@ -2519,6 +2521,9 @@ def fetch_incidents(client: Client, integration_params: Dict, is_test: bool = Fa
                     incident, incident_last_run = host_to_incident(client, event, detection_category, detection_type)
                 elif entity_type == 'Detections':
                     incident, incident_last_run = detection_to_incident(event)
+                else:
+                    demisto.debug(f"The {entity_type=} didn't match any condition, can't create an incident, continue.")
+                    continue
 
                 # Search this incident in the last_run, if it's in, skip it, if not create it
                 # Create incident UID and search for it
@@ -2616,7 +2621,7 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
                 break
 
     # Filter out None values if there are any.
-    modified_entities_ids: List[str] = list(filter(None, modified_entities_ids))  # type: ignore
+    modified_entities_ids: list[str] = list(filter(None, modified_entities_ids))  # type: ignore
     demisto.debug(f'Performing get-modified-remote-data command. Numbers Entity IDs to update in XSOAR:'
                   f' {len(modified_entities_ids)}')
     demisto.debug(f'Performing get-modified-remote-data command. Entity IDs to update in XSOAR:'
@@ -2631,7 +2636,7 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
     return GetModifiedRemoteDataResponse(modified_incident_ids=updated_incident_ids)
 
 
-def get_remote_data_command(client: Client, integration_params: Dict = {}) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, integration_params: dict = {}) -> GetRemoteDataResponse:
     """
     Get remote data for a specific entity from the Vectra platform and prepare it for mirroring in XSOAR.
 
@@ -2644,7 +2649,7 @@ def get_remote_data_command(client: Client, integration_params: Dict = {}) -> Ge
     """
     detection_category = integration_params.get('detection_category', '')
     detection_type = integration_params.get('detection_type', '').strip()
-    new_entries_to_return: List[Dict] = []
+    new_entries_to_return: list[dict] = []
 
     args = demisto.args()
     dbot_mirror_id: str = args.get('id')  # type: ignore
@@ -2770,7 +2775,7 @@ def update_remote_system_command(client: Client) -> str:
     xsoar_incident_id = data.get('id', '')
     demisto.debug(f'XSOAR Incident ID: {xsoar_incident_id}')
     new_entries = parsed_args.entries or []
-    xsoar_tags: List = delta.get('tags', [])
+    xsoar_tags: list = delta.get('tags', [])
     mirror_entity_id = remote_entity_id.split('-')[0]
     remote_entity_type = remote_entity_id.split('-')[1]
 
@@ -2794,7 +2799,7 @@ def update_remote_system_command(client: Client) -> str:
     # For tags
     res = client.list_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type)
     vectra_tags = res.get('tags')
-    if xsoar_tags or (not xsoar_tags and vectra_tags and 'tags' in delta.keys()):
+    if xsoar_tags or (not xsoar_tags and vectra_tags and 'tags' in delta):
         demisto.debug(f'Sending the tags: {xsoar_tags}')
         client.update_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type,
                                           tag_list=xsoar_tags)
@@ -2806,8 +2811,8 @@ def update_remote_system_command(client: Client) -> str:
     return remote_entity_id
 
 
-def send_close_notes(client: Client, data: Dict, xsoar_incident_id: str, remote_entity_id: str,
-                     remote_entity_type: str, mirror_entity_id: int, delta: Dict,
+def send_close_notes(client: Client, data: dict, xsoar_incident_id: str, remote_entity_id: str,
+                     remote_entity_type: str, mirror_entity_id: int, delta: dict,
                      parsed_args: UpdateRemoteSystemArgs):
     """
     Send close notes to Vectra and also remove the assignment when the XSOAR incident is reopened.
@@ -3874,7 +3879,7 @@ def markall_detections_asfixed_command(client: Client, type: str, account_id: st
     return command_result
 
 
-def vectra_group_list_command(client: Client, args: Dict[str, Any]):
+def vectra_group_list_command(client: Client, args: dict[str, Any]):
     """
     Retrieves a list of groups.
 
@@ -3923,7 +3928,7 @@ def vectra_group_list_command(client: Client, args: Dict[str, Any]):
                           raw_response=groups, outputs_key_field='group_id')
 
 
-def vectra_group_unassign_command(client: Client, args: Dict[str, Any]):
+def vectra_group_unassign_command(client: Client, args: dict[str, Any]):
     """
     Unassign members in Group.
 
@@ -3977,7 +3982,7 @@ def vectra_group_unassign_command(client: Client, args: Dict[str, Any]):
                           readable_output=human_readable, raw_response=updated_group, outputs_key_field='group_id')
 
 
-def vectra_group_assign_command(client: Client, args: Dict[str, Any]):
+def vectra_group_assign_command(client: Client, args: dict[str, Any]):
     """
     Assign members in Group.
 
@@ -4045,15 +4050,15 @@ def main() -> None:  # pragma: no cover
     kwargs = remove_space_from_args(demisto.args())
     remove_nulls_from_dictionary(kwargs)
 
-    server_fqdn: Optional[str] = integration_params.get('server_fqdn')
+    server_fqdn: str | None = integration_params.get('server_fqdn')
     if not server_fqdn:  # Should be impossible thx to UI required settings control
         raise DemistoException("Missing integration setting : 'Server FQDN'")
 
-    credentials: Optional[Dict] = integration_params.get('credentials')
+    credentials: dict | None = integration_params.get('credentials')
     if not credentials:
         raise DemistoException("Missing integration setting : 'Credentials' or 'API token'")
 
-    api_token: Optional[str] = credentials.get('password')
+    api_token: str | None = credentials.get('password')
     if (api_token is None) or (api_token == ''):
         raise DemistoException("Missing integration setting : 'Credentials password' or 'API token'")
 
@@ -4077,7 +4082,7 @@ def main() -> None:  # pragma: no cover
 
     demisto.info(f'Command being called is {command}')
     try:
-        headers: Dict = {"User-Agent": USER_AGENT,
+        headers: dict = {"User-Agent": USER_AGENT,
                          "Authorization": f"token {api_token}"}
 
         # As the Client class inherits from BaseClient, SSL verification and system proxy are handled out of the box by it
@@ -4212,7 +4217,7 @@ def main() -> None:  # pragma: no cover
             return_results(vectra_group_unassign_command(client, kwargs))
 
         else:
-            raise NotImplementedError()
+            raise NotImplementedError
 
     # Log exceptions and return errors
     except Exception as e:
