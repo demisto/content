@@ -2806,3 +2806,48 @@ def test_auth_type_handling_for_first_run_of_the_instance(mocker):
     assert set_integration_context_mocker.call_args[0][0] == {'current_auth_type': 'Authorization Code'}
     assert 'This is the first run of the integration instance' in debug_log_mocker.call_args[0][0]
     assert debug_log_mocker.call_count == 1
+
+def test_message_update(mocker, requests_mock):
+    """
+    Given:
+        - a message as a basic string and a  message that contains GUID.
+    When:
+        - running send message function.
+    Then:
+        - The message is sent successfully in both cases.
+    """
+    from MicrosoftTeams import message_update_command
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('MicrosoftTeams.get_channel_type', return_value='standard')
+
+    expected = util_load_json('test_data/send_message/expected_generic.json')
+    raw = util_load_json('test_data/send_message/raw_generic.json')
+
+    activity_id: str = '1730232813350'
+    conversation_id: str = '19:2cbad0d78c624400ef83a5750534448g@thread.skype'
+    mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'message_id': activity_id,
+            'team': team_name,
+            'channel': 'incident-10',
+            'message': "Updated message",
+            'format_as_card': False
+        }
+    )
+
+    requests_mock.put(
+        f'{service_url}/v3/conversations/{conversation_id}/activities/{activity_id}',
+        json={'id': activity_id}
+    )
+
+    requests_mock.post(
+        f"{service_url}/v3/conversations/{mirrored_channels[0]['channel_id']}/activities",
+        json=raw
+    )
+    message_update_command()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == expected

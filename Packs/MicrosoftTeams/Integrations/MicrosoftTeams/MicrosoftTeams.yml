@@ -582,6 +582,10 @@ script:
       name: team_member
     - description: Whether or not an adaptive card is being updated.
       name: format_as_card
+    outputs:
+    - contextPath: MicrosoftTeams.Message.ID
+      description: ID of the message sent.
+      type: String
     description: Updates a message.
     name: microsoft-teams-message-update
   - arguments:

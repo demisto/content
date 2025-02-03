@@ -1210,10 +1210,16 @@ Updates a message.
 
 ##### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.Message.ID | String | ID of the message sent. | 
+
 
 ##### Command Example
 ```!microsoft-teams-message-update message_id=1737151779 team=MyTeam channel=General message="New message"```
+
+##### Human Readable Output
+Message was sent successfully.
 
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.

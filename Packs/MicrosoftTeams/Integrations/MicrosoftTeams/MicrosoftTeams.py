@@ -2268,7 +2268,7 @@ def message_update_command():
     res: dict = update_message(service_url, recipient, message_id, message, format_as_card=format_as_card)
 
     results = CommandResults(
-        outputs={"id": res.get('id')},
+        outputs={"ID": res.get('id')},
         outputs_prefix='MicrosoftTeams.Message',
         readable_output='Message was sent successfully.',
         raw_response=res
