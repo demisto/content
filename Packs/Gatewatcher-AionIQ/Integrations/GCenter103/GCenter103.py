@@ -302,7 +302,7 @@ def test_module(client: GwClient, user: str, password: str, token: str) -> str: 
         'Authentication error' when the GCenter connection doesn't works.
     """
     client.auth(user=user if user != "" else None,
-                password=password if password != "" else None, 
+                password=password if password != "" else None,
                 token=token)
 
     if client.is_authenticated():
@@ -345,7 +345,7 @@ def gcenter103_alerts_list(client: GwClient, args: dict[str, Any]) -> CommandRes
         "page_size": args.get("page_size")
     }
 
-    try:        
+    try:
         req = client._get(endpoint="/api/v1/alerts/", params=params)
     except req.status_code != 200:
         raise Exception("Request failed")
@@ -357,7 +357,7 @@ def gcenter103_alerts_list(client: GwClient, args: dict[str, Any]) -> CommandRes
         return CommandResults(
            readable_output="# gcenter103-alerts-list - Empty alerts list",
            outputs_prefix="Gatewatcher.Alerts.List"
-       ) 
+           ) 
 
     res_keys = []
     
@@ -373,7 +373,7 @@ def gcenter103_alerts_list(client: GwClient, args: dict[str, Any]) -> CommandRes
        outputs_key_field="uuid",
        outputs=res_keys,
        raw_response=res
-   ) 
+       ) 
 
 
 def gcenter103_alerts_get(client: GwClient, args: dict[str, str]) -> CommandResults:
@@ -382,7 +382,7 @@ def gcenter103_alerts_get(client: GwClient, args: dict[str, str]) -> CommandResu
         "uuid": args.get("uuid")
     }
 
-    try:        
+    try:
         req = client._get(endpoint="/api/v1/alerts/"+params['uuid'])
         if req.status_code != 200:
             raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
@@ -409,7 +409,7 @@ def gcenter103_alerts_note_add(client: GwClient, args: dict[str, str]) -> Comman
 
         data = {"note": params['note']}
         
-        try:        
+        try:
             req = client._put(endpoint="/api/v1/alerts/"+params['uuid']+"/note",data=data)
             if req.status_code != 200:
                 raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
@@ -425,7 +425,7 @@ def gcenter103_alerts_note_add(client: GwClient, args: dict[str, str]) -> Comman
 
     else:
 
-        try:        
+        try:
             req = client._get(endpoint="/api/v1/alerts/"+params['uuid'])
             if req.status_code != 200:
                 raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
@@ -438,7 +438,7 @@ def gcenter103_alerts_note_add(client: GwClient, args: dict[str, str]) -> Comman
             old_note = ""
         data = {"note": old_note+"\n"+params['note']}
         
-        try:        
+        try:
             req = client._put(endpoint="/api/v1/alerts/"+params['uuid']+"/note", json_data=data)
             if req.status_code != 200:
                 raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
