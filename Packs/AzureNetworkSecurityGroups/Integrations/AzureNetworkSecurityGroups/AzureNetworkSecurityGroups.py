@@ -583,7 +583,7 @@ def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, arg
     Returns:
         Command results with raw response, outputs and readable outputs.
     """
-    all_results = argToBoolean(args.get('all_results', 'true'))
+    all_results = argToBoolean(args.get('all_results', 'false'))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
@@ -624,7 +624,7 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
     Returns:
         Command results with raw response, outputs and readable outputs.
     """
-    all_results = argToBoolean(args.get('all_results', 'true'))
+    all_results = argToBoolean(args.get('all_results', 'false'))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
@@ -642,16 +642,21 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
         extract_list(output, 'subnets', 'name', 'subnetName')
         extract_list(output, 'subnets', 'properties', 'subnetProperties')
         extract_list(output, 'subnetProperties', 'addressPrefix', 'subnetAdrdressPrefix')
+        output['etag'] = output.get('etag')[3:-1]
 
     properties = outputs[0].get('subnetProperties')[0]
+    subnets_id = []
     if properties:
-        outputs[0]['subnetIPConfigurations'] = properties.get('ipConfigurations')
+        ip_conf = properties.get('ipConfigurations')
+        for conf in ip_conf:
+            subnets_id.append(conf.get('id'))
+    outputs[0]['subnetID'] = subnets_id
         
     readable_output = tableToMarkdown('Virtual Networks List',
                                       outputs,
                                       [
                                        'name', 'etag', 'location', 'addressPrefixes',
-                                       'subnetName', 'subnetAdrdressPrefix', 'subnetIPConfigurations',
+                                       'subnetName', 'subnetAdrdressPrefix', 'subnetID',
                                        ],
                                       removeNull=True, headerTransform=pascalToSpace)
     return CommandResults(
@@ -685,6 +690,7 @@ def azure_nsg_security_group_create(client: AzureNSGClient, params: Dict, args: 
                                                       security_group_name=security_group_name, location=location)
     outputs = response.copy()
     extract_inner_dict(outputs, ['properties'], 'securityRules')
+    outputs['etag'] = outputs.get('etag')[3:-1]
     readable_output = tableToMarkdown('Security Group List',
                                       outputs,
                                       ['name', 'etag', 'location', 'securityRules',],
@@ -709,7 +715,7 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
     Returns:
         Command results with raw response, outputs and readable outputs.
     """
-    all_results = argToBoolean(args.get('all_results', 'true'))
+    all_results = argToBoolean(args.get('all_results', 'false'))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
@@ -816,6 +822,7 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
                             'ipConfigurationPublicIPAddressName')
     extract_list(outputs, 'ipConfigurationProperties', 'subnet', 'ipConfigurationSub')
     extract_list(outputs, 'ipConfigurationSub', 'id', 'subnetId')
+    outputs['etag'] = outputs.get('etag')[3:-1]
     readable_output = tableToMarkdown('Network Interface',
                                       outputs,
                                       [
