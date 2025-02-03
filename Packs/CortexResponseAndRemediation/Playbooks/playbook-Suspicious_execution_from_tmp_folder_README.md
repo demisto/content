@@ -1,8 +1,3 @@
-
-#### Playbooks
-
-##### New: Suspicious execution from tmp folder
-
 This playbook addresses the following alerts for linux os:
 
 - Suspicious process execution from tmp folder
@@ -17,7 +12,7 @@ Analysis:
 - Check target process hash reputation
 - Check commandline extracted indicators reputation
 
-The playbook will proceed directly to remediation if suspicious/malicious reputation is found during the analysis stage.
+The playbook will proceed directly to remediation if suspicious/Suspicious reputation is found during the analysis stage.
 
 Investigation:
 
@@ -35,13 +30,50 @@ If no suspicious reputation is found in the analysis stage, but suspicious insig
 Remediation:
 
 - Terminate causality process
-- Quarantine the suspicious process image file (requires manual approval).
+- Quarantine the Suspicious process image file (requires manual approval).
 - Disable the suspicious cron job task (requires manual action).
 
-#### Triggers Recommendations
+## Dependencies
 
-##### New: Suspicious execution from tmp folder
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-- New: This trigger is responsible for handling the 'Suspicious interactive execution of a binary from the tmp folder', 'Suspicious cron job task execution of a binary from the tmp folder' and 'A web server process executed an unpopular application from the tmp folder' alerts via the 'Suspicious execution from tmp folder' playbook.
+### Sub-playbooks
 
+* Entity Enrichment - Generic v3
 
+### Integrations
+
+This playbook does not use any integrations.
+
+### Scripts
+
+* SearchIncidentsV2
+* SetAndHandleEmpty
+
+### Commands
+
+* closeInvestigation
+* core-get-cloud-original-alerts
+* core-get-quarantine-status
+* core-get-script-execution-results
+* core-quarantine-files
+* core-run-script-execute-commands
+* core-terminate-causality
+* extractIndicators
+* file
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Suspicious execution from tmp folder](../doc_files/Suspicious_execution_from_tmp_folder.png)
