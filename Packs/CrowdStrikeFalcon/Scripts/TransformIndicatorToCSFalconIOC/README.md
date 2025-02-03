@@ -16,7 +16,7 @@ This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* c
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| query | The indicators query. Using \`GetIndicatorsByQuery\` automation.<br/>Example: \`type:IP and lastSeen:>="2022-02-16T16:20:00 \+0200" \` |
+| query | The indicators query. Using `GetIndicatorsByQuery` automation. <br/>Example: `type:IP and lastSeen:>="2022-02-16T16:20:00 +0200"`. |
 | action | The action that will be taken if the indicator will be discovered in the organization. |
 | limit | The maximum number of indicators to fetch. |
 | offset | The results offset page. Only change when the number of the results exceed the limit. |

@@ -1,7 +1,5 @@
 args:
-- description: |-
-    The indicators query. Using `GetIndicatorsByQuery` automation.
-    Example: `type:IP and lastSeen:>="2022-02-16T16:20:00 +0200" `
+- description: 'The indicators query. Using `GetIndicatorsByQuery` automation. <br/>Example: `type:IP and lastSeen:>="2022-02-16T16:20:00 +0200"`.'
   name: query
   required: true
 - auto: PREDEFINED
