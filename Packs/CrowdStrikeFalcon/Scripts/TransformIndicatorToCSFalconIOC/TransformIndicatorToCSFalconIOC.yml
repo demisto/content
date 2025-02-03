@@ -55,7 +55,7 @@ outputs:
   description: The date on which the indicator will become inactive.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.description
-  description: Descriptive label for the indicator
+  description: Descriptive label for the indicator.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.tags
   description: List of tags of the indicator
