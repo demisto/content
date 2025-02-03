@@ -255,7 +255,7 @@ def create_ticket_context(data: dict, additional_fields: list | None = None) -> 
     }
     if additional_fields:
         for additional_field in additional_fields:
-            if camelize_string(additional_field) not in context.keys():
+            if camelize_string(additional_field) not in context:
                 # in case of a nested additional field (in the form of field1.field2)
                 nested_additional_field_list = additional_field.split('.')
                 if value := dict_safe_get(data, nested_additional_field_list):
@@ -287,8 +287,8 @@ def create_ticket_context(data: dict, additional_fields: list | None = None) -> 
     priority = data.get('priority')
     if priority:
         if isinstance(priority, dict):
-            context['Priority'] = TICKET_PRIORITY.get(str(int(priority.get('value', ''))),
-                                                      str(int(priority.get('value', '')))),
+            value = priority.get('value', '')
+            context['Priority'] = TICKET_PRIORITY.get(str(int(value)), str(int(value))) if value else ''
         else:
             context['Priority'] = TICKET_PRIORITY.get(priority, priority)
     state = data.get('state')
@@ -2620,6 +2620,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     if client.use_display_value and client.display_date_format:
         timezone_offset = get_timezone_offset(ticket, client.display_date_format)
         ticket = format_incidents_response_with_display_values(ticket)[0]
+    else:
+        timezone_offset = None
+        demisto.debug(f"not ({client.use_display_value=} and {client.display_date_format=}) setting {timezone_offset=}")
 
     ticket_last_update = arg_to_timestamp(
         arg=ticket.get('sys_updated_on'),
@@ -3128,7 +3131,7 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
         'Business Impact': BUSINESS_IMPACT.get(str(ticket.get('business_criticality', {}).get('value', '')), ''),
         'Urgency': ticket.get('urgency', {}).get('display_value', ''),
         'Severity': ticket.get('severity', {}).get('value', ''),
-        'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),
+        'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))) if priority else '',
         'State': states.get(str(int(state)), str(int(state))),
         'Approval': ticket.get('approval_history', {}).get('value', ''),
         'Created On': ticket.get('sys_created_on', {}).get('value', ''),

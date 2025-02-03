@@ -2,7 +2,7 @@
     "name": "Google Calendar",
     "description": "Google Calendar integration with Cortex XSOAR.",
     "support": "xsoar",
-    "currentVersion": "1.1.49",
+    "currentVersion": "1.1.51",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

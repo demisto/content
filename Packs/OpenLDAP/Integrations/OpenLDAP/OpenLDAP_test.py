@@ -223,12 +223,6 @@ class TestsOpenLDAP:
             client._is_valid_dn(dn, client.USER_IDENTIFIER_ATTRIBUTE)
         assert e.value.args[0] == f'OpenLDAP {user_identifier_attribute} attribute was not found in user DN : {dn}'
 
-    # def test_get_user_data(self):
-    #     client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip',
-    #                          'connection_type': 'SSL', 'user_identifier_attribute': 'uid'})
-    #
-    #     mocker.patch('OpenLDAP.LdapClient.search_user_data', return_value=)
-
 
 class TestLDAPAuthentication:
     """
@@ -305,10 +299,26 @@ class TestLDAPAuthentication:
         assert e.value.args[0] == (f'User defined attributes must be of the form "attrA=valA,attrB=valB,...", but got: '
                                    f'{client.CUSTOM_ATTRIBUTE}')
 
+    @pytest.mark.parametrize('user_logon_name', [
+        ('test*'),
+        ('test?test'),
+    ])
+    def test_has_wildcards_in_user_logon(self, user_logon_name):
+        """
+            Given:
+                1. A user logon name contains the "*" symbol.
+                2. A user logon name contains the "?" symbol.
+            When:
+                - Running the 'has_wildcards_in_user_logon()' function.
+            Then:
+                - Verify that an exception is raised due to the use of wildcards in the logon name.
+        """
+        client = LdapClient({'ldap_server_vendor': 'Active Directory', 'host': 'server_ip'})
 
-'''
-please add doc string to the tests in our format given: when: then
-'''
+        with pytest.raises(Exception) as e:
+            client._has_wildcards_in_user_logon(user_logon_name)
+        assert 'Wildcards were detected in the user logon name' in e.value.args[0]
+        assert user_logon_name in e.value.args[0]
 
 
 class TestEntriesPagedSearch(unittest.TestCase):

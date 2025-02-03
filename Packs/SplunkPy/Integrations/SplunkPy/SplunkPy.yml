@@ -28,6 +28,7 @@ configuration:
   display: Fetch events query
   name: fetchQuery
   type: 0
+  section: Collect
   required: false
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
@@ -295,12 +296,14 @@ configuration:
   name: comment_tag_from_splunk
   defaultvalue: FROM SPLUNK
   type: 0
+  section: Collect
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment from Splunk.
 - display: Comment tag to Splunk
   name: comment_tag_to_splunk
   defaultvalue: FROM XSOAR
   type: 0
+  section: Collect
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
 description: Runs queries on Splunk servers.
@@ -677,7 +680,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.115556
+  dockerimage: demisto/splunksdk-py3:1.0.0.117329
   isfetch: true
   ismappable: true
   isremotesyncin: true

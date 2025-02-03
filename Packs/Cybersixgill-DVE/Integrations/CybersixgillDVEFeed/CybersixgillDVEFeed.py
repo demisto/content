@@ -18,7 +18,7 @@ from sixgill.sixgill_utils import is_indicator
 """ CONSTANTS """
 INTEGRATION_NAME = "Sixgil_DVE_Feed"
 CHANNEL_CODE = "7698e8287dfde53dcd13082be750a85a"
-MAX_INDICATORS = 1000
+MAX_INDICATORS = 100
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 SUSPICIOUS_FEED_IDS = ["darkfeed_003"]
 DEMISTO_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -122,7 +122,7 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: str | None = None):
             ext_id = ext_obj[0].get("external_id")
         event_obj = stix_obj.get("x_sixgill_info", {}).get("event", {})
         nvd_obj = stix_obj.get("x_sixgill_info", {}).get("nvd", {})
-        score_obj = stix_obj.get("x_sixgill_info", {}).get("score", {})
+        score_obj = stix_obj.get("x_sixgill_info", {}).get("rating", {})
         fields = create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id)
         fields = get_description(fields)
         indicator["value"] = ext_id

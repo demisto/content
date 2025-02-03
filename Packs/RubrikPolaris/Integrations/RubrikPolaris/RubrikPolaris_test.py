@@ -46,6 +46,12 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def util_load_text_data(path: str) -> str:
+    """Load a text file."""
+    with open(path, encoding='utf-8') as f:
+        return f.read()
+
+
 def test_main_incorrect_credentials(requests_mock, monkeypatch, capfd, caplog):
     """Tests the execution of main function when incorrect credentials are provided."""
     from RubrikPolaris import main
@@ -57,7 +63,7 @@ def test_main_incorrect_credentials(requests_mock, monkeypatch, capfd, caplog):
 
         }})
     monkeypatch.setattr(mock_command, lambda: "rubrik-sonar-policy-analyzer-groups-list")
-    monkeypatch.setattr('demistomock.args', lambda: {})
+    monkeypatch.setattr('demistomock.args', dict)
     response_data = {
         "code": 401,
         "uri": "/api/session",
@@ -205,7 +211,7 @@ def test_get_api_token_when_not_found_in_integration_context(mocker_get_context,
 
     api_token = client.get_api_token()
 
-    assert api_token == bool(False)
+    assert not api_token
 
 
 @patch('demistomock.getIntegrationContext')
@@ -896,8 +902,13 @@ def test_vm_object_snapshot_get_when_invalid_arguments_are_provided(client, requ
     assert str(e.value) == error
 
 
-@pytest.mark.parametrize("empty_response", [True, False])
-def test_radar_anomaly_csv_analysis_success(client, requests_mock, empty_response):
+@pytest.mark.parametrize("empty_response, download_file", [
+    (True, "True"),
+    (True, "False"),
+    (False, "True"),
+    (False, "False")
+])
+def test_radar_anomaly_csv_analysis_success(client, requests_mock, empty_response, download_file):
     """Tests success for rubrik_radar_anomaly_csv_analysis."""
     from RubrikPolaris import rubrik_radar_anomaly_csv_analysis_command
 
@@ -907,22 +918,29 @@ def test_radar_anomaly_csv_analysis_success(client, requests_mock, empty_respons
                            "test_data/radar_anomaly_csv_analysis_hr.md")) as f:
         radar_anomaly_hr = f.read()
 
-    args = {"object_id": "dummy", "cluster_id": "dummy", "snapshot_id": "dummy"}
+    args = {"object_id": "dummy", "cluster_id": "dummy", "snapshot_id": "dummy", "download_file": download_file}
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           "test_data/radar_anomaly_csv_analysis_file.csv"), 'r') as f:
+        file_data = f.read()
+    requests_mock.get('https://dummy_link/snapshot_000-000-000.csv', text=file_data, status_code=200)
 
     if empty_response:
         response = radar_anomaly_response.get('empty_response')
         requests_mock.post(BASE_URL_GRAPHQL, json=response)
         response = rubrik_radar_anomaly_csv_analysis_command(client, args=args)
-        assert response.readable_output == MESSAGES['NO_RESPONSE']
+        assert response[0].readable_output == MESSAGES['NO_RESPONSE']
 
     else:
         responses = radar_anomaly_response.get('raw_response')
         requests_mock.post(BASE_URL_GRAPHQL, json=responses)
         response = rubrik_radar_anomaly_csv_analysis_command(client, args=args)
 
-        assert response.raw_response == radar_anomaly_response.get('raw_response')
-        assert response.outputs == remove_empty_elements(radar_anomaly_response.get('outputs'))
-        assert response.readable_output == radar_anomaly_hr
+        assert response[0].raw_response == radar_anomaly_response.get('raw_response')
+        assert response[0].outputs == remove_empty_elements(radar_anomaly_response.get('outputs'))
+        assert response[0].readable_output == radar_anomaly_hr
+        if download_file == 'True' and isinstance(response[1], dict):
+            assert response[1].get('File') == 'snapshot_000-000-000.csv'
 
 
 @pytest.mark.parametrize("args, error", [
@@ -2803,3 +2821,97 @@ def test_rubrik_radar_suspicious_file_list_command_with_invalid_args(client, arg
     with pytest.raises(ValueError) as e:
         rubrik_radar_suspicious_file_list_command(client, args=args)
     assert str(e.value) == error
+
+
+@patch('RubrikPolaris.return_warning')
+def test_ip_command_success(mock_return, client, requests_mock, capfd):
+    '''
+    Test case scenario for successful execution of ip_command.
+
+    Given:
+       - mocked client.
+    When:
+       - Calling `ip_command` function.
+    Then:
+       - Returns CommandResult.
+    '''
+    response = util_load_json('test_data/ip_command_success_response.json')
+    output = util_load_json('test_data/ip_command_success_output.json')
+    ip_hr = util_load_text_data('test_data/ip_command_success_hr.md')
+    ip_indicator = util_load_json('test_data/ip_indicator.json')
+
+    requests_mock.get(f'{BASE_URL}/thirdparty/workload_summary?search_string=0.0.0.1&search_type=ipv4',
+                      json=response, status_code=200)
+    requests_mock.get(f'{BASE_URL}/thirdparty/workload_summary?search_string=0.0.0.2&search_type=ipv4', json={}, status_code=200)
+
+    args = {"ip": "0.0.0.1,\"  0.0.0.2  \",0.0.0.256"}
+
+    capfd.close()
+    from RubrikPolaris import ip_command
+    command_output = ip_command(client, args=args)
+
+    assert MESSAGES["IP_NOT_FOUND"].format('0.0.0.2') == mock_return.call_args[0][0]
+    assert output == command_output[0].outputs
+    assert response == command_output[0].raw_response
+    assert ip_hr == command_output[0].readable_output
+    assert command_output[0].outputs_key_field == 'ip'
+    assert OUTPUT_PREFIX['IP'] == command_output[0].outputs_prefix
+    assert ip_indicator == command_output[0].indicator.to_context()
+
+
+def test_ip_command_when_all_ips_invalid(client, capfd):
+    '''
+    Test case scenario for the execution of ip_command with invalid ip addresses.
+
+    Given:
+       - mocked client.
+    When:
+       - Calling `ip_command` function.
+    Then:
+       - Returns exception.
+    '''
+    from RubrikPolaris import ip_command
+
+    args = {'ip': '0: 0: 85a3: 0000: asv: 8a2e: 0370: 7334, 2.2.2, \" a.b.c.d \"'}
+    capfd.close()
+    with pytest.raises(SystemExit) as err:
+        ip_command(client, args)
+
+    assert err.value.code == 0
+
+
+@patch('RubrikPolaris.return_warning')
+def test_domain_command_success(mock_return, client, requests_mock, capfd):
+    '''
+    Test case scenario for successful execution of domain_command.
+
+    Given:
+       - mocked client.
+    When:
+       - Calling `domain_command` function.
+    Then:
+       - Returns CommandResult.
+    '''
+    response = util_load_json('test_data/domain_command_success_response.json')
+    output = util_load_json('test_data/domain_command_success_output.json')
+    domain_hr = util_load_text_data('test_data/domain_command_success_hr.md')
+    domain_indicator = util_load_json('test_data/domain_indicator.json')
+
+    requests_mock.get(f'{BASE_URL}/thirdparty/workload_summary?search_string=DEMO-RADAR&search_type=name',
+                      json=response, status_code=200)
+    requests_mock.get(f'{BASE_URL}/thirdparty/workload_summary?search_string=DEMO-RADAR02&search_type=name',
+                      json={}, status_code=200)
+
+    args = {"domain": "DEMO-RADAR, ,DEMO-RADAR02"}
+
+    capfd.close()
+    from RubrikPolaris import domain_command
+    command_output = domain_command(client, args=args)
+
+    assert MESSAGES["DOMAIN_NOT_FOUND"].format('DEMO-RADAR02') == mock_return.call_args[0][0]
+    assert output == command_output[0].outputs
+    assert response == command_output[0].raw_response
+    assert domain_hr == command_output[0].readable_output
+    assert command_output[0].outputs_key_field == 'domain'
+    assert OUTPUT_PREFIX['DOMAIN'] == command_output[0].outputs_prefix
+    assert domain_indicator == command_output[0].indicator.to_context()

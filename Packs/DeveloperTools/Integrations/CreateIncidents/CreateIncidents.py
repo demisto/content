@@ -120,6 +120,7 @@ def create_test_incident_from_json_command(args):
     """
     This function will get the incidents and save the formatted incidents to instance context, for the fetch.
     """
+    incidents = None
     incidents_entry_id = args.get('incident_entry_id')
     incidents_json = args.get('incident_raw_json')
     if (not incidents_entry_id and not incidents_json) or (incidents_entry_id and incidents_json):

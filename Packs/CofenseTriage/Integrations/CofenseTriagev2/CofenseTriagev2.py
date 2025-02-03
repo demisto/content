@@ -299,7 +299,7 @@ class TriageReporters:
 
     def reporters(self):
         return [
-            TriageReporter(self.triage_instance, response["id"])  # TODO causes unnecessary extra request---we can just pass in `response`, which has all the fields already # noqa: 501
+            TriageReporter(self.triage_instance, response["id"])  # TODO causes unnecessary extra request---we can just pass in `response`, which has all the fields already # noqa: E501
             for response in self.fetch_reporters()
         ]
 

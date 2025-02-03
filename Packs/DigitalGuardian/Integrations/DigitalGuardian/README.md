@@ -1,4 +1,5 @@
-#Digital Guardian ARC Watchlist Integration
+# Digital Guardian ARC Watchlist Integration
+
 This integration was integrated and tested with version 2.11.0 of Digital Guardian ARC
 
 ## Configure Digital Guardian in Cortex

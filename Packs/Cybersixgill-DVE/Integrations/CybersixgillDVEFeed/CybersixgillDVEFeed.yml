@@ -7,15 +7,18 @@ configuration:
   name: client_id
   required: true
   type: 0
+  section: Connect
 - display: Client Secret
   name: client_secret
   required: true
   type: 4
+  section: Connect
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -27,6 +30,7 @@ configuration:
   - Bad
   type: 18
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -40,6 +44,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -50,6 +55,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - display: ''
   name: feedExpirationPolicy
   options:
@@ -58,44 +64,53 @@ configuration:
   - indicatorType
   type: 17
   required: false
+  section: Collect
 - display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
 - defaultvalue: '2'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
-- defaultvalue: '1000'
+  section: Collect
+- defaultvalue: '100'
   display: The maximum number of indicators to fetch.
   name: maxIndicators
   type: 0
   required: false
+  section: Collect
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Collect
 - display: Incremental Feed
   defaultvalue: 'true'
   hidden: true
   name: feedIncremental
   type: 8
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
   required: false
+  section: Collect
 description: The Cybersixgill Dynamic Vulnerability Exploit (DVE) Score is based on the most comprehensive collection of vulnerability-related threat intelligence and is the only solution that provides users total context and predicts the immediate risks of a vulnerability based on threat actors’ intent. Cortex XSOAR users can track threats stemming from CVEs that most others define as irrelevant and have a higher probability of being exploited via their Cortex XSOAR dashboard.
 display: Cybersixgill DVE Feed Threat Intelligence v2
 name: Sixgill_DVE_Feed v2
@@ -117,3 +132,6 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect
