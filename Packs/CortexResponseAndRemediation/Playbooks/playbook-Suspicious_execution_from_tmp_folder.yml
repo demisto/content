@@ -189,7 +189,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -201,18 +201,6 @@ tasks:
           right:
             value:
               simple: "2"
-        - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: DBotScore
-                accessor: Score
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: "3"
     continueonerrortype: ""
     view: |-
       {
