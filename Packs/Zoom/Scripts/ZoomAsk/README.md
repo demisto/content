@@ -67,12 +67,9 @@ To use `ZoomAsk` via playbook:
 5. In the `ZoomAsk` task, pass a tag value to the `task` argument.
 
 All other inputs are optional.
-
 At some point at the playbook, after running `ZoomAsk`, add a manual conditional task, which holds up the playbook execution until the response is received from Zoom.
-
 The condition names must match the response options you passed in to `ZoomAsk`.
-
-In order to tie the conditional task back to `ZoomAsk`, add the same tag from the fourth step to the conditional task (under the "Details" tab of the task). The conditional task will be marked as completed when a user responds to the `ZoomAsk` form.
+In order to tie the conditional task back to `ZoomAsk`, add the same tag from the fifth step to the conditional task (under the "Details" tab of the task). The conditional task will be marked as completed when a user responds to the `ZoomAsk` form.
 
 ## Notes
 
