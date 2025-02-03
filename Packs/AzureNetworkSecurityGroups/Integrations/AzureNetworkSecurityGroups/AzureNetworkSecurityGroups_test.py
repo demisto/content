@@ -122,18 +122,43 @@ def test_azure_nsg_networks_interfaces_list(mocker):
     assert res.get('location') == 'eastus'
     assert res.get('kind') == 'kind'
     
-# def test_create_azure_nsg_security_group(mocker):
-#     """
-#     Given: a security group to be created
-#     """
-#     from AzureNetworkSecurityGroups import azure_nsg_security_group_create
-#     client = mock_client(mocker, util_load_json('test_data/list_public_ip_addresses.json'))
-#     azure_nsg_security_group_create(client, args={'security_group_name': 'securityGroup', 'location': 'westus'},
-#                                     params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
-#     properties = client.http_request.call_args_list
-   
-#     assert properties==''
+def test_create_azure_nsg_security_group(mocker):
+    """
+    Given: a security group to be created
+    """
+    from AzureNetworkSecurityGroups import azure_nsg_security_group_create
+    client = mock_client(mocker, util_load_json('test_data/put_data.json'))
+    res = azure_nsg_security_group_create(client, args={'security_group_name': 'securityGroup', 'location': 'westus'},
+                                    params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
+    
+    assert '### Security Group' in res.readable_output
+    res = res.outputs
+    assert res.get('name') == 'test-nic'
+    assert res.get('etag') == 'etag'
+    assert res.get('location') == 'eastus'
+    assert res.get('securityRules') == []
 
+def test_create_azure_nsg_network_interfaces(mocker):
+    """
+    Given: a network interface to be created
+    """
+    from AzureNetworkSecurityGroups import azure_nsg_network_interfaces_create
+    client = mock_client(mocker, util_load_json('test_data/put_data.json'))
+    res = azure_nsg_network_interfaces_create(client, args={'nic_name': 'nic_name', 'location': 'westus',
+                                                      'ip_config_name':'ip_config_name', 'vnet_name':'vnet_name',
+                                                      'subnet_name':'subnet_name'},
+                                    params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
+    
+    assert '### Network Interface' in res.readable_output
+    res = res.outputs
+    assert res.get('name') == 'test-nic'
+    assert res.get('etag') == 'etag'
+    assert res.get('provisioningState') == 'Succeeded'
+    assert res.get('ipConfigurationName') == ['ipconfig1']
+    assert res.get('ipConfigurationPrivateIPAddress') == ['172.20.2.4']
+    assert res.get('ipConfigurationPublicIPAddressName') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip']
+    assert res.get('subnetId') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/rg1-vnet/subnets/default']
+   
 def test_create_rule_command(mocker):
     """
     Given: a rule to be created
