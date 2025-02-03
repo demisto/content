@@ -17,6 +17,8 @@ args:
   description: Entry ID where EmailAskUser will complete when user replies.
 - name: prefix
   description: Text to remove from the start of the answer. If the response contains a known prefix that should be removed, this argument should be used.
+- name: suffix
+  description: Text to remove from the end of the answer. If the response contains a known suffix that should be removed, this argument should be used.
 scripttarget: 0
 fromversion: 5.0.0
 tests:

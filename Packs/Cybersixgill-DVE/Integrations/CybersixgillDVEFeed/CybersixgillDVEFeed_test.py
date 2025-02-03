@@ -57,7 +57,7 @@ iocs_bundle = [
                         "vector_v2": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
                         "vector_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                     },
-                    "score": {
+                    "rating": {
                         "current": 0.02,
                         "highest": {"date": "2020-07-27T00:00Z", "value": 0.02},
                         "previouslyExploited": 0.07,
@@ -96,7 +96,7 @@ iocs_bundle = [
                         "vector_v2": "AV:N/AC:M/Au:N/C:C/I:C/A:C",
                         "vector_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
                     },
-                    "score": {
+                    "rating": {
                         "current": 9.13,
                         "highest": {"date": "2020-07-14T00:00Z", "value": 9.25},
                         "previouslyExploited": 5.32,
@@ -135,7 +135,7 @@ iocs_bundle = [
                         "vector_v2": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
                         "vector_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
                     },
-                    "score": {
+                    "rating": {
                         "current": 8.33,
                         "highest": {"date": "2020-07-25T00:00Z", "value": 8.4},
                         "previouslyExploited": 5.07,
@@ -174,7 +174,7 @@ iocs_bundle = [
                         "vector_v2": "None",
                         "vector_v3": "None",
                     },
-                    "score": {"current": None, "highest": {"date": None, "value": None}, "previouslyExploited": None},
+                    "rating": {"current": None, "highest": {"date": None, "value": None}, "previouslyExploited": None},
                 },
             },
             {
@@ -210,7 +210,7 @@ iocs_bundle = [
                         "vector_v2": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
                         "vector_v3": "None",
                     },
-                    "score": {
+                    "rating": {
                         "current": None,
                         "highest": {"date": "2016-04-14T00:00Z", "value": 7.02},
                         "previouslyExploited": 1.51,
@@ -250,7 +250,7 @@ iocs_bundle = [
                         "vector_v2": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
                         "vector_v3": "None",
                     },
-                    "score": {
+                    "rating": {
                         "current": None,
                         "highest": {"date": "2016-04-14T00:00Z", "value": 7.02},
                         "previouslyExploited": 1.51,
@@ -321,7 +321,7 @@ expected_ioc_output = [
                     "vector_v2": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
                     "vector_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                 },
-                "score": {
+                "rating": {
                     "current": 0.02,
                     "highest": {"date": "2020-07-27T00:00Z", "value": 0.02},
                     "previouslyExploited": 0.07,
@@ -414,7 +414,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
                     "vector_v2": "AV:N/AC:M/Au:N/C:C/I:C/A:C",
                     "vector_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
                 },
-                "score": {
+                "rating": {
                     "current": 9.13,
                     "highest": {"date": "2020-07-14T00:00Z", "value": 9.25},
                     "previouslyExploited": 5.32,
@@ -507,7 +507,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
                     "vector_v2": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
                     "vector_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
                 },
-                "score": {
+                "rating": {
                     "current": 8.33,
                     "highest": {"date": "2020-07-25T00:00Z", "value": 8.4},
                     "previouslyExploited": 5.07,
@@ -600,7 +600,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
                     "vector_v2": "None",
                     "vector_v3": "None",
                 },
-                "score": {"current": None, "highest": {"date": None, "value": None}, "previouslyExploited": None},
+                "rating": {"current": None, "highest": {"date": None, "value": None}, "previouslyExploited": None},
             },
         },
         "score": 3,
@@ -690,7 +690,7 @@ NVD Vector - V3.1: None
                     "vector_v2": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
                     "vector_v3": "None",
                 },
-                "score": {
+                "rating": {
                     "current": None,
                     "highest": {"date": "2016-04-14T00:00Z", "value": 7.02},
                     "previouslyExploited": 1.51,
@@ -784,7 +784,7 @@ NVD Vector - V3.1: None
                     "vector_v2": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
                     "vector_v3": "None",
                 },
-                "score": {
+                "rating": {
                     "current": None,
                     "highest": {"date": "2016-04-14T00:00Z", "value": 7.02},
                     "previouslyExploited": 1.51,

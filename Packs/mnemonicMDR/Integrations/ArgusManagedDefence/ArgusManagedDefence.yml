@@ -6031,7 +6031,7 @@ script:
       required: true
       description: Case ID
     description: Download all attachments related to Argus Case.
-  dockerimage: demisto/argus-toolbelt:3.0.0.91320
+  dockerimage: demisto/argus-toolbelt:3.0.0.2055215
   isfetch: true
   subtype: python3
   isremotesyncin: true
