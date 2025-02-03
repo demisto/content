@@ -1,4 +1,4 @@
-This playbook addresses the following alerts:
+This playbook addresses the following alerts for linux os:
 
 - Suspicious process execution from tmp folder
 - Suspicious interactive execution of a binary from the tmp folder
@@ -25,8 +25,6 @@ Remediation:
 - Terminate causality process
 - Quarantine the malicious process image file (requires manual approval).
 - Disable the suspicious cron job task (requires manual action).
-
-This structure ensures swift action for known threats while allowing for deeper investigation when the initial analysis is inconclusive.
 
 ## Dependencies
 
