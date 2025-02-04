@@ -1,0 +1,32 @@
+{
+    "id": "incident_ustastolencreditcards_card_number",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "modified": "2024-11-11T16:15:34.34081608Z",
+    "name": "Usta Stolen Credit Cards Card Number",
+    "ownerOnly": false,
+    "placeholder": "USTA Stolen Credit Card Number",
+    "cliName": "ustastolencreditcardscardnumber",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "USTA Stolen Credit Card"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}
