@@ -4446,6 +4446,7 @@ Return the detections for the specified curated rule identifier.
 
 ***
 Lists the events for the specified UDM Search query.
+Note: The underlying API has the rate limit of 120 queries per hour.
 
 #### Base Command
 
