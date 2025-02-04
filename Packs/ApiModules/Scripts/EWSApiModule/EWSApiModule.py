@@ -788,7 +788,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
     return clean_body, attachments
 
 
-def get_config_args_from_context(context: dict, credentials: BaseCredentials):
+def get_config_args_from_context(context: dict, credentials: BaseCredentials) -> dict:
     """
     Create a configuration obj from the cached autodiscovery results in the provided integration context.
 
@@ -811,7 +811,7 @@ def get_config_args_from_context(context: dict, credentials: BaseCredentials):
     return config_args
 
 
-def get_build_from_context(context: dict):
+def get_build_from_context(context: dict) -> Build:
     """
     Create a Build object from the cached autodiscovery results in the provided integration context.
 
@@ -824,7 +824,7 @@ def get_build_from_context(context: dict):
     return Build(*build_params)
 
 
-def get_endpoint_from_context(context_dict: dict):
+def get_endpoint_from_context(context_dict: dict) -> str:
     """
     Get the EWS Server endpoint from the cached autodiscovery results in the provided integration context.
 
@@ -835,7 +835,7 @@ def get_endpoint_from_context(context_dict: dict):
     return context_dict['service_endpoint']
 
 
-def cache_autodiscover_results(context: dict, account: Account):
+def cache_autodiscover_results(context: dict, account: Account) -> dict:
     """
     Add the autodiscovery results to the integration context for later reuse.
 
@@ -852,7 +852,7 @@ def cache_autodiscover_results(context: dict, account: Account):
     return context
 
 
-def get_on_prem_build(version: str):
+def get_on_prem_build(version: str) -> Build:
     """
     Convert a version string to a Build object for supported on-prem Exchange Server versions.
 
@@ -867,7 +867,7 @@ def get_on_prem_build(version: str):
     return SUPPORTED_ON_PREM_BUILDS[version]
 
 
-def get_on_prem_version(version: str):
+def get_on_prem_version(version: str) -> Version:
     """
     Convert a version string to a Version object for supported on-prem Exchange Server versions.
 
@@ -1003,11 +1003,12 @@ def move_item_between_mailboxes(src_client: EWSClient, item_id, destination_mail
                                 is_public: Optional[bool] = None) -> CommandResults:
     """
     Moves item between mailboxes
-    :param client: EWS Client
+    :param src_client: EWS Client for the source mailbox
     :param item_id: item id
     :param destination_mailbox: destination mailbox
     :param destination_folder_path: destination folder path
-    :param (Optional) source_mailbox: source mailbox
+    :param (Optional) dest_client: EWS Client for the destination mailbox (For O365 since target mailbox impacts authentication)
+    :param (Optional) source_mailbox: source mailbox (Defaults to account_email)
     :param (Optional) is_public: is the destination folder public
     :return: result object
     """
@@ -1111,13 +1112,16 @@ def get_out_of_office_state(client: EWSClient, target_mailbox: Optional[str] = N
     """
     account = client.get_account(target_mailbox)
     oof = account.oof_settings
+    if not oof:
+        raise DemistoException(f'Failed to get out of office state for {target_mailbox or client.account_email}')
+
     oof_dict = {
-        'state': oof.state,  # pylint: disable=E1101
+        'state': oof.state,
         'externalAudience': getattr(oof, 'external_audience', None),
-        'start': oof.start.ewsformat() if oof.start else None,  # pylint: disable=E1101
-        'end': oof.end.ewsformat() if oof.end else None,  # pylint: disable=E1101
-        'internalReply': getattr(oof, 'internal_replay', None),
-        'externalReply': getattr(oof, 'external_replay', None),
+        'start': oof.start.ewsformat() if oof.start else None,
+        'end': oof.end.ewsformat() if oof.end else None,
+        'internalReply': getattr(oof, 'internal_reply', None),
+        'externalReply': getattr(oof, 'external_reply', None),
         MAILBOX: account.primary_smtp_address,
     }
 
@@ -1143,7 +1147,7 @@ def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path:
     recovered_messages = []
     message_ids = argToList(message_ids)
 
-    items_to_recover = account.recoverable_items_deletions.filter(message_id__in=message_ids).all()  # pylint: disable=E1101
+    items_to_recover = account.recoverable_items_deletions.filter(message_id__in=message_ids).all()
 
     recovered_items = set()
     for item in items_to_recover:
