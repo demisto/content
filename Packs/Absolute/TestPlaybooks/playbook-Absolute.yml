@@ -1,5 +1,6 @@
 id: Absolute_TestPlaybook
 version: 7
+fromversion: 6.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: Absolute_TestPlaybook
 starttaskid: "0"
