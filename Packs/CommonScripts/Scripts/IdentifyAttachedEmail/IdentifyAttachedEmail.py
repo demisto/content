@@ -42,7 +42,7 @@ def get_email_entry_id(entry: dict) -> None | str:
         file_metadata = entry.get('FileMetadata', {})
         name = entry.get('File', '')
         demisto.debug(f"IAE {file_metadata=}, {name=}")
-        demisto.debug(f"IAE {is_email(file_metadata, name)}=")
+        demisto.debug(f"IAE {is_email(file_metadata, name)=}")
         if is_email(file_metadata, name):
             return entry.get('ID')
     return None
@@ -58,11 +58,12 @@ def identify_attached_mail(args):
             entry_ids = entry_ids.strip().replace(r'\"', '"')  # type:ignore
         demisto.debug(f"IAE After parsing {entry_ids=}")
         entry_ids = argToList(entry_ids)
-
+        demisto.debug(f"IAE {is_xsiam_or_xsoar_saas()=}")
         if is_xsiam_or_xsoar_saas():
-            demisto.debug(f"IAE {is_xsiam_or_xsoar_saas()=}")
             entry_ids_str = ",".join(entry_ids)
             entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids_str})
+            if is_error(entries):
+                demisto.info(f"There was an error executing getEntriesByIDs {get_error(entries)=}")
             demisto.debug(f"IAE executed getEntriesByIDs {entries=}")
         else:
             for ent_id in entry_ids:
