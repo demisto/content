@@ -20,6 +20,7 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *
+from requests.auth import HTTPDigestAuth
 
 urllib3.disable_warnings()
 
@@ -37,20 +38,23 @@ BEARER_PREFIX = 'Bearer '
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, client_id: str, client_secret: str):
-        super().__init__(base_url=base_url, verify=verify)
-        self.client_id = client_id
-        self.client_secret = client_secret
+        auth = (client_id, client_secret)
+        super().__init__(base_url=base_url, verify=verify, auth=auth)
         self.token = None  # TODO
-        self.generate_token()
 
-    def generate_token(self):
+    def get_access_token_for_audit(self):
+        data = {
+            "grant_type": "client_credentials",
+            "scope": "audit.log:read"
+        }
         results = self._http_request(
             method="POST",
-            url_suffix=f"/oauth2/token?grant_type=client_credentials&scope=audit.log:read",
+            url_suffix="/oauth2/token",
+            data=data
         )
         self.token = results['access_token']
 
-    def get_events(self, start_date: str, end_date: str) -> dict:
+    def get_audit_logs(self, start_date: str, end_date: str) -> dict:
         headers = {
             'Authorization': f'{BEARER_PREFIX}{self.token}',
         }
@@ -70,6 +74,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
+    client.get_access_token_for_audit()
     return "ok"
 
 
@@ -88,7 +93,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     current_start_date = event_date
 
     while True:
-        events = client.get_events(event_date, end)
+        events = client.get_audit_logs(event_date, end)
 
         if rate_limit_reached():
             check_if_limit_more_than_0_and_wait_this_time
@@ -97,8 +102,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             return
         if got_error_for_token:
             client.regnerate_token
-            client.get_events(event_date, end)
-
+            client.get_audit_logs(event_date, end)
         if not events:
             break
 
@@ -126,28 +130,33 @@ def main():
     """main function, parses params and runs command functions"""
     params = demisto.params()
     args = demisto.args()
-    base_url = params.get("url")
-    verify_certificate = not argToBoolean(params("insecure", False))
-    proxy = argToBoolean(params.get("proxy", False))
-
     command = demisto.command()
+
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {
-
-        }
+        base_url = params.get("url")
+        verify_certificate = not argToBoolean(params.get("insecure", False))
+        proxy = argToBoolean(params.get("proxy", False))
+        client_id = params.get('credentials', {}).get('identifier')
+        client_secret = params.get('credentials', {}).get('password')
+        fetch_limit = arg_to_number(params.get('max_events_per_fetch')) or DEFAULT_FETCH_LIMIT
 
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            headers=headers,
-            proxy=proxy
+            client_id=client_id,
+            client_secret=client_secret
         )
         if command == "test-module":
             result = test_module(client)
             return result
         elif command == "fetch-events":
-            pass
+            events, new_last_run_dict = fetch_events(client, fetch_limit)
+            if events:
+                demisto.debug(f'Sending {len(events)} events.')
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(new_last_run_dict)
+            demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "celonis-get-events":
             pass
         else:
