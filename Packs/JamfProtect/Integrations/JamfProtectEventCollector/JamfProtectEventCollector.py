@@ -163,7 +163,7 @@ class Client(BaseClient):
         Fetches data from the Jamf Protect API based on the event type.
 
         Args:
-            event_type (str): The type of data to retrieve. Possible values: "alert", "computer", "audit".
+            event_type (str): The type of data to retrieve. Possible values: "alert", "computers", "audit".
             next_page (str): The token for the next page of results, used for pagination. Default is "".
             args (dict): A dictionary of arguments for the GraphQL query. Default is {}.
 
@@ -240,7 +240,7 @@ class Client(BaseClient):
                     }
                 }
 
-        elif event_type == "computer":
+        elif event_type == "computers":
             query = """
                 query listComputers($page_size: Int, $next: String) {
                     listComputers( input: {
@@ -482,7 +482,7 @@ def fetch_assets(client, assets_last_run={}, max_fetch=COMPUTER_MAX_FETCH):
     next_page = assets_last_run.get('next_page', '')
     snapshot_id = assets_last_run.get('snapshot_id', str(round(time.time() * 1000)))
 
-    assets, page_info = get_events(client, "computer", max_fetch, next_page)
+    assets, page_info = get_events(client, "computers", max_fetch, next_page)
 
     next_run = {
         'next_page': page_info.get("next"),
@@ -656,7 +656,7 @@ def add_fields_to_events(events: list[dict[str, Any]], event_type: str) -> list:
     """
     for event in events:
         event["source_log_type"] = event_type
-        if event_type != "computer":
+        if event_type != "computers":
             event['_time'] = event.get('date') or event.get('created')
 
     return events

@@ -432,12 +432,12 @@ def test_add_fields_to_events_with_computer_events():
         {"id": 1, "created": "2022-01-02T00:00:00Z", "name": "Computer 1"},
         {"id": 2, "created": "2022-01-02T00:00:00Z", "name": "Computer 2"}
     ]
-    event_type = "computer"
+    event_type = "computers"
 
     updated_events = add_fields_to_events(events, event_type)
 
     assert len(updated_events) == 2
     assert "_time" not in updated_events[0]
-    assert updated_events[0]["source_log_type"] == "computer"
+    assert updated_events[0]["source_log_type"] == "computers"
     assert "_time" not in updated_events[1]
-    assert updated_events[1]["source_log_type"] == "computer"
+    assert updated_events[1]["source_log_type"] == "computers"
