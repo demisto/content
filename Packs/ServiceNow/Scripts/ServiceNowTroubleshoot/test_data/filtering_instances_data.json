@@ -1,0 +1,49 @@
+{
+    "ServiceNow v2_instance_2": {
+        "id": "11111", "name": "ServiceNow v2_instance_2", "version": 5, "sequenceNumber": 453233, "primaryTerm": 1,
+        "modified": "2025-01-27T09:14:18.207475895Z", "sizeInBytes": 3066, "enabled": "true",
+        "configvalues": {
+             "api_version": "None", "close_custom_state": "None", "close_incident": "None",
+             "close_ticket": "False", "close_ticket_multiple_options": "None", "comment_tag": "comments",
+             "comment_tag_from_servicenow": "CommentFromServiceNow", "custom_fields": "None", "display_date_format": "None",
+             "fetch_limit": "10", "fetch_time": "1 year", "file_tag": "ForServiceNow",
+             "file_tag_from_service_now": "FromServiceNow", "get_attachments": "False", "incidentFetchInterval": "1",
+             "incidentType": "None", "incident_name": "number", "insecure": "False", "isFetch": "True", "look_back": "0",
+             "mirror_direction": "Both", "mirror_limit": "100", "mirror_notes_for_new_incidents": "False", "proxy": "False",
+             "server_close_custom_state": "None", "server_custom_close_code": "None", "sysparm_query": "stateNOT IN6,7",
+             "ticket_type": "incident", "timestamp_field": "opened_at", "update_timestamp_field": "sys_updated_on",
+             "url": "https://url_dummy/", "use_display_value": "False", "use_oauth": "False",
+             "work_notes_tag": "work_notes", "work_notes_tag_from_servicenow": "WorkNoteFromServiceNow"
+        },
+        "brand": "ServiceNow v2", "category": "Case Management",
+        "health": {
+            "id": "ServiceNow v2.ServiceNow v2_instance_2", "version": 16, "sequenceNumber": 454401,
+            "primaryTerm": 1, "modified": "2025-01-27T09:26:49.458264357Z", "sizeInBytes": 516, "sortValues": ["5994"],
+            "brand": "ServiceNow v2", "instance": "ServiceNow v2_instance_2", "incidentsPulled": 10, "incidentsDropped": 0,
+            "lastPullTime": "2025-01-27T09:26:45.226409678Z", "lastError": ""}
+        },
+        "ServiceNow v2_instance_1": {
+            "id": "22222", "name": "ServiceNow v2_instance_1", "version": 5, "modified": "2025-01-27T09:14:18.207475895Z",
+            "sizeInBytes": 3066, "enabled": "false",
+            "configvalues": {
+                "api_version": "None", "close_custom_state": "None", "close_incident": "None",
+                "close_ticket": "False", "close_ticket_multiple_options": "None", "comment_tag": "comments",
+                "comment_tag_from_servicenow": "CommentFromServiceNow", "custom_fields": "None", "display_date_format": "None",
+                "fetch_limit": "10", "fetch_time": "1 year", "file_tag": "ForServiceNow",
+                "file_tag_from_service_now": "FromServiceNow", "get_attachments": "False", "incidentFetchInterval": "1",
+                "incidentType": "None", "incident_name": "number", "insecure": "False", "isFetch": "True", "look_back": "0",
+                "mirror_direction": "Both", "mirror_limit": "100", "mirror_notes_for_new_incidents": "False", "proxy": "False",
+                "server_close_custom_state": "None", "server_custom_close_code": "None",
+                "sysparm_query": "stateNOT IN6,7", "ticket_type": "incident", "timestamp_field": "opened_at",
+                "update_timestamp_field": "sys_updated_on", "url": "https://url_dummy/",
+                "use_display_value": "False", "use_oauth": "False", "work_notes_tag": "work_notes",
+                "work_notes_tag_from_servicenow": "WorkNoteFromServiceNow"},
+            "brand": "ServiceNow v2", "category": "Case Management",
+            "health": {
+                "id": "ServiceNow v2.ServiceNow v2_instance_1", "version": 16, "sequenceNumber": 454401,
+                "primaryTerm": 1, "modified": "2025-01-27T09:26:49.458264357Z", "sizeInBytes": 516, "sortValues": ["5994"],
+                "brand": "ServiceNow v2", "instance": "ServiceNow v2_instance_1", "incidentsPulled": 10, "incidentsDropped": 0,
+                "lastPullTime": "2025-01-27T09:26:45.226409678Z", "lastError": ""
+            }
+    }
+}
