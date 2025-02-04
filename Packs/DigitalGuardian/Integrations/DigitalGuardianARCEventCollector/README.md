@@ -5,7 +5,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Known Limitations
 
-- By default, a maximum of **10,000** events can be retrieved per fetch for each Digital Guardian export profile. To increase the volume of fetched events beyond this value, set the "Number of Export Requests per Fetch" configuration parameter to greater than 1. For example, setting this parameter to 4 would fetch up to 40,000 events per export profile. Note that increasing this value beyond 1 may result in exceeding daily data ingestion quota in the Cortex XSIAM license plan.
+- By default, a maximum of **10,000** events can be retrieved per fetch for each Digital Guardian export profile. To increase the volume of fetched events beyond this value, set the "Number of Export Requests per Fetch" configuration parameter to greater than 1. For example, setting this parameter to 4 would fetch up to 40,000 events per export profile. Note that fetching a large number of events may result in exceeding the daily data ingestion quota in the Cortex XSIAM license plan.
 
 - Events are fetched starting from the **Last Exported Record** timestamp of the export profile. When first configuring the event collector, it is highly recommended to adjust the value of this field in the selected export profile(s) to a recent timestamp to prevent the fetching of outdated events.
 
