@@ -8,7 +8,7 @@ During the analysis, the playbook will perform the following:
 - Checks if the causality process (CGO) is signed and prevalent.
 - Checks for the host's risk score.
 
-If the CGO is unsigned and not prevalent or either of them plus with a high-risk score, it proceeds to remediation actions; otherwise, it continues to the investigation phase.
+If the CGO process is not signed and not prevalent, or if either of these conditions is met in addition to having a high-risk score, the playbook proceeds with remediation actions. Otherwise, it will continue to the investigation phase.
 
 Investigation:
 During the alert investigation, the playbook will perform the following:
@@ -22,7 +22,7 @@ Searches for related Cortex XSIAM alerts and insights on the same causalities ch
 - Execution From a Restricted Location
 - Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
 
-The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions; otherwise, it closes the alert with the message "No indication of malicious activity was found".
+The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions. Otherwise, it closes the alert with the following message: "No indication of malicious activity was found".
 
 
 Remediation:  

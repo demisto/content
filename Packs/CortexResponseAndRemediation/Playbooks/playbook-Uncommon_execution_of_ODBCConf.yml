@@ -12,7 +12,7 @@ description: |-
     - Checks if the causality process (CGO) is signed and prevalent.
     - Checks for the host's risk score.
 
-    If the CGO is unsigned and not prevalent or either of them plus with a high-risk score, it proceeds to remediation actions; otherwise, it continues to the investigation phase.
+    If the CGO process is not signed and not prevalent, or if either of these conditions is met in addition to having a high-risk score, the playbook proceeds with remediation actions. Otherwise, it will continue to the investigation phase.
 
     Investigation:
     During the alert investigation, the playbook will perform the following:
@@ -26,7 +26,7 @@ description: |-
     - Execution From a Restricted Location
     - Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
 
-    The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions; otherwise, it closes the alert with the message "No indication of malicious activity was found".
+    The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions. Otherwise, it closes the alert with the following message: "No indication of malicious activity was found".
 
 
     Remediation:  
@@ -76,7 +76,7 @@ tasks:
       id: d6d828b0-4213-478a-84e4-56ab20a4ce74
       version: -1
       name: Check if the causality process is prevalent
-      description: Get the prevalence of a process, identified by process_name.
+      description: Get the prevalence of a process, identified by the process_name.
       script: '|||core-get-process-analytics-prevalence'
       type: regular
       iscommand: true
@@ -111,7 +111,7 @@ tasks:
       id: a30d9322-0cf5-469f-88cf-c6c63d905b08
       version: -1
       name: Check if the causality process is prevalent and not signed
-      description: This task checks if the causality process is prevalent and not signed
+      description: Checks if the causality process is prevalent and unsigned.
       type: condition
       iscommand: false
       brand: ""
@@ -161,7 +161,7 @@ tasks:
       id: 765fe8d2-bdd1-4be4-8a98-48c82c984a70
       version: -1
       name: Remediation
-      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available for Cortex XSIAM 2.4 and above.
       type: title
       iscommand: false
       brand: ""
@@ -193,7 +193,7 @@ tasks:
       id: bd9cacdf-4ffb-44e7-81b4-7d958cb76986
       version: -1
       name: Close Alert
-      description: Close the current alert as True Positive.
+      description: Close the current alert as a True Positive.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -297,8 +297,8 @@ tasks:
     task:
       id: 5b00bf39-f41c-4580-8ee8-a7eb6546221f
       version: -1
-      name: Close Alert - No results returned
-      description: Close the current alert as False Positive.
+      name: Close Alert - No malicious activity was found
+      description: Close the current alert as a False Positive.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -336,7 +336,7 @@ tasks:
     task:
       id: 6bb015bc-9dc9-4669-8e89-17a7be7c0a70
       version: -1
-      name: No Results Found
+      name: No malicious activity was found
       type: title
       iscommand: false
       brand: ""
@@ -368,7 +368,7 @@ tasks:
       id: 2f2ea69d-4ed3-404f-869e-8d0f824d82e6
       version: -1
       name: Terminate Causality (CGO)
-      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available for Cortex XSIAM 2.4 and above.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -445,7 +445,7 @@ tasks:
       id: bcca051a-ab0b-4b59-8846-c6b7238fe153
       version: -1
       name: Is There a Host Risk Score?
-      description: This task checks if the host risk score was retrieved.
+      description: Checks if the host risk score was retrieved.
       type: condition
       iscommand: false
       brand: ""
@@ -485,8 +485,8 @@ tasks:
     task:
       id: 5170b127-ee82-4589-874a-6b668e00b2c5
       version: -1
-      name: Is the Risk Score High
-      description: "this tasks checks if the host risk score is \"High\"."
+      name: Is the Risk Score High and the CGO isn't prevelant or unsigned
+      description: Checks if the host risk score is "High" and the CGO isn't prevelant or unsigned.
       type: condition
       iscommand: false
       brand: ""
@@ -544,13 +544,9 @@ tasks:
     task:
       id: 7ce3bc2a-81a0-42e7-8d82-c6f35d296cbf
       version: -1
-      name: Check For Specific Alerts
+      name: Check For Specific Alerts By CGO
       description: |-
-        Searches Demisto alerts. A summarized version of this scrips is available with the summarizedversion argument.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Permission-Management
+        Searches Cortex XSIAM alerts. A summarized version of this scripts is available with the summarizedversion argument.
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
