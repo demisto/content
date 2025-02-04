@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
+import pytz
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -87,6 +88,8 @@ class OktaASAClient(BaseClient):
             events_response = self.get_audit_events_request(params)
         except DemistoException as e:
             if e.res is not None and e.res.status_code == 401 and "Authentication token expired" in e.res.text:
+                self.is_token_refresh_required(hard=True)
+                demisto.debug(f"{INTEGRATION_NAME}: Hard refresh token")
                 events_response = self.get_audit_events_request(params)
             else:
                 raise e
@@ -105,9 +108,12 @@ class OktaASAClient(BaseClient):
         token_response: dict = {}
 
         if integration_context:
-            now_utc = datetime.now(timezone.utc)
-            expires_at_token = integration_context.get("expires_at", str(now_utc))
+            current_time = datetime.now().astimezone(pytz.utc)
+            expires_at_token = integration_context.get("expires_at", str(current_time))
             is_token_expired = has_passed_time_threshold(expires_at_token, TOKEN_LIFE_TIME_SECONDS) or hard
+            demisto.debug(
+                f"{INTEGRATION_NAME}: is_token_expired {is_token_expired=},"
+                f"{current_time.strftime(DATE_FORMAT)=}, {expires_at_token=}")
             token_response = (self.get_token_request()
                               if is_token_expired
                               else integration_context)
@@ -133,7 +139,6 @@ class OktaASAClient(BaseClient):
         descending = False
         # We are limited to 1000 results per request, count > 1000 does not work.
         count = 1000 if limit and limit > 1000 else limit
-        demisto.debug(f"{INTEGRATION_NAME}: count for the request is {count}")
         while limit and len(results) < limit:
             descending = bool(not offset)
             events = self.execute_audit_events_request(offset=offset, count=count, descending=descending, prev=None)
@@ -168,6 +173,7 @@ def test_module(client: OktaASAClient) -> str:
             client=client,
             last_run={},
             max_audit_events_per_fetch=1,
+            is_fetch_events=True
         )
 
     except Exception as e:
@@ -206,7 +212,7 @@ def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
                          ) -> tuple[Dict, List[Dict]]:
     """
     Args:
-        client (Client): HelloWorld client to use.
+        client (OktaASAClient): OktaASAClient client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
         max_audit_events_per_fetch (int): number of events per fetch
     Returns:
