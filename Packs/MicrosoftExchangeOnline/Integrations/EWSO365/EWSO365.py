@@ -1642,6 +1642,7 @@ def create_message(
     Returns:
         Message. Message object ready to be sent.
     """
+    demisto.debug(f"create_message: Received {len(attachments)} attachments, {handle_inline_image=}")
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
@@ -1656,7 +1657,7 @@ def create_message(
         if handle_inline_image:
             html_body, html_attachments = handle_html(html_body)
             attachments += html_attachments
-
+            demisto.debug(f"create_message: Processed HTML body with {len(attachments)} attachments")
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
                                         reply_to, importance)
 
