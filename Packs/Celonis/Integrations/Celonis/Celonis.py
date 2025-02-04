@@ -31,6 +31,7 @@ PRODUCT = 'Celonis'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 PAGE_SIZE = 200
 PAGE_NUMBER = 0
+DEFAULT_FETCH_LIMIT = 600
 BEARER_PREFIX = 'Bearer '
 
 """ CLIENT CLASS """
@@ -66,7 +67,6 @@ class Client(BaseClient):
         return results
 
 
-
 """ HELPER FUNCTIONS """
 
 
@@ -79,11 +79,10 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
-    output: list = []
-
-    if get_events_args:
-        pass
-    else:
+    if get_events_args:  # handle get_event command
+        event_date = get_events_args.get('start_date', '')
+        end = get_events_args.get('end_date', '')
+    else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
         event_date = last_run.get('start_date', '')
         if not event_date:
@@ -91,25 +90,25 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         end = get_current_time().strftime(DATE_FORMAT)
 
     current_start_date = event_date
-
+    output: list = []
     while True:
         events = client.get_audit_logs(event_date, end)
-
-        if rate_limit_reached():
-            check_if_limit_more_than_0_and_wait_this_time
-            # TODO to add logs
-            send_message_to_client_and_return_results()
-            return
-        if got_error_for_token:
-            client.regnerate_token
-            client.get_audit_logs(event_date, end)
+        if events.get('errorCode') == "LIMIT_RATE_EXCEEDED":  # rate limit reached
+            demisto.debug(f"Rate limit reached. Returning {len(events)} instead of {fetch_limit} Audit logs.")
+            new_last_run = {'start_date': event_date}
+            return output, new_last_run
+        if events.get('error') == 'Unauthorized':  # need to regenerate the token
+            client.get_access_token_for_audit()
+            events = client.get_audit_logs(event_date, end)
         if not events:
             break
+        if check_if_limit_more_than_0_and_wait_this_time:
+            pass
 
         for event in events:
-            event['_TIME'] = event.get('date')
+            event_date = event.get('timestamp')
+            event['_TIME'] = event_date
             output.append(event)
-            event_date = get_and_parse_date(event)
 
             if event_date != current_start_date:
                 current_start_date = event_date
@@ -123,7 +122,28 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
 
 
 def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
-    pass
+    start_date = args.get('start_date')
+    end_date = args.get('end_date')
+    limit: int = arg_to_number(args.get('limit')) or DEFAULT_FETCH_LIMIT
+
+    output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
+
+    filtered_events = []
+    for event in output:
+        filtered_event = {'User ID': event.get('userId'),
+                          'User Role': event.get('userRole'),
+                          'Event': event.get('event'),
+                          'Timestamp': event.get('timestamp')
+                          }
+        filtered_events.append(filtered_event)
+
+    human_readable = tableToMarkdown(name='Celonis Audit Logs Events', t=filtered_events, removeNull=True)
+    command_results = CommandResults(
+        readable_output=human_readable,
+        outputs=output,
+        outputs_prefix='CelonisEventCollector',
+    )
+    return output, command_results
 
 
 def main():
@@ -136,7 +156,6 @@ def main():
     try:
         base_url = params.get("url")
         verify_certificate = not argToBoolean(params.get("insecure", False))
-        proxy = argToBoolean(params.get("proxy", False))
         client_id = params.get('credentials', {}).get('identifier')
         client_secret = params.get('credentials', {}).get('password')
         fetch_limit = arg_to_number(params.get('max_events_per_fetch')) or DEFAULT_FETCH_LIMIT
@@ -149,7 +168,7 @@ def main():
         )
         if command == "test-module":
             result = test_module(client)
-            return result
+            return_results(result)
         elif command == "fetch-events":
             events, new_last_run_dict = fetch_events(client, fetch_limit)
             if events:
@@ -158,7 +177,11 @@ def main():
             demisto.setLastRun(new_last_run_dict)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "celonis-get-events":
-            pass
+            events, command_results = get_events(client, args)
+            if events and argToBoolean(args.get('should_push_events')):
+                demisto.debug(f'Sending {len(events)} events.')
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            return_results(command_results)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
