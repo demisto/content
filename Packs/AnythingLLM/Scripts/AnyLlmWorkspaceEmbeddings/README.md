@@ -1,4 +1,4 @@
-List the current LLM workspace's embedded documents in an XSOAR grid field
+List the current LLM workspace's embedded documents in an XSOAR grid field.
 
 ## Script Data
 
@@ -14,8 +14,8 @@ List the current LLM workspace's embedded documents in an XSOAR grid field
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| workspace | name of the LLM workspace |
-| embeddingfield | XSOAR grid field name for the documents list |
+| workspace | name of the LLM workspace. |
+| embeddingfield | XSOAR grid field name for the documents list. |
 
 ## Outputs
 
