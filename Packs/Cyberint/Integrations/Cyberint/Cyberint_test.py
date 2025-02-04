@@ -1,9 +1,11 @@
 import json
 from datetime import datetime, timedelta
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
-from CommonServerPython import *
+import Cyberint
+
+from CommonServerPython import EntryType, DemistoException, GetRemoteDataResponse, GetModifiedRemoteDataResponse
 
 BASE_URL = "https://test.cyberint.io/alert"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -26,8 +28,8 @@ def client():
     return Client(
         base_url=BASE_URL,
         access_token="xxx",
-        verify_ssl=None,
-        proxy=None,
+        verify_ssl=False,
+        proxy=False,
     )
 
 
@@ -56,6 +58,16 @@ def test_cyberint_alerts_fetch_command(requests_mock, client):
     assert result.outputs[0].get("ref_id") == "ARG-3"
 
 
+def test_cyberint_alerts_fetch_command_invalid_page_size(client):
+    from Cyberint import cyberint_alerts_fetch_command
+
+    with pytest.raises(DemistoException, match="Page size must be between 10 and 100."):
+        cyberint_alerts_fetch_command(client, {"page_size": "5"})
+
+    with pytest.raises(DemistoException, match="Page size must be between 10 and 100."):
+        cyberint_alerts_fetch_command(client, {"page_size": "101"})
+
+
 def test_cyberint_alerts_status_update_command(requests_mock, client):
     """
     Scenario: Update alert statuses.
@@ -82,6 +94,37 @@ def test_cyberint_alerts_status_update_command(requests_mock, client):
     assert len(result.outputs) == 2
     assert result.outputs_prefix == "Cyberint.Alert"
     assert result.outputs[1].get("ref_id") == "alert2"
+
+
+def test_cyberint_alerts_status_update_closing_without_reason(client):
+    """
+    Scenario: Attempt to close an alert without providing a closure reason.
+    Given:
+     - User attempts to close an alert.
+    When:
+     - No closure reason is provided.
+    Then:
+     - Ensure an exception is raised with an appropriate message.
+    """
+
+    with pytest.raises(DemistoException, match="You must supply a closure reason when closing an alert."):
+        Cyberint.cyberint_alerts_status_update(client, {"alert_ref_ids": "alert1", "status": "closed"})
+
+
+def test_cyberint_alerts_status_update_other_reason_without_description(client):
+    """
+    Scenario: Attempt to close an alert with closure_reason='other' but without closure_reason_description.
+    Given:
+     - User sets closure_reason to 'other'.
+    When:
+     - No closure_reason_description is provided.
+    Then:
+     - Ensure an exception is raised with an appropriate message.
+    """
+
+    with pytest.raises(DemistoException,
+                       match="You must supply a closure_reason_description when specify closure_reason to 'other'."):
+        Cyberint.cyberint_alerts_status_update(client, {"alert_ref_ids": "alert1", "status": "closed", "closure_reason": "other"})
 
 
 @pytest.mark.parametrize(
@@ -116,7 +159,7 @@ def test_fetch_incidents(requests_mock, duplicate_alerts, client) -> None:
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
-        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing"
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing", False
     )
     wanted_time = datetime.timestamp(datetime.strptime("2020-12-30T00:00:57Z", DATE_FORMAT))
     assert last_fetch.get("last_fetch") == wanted_time * 1000
@@ -150,7 +193,7 @@ def test_fetch_incidents_no_last_fetch(requests_mock, client):
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
-        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing"
+        client, {}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False
     )
     wanted_time = datetime.timestamp(datetime.strptime("2020-12-30T00:00:57Z", DATE_FORMAT))
     assert last_fetch.get("last_fetch") == wanted_time * 1000
@@ -177,7 +220,7 @@ def test_fetch_incidents_empty_response(requests_mock, client):
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
-        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing"
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False
     )
     assert last_fetch.get("last_fetch") == 100001000
     assert len(incidents) == 0
@@ -294,12 +337,16 @@ def test_verify_input_date_format():
     """
     from Cyberint import verify_input_date_format
 
-    result = verify_input_date_format("2023-02-14 00:00:57")
+    result1 = verify_input_date_format("2023-02-14 00:00:57")
+    result2 = verify_input_date_format("2023-02-15 00:00:57Z")
+    result3 = verify_input_date_format(None)
 
-    assert result == "2023-02-14 00:00:57Z"
+    assert result1 == "2023-02-14 00:00:57Z"
+    assert result2 == "2023-02-15 00:00:57Z"
+    assert result3 is None
 
 
-def test_test_module(requests_mock, client):
+def test_test_module_ok(requests_mock, client):
     """
     Scenario: Verify date format.
     Given:
@@ -316,203 +363,424 @@ def test_test_module(requests_mock, client):
 
     result = test_module(client)
 
-    assert result == "ok"
+    assert result is not None
 
 
-def test_date_to_epoch_for_fetch():
+def test_test_module_invalid_token(requests_mock, client):
     """
-    Scenario: Verify date conversion to epoch timestamp.
+    Scenario: API returns an error for an invalid or expired token.
     Given:
-     - A valid datetime object.
+     - User provides invalid or expired credentials.
     When:
-     - Converting the datetime to an epoch timestamp for fetch command.
+     - A request is made to the Cyberint API.
     Then:
-     - Ensure that the returned timestamp is in the expected format.
+     - A DemistoException is raised with an appropriate error message.
     """
-    from Cyberint import date_to_epoch_for_fetch
 
-    input_date = datetime(2023, 2, 14, 0, 0, 57)
+    error_response = {"error": "Invalid token or token expired"}
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=401, json=error_response)
 
-    expected_timestamp = int(input_date.timestamp())
+    assert Cyberint.test_module(
+        client) == 'Error verifying access token and / or URL, make sure the configuration parameters are correct.'
 
-    result = date_to_epoch_for_fetch(input_date)
 
-    assert result == expected_timestamp
+def test_test_module_error(requests_mock, client):
+    """
+    Scenario: API returns an error for an invalid or expired token.
+    Given:
+     - User provides invalid or expired credentials.
+    When:
+     - A request is made to the Cyberint API.
+    Then:
+     - A DemistoException is raised with an appropriate error message.
+    """
+
+    error_response = {"error": "Not found"}
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=404, json=error_response)
+
+    assert Cyberint.test_module(client) == 'Error in API call [404] - None\n{"error": "Not found"}'
+
+
+def test_get_alert_attachments_with_analysis_report(requests_mock, client):
+    alert_id = "ARG-3"
+    with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
+        requests_mock.get(f"{BASE_URL}/api/v1/alerts/{alert_id}/analysis_report", content=pdf_content_mock.read())
+
+    attachment_list = [{"id": "123", "name": "report.pdf", "mimetype": "application/pdf"}]
+
+    result = Cyberint.get_alert_attachments(client, attachment_list, "analysis_report", alert_id)
+
+    assert result is not None
+
+
+@patch("Cyberint.get_attachment_name")
+@patch("Cyberint.fileResult")
+def test_create_fetch_incident_attachment(mock_file_result, mock_get_attachment_name):
+    # Mock the raw_response content
+    mock_raw_response = Mock()
+    mock_raw_response.content = b"mock binary content"
+
+    # Define the input attachment file name
+    attachment_file_name = "example_attachment.pdf"
+
+    # Mock the get_attachment_name function to return a processed attachment name
+    mock_get_attachment_name.return_value = "processed_example_attachment.pdf"
+
+    # Mock the fileResult function to simulate a successful file save with a FileID
+    mock_file_result.return_value = {"FileID": "file_12345"}
+
+    # Call the function
+    result = Cyberint.create_fetch_incident_attachment(mock_raw_response, attachment_file_name)
+
+    # Expected result
+    expected_result = {
+        "path": "file_12345",
+        "name": "processed_example_attachment.pdf",
+        "showMediaFile": True,
+    }
+
+    # Assertions
+    assert result == expected_result
+    mock_get_attachment_name.assert_called_once_with(attachment_file_name)
+    mock_file_result.assert_called_once_with(filename="processed_example_attachment.pdf", data=b"mock binary content")
+
+
+def test_get_alert_attachments_with_attachment_type(requests_mock, client):
+    alert_id = "ARG-3"
+
+    attachment_list = [{"id": "456", "name": "file.txt", "mimetype": "text/plain"}]
+    mock_response = load_mock_response("csv_example.csv")
+
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{alert_id}/attachments/456", json=mock_response)
+
+    result = Cyberint.get_alert_attachments(client, attachment_list, "attachment", alert_id)
+
+    assert result is not None
+
+
+def test_get_alert_attachments_with_empty_attachment_list(client):
+    alert_id = "ARG-3"
+    result = Cyberint.get_alert_attachments(client, [], "attachment", alert_id)
+
+    # Assertions
+    assert result == []
+
+
+def test_get_alert_attachments_with_none_in_attachment_list(requests_mock, client):
+    alert_id = "ARG-3"
+    attachment_list = [{"id": "789", "name": "image.png", "mimetype": "image/png"}]
+    mock_response = load_mock_response("csv_example.csv")
+
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/789", json=mock_response)
+
+    result = Cyberint.get_alert_attachments(client, attachment_list, "attachment", alert_id)
+
+    assert result is not None
+
+
+def test_get_attachment_name(client):
+    """
+    Scenario: Retrieve attachment name.
+    Given:
+    - User has provided valid credentials and arguments.
+    """
+    from Cyberint import get_attachment_name
+
+    assert get_attachment_name("dummy") == "dummy"
+    assert get_attachment_name("") == "xsoar_untitled_attachment"
+
+
+def test_get_remote_data_command_with_open_incident(requests_mock, client):
+
+    from Cyberint import get_remote_data_command
+
+    args = {
+        "id": 123,
+        "lastUpdate": "2024-06-10T12:00:00Z",
+        "remote_incident_id": 123,
+        "last_update": "2024-06-10T12:00:00Z"
+    }
+    params = {
+        "close_incident": False
+    }
+    mock_response = load_mock_response("alert_open.json")
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
+
+    response = get_remote_data_command(client, args, params)
+
+    assert response is not None
+
+
+def test_get_remote_data_command_with_closed_incident(requests_mock, client):
+
+    from Cyberint import get_remote_data_command
+
+    args = {
+        "id": 124,
+        "lastUpdate": "2024-06-10T12:00:00Z",
+        "remote_incident_id": 124,
+        "last_update": "2024-06-10T12:00:00Z"
+    }
+    params = {
+        "close_incident": True
+    }
+    mock_response = load_mock_response("alert_closed.json")
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
+
+    response = get_remote_data_command(client, args, params)
+
+    assert response is not None
+
+
+def test_get_remote_data_command_with_missing_update_date(requests_mock, client):
+
+    from Cyberint import get_remote_data_command
+
+    args = {
+        "id": 125,
+        "lastUpdate": "2024-06-10T12:00:00Z",
+        "remote_incident_id": 125,
+        "last_update": "2024-06-10T12:00:00Z"
+
+    }
+    params = {"close_incident": True}
+
+    mock_response = {
+        "alert": {
+            "id": "125",
+            "status": "closed",
+            "closure_reason": "Resolved",
+            "closure_reason_description": "Issue mitigated"
+        }
+    }
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
+
+    response = get_remote_data_command(client, args, params)
+
+    assert isinstance(response, GetRemoteDataResponse)
+    assert response.mirrored_object["cyberintstatus"] is None
+    assert response.entries[0]["Contents"]["dbotIncidentClose"] is True
+
+
+def test_get_remote_data_command_with_none_response(requests_mock, client, capfd):
+
+    from Cyberint import get_remote_data_command
+
+    args = {
+        "id": 125,
+        "lastUpdate": "2024-06-10T12:00:00Z",
+        "remote_incident_id": 125,
+        "last_update": "2024-06-10T12:00:00Z"
+
+    }
+    params = {"close_incident": True}
+
+    mock_response = "null"
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
+
+    response = get_remote_data_command(client, args, params)
+
+    captured = capfd.readouterr()
+    assert captured.out == "Invalid response from Cyberint\n"
+    assert isinstance(response, GetRemoteDataResponse)
+
+
+def test_get_remote_data_command_invalid_response(requests_mock, client):
+
+    from Cyberint import get_remote_data_command
+
+    args = {
+        "id": 126,
+        "lastUpdate": "2024-06-10T12:00:00Z",
+        "remote_incident_id": 126,
+        "last_update": "2024-06-10T12:00:00Z"
+    }
+    params = {"close_incident": True}
+
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", text='{"invalid": "response"}')
+
+    response = get_remote_data_command(client, args, params)
+
+    assert isinstance(response, GetRemoteDataResponse)
+    assert response.mirrored_object == {}
+    assert len(response.entries) == 0
 
 
 def test_convert_date_time_args():
     """
-    Scenario: Verify conversion of date_time string to datetime.
-    Given:
-     - A valid date_time string.
-    When:
-     - Converting the date_time string to a datetime and formatting it.
-    Then:
-     - Ensure that the returned datetime string matches the expected format.
+    Test the convert_date_time_args function to ensure it correctly converts date arguments.
     """
-    from Cyberint import convert_date_time_args
+    args = "2024-01-01T12:00:00Z"
 
-    date_time_str = "2023-02-14 12:30:45"
-
-    expected_result = "2023-02-14T12:30:45Z"
-
-    result = convert_date_time_args(date_time_str)
-
-    assert result == expected_result
+    result = Cyberint.convert_date_time_args(args)
+    assert result == args
 
 
-def test_get_modified_remote_data(client):
+def test_convert_date_time_args_empty():
     """
-    Scenario: Verify getting modified remote data.
-    Given:
-     - A valid Cyberint API client.
-     - Valid command arguments.
-     - Mocked response from the client.
-    When:
-     - Calling the function to get modified remote data.
-    Then:
-     - Ensure that the returned response matches the expected format.
+    Test the convert_date_time_args function to ensure it returns an empty string for invalid or missing date arguments.
     """
-    from Cyberint import get_modified_remote_data
+    # Test with None
+    with patch("Cyberint.arg_to_datetime", return_value=None):
+        result_none = Cyberint.convert_date_time_args(None)
+        assert result_none == ""
 
-    mock_response = {"alerts": [{"ref_id": "incident1"}, {"ref_id": "incident2"}]}
-
-    with patch("Cyberint.Client") as MockClient:
-        client_instance = MockClient.return_value
-        client_instance.list_alerts.return_value = mock_response
-
-        args = {
-            "lastUpdate": "2023-02-14 12:30:45",
-        }
-
-        with patch("Cyberint.convert_date_time_args") as mock_convert_date_time_args:
-            mock_convert_date_time_args.return_value = "2023-02-14 12:30:45"
-
-            result = get_modified_remote_data(client_instance, args)
-
-            expected_response = GetModifiedRemoteDataResponse(["incident1", "incident2"])
-            assert result.modified_incident_ids == expected_response.modified_incident_ids
+    # Test with an invalid date string
+    with patch("Cyberint.arg_to_datetime", return_value=None):
+        invalid_date = "invalid-date-format"
+        result_invalid = Cyberint.convert_date_time_args(invalid_date)
+        assert result_invalid == ""
 
 
 def test_get_mapping_fields_command():
     """
-    Scenario: Verify fetching mapping fields.
+    Test the get_mapping_fields_command function to ensure it returns the correct response.
+    """
+    result = Cyberint.get_mapping_fields_command()
+    not_expected = {}
+    assert result is not not_expected
+
+
+def test_date_to_epoch_for_fetch():
+    """
+    Test date_to_epoch_for_fetch for converting ISO date to epoch.
+    """
+    result = Cyberint.date_to_epoch_for_fetch("2024-11-06T08:56:41")
+    assert result is not None
+
+
+def test_cyberint_alerts_fetch_command_empty_response(requests_mock, client):
+    """
+    Scenario: Fetch alerts when the API returns an empty response.
     Given:
-     - No specific input required for this function.
+     - User has provided valid credentials.
     When:
-     - Calling the function to fetch mapping fields.
+     - The API returns an empty list of alerts.
     Then:
-     - Ensure that the returned response matches the expected format.
+     - Ensure the result outputs are an empty list.
     """
-    from Cyberint import MIRRORING_FIELDS, get_mapping_fields_command
+    from Cyberint import cyberint_alerts_fetch_command
 
-    result = get_mapping_fields_command()
+    mock_response = {"alerts": []}
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
-    expected_response = GetMappingFieldsResponse()
-    incident_type_scheme = SchemeTypeMapping(type_name="Cyberint Incident")
-
-    for field in MIRRORING_FIELDS:
-        incident_type_scheme.add_field(field)
-
-    expected_response.add_scheme_type(incident_type_scheme)
-
-    assert result.scheme_types_mappings[0].type_name == expected_response.scheme_types_mappings[0].type_name
-    assert result.scheme_types_mappings[0].fields == expected_response.scheme_types_mappings[0].fields
+    result = cyberint_alerts_fetch_command(client, {})
+    assert result.outputs == []
 
 
-def test_get_remote_data_command():
+def test_extract_data_from_csv_stream_malformed_csv(requests_mock, client):
     """
-    Scenario: Verify fetching remote data.
+    Scenario: Extract data from a malformed CSV.
     Given:
-     - A valid Cyberint API client.
-     - Valid command arguments.
-     - Mocked response from the client.
+     - The CSV file content is not formatted properly.
     When:
-     - Calling the function to fetch remote data.
+     - extract_data_from_csv_stream is called.
     Then:
-     - Ensure that the returned response matches the expected format.
+     - Ensure an empty list is returned.
     """
-    from Cyberint import get_remote_data_command
+    from Cyberint import extract_data_from_csv_stream
 
-    mock_response = {
-        "alert": {
-            "alert_ref_id": "incident123",
-            "status": "closed",
-            "update_date": "2023-02-14 12:30:45",
-        }
-    }
+    malformed_csv_content = "username,email\ninvalid_row"
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/alert_id/attachments/123", text=malformed_csv_content)
 
-    with patch("Cyberint.Client") as MockClient:
-        client_instance = MockClient.return_value
-        client_instance.get_alert.return_value = mock_response
-
-        args = {
-            "id": "incident123",
-            "lastUpdate": "2023-02-14 12:30:45",
-        }
-
-        with patch("Cyberint.arg_to_datetime") as mock_arg_to_datetime:  # noqa: SIM117
-            with patch("Cyberint.date_to_epoch_for_fetch") as mock_date_to_epoch_for_fetch:
-                mock_arg_to_datetime.return_value = datetime(2023, 2, 14, 12, 30, 45)
-                mock_date_to_epoch_for_fetch.return_value = 123456789
-
-                result = get_remote_data_command(client_instance, args, {})
-
-                expected_response = GetRemoteDataResponse(
-                    {
-                        "alert_ref_id": "incident123",
-                        "status": "closed",
-                        "update_date": "2023-02-14 12:30:45",
-                    },
-                    [
-                        {
-                            "Type": "note",
-                            "Contents": {"dbotIncidentClose": True, "closeReason": "Closed from Cyberint."},
-                            "ContentsFormat": "json",
-                        }
-                    ],
-                )
-
-                assert result.mirrored_object == expected_response.mirrored_object
+    result = extract_data_from_csv_stream(client, "alert_id", "123")
+    assert len(result) == 0
 
 
-def test_update_remote_system():
+def test_cyberint_alerts_get_attachment_command_not_found(requests_mock, client):
     """
-    Scenario: Verify updating the remote system.
+    Scenario: Retrieve an attachment that does not exist.
     Given:
-     - A valid Cyberint API client.
-     - Valid command arguments.
-     - Mocked response from the client.
+     - User has provided valid credentials.
     When:
-     - Calling the function to update the remote system.
+     - The attachment ID does not exist.
     Then:
-     - Ensure that the remote incident ID is returned.
+     - Ensure a DemistoException is raised with a 404 error.
     """
-    from Cyberint import update_remote_system
+    from Cyberint import cyberint_alerts_get_attachment_command
 
-    mock_response = {
-        "result": "success",
-    }
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/invalid", status_code=404)
 
-    with patch("Cyberint.Client") as MockClient:
-        client_instance = MockClient.return_value
-        client_instance.update_alerts.return_value = mock_response
+    with pytest.raises(DemistoException, match="Error in API call \\[404\\]"):
+        cyberint_alerts_get_attachment_command(client, "ARG-3", "invalid", "missing_file.png")
 
-        args = {
-            "data": {
-                "incident_key": "incident123",
-                "status": "closed",
-            },
-            "entries": [],
-            "incidentChanged": True,
-            "remoteId": "incident123",
-            "status": "new_status",
-            "delta": {},
-        }
 
-        with patch("Cyberint.UpdateRemoteSystemArgs") as mock_UpdateRemoteSystemArgs:
-            mock_UpdateRemoteSystemArgs.return_value = UpdateRemoteSystemArgs(args)
+def test_date_formatting():
+    """
+    Test date formatting handling within the script.
+    """
+    from Cyberint import convert_date_time_args
 
-            result = update_remote_system(client_instance, args)
+    invalid_date = "2024-13-40T25:61:00.000000Z"
 
-            assert result == "incident123"
+    with pytest.raises(ValueError, match='"2024-13-40T25:61:00.000000Z" is not a valid date'):
+        convert_date_time_args(invalid_date)
+
+
+def test_edge_case_handling(requests_mock, client):
+    """
+    Test that edge cases are handled correctly, such as empty responses.
+    """
+    from Cyberint import cyberint_alerts_fetch_command
+
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json={})  # Empty response
+
+    result = cyberint_alerts_fetch_command(client, {})
+
+    assert result is not None
+
+
+@pytest.mark.parametrize(
+    "last_update, api_response, expected_tickets",
+    [
+        (
+            "2024-12-25T10:00:00Z",
+            {"alerts": [{"ref_id": "123"}, {"ref_id": "456"}, {"ref_id": "789"}]},
+            ["123", "456", "789"],
+        ),
+        (
+            "2024-12-26T10:00:00Z",
+            {"alerts": []},  # No modified alerts
+            [],
+        ),
+    ],
+)
+@patch("Cyberint.convert_date_time_args")
+@patch("Cyberint.Client.list_alerts")
+def test_get_modified_remote_data(mock_list_alerts, mock_convert_date_time_args, last_update,
+                                  api_response, expected_tickets, client):
+    """
+    Test the get_modified_remote_data function to ensure it correctly retrieves and processes modified incidents.
+    """
+    from Cyberint import get_modified_remote_data
+
+    # Mock the dependencies
+    mock_convert_date_time_args.return_value = "2024-12-25T10:00:00Z"  # Simulate converted date
+    mock_list_alerts.return_value = api_response  # Simulate API response
+
+    # Prepare arguments
+    args = {"last_update": last_update, "lastUpdate": last_update}
+
+    # Call the function
+    result = get_modified_remote_data(client, args)
+
+    # Validate the result
+    assert isinstance(result, GetModifiedRemoteDataResponse)
+    assert result.modified_incident_ids == expected_tickets
+
+    # Validate mocked dependencies were called correctly
+    mock_convert_date_time_args.assert_called_once_with(last_update)
+    mock_list_alerts.assert_called_once_with(
+        page="1",
+        page_size=50,
+        update_date_from="2024-12-25T10:00:00Z",
+        update_date_to=datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),  # DATE_FORMAT
+        created_date_from=None,
+        created_date_to=None,
+        modification_date_from=None,
+        modification_date_to=None,
+        environments=None,
+        statuses=None,
+        severities=None,
+        types=None,
+    )

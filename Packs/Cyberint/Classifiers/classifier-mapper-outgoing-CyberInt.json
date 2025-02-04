@@ -1,34 +1,36 @@
 {
-    "description": "",
-    "feed": false,
-    "id": "CyberInt Outgoing (mapper)",
-    "mapping": {
-        "Cyberint Incident": {
-            "dontMapEventToLabels": true,
-            "internalMapping": {
-                "closure_reason": {
-                    "simple": "cyberintclosurereason"
-                },
-                "closure_reason_description": {
-                    "simple": "cyberintclosurereasondescription"
-                },
-                "mirror_direction": {
-                    "simple": "dbotMirrorDirection"
-                },
-                "mirror_instance": {
-                    "simple": "dbotMirrorInstance"
-                },
-                "ref_id": {
-                    "simple": "dbotMirrorId"
-                },
-                "status": {
-                    "simple": "cyberintstatus"
-                }
-            }
-        }
-    },
-    "name": "CyberInt Outgoing (mapper)",
-    "type": "mapping-outgoing",
-    "version": -1,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"id": "CyberInt Outgoing (mapper)",
+	"mapping": {
+		"Cyberint Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"closure_reason": {
+					"simple": "cyberintclosurereason"
+				},
+				"closure_reason_description": {
+					"simple": "cyberintclosurereasondescription"
+				},
+				"mirror_direction": {
+					"simple": "dbotMirrorDirection"
+				},
+				"mirror_instance": {
+					"simple": "dbotMirrorInstance"
+				},
+				"ref_id": {
+					"simple": "dbotMirrorId"
+				},
+				"status": {
+					"simple": "cyberintstatus"
+				}
+			}
+		}
+	},
+	"name": "CyberInt Outgoing (mapper)",
+	"type": "mapping-outgoing",
+	"version": -1,
     "fromVersion": "6.0.0"
 }
