@@ -658,7 +658,7 @@ script:
       defaultValue: 50
     - name: all_results
       description: Whether to retrieve all the results by overriding the default limit.
-      defaultValue: "true"
+      defaultValue: "false"
       auto: PREDEFINED
       predefined:
       - "false"
@@ -705,7 +705,7 @@ script:
       defaultValue: 50
     - name: all_results
       description: Whether to retrieve all the results by overriding the default limit.
-      defaultValue: "true"
+      defaultValue: "false"
       auto: PREDEFINED
       predefined:
       - "false"
@@ -813,7 +813,7 @@ script:
       defaultValue: 50
     - name: all_results
       description: Whether to retrieve all the results by overriding the default limit.
-      defaultValue: "true"
+      defaultValue: "false"
       auto: PREDEFINED
       predefined:
       - "false"

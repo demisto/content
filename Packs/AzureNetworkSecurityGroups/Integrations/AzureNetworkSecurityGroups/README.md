@@ -953,3 +953,165 @@ Gets all resource groups for a subscription.
 >|---|---|---|
 >| cloud-shell-storage-eastus | eastus |  |
 >| demi | centralus | Owner: Demi |
+
+### azure-nsg-virtual-networks-list
+
+***
+Gets virtual networks in a resource group.
+
+#### Base Command
+
+`azure-nsg-virtual-networks-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.VirtualNetwork.name | String | The virtual network's name. | 
+| AzureNSG.VirtualNetwork.etag | String | The virtual network's etag. | 
+| AzureNSG.VirtualNetwork.location | String | The virtual network's location. | 
+| AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes | String | A list of address blocks reserved for this virtual network in CIDR notation. | 
+| AzureNSG.VirtualNetwork.properties.subnets.name | List | The virtual network's subnet name. | 
+| AzureNSG.VirtualNetwork.properties.subnets.properties.addressPrefix | List | The virtual network's subnet address prefix. | 
+| AzureNSG.VirtualNetwork.properties.subnets.properties.ipConfigurations | JSON | The virtual network's ip configuration. | 
+
+### azure-nsg-security-group-create
+
+***
+Creates a network security group in the specified resource group.
+
+#### Base Command
+
+`azure-nsg-security-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| security_group_name | The security group name. | Required | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| location | The Resource location. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.SecurityGroup.name | String | The network security group's name. | 
+| AzureNSG.SecurityGroup.etag | String | The network security group's etag. | 
+| AzureNSG.SecurityGroup.location | String | The network security group's location. | 
+| AzureNSG.SecurityGroup.properties.securityRules | List | A collection of security rules of the network security group. | 
+
+### azure-nsg-network-interfaces-list
+
+***
+Gets network interfaces in a resource group.
+
+#### Base Command
+
+`azure-nsg-network-interfaces-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.NetworkInterfaces.name | String | The network interface's name. | 
+| AzureNSG.NetworkInterfaces.id | String | The network interface's id. | 
+| AzureNSG.NetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. | 
+| AzureNSG.NetworkInterfaces.properties.ipConfigurations.name | List | The name of the resource that is unique within a resource group. | 
+| AzureNSG.NetworkInterfaces.properties.ipConfigurations.id | List | The Resource ID. | 
+| AzureNSG.NetworkInterfaces.properties.ipConfigurations.properties.privateIPAddress | List | The private IP address of the IP configuration. | 
+| AzureNSG.NetworkInterfaces.properties.ipConfigurations.properties.publicIPAddress.id | List | The id of the public IP address of the IP configuration. | 
+| AzureNSG.NetworkInterfaces.properties.dnsSettings.dnsServers | List | List of DNS servers IP addresses. | 
+| AzureNSG.NetworkInterfaces.properties.dnsSettings.appliedDnsServers | List | List of all DNS servers from all NICs that are part of the Availability Set. | 
+| AzureNSG.NetworkInterfaces.properties.dnsSettings.internalDomainNameSuffix | String | The network interface's internal domain name suffix. | 
+| AzureNSG.NetworkInterfaces.properties.macAddress | String | The network interface's mac address. | 
+| AzureNSG.NetworkInterfaces.properties.virtualMachine.id | String | The network interface's virtual machine's id. | 
+| AzureNSG.NetworkInterfaces.location | String | The network interface's location. | 
+| AzureNSG.NetworkInterfaces.kind | String | The network interface's kind. | 
+
+### azure-nsg-public-ip-addresses-list
+
+***
+Gets public IP addresses in a resource group.
+
+#### Base Command
+
+`azure-nsg-public-ip-addresses-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.PublicIPAdress.name | String | The public ip address's name. | 
+| AzureNSG.PublicIPAdress.id | String | The public ip address's id. | 
+| AzureNSG.PublicIPAdress.etag | String | The public ip address's etag. | 
+| AzureNSG.PublicIPAdress.provisioningState | String | The public ip address's provisioning state. | 
+| AzureNSG.PublicIPAdress.publicIPAddressVersion | String | The public ip address's version. | 
+| AzureNSG.PublicIPAdress.ipAddress | String | The public ip address's ip address. | 
+| AzureNSG.PublicIPAdress.domainNameLabel | String | The public ip address's domain name label. | 
+| AzureNSG.PublicIPAdress.fqdn | String | The public ip address's fully qualified domain name \(FQDN\). | 
+
+### azure-nsg-network-interfaces-create
+
+***
+Creates or updates a network interface.
+
+#### Base Command
+
+`azure-nsg-network-interfaces-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| nic_name | The network interface name. | Required | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| nsg_name | Existing network security group name. Note: use azure-nsg-security-groups-list in order to find existing network security group name. | Optional | 
+| ip_config_name | Existing ip configuration name Note: use azure-nsg-public-ip-adresses-list in order to find available ip configuration. | Required | 
+| private_ip | The private ip. | Optional | 
+| public_ip_address_name | The public ip address name. | Optional | 
+| vnet_name | The virtual network name. | Required | 
+| subnet_name | The subnet name. | Required | 
+| location | The Resource location. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.NetworkInterface.name | String | The network interface's name. | 
+| AzureNSG.NetworkInterface.etag | String | The network interface's etag. | 
+| AzureNSG.NetworkInterface.properties.provisioningState | String | The network interface's provisioning state. | 
+| AzureNSG.NetworkInterface.properties.ipConfigurations.name | List | The name of the resource that is unique within a resource group. | 
+| AzureNSG.NetworkInterface.properties.ipConfigurations.properties.privateIPAddress | List | The private IP address of the IP configuration. | 
+| AzureNSG.NetworkInterface.properties.ipConfigurations.properties.publicIPAddress.id | List | The id of the public IP address of the IP configuration. | 
+| AzureNSG.NetworkInterface.properties.ipConfigurations.properties.subnet.id | List | The subnet id of the ip configuration. | 
+
