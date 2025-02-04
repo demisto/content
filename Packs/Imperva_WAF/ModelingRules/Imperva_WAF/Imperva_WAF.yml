@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: imperva_waf
-name: Imperva WAF
+id: Imperva_WAF_ModelingRule
+name: Imperva WAF Modeling Rule
 rules: ''
 schema: ''
 tags: ''

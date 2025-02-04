@@ -1,0 +1,27 @@
+args:
+- default: true
+  defaultValue: anythingllmdocuments
+  description: XSOAR grid field name for the documents list.
+  name: documentsfield
+  required: true
+comment: 'Queries the LLM for the list of documents that have been uploaded and copies it into an XSOAR grid field for display and additional actions.'
+commonfields:
+  id: AnyLlmDocuments
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+engineinfo: {}
+name: AnyLlmDocuments
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

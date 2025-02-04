@@ -2,7 +2,7 @@
     "name": "Anything LLM",
     "description": "This content pack contains an integration for Anything LLM that supports the use of Retrieval Augmented Generation (RAG) with an LLM and vector DB.  The LLM and vector DB can be fully local for maximum data privacy or configured to use cloud-based services such as OpenAI.  A large range of LLMs and vector DBs are supported. ",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "2.0.1",
     "author": "Randy Uhrlaub",
     "url": "",
     "email": "",

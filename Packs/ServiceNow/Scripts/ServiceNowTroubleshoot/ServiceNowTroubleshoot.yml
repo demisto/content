@@ -1,0 +1,23 @@
+args: []
+comment: "Troubleshot ServiceNow v2 integration by displaying health information of enabled instances and old and active incidents of disabled instances."
+commonfields:
+  id: ServiceNowTroubleshoot
+  version: -1
+enabled: false
+name: ServiceNowTroubleshoot
+outputs: []
+script: '-'
+system: false
+tags:
+- servicenow
+- servicenow v2
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests: 
+- No tests
