@@ -13,7 +13,7 @@ This integration was integrated and tested with version 2 of FreshworksFreshserv
     | API Token | Freshservice API access token. | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Fetch incidents |  | False |
+    | Fetch incidents | Enable fetch incidents. Only incidents created after the specified "First fetch timestamp" will be retrieved. | False |
     | First fetch timestamp | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
     | Maximum incidents per fetch | Maximum number of incidents per fetch. Default is 50. The maximum is 100. | False |
     | Ticket type to fetch as incidents.  |  | False |
