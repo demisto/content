@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: ACTI Indicator Feed
   version: -1
@@ -181,3 +178,6 @@ script:
 tests:
 - ACTI Indicator Feed Test
 fromversion: 5.5.0
+sectionOrder:
+- Connect
+- Collect
