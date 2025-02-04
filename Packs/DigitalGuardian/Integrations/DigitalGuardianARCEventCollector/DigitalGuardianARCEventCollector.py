@@ -315,12 +315,14 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
             events_count = 0
-            for _ in range(export_calls_per_fetch):
-                for export_profile in export_profiles:
+            for export_profile in export_profiles:
+                for call_number in range(export_calls_per_fetch):
+                    demisto.debug(f'Export call {call_number + 1} out of {export_calls_per_fetch} for profile {export_profile}')
                     events, last_run = fetch_events(client, export_profile)
                     push_events(events, export_profile)
                     set_export_bookmark(client, last_run, export_profile)
                     events_count += len(events)
+            demisto.debug(f'Pulled {events_count} events from profiles {export_profiles}. Updating module health')
             demisto.updateModuleHealth({'eventsPulled': events_count})
 
         else:

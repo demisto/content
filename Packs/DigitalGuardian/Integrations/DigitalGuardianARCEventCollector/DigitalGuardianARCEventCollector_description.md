@@ -36,8 +36,10 @@ To view, create, or edit export profiles, in the DGMC, navigate to **DG ARC** > 
 
     To update the **Last Exported Record** field, select the relevant export profile and edit its settings. Ensure all changes are saved.
 
+    If older events are still being fetched from the export profile despite updating this setting, you may need to contact [Digital Guardian Support](https://www.digitalguardian.com/services/support).
+
 ![Digital Guardian export profile edit](../../doc_files/edit_export_profile.png)
 
 #### Number of Export Requests per Fetch
 
-By default, a maximum of **10,000** events can be retrieved per fetch for each Digital Guardian export profile. To increase the volume of fetched events beyond this value, set the "Number of Export Requests per Fetch" configuration parameter to greater than 1. For example, setting this parameter to 4 would fetch up to 40,000 events per export profile.
+By default, a maximum of **10,000** events can be retrieved per fetch for each Digital Guardian export profile. To increase the volume of fetched events beyond this value, set the "Number of Export Requests per Fetch" configuration parameter to greater than 1. For example, setting this parameter to 4 would fetch up to 40,000 events per export profile. Note that increasing this value beyond 1 may result in exceeding daily data ingestion quota in the Cortex XSIAM license plan.
