@@ -559,6 +559,25 @@ dataset = xdr_data
                         "xql": "\ndataset = xdr_data\n| fields _time\n"
                     }
                 }
+            ),
+            (
+                'true',
+                r"""
+                {
+                    "query": {
+                        "xql":
+```
+dataset = xdr_data
+| fields _time
+```
+                    }
+                }
+                """,
+                {
+                    "query": {
+                        "xql": "\ndataset = xdr_data\n| fields _time\n"
+                    }
+                }
             )
         ]
     )
