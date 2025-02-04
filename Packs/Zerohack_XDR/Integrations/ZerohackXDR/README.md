@@ -19,20 +19,20 @@ This integration was integrated and tested with version 1.0 of Zerohack XDR
 2. Click on Create API key.  
 
 
-    ![Setup Account](./../../doc_files/createAPI1.1.png)
+    ![Setup Account](./../../doc_files/createAPI1_1.png)
 
 
 3. Click on Drop down of Select application.
 
 
-    ![Setup Account](./../../doc_files/createAPI_2.1.png)
+    ![Setup Account](./../../doc_files/createAPI_2_1.png)
 
 
 4. Click on Palo Alto XSOAR.
 
 
 
-    ![Setup Account](./../../doc_files/createAPI_3.1.png)
+    ![Setup Account](./../../doc_files/createAPI_3_1.png)
 
 
 
@@ -41,20 +41,20 @@ This integration was integrated and tested with version 1.0 of Zerohack XDR
 5. Select API Type "Full Control".
 
 
-   ![Setup Account](./../../doc_files/createAPI_4.1.png)
+   ![Setup Account](./../../doc_files/createAPI_4_1.png)
 
 
 
 6. Click on Create Api.
 
 
-   ![Setup Account](./../../doc_files/createAPI_5.1.png)
+   ![Setup Account](./../../doc_files/createAPI_5_1.png)
 
 
 7. Copy your API key.   
 
 
-   ![Setup Account](./../../doc_files/createAPI_6.1.png)
+   ![Setup Account](./../../doc_files/createAPI_6_1.png)
  
 ## Configure Zerohack XDR on Cortex XSOAR
 
