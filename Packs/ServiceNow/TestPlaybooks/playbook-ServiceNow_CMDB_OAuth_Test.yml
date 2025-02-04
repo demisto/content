@@ -1,6 +1,5 @@
 id: ServiceNow_CMDB_OAuth_Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: ServiceNow_CMDB_OAuth_Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -406,6 +406,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

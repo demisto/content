@@ -573,7 +573,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: ServiceNowCMDB.Record
-  description: Discovered CI records
+  description: Discovered CI records.
   type: unknown
 - contextPath: ServiceNowCMDB.Records
   description: A list of all the records that were found in the CMDB table.

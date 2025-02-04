@@ -72,11 +72,11 @@ script:
   commands:
   - arguments:
     - default: true
-      description: Ticket System ID
+      description: Ticket System ID.
       name: id
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -84,89 +84,89 @@ script:
       - change_request
       - sc_request
       - sc_task
-    - description: Ticket number to retrieve
+    - description: Ticket number to retrieve.
       name: number
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to retrieve ticket attachments, default false
+      description: Whether to retrieve ticket attachments, default false.
       name: get_attachments
       predefined:
       - 'true'
       - 'false'
     deprecated: true
-    description: Retrieve ticket information by specific ticket ID
+    description: Retrieve ticket information by specific ticket ID.
     name: servicenow-get-ticket
     outputs:
     - contextPath: ServiceNow.Ticket.ID
-      description: ServiceNow ticket ID
+      description: ServiceNow ticket ID.
       type: string
     - contextPath: ServiceNow.Ticket.OpenedBy
-      description: ServiceNow ticket opener ID
+      description: ServiceNow ticket opener ID.
       type: string
     - contextPath: ServiceNow.Ticket.CreatedOn
       description: ServiceNow ticket creation date.
       type: date
     - contextPath: ServiceNow.Ticket.Assignee
-      description: ServiceNow ticket assignee ID
+      description: ServiceNow ticket assignee ID.
       type: string
     - contextPath: ServiceNow.Ticket.State
-      description: ServiceNow ticket state
+      description: ServiceNow ticket state.
       type: string
     - contextPath: ServiceNow.Ticket.Summary
-      description: ServiceNow ticket short summary
+      description: ServiceNow ticket short summary.
       type: string
     - contextPath: ServiceNow.Ticket.Number
-      description: ServiceNow ticket number
+      description: ServiceNow ticket number.
       type: string
     - contextPath: ServiceNow.Ticket.Active
-      description: ServiceNow ticket active
+      description: ServiceNow ticket active.
       type: boolean
     - contextPath: ServiceNow.Ticket.AdditionalComments
-      description: ServiceNow ticket comments
+      description: ServiceNow ticket comments.
       type: string
     - contextPath: ServiceNow.Ticket.Priority
-      description: ServiceNow ticket priority
+      description: ServiceNow ticket priority.
       type: string
     - contextPath: ServiceNow.Ticket.OpenedAt
-      description: ServiceNow ticket opening time
+      description: ServiceNow ticket opening time.
       type: date
     - contextPath: ServiceNow.Ticket.ResolvedBy
-      description: ServiceNow ticket resolver ID
+      description: ServiceNow ticket resolver ID.
       type: string
     - contextPath: ServiceNow.Ticket.CloseCode
-      description: ServiceNow ticket close code
+      description: ServiceNow ticket close code.
       type: string
     - contextPath: File.Info
-      description: Attachment file info
+      description: Attachment file info.
       type: string
     - contextPath: File.Name
-      description: Attachment file name
+      description: Attachment file name.
       type: string
     - contextPath: File.Size
-      description: Attachment file size
+      description: Attachment file size.
       type: number
     - contextPath: File.SHA1
-      description: Attachment file SHA1
+      description: Attachment file SHA1.
       type: string
     - contextPath: File.SHA256
-      description: Attachment file SHA256
+      description: Attachment file SHA256.
       type: string
     - contextPath: File.EntryID
-      description: Attachment file entry ID
+      description: Attachment file entry ID.
       type: string
     - contextPath: File.Type
-      description: Attachment file type
+      description: Attachment file type.
       type: string
     - contextPath: File.MD5
-      description: Attachment file MD5
+      description: Attachment file MD5.
       type: string
   - arguments:
     - default: true
-      description: Ticket System ID to retrieve
+      description: Ticket System ID to retrieve.
       name: id
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -174,12 +174,12 @@ script:
       - change_request
       - sc_request
       - sc_task
-    - description: Ticket number to retrieve
+    - description: Ticket number to retrieve.
       name: number
-    - description: Whether to retrieve ticket attachments, default false
+    - description: Whether to retrieve ticket attachments, default false.
       name: get_attachments
     deprecated: true
-    description: Deprecated. Use servicenow-get-ticket or servicenow-get-record instead
+    description: Deprecated. Use servicenow-get-ticket or servicenow-get-record instead.
     name: servicenow-get
     outputs:
     - contextPath: Ticket.ID
@@ -216,35 +216,35 @@ script:
       description: The date and time when the ticket was opened for the first time.
       type: date
     - contextPath: File.Info
-      description: Attachment file info
+      description: Attachment file info.
       type: string
     - contextPath: File.Name
-      description: Attachment file name
+      description: Attachment file name.
       type: string
     - contextPath: File.Size
-      description: Attachment file size
+      description: Attachment file size.
       type: number
     - contextPath: File.SHA1
-      description: Attachment file SHA1
+      description: Attachment file SHA1.
       type: string
     - contextPath: File.SHA256
-      description: Attachment file SHA256
+      description: Attachment file SHA256.
       type: string
     - contextPath: File.EntryID
-      description: Attachment file entry ID
+      description: Attachment file entry ID.
       type: string
     - contextPath: File.Type
-      description: Attachment file type
+      description: Attachment file type.
       type: string
     - contextPath: File.MD5
-      description: Attachment file MD5
+      description: Attachment file MD5.
       type: string
   - arguments:
-    - description: Short description of the ticket
+    - description: Short description of the ticket.
       name: short_description
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -253,58 +253,58 @@ script:
       - sc_request
       - sc_task
     - auto: PREDEFINED
-      description: Ticket urgency
+      description: Ticket urgency.
       name: urgency
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Ticket severity
+      description: Ticket severity.
       name: severity
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Ticket impact
+      description: Ticket impact.
       name: impact
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Set ticket as Active
+      description: Set ticket as Active.
       name: active
       predefined:
       - 'true'
       - 'false'
-    - description: Set ticket ActivityDue - format "2016-07-02 21:51:11"
+    - description: Set ticket ActivityDue - format "2016-07-02 21:51:11".
       name: activity_due
-    - description: List of assigned users to the ticket
+    - description: List of assigned users to the ticket.
       name: additional_assignee_list
-    - description: Ticket history approval
+    - description: Ticket history approval.
       name: approval_history
-    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11"
+    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11".
       name: approval_set
-    - description: To whom the ticket is assigned
+    - description: To whom the ticket is assigned.
       name: assigned_to
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: business_duration
-    - description: Business service
+    - description: Business service.
       name: business_service
-    - description: Business source
+    - description: Business source.
       name: business_stc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: calendar_duration
-    - description: UID Format
+    - description: UID Format.
       name: caller_id
-    - description: Category of ticket
+    - description: Category of ticket.
       name: category
-    - description: UID Format
+    - description: UID Format.
       name: caused_by
     - auto: PREDEFINED
-      description: Ticket's close code
+      description: Ticket's close code.
       name: close_code
       predefined:
       - Solved (Work Around)
@@ -314,27 +314,27 @@ script:
       - Not Solved (Not Reproducible)
       - Not Solved (Too Costly)
       - Closed/Resolved by Caller
-    - description: Close notes of the ticket
+    - description: Close notes of the ticket.
       name: close_notes
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: closed_at
-    - description: User who closed the ticket
+    - description: User who closed the ticket.
       name: closed_by
-    - description: UID Format
+    - description: UID Format.
       name: cmdb_ci
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments_and_work_notes
-    - description: UID Format
+    - description: UID Format.
       name: company
-    - description: Contact type
+    - description: Contact type.
       name: contact_type
-    - description: Correlation display
+    - description: Correlation display.
       name: correlation_display
-    - description: Correlation id
+    - description: Correlation id.
       name: correlation_id
-    - description: UID Format
+    - description: UID Format.
       name: delivery_plan
     - auto: PREDEFINED
       description: If you want to display comments, work_notes...
@@ -342,80 +342,80 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Ticket description
+    - description: Ticket description.
       name: description
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
-    - description: Escalation
+    - description: Escalation.
       name: escalation
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: expected_start
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: follow_up
-    - description: UID format list
+    - description: UID format list.
       name: group_list
     - auto: PREDEFINED
-      description: Is the ticket solved in the knowledge base
+      description: Is the ticket solved in the knowledge base.
       name: knowledge
       predefined:
       - 'true'
       - 'false'
-    - description: Location of the ticket
+    - description: Location of the ticket.
       name: location
-    - description: SLA of the ticket
+    - description: SLA of the ticket.
       name: made_sla
     - auto: PREDEFINED
-      description: Notify about this ticket
+      description: Notify about this ticket.
       name: notify
       predefined:
       - '1'
       - '0'
-    - description: Order number
+    - description: Order number.
       name: order
-    - description: UID Format
+    - description: UID Format.
       name: parent
-    - description: UID Format
+    - description: UID Format.
       name: parent_incident
-    - description: UID Format
+    - description: UID Format.
       name: problem_id
-    - description: How many users included in this ticket before
+    - description: How many users included in this ticket before.
       name: reassignment_count
-    - description: How many time the ticket has been reopened
+    - description: How many time the ticket has been reopened.
       name: reopen_count
-    - description: 'Resolving time, Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Resolving time, Format: YYYY-MM-DD HH:MM:SS.'
       name: resolved_at
-    - description: UID Format
+    - description: UID Format.
       name: resolved_by
-    - description: UID
+    - description: UID.
       name: rfc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
-    - description: Subcategory
+    - description: Subcategory.
       name: subcategory
-    - description: Last updated by
+    - description: Last updated by.
       name: sys_updated_by
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sys_updated_on
-    - description: Input from the end user
+    - description: Input from the end user.
       name: user_input
-    - description: A list of watched tickets
+    - description: A list of watched tickets.
       name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: work_end
-    - description: Format journal list
+    - description: Format journal list.
       name: work_notes
-    - description: List with UIDs
+    - description: List with UIDs.
       name: work_notes_list
-    - description: Date when started to work on the ticket
+    - description: Date when started to work on the ticket.
       name: work_start
-    - description: Set AssignmentGroup - sys_id of group
+    - description: Set AssignmentGroup - sys_id of group.
       name: assignment_group
-    - description: integer
+    - description: integer.
       name: incident_state
-    - description: Ticket number
+    - description: Ticket number.
       name: number
     - auto: PREDEFINED
-      description: Priority of the ticket
+      description: Priority of the ticket.
       name: priority
       predefined:
       - 5 - Planning
@@ -429,7 +429,7 @@ script:
       name: custom_fields
     - auto: PREDEFINED
       defaultValue: normal
-      description: Type of Change Request ticket
+      description: Type of Change Request ticket.
       name: change_type
       predefined:
       - normal
@@ -437,59 +437,59 @@ script:
       - emergency
     - description: State of the ticket, e.g., "Closed" or "7" or "7 - Closed".
       name: state
-    - description: ' Ticket opening time, Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Ticket opening time, Format: YYYY-MM-DD HH:MM:SS.'
       name: opened_at
-    - description: Caller system ID
+    - description: Caller system ID.
       name: caller
     deprecated: true
-    description: Create new ServiceNow ticket
+    description: Create new ServiceNow ticket.
     name: servicenow-create-ticket
     outputs:
     - contextPath: ServiceNow.Ticket.ID
-      description: ServiceNow ticket ID
+      description: ServiceNow ticket ID.
       type: string
     - contextPath: ServiceNow.Ticket.OpenedBy
-      description: ServiceNow ticket opener ID
+      description: ServiceNow ticket opener ID.
       type: string
     - contextPath: ServiceNow.Ticket.CreatedOn
       description: ServiceNow ticket creation date.
       type: date
     - contextPath: ServiceNow.Ticket.Assignee
-      description: ServiceNow ticket assignee ID
+      description: ServiceNow ticket assignee ID.
       type: string
     - contextPath: ServiceNow.Ticket.State
-      description: ServiceNow ticket state
+      description: ServiceNow ticket state.
       type: string
     - contextPath: ServiceNow.Ticket.Summary
-      description: ServiceNow ticket short summary
+      description: ServiceNow ticket short summary.
       type: string
     - contextPath: ServiceNow.Ticket.Number
-      description: ServiceNow ticket number
+      description: ServiceNow ticket number.
       type: string
     - contextPath: ServiceNow.Ticket.Active
-      description: ServiceNow ticket active
+      description: ServiceNow ticket active.
       type: boolean
     - contextPath: ServiceNow.Ticket.AdditionalComments
-      description: ServiceNow ticket comments
+      description: ServiceNow ticket comments.
       type: string
     - contextPath: ServiceNow.Ticket.Priority
-      description: ServiceNow ticket priority
+      description: ServiceNow ticket priority.
       type: string
     - contextPath: ServiceNow.Ticket.OpenedAt
-      description: ServiceNow ticket opening time
+      description: ServiceNow ticket opening time.
       type: date
     - contextPath: ServiceNow.Ticket.ResolvedBy
-      description: ServiceNow ticket resolver ID
+      description: ServiceNow ticket resolver ID.
       type: string
     - contextPath: ServiceNow.Ticket.CloseCode
-      description: ServiceNow ticket close code
+      description: ServiceNow ticket close code.
       type: string
   - arguments:
-    - description: Short description of the ticket
+    - description: Short description of the ticket.
       name: short_description
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -498,79 +498,79 @@ script:
       - sc_request
       - sc_task
     - auto: PREDEFINED
-      description: Ticket urgency
+      description: Ticket urgency.
       name: urgency
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Ticket severity
+      description: Ticket severity.
       name: severity
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Ticket impact
+      description: Ticket impact.
       name: impact
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Set ticket as Active
+      description: Set ticket as Active.
       name: active
       predefined:
       - 'true'
       - 'false'
-    - description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+    - description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time.
       name: activity_due
-    - description: List of assigned users to the ticket
+    - description: List of assigned users to the ticket.
       name: additional_assignee_list
-    - description: Ticket history approval
+    - description: Ticket history approval.
       name: approval_history
-    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time.
       name: approval_set
-    - description: To whom the ticket is assigned
+    - description: To whom the ticket is assigned.
       name: assigned_to
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: business_duration
-    - description: Business service
+    - description: Business service.
       name: business_service
-    - description: Business source
+    - description: Business source.
       name: business_stc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: calendar_duration
-    - description: UID Format
+    - description: UID Format.
       name: caller_id
-    - description: Category of ticket
+    - description: Category of ticket.
       name: category
-    - description: UID Format
+    - description: UID Format.
       name: caused_by
-    - description: Ticket's close code
+    - description: Ticket's close code.
       name: close_code
-    - description: Close notes of the ticket
+    - description: Close notes of the ticket.
       name: close_notes
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: closed_at
-    - description: User who closed the ticket
+    - description: User who closed the ticket.
       name: closed_by
-    - description: UID Format
+    - description: UID Format.
       name: cmdb_ci
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments_and_work_notes
-    - description: UID Format
+    - description: UID Format.
       name: company
-    - description: Contact type
+    - description: Contact type.
       name: contact_type
-    - description: Correlation display
+    - description: Correlation display.
       name: correlation_display
-    - description: Correlation id
+    - description: Correlation id.
       name: correlation_id
-    - description: UID Format
+    - description: UID Format.
       name: delivery_plan
     - auto: PREDEFINED
       description: If you want to display comments, work_notes...
@@ -578,80 +578,80 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Ticket description
+    - description: Ticket description.
       name: description
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
-    - description: Escalation
+    - description: Escalation.
       name: escalation
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: expected_start
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: follow_up
-    - description: UID format list
+    - description: UID format list.
       name: group_list
     - auto: PREDEFINED
-      description: Is the ticket solved in the knowledge base
+      description: Is the ticket solved in the knowledge base.
       name: knowledge
       predefined:
       - 'true'
       - 'false'
-    - description: Location of the ticket
+    - description: Location of the ticket.
       name: location
-    - description: SLA of the ticket
+    - description: SLA of the ticket.
       name: made_sla
     - auto: PREDEFINED
-      description: Notify about this ticket
+      description: Notify about this ticket.
       name: notify
       predefined:
       - '1'
       - '0'
-    - description: Order number
+    - description: Order number.
       name: order
-    - description: UID Format
+    - description: UID Format.
       name: parent
-    - description: UID Format
+    - description: UID Format.
       name: parent_incident
-    - description: UID Format
+    - description: UID Format.
       name: problem_id
-    - description: How many users included in this ticket before
+    - description: How many users included in this ticket before.
       name: reassignment_count
-    - description: How many time the ticket has been reopened
+    - description: How many time the ticket has been reopened.
       name: reopen_count
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: resolved_at
-    - description: UID Format
+    - description: UID Format.
       name: resolved_by
-    - description: UID
+    - description: UID.
       name: rfc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
-    - description: Subcategory
+    - description: Subcategory.
       name: subcategory
-    - description: Last updated by
+    - description: Last updated by.
       name: sys_updated_by
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sys_updated_on
-    - description: Input from the end user
+    - description: Input from the end user.
       name: user_input
-    - description: A list of watched tickets
+    - description: A list of watched tickets.
       name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: work_end
-    - description: Format journal list
+    - description: Format journal list.
       name: work_notes
-    - description: List with UIDs
+    - description: List with UIDs.
       name: work_notes_list
-    - description: Date when started to work on the ticket
+    - description: Date when started to work on the ticket.
       name: work_start
-    - description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
+    - description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547.
       name: assignment_group
-    - description: integer
+    - description: integer.
       name: incident_state
-    - description: Ticket number
+    - description: Ticket number.
       name: number
     - auto: PREDEFINED
-      description: Priority of the ticket (number)
+      description: Priority of the ticket (number).
       name: priority
       predefined:
       - 5 - Planning
@@ -665,106 +665,106 @@ script:
       name: custom_fields
     - auto: PREDEFINED
       defaultValue: normal
-      description: Type of Change Request ticket
+      description: Type of Change Request ticket.
       name: type
       predefined:
       - normal
       - standard
       - emergency
-    - description: State of the ticket
+    - description: State of the ticket.
       name: state
     deprecated: true
-    description: Deprecated. Use servicenow-create-ticket or servicenow-create-record instead
+    description: Deprecated. Use servicenow-create-ticket or servicenow-create-record instead.
     name: servicenow-create
     outputs:
     - contextPath: Ticket.ID
-      description: ServiceNow ticket System ID
+      description: ServiceNow ticket System ID.
       type: string
     - contextPath: Ticket.Creator
-      description: ServiceNow ticket creator
+      description: ServiceNow ticket creator.
       type: string
     - contextPath: Ticket.Assignee
-      description: ServiceNow ticket assignee
+      description: ServiceNow ticket assignee.
       type: string
     - contextPath: Ticket.State
-      description: ServiceNow ticket state
+      description: ServiceNow ticket state.
       type: string
     - contextPath: Ticket.Summary
-      description: ServiceNow ticket short summary
+      description: ServiceNow ticket short summary.
       type: string
     - contextPath: Ticket.Number
-      description: ServiceNow ticket number
+      description: ServiceNow ticket number.
       type: string
   - arguments:
-    - description: Short description of the ticket
+    - description: Short description of the ticket.
       name: short_description
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
       - problem
       - change_request
-    - description: Ticket urgency
+    - description: Ticket urgency.
       name: urgency
-    - description: Ticket severity
+    - description: Ticket severity.
       name: severity
-    - description: Ticket impact
+    - description: Ticket impact.
       name: impact
     - auto: PREDEFINED
-      description: Set ticket as Active
+      description: Set ticket as Active.
       name: active
       predefined:
       - 'true'
       - 'false'
-    - description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+    - description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time.
       name: activity_due
-    - description: List of assigned users to the ticket
+    - description: List of assigned users to the ticket.
       name: additional_assignee_list
-    - description: Ticket history approval
+    - description: Ticket history approval.
       name: approval_history
-    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time.
       name: approval_set
-    - description: To whom the ticket is assigned
+    - description: To whom the ticket is assigned.
       name: assigned_to
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: business_duration
-    - description: Business service
+    - description: Business service.
       name: business_service
-    - description: Business source
+    - description: Business source.
       name: business_stc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: calendar_duration
-    - description: UID Format
+    - description: UID Format.
       name: caller_id
-    - description: Category name
+    - description: Category name.
       name: category
-    - description: UID Format
+    - description: UID Format.
       name: caused_by
-    - description: Ticket's close code
+    - description: Ticket's close code.
       name: close_code
-    - description: Close notes of the ticket
+    - description: Close notes of the ticket.
       name: close_notes
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: closed_at
-    - description: User who closed the ticket
+    - description: User who closed the ticket.
       name: closed_by
-    - description: UID Format
+    - description: UID Format.
       name: cmdb_ci
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments_and_work_notes
-    - description: UID Format
+    - description: UID Format.
       name: company
-    - description: Contact type
+    - description: Contact type.
       name: contact_type
-    - description: Correlation display
+    - description: Correlation display.
       name: correlation_display
-    - description: Correlation id
+    - description: Correlation id.
       name: correlation_id
-    - description: UID Format
+    - description: UID Format.
       name: delivery_plan
     - auto: PREDEFINED
       description: If you want to display comments, work_notes...
@@ -772,110 +772,110 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Ticket description
+    - description: Ticket description.
       name: description
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
-    - description: Escalation
+    - description: Escalation.
       name: escalation
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: expected_start
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: follow_up
-    - description: UID format list
+    - description: UID format list.
       name: group_list
     - auto: PREDEFINED
-      description: Is the ticket solved in the knowledge base
+      description: Is the ticket solved in the knowledge base.
       name: knowledge
       predefined:
       - 'true'
       - 'false'
-    - description: Location of the ticket
+    - description: Location of the ticket.
       name: location
-    - description: SLA of the ticket
+    - description: SLA of the ticket.
       name: made_sla
     - auto: PREDEFINED
-      description: Notify about this ticket
+      description: Notify about this ticket.
       name: notify
       predefined:
       - '1'
       - '0'
-    - description: Order number
+    - description: Order number.
       name: order
-    - description: UID Format
+    - description: UID Format.
       name: parent
-    - description: UID Format
+    - description: UID Format.
       name: parent_incident
-    - description: UID Format
+    - description: UID Format.
       name: problem_id
-    - description: How many users included in this ticket before
+    - description: How many users included in this ticket before.
       name: reassignment_count
-    - description: How many time the ticket has been reopened
+    - description: How many time the ticket has been reopened.
       name: reopen_count
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: resolved_at
-    - description: UID Format
+    - description: UID Format.
       name: resolved_by
-    - description: UID
+    - description: UID.
       name: rfc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
-    - description: Subcategory
+    - description: Subcategory.
       name: subcategory
-    - description: Last updated by
+    - description: Last updated by.
       name: sys_updated_by
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sys_updated_on
-    - description: Input from the end user
+    - description: Input from the end user.
       name: user_input
-    - description: A list of watched tickets
+    - description: A list of watched tickets.
       name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: work_end
-    - description: Format journal list
+    - description: Format journal list.
       name: work_notes
-    - description: List with UIDs
+    - description: List with UIDs.
       name: work_notes_list
-    - description: Date when started to work on the ticket
+    - description: Date when started to work on the ticket.
       name: work_start
-    - description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
+    - description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547.
       name: assignment_group
-    - description: integer
+    - description: integer.
       name: incident_state
-    - description: Ticket number
+    - description: Ticket number.
       name: number
-    - description: Priority of the ticket (number)
+    - description: Priority of the ticket (number).
       name: priority
     - description: Template name to use as a base to create new tickets.
       name: template
     deprecated: true
-    description: Create a new ServiceNow ticket
+    description: Create a new ServiceNow ticket.
     name: servicenow-incident-create
     outputs:
     - contextPath: Ticket.ID
-      description: ServiceNow ticket System ID
+      description: ServiceNow ticket System ID.
       type: string
     - contextPath: Ticket.Creator
-      description: ServiceNow ticket creator
+      description: ServiceNow ticket creator.
       type: string
     - contextPath: Ticket.Assignee
-      description: ServiceNow ticket assignee
+      description: ServiceNow ticket assignee.
       type: string
     - contextPath: Ticket.State
-      description: ServiceNow ticket state
+      description: ServiceNow ticket state.
       type: string
     - contextPath: Ticket.Summary
-      description: ServiceNow ticket short summary
+      description: ServiceNow ticket short summary.
       type: string
     - contextPath: Ticket.Number
-      description: ServiceNow ticket number
+      description: ServiceNow ticket number.
       type: string
   - arguments:
-    - description: Short description of the ticket
+    - description: Short description of the ticket.
       name: short_description
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -884,58 +884,58 @@ script:
       - sc_request
       - sc_task
     - auto: PREDEFINED
-      description: Ticket urgency
+      description: Ticket urgency.
       name: urgency
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Ticket severity
+      description: Ticket severity.
       name: severity
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Ticket impact
+      description: Ticket impact.
       name: impact
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Does the ticket active(true/false)
+      description: Does the ticket active(true/false).
       name: active
       predefined:
       - 'true'
       - 'false'
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: activity_due
-    - description: List of assigned users to the ticket
+    - description: List of assigned users to the ticket.
       name: additional_assignee_list
-    - description: Ticket history approval
+    - description: Ticket history approval.
       name: approval_history
-    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11"
+    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11".
       name: approval_set
-    - description: To whom the ticket is assigned
+    - description: To whom the ticket is assigned.
       name: assigned_to
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: business_duration
-    - description: Business service
+    - description: Business service.
       name: business_service
-    - description: Business source
+    - description: Business source.
       name: business_stc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: calendar_duration
-    - description: UID Format
+    - description: UID Format.
       name: caller_id
-    - description: Category name
+    - description: Category name.
       name: category
-    - description: UID Format
+    - description: UID Format.
       name: caused_by
     - auto: PREDEFINED
-      description: Ticket's close code
+      description: Ticket's close code.
       name: close_code
       predefined:
       - Solved (Work Around)
@@ -945,27 +945,27 @@ script:
       - Not Solved (Not Reproducible)
       - Not Solved (Too Costly)
       - Closed/Resolved by Caller
-    - description: Close notes of the ticket
+    - description: Close notes of the ticket.
       name: close_notes
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: closed_at
-    - description: User who closed the ticket
+    - description: User who closed the ticket.
       name: closed_by
-    - description: UID Format
+    - description: UID Format.
       name: cmdb_ci
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments_and_work_notes
-    - description: UID Format
+    - description: UID Format.
       name: company
-    - description: Contact type
+    - description: Contact type.
       name: contact_type
-    - description: Correlation display
+    - description: Correlation display.
       name: correlation_display
-    - description: Correlation id
+    - description: Correlation id.
       name: correlation_id
-    - description: UID Format
+    - description: UID Format.
       name: delivery_plan
     - auto: PREDEFINED
       description: If you want to display comments, work_notes...
@@ -973,80 +973,80 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Ticket description
+    - description: Ticket description.
       name: description
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
-    - description: Escalation
+    - description: Escalation.
       name: escalation
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: expected_start
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: follow_up
-    - description: UID format list
+    - description: UID format list.
       name: group_list
     - auto: PREDEFINED
-      description: Is the ticket solved in the knowledge base
+      description: Is the ticket solved in the knowledge base.
       name: knowledge
       predefined:
       - 'true'
       - 'false'
-    - description: Location of the ticket
+    - description: Location of the ticket.
       name: location
-    - description: SLA of the ticket
+    - description: SLA of the ticket.
       name: made_sla
     - auto: PREDEFINED
-      description: Notify about this ticket
+      description: Notify about this ticket.
       name: notify
       predefined:
       - '1'
       - '0'
-    - description: Order number
+    - description: Order number.
       name: order
-    - description: UID Format
+    - description: UID Format.
       name: parent
-    - description: UID Format
+    - description: UID Format.
       name: parent_incident
-    - description: UID Format
+    - description: UID Format.
       name: problem_id
-    - description: How many users included in this ticket before
+    - description: How many users included in this ticket before.
       name: reassignment_count
-    - description: How many time the ticket has been reopened
+    - description: How many time the ticket has been reopened.
       name: reopen_count
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: resolved_at
-    - description: UID Format
+    - description: UID Format.
       name: resolved_by
-    - description: UID
+    - description: UID.
       name: rfc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
-    - description: Subcategory
+    - description: Subcategory.
       name: subcategory
-    - description: Last updated by
+    - description: Last updated by.
       name: sys_updated_by
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sys_updated_on
-    - description: Input from the end user
+    - description: Input from the end user.
       name: user_input
-    - description: A list of watched tickets
+    - description: A list of watched tickets.
       name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: work_end
-    - description: Format journal list
+    - description: Format journal list.
       name: work_notes
-    - description: List with UIDs
+    - description: List with UIDs.
       name: work_notes_list
-    - description: Date when started to work on the ticket
+    - description: Date when started to work on the ticket.
       name: work_start
-    - description: UID
+    - description: UID.
       name: assignment_group
-    - description: integer
+    - description: integer.
       name: incident_state
-    - description: Ticket number
+    - description: Ticket number.
       name: number
     - auto: PREDEFINED
-      description: Priority of the ticket
+      description: Priority of the ticket.
       name: priority
       predefined:
       - 5 - Planning
@@ -1054,14 +1054,14 @@ script:
       - 3 - Moderate
       - 2 - High
       - 1 - Critical
-    - description: System ID of the ticket to update
+    - description: System ID of the ticket to update.
       name: id
       required: true
     - description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value; custom fields start with a "u_".'
       name: custom_fields
     - auto: PREDEFINED
       defaultValue: normal
-      description: Type of Change Request ticket
+      description: Type of Change Request ticket.
       name: change_type
       predefined:
       - normal
@@ -1069,17 +1069,17 @@ script:
       - emergency
     - description: State of the ticket, e.g., "Closed" or "7" or "7 - Closed".
       name: state
-    - description: Caller system ID
+    - description: Caller system ID.
       name: caller
     deprecated: true
-    description: Update specific ticket
+    description: Update specific ticket.
     name: servicenow-update-ticket
   - arguments:
-    - description: Short description of the ticket
+    - description: Short description of the ticket.
       name: short_description
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -1088,79 +1088,79 @@ script:
       - sc_request
       - sc_task
     - auto: PREDEFINED
-      description: Ticket urgency
+      description: Ticket urgency.
       name: urgency
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Ticket severity
+      description: Ticket severity.
       name: severity
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Ticket impact
+      description: Ticket impact.
       name: impact
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
     - auto: PREDEFINED
-      description: Does the ticket active(true/false)
+      description: Does the ticket active(true/false).
       name: active
       predefined:
       - 'true'
       - 'false'
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: activity_due
-    - description: List of assigned users to the ticket
+    - description: List of assigned users to the ticket.
       name: additional_assignee_list
-    - description: Ticket history approval
+    - description: Ticket history approval.
       name: approval_history
-    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time.
       name: approval_set
-    - description: To whom the ticket is assigned
+    - description: To whom the ticket is assigned.
       name: assigned_to
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: business_duration
-    - description: Business service
+    - description: Business service.
       name: business_service
-    - description: Business source
+    - description: Business source.
       name: business_stc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: calendar_duration
-    - description: UID Format
+    - description: UID Format.
       name: caller_id
-    - description: Category name
+    - description: Category name.
       name: category
-    - description: UID Format
+    - description: UID Format.
       name: caused_by
-    - description: Ticket's close code
+    - description: Ticket's close code.
       name: close_code
-    - description: Close notes of the ticket
+    - description: Close notes of the ticket.
       name: close_notes
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: closed_at
-    - description: User who closed the ticket
+    - description: User who closed the ticket.
       name: closed_by
-    - description: UID Format
+    - description: UID Format.
       name: cmdb_ci
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments_and_work_notes
-    - description: UID Format
+    - description: UID Format.
       name: company
-    - description: Contact type
+    - description: Contact type.
       name: contact_type
-    - description: Correlation display
+    - description: Correlation display.
       name: correlation_display
-    - description: Correlation id
+    - description: Correlation id.
       name: correlation_id
-    - description: UID Format
+    - description: UID Format.
       name: delivery_plan
     - auto: PREDEFINED
       description: If you want to display comments, work_notes...
@@ -1168,80 +1168,80 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Ticket description
+    - description: Ticket description.
       name: description
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
-    - description: Escalation
+    - description: Escalation.
       name: escalation
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: expected_start
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: follow_up
-    - description: UID format list
+    - description: UID format list.
       name: group_list
     - auto: PREDEFINED
-      description: Is the ticket solved in the knowledge base
+      description: Is the ticket solved in the knowledge base.
       name: knowledge
       predefined:
       - 'true'
       - 'false'
-    - description: Location of the ticket
+    - description: Location of the ticket.
       name: location
-    - description: SLA of the ticket
+    - description: SLA of the ticket.
       name: made_sla
     - auto: PREDEFINED
-      description: Notify about this ticket
+      description: Notify about this ticket.
       name: notify
       predefined:
       - '1'
       - '0'
-    - description: Order number
+    - description: Order number.
       name: order
-    - description: UID Format
+    - description: UID Format.
       name: parent
-    - description: UID Format
+    - description: UID Format.
       name: parent_incident
-    - description: UID Format
+    - description: UID Format.
       name: problem_id
-    - description: How many users included in this ticket before
+    - description: How many users included in this ticket before.
       name: reassignment_count
-    - description: How many time the ticket has been reopened
+    - description: How many time the ticket has been reopened.
       name: reopen_count
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: resolved_at
-    - description: UID Format
+    - description: UID Format.
       name: resolved_by
-    - description: UID
+    - description: UID.
       name: rfc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
-    - description: Subcategory
+    - description: Subcategory.
       name: subcategory
-    - description: Last updated by
+    - description: Last updated by.
       name: sys_updated_by
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sys_updated_on
-    - description: Input from the end user
+    - description: Input from the end user.
       name: user_input
-    - description: A list of watched tickets
+    - description: A list of watched tickets.
       name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: work_end
-    - description: Format journal list
+    - description: Format journal list.
       name: work_notes
-    - description: List with UIDs
+    - description: List with UIDs.
       name: work_notes_list
-    - description: Date when started to work on the ticket
+    - description: Date when started to work on the ticket.
       name: work_start
-    - description: UID
+    - description: UID.
       name: assignment_group
-    - description: integer
+    - description: integer.
       name: incident_state
-    - description: Ticket number
+    - description: Ticket number.
       name: number
     - auto: PREDEFINED
-      description: Priority of the ticket
+      description: Priority of the ticket.
       name: priority
       predefined:
       - 5 - Planning
@@ -1249,94 +1249,94 @@ script:
       - 3 - Moderate
       - 2 - High
       - 1 - Critical
-    - description: System ID of the ticket to update
+    - description: System ID of the ticket to update.
       name: id
       required: true
     - description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
       name: custom_fields
     - auto: PREDEFINED
       defaultValue: normal
-      description: Type of Change Request ticket
+      description: Type of Change Request ticket.
       name: type
       predefined:
       - normal
       - standard
       - emergency
-    - description: State of the ticket
+    - description: State of the ticket.
       name: state
     deprecated: true
-    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record instead
+    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record instead.
     name: servicenow-update
   - arguments:
-    - description: Short description of the ticket
+    - description: Short description of the ticket.
       name: short_description
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
       - problem
       - change_request
-    - description: Ticket urgency
+    - description: Ticket urgency.
       name: urgency
-    - description: Ticket severity
+    - description: Ticket severity.
       name: severity
-    - description: Ticket impact
+    - description: Ticket impact.
       name: impact
     - auto: PREDEFINED
-      description: Does the ticket active(true/false)
+      description: Does the ticket active(true/false).
       name: active
       predefined:
       - 'true'
       - 'false'
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: activity_due
-    - description: List of assigned users to the ticket
+    - description: List of assigned users to the ticket.
       name: additional_assignee_list
-    - description: Ticket history approval
+    - description: Ticket history approval.
       name: approval_history
-    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time.
       name: approval_set
-    - description: To whom the ticket is assigned
+    - description: To whom the ticket is assigned.
       name: assigned_to
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: business_duration
-    - description: Business service
+    - description: Business service.
       name: business_service
-    - description: Business source
+    - description: Business source.
       name: business_stc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: calendar_duration
-    - description: UID Format
+    - description: UID Format.
       name: caller_id
-    - description: Category name
+    - description: Category name.
       name: category
-    - description: UID Format
+    - description: UID Format.
       name: caused_by
-    - description: Ticket's close code
+    - description: Ticket's close code.
       name: close_code
-    - description: Close notes of the ticket
+    - description: Close notes of the ticket.
       name: close_notes
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: closed_at
-    - description: User who closed the ticket
+    - description: User who closed the ticket.
       name: closed_by
-    - description: UID Format
+    - description: UID Format.
       name: cmdb_ci
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments
-    - description: Format type journal input
+    - description: Format type journal input.
       name: comments_and_work_notes
-    - description: UID Format
+    - description: UID Format.
       name: company
-    - description: Contact type
+    - description: Contact type.
       name: contact_type
-    - description: Correlation display
+    - description: Correlation display.
       name: correlation_display
-    - description: Correlation id
+    - description: Correlation id.
       name: correlation_id
-    - description: UID Format
+    - description: UID Format.
       name: delivery_plan
     - auto: PREDEFINED
       description: If you want to display comments, work_notes...
@@ -1344,92 +1344,92 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Ticket description
+    - description: Ticket description.
       name: description
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
-    - description: Escalation
+    - description: Escalation.
       name: escalation
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: expected_start
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: follow_up
-    - description: UID format list
+    - description: UID format list.
       name: group_list
     - auto: PREDEFINED
-      description: Is the ticket solved in the knowledge base
+      description: Is the ticket solved in the knowledge base.
       name: knowledge
       predefined:
       - 'true'
       - 'false'
-    - description: Location of the ticket
+    - description: Location of the ticket.
       name: location
-    - description: SLA of the ticket
+    - description: SLA of the ticket.
       name: made_sla
     - auto: PREDEFINED
-      description: Notify about this ticket
+      description: Notify about this ticket.
       name: notify
       predefined:
       - '1'
       - '0'
-    - description: Order number
+    - description: Order number.
       name: order
-    - description: UID Format
+    - description: UID Format.
       name: parent
-    - description: UID Format
+    - description: UID Format.
       name: parent_incident
-    - description: UID Format
+    - description: UID Format.
       name: problem_id
-    - description: How many users included in this ticket before
+    - description: How many users included in this ticket before.
       name: reassignment_count
-    - description: How many time the ticket has been reopened
+    - description: How many time the ticket has been reopened.
       name: reopen_count
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: resolved_at
-    - description: UID Format
+    - description: UID Format.
       name: resolved_by
-    - description: UID
+    - description: UID.
       name: rfc
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
-    - description: Subcategory
+    - description: Subcategory.
       name: subcategory
-    - description: Last updated by
+    - description: Last updated by.
       name: sys_updated_by
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: sys_updated_on
-    - description: Input from the end user
+    - description: Input from the end user.
       name: user_input
-    - description: A list of watched tickets
+    - description: A list of watched tickets.
       name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: work_end
-    - description: Format journal list
+    - description: Format journal list.
       name: work_notes
-    - description: List with UIDs
+    - description: List with UIDs.
       name: work_notes_list
-    - description: Date when started to work on the ticket
+    - description: Date when started to work on the ticket.
       name: work_start
-    - description: UID
+    - description: UID.
       name: assignment_group
-    - description: integer
+    - description: integer.
       name: incident_state
-    - description: Ticket number
+    - description: Ticket number.
       name: number
-    - description: Priority of the ticket (number)
+    - description: Priority of the ticket (number).
       name: priority
-    - description: System ID of the ticket to update
+    - description: System ID of the ticket to update.
       name: id
       required: true
     deprecated: true
-    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record instead
+    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record instead.
     name: servicenow-incident-update
   - arguments:
-    - description: Ticket System ID
+    - description: Ticket System ID.
       name: id
       required: true
     - auto: PREDEFINED
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -1438,15 +1438,15 @@ script:
       - sc_request
       - sc_task
     deprecated: true
-    description: Delete a ticket from ServiceNow
+    description: Delete a ticket from ServiceNow.
     name: servicenow-delete-ticket
   - arguments:
-    - description: Ticket System ID
+    - description: Ticket System ID.
       name: id
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -1457,20 +1457,20 @@ script:
     - description: The actual link to publish in ServiceNow ticket, valid url format, like http://www.demisto.com
       name: link
       required: true
-    - description: Publish the link as comment on the ticket, if false will publish the link as WorkNote, format bool
+    - description: Publish the link as comment on the ticket, if false will publish the link as WorkNote, format bool.
       name: post-as-comment
-    - description: The text to represent the link
+    - description: The text to represent the link.
       name: text
     deprecated: true
-    description: Add a link to specific ticket
+    description: Add a link to specific ticket.
     name: servicenow-add-link
   - arguments:
-    - description: Ticket System ID
+    - description: Ticket System ID.
       name: id
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -1479,20 +1479,20 @@ script:
     - description: The actual link to publish in ServiceNow ticket, valid url format, like http://www.demisto.com
       name: link
       required: true
-    - description: Publish the link as comment on the ticket, by default true, if false will publish the link as WorkNote, format bool
+    - description: Publish the link as comment on the ticket, by default true, if false will publish the link as WorkNote, format bool.
       name: post-as-comment
-    - description: The text to represent the link
+    - description: The text to represent the link.
       name: text
     deprecated: true
     description: Deprecated. Use servicenow-add-link instead.
     name: servicenow-incident-add-link
   - arguments:
-    - description: Ticket System ID
+    - description: Ticket System ID.
       name: id
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -1500,7 +1500,7 @@ script:
       - change_request
       - sc_request
       - sc_task
-    - description: Comment to add
+    - description: Comment to add.
       name: comment
       required: true
     - auto: PREDEFINED
@@ -1511,35 +1511,35 @@ script:
       - 'true'
       - 'false'
     deprecated: true
-    description: Add comment to specific ticket by providing ticket id
+    description: Add comment to specific ticket by providing ticket id.
     name: servicenow-add-comment
   - arguments:
-    - description: Ticket System ID
+    - description: Ticket System ID.
       name: id
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
       - problem
       - change_request
-    - description: Comment to add
+    - description: Comment to add.
       name: comment
       required: true
-    - description: Publish the link as comment on the ticket, if false will publish the link as WorkNote, format bool
+    - description: Publish the link as comment on the ticket, if false will publish the link as WorkNote, format bool.
       name: post-as-comment
     deprecated: true
     description: Deprecated. Use servicenow-add-comment instead.
     name: servicenow-incident-add-comment
   - arguments:
     - defaultValue: '10'
-      description: Limit for how many tickets to retrieve
+      description: Limit for how many tickets to retrieve.
       name: limit
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -1550,10 +1550,10 @@ script:
     - description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
     - defaultValue: '0'
-      description: Starting record index to begin retrieving records from
+      description: Starting record index to begin retrieving records from.
       name: offset
     deprecated: true
-    description: Retrieve ticket info with a query
+    description: Retrieve ticket info with a query.
     name: servicenow-query-tickets
     outputs:
     - contextPath: Ticket.ID
@@ -1594,13 +1594,13 @@ script:
       type: string
   - arguments:
     - defaultValue: '10'
-      description: Limit for how many tickets to retrieve
+      description: Limit for how many tickets to retrieve.
       name: limit
-    - description: Query
+    - description: Query.
       name: sysparm_query
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -1615,32 +1615,32 @@ script:
     name: servicenow-query
     outputs:
     - contextPath: Ticket.ID
-      description: ServiceNow ticket System ID
+      description: ServiceNow ticket System ID.
       type: string
     - contextPath: Ticket.Creator
-      description: ServiceNow ticket creator
+      description: ServiceNow ticket creator.
       type: string
     - contextPath: Ticket.Assignee
-      description: ServiceNow ticket assignee
+      description: ServiceNow ticket assignee.
       type: string
     - contextPath: Ticket.State
-      description: ServiceNow ticket state
+      description: ServiceNow ticket state.
       type: string
     - contextPath: Ticket.Summary
-      description: ServiceNow ticket short summary
+      description: ServiceNow ticket short summary.
       type: string
     - contextPath: Ticket.Number
-      description: ServiceNow ticket number
+      description: ServiceNow ticket number.
       type: string
   - arguments:
     - defaultValue: '10'
-      description: Limit for how many tickets to retrieve
+      description: Limit for how many tickets to retrieve.
       name: limit
-    - description: Query
+    - description: Query.
       name: sysparm_query
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -1651,30 +1651,30 @@ script:
     name: servicenow-incidents-query
     outputs:
     - contextPath: Ticket.ID
-      description: ServiceNow ticket System ID
+      description: ServiceNow ticket System ID.
       type: string
     - contextPath: Ticket.Creator
-      description: ServiceNow ticket creator
+      description: ServiceNow ticket creator.
       type: string
     - contextPath: Ticket.Assignee
-      description: ServiceNow ticket assignee
+      description: ServiceNow ticket assignee.
       type: string
     - contextPath: Ticket.State
-      description: ServiceNow ticket state
+      description: ServiceNow ticket state.
       type: string
     - contextPath: Ticket.Summary
-      description: ServiceNow ticket short summary
+      description: ServiceNow ticket short summary.
       type: string
     - contextPath: Ticket.Number
-      description: ServiceNow ticket number
+      description: ServiceNow ticket number.
       type: string
   - arguments:
-    - description: Ticket System ID
+    - description: Ticket System ID.
       name: id
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
@@ -1682,56 +1682,56 @@ script:
       - change_request
       - sc_request
       - sc_task
-    - description: War-room entry ID that includes the file
+    - description: War-room entry ID that includes the file.
       name: file_id
       required: true
-    - description: Filename of uploaded file to override the existing file name in entry
+    - description: Filename of uploaded file to override the existing file name in entry.
       name: file_name
     deprecated: true
-    description: Upload a file to a specific ticket
+    description: Upload a file to a specific ticket.
     name: servicenow-upload-file
     outputs:
     - contextPath: ServiceNow.Ticket.File.Filename
-      description: Name of the file
+      description: Name of the file.
       type: string
     - contextPath: ServiceNow.Ticket.File.Link
-      description: Download link for the file
+      description: Download link for the file.
       type: string
     - contextPath: ServiceNow.Ticket.File.SystemID
-      description: System ID of the file
+      description: System ID of the file.
       type: string
   - arguments:
-    - description: Ticket System ID
+    - description: Ticket System ID.
       name: id
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type
+      description: Ticket type.
       name: ticket_type
       predefined:
       - incident
       - problem
       - change_request
-    - description: War-room entry ID that includes the file
+    - description: War-room entry ID that includes the file.
       name: file_id
       required: true
-    - description: Filename of uploaded file to override the existing file name in entry
+    - description: Filename of uploaded file to override the existing file name in entry.
       name: file_name
     deprecated: true
     description: Deprecated. Use servicenow-upload-file instead.
     name: servicenow-incident-upload-file
     outputs:
     - contextPath: Ticket.File.Filename
-      description: Name of the file
+      description: Name of the file.
       type: string
     - contextPath: Ticket.File.Link
-      description: Download link for the file
+      description: Download link for the file.
       type: string
     - contextPath: Ticket.File.SystemID
-      description: System ID of the file
+      description: System ID of the file.
       type: string
   - arguments:
-    - description: Servicenow group name
+    - description: Servicenow group name.
       name: name
       required: true
     deprecated: true
@@ -1739,13 +1739,13 @@ script:
     name: servicenow-get-groups
     outputs:
     - contextPath: ServiceNowGroups.GroupId
-      description: Group Id
+      description: Group Id.
       type: string
     - contextPath: ServiceNowGroups.GroupName
-      description: Group name
+      description: Group name.
       type: string
   - arguments:
-    - description: machine name
+    - description: machine name.
       name: computerName
       required: true
     deprecated: true
@@ -1753,31 +1753,31 @@ script:
     name: servicenow-get-computer
     outputs:
     - contextPath: ServiceNowComputer.sys_id
-      description: 'Id '
+      description: 'Id.'
       type: string
     - contextPath: ServiceNowComputer.u_code
-      description: Code
+      description: Code.
       type: string
     - contextPath: ServiceNowComputer.support_group
-      description: Support group
+      description: Support group.
       type: string
     - contextPath: ServiceNowComputer.os
-      description: Operating System
+      description: Operating System.
       type: string
     - contextPath: ServiceNowComputer.comments
-      description: Comments
+      description: Comments.
       type: string
   - arguments:
-    - description: Record system ID
+    - description: Record system ID.
       name: id
       required: true
     - description: Comma separated table fields to display and output to the context, e.g name,tag,company. ID field is added by default.
       name: fields
-    - description: The name of the table to get the record from
+    - description: The name of the table to get the record from.
       name: table_name
       required: true
     deprecated: true
-    description: Retrieve record information by specific record ID
+    description: Retrieve record information by specific record ID.
     name: servicenow-get-record
     outputs:
     - contextPath: ServiceNow.Record.ID
@@ -1796,11 +1796,11 @@ script:
       description: time-stamp field that indicates when a record was created.
       type: date
   - arguments:
-    - description: The name of the table to query
+    - description: The name of the table to query.
       name: table_name
       required: true
     - defaultValue: '10'
-      description: Limit for how many tickets to retrieve
+      description: Limit for how many tickets to retrieve.
       name: limit
     - description: The query to run. For more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
@@ -1808,10 +1808,10 @@ script:
       isArray: true
       name: fields
     - defaultValue: '0'
-      description: Starting record index to begin retrieving records from
+      description: Starting record index to begin retrieving records from.
       name: offset
     deprecated: true
-    description: Query a specified table in ServiceNow
+    description: Query a specified table in ServiceNow.
     name: servicenow-query-table
     outputs:
     - contextPath: ServiceNow.Results.ID
@@ -1838,7 +1838,7 @@ script:
     - description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
       name: custom_fields
     deprecated: true
-    description: Create a new record in a specified ServiceNow table
+    description: Create a new record in a specified ServiceNow table.
     name: servicenow-create-record
     outputs:
     - contextPath: ServiceNow.Record.ID
@@ -1857,10 +1857,10 @@ script:
       description: time-stamp field that indicates when a record was created.
       type: date
   - arguments:
-    - description: The name of the table to update the record in
+    - description: The name of the table to update the record in.
       name: table_name
       required: true
-    - description: The system ID of the ticket to update
+    - description: The system ID of the ticket to update.
       name: id
       required: true
     - description: 'Fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;...'
@@ -1868,7 +1868,7 @@ script:
     - description: 'Custom(User defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;...'
       name: custom_fields
     deprecated: true
-    description: Update a record in a specified ServiceNow table
+    description: Update a record in a specified ServiceNow table.
     name: servicenow-update-record
     outputs:
     - contextPath: ServiceNow.Record.ID
@@ -1887,202 +1887,202 @@ script:
       description: time-stamp field that indicates when a record was created.
       type: date
   - arguments:
-    - description: The table name
+    - description: The table name.
       name: table_name
       required: true
-    - description: The system ID of the ticket to delete
+    - description: The system ID of the ticket to delete.
       name: id
       required: true
     deprecated: true
-    description: Delete a record in a specified ServiceNow table
+    description: Delete a record in a specified ServiceNow table.
     name: servicenow-delete-record
   - arguments:
-    - description: Table name
+    - description: Table name.
       name: table_name
       required: true
     deprecated: true
-    description: List API fields for a specified ServiceNow table
+    description: List API fields for a specified ServiceNow table.
     name: servicenow-list-table-fields
     outputs:
     - contextPath: ServiceNow.Field
-      description: Table API field name
+      description: Table API field name.
       type: string
   - arguments:
-    - description: Query by computer sys_id
+    - description: Query by computer sys_id.
       name: computer_id
-    - description: Query by computer name
+    - description: Query by computer name.
       name: computer_name
     - description: Query by specified query, for more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
-    - description: Query by asset tag
+    - description: Query by asset tag.
       name: asset_tag
     - defaultValue: '10'
-      description: Query results limit
+      description: Query results limit.
       name: limit
     - defaultValue: '0'
-      description: Starting record index to begin retrieving records from
+      description: Starting record index to begin retrieving records from.
       name: offset
     deprecated: true
-    description: Query the cmdb_ci_computer table in ServiceNow
+    description: Query the cmdb_ci_computer table in ServiceNow.
     name: servicenow-query-computers
     outputs:
     - contextPath: ServiceNow.Computer.ID
-      description: Computer sys_id
+      description: Computer sys_id.
       type: string
     - contextPath: ServiceNow.Computer.AssetTag
-      description: Computer Asset tag
+      description: Computer Asset tag.
       type: string
     - contextPath: ServiceNow.Computer.Name
-      description: Computer name
+      description: Computer name.
       type: string
     - contextPath: ServiceNow.Computer.DisplayName
-      description: Computer display name
+      description: Computer display name.
       type: string
     - contextPath: ServiceNow.Computer.SupportGroup
-      description: Computer support group
+      description: Computer support group.
       type: string
     - contextPath: ServiceNow.Computer.OperatingSystem
-      description: Computer operating system
+      description: Computer operating system.
       type: string
     - contextPath: ServiceNow.Computer.Company
-      description: Computer company sys_id
+      description: Computer company sys_id.
       type: string
     - contextPath: ServiceNow.Computer.AssignedTo
-      description: Computer assigned to user sys_id
+      description: Computer assigned to user sys_id.
       type: string
     - contextPath: ServiceNow.Computer.State
-      description: Computer state
+      description: Computer state.
       type: string
     - contextPath: ServiceNow.Computer.Cost
-      description: Computer cost
+      description: Computer cost.
       type: string
     - contextPath: ServiceNow.Computer.Comments
-      description: Computer comments
+      description: Computer comments.
       type: string
   - arguments:
-    - description: Query by group sys_id
+    - description: Query by group sys_id.
       name: group_id
-    - description: Query by group name
+    - description: Query by group name.
       name: group_name
     - description: Query by specified query, for more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
     - defaultValue: '10'
-      description: Query results limit
+      description: Query results limit.
       name: limit
     - defaultValue: '0'
-      description: Starting record index to begin retrieving records from
+      description: Starting record index to begin retrieving records from.
       name: offset
     deprecated: true
-    description: Query the sys_user_group table in ServiceNow
+    description: Query the sys_user_group table in ServiceNow.
     name: servicenow-query-groups
     outputs:
     - contextPath: ServiceNow.Group.ID
-      description: Group sys_id
+      description: Group sys_id.
       type: string
     - contextPath: ServiceNow.Group.Description
-      description: Group description
+      description: Group description.
       type: string
     - contextPath: ServiceNow.Group.Name
-      description: Group name
+      description: Group name.
       type: string
     - contextPath: ServiceNow.Group.Manager
-      description: Group manager sys_id
+      description: Group manager sys_id.
       type: string
     - contextPath: ServiceNow.Group.Updated
-      description: Group update time
+      description: Group update time.
       type: date
   - arguments:
-    - description: Query by user sys_id
+    - description: Query by user sys_id.
       name: user_id
-    - description: Query by username
+    - description: Query by username.
       name: user_name
     - description: Query by specified query, for more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
     - defaultValue: '10'
-      description: Query results limit
+      description: Query results limit.
       name: limit
     - defaultValue: '0'
-      description: Starting record index to begin retrieving records from
+      description: Starting record index to begin retrieving records from.
       name: offset
     deprecated: true
-    description: Query the sys_user table in ServiceNow
+    description: Query the sys_user table in ServiceNow.
     name: servicenow-query-users
     outputs:
     - contextPath: ServiceNow.User.ID
-      description: User sys_id
+      description: User sys_id.
       type: string
     - contextPath: ServiceNow.User.Name
-      description: User name (first + last)
+      description: User name (first + last).
       type: string
     - contextPath: ServiceNow.User.UserName
-      description: User username
+      description: User username.
       type: string
     - contextPath: ServiceNow.User.Email
-      description: User email
+      description: User email.
       type: string
     - contextPath: ServiceNow.User.Created
-      description: User creation time
+      description: User creation time.
       type: date
     - contextPath: ServiceNow.User.Updated
-      description: User update time
+      description: User update time.
       type: date
   - arguments:
     - description: The table label, e.g Asset, Incident, IP address etc.
       name: label
       required: true
     - defaultValue: '10'
-      description: Results limit
+      description: Results limit.
       name: limit
-    - description: Starting record index to begin retrieving records from
+    - description: Starting record index to begin retrieving records from.
       name: offset
     deprecated: true
-    description: Get table names by a label to use in commands
+    description: Get table names by a label to use in commands.
     name: servicenow-get-table-name
     outputs:
     - contextPath: ServiceNow.Table.ID
-      description: Table system ID
+      description: Table system ID.
       type: string
     - contextPath: ServiceNow.Table.Name
-      description: Table name to use in commands, e.g alm_asset
+      description: Table name to use in commands, e.g alm_asset.
       type: string
     - contextPath: ServiceNow.Table.SystemName
-      description: Table system name, e.g Asset
+      description: Table system name, e.g Asset.
       type: string
   - arguments:
     - default: true
-      description: Ticket System ID
+      description: Ticket System ID.
       name: id
       required: true
     - defaultValue: '10'
-      description: Limit for the ticket notes
+      description: Limit for the ticket notes.
       name: limit
     - defaultValue: '0'
-      description: Offset of the ticket notes
+      description: Offset of the ticket notes.
       name: offset
     deprecated: true
     description: Get notes from the specified ServiceNow ticket - Read permissions are required for the sys_journal_field table.
     name: servicenow-get-ticket-notes
     outputs:
     - contextPath: ServiceNow.Ticket.ID
-      description: Ticket ID
+      description: Ticket ID.
       type: string
     - contextPath: ServiceNow.Ticket.Note.Value
-      description: Ticket note value
+      description: Ticket note value.
       type: unknown
     - contextPath: ServiceNow.Ticket.Note.CreatedOn
-      description: Ticket note created on
+      description: Ticket note created on.
       type: date
     - contextPath: ServiceNow.Ticket.Note.CreatedBy
-      description: Ticket note created by
+      description: Ticket note created by.
       type: string
     - contextPath: ServiceNow.Ticket.Note.Type
-      description: Ticket note type
+      description: Ticket note type.
       type: string
   isfetch: true
   script: '-'
   type: python
   subtype: python2
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.76921
 tests:
 - No test - Hibernating instance
 fromversion: 5.0.0

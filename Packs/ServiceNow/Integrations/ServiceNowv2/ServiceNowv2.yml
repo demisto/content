@@ -1683,7 +1683,7 @@ script:
       required: true
     description: Retrieves attachments from a ticket.
     name: servicenow-get-ticket-attachments
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -20,7 +20,7 @@
     "openEnded": false,
     "associatedTypes": [
         "ServiceNow Ticket",
-	"ServiceNow Create Ticket and Mirror"
+        "ServiceNow Create Ticket and Mirror"
     ],
     "associatedToAll": false,
     "unmapped": false,

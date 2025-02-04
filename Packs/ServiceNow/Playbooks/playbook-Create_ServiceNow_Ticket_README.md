@@ -1,27 +1,34 @@
 Create ServiceNow Ticket allows you to open new tickets as a task from a parent playbook.
 When creating the ticket, you can decide to update based on the ticket's state, which will wait for the ticket to resolve or close with StatePolling. 
 Alternatively, you can select to mirror the ServiceNow ticket and incident fields. To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: 
+
 1. StatePolling
 2. Mirror
 3. Leave Blank to use none.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * ServiceNow Ticket State Polling
 * Mirror ServiceNow Ticket
 
 ### Integrations
+
 ServiceNow v2
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 servicenow-create-ticket
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -44,6 +51,7 @@ servicenow-create-ticket
 | TicketType | The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -63,5 +71,6 @@ servicenow-create-ticket
 | ServiceNow.Ticket.CloseCode | Ticket close code. | string |
 
 ## Playbook Image
+
 ---
 ![Create ServiceNow Ticket](../doc_files/Create_ServiceNow_Ticket.png)

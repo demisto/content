@@ -8,21 +8,27 @@ In Addition to the Playbook, It is recommended to use the included layout for Se
 You can add the new layout as a tab to existing layouts at the edit layout screen.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Field Polling - Generic
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * setIncident
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -36,9 +42,11 @@ This playbook does not use any scripts.
 | FieldPollingTimeout | <br/>Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.<br/>\(In minutes\) |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
 ![Mirror ServiceNow Ticket](../doc_files/Mirror_ServiceNow_Ticket.png)
