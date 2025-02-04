@@ -1,7 +1,7 @@
 id: Uncommon execution of ODBCConf
 version: -1
 name: Uncommon execution of ODBCConf
-description: |2-
+description: |-
     This playbook handles "Uncommon execution of ODBCConf" alerts.
 
     Playbook Stages:
@@ -26,7 +26,7 @@ description: |2-
     - Execution From a Restricted Location
     - Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
 
-    The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. If related insights are found, it will proceed to remediation actions only if the host score is listed as high.; otherwise, it closes the alert with the message "No indication of malicious activity was found".
+    The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions; otherwise, it closes the alert with the message "No indication of malicious activity was found".
 
 
     Remediation:  
