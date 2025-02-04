@@ -128,9 +128,5 @@
             }
         }
     ],
-    "links": {
-        "first": "https://triage.example.com/api/public/v2/rules?page%5Bnumber%5D=1&page%5Bsize%5D=2",
-        "next": "https://triage.example.com/api/public/v2/rules?page%5Bnumber%5D=2&page%5Bsize%5D=2",
-        "last": "https://triage.example.com/api/public/v2/rules?page%5Bnumber%5D=6&page%5Bsize%5D=2"
-    }
+    "version": -1
 }

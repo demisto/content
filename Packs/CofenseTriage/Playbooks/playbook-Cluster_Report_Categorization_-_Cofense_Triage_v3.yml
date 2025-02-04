@@ -1,8 +1,7 @@
 id: Cluster Report Categorization - Cofense Triage v3
 version: -1
 name: Cluster Report Categorization - Cofense Triage v3
-description: Cluster Report Categorization playbook is used to retrieve the reports
-  of specific clusters and perform the categorization of reports.
+description: Cluster Report Categorization playbook is used to retrieve the reports of specific clusters and perform the categorization of reports.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +39,7 @@ tasks:
       id: a4de689e-1d44-4b7e-8198-52e4313d3e18
       version: -1
       name: Get the Clusters based on tags and match priority
-      description: Retrieves clusters based on the filter values provided in the command
-        arguments.
+      description: Retrieves clusters based on the filter values provided in the command arguments.
       script: '|||cofense-cluster-list'
       type: regular
       iscommand: true
@@ -87,8 +85,7 @@ tasks:
       id: 62af86fd-adb1-4390-82c5-13fb1f9fe7d3
       version: -1
       name: Get Reports of specific cluster
-      description: Retrieves a report or a list of reports based on the filter values
-        provided in the command arguments.
+      description: Retrieves a report or a list of reports based on the filter values provided in the command arguments.
       script: '|||cofense-report-list'
       type: regular
       iscommand: true
@@ -162,8 +159,7 @@ tasks:
       id: 5b608776-932a-4d52-8dd3-f2618b4bd2fe
       version: -1
       name: Is Cofense Triage v3 Integration enabled?
-      description: Retrieves clusters based on the filter values provided in the command
-        arguments.
+      description: Retrieves clusters based on the filter values provided in the command arguments.
       type: condition
       iscommand: false
       brand: ""
@@ -279,8 +275,7 @@ inputs:
 - key: MatchPriority
   value: {}
   required: true
-  description: Specify the priority to retrieve the cluster based on the priority
-    of the rules that match the reports in the cluster.
+  description: Specify the priority to retrieve the cluster based on the priority of the rules that match the reports in the cluster.
   playbookInputQuery:
 outputs: []
 tests:

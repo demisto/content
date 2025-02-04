@@ -61,8 +61,5 @@
             }
         }
     ],
-    "links": {
-        "first": "https://triage.example.com/api/public/v2/categories?filter%5Bscore%5D=4%2C10&page%5Bnumber%5D=1&page%5Bsize%5D=20",
-        "last": "https://triage.example.com/api/public/v2/categories?filter%5Bscore%5D=4%2C10&page%5Bnumber%5D=1&page%5Bsize%5D=20"
-    }
+    "version": -1
 }

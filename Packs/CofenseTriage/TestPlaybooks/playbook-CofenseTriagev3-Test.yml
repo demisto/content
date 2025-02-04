@@ -1,8 +1,7 @@
 id: Cofense Triage v3-Test
 version: -1
 name: Cofense Triage v3-Test
-description: This playbook uses Cofense Triage v3 integration and tests all  commands
-  of the integration.
+description: This playbook uses Cofense Triage v3 integration and tests all  commands of the integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -2406,8 +2405,7 @@ tasks:
       id: dd3610c9-ca15-401b-8c6e-1d58c064de4b
       version: -1
       name: cofense-cluster-list
-      description: Retrieves clusters based on the filter values provided in the command
-        arguments.
+      description: Retrieves clusters based on the filter values provided in the command arguments.
       script: '|||cofense-cluster-list'
       type: regular
       iscommand: true
@@ -2754,8 +2752,7 @@ tasks:
       id: cde554ec-0d72-4c18-8179-5156c910219f
       version: -1
       name: cofense-report-image-download
-      description: Downloads the image of the report that matches the specified report
-        ID.
+      description: Downloads the image of the report that matches the specified report ID.
       script: '|||cofense-report-image-download'
       type: regular
       iscommand: true

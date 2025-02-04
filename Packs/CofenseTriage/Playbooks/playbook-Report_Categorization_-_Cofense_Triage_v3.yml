@@ -1,9 +1,7 @@
 id: Report Categorization - Cofense Triage v3
 version: -1
 name: Report Categorization - Cofense Triage v3
-description: Report Categorization playbook investigates reports that are unprocessed
-  or uncategorized on Cofense Triage as incident alerts in XSOAR and categorizes them
-  based on the severity of the incident.
+description: Report Categorization playbook investigates reports that are unprocessed or uncategorized on Cofense Triage as incident alerts in XSOAR and categorizes them based on the severity of the incident.
 starttaskid: "0"
 tasks:
   "0":
@@ -205,8 +203,7 @@ tasks:
       id: 0f63c17f-a2cc-4341-871c-67653506259a
       version: -1
       name: Report Download
-      description: Downloads the raw email for the report that matches the specified
-        report ID.
+      description: Downloads the raw email for the report that matches the specified report ID.
       script: '|||cofense-report-download'
       type: regular
       iscommand: true
@@ -240,12 +237,7 @@ tasks:
       id: 45ff57c3-c414-4868-8ae5-692bec160146
       version: -1
       name: Parse Email
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -380,8 +372,7 @@ tasks:
       id: 02b97a9a-1430-44bf-8833-b3d4e45fb6de
       version: -1
       name: Check Email Authenticity
-      description: Checks the authenticity of an email based on the email's SPF, DMARC,
-        and DKIM.
+      description: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
       scriptName: CheckEmailAuthenticity
       type: regular
       iscommand: false
@@ -1093,8 +1084,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Set to true to assign only user that is currently on shift. Requires
-    Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
   playbookInputQuery:
 - key: ReportID
   value:
@@ -1102,8 +1092,7 @@ inputs:
       root: incident
       accessor: cofensetriagereportid
   required: true
-  description: Requires report ID to investigate and categorize the report that is
-    pulled from Cofense Triage.
+  description: Requires report ID to investigate and categorize the report that is pulled from Cofense Triage.
   playbookInputQuery:
 - key: AutoCategorize
   value:

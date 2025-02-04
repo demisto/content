@@ -39,9 +39,7 @@ tasks:
       id: 7ca3cfcd-be9e-47be-8e52-6275684f74d8
       version: -1
       name: List the Threat Indicators
-      description: "Retrieves the list of threat indicators based on the provided\
-        \ parameters. \nThreat indicators identify the threat level of an email's\
-        \ subject, sender, domains, URLs, and MD5 and SHA256 attachment hash signatures."
+      description: "Retrieves the list of threat indicators based on the provided parameters. \nThreat indicators identify the threat level of an email's subject, sender, domains, URLs, and MD5 and SHA256 attachment hash signatures."
       script: '|||cofense-threat-indicator-list'
       type: regular
       iscommand: true
@@ -88,8 +86,7 @@ tasks:
       id: 83c85a95-052a-403e-8693-7fd8fd991784
       version: -1
       name: Update Threat Indicator
-      description: Updates a threat indicator based on the values provided in the
-        command arguments.
+      description: Updates a threat indicator based on the values provided in the command arguments.
       script: '|||cofense-threat-indicator-update'
       type: regular
       iscommand: true
@@ -233,8 +230,7 @@ tasks:
       id: a83a1b93-69a4-4b5f-8c41-fdd4e3638826
       version: -1
       name: Create Threat Indicator of type MD5
-      description: Creates a threat indicator based on the values provided in the
-        command arguments.
+      description: Creates a threat indicator based on the values provided in the command arguments.
       script: '|||cofense-threat-indicator-create'
       type: regular
       iscommand: true
@@ -276,8 +272,7 @@ tasks:
       id: 3010aae2-973b-439b-8f5c-023608f5190b
       version: -1
       name: Create Threat Indicator of type url
-      description: Creates a threat indicator based on the values provided in the
-        command arguments.
+      description: Creates a threat indicator based on the values provided in the command arguments.
       script: '|||cofense-threat-indicator-create'
       type: regular
       iscommand: true
@@ -319,8 +314,7 @@ tasks:
       id: 580eb69d-4d32-450f-8658-495d39925b6a
       version: -1
       name: Create Threat Indicator of type SHA256
-      description: Creates a threat indicator based on the values provided in the
-        command arguments.
+      description: Creates a threat indicator based on the values provided in the command arguments.
       script: '|||cofense-threat-indicator-create'
       type: regular
       iscommand: true
@@ -362,8 +356,7 @@ tasks:
       id: 3825d30f-d0ca-439d-8e67-cf0cfeba7a2c
       version: -1
       name: Classify threats based on the type of the threat
-      description: Determine the type of the threat based on the value of the threat
-        indicator.
+      description: Determine the type of the threat based on the value of the threat indicator.
       type: condition
       iscommand: false
       brand: ""
@@ -431,8 +424,7 @@ tasks:
       id: 365c9aca-4b26-4918-89df-62fbb30a61b1
       version: -1
       name: Is the type of Indicator hash or url?
-      description: Determines whether the type of the threat indicator is other then
-        hash or url or not.
+      description: Determines whether the type of the threat indicator is other then hash or url or not.
       type: condition
       iscommand: false
       brand: ""

@@ -1,6 +1,5 @@
 id: Cofense Triage v2 Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Cofense Triage v2 Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -211,6 +211,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -265,8 +266,7 @@ tasks:
       id: 4496f8e2-ae76-4590-87fb-6a3655efb2e4
       version: -1
       name: Cofense Threat Indicators
-      description: Threat Indicators that are designated by analysts as malicious,
-        suspicious or benign
+      description: Threat Indicators that are designated by analysts as malicious, suspicious or benign
       script: '|||cofense-get-threat-indicators'
       type: regular
       iscommand: true

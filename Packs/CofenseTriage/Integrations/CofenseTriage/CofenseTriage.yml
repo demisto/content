@@ -76,7 +76,7 @@ script:
     - name: url
       description: The reported URLs.
     - name: subject
-      description: Report's subject
+      description: Report's subject.
     - name: reported_at
       description: 'Retrieve reports that were reported after this time, for example: "2 hours, 4 minutes, 6 month, 1 day".'
       defaultValue: 60 days
@@ -182,15 +182,15 @@ script:
       description: ID of the reporter.
     - contextPath: Cofense.Report.Email
       description: Reporter email address.
-    description: Retrieves Email address of the reporter by ID
+    description: Retrieves Email address of the reporter by ID.
   - name: cofense-get-report-by-id
     arguments:
     - name: report_id
       required: true
-      description: ID of the report
+      description: ID of the report.
     outputs:
     - contextPath: Cofense.Report.ID
-      description: ID number of the report
+      description: ID number of the report.
     - contextPath: Cofense.Report.EmailAttachments
       description: Email attachments.
     - contextPath: Cofense.Report.EmailAttachments.id
@@ -237,7 +237,7 @@ script:
     - contextPath: Cofense.Report.Sha256
       description: SHA256 hash of the file.
     description: 'Retrieves a report by the report ID number. '
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
 tests:
 - No test
