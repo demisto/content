@@ -202,7 +202,7 @@ class URIObject:
             elif type_ == 'Domain':
                 domain = url.replace('https://', "").replace("http://", "")
                 indicator_type = auto_detect_indicator_type(domain)
-                is_domain = 'Domain' in indicator_type if indicator_type else ''
+                is_domain = 'Domain' in indicator_type if indicator_type else False
                 demisto.debug(f"{indicator_type=}, {is_domain=}")
                 if len(domain.split(".")) > 1 or is_domain:
                     results.append({
