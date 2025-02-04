@@ -41,6 +41,8 @@ def get_email_entry_id(entry: dict) -> None | str:
     if isinstance(entry, dict):
         file_metadata = entry.get('FileMetadata', {})
         name = entry.get('File', '')
+        demisto.debug(f"IAE {file_metadata=}, {name=}")
+        demisto.debug(f"IAE {is_email(file_metadata, name)}=")
         if is_email(file_metadata, name):
             return entry.get('ID')
     return None
@@ -49,27 +51,36 @@ def get_email_entry_id(entry: dict) -> None | str:
 def identify_attached_mail(args):
     entries: list[dict] = []
     entry_ids = args.get('entryid')
+    demisto.debug(f"IAE {entry_ids=}")
     if entry_ids:
         if isinstance(entry_ids, STRING_TYPES):
             # playbook inputs may be in the form: [\"23@2\",\"24@2\"] if passed as a string and not array
             entry_ids = entry_ids.strip().replace(r'\"', '"')  # type:ignore
+        demisto.debug(f"IAE After parsing {entry_ids=}")
         entry_ids = argToList(entry_ids)
 
         if is_xsiam_or_xsoar_saas():
+            demisto.debug(f"IAE {is_xsiam_or_xsoar_saas()=}")
             entry_ids_str = ",".join(entry_ids)
             entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids_str})
+            demisto.debug(f"IAE executed getEntriesByIDs {entries=}")
         else:
             for ent_id in entry_ids:
                 res = demisto.executeCommand('getEntry', {'id': ent_id})
+                demisto.debug(f"IAE executed getEntry {res[0]=}")
                 if not is_error(res):
                     entries.append(res[0])
+                demisto.debug(f"IAE Inside else {entries=}")
     else:
         entries = demisto.executeCommand('getEntries', {"filter": {"categories": ["attachments"]}})
+        demisto.debug(f"IAE No entry_ids {entries=}")
 
     if not entries:
+        demisto.debug("IAE No entries")
         return 'no', None
 
     entry_ids = list(filter(None, map(get_email_entry_id, entries)))
+    demisto.debug(f"IAE After isEmail {entry_ids=}")
     if entry_ids:
         # leave the following comment as server used it to detect the additional context path used beyond the condition values
         # demisto.setContext('reportedemailentryid', id)
@@ -81,6 +92,7 @@ def identify_attached_mail(args):
 def main():
     args = demisto.args()
     result, outputs = identify_attached_mail(args)
+    demisto.debug(f"IAE {result=}, {outputs=}")
     return_outputs(result, outputs, result)
 
 
