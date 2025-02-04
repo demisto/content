@@ -1,34 +1,34 @@
-  This playbook handles "Uncommon execution of ODBCConf" alerts.
+This playbook handles "Uncommon execution of ODBCConf" alerts.
 
-  Playbook Stages:
+Playbook Stages:
 
-  Analysis:
-  During the analysis, the playbook will perform the following:
+Analysis:
+During the analysis, the playbook will perform the following:
 
-  - Checks if the causality process (CGO) is signed and prevalent.
-  - Checks for the host's risk score.
+- Checks if the causality process (CGO) is signed and prevalent.
+- Checks for the host's risk score.
 
-  If the CGO is unsigned and not prevalent or either of them plus with a high-risk score, it proceeds to remediation actions; otherwise, it continues to the investigation phase.
+If the CGO is unsigned and not prevalent or either of them plus with a high-risk score, it proceeds to remediation actions; otherwise, it continues to the investigation phase.
 
-  Investigation:
-  During the alert investigation, the playbook will perform the following:
+Investigation:
+During the alert investigation, the playbook will perform the following:
 
-  Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :  
-  - Evasion Technique - 3048798454
-  - An uncommon LOLBIN added to startup-related Registry keys
-  - Behavioral Threat
-  - An uncommon file was created in the startup folder
-  - Unsigned process running from a temporary directory
-  - Execution From a Restricted Location
-  - Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
+Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :  
+- Evasion Technique - 3048798454
+- An uncommon LOLBIN added to startup-related Registry keys
+- Behavioral Threat
+- An uncommon file was created in the startup folder
+- Unsigned process running from a temporary directory
+- Execution From a Restricted Location
+- Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
 
-  The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. If related insights are found, it will proceed to remediation actions only if the host score is listed as high.; otherwise, it closes the alert with the message "No indication of malicious activity was found".
+The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions; otherwise, it closes the alert with the message "No indication of malicious activity was found".
 
 
-  Remediation:  
+Remediation:  
 
-  - Automatically terminate the causality process.
-  - Automatically Close the alert.
+- Automatically terminate the causality process.
+- Automatically Close the alert.
 
 ## Dependencies
 

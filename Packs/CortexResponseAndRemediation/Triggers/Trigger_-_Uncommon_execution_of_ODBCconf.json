@@ -20,8 +20,13 @@
                     "SEARCH_TYPE": "EQ",
                     "SEARCH_VALUE": "Uncommon execution of ODBCConf to load dll directly"
                 } 
-            ]            
-        }
+            ]
+        },
+            {
+                  "SEARCH_FIELD": "alert_type",
+                  "SEARCH_TYPE": "NEQ",
+                  "SEARCH_VALUE": "Correlation"
+            }
       ]
     }
   }
