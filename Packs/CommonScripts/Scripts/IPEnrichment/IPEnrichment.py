@@ -364,23 +364,30 @@ def separate_ips(ip_list: list[str]) -> tuple[list[str], list[str]]:
 ########################### search indicators #################################
 def generate_common_ip_from_ip_indicator(ip_address :str, ip_type : str, custom_fields : dict) -> dict:
     """
-    CustomFields
-    asn
-    detectionengines
-feedrelatedindicators
-geocountry
-geolocation
-hostname
-organization
-organizationtype
-positivedetections
-tags
+    todo: get a response regarding this for a complete mapping - https://panw-global.slack.com/archives/D072EEC9XJM/p1738588622110269
+
     """
+    latitude, longitude = custom_fields.get("geolocation").split(':')
     return Common.IP(
         ip = ip_address,
         ip_type= ip_type,
-        asn=custom_fields.get('')
+        asn=custom_fields.get('asn'),
+        feed_related_indicators=[Common.FeedRelatedIndicators(
+                    value= indicator.get("value"),
+                    indicator_type=indicator.get("type"),
+                    description = indicator.get("description")
 
+                ) for indicator in custom_fields.get("feedrelatedindicators")],
+        geo_country=custom_fields.get("geocountry"),
+        geo_longitude= longitude,
+        geo_latitude=latitude,
+        organization_name=custom_fields.get("organization"),
+        organization_type=custom_fields.get("organizationtype"),
+        positive_engines= custom_fields.get("positivedetections"),
+        detection_engines=custom_fields.get("detectionengines"),
+        hostname=custom_fields.get("hostname"),
+        tags = custom_fields.get("tags"),
+        #todo - which dbot score should I put?
     )
 
 
