@@ -120,15 +120,8 @@ display: DomainTools Iris
 name: DomainTools Iris
 script:
   commands:
-  - arguments:
-    - default: true
-      description: The domain to enrich.
-      name: domain
-      required: true
-      isArray: false
-      secret: false
+  - name: domain
     description: Provides data enrichment for domains.
-    name: domain
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain.
@@ -471,7 +464,26 @@ script:
       type: Number
     deprecated: false
     execution: false
-  - arguments:
+    arguments:
+    - default: true
+      description: The domain to enrich.
+      name: domain
+      required: true
+      isArray: false
+      secret: false
+  - name: domainProfile
+    deprecated: false
+    execution: false
+    description: Returns the most recent Domain-RDAP registration record.
+    arguments:
+    - default: true
+      description: Specify the domain (e.g., mycompany.com).
+      name: domain
+      required: true
+      isArray: false
+      secret: false
+  - name: domaintoolsiris-investigate
+    arguments:
     - description: The domain name (SLD.TLD) to Investigate. Supports up to 1,000 comma-separated domains.
       name: domain
       required: true
@@ -491,7 +503,6 @@ script:
       auto: PREDEFINED
       defaultValue: "true"
     description: Returns a complete profile of the domain (SLD.TLD) using Iris Investigate. If parsing of FQDNs is desired, see domainExtractAndInvestigate.
-    name: domaintoolsiris-investigate
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain.
@@ -834,7 +845,8 @@ script:
       type: Number
     deprecated: false
     execution: false
-  - arguments:
+  - name: domaintoolsiris-enrich
+    arguments:
     - description: The domain name (SLD.TLD), or a comma-separated list of up to 6,000 domains.
       name: domain
       required: true
@@ -854,7 +866,6 @@ script:
       auto: PREDEFINED
       defaultValue: "true"
     description: Returns a complete profile of the domain (SLD.TLD) using Iris Enrich. If parsing of URLs or FQDNs is desired, see domainExtractAndEnrich.
-    name: domaintoolsiris-enrich
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain.
@@ -1197,7 +1208,8 @@ script:
       type: Number
     deprecated: false
     execution: false
-  - arguments:
+  - name: domaintoolsiris-analytics
+    arguments:
     - default: false
       description: The domain name to display.
       name: domain
@@ -1217,7 +1229,6 @@ script:
       auto: PREDEFINED
       defaultValue: "true"
     description: Displays DomainTools Analytic data in a markdown format table.
-    name: domaintoolsiris-analytics
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain.
@@ -1551,7 +1562,8 @@ script:
       type: Number
     deprecated: false
     execution: false
-  - arguments:
+  - name: domaintoolsiris-threat-profile
+    arguments:
     - default: false
       description: The domain name.
       name: domain
@@ -1559,7 +1571,6 @@ script:
       required: true
       secret: false
     description: Displays DomainTools Threat Profile data in a markdown format table.
-    name: domaintoolsiris-threat-profile
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain.
@@ -1893,7 +1904,8 @@ script:
       type: Number
     deprecated: false
     execution: false
-  - arguments:
+  - name: domaintoolsiris-pivot
+    arguments:
     - default: false
       description: The IP Address.
       isArray: false
@@ -2041,7 +2053,6 @@ script:
     deprecated: false
     description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally exclude results from context with include_context=false.
     execution: false
-    name: domaintoolsiris-pivot
     outputs:
     - contextPath: DomainTools.Pivots.PivotedDomains.Name
       description: The DomainTools Domain Name.
@@ -2298,7 +2309,8 @@ script:
     - contextPath: DomainTools.Pivots.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code Google Analytics.
       type: Number
-  - arguments:
+  - name: domaintools-whois-history
+    arguments:
     - default: true
       description: A domain name to query (e.g. example.com).
       isArray: false
@@ -2349,13 +2361,13 @@ script:
     deprecated: false
     description: The DomainTools Whois History API endpoint returns up to 100 historical Whois records associated with a domain name.
     execution: false
-    name: domaintools-whois-history
     outputs:
     - contextPath: DomainTools.History.Value
       description: Name of domain.
     - contextPath: DomainTools.History.WhoisHistory
       description: Domain Whois history data.
-  - arguments:
+  - name: domaintools-hosting-history
+    arguments:
     - default: true
       description: A domain name to query (e.g. example.com).
       isArray: false
@@ -2365,7 +2377,6 @@ script:
     deprecated: false
     description: Hosting History will list IP address, name server and registrar history.
     execution: false
-    name: domaintools-hosting-history
     outputs:
     - contextPath: DomainTools.History.Value
       description: Name of domain.
@@ -2375,7 +2386,8 @@ script:
       description: Domain Nameserver history data.
     - contextPath: DomainTools.History.RegistrarHistory
       description: Domain Registrar history data.
-  - arguments:
+  - name: domaintools-reverse-whois
+    arguments:
     - default: true
       description: (default) List of one or more terms to search for in the Whois record, separated with the pipe character ( | ).
       name: terms
@@ -2390,19 +2402,18 @@ script:
       - "true"
       - "false"
     description: The DomainTools Reverse Whois API provides a list of domain names that share the same Registrant Information. You can enter terms that describe a domain owner, like an email address or a company name, and you’ll get a list of domain names that have your search terms listed in the Whois record.
-    name: domaintools-reverse-whois
     outputs:
     - contextPath: DomainTools.ReverseWhois.Value
       description: Search term to reverse whois lookup on.
     - contextPath: DomainTools.ReverseWhois.Results
       description: List of results for reverse whois lookup.
-  - arguments:
+  - name: domaintools-whois
+    arguments:
     - default: true
       description: A domain name or IP address (e.g. example.com or 192.168.1.1).
       name: query
       required: true
     description: The DomainTools Parsed Whois API provides parsed information extracted from the raw Whois record. The API is optimized to quickly retrieve the Whois record, group important data together and return a well-structured format. The Parsed Whois API is ideal for anyone wishing to search for, index, or cross-reference data from one or multiple Whois records.
-    name: domaintools-whois
     outputs:
     - contextPath: Domain.Name
       description: Requested domain name.
@@ -2410,7 +2421,7 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
-  dockerimage: demisto/vendors-sdk:1.0.0.115493
+  dockerimage: demisto/vendors-sdk:1.0.0.2121370
   runonce: false
   script: '-'
   type: python
@@ -2420,4 +2431,4 @@ script:
   longRunningPort: false
 tests:
 - No test - test 'DomainTools Iris - Test' was moved to NonCircleFolder
-fromversion: 5.0.0
+fromversion: 5.5.0
