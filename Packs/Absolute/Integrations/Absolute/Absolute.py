@@ -11,7 +11,7 @@ from typing import Any
 import hmac
 
 from datetime import timedelta
-from authlib.jose import JsonWebSignature
+import jwt
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -351,9 +351,8 @@ class ClientV3(BaseClient):
         self._token_id = token_id
         self._headers = headers
         self._secret_key = secret_key
-        self._jws = JsonWebSignature()
 
-    def prepare_request(self, method: str, url_suffix: str, query_string: str) -> bytes:
+    def prepare_request(self, method: str, url_suffix: str, query_string: str) -> str:
         """
         Prepares the signed HTTP request data for making an API call.
 
@@ -363,7 +362,7 @@ class ClientV3(BaseClient):
             query_string (str): The query string parameters for the API call.
 
         Returns:
-            bytes: The prepared signed HTTP request data.
+            str: The prepared signed HTTP request data.
         """
         headers = {
             "alg": "HS256",
@@ -375,7 +374,7 @@ class ClientV3(BaseClient):
             "issuedAt": round(time.time() * 1000)
         }
 
-        return self._jws.serialize_compact(headers, json.dumps({"data": {}}), self._secret_key)
+        return jwt.encode({"data": {}}, self._secret_key, algorithm='HS256', headers=headers)
 
     def fetch_events_request(self, query_string: str) -> dict[str, Any]:
         """
@@ -1059,7 +1058,8 @@ def process_events(events: List[Dict[str, Any]], last_run: Dict[str, Any], shoul
         Tuple[List[Dict[str, Any]], [Dict[str, Any]]]: A tuple containing the processed events and the updated last run object.
 
     """
-    demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id and time")
+    demisto.debug(f"Handle duplicate events, adding _time field to events and optionally getting the latest events id and time."
+                  f" {events=}, {last_run=}")
     last_run_latest_events_id = last_run.get('latest_events_id', [])
     earliest_event_time = last_run.get('latest_events_time', '')
     latest_event_time = events[-1].get('eventDateTimeUtc') if events else ''
