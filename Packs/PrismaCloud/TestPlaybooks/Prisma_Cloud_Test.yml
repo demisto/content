@@ -1,8 +1,6 @@
 id: Prisma Cloud V2 Test
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Prisma Cloud V2 Test
-description: Test for Prisma Cloud V2.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -159,6 +158,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -183,9 +183,7 @@ tasks:
       id: 525fffbd-5285-474d-800a-a6dddbe084fa
       version: -1
       name: prisma-cloud-alert-search
-      description: Search alerts on the Prisma Cloud platform. When no absolute time
-        nor relative time arguments are provided, the search will show alerts from
-        the last 7 days.
+      description: Search alerts on the Prisma Cloud platform. When no absolute time nor relative time arguments are provided, the search will show alerts from the last 7 days.
       script: '|||prisma-cloud-alert-search'
       type: regular
       iscommand: true
@@ -353,10 +351,7 @@ tasks:
       id: 1279ce5e-5c2b-4ef4-8ecf-c451c160e83e
       version: -1
       name: prisma-cloud-alert-dismiss
-      description: Dismiss or snooze the alerts matching the given filter. Either
-        policy IDs or alert IDs must be provided. When no absolute time nor relative
-        time arguments are provided, default time range is all times. For snoozing,
-        provide "snooze_unit" and "snooze_value" arguments.
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
       script: '|||prisma-cloud-alert-dismiss'
       type: regular
       iscommand: true
@@ -479,9 +474,7 @@ tasks:
       id: 285c7d46-70ff-4df2-8a53-87daea7618dc
       version: -1
       name: prisma-cloud-alert-reopen
-      description: Re-open the alerts matching the given filter. Either policy IDs
-        or alert IDs must be provided. When no absolute time nor relative time arguments
-        are provided, default time range is all times.
+      description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
       script: '|||prisma-cloud-alert-reopen'
       type: regular
       iscommand: true
@@ -600,10 +593,7 @@ tasks:
       id: 1f0113ab-df8e-4ac0-8745-97b9da927275
       version: -1
       name: prisma-cloud-config-search
-      description: Search configuration inventory on the Prisma Cloud platform using
-        RQL language. Use this command for all queries that start with "config". When
-        no absolute time nor relative time arguments are provided, default time range
-        is all times.
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
       script: '|||prisma-cloud-config-search'
       type: regular
       iscommand: true
@@ -615,8 +605,7 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: config from cloud.resource where cloud.region = 'AWS Ohio' AND cloud.service
-          = 'Amazon EC2'
+        simple: 'config from cloud.resource where cloud.region = ''AWS Ohio'' AND cloud.service = ''Amazon EC2'''
       time_range_unit:
         simple: hour
       time_range_value:
@@ -691,10 +680,7 @@ tasks:
       id: 3b874bc2-33c2-452e-8cb8-302ddfa27263
       version: -1
       name: prisma-cloud-event-search
-      description: Search events inventory on the Prisma Cloud platform using RQL
-        language. Use this command for all queries that start with "event". When no
-        absolute time nor relative time arguments are provided, default time range
-        is all times.
+      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, default time range is all times.
       script: '|||prisma-cloud-event-search'
       type: regular
       iscommand: true
@@ -706,8 +692,7 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: event from cloud.audit_logs where cloud.type = 'aws' AND cloud.region
-          = 'AWS Oregon'
+        simple: event from cloud.audit_logs where cloud.type = 'aws' AND cloud.region = 'AWS Oregon'
       time_range_unit:
         simple: hour
       time_range_value:
@@ -1098,8 +1083,7 @@ tasks:
       limit:
         simple: "5"
       query:
-        simple: config from iam where dest.cloud.region = 'AWS Virginia' AND dest.cloud.service.name
-          = 'lambda' AND dest.cloud.resource.type = 'function'
+        simple: config from iam where dest.cloud.region = 'AWS Virginia' AND dest.cloud.service.name = 'lambda' AND dest.cloud.resource.type = 'function'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1178,10 +1162,7 @@ tasks:
       id: d09d9abf-60d1-4372-8cbd-c6e726345afe
       version: -1
       name: prisma-cloud-alert-dismiss
-      description: Dismiss or snooze the alerts matching the given filter. Either
-        policy IDs or alert IDs must be provided. When no absolute time nor relative
-        time arguments are provided, default time range is all times. For snoozing,
-        provide "snooze_unit" and "snooze_value" arguments.
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
       script: '|||prisma-cloud-alert-dismiss'
       type: regular
       iscommand: true
@@ -1525,9 +1506,7 @@ tasks:
       id: ba50b018-32b6-4ed3-84e8-bee11d5c73fc
       version: -1
       name: Reopen snoozed alert (for next playbook run)
-      description: Re-open the alerts matching the given filter. Either policy IDs
-        or alert IDs must be provided. When no absolute time nor relative time arguments
-        are provided, default time range is all times.
+      description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
       script: '|||prisma-cloud-alert-reopen'
       type: regular
       iscommand: true
@@ -1562,8 +1541,7 @@ tasks:
       id: e6530f96-b7dd-4c8e-8188-eaf97afe96da
       version: -1
       name: prisma-cloud-access-key-create
-      description: Adds a new access key for the current user. If you have API access,
-        you can create up to two access keys.
+      description: Adds a new access key for the current user. If you have API access, you can create up to two access keys.
       script: '|||prisma-cloud-access-key-create'
       type: regular
       iscommand: true
@@ -1601,8 +1579,7 @@ tasks:
       id: e9572ec4-9557-4f56-8bb2-20e876dbc60b
       version: -1
       name: prisma-cloud-access-keys-list
-      description: Returns all access keys for your tenant if you have a Prisma Cloud
-        System Admin role. Returns just your access keys if you don't have this role.
+      description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
       script: '|||prisma-cloud-access-keys-list'
       type: regular
       iscommand: true
@@ -1634,8 +1611,7 @@ tasks:
       id: 3ff6480e-6727-4210-829d-f0fb3cab9a55
       version: -1
       name: prisma-cloud-access-keys-list Verify Access key by ID
-      description: Returns all access keys for your tenant if you have a Prisma Cloud
-        System Admin role. Returns just your access keys if you don't have this role.
+      description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
       script: '|||prisma-cloud-access-keys-list'
       type: regular
       iscommand: true
@@ -1740,8 +1716,7 @@ tasks:
       id: 2ca861d0-f3ae-4be7-8604-150a0ac3e127
       version: -1
       name: prisma-cloud-access-key-enable
-      description: Activates the access key that has the specified ID. You cannot
-        activate an expired access key.
+      description: Activates the access key that has the specified ID. You cannot activate an expired access key.
       script: '|||prisma-cloud-access-key-enable'
       type: regular
       iscommand: true
@@ -1776,8 +1751,7 @@ tasks:
       id: 5db2f2d7-d2fb-4d6e-8936-afa5c7063538
       version: -1
       name: prisma-cloud-access-keys-list
-      description: Returns all access keys for your tenant if you have a Prisma Cloud
-        System Admin role. Returns just your access keys if you don't have this role.
+      description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
       script: '|||prisma-cloud-access-keys-list'
       type: regular
       iscommand: true
@@ -1812,6 +1786,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -1922,3 +1897,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
+description: Test for Prisma Cloud V2.
