@@ -362,13 +362,14 @@ def separate_ips(ip_list: list[str]) -> tuple[list[str], list[str]]:
 
 
 ########################### search indicators #################################
-def generate_common_ip_from_ip_indicator(ip_address :str, ip_type : str, custom_fields : dict) -> dict:
+def generate_common_ip_from_ip_indicator(ip_address :str, ip_type : str, score: int, custom_fields : dict) -> dict:
     """
     todo: get a response regarding this for a complete mapping - https://panw-global.slack.com/archives/D072EEC9XJM/p1738588622110269
 
     """
     latitude, longitude = custom_fields.get("geolocation").split(':')
     return Common.IP(
+        dbot_score=Common.DBotScore(indicator=ip_address, indicator_type=DBotScoreType.IP , score=score),
         ip = ip_address,
         ip_type= ip_type,
         asn=custom_fields.get('asn'),
@@ -400,6 +401,7 @@ def get_search_indicators_outputs(iocs: list[dict]):
         #todo - which fields should be excluded?
         common_ip = generate_common_ip_from_ip_indicator(ip_address = ip_indicator.get('value'),
                                                         ip_type = ip_indicator.get('indicator_type'),
+                                                         score = ip_indicator.get('score'),
                                                         custom_fields =  ip_indicator.get('CustomFields', {}))
 
 
