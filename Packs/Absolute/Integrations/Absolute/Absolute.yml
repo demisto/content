@@ -36,12 +36,8 @@ script:
     - description: The system unique identifier of the device.
       name: device_id
       required: true
-    - defaultValue: '50'
-      description: Maximum number of results to return.
+    - description: Maximum number of results to return. If not defined, will return all results.
       name: limit
-    - defaultValue: '0'
-      description: The page number of the results to retrieve. Minimum value is 0.
-      name: page
     description: Returns a list of custom device fields associated with the given device_id, based on the authorization token.
     name: absolute-custom-device-field-list
     outputs:

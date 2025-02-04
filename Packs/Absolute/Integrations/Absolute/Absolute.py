@@ -277,7 +277,7 @@ class ClientV3(BaseClient):
 
         elif method == 'PUT':
             response = self.send_request_to_api('PUT', url_suffix, query_string,
-                                                payload=body, ok_codes=tuple(success_status_code))
+                                                payload=body, ok_codes=tuple(success_status_code), resp_type=resp_type)
             return response
 
         elif method == 'POST':
@@ -321,7 +321,7 @@ def test_module(client: ClientV3) -> str:
     return message
 
 
-def parse_device_field_list_response(response: dict, device_id: str) -> dict[str, Any]:
+def parse_device_field_list_response(response: dict, device_id: str, limit: Optional[int]) -> dict[str, Any]:
     """Parse the device field list response"""
     parsed_data = {'DeviceUID': device_id, 'CDFValues': []}  # type: ignore
     for cdf_item in response:
@@ -333,6 +333,9 @@ def parse_device_field_list_response(response: dict, device_id: str) -> dict[str
             'FieldValue': cdf_item.get('cdfFieldValue'),
             'Type': cdf_item.get('type'),
         })
+    
+    if limit:
+        parsed_data['CDFValues'] = parsed_data['CDFValues'][:limit]
     return parsed_data
 
 
@@ -341,9 +344,9 @@ def parse_device_field_list_response_human_readable(outputs: dict) -> list:
     human_readable = []
     for cdf_values in outputs.get('CDFValues', []):
         human_readable.append({
-            'Filed Name': cdf_values.get('FieldName'),
+            'Field Name': cdf_values.get('FieldName'),
             'CDF ID': cdf_values.get('CDFUID'),
-            'Field Value': cdf_values.get('FieldName'),
+            'Field Value': cdf_values.get('FieldValue'),
         })
     return human_readable
 
@@ -352,11 +355,9 @@ def get_custom_device_field_list_command(args, client) -> CommandResults:
     """Gets custom device field
     """
     device_id = args.get('device_id')
-    page = arg_to_number(args.get('page', 0))
-    limit = arg_to_number(args.get('limit', 50))
-    res = client.api_request_absolute('GET', f'/v3/configurations/customfields/devices/{device_id}',
-                                      page=page, page_size=limit, specific_page=True)
-    outputs = parse_device_field_list_response(res, device_id)
+    limit = arg_to_number(args.get('limit'))
+    res = client.api_request_absolute('GET', f'/v3/configurations/customfields/devices/{device_id}')
+    outputs = parse_device_field_list_response(res, device_id, limit)
     human_readable = tableToMarkdown(f'{INTEGRATION} Custom device field list',
                                      parse_device_field_list_response_human_readable(outputs),
                                      removeNull=True)
@@ -373,8 +374,9 @@ def update_custom_device_field_command(args, client) -> CommandResults:
     cdf_uid = args.get('cdf_uid')
     field_value = args.get('value')
 
-    payload = json.dumps({"cdfValues": [{'cdfUid': cdf_uid, 'fieldValue': field_value}]})
-    client.api_request_absolute('PUT', f'/v3/configurations/customfields/devices/{device_id}', body=payload)
+    payload = [{'cdfUid': cdf_uid, 'cdfFieldValue': field_value}]
+    client.api_request_absolute('PUT', f'/v3/configurations/customfields/devices/{device_id}',
+                                body=payload, resp_type="response")
     return CommandResults(readable_output=f"Device {device_id} with value {field_value} was updated successfully.")
 
 
@@ -674,24 +676,27 @@ def parse_device_unenroll_request_data_response(response: dict) -> dict:
     return parsed_data
 
 
-def parse_device_unenroll_response(response: list) -> list:
+def parse_device_unenroll_response(response: list, request_uid: str) -> list:
     """Parse the unenroll response
 
     Args:
-        response (list): The response to parse
+        response (list): The response to parse.
+        request_uid (str): The request uid if the current request
     """
     parsed_devices_data = []
     for device in response:
-        parsed_devices_data.append({
-            'DeviceUid': device.get('deviceUid'),
-            'ActionUid': device.get('actionUid'),
-            'RequestUid': device.get('requestUid'),
-            'DeviceName': device.get('deviceName'),
-            'ActionStatus': device.get('actionStatus'),
-            'ESN': device.get('esn'),
-            'CreatedDateTimeUtc': device.get('createdDateTimeUtc'),
-            'UpdatedDateTimeUtc': device.get('updatedDateTimeUtc'),
-        })
+        if device.get('requestUid') == request_uid:
+            # only returning device data from the current unenroll request
+            parsed_devices_data.append({
+                'DeviceUid': device.get('deviceUid'),
+                'ActionUid': device.get('actionUid'),
+                'RequestUid': device.get('requestUid'),
+                'DeviceName': device.get('deviceName'),
+                'ActionStatus': device.get('actionStatus'),
+                'ESN': device.get('esn'),
+                'CreatedDateTimeUtc': device.get('createdDateTimeUtc'),
+                'UpdatedDateTimeUtc': device.get('updatedDateTimeUtc'),
+            })
     return parsed_devices_data
 
 
@@ -707,16 +712,16 @@ def device_unenroll_command(args, client) -> CommandResults:
     request_uid = res_1.get('requestUid', '')
 
     # getting data from API 2
-    res_2 = client.api_request_absolute('GET', f'v3/actions/requests/unenroll/{request_uid}')
+    res_2 = client.api_request_absolute('GET', f'/v3/actions/requests/unenroll/{request_uid}')
     request_data_outputs = parse_device_unenroll_request_data_response(res_2)
 
     # getting data from API 3
     payload = {'deviceUids': device_ids}
-    res_3 = client.api_request_absolute('POST', 'post/actions/unenroll/get-actions', body=payload)
+    res_3 = client.api_request_absolute('POST', '/v3/actions/unenroll/get-actions', body=payload)
 
-    devices_data_outputs = parse_device_unenroll_response(res_3)
+    devices_data_outputs = parse_device_unenroll_response(res_3, request_uid)
     human_readable = tableToMarkdown(f'{INTEGRATION} Unenroll request data:', request_data_outputs,
-                                     headers=['RequestId', 'RequestStatus'],
+                                     headers=['RequestUid', 'RequestStatus'],
                                      removeNull=True)
 
     human_readable += tableToMarkdown(f'{INTEGRATION} unenrolled devices:', devices_data_outputs,
