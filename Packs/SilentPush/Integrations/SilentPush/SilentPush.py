@@ -5,12 +5,16 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
+
+import time
 import enum
 import json
 import urllib3
 import dateparser
 import traceback
 from typing import Any, Dict, List, Optional, Union, Tuple
+import ast
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -18,6 +22,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+RESOURCE = {"ipv4", "ipv6", "domain"}
 
 # API ENDPOINTS
 JOB_STATUS = "explore/job"
@@ -39,7 +44,7 @@ IPV4_REPUTATION = "explore/ipreputation/history/ipv4"
 FORWARD_PADNS = "explore/padns/lookup/query"
 REVERSE_PADNS = "explore/padns/lookup/answer"
 SEARCH_SCAN = "explore/scandata/search/raw"
-LIVE_SCAN_URL_OUTPUTS = "explore/tools/scanondemand"
+LIVE_SCAN_URL = "explore/tools/scanondemand"
 FUTURE_ATTACK_INDICATOR = "/api/v2/iocs/threat-ranking"
 SCREENSHOT_URL = "explore/tools/screenshotondemand"
 
@@ -51,8 +56,12 @@ JOB_STATUS_INPUTS = [
                                       required=True),
                     InputArgument(name='max_wait',
                                 description='Number of seconds to wait for results (0-25 seconds).'),
-                    InputArgument(name='result_type',
-                                description='Type of result to include in the response.')
+                    InputArgument(name='status_only',
+                                description='Return job status, even if job is complete.'),
+                    InputArgument(name='force_metadata_on',
+                                description='Always return query metadata, even if original request did not include metadata.'),
+                    InputArgument(name='force_metadata_off',
+                                description='Never return query metadata, even if original request did include metadata.'),
                     ]
 NAMESERVER_REPUTATION_INPUTS = [
                     InputArgument(name='nameserver',
@@ -130,6 +139,9 @@ DOMAIN_INFRATAGS_INPUTS = [
                             default='live'),
                 InputArgument(name='match', 
                             description='Handling of self-hosted infrastructure. Defaults to "self".', 
+                            default='self'),
+                InputArgument(name='as_of', 
+                            description='Build infratags from padns data where the as_of timestamp equivalent is between the first_seen and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - relative time <sec> seconds ago', 
                             default='self')
             ]
 LIST_DOMAIN_INPUTS = [
@@ -154,7 +166,17 @@ DOMAIN_CERTIFICATE_INPUTS = [
                 InputArgument(name='date_min',
                             description='Filter certificates issued on or after this date.'),
                 InputArgument(name='date_max',
-                            description='Filter certificates issued on or before this date.')
+                            description='Filter certificates issued on or before this date.'),
+                InputArgument(name='prefer',
+                            description='Prefer to wait for results for longer running queries or to return job_id immediately (Defaults to Silent Push API behaviour).'),
+                InputArgument(name='max_wait',
+                            description='Number of seconds to wait for results before returning a job_id, with a range from 0 to 25 seconds.'),
+                InputArgument(name='with_metadata',
+                            description='Includes a metadata object in the response, containing returned results, total results, and job_id.'),
+                InputArgument(name='skip',
+                            description='Number of results to skip.'),
+                InputArgument(name='limit',
+                            description='Number of results to return.')
             ]
 ENRICHMENT_INPUTS = [
                 InputArgument(name='resource', 
@@ -171,13 +193,7 @@ ENRICHMENT_INPUTS = [
 LIST_IP_INPUTS = [
             InputArgument(name='ips', 
                         description='Comma-separated list of IP addresses.',
-                        required=True),
-            InputArgument(name='explain', 
-                        description='Include explanation of calculations.'),
-            InputArgument(name='scan_data', 
-                        description='Include scan data (IPv4 only).'),
-            InputArgument(name='sparse', 
-                        description='Specific data to return (asn/asname/sp_risk_score).')
+                        required=True)
         ]
 ASN_REPUTATION_INPUTS = [
             InputArgument(name='asn', 
@@ -259,8 +275,6 @@ REVERSE_PADNS_INPUTS = [
                         description='Whether to include subdomains in the lookup.'),
             InputArgument(name='regex',
                         description='Regular expression to filter the DNS records.'),
-            InputArgument(name='match',
-                        description='Matching condition for the DNS records.'),
             InputArgument(name='first_seen_after',
                         description='Filter for records first seen after a specific date/time.'),
             InputArgument(name='first_seen_before',
@@ -336,9 +350,7 @@ FUTURE_ATTACK_INDICATOR_INPUTS = [
 SCREENSHOT_URL_INPUTS = [
             InputArgument(name='url',  # option 1
                         description='URL for the screenshot.',
-                        required=True),
-            InputArgument(name='description',
-                        description='Generate and store a screenshot of a URL in the vault.')
+                        required=True)
         ]
 
 
@@ -454,7 +466,10 @@ DOMAIN_CERTIFICATE_OUTPUTS = [
                         OutputArgument(name='source_name', output_type=str, description='Source log name of the certificate.'),
                         OutputArgument(name='source_url', output_type=str, description='URL of the certificate log source.'),
                         OutputArgument(name='subject', output_type=str, description='Subject details of the certificate.'),
-                        OutputArgument(name='wildcard', output_type=int, description='Indicates if the certificate is a wildcard certificate.')
+                        OutputArgument(name='wildcard', output_type=int, description='Indicates if the certificate is a wildcard certificate.'),
+                        OutputArgument(name='job_status.job_id', output_type=str, description='ID of the job.'),
+                        OutputArgument(name='job_status.status', output_type=str, description='Status of the job.')
+
                     ]
 ENRICHMENT_OUTPUTS = [
                         OutputArgument(name='ip_is_dsl_dynamic', output_type=bool, description='Indicates if the IP is DSL dynamic.'),
@@ -923,7 +938,7 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(f'Error in API call: {str(e)}')
 
-    def get_job_status(self, job_id: str, max_wait: Optional[int] = None, result_type: Optional[str] = None) -> Dict[str, Any]:
+    def get_job_status(self, job_id: str, params: Optional[list] = None) -> Dict[str, Any]:
         """
             Retrieve the status of a specific job.
 
@@ -939,19 +954,10 @@ class Client(BaseClient):
                 ValueError: If max_wait is invalid or result_type is not in allowed values.
             """
         url_suffix = f"{JOB_STATUS}/{job_id}"
-        params = {}
-
+        max_wait = params.get("max_wait")
         if max_wait is not None:
             if not (0 <= max_wait <= 25):
                 raise ValueError("max_wait must be an integer between 0 and 25")
-        params['max_wait'] = max_wait
-
-        valid_result_types = {'Status', 'Include Metadata', 'Exclude Metadata'}
-        if result_type and result_type not in valid_result_types:
-            raise ValueError(f"result_type must be one of {valid_result_types}")
-        
-        if result_type:
-            params['result_type'] = result_type
 
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
@@ -1083,8 +1089,8 @@ class Client(BaseClient):
             'asname': asname,
             'min_ip_diversity': min_ip_diversity,
             'registrar': registrar,
-            'min_asn_diversity': min_asn_diversity,
-            'certificate_issuer': certificate_issuer,
+            'asn_diversity_min': min_asn_diversity,
+            'cert_issuer': certificate_issuer,
             'whois_date_after': whois_date_after,
             'skip': skip,
         })
@@ -1119,7 +1125,6 @@ class Client(BaseClient):
         """
         url_suffix = DOMAIN_INFRATAGS
 
-        # Construct the params dictionary
         params = {
             'mode': mode,
             'match': match,
@@ -1128,27 +1133,15 @@ class Client(BaseClient):
             'origin_uid': origin_uid
         }
 
-        # Remove any None values from params using filter_none_values helper function
         params = filter_none_values(params)
 
-        if use_get:
-            # Use GET method
-            response = self._http_request(
-                method='GET',
-                url_suffix=url_suffix,
-                params=params
-            )
-        else:
-            # Use POST method
-            payload = {'domains': domains}
-            response = self._http_request(
-                method='POST',
-                url_suffix=url_suffix,
-                params=params,
-                data=payload
-            )
-
-        return response
+        payload = {'domains': domains}
+        return self._http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            params=params,
+            data=payload
+        )
 
     def fetch_bulk_domain_info(self, domains: List[str]) -> Dict[str, Any]:
         """Fetch basic domain information for a list of domains."""
@@ -1412,7 +1405,7 @@ class Client(BaseClient):
 
         return response.get('response', {}).get('takedown_reputation', {})
 
-    def get_ipv4_reputation(self, ipv4: str, explain: bool = False, limit: int = None) -> List[Dict[str, Any]]:
+    def get_ipv4_reputation(self, ipv4: str, explain: int = 0, limit: int = None) -> List[Dict[str, Any]]:
         """
         Retrieve reputation information for an IPv4 address.
         """
@@ -1420,7 +1413,7 @@ class Client(BaseClient):
         query_params = {}
 
         if explain:
-            query_params['explain'] = 'true'
+            query_params['explain'] = explain
         if limit:
             query_params['limit'] = limit
 
@@ -1517,7 +1510,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: The scan results including hosting metadata.
         """
-        url_suffix = LIVE_SCAN_URL_OUTPUTS
+        url_suffix = LIVE_SCAN_URL
 
         params = {
             'url': url,
@@ -1572,7 +1565,7 @@ class Client(BaseClient):
             Dict[str, Any]: Response containing screenshot information and vault details
         """
         endpoint = SCREENSHOT_URL
-        params = filter_none_values({"url": url})  # Remove any None values from params
+        params = filter_none_values({"url": url})
 
         response = self._http_request(
             method="GET",
@@ -1591,17 +1584,9 @@ class Client(BaseClient):
         if not screenshot_url:
             return {"error": "No screenshot URL returned"}
 
-        image_response = requests.get(screenshot_url, verify=self.verify)
-        if image_response.status_code != 200:
-            return {"error": f"Failed to download screenshot image: HTTP {image_response.status_code}"}
-
-        filename = f"{url.split('://')[1].split('/')[0]}_screenshot.jpg"
-        
         return {
             "status_code": screenshot_data.get("response", 200),
-            "screenshot_url": screenshot_url,
-            "vault_info": fileResult(filename, image_response.content),
-            "filename": filename
+            "screenshot_url": screenshot_url
         }
 
 
@@ -1609,7 +1594,12 @@ class Client(BaseClient):
 def filter_none_values(params: Dict[str, Any]) -> Dict[str, Any]:
     """Removes None values from a dictionary."""
     return {k: v for k, v in params.items() if v is not None}
-
+def bool_to_binary(value: str) -> int:
+    """Convert boolen into binary"""
+    if isinstance(value, bool):
+        return int(value)
+    value = value.strip().lower()
+    return 1 if value == "true" else 0
 
 ''' COMMAND FUNCTIONS '''
 
@@ -1667,8 +1657,6 @@ def get_job_status_command(client: Client, args: dict) -> CommandResults:
         args (dict): A dictionary of arguments, which should include:
             - 'job_id' (str): The unique identifier of the job for which status is being retrieved.
             - 'max_wait' (Optional[int]): The maximum wait time in seconds (default is None).
-            - 'result_type' (Optional[str]): Type of result to retrieve. Valid options are 'Status', 
-                                              'Include Metadata', or 'Exclude Metadata' (default is None).
 
     Returns:
         CommandResults: The command results containing:
@@ -1682,13 +1670,20 @@ def get_job_status_command(client: Client, args: dict) -> CommandResults:
         DemistoException: If the 'job_id' parameter is missing or if no job status is found for the given job ID.
     """
     job_id = args.get('job_id')
-    max_wait = arg_to_number(args.get('max_wait'))
-    result_type = args.get('result_type')
+
+    params = {
+        "max_wait": arg_to_number(args.get("max_wait")),
+        "status_only": bool_to_binary(args.get("status_only", False)),
+        "force_metadata_on": bool_to_binary(args.get("force_metadata_on", False)),
+        "force_metadata_off": bool_to_binary(args.get("force_metadata_off", False))
+    }
+
+
 
     if not job_id:
         raise DemistoException("job_id is a required parameter")
 
-    raw_response = client.get_job_status(job_id, max_wait, result_type)
+    raw_response = client.get_job_status(job_id, params)
     job_status = raw_response.get('response', {})
 
     if not job_status:
@@ -1728,7 +1723,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
         CommandResults: The command results containing nameserver reputation data.
     """
     nameserver = args.get("nameserver")
-    explain = argToBoolean(args.get("explain", False))
+    explain = bool_to_binary(args.get("explain", False))
     limit = arg_to_number(args.get("limit"))
 
     if not nameserver:
@@ -1782,7 +1777,7 @@ def get_subnet_reputation_command(client: Client, args: dict) -> CommandResults:
     if not subnet:
         raise DemistoException("Subnet is a required parameter.")
 
-    explain = argToBoolean(args.get('explain', False))
+    explain = bool_to_binary(args.get('explain', False))
     limit = arg_to_number(args.get('limit'))
 
     raw_response = client.get_subnet_reputation(subnet, explain, limit)
@@ -1917,7 +1912,7 @@ def search_domains_command(client: Client, args: dict) -> CommandResults:
         CommandResults: The results of the domain search, including readable output and raw response.
     """
     # Extract arguments
-    query = args.get('query')
+    query = args.get('domain')
     start_date = args.get('start_date')
     end_date = args.get('end_date')
     risk_score_min = arg_to_number(args.get('risk_score_min'))
@@ -2011,7 +2006,7 @@ def list_domain_infratags_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Formatted results of the infratags lookup.
     """
     domains = argToList(args.get('domains', ''))
-    cluster = argToBoolean(args.get('cluster', False))
+    cluster = bool_to_binary(args.get('cluster', False))
     mode = args.get('mode', 'live')
     match = args.get('match', 'self')
     as_of = args.get('as_of', None)
@@ -2085,8 +2080,8 @@ def parse_arguments(args: Dict[str, Any]) -> Tuple[List[str], bool, bool]:
         raise DemistoException('No domains provided')
     
     domains = [domain.strip() for domain in domains_arg.split(',') if domain.strip()]
-    fetch_risk_score = argToBoolean(args.get('fetch_risk_score', False))
-    fetch_whois_info = argToBoolean(args.get('fetch_whois_info', False))
+    fetch_risk_score = bool_to_binary(args.get('fetch_risk_score', False))
+    fetch_whois_info = bool_to_binary(args.get('fetch_whois_info', False))
     
     return domains, fetch_risk_score, fetch_whois_info
 
@@ -2107,16 +2102,7 @@ def format_domain_information(response: Dict[str, Any], fetch_risk_score: bool, 
     for domain_data in response.get('domains', []):
         domain = domain_data.get('domain', 'N/A')
         markdown.append(f'## Domain: {domain}')
-        
-        basic_info = {
-            'Created Date': domain_data.get('whois_created_date', 'N/A'),
-            'Updated Date': domain_data.get('whois_updated_date', 'N/A'),
-            'Expiration Date': domain_data.get('whois_expiration_date', 'N/A'),
-            'Registrar': domain_data.get('registrar', 'N/A'),
-            'Status': domain_data.get('status', 'N/A'),
-            'Name Servers': domain_data.get('nameservers', 'N/A')
-        }
-        markdown.append(tableToMarkdown('Domain Information', [basic_info]))
+        markdown.append(tableToMarkdown('Domain Information', [domain_data]))
 
         if fetch_risk_score:
             risk_info = {
@@ -2140,9 +2126,9 @@ def format_domain_information(response: Dict[str, Any], fetch_risk_score: bool, 
 
 @metadata_collector.command(
     command_name="silentpush-get-domain-certificates",
-    inputs_list=LIST_DOMAIN_INPUTS,
+    inputs_list=DOMAIN_CERTIFICATE_INPUTS,
     outputs_prefix="SilentPush.Certificate",
-    outputs_list=LIST_DOMAIN_OUTPUTS,
+    outputs_list=DOMAIN_CERTIFICATE_OUTPUTS,
     description="This command get certificate data collected from domain scanning."
 )
 def get_domain_certificates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2172,17 +2158,29 @@ def get_domain_certificates_command(client: Client, args: Dict[str, Any]) -> Com
 
     params = filter_none_values({
         'domain_regex': args.get('domain_regex'),
-        'certificate_issuer': args.get('certificate_issuer'),
+        'cert_issuer': args.get('certificate_issuer'),
         'date_min': args.get('date_min'),
         'date_max': args.get('date_max'),
         'prefer': args.get('prefer'),
         'max_wait': arg_to_number(args.get('max_wait')),
-        'with_metadata': argToBoolean(args.get('with_metadata')) if 'with_metadata' in args else None,
+        'with_metadata': bool_to_binary(args.get('with_metadata')) if 'with_metadata' in args else None,
         'skip': arg_to_number(args.get('skip')),
         'limit': arg_to_number(args.get('limit'))
     })
-
     raw_response = client.get_domain_certificates(domain, **params)
+
+    if raw_response.get('response', {}).get('job_status', {}):
+        job_details = raw_response.get('response', {}).get('job_status', {})
+        job_status = job_details.get('status', "")
+        readable_output = tableToMarkdown(f"# Job status for Domain: {domain}\n", job_details, removeNull=True)
+        return CommandResults(
+            outputs_prefix='SilentPush.Certificate',
+            outputs_key_field='domain',
+            outputs={'domain': domain, 'job_details': job_details},
+            readable_output=readable_output,
+            raw_response=raw_response
+        )
+
     certificates = raw_response.get('response', {}).get('domain_certificates', [])
     metadata = raw_response.get('response', {}).get('metadata', {})
 
@@ -2219,7 +2217,7 @@ def format_certificate_info(cert: Dict[str, Any], client: Client) -> Dict[str, s
     Returns:
         Dict[str, str]: Formatted certificate details.
     """
-    subject = client.parse_subject(cert.get('subject', {}))
+    subject = ast.literal_eval(cert.get('subject', {}))
     return {
         'Issuer': cert.get('issuer', 'N/A'),
         'Issued On': cert.get('not_before', 'N/A'),
@@ -2248,14 +2246,17 @@ def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: The results of the enrichment data retrieval, including readable output and raw response.
     """
-    # Retrieve arguments
-    resource = args.get("resource")
+    resource = args.get("resource").lower()
     value = args.get("value")
-    explain = argToBoolean(args.get("explain", False))
-    scan_data = argToBoolean(args.get("scan_data", False))
+    explain = bool_to_binary(args.get("explain", False))
+    scan_data = bool_to_binary(args.get("scan_data", False))
 
     if not resource or not value:
         raise ValueError("Both 'resource' and 'value' arguments are required.")
+
+    if resource not in RESOURCE:
+        raise ValueError(f"Invalid input: {resource}. Allowed values are {RESOURCE}")
+
 
     if resource in ["ipv4", "ipv6"]:
         validate_ip(client, resource, value)
@@ -2420,7 +2421,7 @@ def get_asn_reputation_command(client: Client, args: dict) -> CommandResults:
     """
     asn = args.get("asn")
     limit = arg_to_number(args.get("limit", None))
-    explain = argToBoolean(args.get("explain", False))
+    explain = bool_to_binary(args.get("explain", False))
 
     if not asn:
         raise ValueError("ASN is required.")
@@ -2497,8 +2498,8 @@ def prepare_asn_reputation_table(asn_reputation: list, explain: bool) -> list:
             'ASName': entry.get('asname'),
             'Date': entry.get('date')
         }
-        if explain and entry.get('explanation'):
-            row['Explanation'] = entry.get('explanation')
+        if explain and entry.get('asn_reputation_explain'):
+            row['Explanation'] = entry.get('asn_reputation_explain')
         data_for_table.append(row)
     return data_for_table
 
@@ -2542,12 +2543,10 @@ def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandRe
         ValueError: If 'asn' is not provided or 'limit' is not a valid integer.
         DemistoException: If an error occurs while retrieving the data from the API.
     """
-    # Parameter validation
     asn = args.get('asn')
     if not asn:
         raise ValueError('ASN is a required parameter')
 
-    # Convert 'limit' to an integer if provided
     limit = args.get('limit')
     if limit is not None:
         try:
@@ -2555,13 +2554,10 @@ def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandRe
         except ValueError:
             raise ValueError('Limit must be a valid number')
 
-    # Convert 'explain' argument to a boolean
-    explain = argToBoolean(args.get('explain', False))
+    explain = bool_to_binary(args.get('explain', False))
 
-    # Fetch ASN takedown reputation data
     response = client.get_asn_takedown_reputation(asn=asn, limit=limit, explain=explain)
 
-    # If no data is returned, construct and return the response
     if not response:
         return CommandResults(
             readable_output=f'No takedown reputation data found for ASN {asn}',
@@ -2569,22 +2565,9 @@ def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandRe
             outputs=None
         )
 
-    # Prepare reputation data for output
-    reputation_data = {
-        'ASN': response.get('asn', asn),
-        'AS Name': response.get('asname', 'N/A'),
-        'Allocation Date': response.get('asn_allocation_date', 'N/A'),
-        'Takedown Reputation': response.get('asn_takedown_reputation', 'N/A'),
-        'Allocation Age': response.get('asn_allocation_age', 'N/A')
-    }
-
-    headers = ['ASN', 'AS Name', 'Allocation Date', 'Takedown Reputation', 'Allocation Age']
-
-    # Format the data as a markdown table
     readable_output = tableToMarkdown(
         f'ASN Takedown Reputation Information for {asn}',
-        [reputation_data],
-        headers=headers,
+        [response],
         removeNull=True
     )
 
@@ -2592,7 +2575,7 @@ def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandRe
         readable_output=readable_output,
         outputs_prefix='SilentPush.ASNTakedownReputation',
         outputs_key_field='asn',
-        outputs=reputation_data,
+        outputs=response,
         raw_response=response
     )
 
@@ -2619,7 +2602,9 @@ def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> Command
     if not ipv4:
         raise DemistoException("IPv4 address is required")
 
-    explain = argToBoolean(args.get('explain', "false"))
+    validate_ip(client, 'ipv4', ipv4)
+
+    explain = bool_to_binary(args.get('explain', "false"))
     limit = arg_to_number(args.get('limit'))
 
     raw_response = client.get_ipv4_reputation(ipv4, explain, limit)
@@ -2642,6 +2627,14 @@ def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> Command
         'Date': latest_reputation.get('date'),
         'Reputation Score': latest_reputation.get('ip_reputation')
     }
+    ip_reputation_explain = latest_reputation.get('ip_reputation_explain', {})
+    if ip_reputation_explain:
+        ip_reputation_data = {
+            'ip_density': ip_reputation_explain.get('ip_density'),
+            'names_num_listed': ip_reputation_explain.get('names_num_listed')
+        }
+        reputation_data.update({"ip_reputation_explain": ip_reputation_data})
+
 
     # Convert data to markdown table for readable output
     readable_output = tableToMarkdown(
@@ -2678,13 +2671,11 @@ def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     qtype = args.get('qtype')
     qname = args.get('qname')
 
-    # Validate required parameters
     if not qtype or not qname:
         raise DemistoException("Both 'qtype' and 'qname' are required parameters.")
 
-    # Optional parameters
     netmask = args.get('netmask')
-    subdomains = argToBoolean(args.get('subdomains')) if 'subdomains' in args else None
+    subdomains = bool_to_binary(args.get('subdomains')) if 'subdomains' in args else None
     regex = args.get('regex')
     match = args.get('match')
     first_seen_after = args.get('first_seen_after')
@@ -2700,27 +2691,26 @@ def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     skip = arg_to_number(args.get('skip'))
     limit = arg_to_number(args.get('limit'))
 
-    # Perform the PADNS lookup
     raw_response = client.forward_padns_lookup(
-        qtype=qtype,
-        qname=qname,
-        netmask=netmask,
-        subdomains=subdomains,
-        regex=regex,
-        match=match,
-        first_seen_after=first_seen_after,
-        first_seen_before=first_seen_before,
-        last_seen_after=last_seen_after,
-        last_seen_before=last_seen_before,
-        as_of=as_of,
-        sort=sort,
-        output_format=output_format,
-        prefer=prefer,
-        with_metadata=with_metadata,
-        max_wait=max_wait,
-        skip=skip,
-        limit=limit
-    )
+            qtype=qtype,
+            qname=qname,
+            netmask=netmask,
+            subdomains=subdomains,
+            regex=regex,
+            match=match,
+            first_seen_after=first_seen_after,
+            first_seen_before=first_seen_before,
+            last_seen_after=last_seen_after,
+            last_seen_before=last_seen_before,
+            as_of=as_of,
+            sort=sort,
+            output_format=output_format,
+            prefer=prefer,
+            with_metadata=with_metadata,
+            max_wait=max_wait,
+            skip=skip,
+            limit=limit
+        )
 
     records = raw_response.get('response', {}).get('records', [])
 
@@ -3018,13 +3008,20 @@ def screenshot_url_command(client: Client, args: Dict[str, Any]) -> CommandResul
         raise ValueError("URL is required")
 
     result = client.screenshot_url(url)
+    if result.get("error"):
+        raise Exception(result.get("error"))
+
+    image_response = requests.get(result['screenshot_url'])
+    if image_response.status_code != 200:
+        return {"error": f"Failed to download screenshot image: HTTP {image_response.status_code}"}
+
+    filename = f"{url.split('://')[1].split('/')[0]}_screenshot.jpg"
 
     readable_output = (
         f"### Screenshot captured for {url}\n"
         f"- Status: Success\n"
         f"- Screenshot URL: {result['screenshot_url']}\n"
-        f"- File ID: {result['vault_info']['FileID']}\n"
-        f"- File Name: {result['filename']}"
+        f"- File Name: {filename}"
     )
 
     result_data = {
@@ -3032,18 +3029,21 @@ def screenshot_url_command(client: Client, args: Dict[str, Any]) -> CommandResul
         "status": "success",
         "status_code": result["status_code"],
         "screenshot_url": result["screenshot_url"],
-        "file_id": result["vault_info"]["FileID"],
-        "file_name": result["filename"]
+        "file_name": "filename"
     }
 
     result_data = filter_none_values(result_data)
+
+    # Download link of the image
+    return_results(fileResult(filename, image_response.content))
 
     return CommandResults(
         outputs_prefix="SilentPush.Screenshot",
         outputs_key_field="url",
         outputs=result_data,
         readable_output=readable_output,
-        raw_response=result
+        raw_response=result,
+
     )
 
 
@@ -3100,7 +3100,7 @@ def main() -> None:
 
         elif demisto.command() == 'silentpush-get-domain-certificates':
             return_results(get_domain_certificates_command(client, demisto.args()))
-        
+
         elif demisto.command() == 'silentpush-get-enrichment-data':
             return_results(get_enrichment_data_command(client, demisto.args()))
 

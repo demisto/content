@@ -291,61 +291,133 @@ script:
     description: This command get certificate data collected from domain scanning.
     name: silentpush-get-domain-certificates
     arguments:
-    - name: domains
+    - name: domain
       isArray: false
-      description: Comma-separated list of domains to query.
+      description: The domain to query certificates for.
       required: true
       secret: false
       default: false
-    - name: fetch_risk_score
+    - name: domain_regex
       isArray: false
-      description: Whether to fetch risk scores for the domains.
+      description: Regular expression to match domains.
       required: false
       secret: false
       default: false
-    - name: fetch_whois_info
+    - name: certificate_issuer
       isArray: false
-      description: Whether to fetch WHOIS information for the domains.
+      description: Filter by certificate issuer.
+      required: false
+      secret: false
+      default: false
+    - name: date_min
+      isArray: false
+      description: Filter certificates issued on or after this date.
+      required: false
+      secret: false
+      default: false
+    - name: date_max
+      isArray: false
+      description: Filter certificates issued on or before this date.
+      required: false
+      secret: false
+      default: false
+    - name: prefer
+      isArray: false
+      description: Prefer to wait for results for longer running queries or to return job_id immediately (Defaults to Silent Push API behaviour).
+      required: false
+      secret: false
+      default: false
+    - name: max_wait
+      isArray: false
+      description: Number of seconds to wait for results before returning a job_id, with a range from 0 to 25 seconds.
+      required: false
+      secret: false
+      default: false
+    - name: with_metadata
+      isArray: false
+      description: Includes a metadata object in the response, containing returned results, total results, and job_id.
+      required: false
+      secret: false
+      default: false
+    - name: skip
+      isArray: false
+      description: Number of results to skip.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: Number of results to return.
       required: false
       secret: false
       default: false
     outputs:
+    - contextPath: SilentPush.Certificate.cert_index
+      description: Index of the certificate.
+      type: Number
+    - contextPath: SilentPush.Certificate.chain
+      description: Certificate chain.
+      type: Unknown
+    - contextPath: SilentPush.Certificate.date
+      description: Certificate issue date.
+      type: Number
     - contextPath: SilentPush.Certificate.domain
-      description: The domain name queried.
+      description: Primary domain of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.last_seen
-      description: The last seen date of the domain in YYYYMMDD format.
-      type: Number
-    - contextPath: SilentPush.Certificate.query
-      description: The domain name used for the query.
+    - contextPath: SilentPush.Certificate.domains
+      description: List of domains covered by the certificate.
+      type: Unknown
+    - contextPath: SilentPush.Certificate.fingerprint
+      description: SHA-1 fingerprint of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.whois_age
-      description: The age of the domain in days based on WHOIS creation date.
-      type: Number
-    - contextPath: SilentPush.Certificate.first_seen
-      description: The first seen date of the domain in YYYYMMDD format.
-      type: Number
-    - contextPath: SilentPush.Certificate.is_new
-      description: Indicates whether the domain is newly observed.
-      type: Boolean
-    - contextPath: SilentPush.Certificate.zone
-      description: The top-level domain (TLD) or zone of the queried domain.
+    - contextPath: SilentPush.Certificate.fingerprint_md5
+      description: MD5 fingerprint of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.registrar
-      description: The registrar responsible for the domain registration.
+    - contextPath: SilentPush.Certificate.fingerprint_sha1
+      description: SHA-1 fingerprint of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.age_score
-      description: A risk score based on the domain's age.
-      type: Number
-    - contextPath: SilentPush.Certificate.whois_created_date
-      description: The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format.
+    - contextPath: SilentPush.Certificate.fingerprint_sha256
+      description: SHA-256 fingerprint of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.is_new_score
-      description: A risk score indicating how new the domain is.
+    - contextPath: SilentPush.Certificate.host
+      description: Host associated with the certificate.
+      type: String
+    - contextPath: SilentPush.Certificate.issuer
+      description: Issuer of the certificate.
+      type: String
+    - contextPath: SilentPush.Certificate.not_after
+      description: Expiration date of the certificate.
+      type: String
+    - contextPath: SilentPush.Certificate.not_before
+      description: Start date of the certificate validity.
+      type: String
+    - contextPath: SilentPush.Certificate.serial_dec
+      description: Decimal representation of the serial number.
+      type: String
+    - contextPath: SilentPush.Certificate.serial_hex
+      description: Hexadecimal representation of the serial number.
+      type: String
+    - contextPath: SilentPush.Certificate.serial_number
+      description: Serial number of the certificate.
+      type: String
+    - contextPath: SilentPush.Certificate.source_name
+      description: Source log name of the certificate.
+      type: String
+    - contextPath: SilentPush.Certificate.source_url
+      description: URL of the certificate log source.
+      type: String
+    - contextPath: SilentPush.Certificate.subject
+      description: Subject details of the certificate.
+      type: String
+    - contextPath: SilentPush.Certificate.wildcard
+      description: Indicates if the certificate is a wildcard certificate.
       type: Number
-    - contextPath: SilentPush.Certificate.age
-      description: The age of the domain in days.
-      type: Number
+    - contextPath: SilentPush.Certificate.job_status.job_id
+      description: ID of the job.
+      type: String
+    - contextPath: SilentPush.Certificate.job_status.status
+      description: Status of the job.
+      type: String
   - deprecated: false
     description: This command retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
     name: silentpush-get-enrichment-data
@@ -614,9 +686,21 @@ script:
       required: false
       secret: false
       default: false
-    - name: result_type
+    - name: status_only
       isArray: false
-      description: Type of result to include in the response.
+      description: Return job status, even if job is complete.
+      required: false
+      secret: false
+      default: false
+    - name: force_metadata_on
+      isArray: false
+      description: Always return query metadata, even if original request did not include metadata.
+      required: false
+      secret: false
+      default: false
+    - name: force_metadata_off
+      isArray: false
+      description: Never return query metadata, even if original request did include metadata.
       required: false
       secret: false
       default: false
@@ -801,6 +885,13 @@ script:
       secret: false
       default: false
       defaultValue: self
+    - name: as_of
+      isArray: false
+      description: 'Build infratags from padns data where the as_of timestamp equivalent is between the first_seen and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - relative time <sec> seconds ago'
+      required: false
+      secret: false
+      default: false
+      defaultValue: self
     outputs:
     - contextPath: SilentPush.InfraTags.infratags.domain
       description: The domain associated with the infratag.
@@ -843,24 +934,6 @@ script:
       isArray: false
       description: Comma-separated list of IP addresses.
       required: true
-      secret: false
-      default: false
-    - name: explain
-      isArray: false
-      description: Include explanation of calculations.
-      required: false
-      secret: false
-      default: false
-    - name: scan_data
-      isArray: false
-      description: Include scan data (IPv4 only).
-      required: false
-      secret: false
-      default: false
-    - name: sparse
-      isArray: false
-      description: Specific data to return (asn/asname/sp_risk_score).
-      required: false
       secret: false
       default: false
     outputs:
@@ -1371,12 +1444,6 @@ script:
       required: false
       secret: false
       default: false
-    - name: match
-      isArray: false
-      description: Matching condition for the DNS records.
-      required: false
-      secret: false
-      default: false
     - name: first_seen_after
       isArray: false
       description: Filter for records first seen after a specific date/time.
@@ -1488,12 +1555,6 @@ script:
       isArray: false
       description: URL for the screenshot.
       required: true
-      secret: false
-      default: false
-    - name: description
-      isArray: false
-      description: Generate and store a screenshot of a URL in the vault.
-      required: false
       secret: false
       default: false
     outputs:
