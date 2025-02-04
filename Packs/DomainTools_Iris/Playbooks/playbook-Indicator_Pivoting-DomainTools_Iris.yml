@@ -939,7 +939,6 @@ outputs:
 - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
   description: The tracking code of Google Analytics.
   type: Number
-sourceplaybookid: Indicator Pivoting - DomainTools Iris
 fromversion: 5.0.0
 tests:
 - DomainTools Iris - Test

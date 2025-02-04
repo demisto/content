@@ -21,8 +21,7 @@ def check_tags(args: dict[str, Any]) -> CommandResults:
         # 3 is High severity level
         demisto.executeCommand(
             'setIncident', {'id': incident_id, 'severity': 3})
-        human_readable_str = 'Incident {} has been updated to HIGH Severity.'.format(
-            incident_id)
+        human_readable_str = f'Incident {incident_id} has been updated to HIGH Severity.'
 
     return CommandResults(readable_output=human_readable_str)
 
