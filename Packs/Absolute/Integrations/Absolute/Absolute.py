@@ -446,7 +446,7 @@ def sign(key, msg):
 
 
 def validate_absolute_api_url(base_url):
-    if base_url not in ABSOLUTE_URL_TO_API_URL:
+    if base_url not in ABSOLUTE_URL_TO_API_URL.keys():
         raise_demisto_exception(
             f"The Absolute server url {base_url} in not a valid url. "
             f"Possible options: {list(ABSOLUTE_URL_TO_API_URL.keys())}")
