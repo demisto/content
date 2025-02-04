@@ -917,3 +917,21 @@ The DomainTools Parsed Whois API provides parsed information extracted from the 
 | Domain.Name | unknown | Requested domain name. | 
 | Domain.Whois | unknown | Parsed Whois data. | 
 | Domain.WhoisRecords | unknown | Full Whois record. | 
+### domainProfile
+
+***
+Returns the most recent Domain-RDAP registration record.
+
+#### Base Command
+
+`domainProfile`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Specify the domain (e.g., mycompany.com). | Required | 
+
+#### Context Output
+
+There is no context output for this command.
