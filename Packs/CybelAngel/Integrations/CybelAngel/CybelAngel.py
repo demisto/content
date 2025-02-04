@@ -1,5 +1,5 @@
-# import demistomock as demisto  # noqa: F401
-# from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import datetime as dt
 import requests
 import urllib3
@@ -8,6 +8,7 @@ from enum import IntEnum, Enum
 from uuid import UUID
 from typing import Optional, List
 from dataclasses import dataclass, field, asdict
+
 
 """
       CybelAngel Integration for Cortex XSOAR
@@ -145,9 +146,9 @@ class Client(BaseClient):
             self.new_token_fetched = True
             demisto.info('New token acquired')
 
-        except:
+        except Exception as e:
             demisto.debug('Error fetching token')
-            return {"msg": "Error fetching token"}
+            return {"msg": f"Error fetching token: {str(e)}"}
 
     def check_token(self):
         """ Check to see if token exists or if there is still time left with to use the token """
