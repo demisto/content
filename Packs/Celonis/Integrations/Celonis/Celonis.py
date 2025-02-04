@@ -39,11 +39,13 @@ BEARER_PREFIX = 'Bearer '
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, client_id: str, client_secret: str):
-        auth = (client_id, client_secret)
-        super().__init__(base_url=base_url, verify=verify, auth=auth)
-        self.token = None  # TODO
+        self.client_id = client_id
+        self.client_secret = client_secret
+        super().__init__(base_url=base_url, verify=verify)
+        self.token = None
+        self.create_access_token_for_audit()
 
-    def get_access_token_for_audit(self):
+    def create_access_token_for_audit(self):
         data = {
             "grant_type": "client_credentials",
             "scope": "audit.log:read"
@@ -51,18 +53,26 @@ class Client(BaseClient):
         results = self._http_request(
             method="POST",
             url_suffix="/oauth2/token",
-            data=data
+            data=data,
+            auth=(self.client_id, self.client_secret)
         )
         self.token = results['access_token']
 
     def get_audit_logs(self, start_date: str, end_date: str) -> dict:
+        params = assign_params(
+            pageNumber=PAGE_NUMBER,
+            pageSize=PAGE_SIZE,
+            startDate=start_date,
+            to=end_date
+        )
         headers = {
             'Authorization': f'{BEARER_PREFIX}{self.token}',
         }
         results = self._http_request(
             method="GET",
-            url_suffix=f"/log/api/external/audit?pageNumber={PAGE_NUMBER}&pageSize={PAGE_SIZE}&from={start_date}&to={end_date}",
-            headers=headers
+            url_suffix=f"/log/api/external/audit",
+            headers=headers,
+            params=params
         )
         return results
 
@@ -74,7 +84,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    client.get_access_token_for_audit()
+    client.create_access_token_for_audit()
     return "ok"
 
 
@@ -86,20 +96,25 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         last_run = demisto.getLastRun() or {}
         event_date = last_run.get('start_date', '')
         if not event_date:
-            event_date = get_current_time().strftime(DATE_FORMAT)
+            event_date = "2025-01-03T15:19:12.180Z"
+            # event_date = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
 
     current_start_date = event_date
     output: list = []
     while True:
-        events = client.get_audit_logs(event_date, end)
-        if events.get('errorCode') == "LIMIT_RATE_EXCEEDED":  # rate limit reached
-            demisto.debug(f"Rate limit reached. Returning {len(events)} instead of {fetch_limit} Audit logs.")
-            new_last_run = {'start_date': event_date}
-            return output, new_last_run
-        if events.get('error') == 'Unauthorized':  # need to regenerate the token
-            client.get_access_token_for_audit()
-            events = client.get_audit_logs(event_date, end)
+        try:
+            response = client.get_audit_logs(event_date, end)
+        except Exception as e:
+            if e.errorCode == "LIMIT_RATE_EXCEEDED":  # rate limit reached
+                demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit} Audit logs.")
+                new_last_run = {'start_date': event_date}
+                return output, new_last_run
+            if e.error == 'Unauthorized':  # need to regenerate the token
+                client.create_access_token_for_audit()
+                response = client.get_audit_logs(event_date, end)
+
+        events = response.get('context')
         if not events:
             break
         if check_if_limit_more_than_0_and_wait_this_time:
