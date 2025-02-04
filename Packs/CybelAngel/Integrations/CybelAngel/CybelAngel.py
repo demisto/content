@@ -152,7 +152,7 @@ class Client(BaseClient):
 
     def check_token(self):
         """ Check to see if token exists or if there is still time left with to use the token """
-        if self.token_time == None:
+        if self.token_time is None:
             self.fetch_token()
             self.token_time = dt.datetime.utcnow()
 
