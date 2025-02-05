@@ -38,7 +38,7 @@ tasks:
       id: fbfc8b66-0fdb-47a4-83a2-6d22c658e2b1
       version: -1
       name: show tables
-      description: Running a sql query and trigger build
+      description: Running a sql query
       script: Generic SQL|||sql-command
       type: regular
       iscommand: true
@@ -208,5 +208,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-
-

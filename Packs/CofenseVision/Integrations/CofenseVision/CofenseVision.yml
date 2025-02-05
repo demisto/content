@@ -2382,9 +2382,6 @@ script:
     - contextPath: Cofense.Config.value
       description: List of headers that are available to create a message search.
       type: Unknown
-    - contextPath: Confense.Config.todododo
-      description: delete item.
-      type: String
   dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'

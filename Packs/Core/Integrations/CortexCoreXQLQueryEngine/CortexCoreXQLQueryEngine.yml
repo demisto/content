@@ -1313,8 +1313,6 @@ script:
       - "true"
       - "false"
       defaultValue: "false"
-    - description: "blablabla to delete."
-      name: new
     description: Search for network connection created by a given process instance ID.
     polling: true
     name: xdr-xql-process-instance-network-activity-query

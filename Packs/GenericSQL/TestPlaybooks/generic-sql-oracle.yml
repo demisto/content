@@ -325,7 +325,7 @@ tasks:
       id: b0b1cf41-89e3-45a2-8590-0838c45bf219
       version: -1
       name: PrintErrorEntry
-      description: Prints an error entry with a given message bbb
+      description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false

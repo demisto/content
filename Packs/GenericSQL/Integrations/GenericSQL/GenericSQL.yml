@@ -163,9 +163,7 @@ script:
     - description: 'A comma-separated list of value, for example: 7,"foo",3.'
       isArray: true
       name: bind_variables_values
-    - description: blabla.
-      name: blabla
-    description: Running a sql query. fgbdb
+    description: Running a sql query.
     name: sql-command
   dockerimage: demisto/genericsql:1.1.0.1836486
   isfetch: true
