@@ -5829,7 +5829,6 @@
             "integrations": "CIRCL CVE Search",
             "playbookID": "CIRCL CVE Search - Test",
             "fromversion": "6.8.0",
-            "is_mockable": false
         },
         {
             "integrations": "Kaspersky Security Center",
