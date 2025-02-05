@@ -1,635 +1,635 @@
 {
-	"id": "CyberBlindspot Incident Dashboard",
-	"description": "Dashboard to find metrics regarding the CyberBlindspot module",
-	"isPredefined": false,
-	"version": -1,
-	"fromVersion": "6.10.0",
-	"fromDate": "0001-01-01T00:00:00Z",
-	"toDate": "0001-01-01T00:00:00Z",
-	"period": {
-		"by": "",
-		"byTo": "",
-		"byFrom": "days",
-		"toValue": null,
-		"fromValue": 7,
-		"field": ""
-	},
-	"fromDateLicense": "0001-01-01T00:00:00Z",
-	"name": "CyberBlindspot Incident Dashboard",
-	"layout": [
-		{
-			"id": "82290230-9808-11ee-be91-bd9f71ef874f",
-			"forceRange": false,
-			"x": 0,
-			"y": 0,
-			"i": "82290230-9808-11ee-be91-bd9f71ef874f",
-			"w": 6,
-			"h": 3,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2023-12-10T11:20:59.026314772+03:00",
-				"created": "2023-12-10T11:20:52.129395461+03:00",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.39",
-				"fromServerVersion": "5.0.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Active Incidents - Line chart",
-				"prevName": "Active Incidents - Line chart",
-				"dataType": "incidents",
-				"widgetType": "line",
-				"query": "-category:job and -status:archived and -status:closed type:\"CyberBlindspot Incident\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 7,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"groupBy": [
-						"occurred(d)",
-						"rawType"
-					]
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "db208da0-aec8-11ee-82fa-dd707358474c",
-			"forceRange": false,
-			"x": 9,
-			"y": 2,
-			"i": "db208da0-aec8-11ee-82fa-dd707358474c",
-			"w": 3,
-			"h": 3,
-			"widget": {
-				"id": "active-incidents-by-severity",
-				"version": 12,
-				"cacheVersn": 0,
-				"modified": "2024-01-07T08:36:21.274425938+03:00",
-				"created": "2024-01-07T08:36:16.822326133+03:00",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.44",
-				"fromServerVersion": "5.0.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Active Incidents - Pie chart",
-				"prevName": "Active Incidents - Pie chart",
-				"dataType": "incidents",
-				"widgetType": "pie",
-				"query": "-category:job and -status:archived and -status:closed",
-				"isPredefined": true,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 7,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"groupBy": [
-						"severity"
-					],
-					"showGraphValues": false
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "32d91b60-aeca-11ee-82fa-dd707358474c",
-			"forceRange": false,
-			"x": 6,
-			"y": 5,
-			"i": "32d91b60-aeca-11ee-82fa-dd707358474c",
-			"w": 6,
-			"h": 3,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-07T08:36:21.274425938+03:00",
-				"created": "2024-01-07T08:36:16.822326133+03:00",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.44",
-				"fromServerVersion": "5.0.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Incidents Pending Action - Pie chart",
-				"prevName": "Active Incidents - Pie chart",
-				"dataType": "incidents",
-				"widgetType": "pie",
-				"query": "-category:job and -status:archived and -status:closed",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 7,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"customGroupBy": [
-						{
-							"Close Possible": {
-								"conditions": [
-									[
-										{
-											"field": "ctm360cyberblindspotcourseofaction",
-											"operator": "isEqualCaseString",
-											"right": "member side action",
-											"type": "string"
-										}
-									]
-								],
-								"name": "Close Possible"
-							},
-							"Close or Takedown Possible": {
-								"conditions": [
-									[
-										{
-											"field": "ctm360cyberblindspotcourseofaction",
-											"operator": "isEqualCaseString",
-											"right": "takedown",
-											"type": "string"
-										}
-									]
-								],
-								"name": "Close or Takedown Possible"
-							},
-							"Monitoring Still Going": {
-								"conditions": [
-									[
-										{
-											"field": "ctm360cyberblindspotcourseofaction",
-											"operator": "isEqualCaseString",
-											"right": "monitoring",
-											"type": "string"
-										}
-									]
-								],
-								"name": "Monitoring Still Going"
-							}
-						}
-					],
-					"groupBy": [
-						"ctm360cyberblindspotcourseofaction"
-					],
-					"showGraphValues": false,
-					"showOthers": false
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "e6f69960-aef7-11ee-ac47-ef32c7f05a79",
-			"forceRange": false,
-			"x": 6,
-			"y": 0,
-			"i": "e6f69960-aef7-11ee-ac47-ef32c7f05a79",
-			"w": 3,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-07T08:36:21.274656973+03:00",
-				"created": "2024-01-07T08:36:16.823054025+03:00",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.44",
-				"fromServerVersion": "5.0.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Active Incidents (Past Week)",
-				"prevName": "Incidents in Error Run Status",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-runStatus:error type:\"CyberBlindspot Incident\" and status:Active",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 7,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": false,
-						"items": {
-							"#00CD33": {
-								"value": 10
-							},
-							"#FAC100": {
-								"value": 20
-							},
-							"#FF1B15": {
-								"value": 40
-							}
-						},
-						"type": "above"
-					}
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "4a71f9d0-aef8-11ee-ac47-ef32c7f05a79",
-			"forceRange": false,
-			"x": 9,
-			"y": 0,
-			"i": "4a71f9d0-aef8-11ee-ac47-ef32c7f05a79",
-			"w": 3,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-07T08:36:21.273909715+03:00",
-				"created": "2024-01-07T08:36:16.821190202+03:00",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.44",
-				"fromServerVersion": "5.0.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Running playbooks",
-				"prevName": "Running playbooks",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "runStatus:running playbook:\"CyberBlindspot Incident Management\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": false,
-						"items": {
-							"#00CD33": {
-								"value": 0
-							},
-							"#FAC100": {
-								"value": 5
-							},
-							"#FF1B15": {
-								"value": 20
-							}
-						},
-						"type": "above"
-					}
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "7d10a7b0-aef8-11ee-ac47-ef32c7f05a79",
-			"forceRange": false,
-			"x": 6,
-			"y": 1,
-			"i": "7d10a7b0-aef8-11ee-ac47-ef32c7f05a79",
-			"w": 3,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-07T08:36:21.274656973+03:00",
-				"created": "2024-01-07T08:36:16.823054025+03:00",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.44",
-				"fromServerVersion": "5.0.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Closed Incidents (Past Week)",
-				"prevName": "Incidents in Error Run Status",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-runStatus:error type:\"CyberBlindspot Incident\" and status:Closed",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 7,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": false,
-						"items": {
-							"#00CD33": {
-								"value": 10
-							},
-							"#FAC100": {
-								"value": 20
-							},
-							"#FF1B15": {
-								"value": 40
-							}
-						},
-						"type": "above"
-					}
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "8c864490-af78-11ee-9dec-eb27c047d071",
-			"forceRange": false,
-			"x": 0,
-			"y": 3,
-			"i": "8c864490-af78-11ee-9dec-eb27c047d071",
-			"w": 6,
-			"h": 5,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-07T08:36:21.27343997+03:00",
-				"created": "2024-01-07T08:36:16.820119695+03:00",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.44",
-				"fromServerVersion": "5.0.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"size": 5,
-				"Cache": null,
-				"name": "Top Active Playbooks (Past Week)",
-				"prevName": "Top Active Playbooks",
-				"dataType": "incidents",
-				"widgetType": "column",
-				"query": "status:active -category:job and type:\"CyberBlindspot Incident\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 7,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"groupBy": [
-						"playbookId"
-					]
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "0a967ed0-af7a-11ee-9dec-eb27c047d071",
-			"forceRange": false,
-			"x": 9,
-			"y": 1,
-			"i": "0a967ed0-af7a-11ee-9dec-eb27c047d071",
-			"w": 3,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-07T08:36:21.274785325+03:00",
-				"created": "2024-01-07T08:36:16.823354842+03:00",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.44",
-				"fromServerVersion": "6.2.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Avg. runtime for Playbooks (Past Week)",
-				"prevName": "Average runtime for Playbooks",
-				"dataType": "metrics",
-				"widgetType": "duration",
-				"query": "type:playbook and incidentType:\"CyberBlindspot Incident\"",
-				"isPredefined": false,
-				"description": "Average runtime for Playbooks",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 7,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"keys": [
-						"avg|duration"
-					],
-					"tableColumns": [],
-					"valuesFormat": "minutes"
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "79ceb8b0-d267-11ef-bb8f-7b3689ec5634",
-			"forceRange": false,
-			"x": 6,
-			"y": 2,
-			"i": "79ceb8b0-d267-11ef-bb8f-7b3689ec5634",
-			"w": 3,
-			"h": 3,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-07T08:36:21.274425938+03:00",
-				"created": "2024-01-07T08:36:16.822326133+03:00",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.44",
-				"fromServerVersion": "5.0.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Active Incidents by Module - Pie chart",
-				"prevName": "Active Incidents - Pie chart",
-				"dataType": "incidents",
-				"widgetType": "pie",
-				"query": "-category:job and -status:archived and -status:closed",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 7,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"customGroupBy": [
-						null
-					],
-					"groupBy": [
-						"ctm360cyberblindspotmodule"
-					],
-					"showGraphValues": false,
-					"showOthers": false
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		}
-	]
+    "id": "CyberBlindspot Incident Dashboard",
+    "description": "Dashboard to find metrics regarding the CyberBlindspot module",
+    "isPredefined": true,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "CyberBlindspot Incident Dashboard",
+    "layout": [
+        {
+            "id": "82290230-9808-11ee-be91-bd9f71ef874f",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "82290230-9808-11ee-be91-bd9f71ef874f",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2023-12-10T11:20:59.026314772+03:00",
+                "created": "2023-12-10T11:20:52.129395461+03:00",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.39",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Active Incidents - Line chart",
+                "prevName": "Active Incidents - Line chart",
+                "dataType": "incidents",
+                "widgetType": "line",
+                "query": "-category:job and -status:archived and -status:closed type:\"CyberBlindspot Incident\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "rawType"
+                    ]
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "db208da0-aec8-11ee-82fa-dd707358474c",
+            "forceRange": false,
+            "x": 9,
+            "y": 2,
+            "i": "db208da0-aec8-11ee-82fa-dd707358474c",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "active-incidents-by-severity",
+                "version": 12,
+                "cacheVersn": 0,
+                "modified": "2024-01-07T08:36:21.274425938+03:00",
+                "created": "2024-01-07T08:36:16.822326133+03:00",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.44",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Active Incidents - Pie chart",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-category:job and -status:archived and -status:closed",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "severity"
+                    ],
+                    "showGraphValues": false
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "32d91b60-aeca-11ee-82fa-dd707358474c",
+            "forceRange": false,
+            "x": 6,
+            "y": 5,
+            "i": "32d91b60-aeca-11ee-82fa-dd707358474c",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-07T08:36:21.274425938+03:00",
+                "created": "2024-01-07T08:36:16.822326133+03:00",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.44",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Incidents Pending Action - Pie chart",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-category:job and -status:archived and -status:closed",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        {
+                            "Close Possible": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "ctm360cyberblindspotcourseofaction",
+                                            "operator": "isEqualCaseString",
+                                            "right": "member side action",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Close Possible"
+                            },
+                            "Monitoring Still Going": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "ctm360cyberblindspotcourseofaction",
+                                            "operator": "isEqualCaseString",
+                                            "right": "monitoring",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Monitoring Still Going"
+                            },
+                            "Close or Takedown Possible": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "ctm360cyberblindspotcourseofaction",
+                                            "operator": "isEqualCaseString",
+                                            "right": "takedown",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Close or Takedown Possible"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "ctm360cyberblindspotcourseofaction"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": false
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "e6f69960-aef7-11ee-ac47-ef32c7f05a79",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "e6f69960-aef7-11ee-ac47-ef32c7f05a79",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-07T08:36:21.274656973+03:00",
+                "created": "2024-01-07T08:36:16.823054025+03:00",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.44",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Active Incidents (Past Week)",
+                "prevName": "Incidents in Error Run Status",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-runStatus:error type:\"CyberBlindspot Incident\" and status:Active",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+                            "#00CD33": {
+                                "value": 10
+                            },
+                            "#FAC100": {
+                                "value": 20
+                            },
+                            "#FF1B15": {
+                                "value": 40
+                            }
+                        },
+                        "type": "above"
+                    }
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "4a71f9d0-aef8-11ee-ac47-ef32c7f05a79",
+            "forceRange": false,
+            "x": 9,
+            "y": 0,
+            "i": "4a71f9d0-aef8-11ee-ac47-ef32c7f05a79",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-07T08:36:21.273909715+03:00",
+                "created": "2024-01-07T08:36:16.821190202+03:00",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.44",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Running playbooks",
+                "prevName": "Running playbooks",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "runStatus:running playbook:\"CyberBlindspot Incident Management\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+                            "#00CD33": {
+                                "value": 0
+                            },
+                            "#FAC100": {
+                                "value": 5
+                            },
+                            "#FF1B15": {
+                                "value": 20
+                            }
+                        },
+                        "type": "above"
+                    }
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "7d10a7b0-aef8-11ee-ac47-ef32c7f05a79",
+            "forceRange": false,
+            "x": 6,
+            "y": 1,
+            "i": "7d10a7b0-aef8-11ee-ac47-ef32c7f05a79",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-07T08:36:21.274656973+03:00",
+                "created": "2024-01-07T08:36:16.823054025+03:00",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.44",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Closed Incidents (Past Week)",
+                "prevName": "Incidents in Error Run Status",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-runStatus:error type:\"CyberBlindspot Incident\" and status:Closed",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+                            "#00CD33": {
+                                "value": 10
+                            },
+                            "#FAC100": {
+                                "value": 20
+                            },
+                            "#FF1B15": {
+                                "value": 40
+                            }
+                        },
+                        "type": "above"
+                    }
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "8c864490-af78-11ee-9dec-eb27c047d071",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "8c864490-af78-11ee-9dec-eb27c047d071",
+            "w": 6,
+            "h": 5,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-07T08:36:21.27343997+03:00",
+                "created": "2024-01-07T08:36:16.820119695+03:00",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.44",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "size": 5,
+                "Cache": null,
+                "name": "Top Active Playbooks (Past Week)",
+                "prevName": "Top Active Playbooks",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "status:active -category:job and type:\"CyberBlindspot Incident\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "playbookId"
+                    ]
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "0a967ed0-af7a-11ee-9dec-eb27c047d071",
+            "forceRange": false,
+            "x": 9,
+            "y": 1,
+            "i": "0a967ed0-af7a-11ee-9dec-eb27c047d071",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-07T08:36:21.274785325+03:00",
+                "created": "2024-01-07T08:36:16.823354842+03:00",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.44",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Avg. runtime for Playbooks (Past Week)",
+                "prevName": "Average runtime for Playbooks",
+                "dataType": "metrics",
+                "widgetType": "duration",
+                "query": "type:playbook and incidentType:\"CyberBlindspot Incident\"",
+                "isPredefined": false,
+                "description": "Average runtime for Playbooks",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "keys": [
+                        "avg|duration"
+                    ],
+                    "tableColumns": [],
+                    "valuesFormat": "minutes"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "79ceb8b0-d267-11ef-bb8f-7b3689ec5634",
+            "forceRange": false,
+            "x": 6,
+            "y": 2,
+            "i": "79ceb8b0-d267-11ef-bb8f-7b3689ec5634",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-07T08:36:21.274425938+03:00",
+                "created": "2024-01-07T08:36:16.822326133+03:00",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.44",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Active Incidents by Module - Pie chart",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-category:job and -status:archived and -status:closed",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null
+                    ],
+                    "groupBy": [
+                        "ctm360cyberblindspotmodule"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": false
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ]
 }
