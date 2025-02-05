@@ -1,3 +1,4 @@
+from requests import Request
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
@@ -609,11 +610,25 @@ async def get_events_with_offset_aiohttp(
 
     url = f"{client._base_url}/"
     demisto.info(f"Running in interval = {counter}. Init session and sending request.")
+    
+    def get_signed_headers(url, method="GET"):
+        auth = client._auth
+        
+        # Create a dummy request to generate headers
+        req = Request(method, url)
+        prepared_req = req.prepare()
+        
+        # Sign the request using EdgeGridAuth
+        auth(prepared_req)
+        
+        return dict(prepared_req.headers)
+    
+    headers = get_signed_headers(url)
 
     async with aiohttp.ClientSession(base_url=url,
                                      trust_env=True) as session, session.get(url=config_ids,
                                                                              params=params,
-                                                                             auth=client._auth,
+                                                                             headers=headers,
                                                                              ssl=client._verify) as response:
         try:
             response.raise_for_status()  # Check for any HTTP errors
