@@ -12,6 +12,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 MAX_ENTRIES = 100
 TIMEOUT = '30'
+TIMEOUT_INT = 30
 BASE_URL = "https://api.security.microsoft.com"
 
 MIRROR_DIRECTION = {
@@ -713,7 +714,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time: str) -> List[s
     while True:
         # HTTP request
         demisto.debug(f"Microsoft Defender 365 - fetch_modified_incident_ids - fetching incidents with offset {offset}")
-        response = client.incidents_list(timeout=50, last_update_time=last_update_time,
+        response = client.incidents_list(timeout=TIMEOUT_INT, last_update_time=last_update_time,
                                          skip=offset)
         raw_incidents = response.get('value')
         demisto.debug(
@@ -800,7 +801,7 @@ def fetch_modified_incident(client: Client, incident_id: int) -> dict:
         dict: The modified incident.
     """
     demisto.debug(f"Microsoft Defender 365 - Starting fetch_modified_incident {incident_id=}")
-    incident = client.get_incident(incident_id=incident_id, timeout=50)
+    incident = client.get_incident(incident_id=incident_id, timeout=TIMEOUT_INT)
     demisto.debug(f"Microsoft Defender 365 - Fetched incident {incident_id=}")
     if incident.get('@odata.context'):
         del incident['@odata.context']
@@ -979,8 +980,8 @@ def mirror_out_entries(client: Client, entries: list[Dict], comment_tag: str, re
             else:
                 text = f"({user}): {str(entry.get('contents', ''))}\n\n {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}"
 
-            updated_incident = client.update_incident(incident_id=remote_incident_id,
-                                                      timeout=50,
+            client.update_incident(incident_id=remote_incident_id,
+                                                      timeout=TIMEOUT_INT,
                                                       comment=text)
             demisto.debug(f"Microsoft Defender 365 - mirror out entries updated incident {remote_incident_id=}")
 
@@ -1011,13 +1012,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         if update_remote_system_args.incident_changed and delta:
             handle_incident_close_out_or_reactivation(delta, update_remote_system_args.inc_status)
 
-            updated_incident = client.update_incident(incident_id=remote_incident_id,
+            client.update_incident(incident_id=remote_incident_id,
                                                       status=delta.get('status'),
                                                       assigned_to=delta.get('assignedTo'),
                                                       classification=delta.get('classification'),
                                                       determination=delta.get('determination'),
                                                       tags=argToList(delta.get('tags')),
-                                                      timeout=50,
+                                                      timeout=TIMEOUT_INT,
                                                       comment=delta.get('comment'))
 
             demisto.debug(f"Microsoft Defender 365 - Updated incident {remote_incident_id=}")
