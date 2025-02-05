@@ -1938,12 +1938,12 @@ def update_integration_context_with_all_team_members(integration_context):
     for team in teams:
         team_id = team.get('team_id', '')
         team_name = team.get('team_name', '')
-        demisto.error(f'DANF Request members for {team_id=} {team_name=}')
+        demisto.debug(f'Request members for {team_id=} {team_name=}')
         url = f'{service_url}/v3/conversations/{team_id}/members'
         team_members: list = cast(list[Any], http_request('GET', url, api='bot'))
-        demisto.error(f'DANF Updating {team_name=} with {team_members=}')
+        demisto.debug(f'Updating {team_name=} with {team_members=}')
         team['team_members'] = team_members
-    demisto.error(f'DANF Setting integration_context with {teams=}')
+    demisto.debug(f'Setting integration_context with {teams=}')
     integration_context['teams'] = json.dumps(teams)
     set_integration_context(integration_context)
 
@@ -2164,7 +2164,6 @@ def send_message():
             update_integration_context_with_all_team_members(integration_context)
             team_member_id = get_team_member_id(team_member, integration_context)
         if not team_member_id:
-            demisto.error(f"Could not find team member ID for '{team_member}' in integration context.")
             raise ValueError(f"Could not find team member ID for '{team_member}'.")
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
 
