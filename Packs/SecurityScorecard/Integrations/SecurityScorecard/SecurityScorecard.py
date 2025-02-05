@@ -1211,11 +1211,9 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
 
     for entry in entries:  # type: ignore
         content: Dict[str, str] = {
-            # "Alert ID": entry.get("id"), this is execution id, not useful
             "company": entry.get("company_name"),
             "domain": entry.get("domain"),
             "datetime": entry.get("created_at"),
-            # "Score date": entry.get("platform_score_date"), #no need for this
         }
 
         change_data = entry.get("change_data")
@@ -1415,32 +1413,33 @@ def alert_rules_list_command(client: SecurityScorecardClient, args: Dict[str, An
 
     response = client.get_subscriptions()
     demisto.debug(f"Response received: {response}")
-    entries = response.get("entries")  # type: ignore
+    entries = response.get("entries")
 
     alert_rules: List[Dict[str, str]] = []
 
-    for entry in entries:  # type: ignore
-        target = entry.get("delivery", {}).get("workflow", {}).get("filters", {}).get("scorecards", {}).get("value", "N/A")
-        if target == "by_id":
-            target = "single scorecard"
-        elif target == "in_portfolio":
-            portfolio_id = entry.get("delivery", {}).get("workflow", {}).get(
-                "filters", {}).get("scorecards", {}).get("portfolio_id", {}).get("value", "N/A")
-            target = f"portfolio with id {portfolio_id}"
-        elif target == "followed":
-            target = "all followed scorecards"
-        elif target == "my_scorecard":
-            target = "my scorecard"
+    if entries:
+        for entry in entries:
+            target = entry.get("delivery", {}).get("workflow", {}).get("filters", {}).get("scorecards", {}).get("value", "N/A")
+            if target == "by_id":
+                target = "single scorecard"
+            elif target == "in_portfolio":
+                portfolio_id = entry.get("delivery", {}).get("workflow", {}).get(
+                    "filters", {}).get("scorecards", {}).get("portfolio_id", {}).get("value", "N/A")
+                target = f"portfolio with id {portfolio_id}"
+            elif target == "followed":
+                target = "all followed scorecards"
+            elif target == "my_scorecard":
+                target = "my scorecard"
 
-        content: Dict[str, str] = {
-            "Alert Rule ID": entry.get("id"),
-            "Target": target,
-            "Name": entry.get("delivery", {}).get("workflow", {}).get("name", "N/A"),
-            "Updated At": entry.get("updated_at", "N/A"),
-            "Paused At": entry.get("paused_at", "N/A"),
-        }
+            content: Dict[str, str] = {
+                "Alert Rule ID": entry.get("id"),
+                "Target": target,
+                "Name": entry.get("delivery", {}).get("workflow", {}).get("name", "N/A"),
+                "Updated At": entry.get("updated_at", "N/A"),
+                "Paused At": entry.get("paused_at", "N/A"),
+            }
 
-        alert_rules.append(content)
+            alert_rules.append(content)
 
     markdown = tableToMarkdown("Alert Rules", alert_rules)
 
