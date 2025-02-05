@@ -42,8 +42,9 @@ def load_params_from_json(json_path, type=''):
 @pytest.fixture(scope='module')
 def client():
     from Akamai_SIEM import Client
+    from akamai.edgegrid import EdgeGridAuth
 
-    return Client(base_url=BASE_URL)
+    return Client(base_url=BASE_URL, auth=EdgeGridAuth("bla", "bla", "bla"))
 
 
 '''Tests'''
