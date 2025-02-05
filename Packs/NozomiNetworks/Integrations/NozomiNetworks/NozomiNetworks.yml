@@ -7,7 +7,7 @@ category: Network Security
 fromversion: 5.0.0
 tests:
 - No tests
-description: "The Nozomi Networks Guardian platform is a hardware or virtual appliance that is used to monitor OT/IoT/IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring and threat detection in a single solution.\n  This integration is used to gather alerts and assets information from Nozomi."
+description: "The Nozomi Networks platform, available as a hardware, virtual appliance, or via the Vantage Cloud product, provides comprehensive monitoring for OT, IoT, and IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring, and advanced threat detection in a unified solution. The integration is designed to gather alerts and asset information from Nozomi, whether deployed on-premises or in the cloud via Vantage, ensuring seamless visibility and security across environments."
 sectionOrder:
 - Connect
 - Collect
