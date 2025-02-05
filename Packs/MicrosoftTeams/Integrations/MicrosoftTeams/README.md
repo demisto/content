@@ -1247,22 +1247,3 @@ If your authentication type is the `Authorization Code Flow`, after running the 
 ## Download Demisto Bot
 
 [Demisto Bot zip](https://github.com/demisto/content/raw/2d9804da7ff94bc1243fe083f280e44602bd1738/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
-
-### microsoft-teams-get-team-members
-
-***
-Handle failed send-notification to added users. This command will pull members added to a team.
-
-#### Base Command
-
-`microsoft-teams-get-team-members`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| team_name | Specify in which team to pull members from. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
