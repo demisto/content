@@ -149,7 +149,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         except Exception as e:
             if hasattr(e, "res") and e.res == "LIMIT_RATE_EXCEEDED":   # rate limit reached
                 demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit} Audit logs.")
-                new_last_run = {'start_date': start}
+                new_last_run = {'start_date': start, 'token': client.token}
                 return output, new_last_run
             if hasattr(e, "message") and 'Unauthorized' in e.message:  # need to regenerate the token
                 client.create_access_token_for_audit()
