@@ -920,7 +920,7 @@ class TestEmailModule(unittest.TestCase):
 
         # Call the function
         result = create_message(
-            to, subject, html_body=html_body, attachments=attachments
+            to, True,subject, html_body=html_body, attachments=attachments
         )
 
         # Assertions
