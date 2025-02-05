@@ -357,63 +357,82 @@ def separate_ips(ip_list: list[str]) -> tuple[list[str], list[str]]:
     external_ips = set(ip_list) - internal_ips
     return list(internal_ips), list(external_ips)
 
+
 #################################################################################################
 
 
-
 ########################### search indicators #################################
-def generate_common_ip_from_ip_indicator(ip_address :str, ip_type : str, score: int, custom_fields : dict) -> dict:
+def generate_common_ip_from_ip_indicator(ip_address: str, ip_type: str, score: int, custom_fields: dict) -> Common.IP:
     """
     todo: get a response regarding this for a complete mapping - https://panw-global.slack.com/archives/D072EEC9XJM/p1738588622110269
 
     """
-    latitude, longitude = custom_fields.get("geolocation").split(':')
+    geolocation = custom_fields.get("geolocation", "").split(':')
+    geo_latitude ,  geo_longitude = geolocation if len(geolocation) == 2 else (None, None)
     return Common.IP(
-        dbot_score=Common.DBotScore(indicator=ip_address, indicator_type=DBotScoreType.IP , score=score),
-        ip = ip_address,
-        ip_type= ip_type,
+        dbot_score=Common.DBotScore(indicator=ip_address, indicator_type=DBotScoreType.IP, score=score),
+        ip=ip_address,
+        ip_type=ip_type,
         asn=custom_fields.get('asn'),
         feed_related_indicators=[Common.FeedRelatedIndicators(
-                    value= indicator.get("value"),
-                    indicator_type=indicator.get("type"),
-                    description = indicator.get("description")
+            value=indicator.get("value"),
+            indicator_type=indicator.get("type"),
+            description=indicator.get("description")
 
-                ) for indicator in custom_fields.get("feedrelatedindicators")],
+        ) for indicator in custom_fields.get("feedrelatedindicators", [])],
         geo_country=custom_fields.get("geocountry"),
-        geo_longitude= longitude,
-        geo_latitude=latitude,
+        geo_latitude=geo_latitude,
+        geo_longitude=geo_longitude,  #todo confirm order
         organization_name=custom_fields.get("organization"),
         organization_type=custom_fields.get("organizationtype"),
-        positive_engines= custom_fields.get("positivedetections"),
+        positive_engines=custom_fields.get("positivedetections"),
         detection_engines=custom_fields.get("detectionengines"),
         hostname=custom_fields.get("hostname"),
-        tags = custom_fields.get("tags"),
+        tags=custom_fields.get("tags"),
         #todo - which dbot score should I put?
     )
 
 
+def map_search_indicator_to_context(ip_indicator):
+    print("map_search_indicator_to_context")
+    #todo: which fields should be excluded? what about module to feed map? insightcache?
+    filtered_ip_indicator = {key: value for key, value in ip_indicator.items() if key not in ["CustomFields", "insightCache"]}
+    return enrich_data_with_source(data=filtered_ip_indicator, source="searchIndicators")
 
 
-
-def get_search_indicators_outputs(iocs: list[dict]):
+def get_search_indicators_outputs(iocs: list[dict]) -> List[dict]:
+    print("get_search_indicators_outputs")
     outputs = []
     for ip_indicator in iocs:
         #todo - which fields should be excluded?
-        common_ip = generate_common_ip_from_ip_indicator(ip_address = ip_indicator.get('value'),
-                                                        ip_type = ip_indicator.get('indicator_type'),
-                                                         score = ip_indicator.get('score'),
-                                                        custom_fields =  ip_indicator.get('CustomFields', {}))
+        common_ip = generate_common_ip_from_ip_indicator(ip_address=ip_indicator.get('value'),
+                                                         ip_type=ip_indicator.get('indicator_type'),
+                                                         score=ip_indicator.get('score'),
+                                                         custom_fields=ip_indicator.get('CustomFields', {}))
+        ip_indicator_mapped_context = map_search_indicator_to_context(ip_indicator)
+        print(ip_indicator_mapped_context)
+        common_ip_mapped_context = common_ip.to_context()
+        print(common_ip_mapped_context)
+        common_keys = set(ip_indicator_mapped_context.keys()) & set(common_ip_mapped_context.keys())
+
+        if common_keys:
+            raise DemistoException(f"get_search_indicators_outputs - Common keys found: {common_keys}")
+
+        outputs.append(common_ip_mapped_context | ip_indicator_mapped_context)
+    return outputs
 
 
 def search_indicators(ips: list[str]):
     """Retrieve TIM data for IP indicators."""
+    print("search_indicators")
+
     ips_value_query = " or ".join([f"value:{ip}" for ip in ips])
     query = f"(type:IPv6 or type:IPv6CIDR or type:IP) and ({ips_value_query})"
     raw_results = demisto.searchIndicators(query=query)
     #todo: wrap in command_results
     outputs = get_search_indicators_outputs(raw_results.get('iocs', []))
-    return raw_results , outputs
-
+    print(outputs)
+    return raw_results, outputs
 
     # command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(find_indicators_command, {
     #     "query": query})  #RETURNS A LIST OF DICTIONARIES PER INDICATOR, TODO: IF MISSING? IF EMPTY EMPTY LIST IS RETUNRED. WHAT TO DO IF MULTIPLE RESULTS FOR ONE IP?
@@ -454,6 +473,35 @@ def search_indicators(ips: list[str]):
 
 
 ######################################## internal flow #######################################
+
+def get_endpoint_data_outputs(endpoints_data) -> List[dict]:
+    pass
+    # print("get_endpoint_data_outputs")
+    # outputs = []
+    # for endpoint_data in endpoints_data:
+    #     # todo - which fields should be excluded?
+    #     common_ip = generate_common_ip_from_ip_indicator(ip_address=ip_indicator.get('value'),
+    #                                                      ip_type=ip_indicator.get('indicator_type'),
+    #                                                      score=ip_indicator.get('score'),
+    #                                                      custom_fields=ip_indicator.get('CustomFields', {}))
+    #     ip_indicator_mapped_context = map_search_indicator_to_context(ip_indicator)
+    #     print(ip_indicator_mapped_context)
+    #     common_ip_mapped_context = common_ip.to_context()
+    #     print(common_ip_mapped_context)
+    #     common_keys = set(ip_indicator_mapped_context.keys()) & set(common_ip_mapped_context.keys())
+    #
+    #     if common_keys:
+    #         raise DemistoException(f"get_search_indicators_outputs - Common keys found: {common_keys}")
+    #
+    #     outputs.append(common_ip_mapped_context | ip_indicator_mapped_context)
+    # return outputs
+
+
+def get_endpoint_data(ips):
+    raw_results = demisto.executeCommand("get-endpoint-data", {"agent_ip": ips, "verbose" : "true"})
+    print(raw_results)
+    outputs = get_endpoint_data_outputs(raw_results.get('Contents', []))
+    return raw_results , outputs
 ######################################## external flow #######################################
 def check_reputation(ip_command_runner: IPCommandRunner, ips: str):
     """Check the reputation of an IP address."""
@@ -483,53 +531,63 @@ def get_analytics_prevalence(ip_command_runner: IPCommandRunner, ips: str) -> di
     command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(
         prevalence_command, {"ip_address": ips})
 
-######################################### general flow #######################################
-def enrich_internal_ip_address(ip_command_runner, ips: list[str]):
-    """Handle internal IP enrichment."""
-    raw_results , outputs = [] , []
-    demisto.debug(f"Internal IP detected: {ips}")
-    print("INTERNAL IP")
-    joined_ips = ",".join(ips)
-    get_endpoint_data_command = Command(
-        name="get-endpoint-data",
-        output_keys=["Contents"],
-        output_mapping=lambda x: x.get("Contents", [])
-    )
-    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(
-        get_endpoint_data_command, {"agent_ip": joined_ips})
-    get_outputs("Core.AnalyticsPrevalence.Ip", command_context_outputs[0])
-    return raw_results , outputs
 
-def enrich_external_ip_address(ip_command_runner, ips: list[str]):
-    """Handle external IP enrichment."""
-    raw_results, outputs = [], []
-    demisto.debug(f"External IPs detected: {ips}")
-    print("EXTERNAL IP")
+######################################### general flow #######################################
+def enrich_internal_ip_address(ips: list[str]):
+    """Handle internal IP enrichment."""
+    outputs = []
+    demisto.debug(f"Internal IP detected: {ips}")
     joined_ips = ",".join(ips)
-    check_reputation(ip_command_runner, joined_ips)
-    if is_xsiam():
-        get_analytics_prevalence(ip_command_runner, joined_ips)
+    get_endpoint_data_raw_results, get_endpoint_data_outputs = get_endpoint_data(joined_ips)
+
+
+    # get_endpoint_data_command = Command(
+    #     name="get-endpoint-data",
+    #     output_keys=["Contents"],
+    #     output_mapping=lambda x: x.get("Contents", [])
+    # )
+    # command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(
+    #     get_endpoint_data_command, {"agent_ip": joined_ips})
+    # get_outputs("Core.AnalyticsPrevalence.Ip", command_context_outputs[0])
     return raw_results, outputs
 
-def gather_enrichment_data(ips: list[str], third_enrichment: bool, ip_command_runner):
-    search_indicators_raw_results, search_indicators_outputs  = search_indicators(ips)
-    if not third_enrichment:
+
+def enrich_external_ip_address(ips: list[str]):
+    """Handle external IP enrichment."""
+    pass
+    # raw_results, outputs = [], []
+    # demisto.debug(f"External IPs detected: {ips}")
+    # print("EXTERNAL IP")
+    # joined_ips = ",".join(ips)
+    # check_reputation(ip_command_runner, joined_ips)
+    # if is_xsiam():
+    #     get_analytics_prevalence(ip_command_runner, joined_ips)
+    # return raw_results, outputs
+
+
+def gather_enrichment_data(ips: list[str], third_enrichment: bool, verbose: bool):
+    print("gather_enrichment_data")
+    search_indicators_raw_results, search_indicators_outputs = search_indicators(ips)
+    if not third_enrichment and search_indicators_outputs:
         return
     internal_ips, external_ips = separate_ips(ips)
     print(f"Internal IPs: {internal_ips}")
     print(f"External IPs: {external_ips}")
     if internal_ips:
-        enrich_internal_ip_address(ip_command_runner, internal_ips)
+        enrich_internal_ip_address(internal_ips)
     if external_ips:
-        enrich_external_ip_address(ip_command_runner, external_ips)
-
+        enrich_external_ip_address(external_ips)
 
 
 def merge_enrichment_data():
     pass
-def ip_enrichment(ip_command_runner, ):
+
+
+def ip_enrichment(ips, third_enrichment, verbose):
     """Perform IP enrichment with validation."""
     try:
+        gather_enrichment_data(ips, third_enrichment, verbose)
+        merge_enrichment_data()
 
 
 
@@ -544,23 +602,23 @@ def main():
         ips = argToList(args.get("ip", ""))
         third_enrichment = argToBoolean(args.get("third_enrichment", False))
         verbose = argToBoolean(args.get("verbose", False))
-        ip_command_runner = IPCommandRunner(verbose)
+        # ip_command_runner = IPCommandRunner(verbose)
 
         if not ips:
             raise ValueError("No IPs provided for enrichment.")
 
         try:
-            ip_enrichment(ip_command_runner, ips, third_enrichment)
+            ip_enrichment(ips, third_enrichment, verbose)
 
         except Exception as e:
             print(f"Failed to enrich IP: {e}")
             #ips_not_found_list.append({"ip": ip, "error": str(e)})
 
-        return_results(ip_command_runner.commands_results_list)
+        # return_results(ip_command_runner.commands_results_list)
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute IPEnrichment. Error: {str(e)}")
+        return_error(f"Failed to execute IPEnrichment. Error: {str(e)} {traceback.format_exc()}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
