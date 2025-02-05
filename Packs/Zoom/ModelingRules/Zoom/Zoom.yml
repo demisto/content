@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Zoom_Zoom_modeling_rule
-name: Zoom Zoom Modeling Rule
+id: Zoom_ModelingRule
+name: Zoom Modeling Rule
 rules: ''
 schema: ''
 tags: Zoom
