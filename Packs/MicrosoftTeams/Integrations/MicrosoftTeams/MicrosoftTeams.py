@@ -418,7 +418,7 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
                 'userPrincipalName', '').lower(), team_member.get('name', '').lower()]
             if requested_team_member.lower() in [value.lower() for value in member_properties]:
                 return team_member.get("id")
-    return ""
+    raise ValueError(f'Team member {requested_team_member} was not found')
 
 
 def create_adaptive_card(body: list, actions: list | None = None) -> dict:
@@ -2158,13 +2158,12 @@ def send_message():
     if channel_name:
         channel_id = get_channel_id_for_send_notification(channel_name, message_type)
     elif team_member:
-        team_member_id: str = get_team_member_id(team_member, integration_context)
-        if not team_member_id:
+        try:
+            team_member_id: str = get_team_member_id(team_member, integration_context)
+        except Exception:
             demisto.debug(f"Did not find '{team_member=}' will update integration context with all team members.")
             update_integration_context_with_all_team_members(integration_context)
             team_member_id = get_team_member_id(team_member, integration_context)
-        if not team_member_id:
-            raise ValueError(f"Could not find team member ID for '{team_member}'.")
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
 
     recipient: str = channel_id or personal_conversation_id
