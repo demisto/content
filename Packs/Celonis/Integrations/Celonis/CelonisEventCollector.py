@@ -41,6 +41,9 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify)
         self.token = None
 
+    def set_token(self, token: str):
+        self.token = token
+
     def create_access_token_for_audit(self) -> None:
         """
         Creates an access token for audit log access using a specific scope and client credentials.
@@ -127,6 +130,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
         start = last_run.get('start_date', '')
+        client.set_token(last_run.get('token'))
         if not start:
             start = "2025-02-02T09:00:00"  # TODO
             # event_date = get_current_time().strftime(DATE_FORMAT)
@@ -139,7 +143,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         except Exception as e:
             if hasattr(e, "res") and e.res == "LIMIT_RATE_EXCEEDED":   # rate limit reached
                 demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit} Audit logs.")
-                new_last_run = {'start_date': add_millisecond(event_date)}
+                new_last_run = {'start_date': start}
                 return output, new_last_run
             if hasattr(e, "message") and 'Unauthorized' in e.message:  # need to regenerate the token
                 client.create_access_token_for_audit()
@@ -159,12 +163,12 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
 
             if len(output) >= fetch_limit:
                 start = add_millisecond(event_date)
-                new_last_run = {'start_date': start}
+                new_last_run = {'start_date': start, 'token': client.token}
                 return output, new_last_run
 
         start = add_millisecond(event_date)
 
-    new_last_run = {'start_date': start}
+    new_last_run = {'start_date': start, 'token': client.token}
     return output, new_last_run
 
 
