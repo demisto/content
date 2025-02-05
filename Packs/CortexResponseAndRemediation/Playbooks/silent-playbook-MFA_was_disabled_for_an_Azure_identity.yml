@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: silent-MFA was disabled for an Azure identity
-description: "**This playbook addresses the following alerts**:\n- MFA was disabled for an Azure identity\n- MFA was disabled for an Azure identity from a new country\n\n**Playbook Stages**:\n\n**Triage**:\n- Gather initial information about the initiating user.\n**Investigation**:\n- **IP Enrichment**:\n  - Analyze the reputation of the initiating user IP addresses.\n- **Azure Detection Analysis**:\n  - Investigate recent Azure security alerts for the initiating user to detect additional suspicious activity.\n  - If any detections found, investigate the related user agent. \n- **User Risk Analysis**:\n  - Assess the risk level of the initiating user based on XSIAM Core and Azure risk score.\n  - Investigate reasons behind any identified risks, including recent detections.\n- **Attacker Geolocation Analysis:**:\n  - Investigate the initiating user connection geolocation.\n- **Insights Analysis**:\n  - Investigate the XSIAM insights that related to the initiating user to detect additional suspicious activity.\n\n**Verdict & Containment**:\n- If any suspicious evidence is found during the investigation phase and the integration \"Microsoft Graph User\" integration is enabled, the playbook will revoke the sessions of the initiating user and the destination user. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n- If any suspicious evidence found during the Azure detection analysis, Attacker geolocation analysis and Insight analysis investigations, and the integration \"Microsoft Graph User\" is enabled, the playbook will revoke the sessions of the initiating user and the destination user and will recommend manually to disable either one of the users or both of the users. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n\n**Requirements:**:\n- `Azure Risky Users` for retrieving user risk scores.\n- `Microsoft 365 Defender` for advanced hunting queries and Azure security alerts.\n- `Microsoft Graph User` for disabling accounts and revoking sessions."
+description: "**This playbook addresses the following alerts**:\n- MFA was disabled for an Azure identity\n- MFA was disabled for an Azure identity from a new country\n\n**Playbook Stages**:\n\n**Triage**:\n- Gather initial information about the initiating user.\n**Investigation**:\n- **IP Enrichment**:\n  - Analyze the reputation of the initiating user IP addresses.\n- **Azure Detection Analysis**:\n  - Investigate recent Azure security alerts for the initiating user to detect additional suspicious activity.\n  - If any detections found, investigate the related user agent. \n- **User Risk Analysis**:\n  - Assess the risk level of the initiating user based on Cortex XSIAM Core and Azure risk score.\n  - Investigate reasons behind any identified risks, including recent detections.\n- **Attacker Geolocation Analysis:**:\n  - Investigate the initiating user connection geolocation.\n- **Insights Analysis**:\n  - Investigate the Cortex XSIAM insights that relate to the initiating user to detect additional suspicious activity.\n\n**Verdict & Containment**:\n- If any suspicious evidence is found during the investigation phase and the integration \"Microsoft Graph User\" integration is enabled, the playbook will revoke the sessions of the initiating user and the destination user. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n- If any suspicious evidence found during the Azure detection analysis, Attacker geolocation analysis and Insight analysis investigations, and the integration \"Microsoft Graph User\" is enabled, the playbook will revoke the sessions of the initiating user and the destination user and will recommend manually to disable either one of the users or both of the users. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n\n**Requirements:**:\n- `Azure Risky Users` for retrieving user risk scores.\n- `Microsoft 365 Defender` for advanced hunting queries and Azure security alerts.\n- `Microsoft Graph User` for disabling accounts and revoking sessions."
 issilent: true
 tags:
 - TA0003 - Persistence
@@ -549,7 +549,7 @@ tasks:
       version: -1
       name: Revoke user session
       description: |-
-        Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
+        Revoke a user session. Invalidates all the refresh tokens issued to applications for a user.
         Permission: Directory.AccessAsUser.All(Delegated).
       script: '|||msgraph-user-session-revoke'
       type: regular
@@ -594,7 +594,7 @@ tasks:
       id: 9f3a2374-591c-45a1-8fc3-0e13a81236c9
       version: -1
       name: Set risky user
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -779,7 +779,7 @@ tasks:
       id: 10890461-4ac8-4b9d-8a7b-f12831dc7134
       version: -1
       name: Add suspicious geolocation to evidence
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -873,7 +873,7 @@ tasks:
       id: 7250a855-fc56-4bb2-8980-94ec1a931f77
       version: -1
       name: Check for suspicious insights
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1052,7 +1052,7 @@ tasks:
       id: 49938488-eb3e-436e-844b-6e1dfca348ab
       version: -1
       name: Manual Remediation
-      description: "#### Source User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Source User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Source User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Source User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Source User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n\n### Action Required:\nSince the MSGraph integration is not enabled on this XSIAM tenant, we recommend performing the following steps manually:\n\n* re-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n* Revoke the session of both${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}\n* Disable the users ${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}\n\n"
+      description: "#### Source User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Source User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Source User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Source User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Source User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n\n### Action Required:\nSince the MSGraph integration is not enabled on this Cortex XSIAM tenant, we recommend performing the following steps manually:\n\n* re-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n* Revoke the session of both${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}\n* Disable the users ${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}\n\n"
       type: regular
       iscommand: false
       brand: ""
@@ -1140,7 +1140,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Analyst Action
-      description: Analyst review
+      description: Analyst review.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -1227,7 +1227,7 @@ tasks:
       version: -1
       name: Disable both users
       description: |-
-        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables a user,
         but does not terminate an existing session. Supported only in a self deployed app flow with the
         Permission: Directory.AccessAsUser.All(Delegated).
       script: '|||msgraph-user-account-disable'
@@ -1275,7 +1275,7 @@ tasks:
       version: -1
       name: Disable source user
       description: |-
-        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables a user,
         but does not terminate an existing session. Supported only in a self deployed app flow with the
         Permission: Directory.AccessAsUser.All(Delegated).
       script: '|||msgraph-user-account-disable'
@@ -1317,7 +1317,7 @@ tasks:
       version: -1
       name: Disable destination user
       description: |-
-        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables a user,
         but does not terminate an existing session. Supported only in a self deployed app flow with the
         Permission: Directory.AccessAsUser.All(Delegated).
       script: '|||msgraph-user-account-disable'
@@ -1476,7 +1476,7 @@ tasks:
       id: ffb9aac6-1a37-4444-849d-910e8465e27c
       version: -1
       name: Manual Remediation
-      description: "#### Source User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Source User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Source User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Source User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Source User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n\n### Action Required:\nSince the MSGraph integration is not enabled on this XSIAM tenant, we recommend performing the following steps manually:\n\n* re-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n\n* Revoke the session of both ${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}"
+      description: "#### Source User: \n##### The user who disabled the MFA\n`${Core.OriginalAlert.event.identity_name}`\n\n#### Destination User:\n#####  The user whom his MFA was disabled\n`${Core.OriginalAlert.event.referenced_resource_name}`\n\n---\n\n### Malicious IP Found:\n- **Malicious IP**: `${.=val.MaliciousIP || \"None\"}`\n\n---\n\n### Source User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n\n---\n\n### Source User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n\n---\n### Source User Azure Detections Analysis:\n- `${.=val.UserRiskyAzureDetections ? \"Yes, Risk Types: \" + val.UserRiskyAzureDetections : \"N/A\"}`\n\n---\n\n### Source User Geolocation Analysis:\n- **User Connected from a new geolocation**: `${.=val.NewGeolocation ? \"Yes, Geolocation: \" + val.Core.OriginalAlert.raw_abioc.event.caller_ip_geolocation : \"NO\"}`\n\n---\n\n### Action Required:\nSince the MSGraph integration is not enabled on this Cortex XSIAM tenant, we recommend performing the following steps manually:\n\n* re-enroll MFA to ${Core.OriginalAlert.event.referenced_resource_name}\n\n* Revoke the session of both ${Core.OriginalAlert.event.identity_name} & ${Core.OriginalAlert.event.referenced_resource_name}"
       type: regular
       iscommand: false
       brand: ""
@@ -1538,7 +1538,7 @@ tasks:
       id: 6fcba35e-6b96-47aa-8408-9192ee3daefa
       version: -1
       name: Check if the source user connected from a new country
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1601,7 +1601,7 @@ tasks:
       id: cd329007-58a9-4623-81ef-5ee6c8d87f2e
       version: -1
       name: Set malicious IP if exits
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1663,9 +1663,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1796,9 +1796,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1880,9 +1880,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
