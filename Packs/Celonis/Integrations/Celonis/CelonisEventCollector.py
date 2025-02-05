@@ -14,13 +14,10 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 
 """
 
-from typing import Any, Dict, Optional
-
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *
-from requests.auth import HTTPDigestAuth
 
 urllib3.disable_warnings()
 
@@ -29,9 +26,9 @@ urllib3.disable_warnings()
 VENDOR = 'Celonis'
 PRODUCT = 'Celonis'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-PAGE_SIZE = 200
+PAGE_SIZE = 1
 PAGE_NUMBER = 0
-DEFAULT_FETCH_LIMIT = 600
+DEFAULT_FETCH_LIMIT = 3
 BEARER_PREFIX = 'Bearer '
 
 """ CLIENT CLASS """
@@ -59,25 +56,37 @@ class Client(BaseClient):
         self.token = results['access_token']
 
     def get_audit_logs(self, start_date: str, end_date: str) -> dict:
-        params = assign_params(
-            pageNumber=PAGE_NUMBER,
-            pageSize=PAGE_SIZE,
-            startDate=start_date,
-            to=end_date
-        )
         headers = {
             'Authorization': f'{BEARER_PREFIX}{self.token}',
         }
         results = self._http_request(
             method="GET",
-            url_suffix=f"/log/api/external/audit",
-            headers=headers,
-            params=params
+            url_suffix=f"/log/api/external/audit?pageNumber={PAGE_NUMBER}&pageSize={PAGE_SIZE}&from={start_date}&to={end_date}",
+            headers=headers
         )
         return results
 
 
 """ HELPER FUNCTIONS """
+
+
+def sort_events_by_date(events: list) -> list:
+    """
+    Sorts a list of events by their date in ascending order.
+    Args:
+        events (list): A list of dictionaries.
+    Returns:
+        list: The sorted list of events based on the 'timestamp' field.
+    """
+    # if not events:
+    #     return events
+    return sorted(events, key=lambda x: datetime.strptime(x['timestamp'], '%Y-%m-%dT%H:%M:%S.%f%z'))
+
+
+def add_millisecond(timestamp: str) -> str:
+    dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+    dt += timedelta(milliseconds=1)
+    return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
 
 """ COMMAND FUNCTIONS """
@@ -94,45 +103,43 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         end = get_events_args.get('end_date', '')
     else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
-        event_date = last_run.get('start_date', '')
-        if not event_date:
-            event_date = "2025-01-03T15:19:12.180Z"
+        start = last_run.get('start_date', '')
+        if not start:
+            start = "2025-02-02T09:00:00"
             # event_date = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
 
-    current_start_date = event_date
     output: list = []
     while True:
         try:
-            response = client.get_audit_logs(event_date, end)
+            response = client.get_audit_logs(start, end)
         except Exception as e:
-            if e.errorCode == "LIMIT_RATE_EXCEEDED":  # rate limit reached
+            if hasattr(e, "res") and e.res == "LIMIT_RATE_EXCEEDED":   # rate limit reached
                 demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit} Audit logs.")
-                new_last_run = {'start_date': event_date}
+                new_last_run = {'start_date': add_millisecond(event_date)}
                 return output, new_last_run
-            if e.error == 'Unauthorized':  # need to regenerate the token
+            if hasattr(e, "message") and 'Unauthorized' in e.message:  # need to regenerate the token
                 client.create_access_token_for_audit()
                 response = client.get_audit_logs(event_date, end)
 
-        events = response.get('context')
+        events = sort_events_by_date(response.get('content'))
         if not events:
             break
-        if check_if_limit_more_than_0_and_wait_this_time:
-            pass
+        # if check_if_limit_more_than_0_and_wait_this_time:
+        #     pass
 
         for event in events:
             event_date = event.get('timestamp')
             event['_TIME'] = event_date
             output.append(event)
 
-            if event_date != current_start_date:
-                current_start_date = event_date
-
             if len(output) >= fetch_limit:
-                new_last_run = {'start_date': event_date}
+                new_last_run = {'start_date': add_millisecond(event_date)}
                 return output, new_last_run
 
-    new_last_run = {'start_date': event_date}
+        start = add_millisecond(event_date)
+
+    new_last_run = {'start_date': add_millisecond(event_date)}
     return output, new_last_run
 
 
