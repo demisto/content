@@ -36,16 +36,20 @@ script:
     - description: The system unique identifier of the device.
       name: device_id
       required: true
-    - description: Maximum number of results to return. If not defined, will return all results.
+    - description: Maximum number of results to return. Default value is 50.
       name: limit
+      defaultValue: '50'
+    - auto: PREDEFINED
+      description: Whether to all results or not.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns a list of custom device fields associated with the given device_id, based on the authorization token.
     name: absolute-custom-device-field-list
     outputs:
     - contextPath: Absolute.CustomDeviceField.DeviceUID
       description: The system-defined unique identifier of the device.
-      type: String
-    - contextPath: Absolute.CustomDeviceField.ESN
-      description: The unique ESN (identifier) assigned to the Absolute agent that is installed on a device.
       type: String
     - contextPath: Absolute.CustomDeviceField.CDFValues.CDFUID
       description: The unique identifier of the custom device field.
@@ -60,7 +64,7 @@ script:
       description: 'The type of custom device field. Possible values are: PREDEFINED, ESNCOLUMN, UDF.'
       type: String
     - contextPath: Absolute.CustomDeviceField.CDFValues.FieldValue
-      description: The current value of the custom device field.
+      description: 'The current value of the custom device field.'
       type: String
     - contextPath: Absolute.CustomDeviceField.CDFValues.Type
       description: 'The data type of the field value. Possible values are: Text, Date, Dropdown.'
@@ -761,7 +765,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/python3:3.12.7.1902134
+  dockerimage: demisto/auth-utils:1.0.0.1968974
 fromversion: 6.0.0
 tests:
 - Absolute_TestPlaybook

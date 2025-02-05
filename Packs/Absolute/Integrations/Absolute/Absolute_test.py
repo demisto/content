@@ -108,7 +108,7 @@ def test_invalid_absolute_api_url(url):
 def mock_http(method: str, url_suffix: str, body: dict = {}):
     if url_suffix == '/v3/actions/requests/unenroll':
         return {'requestUid': 'abdcef'}
-    elif url_suffix == 'v3/actions/requests/unenroll/abdcef':
+    elif url_suffix == '/v3/actions/requests/unenroll/abdcef':
         return {'totalDevices': 'totalDevices',
                 'pending': 'pending',
                 'processing': 'processing',

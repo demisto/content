@@ -9,7 +9,7 @@ import urllib3
 from typing import Any
 import hmac
 
-from authlib.jose import JsonWebSignature
+import jwt
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -37,6 +37,7 @@ STRING_TO_SIGN_SIGNATURE_VERSION = "abs1"
 DATE_FORMAT = '%Y%m%dT%H%M%SZ'
 DATE_FORMAT_CREDENTIAL_SCOPE = '%Y%m%d'
 DEFAULT_API_PAGE_SIZE = 100
+DEFAULT_LIMIT = 50
 
 DEVICE_LIST_RETURN_FIELDS = [
     "deviceUid",
@@ -138,9 +139,8 @@ class ClientV3(BaseClient):
         self._token_id = token_id
         self._headers = headers
         self._secret_key = secret_key
-        self._jws = JsonWebSignature()
 
-    def prepare_request(self, method: str, url_suffix: str, query_string: str, payload: dict = {}) -> bytes:
+    def prepare_request(self, method: str, url_suffix: str, query_string: str, payload: dict = {}) -> str:
         """
         Prepares the signed HTTP request data for making an API call.
         Args:
@@ -165,7 +165,9 @@ class ClientV3(BaseClient):
             "issuedAt": round(time.time() * 1000)
         }
 
-        return self._jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
+        demisto.debug(f'ABS: Making JWS token with headers: {headers}')
+
+        return jwt.encode(request_payload_data, self._secret_key, algorithm='HS256', headers=headers)
 
     def prepare_query_string_for_canonical_request(self, query_string: str) -> str:
         """
@@ -200,9 +202,12 @@ class ClientV3(BaseClient):
         """
         Add pagination query format
         """
+        query = ''
         if next_page:
-            return f"&nextPage={next_page}&pageSize={page_size}"
-        return f"&pageSize={page_size}"
+            query += f"&nextPage={next_page}"
+        if page_size:
+            query += f"&pageSize={page_size}"
+        return query
 
     def get_specific_page_data(self, url_suffix: str, page_to_return: int, page_size: int, query_string: str, ok_codes: tuple):
         """Return a specific page data
@@ -235,7 +240,7 @@ class ClientV3(BaseClient):
         return data
 
     def api_request_absolute(self, method: str, url_suffix: str, body: dict = {}, success_status_code=(),
-                             query_string: str = '', page: int = 0, page_size: int = DEFAULT_API_PAGE_SIZE,
+                             query_string: str = '', page: int = 0, page_size: int = 0,
                              specific_page: bool = False, resp_type: str = "json"):
         """Makes an HTTP request to the Absolute API.
 
@@ -321,7 +326,8 @@ def test_module(client: ClientV3) -> str:
     return message
 
 
-def parse_device_field_list_response(response: dict, device_id: str, limit: Optional[int]) -> dict[str, Any]:
+def parse_device_field_list_response(response: dict, device_id: str, limit: Optional[int],
+                                     all_results: bool) -> dict[str, Any]:
     """Parse the device field list response"""
     parsed_data = {'DeviceUID': device_id, 'CDFValues': []}  # type: ignore
     for cdf_item in response:
@@ -333,8 +339,8 @@ def parse_device_field_list_response(response: dict, device_id: str, limit: Opti
             'FieldValue': cdf_item.get('cdfFieldValue'),
             'Type': cdf_item.get('type'),
         })
-    
-    if limit:
+
+    if not all_results:
         parsed_data['CDFValues'] = parsed_data['CDFValues'][:limit]
     return parsed_data
 
@@ -355,9 +361,10 @@ def get_custom_device_field_list_command(args, client) -> CommandResults:
     """Gets custom device field
     """
     device_id = args.get('device_id')
-    limit = arg_to_number(args.get('limit'))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', False))
     res = client.api_request_absolute('GET', f'/v3/configurations/customfields/devices/{device_id}')
-    outputs = parse_device_field_list_response(res, device_id, limit)
+    outputs = parse_device_field_list_response(res, device_id, limit, all_results)
     human_readable = tableToMarkdown(f'{INTEGRATION} Custom device field list',
                                      parse_device_field_list_response_human_readable(outputs),
                                      removeNull=True)
@@ -603,7 +610,7 @@ def list_device_freeze_message_command(args, client) -> CommandResults:
         res = client.api_request_absolute('GET', f'/v3/actions/freeze/messages/{message_id}')
     else:
         page = arg_to_number(args.get('page', 0))
-        limit = arg_to_number(args.get('limit', 50))
+        limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
 
         res = client.api_request_absolute('GET', '/v3/actions/freeze/messages',
                                           page=page, page_size=limit, specific_page=True, success_status_code=(200, 204))
@@ -929,7 +936,7 @@ def get_device_application_list_command(args, client) -> CommandResults:
     """Lists devices applications
     """
     page = arg_to_number(args.get('page', 0))
-    limit = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
 
     query_string = create_filter_query_from_args(args)
     query_string = parse_return_fields(args.get('return_fields'), query_string)
@@ -954,7 +961,7 @@ def device_list_command(args, client) -> CommandResults:
     """Lists devices
     """
     page = arg_to_number(args.get('page', 0))
-    limit = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
 
     query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
     query_string = parse_return_fields(",".join(DEVICE_LIST_RETURN_FIELDS), query_string)
@@ -963,7 +970,6 @@ def device_list_command(args, client) -> CommandResults:
                                       page=page, page_size=limit, specific_page=True)
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res), keep_os_in_list=False)
-        # outputs = parse_new_values_for_device_list_outputs(outputs, res)
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs,
                                          headers=['Id', 'LastConnectedUtc', 'LocalIp', 'AgentStatus', 'Esn', 'FullSystemName'],
                                          removeNull=True)
