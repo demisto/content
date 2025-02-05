@@ -5,7 +5,6 @@
   "description": "This trigger is responsible for handling the 'Suspicious LDAP search query executed' and 'Possible LDAP enumeration by unsigned process' alerts via the 'Suspicious LDAP search query' playbook",
   "trigger_name": "Suspicious LDAP search query",
   "fromVersion": "8.8.0",
-  "issilent": true,
   "alerts_filter": {
     "filter": {
         "AND": [
