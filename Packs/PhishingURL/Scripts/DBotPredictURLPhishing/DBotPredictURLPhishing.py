@@ -139,7 +139,7 @@ def delete_model():
     demisto.debug(f'Deleted model. server response: {res}')
 
 
-def save_model_data(model_data: ModelData) -> str:
+def save_model_data(model_data: ModelData):
     """
     Load and save model from the model in the docker
     :return: None
@@ -173,11 +173,11 @@ def extract_and_save_old_model_data(model_data: str, minor_version: int) -> Opti
     model = cast(Model, dill.loads(base64.b64decode(model_data.encode('utf-8'))))
     dill._dill._import_module = old_import
 
-    model_data: ModelData = {
+    model_data = cast(ModelData, {
         'top_domains': model.top_domains,
         'logos_dict': model.logos_dict,
         'custom_logo_associated_domain': model.custom_logo_associated_domain,
-    }
+    })
     save_model_data(model_data)
     return model_data
 
@@ -206,7 +206,7 @@ def load_model() -> Model:
     model = load_model_from_docker()
     model_data = get_model_data()
     if model_data:
-        model.update_model(**model_data)
+        model.update_model(**model_data)  # type: ignore[misc]
     return model
 
 
@@ -352,7 +352,7 @@ def return_entry_summary(
     if pred_json:
         image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
         if not image:
-            image = image_from_base64_to_bytes(output_rasterize.get(KEY_IMAGE_RASTERIZE))
+            image = image_from_base64_to_bytes(output_rasterize.get(KEY_IMAGE_RASTERIZE))  # type: ignore[arg-type]
         res = fileResult(filename='Logo detection engine', data=image)
         res['Type'] = entryTypes['image']
         if pred_json[MODEL_KEY_LOGO_FOUND]:
@@ -668,7 +668,6 @@ def get_urls_to_run(
     if mailto_urls:
         return_results(CommandResults(
             readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_urls}'))
-
 
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
