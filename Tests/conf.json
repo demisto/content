@@ -5234,7 +5234,8 @@
         {
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
-            "marketplaces": "xsoar_saas"
+            "marketplaces": "xsoar_saas",
+            "timeout": 170
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -5920,6 +5921,7 @@
         }
     ],
     "skipped_tests": {
+        "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "Okta IAM - Test Playbook": "Credentials issue CRTX-116483",
         "ThreatCrowd - Test": "The pack is deprecated",
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
