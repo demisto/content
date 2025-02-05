@@ -3198,10 +3198,7 @@ def main():  # pragma: no cover
 
     connection_args = get_connection_args(params)
 
-    demisto.debug(f"before update {params['host']=}")
-    host = params['host'].replace('https://', '')[:-1] if params['host'][-1] == '/' else params['host'].replace('https://', '')
-    demisto.debug(f"after update {host=}")
-    base_url = f"https://{host}:{params['port']}/"
+    base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
     auth_token = None
     username = params['authentication']['identifier']
     password = params['authentication']['password']
