@@ -1,6 +1,6 @@
-id: Suspicious LDAP search query Test
+id: silent-Suspicious LDAP search query Test
 version: -1
-name: Suspicious LDAP search query Test
+name: silent-Suspicious LDAP search query Test
 issilent: true
 description: "This playbook is designed to handle the following alerts:  \n- Possible LDAP enumeration by unsigned process.\n- Suspicious LDAP search query executed.\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the Actor Process Command line contains suspicious arguments.\n- Checks for prevalence of the Actor Process Name and Actor Process CMD.\n- Host risk score is \"Medium\" or \"High\".\n- User risk score is \"High\".\n\nRemediation:\n- Handles malicious alerts by terminating the causality process.\n- Handles non-malicious alerts identified during the investigation."
 tags:

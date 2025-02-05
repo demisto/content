@@ -1,6 +1,6 @@
 {
   "trigger_id": "3c039023b3a5216ba6774484bf1859ea",
-  "playbook_id": "silentSSO Brute Force Test",
+  "playbook_id": "silent-SSO Brute Force Test",
   "suggestion_reason": "Recommended for 'SSO Brute Force Threat Detected' and 'SSO Brute Force Activity Observed' alerts",
   "description": "This trigger is responsible for handling the 'SSO Brute Force Threat Detected' and 'SSO Brute Force Activity Observed' alerts",
   "trigger_name": "silent-SSO Brute Force Activity Test",
