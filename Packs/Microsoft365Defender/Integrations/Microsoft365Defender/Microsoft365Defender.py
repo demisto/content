@@ -454,14 +454,14 @@ def get_determination_value(classification: Optional[str], determination: Option
         return None
 
     if not classification or classification not in CLASSIFICATION_DETERMINATION_MAPPING:
-        raise DemistoException("Please provide a valid classification")
+        raise DemistoException("get_determination_value - Please provide a valid classification")
 
     if not determination:
         return 'NotAvailable' if classification == 'Unknown' else 'Other'
 
     if determination not in CLASSIFICATION_DETERMINATION_MAPPING[classification]:
         raise DemistoException(
-            f"Invalid determination. "
+            f"get_determination_value - Invalid determination. "
             f"Please provide one of the following: {CLASSIFICATION_DETERMINATION_MAPPING[classification]}"
         )
 
@@ -574,7 +574,7 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
     if not last_run:  # this is the first run
         first_fetch_date_time = dateparser.parse(first_fetch_time)
         if not first_fetch_date_time:
-            raise DemistoException(f"Could not parse the first_fetch_time: {first_fetch_time}")
+            raise DemistoException(f"Fetch incidents - Could not parse the first_fetch_time: {first_fetch_time=}")
         last_run = first_fetch_date_time.strftime(DATE_FORMAT)
 
     # creates incidents queue
@@ -781,7 +781,9 @@ def get_modified_remote_data_command(client: Client, args: dict) -> GetModifiedR
     remote_args = GetModifiedRemoteDataArgs(args)
     parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
     if not parsed_date:
-        raise DemistoException(f"Could not parse {remote_args.last_update}")
+        demisto.error(f"Microsoft Defender 365 get_modified_remote_data_command - Could not parse {remote_args.last_update=}")
+        return GetModifiedRemoteDataResponse(modified_incident_ids=[])
+
     last_update = parsed_date.strftime(DATE_FORMAT)
     demisto.debug(f"Microsoft Defender 365 - Last update: {last_update}")
     modified_incident_ids = fetch_modified_incident_ids(client, last_update)
@@ -797,13 +799,13 @@ def fetch_modified_incident(client: Client, incident_id: int) -> dict:
     Returns:
         dict: The modified incident.
     """
-    demisto.debug("Microsoft Defender 365 - Starting fetch_modified_incident")
+    demisto.debug(f"Microsoft Defender 365 - Starting fetch_modified_incident {incident_id=}")
     incident = client.get_incident(incident_id=incident_id, timeout=50)
-    demisto.debug(f"Microsoft Defender 365 - Fetched incident {str(incident)}")
+    demisto.debug(f"Microsoft Defender 365 - Fetched incident {incident_id=}")
     if incident.get('@odata.context'):
         del incident['@odata.context']
     incident.update(_get_meta_data_for_incident(incident))
-    demisto.debug(f"Microsoft Defender 365 - Updated incident with metadata {str(incident)}")
+    demisto.debug(f"Microsoft Defender 365 - Updated incident {incident_id=} with metadata")
     return incident
 
 
@@ -824,10 +826,10 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
     for comment in comments:
         # check if the comment is a mirrored out entry to ms fto avoid duplicates
         if MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR not in comment.get('comment', ''):
-            demisto.debug(f"Microsoft Defender 365 - comment {str(comment)}")
             comment_time = dateparser.parse(comment.get('createdTime', ''))
             if not comment_time:
-                raise DemistoException(f"Could not parse {comment.get('createdTime')}")
+                demisto.error(f"Could not parse {comment.get('createdTime')} for {comment=}")
+                continue
             if comment_time > last_update:
                 entries.append(entry := {
                     'Type': EntryType.NOTE,
@@ -841,7 +843,6 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
                         'comments': comment
                     },
                 })
-                demisto.debug(f"Microsoft Defender 365 - Added comment entry {str(entry)}")
     return entries
 
 
@@ -876,23 +877,23 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
 
     """
     remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = arg_to_number(remote_args.remote_incident_id)
+    if remote_incident_id is None:
+        raise DemistoException("get_remote_data_command - remote_incident_id is None")
     comment_tag = demisto.params().get('comment_tag_from_microsoft365defender', 'CommentFromMicrosoft365Defender')
     last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
     if not last_update:
-        raise DemistoException(f"Could not parse {remote_args.last_update}")
+        demisto.error(f"get_remote_data_command - Could not parse {remote_args.last_update=}")
+        return GetRemoteDataResponse({MICROSOFT_INCIDENT_ID_KEY: remote_incident_id}, entries=[])
     close_incident = argToBoolean(demisto.params().get('close_incident', False))
-    remote_incident_id = arg_to_number(remote_args.remote_incident_id)
-    if remote_incident_id is None:
-        raise DemistoException("remote_incident_id is None")
+
     mirrored_object: Dict = {}
     demisto.debug(
         f'Microsoft Defender 365 - Performing get-remote-data command with incident id: {remote_incident_id} and '
         f'last_update: {remote_args.last_update}')
     try:
         mirrored_object = fetch_modified_incident(client, remote_incident_id)
-        demisto.debug(f"Microsoft Defender 365 - mirrored in object {mirrored_object}")
         entries = get_incident_entries(mirrored_object, last_update, comment_tag, close_incident=close_incident)
-        demisto.debug(f"Microsoft Defender 365 - mirrored in entries {str(entries)}")
         return GetRemoteDataResponse(mirrored_object, entries)
     except Exception as e:
         demisto.debug(f"Error in Microsoft incoming mirror for incident: {remote_incident_id}\n"
@@ -981,7 +982,7 @@ def mirror_out_entries(client: Client, entries: list[Dict], comment_tag: str, re
             updated_incident = client.update_incident(incident_id=remote_incident_id,
                                                       timeout=50,
                                                       comment=text)
-            demisto.debug(f"Microsoft Defender 365 - mirror out entries updated incident {str(updated_incident)}")
+            demisto.debug(f"Microsoft Defender 365 - mirror out entries updated incident {remote_incident_id=}")
 
         else:
             demisto.debug(f"Microsoft Defender 365 - Skipping entry {entry.get('id')} as it does not contain the comment tag")
@@ -1019,7 +1020,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                                                       timeout=50,
                                                       comment=delta.get('comment'))
 
-            demisto.debug(f"Microsoft Defender 365 - Updated incident {str(updated_incident)}")
+            demisto.debug(f"Microsoft Defender 365 - Updated incident {remote_incident_id=}")
         else:
             demisto.debug(
                 f'Microsoft Defender 365 -  Skipping updating remote incident fields [{remote_incident_id}] as it is not new '
@@ -1028,8 +1029,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         if update_remote_system_args.entries:
             comment_tag = demisto.params().get('comment_tag', COMMENT_TO_MICROSOFT_DEFAULT_TAG)
             demisto.debug(
-                f"Microsoft Defender 365 - new entries were found in the xsoar incident: "
-                f"{str(update_remote_system_args.entries)}")
+                f"Microsoft Defender 365 - new entries were found in the xsoar incident.")
             mirror_out_entries(client, update_remote_system_args.entries, comment_tag, remote_incident_id)
 
         return remote_incident_id
