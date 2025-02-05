@@ -203,9 +203,9 @@ tasks:
       - "6"
     scriptarguments:
       closeNotes:
-        simple: Malicious activity detected - Alert was remidated
+        simple: Malicious activity detected - Alert was remediated
       closeReason:
-        simple: Resolved - Handled by the playbook "Suspicious execution of ODBCConf"
+        simple: Resolved - True Positive
       id:
         complex:
           root: alert
@@ -310,7 +310,7 @@ tasks:
       closeNotes:
         simple: No indication of malicious activity was found. Closed automatically without any further action.
       closeReason:
-        simple: Resolved - Handled by the playbook "Suspicious execution of ODBCConf"
+        simple: Resolved - False Positive
       id:
         simple: ${alert.id}
     separatecontext: false
