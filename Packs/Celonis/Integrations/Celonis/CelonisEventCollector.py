@@ -40,9 +40,11 @@ class Client(BaseClient):
         self.client_secret = client_secret
         super().__init__(base_url=base_url, verify=verify)
         self.token = None
-        # self.create_access_token_for_audit()
 
-    def create_access_token_for_audit(self):
+    def create_access_token_for_audit(self) -> None:
+        """
+        Creates an access token for audit log access using a specific scope and client credentials.
+        """
         data = {
             "grant_type": "client_credentials",
             "scope": "audit.log:read"
@@ -53,9 +55,17 @@ class Client(BaseClient):
             data=data,
             auth=(self.client_id, self.client_secret)
         )
-        self.token = results['access_token']
+        self.token = results.get('access_token', '')
 
     def get_audit_logs(self, start_date: str, end_date: str) -> dict:
+        """
+        Retrieves audit logs for the given date range using the access token.
+        Args:
+            start_date (str): The start date of the logs in ISO 8601 format (e.g., "2025-02-05T14:30:00Z").
+            end_date (str): The end date of the logs in ISO 8601 format (e.g., "2025-02-05T15:00:00Z").
+        Returns:
+            dict: The audit logs in JSON format.
+        """
         headers = {
             'Authorization': f'{BEARER_PREFIX}{self.token}',
         }
@@ -82,6 +92,14 @@ def sort_events_by_timestamp(events: list) -> list:
 
 
 def add_millisecond(timestamp: str) -> str:
+    """
+    Adds one millisecond to a given timestamp.
+    Args:
+        timestamp (str): The timestamp in ISO 8601 format (e.g., "2025-02-05T14:30:00.123Z").
+    Returns:
+        str: The new timestamp with one millisecond added, formatted in ISO 8601.
+    """
+
     dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
     dt += timedelta(milliseconds=1)
     return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
@@ -110,7 +128,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         last_run = demisto.getLastRun() or {}
         start = last_run.get('start_date', '')
         if not start:
-            start = "2025-02-02T09:00:00"
+            start = "2025-02-02T09:00:00"  # TODO
             # event_date = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
 

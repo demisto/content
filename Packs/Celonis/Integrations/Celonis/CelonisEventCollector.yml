@@ -4,6 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://<teamname>.<realm>.celonis.cloud
+  additionalinfo: "The endpoint URL is constructed using the team name and realm in the format: https://<teamname>.<realm>.celonis.cloud."
   display: Server URL
   name: url
   required: true
@@ -34,21 +35,30 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-description: ''
+description: 'Celonis Event Collector is an integration that supports fetching audit log events.'
 display: Celonis
 name: Celonis
 script:
   commands:
   - name: celonis-get-events
-    description: Retrieves a list of events from the Celonis instance.
+    description: Retrieves a list of audit logs events from the Celonis instance.
     arguments:
       - auto: PREDEFINED
         defaultValue: 'false'
-        description: Set this argument to True in order to create events, otherwise it will only display them.
+        description: Set this argument to true in order to create events, otherwise it will only display them.
         name: should_push_events
         predefined:
           - 'true'
           - 'false'
+        required: true
+      - description: 'Maximum number of events to return.'
+        name: limit
+        required: true
+      - description: 'The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS" or "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
+        name: start_date
+        required: true
+      - description: 'The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS" or "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
+        name: end_date
         required: true
   isfetch: false
   runonce: false
