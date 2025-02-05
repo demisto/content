@@ -124,11 +124,11 @@ class GwRequests:
         """
         kwargs = self._gen_request_kwargs(
             endpoint=endpoint,
-            data=data,  # type: ignore[arg-type]
-            json_data=json_data,  # type: ignore[arg-type]
-            params=params,  # type: ignore[arg-type]
-            headers=headers,  # type: ignore[arg-type]
-            cookies=cookies,  # type: ignore[arg-type]
+            data=data,
+            json_data=json_data,
+            params=params,
+            headers=headers,
+            cookies=cookies,
             redirects=redirects
         )
         return requests.get(**kwargs)
@@ -155,11 +155,11 @@ class GwRequests:
         """
         kwargs = self._gen_request_kwargs(
             endpoint=endpoint,
-            data=data,  # type: ignore[arg-type]
-            json_data=json_data,  # type: ignore[arg-type]
-            params=params,  # type: ignore[arg-type]
-            headers=headers,  # type: ignore[arg-type]
-            cookies=cookies,  # type: ignore[arg-type]
+            data=data,
+            json_data=json_data,
+            params=params,
+            headers=headers,
+            cookies=cookies,
             redirects=redirects,
             files=files
         )
@@ -187,11 +187,11 @@ class GwRequests:
         """
         kwargs = self._gen_request_kwargs(
             endpoint=endpoint,
-            data=data,  # type: ignore[arg-type]
-            json_data=json_data,  # type: ignore[arg-type]
-            params=params,  # type: ignore[arg-type]
-            headers=headers,  # type: ignore[arg-type]
-            cookies=cookies,  # type: ignore[arg-type]
+            data=data,
+            json_data=json_data,
+            params=params,
+            headers=headers,
+            cookies=cookies,
             redirects=redirects,
             files=files
         )
@@ -218,11 +218,11 @@ class GwRequests:
         """
         kwargs = self._gen_request_kwargs(
             endpoint=endpoint,
-            data=data,  # type: ignore[arg-type]
-            json_data=json_data,  # type: ignore[arg-type]
-            params=params,  # type: ignore[arg-type]
-            headers=headers,  # type: ignore[arg-type]
-            cookies=cookies,  # type: ignore[arg-type]
+            data=data,
+            json_data=json_data,
+            params=params,
+            headers=headers,
+            cookies=cookies,
             redirects=redirects
         )
         return requests.delete(**kwargs)
@@ -1597,7 +1597,7 @@ def gw_client_auth(params: dict) -> GwClient:
     password = params.get('userpass', {}).get('password')
     check_cert = params.get("check_cert", False)
 
-    client = GwClient(ip=ip, check_cert=check_cert)  # type: ignore[arg-type]
+    client = GwClient(ip=ip, check_cert=check_cert)
     client.auth(
         user=user if user != "" else None,
         password=password if password != "" else None,
@@ -1619,7 +1619,7 @@ def last_run_range(params: dict[str, Any]) -> list[str]:
 
     if last_run == {}:
 
-        first_fetch_dt_str = first_fetch_dt.isoformat(sep='T', timespec='milliseconds') + "Z"  # type: ignore[union-attr]
+        first_fetch_dt_str = first_fetch_dt.isoformat(sep='T', timespec='milliseconds') + "Z"
 
         from_to[0] = str(first_fetch_dt_str)
         from_to[1] = str(now_str)
@@ -1666,7 +1666,7 @@ def handle_big_fetch_selected_engines(client: GwClient,
                                       max_fetch: int,
                                       fetch_type: str):
 
-    gw_alerts = []  # type: ignore[var-annotated]
+    gw_alerts = []
     search_after_id_a: int = -1
 
     if fetch_type in ("Alerts", "Both"):
@@ -1675,7 +1675,7 @@ def handle_big_fetch_selected_engines(client: GwClient,
         query['query']['bool']['must'][0]['match']['event.module'] = str(engine_selection[0])
 
         res_a = query_es_alerts(client=client, query=query)
-        gw_alerts = res_a  # type: ignore[assignment]
+        gw_alerts = res_a
         search_after_id_a = gw_alerts[-1]['sort'][0]
 
         nb_req: int = max_fetch // 10000
@@ -1721,12 +1721,12 @@ def handle_big_fetch_empty_selected_engines(client: GwClient,
 
     query['size'] = 10000
     search_after_id_a: int = -1
-    gw_alerts = []  # type: ignore[var-annotated]
+    gw_alerts = []
 
     if fetch_type in ("Alerts", "Both"):
 
         res_a = query_es_alerts(client=client, query=query)
-        gw_alerts = res_a  # type: ignore[assignment]
+        gw_alerts = res_a
         search_after_id_a = gw_alerts[-1]['sort'][0]
 
     nb_req: int = max_fetch // 10000
@@ -1754,12 +1754,12 @@ def handle_big_fetch_metadata(client: GwClient,
     query['size'] = 10000
 
     search_after_id_m: int = -1
-    gw_metadata = []  # type: ignore[var-annotated]
+    gw_metadata = []
 
     if fetch_type in ("Metadata", "Both"):
 
         res_m = query_es_metadata(client=client, query=query)
-        gw_metadata = res_m  # type: ignore[assignment]
+        gw_metadata = res_m
         search_after_id_m = gw_metadata[-1]['sort'][0]
 
     nb_req: int = max_fetch // 10000
@@ -1782,7 +1782,7 @@ def handle_little_fetch_alerts(client: GwClient,
                                engine_selection: list[str],
                                query: dict[str, Any]):
 
-    gw_alerts = []  # type: ignore[var-annotated]
+    gw_alerts = []
 
     for i in range(0, len(engine_selection)):
 
@@ -1811,12 +1811,12 @@ def handle_little_fetch_metadata(client: GwClient,
                                  fetch_type: str,
                                  query: dict[str, Any]):
 
-    gw_metadata = []  # type: ignore[var-annotated]
+    gw_metadata = []
 
     if fetch_type in ("Metadata", "Both"):
 
         res_m = query_es_metadata(client=client, query=query)
-        gw_metadata = res_m  # type: ignore[assignment]
+        gw_metadata = res_m
 
     return gw_metadata
 
