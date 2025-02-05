@@ -95,21 +95,6 @@ class OktaASAClient(BaseClient):
                 raise e
         return events_response
 
-    def is_token_expired(self, expires_date: str) -> bool:
-        """Checks if token is expired.
-
-            Args:
-                self (OktaASAClient): Okta ASA Client.
-                expires_date (str): The expiration date.
-            Returns:
-                bool: is the token expired.
-        """
-        current_utc_time = datetime.now(pytz.utc)
-        expires_datetime_date = dateparser.parse(expires_date, settings={'TIMEZONE': 'UTC'}) or current_utc_time
-        expires_datetime_date = expires_datetime_date - timedelta(hours=0, minutes=3)
-        expires_datetime: datetime = arg_to_datetime(expires_date) or current_utc_time
-        return current_utc_time > expires_datetime
-
     def is_token_refresh_required(self, hard=False) -> None:
         """Checks if token refresh required and return the token.
 
@@ -125,12 +110,12 @@ class OktaASAClient(BaseClient):
         if integration_context:
             current_time = datetime.now(pytz.utc)
             expires_at_token = integration_context.get("expires_at", str(get_current_time()))
-            is_token_expired = self.is_token_expired(expires_at_token) or hard
+            is_token_expired_bool = is_token_expired(expires_at_token) or hard
             demisto.debug(
-                f"{INTEGRATION_NAME}: is_token_expired {is_token_expired=},"
+                f"{INTEGRATION_NAME}: is_token_expired {is_token_expired_bool=},"
                 f"{current_time.strftime(DATE_FORMAT)=}, {expires_at_token=}")
             token_response = (self.get_token_request()
-                              if is_token_expired
+                              if is_token_expired_bool
                               else integration_context)
         else:
             token_response = self.get_token_request()
@@ -168,6 +153,42 @@ class OktaASAClient(BaseClient):
         results = results[0:number_of_requested_events + 1]
 
         return results, results[number_of_requested_events].get('id')
+
+
+'''HELPER FUNCTIONS'''
+
+
+def is_token_expired(expires_date: str) -> bool:
+    """Checks if token is expired.
+
+        Args:
+            self (OktaASAClient): Okta ASA Client.
+            expires_date (str): The expiration date.
+        Returns:
+            bool: is the token expired.
+    """
+    current_utc_time = datetime.now(pytz.utc)
+    expires_datetime_date = dateparser.parse(expires_date, settings={'TIMEZONE': 'UTC'}) or current_utc_time
+    expires_datetime_date = expires_datetime_date - timedelta(hours=0, minutes=3)
+    expires_datetime: datetime = arg_to_datetime(expires_date) or current_utc_time
+    return current_utc_time > expires_datetime
+
+
+def add_time_to_events(events: List[Dict] | None):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: List[Dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    if events:
+        for event in events:
+            create_time = arg_to_datetime(arg=event.get('timestamp'))
+            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+
+
+'''COMMAND FUNCTIONS'''
 
 
 def test_module(client: OktaASAClient) -> str:
@@ -249,20 +270,6 @@ def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
 
 
 ''' MAIN FUNCTION '''
-
-
-def add_time_to_events(events: List[Dict] | None):
-    """
-    Adds the _time key to the events.
-    Args:
-        events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
-    """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get('timestamp'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 def main() -> None:  # pragma: no cover
