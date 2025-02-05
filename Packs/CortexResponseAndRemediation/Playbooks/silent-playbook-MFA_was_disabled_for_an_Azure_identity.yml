@@ -1982,3 +1982,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
+marketplaces:
+- marketplacev2
