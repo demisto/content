@@ -501,6 +501,91 @@ def test_produce_error_message(mocker):
 
 
 @pytest.mark.parametrize(
+    "value_schema_str, value_schema_subject_name, exception_message",
+    [
+        (None, None, "Schema is not provided. Please provide one."),
+        ("schema_str", "subject_name",
+         "Both value_schema_str and value_schema_subject_name are provided. Please provide only one."),
+    ]
+)
+def test_produce_schema_error(
+    mocker,
+    value_schema_str,
+    value_schema_subject_name,
+    exception_message
+):
+    """
+    Given:
+        - initialized KafkaCommunicator
+    When:
+        - running kafka-produce-msg command with bad schemas parametrization.
+    Then:
+        - Assert the relevant exception is raised.
+    """
+    mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
+
+    demisto_args = {
+        'topic': 'some-topic',
+        'value': 'some-value',
+        'value_schema_type': 'AVRO',
+        'value_schema_str': value_schema_str,
+        'value_schema_subject_name': value_schema_subject_name
+    }
+    produce_mock = mocker.patch.object(KProducer, 'produce')
+    get_kafka_schema_registry_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_schema_registry')
+    get_latest_version_mock = mocker.patch.object(KSchemaRegistryClient, 'get_latest_version')
+    flush_mock = mocker.patch.object(KProducer, 'flush', side_effect=None)
+
+    with pytest.raises(DemistoException) as exception_info:
+        produce_message(KAFKA, demisto_args)
+
+    assert str(exception_message) in str(exception_info.value)
+
+    produce_mock.assert_not_called()
+    get_kafka_schema_registry_mock.assert_called_once()
+    get_latest_version_mock.assert_not_called()
+    flush_mock.assert_not_called()
+
+
+def test_produce_schema_registry_none_error(
+    mocker
+):
+    """
+    Given:
+        - initialized KafkaCommunicator
+    When:
+        - running kafka-produce-msg command with schema parametrization without schema registry.
+    Then:
+        - Assert the relevant exception is raised.
+    """
+    mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
+
+    demisto_args = {
+        'topic': 'some-topic',
+        'value': 'some-value',
+        'value_schema_type': 'AVRO',
+        'value_schema_str': 'Test'
+    }
+    produce_mock = mocker.patch.object(KProducer, 'produce')
+    get_kafka_schema_registry_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_schema_registry', return_value=None)
+    get_latest_version_mock = mocker.patch.object(KSchemaRegistryClient, 'get_latest_version')
+    flush_mock = mocker.patch.object(KProducer, 'flush', side_effect=None)
+
+    with pytest.raises(DemistoException) as exception_info:
+        produce_message(KAFKA, demisto_args)
+
+    assert "Kafka Schema Registry client is not configured. Please configure one to use schema validation." in str(
+        exception_info.value)
+
+    produce_mock.assert_not_called()
+    get_kafka_schema_registry_mock.assert_called_once()
+    get_latest_version_mock.assert_not_called()
+    flush_mock.assert_not_called()
+
+
+@pytest.mark.parametrize(
     'demisto_params, last_run, cluster_tree, topic_partitions, incidents, next_run, polled_msgs, offsets',
     [pytest.param(
         {'topic': 'some-topic',
@@ -815,6 +900,8 @@ def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_p
             id="first run, offset is 0,stop_consuming_upon_timeout is true",
         )
     ],
+
+
 )
 def test_fetch_incidents_stop_consuming_upon_timeout_is_true(
     mocker,

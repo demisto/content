@@ -318,10 +318,10 @@ class KafkaCommunicator:
         The delivery_report is called after production.
         """
         kafka_producer = self.get_kafka_producer()
-        kafka_schema_registry_client = self.get_kafka_schema_registry()
         serialized_value = value
 
         if value_schema_type:
+            kafka_schema_registry_client = self.get_kafka_schema_registry()
             if not kafka_schema_registry_client:
                 raise DemistoException(
                     "Kafka Schema Registry client is not configured. Please configure one to use schema validation.")
