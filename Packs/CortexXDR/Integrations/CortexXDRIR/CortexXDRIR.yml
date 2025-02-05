@@ -204,6 +204,9 @@ display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
 script:
   commands:
+  - arguments: []
+    name: fetch-incidents
+    outputs: []
   - arguments:
     - description: A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time

@@ -5,7 +5,8 @@ import dill
 from PIL import Image
 import io
 import traceback
-from typing import Literal, Iterable
+from typing import Literal
+from collections.abc import Iterable
 import numpy as np
 import cv2 as cv
 
@@ -80,11 +81,11 @@ def save_model_data(model_data: ModelData):
 
 
 def model_to_data(model: Model) -> ModelData:
-    return {
+    return cast(ModelData, {
         'top_domains': model.top_domains,
         'logos_dict': model.logos_dict,
         'custom_logo_associated_domain': model.custom_logo_associated_domain
-    }
+    })
 
 
 def load_data_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH) -> ModelData:
@@ -102,7 +103,6 @@ def load_data_from_xsoar() -> Optional[ModelData]:
     if is_error(res):
         demisto.debug(f'Model not found: {get_error(res)}')
         return None
-
     extra_data = dict_safe_get(res, ('Contents', 'model', 'extra'))
     model_data = dict_safe_get(res, ('Contents', 'modelData'))
 
@@ -156,12 +156,12 @@ def decode_image(base64_message: str) -> np.ndarray:
     """
     base64_message = base64.decodebytes(base64_message.encode('utf-8'))
     nparr = np.frombuffer(base64_message, np.uint8)
-    return cv.imdecode(nparr, cv.IMREAD_GRAYSCALE)
+    return cv.imdecode(nparr, cv.IMREAD_GRAYSCALE)  # pylint: disable=E1101
 
 
 def update_top_domain(top_domains: dict, remove_list, add_list):
     for item_to_remove in remove_list:
-        if top_domains.get(item_to_remove, -1)  == 0:
+        if top_domains.get(item_to_remove, -1) == 0:
             top_domains.pop(item_to_remove, None)
     for item_to_add in add_list:
         top_domains.setdefault(item_to_add, 0)
@@ -191,7 +191,7 @@ def add_new_logo(model_data: ModelData, logo_name, logo_image_id, associated_dom
 def remove_logo(model_data: ModelData, logo_name):
     if logo_name not in model_data['logos_dict'] or logo_name not in model_data['custom_logo_associated_domain']:
         return_error(f"Logo name {logo_name!r} not found.")
-    update_top_domain(model_data['custom_logo_associated_domain'][logo_name], [])
+    update_top_domain(model_data['top_domains'], model_data['custom_logo_associated_domain'][logo_name], [])
     model_data['logos_dict'].pop(logo_name)
     model_data['custom_logo_associated_domain'].pop(logo_name)
     return f"Logo {logo_name!r} successfully removed."

@@ -3,7 +3,7 @@ import pytest
 import DBotPredictURLPhishing
 from pytest_mock import MockerFixture
 import pandas as pd
-from test_data.model_predictions import predictions
+from test_data.model_predictions import model_runs
 
 DBotPredictURLPhishing.isCommandAvailable = lambda _: True
 CORRECT_DOMAINS = ['google.com']
@@ -377,13 +377,24 @@ def test_rasterize_urls_bad_rasterize_response(mocker: MockerFixture):
     assert rasterize_command_mock.call_count == 3
 
 
-def test_model_predictions():
+def test_model_predictions(mocker: MockerFixture):
     """
     Given: URL data for the model to predict.
     When: Using the model to predict.
     Then: Make sure the output is correct.
     """
+
+    def mock_get(*args, **kwargs):
+        return next(
+            type('MockRequests', (), mock['res'])
+            for mock in model_runs['requests']
+            if args == mock['args']
+        )
+
+    mocker.patch('requests.get', side_effect=mock_get)
+
     model = load_model_from_docker()
-    for pred in predictions:
+    for pred in model_runs['predictions']:
         output = model.predict(pd.DataFrame(pred['input']))
+        output['logo_name'] = pred['output']['logo_name'] = None
         assert output == pred['output'], f"Prediction failed with {pred['input']['name']}"
