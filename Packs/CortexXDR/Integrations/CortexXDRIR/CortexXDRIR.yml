@@ -192,6 +192,14 @@ configuration:
   section: Collect
   defaultvalue: 'true'
   advanced: true
+- additionalinfo: "Whether to fetch only the essential alert fields in order to minimize the incident's information. Possible values: null_values to remove all null values from alerts data, or any other field of an alert."
+  display: Minimize Alert Information
+  name: excluded_alert_fields
+  required: false
+  type: 16
+  section: Collect
+  advanced: true
+  defaultvalue: 'null_values'
 - display: Close all related alerts in XDR
   name: close_alerts_in_xdr
   required: false
@@ -204,9 +212,6 @@ display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
 script:
   commands:
-  - arguments: []
-    name: fetch-incidents
-    outputs: []
   - arguments:
     - description: A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time
