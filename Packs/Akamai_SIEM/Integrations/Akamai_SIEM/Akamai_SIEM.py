@@ -610,19 +610,19 @@ async def get_events_with_offset_aiohttp(
 
     url = f"{client._base_url}/"
     demisto.info(f"Running in interval = {counter}. Init session and sending request.")
-    
+
     def get_signed_headers(url, method="GET"):  # pragma: no cover
         auth = client._auth
-        
+
         # Create a dummy request to generate headers
         req = Request(method, url)
         prepared_req = req.prepare()
-        
+
         # Sign the request using EdgeGridAuth
         auth(prepared_req)
-        
+
         return dict(prepared_req.headers)
-    
+
     headers = get_signed_headers(url)
 
     async with aiohttp.ClientSession(base_url=url,
