@@ -1474,9 +1474,9 @@ When sending the email to an Outlook account, Outlook UI fails to display custom
 | to | Email addresses for the 'To' field. Supports comma-separated values. | Optional |
 | cc | Email addresses for the 'Cc' field. Supports comma-separated values. | Optional |
 | bcc | Email addresses for the 'Bcc' field. Supports comma-separated values. | Optional |
-| subject | The email subject. | Optional |
-| body | The content (body) of the email (in plain text). | Optional |
-| htmlBody | The content (body) of the email (in HTML format). | Optional |
+| subject | Subject for the email to be sent. | Optional | 
+| body | The contents (body) of the email to be sent in plain text. | Optional | 
+| htmlBody | The contents (body) of the email to be sent in HTML format. | Optional |
 | attachIDs | A comma-separated list of War Room entry IDs that contain the files to attach to the email. | Optional |
 | attachNames | A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3. | Optional |
 | attachCIDs | A comma-separated list of CIDs to embed attachments inside the email itself. | Optional |

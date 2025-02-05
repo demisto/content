@@ -1622,7 +1622,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
 
 
 def create_message(
-    to, handle_inline_image: bool, subject='', body='', bcc=None, cc=None, html_body=None,
+    to, handle_inline_image: bool = True, subject='', body='', bcc=None, cc=None, html_body=None,
     attachments=[], additional_headers=None, from_address=None, reply_to=None, importance=None,
 ):  # pragma: no cover
     """Creates the Message object that will be sent.
@@ -1711,7 +1711,7 @@ def send_email(client: EWSClient, to=None, subject='', body="", bcc=None, cc=Non
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
                additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None,
-               renderBody=False, handle_inline_image=False):  # pragma: no cover
+               renderBody=False, handle_inline_image=True):  # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)

@@ -561,7 +561,7 @@ class MarkAsJunk(EWSAccountService):
 
 def send_email_to_mailbox(  # pragma: no cover
     account, to, subject, body, body_type,
-    bcc, cc, reply_to, handle_inline_image: bool,
+    bcc, cc, reply_to, handle_inline_image: bool = True,
     html_body=None, attachments=None,
     raw_message=None, from_address=None
 ):

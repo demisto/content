@@ -914,14 +914,13 @@ class TestEmailModule(unittest.TestCase):
         subject = "Test Subject"
         html_body = "<p>Test HTML Body</p>"
         attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
-        handle_inline_image = True
         mock_message.return_value = MagicMock()
         mock_html_body.return_value = MagicMock()
         mock_file_attachment.return_value = MagicMock(spec=FileAttachment)
 
         # Call the function
         result = create_message(
-            to, handle_inline_image, subject, html_body=html_body, attachments=attachments
+            to, subject, html_body=html_body, attachments=attachments
         )
 
         # Assertions
