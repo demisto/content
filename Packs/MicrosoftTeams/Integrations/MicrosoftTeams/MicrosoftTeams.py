@@ -3046,7 +3046,7 @@ def main():   # pragma: no cover
         'microsoft-teams-generate-login-url': generate_login_url_command,
         'microsoft-teams-auth-reset': reset_graph_auth_command,
         'microsoft-teams-token-permissions-list': token_permissions_list_command,
-        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command,
+        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command
     }
 
     commands_auth_code: dict = {
