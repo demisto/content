@@ -40,7 +40,7 @@ class Client(BaseClient):
         self.client_secret = client_secret
         super().__init__(base_url=base_url, verify=verify)
         self.token = None
-        self.create_access_token_for_audit()
+        # self.create_access_token_for_audit()
 
     def create_access_token_for_audit(self):
         data = {
@@ -70,7 +70,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def sort_events_by_date(events: list) -> list:
+def sort_events_by_timestamp(events: list) -> list:
     """
     Sorts a list of events by their date in ascending order.
     Args:
@@ -78,8 +78,6 @@ def sort_events_by_date(events: list) -> list:
     Returns:
         list: The sorted list of events based on the 'timestamp' field.
     """
-    # if not events:
-    #     return events
     return sorted(events, key=lambda x: datetime.strptime(x['timestamp'], '%Y-%m-%dT%H:%M:%S.%f%z'))
 
 
@@ -93,6 +91,13 @@ def add_millisecond(timestamp: str) -> str:
 
 
 def test_module(client: Client) -> str:
+    """
+    Tests the connection to the service by creating an access token.
+    Args:
+        client (Client): The client object used to interact with the service.
+    Returns:
+        str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
+    """
     client.create_access_token_for_audit()
     return "ok"
 
@@ -120,11 +125,12 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
                 return output, new_last_run
             if hasattr(e, "message") and 'Unauthorized' in e.message:  # need to regenerate the token
                 client.create_access_token_for_audit()
-                response = client.get_audit_logs(event_date, end)
+                response = client.get_audit_logs(start, end)
 
-        events = sort_events_by_date(response.get('content'))
+        events = response.get('content')
         if not events:
             break
+        events = sort_events_by_timestamp(events)
         # if check_if_limit_more_than_0_and_wait_this_time:
         #     pass
 
@@ -134,12 +140,13 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             output.append(event)
 
             if len(output) >= fetch_limit:
-                new_last_run = {'start_date': add_millisecond(event_date)}
+                start = add_millisecond(event_date)
+                new_last_run = {'start_date': start}
                 return output, new_last_run
 
         start = add_millisecond(event_date)
 
-    new_last_run = {'start_date': add_millisecond(event_date)}
+    new_last_run = {'start_date': start}
     return output, new_last_run
 
 
