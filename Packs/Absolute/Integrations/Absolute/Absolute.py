@@ -183,7 +183,7 @@ class ClientV3(BaseClient):
         return urllib.parse.quote(query_string, safe='=&')
 
     def send_request_to_api(self, method: str, url_suffix: str, query_string: str, ok_codes: tuple, payload: dict = {},
-                            resp_type: str = "json"):
+                            resp_type: str = "json"):  # pragma: no cover
         """Sends the request to Absolute
 
         Args:
@@ -209,7 +209,8 @@ class ClientV3(BaseClient):
             query += f"&pageSize={page_size}"
         return query
 
-    def get_specific_page_data(self, url_suffix: str, page_to_return: int, page_size: int, query_string: str, ok_codes: tuple):
+    def get_specific_page_data(self, url_suffix: str, page_to_return: int, page_size: int,
+                               query_string: str, ok_codes: tuple) -> dict:
         """Return a specific page data
 
         Args:
@@ -312,7 +313,7 @@ def validate_absolute_api_url(base_url: str) -> str:
     return ABSOLUTE_URL_TO_API_URL[base_url]
 
 
-def test_module(client: ClientV3) -> str:
+def test_module(client: ClientV3) -> str:  # pragma: no cover
     """Tests API connectivity to Absolute """
     try:
         client.api_request_absolute('GET', '/v3/reporting/devices', query_string='',

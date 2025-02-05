@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The integration now supports API V3. For more information, refer to the integration documentation."
+}

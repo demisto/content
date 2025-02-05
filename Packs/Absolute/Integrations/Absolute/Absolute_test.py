@@ -6,6 +6,7 @@ import pytest
 from CommonServerPython import DemistoException
 from Absolute import INTEGRATION, ClientV3
 
+
 EXPECTED_CANONICAL_GET_REQ_NO_PAYLOAD_NO_QUERY = """GET
 /v2/reporting/devices
 
@@ -131,6 +132,28 @@ def mock_http(method: str, url_suffix: str, body: dict = {}):
                  'esn': 'esn',
                  'createdDateTimeUtc': 'createdDateTimeUtc',
                  'updatedDateTimeUtc': 'updatedDateTimeUtc'}]
+
+
+def test_prepare_request(mocker, absolute_client_v3):
+    """
+    Given:
+        - All relevant arguments for preparing the prepare_request method
+
+    When:
+        - prepare_request is executed
+
+    Then:
+        - Validate the jwt.encode function gets called with the correct arguments
+    """
+    import jwt
+
+    jwt_encode = mocker.patch.object(jwt, 'encode', return_value='')
+    absolute_client_v3.prepare_request('method', 'url_suffix', 'query_string', {})
+
+    assert jwt_encode.call_args.args == ({}, 'secret')
+    absolute_client_v3.prepare_request('method', 'url_suffix', 'query_string', {"test": "test"})
+
+    assert jwt_encode.call_args.args == ({"data": {"test": "test"}}, 'secret')
 
 
 def test_get_custom_device_field_list_command(mocker, absolute_client_v3):

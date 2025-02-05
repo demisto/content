@@ -1,14 +1,14 @@
-!absolute-custom-device-field-list device_id=e93f2464-2766-4a6b-8f00-66c8fb13e23a
-!absolute-custom-device-field-update device_id=e93f2464-2766-4a6b-8f00-66c8fb13e23a cdf_uid=4m9fUCZqTYec1bJgDSNg value="test2"
-!absolute-device-freeze-request device_ids=c62aaac3-e698-4c0e-9ce7-31ab3fa09fea device_freeze_type=Scheduled html_message="test" message_name="new name" request_name="name1" scheduled_freeze_date=2022-04-03T13:30:00.000Z passcode_type=RandomForEach passcode_length=5
-!absolute-device-remove-freeze-request device_ids=c62aaac3-e698-4c0e-9ce7-31ab3fa09fea remove_scheduled=true
-!absolute-device-freeze-request-get request_uid=c638c2dc-1dd1-4cfa-8708-46f368012398
-!absolute-device-freeze-message-list
+!absolute-custom-device-field-list device_id=71b61e4c-fbb1-43fb-9d2d-7a9d5b9ad873
+!absolute-custom-device-field-update device_id=71b61e4c-fbb1-43fb-9d2d-7a9d5b9ad873a cdf_uid=4m9fUCZqTYec1bJgDSNg value="test2"
+!absolute-device-freeze-request device_ids=71b61e4c-fbb1-43fb-9d2d-7a9d5b9ad873 device_freeze_type=Scheduled html_message="test" message_name="new name" request_name="name1" scheduled_freeze_date=2022-04-03T13:30:00.000Z passcode_type=RandomForEach passcode_length=5
+!absolute-device-remove-freeze-request device_ids=71b61e4c-fbb1-43fb-9d2d-7a9d5b9ad873 remove_scheduled=true
+!absolute-device-freeze-request-get 71b61e4c-fbb1-43fb-9d2d-7a9d5b9ad873
+!absolute-device-freeze-message-list limit=1
 !absolute-device-freeze-message-create html_message="some text" message_name="name name"
-!absolute-device-freeze-message-update html_message="new mesg" message_id=711b5da9-3867-473f-9d8f-9aba3de42b7a message_name="name-new"
-!absolute-device-freeze-message-delete message_id="711b5da9-3867-473f-9d8f-9aba3de42b7a"
-!absolute-device-unenroll device_ids="1"
-!absolute-device-application-list device_ids=e93f2464-2766-4a6b-8f00-66c8fb13e23a filter="appName eq 'Notepad++' or appName eq 'Settings'"
-!absolute-device-list os_name="Microsoft Windows Server 2019 Datacenter"
+!absolute-device-freeze-message-update html_message="new mesg" message_id=c9688944-070f-4a90-9618-8882ed1b15f3 message_name="name-new"
+!absolute-device-freeze-message-delete message_id="c9688944-070f-4a90-9618-8882ed1b15f3"
+!absolute-device-unenroll device_ids="71b61e4c-fbb1-43fb-9d2d-7a9d5b9ad873"
+!absolute-device-application-list device_ids=e93f2464-2766-4a6b-8f00-66c8fb13e23a filter="appName eq 'Notepad++' or appName eq 'Settings'" limit=1
+!absolute-device-list os_name="Microsoft Windows Server 2019 Datacenter" limit=1
 !absolute-device-get device_names="ABSOLUTE-ASSET-"
 !absolute-device-location-get device_ids=e93f2464-2766-4a6b-8f00-66c8fb13e23a
