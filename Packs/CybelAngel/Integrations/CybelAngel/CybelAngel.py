@@ -9,93 +9,115 @@ from uuid import UUID
 from typing import Optional, List
 from dataclasses import dataclass, field, asdict
 
+"""CybelAngel Integration for Cortex XSOAR.
 
+Provides interaction with the CybelAngel API, enabling incident management,
+report retrieval, remediation, and comment management. Facilitates automated
+incident handling and external risk monitoring by fetching, updating, and
+processing CybelAngel data within Cortex XSOAR.
+
+Resources:
+    CybelAngel Developer Documentation: https://developer.cybelangel.com/
+    XSOAR Developer Documentation: https://xsoar.pan.dev/docs/welcome
+
+Commands:
+    test-module:
+        Tests API connectivity and authentication. This command runs when
+        pressing the 'Test' button in XSOAR.
+        Returns:
+            str: 'ok' if authentication and connectivity are successful.
+
+    fetch-incidents:
+        Fetches incidents (reports) from CybelAngel within a specified time
+        interval.
+        Args:
+            first_fetch_interval (int): The interval in minutes for initial fetch
+            last_run: Timestamp of the last fetch to prevent duplicates
+        Returns:
+            list: XSOAR incidents populated with CybelAngel reports,
+                 categorized by severity and including key details
+
+    cybelangel-get-report-by-id:
+        Retrieves a specific CybelAngel report by its unique ID.
+        Args:
+            report_id (str): The ID of the report to retrieve
+        Returns:
+            dict: Report data, formatted for display in XSOAR
+
+    cybelangel-get-report-attachment:
+        Retrieves an attachment from a specific report.
+        Args:
+            report_id (str): The report ID
+            attachment_id (str): The attachment ID
+            filename (str): The desired filename for the download
+        Returns:
+            File: The attachment file in XSOAR
+
+    cybelangel-remediate:
+        Submits a remediation request for a specific report.
+        Args:
+            report_id (str): The ID of the report for remediation
+            email (str): Email address of the requester
+            requester_fullname (str): Full name of the requester
+        Returns:
+            dict: Status and confirmation of the remediation request
+
+    cybelangel-get-comments:
+        Retrieves comments associated with a specific report.
+        Args:
+            report_id (str): The report ID
+        Returns:
+            list: Comments with metadata (content, author, timestamp)
+
+    cybelangel-post-comment:
+        Adds a comment to a specific report.
+        Args:
+            report_id (str): The report ID
+            comment (str): The comment content
+            tenant_id (str): The tenant ID associated with the report
+            assigned (bool, optional): Specifies if comment is assigned
+                                     Defaults to True
+            parent_id (str, optional): Optional ID for nested comments
+        Returns:
+            dict: Confirmation of comment addition and status code
+
+    cybelangel-update-status:
+        Updates the status of a specific report.
+        Args:
+            report_id (str): The report ID
+            status (str): New status value (e.g., "open", "resolved")
+        Returns:
+            dict: Confirmation with updated report details
+
+    cybelangel-get-report-pdf:
+        Downloads a PDF of the report.
+        Args:
+            report_id (str): The report ID
+        Returns:
+            File: PDF file of the report as download in XSOAR
+
+    test_command:
+        A testing command for development purposes.
+        Not intended for production use.
+
+Implementation Details:
+    Authentication:
+        Uses client ID and secret to fetch and renew tokens automatically.
+
+    Token Management:
+        Manages token expiration and renewal, with caching to reduce API calls.
+
+    Error Handling:
+        Catches exceptions and logs detailed errors for debugging within XSOAR.
+
+    Data Parsing:
+        Parses and structures data from CybelAngel API responses for clear
+        presentation in XSOAR.
+
+    Incident Creation:
+        Maps CybelAngel reports to XSOAR incidents with relevant metadata,
+        including severity and timestamps.
 """
-      CybelAngel Integration for Cortex XSOAR
-
-      This integration provides interaction with the CybelAngel API, enabling incident management, report retrieval, remediation, and
-      comment management. It facilitates automated incident handling and external risk monitoring by fetching, updating, and processing
-      CybelAngel data within Cortex XSOAR.
-
-      Resources:
-      - [CybelAngel Developer Documentation](https://developer.cybelangel.com/)
-      - [XSOAR Developer Documentation](https://xsoar.pan.dev/docs/welcome)
-
-      Commands:
-      1. **test-module**
-        - Tests API connectivity and authentication. This command runs when pressing the 'Test' button in XSOAR.
-        - Expected output: `'ok'` if authentication and connectivity are successful.
-
-      2. **fetch-incidents**
-        - Fetches incidents (reports) from CybelAngel within a specified time interval.
-        - Parameters:
-          - `first_fetch_interval` (int): The interval in minutes for the initial fetch.
-          - `last_run`: Timestamp of the last fetch to prevent duplicate incident fetching.
-        - Output: XSOAR incidents populated with CybelAngel reports, categorized by severity and including key details.
-
-      3. **cybelangel-get-report-by-id**
-        - Retrieves a specific CybelAngel report by its unique ID.
-        - Parameters:
-          - `report_id` (str): The ID of the report to retrieve.
-        - Output: Returns the report data, formatted for display in XSOAR.
-
-      4. **cybelangel-get-report-attachment**
-        - Retrieves an attachment from a specific report.
-        - Parameters:
-          - `report_id` (str): The report ID.
-          - `attachment_id` (str): The attachment ID.
-          - `filename` (str): The desired filename for the download.
-        - Output: The attachment is returned as a file in XSOAR.
-
-      5. **cybelangel-remediate**
-        - Submits a remediation request for a specific report.
-        - Parameters:
-          - `report_id` (str): The ID of the report for remediation.
-          - `email` (str): Email address of the requester.
-          - `requester_fullname` (str): Full name of the requester.
-        - Output: Status and confirmation of the remediation request.
-
-      6. **cybelangel-get-comments**
-        - Retrieves comments associated with a specific report.
-        - Parameters:
-          - `report_id` (str): The report ID.
-        - Output: List of comments, each comment containing metadata such as content, author, and timestamp.
-
-      7. **cybelangel-post-comment**
-        - Adds a comment to a specific report.
-        - Parameters:
-          - `report_id` (str): The report ID.
-          - `comment` (str): The comment content.
-          - `tenant_id` (str): The tenant ID associated with the report.
-          - `assigned` (bool, optional): Specifies if the comment is assigned. Default is `True`.
-          - `parent_id` (str, optional): Optional ID for nested comments.
-        - Output: Confirmation of comment addition and status code.
-
-      8. **cybelangel-update-status**
-        - Updates the status of a specific report (e.g., "open", "resolved").
-        - Parameters:
-          - `report_id` (str): The report ID.
-          - `status` (str): New status value.
-        - Output: Confirmation of the status update with the updated report details.
-
-      9. **cybelangel-get-report-pdf**
-        - Downloads a PDF of the report.
-        - Parameters:
-          - `report_id` (str): The report ID.
-        - Output: Returns the PDF file of the report as a download in XSOAR.
-
-      10. **test_command**
-          - A testing command for development purposes, not intended for production.
-
-      Functionality:
-      - **Authentication:** Uses client ID and secret to fetch and renew tokens automatically.
-      - **Token Management:** Manages token expiration and renewal, with caching to reduce API calls.
-      - **Error Handling:** Catches exceptions and logs detailed errors for debugging within the XSOAR environment.
-      - **Data Parsing:** Parses and structures data retrieved from CybelAngel API responses for clear presentation in XSOAR.
-      - **Incident Creation:** Maps CybelAngel reports to XSOAR incidents with relevant metadata, including severity and timestamps.
-
-      Make sure to verify each command’s output and adjust the required parameters in XSOAR when setting up the integration.
-    """
 
 
 ''' IMPORTS '''
@@ -183,8 +205,8 @@ class Client(BaseClient):
                 reports.append(report)
             return reports
 
-        except:
-            return [{"msg": "Error getting reports"}]
+        except Exception as e:
+            return [{"msg": f"Error getting reports : {e}"}]
 
     def get_all_reports(self):
         """ Get all reports from CybelAngel -- Only run once on Configuration """
@@ -201,9 +223,8 @@ class Client(BaseClient):
                 reports.append(report)
             return reports
 
-        except:
-            demisto.debug('Error getting reports')
-            return [{"msg": "Error getting reports"}]
+        except Exception as e:
+            return [{"msg": f"Error getting reports : {e}"}]
 
     def get_report_by_id(self, report_id: str):
         self.check_token()
@@ -218,8 +239,8 @@ class Client(BaseClient):
             result = response
             demisto.info(type(result))
             return result
-        except:
-            return {"msg": f"Error getting report {report_id}"}
+        except Exception as e:
+            return [{"msg": f"Error getting report {report_id} : {e}"}]
 
     def get_report_attachment(self, report_id: str, attachment_id: str):
         self.check_token()
@@ -566,10 +587,7 @@ def test_module(client: Client) -> str:
             message = e
     demisto.debug(message)
 
-
 ''' MAIN FUNCTION '''
-
-
 def main() -> None:
     """main function, parses params and runs command functions
 
