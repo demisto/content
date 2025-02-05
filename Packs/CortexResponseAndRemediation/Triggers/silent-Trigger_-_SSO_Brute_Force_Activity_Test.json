@@ -5,6 +5,7 @@
   "description": "This trigger is responsible for handling the 'SSO Brute Force Threat Detected' and 'SSO Brute Force Activity Observed' alerts",
   "trigger_name": "silent-SSO Brute Force Activity Test",
   "issilent": true,
+  "fromVersion": "8.9.0",
   "alerts_filter": {
     "filter": {
         "AND": [

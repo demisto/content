@@ -4,7 +4,8 @@
   "suggestion_reason": "Recommended for 'MFA was disabled for an Azure identity' and 'MFA was disabled for an Azure identity from a new country' alerts",
   "description": "This trigger runs the A MFA was disabled for an Azure identity playbook, which handles the 'MFA was disabled for an Azure identity' and 'MFA was disabled for an Azure identity from a new country' alerts.",
   "trigger_name": "silent-MFA was disabled for an Azure identity",
-  "issilent": true,
+ "issilent": true,
+ "fromVersion": "8.9.0", 
   "alerts_filter": {
     "filter": {
         "AND": [
