@@ -102,7 +102,13 @@ def add_millisecond(timestamp: str) -> str:
     Returns:
         str: The new timestamp with one millisecond added, formatted in ISO 8601.
     """
+    # Handle timestamps without milliseconds
+    if '.' not in timestamp:
+        dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+        dt += timedelta(milliseconds=1)
+        return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
+    # Handle timestamps with milliseconds
     dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
     dt += timedelta(milliseconds=1)
     return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
