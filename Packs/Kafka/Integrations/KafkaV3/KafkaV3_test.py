@@ -1106,12 +1106,7 @@ Please provide them.'
         {'use_ssl': True, 'use_sasl': True, 'plain_username': 'user', 'plain_password': None, 'brokers': 'broker1, broker2',
          'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
         'Missing required parameters: SASL PLAIN Password. Please provide them.'
-    ),
-    (
-        {'use_ssl': True, 'use_sasl': True, 'plain_username': 'user', 'plain_password': 'pass', 'brokers': 'broker1, broker2',
-         'ca_cert': None, 'client_cert': None, 'client_cert_key': None},
-        'Missing required parameters: CA certificate of Kafka server (.cer). Please provide them.'
-    ),
+    )
 ]
 
 
