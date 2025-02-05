@@ -477,6 +477,8 @@ def test_produce_error_message(mocker):
         - Assert the relevant exception is raised.
     """
     mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
+
     demisto_args = {'topic': 'some-topic', 'partitioning_key': 1, 'value': 'some-value'}
     produce_mock = mocker.patch.object(KProducer, 'produce')
     kafka_error = KafkaError(1)
