@@ -64,7 +64,7 @@ def test_azure_nsg_public_ip_addresses_list(mocker):
     from AzureNetworkSecurityGroups import azure_nsg_public_ip_addresses_list
     client = mock_client(mocker, util_load_json('test_data/list_public_ip_addresses.json'))
     results = azure_nsg_public_ip_addresses_list(client, args={}, params={'subscription_id': 'subscriptionID',
-                                                           'resource_group_name': 'resourceGroupName'})
+                                                                          'resource_group_name': 'resourceGroupName'})
     assert '### Public IP Addresses List' in results.readable_output
     res = results.outputs[0]
     assert res.get('name') == 'testDNS-ip'
@@ -75,7 +75,7 @@ def test_azure_nsg_public_ip_addresses_list(mocker):
     assert res.get('ipAddress') == '40.85.154.247'
     assert res.get('domainNameLabel') == 'testlbl'
     assert res.get('fqdn') == 'testlbl.westus.cloudapp.azure.com'
-    
+
 
 def test_azure_nsg_virtual_networks_list(mocker):
     """
@@ -84,7 +84,7 @@ def test_azure_nsg_virtual_networks_list(mocker):
     from AzureNetworkSecurityGroups import azure_nsg_virtual_networks_list
     client = mock_client(mocker, util_load_json('test_data/list_virtual_networks.json'))
     results = azure_nsg_virtual_networks_list(client, args={}, params={'subscription_id': 'subscriptionID',
-                                                           'resource_group_name': 'resourceGroupName'})
+                                                                       'resource_group_name': 'resourceGroupName'})
     assert '### Virtual Networks List' in results.readable_output
     res = results.outputs[0]
     assert res.get('name') == 'vnet1'
@@ -93,10 +93,10 @@ def test_azure_nsg_virtual_networks_list(mocker):
     assert res.get('addressPrefixes') == ["10.0.0.0/8"]
     assert res.get('subnetName') == ['test-1']
     assert res.get('subnetAdrdressPrefix') == ['10.0.0.0/24']
-    assert res.get('subnetIPConfigurations') == {
-                    "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/testDNS649/\
-ipConfigurations/ipconfig1"}
-                            
+    assert res.get('subnetID') == ["/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/\
+networkInterfaces/testDNS649/ipConfigurations/ipconfig1"]
+
+
 def test_azure_nsg_networks_interfaces_list(mocker):
     """
     Validate that test_azure_nsg_virtual_networks_list returns the output in the correct format
@@ -104,16 +104,18 @@ def test_azure_nsg_networks_interfaces_list(mocker):
     from AzureNetworkSecurityGroups import azure_nsg_networks_interfaces_list
     client = mock_client(mocker, util_load_json('test_data/list_networks_interfaces.json'))
     results = azure_nsg_networks_interfaces_list(client, args={}, params={'subscription_id': 'subscriptionID',
-                                                           'resource_group_name': 'resourceGroupName'})
+                                                                          'resource_group_name': 'resourceGroupName'})
     assert '### Network Interfaces List' in results.readable_output
     res = results.outputs[0]
     assert res.get('name') == 'test-nic'
     assert res.get('id') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic'
     assert res.get('provisioningState') == 'Succeeded'
     assert res.get('ipConfigurationName') == ["ipconfig1"]
-    assert res.get('ipConfigurationID') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic/ipConfigurations/ipconfig1']
+    assert res.get('ipConfigurationID') == [
+        '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic/ipConfigurations/ipconfig1']
     assert res.get('ipConfigurationPrivateIPAddress') == ['172.20.2.4']
-    assert res.get('ipConfigurationPublicIPAddressName') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip']
+    assert res.get('ipConfigurationPublicIPAddressName') == [
+        '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip']
     assert res.get('dnsServers') == []
     assert res.get('appliedDnsServers') == []
     assert res.get('internalDomainNameSuffix') == 'test.bx.internal.cloudapp.net'
@@ -121,7 +123,8 @@ def test_azure_nsg_networks_interfaces_list(mocker):
     assert res.get('virtualMachineId') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Compute/virtualMachines/vm1'
     assert res.get('location') == 'eastus'
     assert res.get('kind') == 'kind'
-    
+
+
 def test_create_azure_nsg_security_group(mocker):
     """
     Given: a security group to be created
@@ -129,14 +132,15 @@ def test_create_azure_nsg_security_group(mocker):
     from AzureNetworkSecurityGroups import azure_nsg_security_group_create
     client = mock_client(mocker, util_load_json('test_data/put_data.json'))
     res = azure_nsg_security_group_create(client, args={'security_group_name': 'securityGroup', 'location': 'westus'},
-                                    params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
-    
+                                          params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
+
     assert '### Security Group' in res.readable_output
     res = res.outputs
     assert res.get('name') == 'test-nic'
     assert res.get('etag') == 'etag'
     assert res.get('location') == 'eastus'
     assert res.get('securityRules') == []
+
 
 def test_create_azure_nsg_network_interfaces(mocker):
     """
@@ -145,10 +149,10 @@ def test_create_azure_nsg_network_interfaces(mocker):
     from AzureNetworkSecurityGroups import azure_nsg_network_interfaces_create
     client = mock_client(mocker, util_load_json('test_data/put_data.json'))
     res = azure_nsg_network_interfaces_create(client, args={'nic_name': 'nic_name', 'location': 'westus',
-                                                      'ip_config_name':'ip_config_name', 'vnet_name':'vnet_name',
-                                                      'subnet_name':'subnet_name'},
-                                    params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
-    
+                                                            'ip_config_name': 'ip_config_name', 'vnet_name': 'vnet_name',
+                                                            'subnet_name': 'subnet_name'},
+                                              params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
+
     assert '### Network Interface' in res.readable_output
     res = res.outputs
     assert res.get('name') == 'test-nic'
@@ -156,9 +160,12 @@ def test_create_azure_nsg_network_interfaces(mocker):
     assert res.get('provisioningState') == 'Succeeded'
     assert res.get('ipConfigurationName') == ['ipconfig1']
     assert res.get('ipConfigurationPrivateIPAddress') == ['172.20.2.4']
-    assert res.get('ipConfigurationPublicIPAddressName') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip']
-    assert res.get('subnetId') == ['/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/rg1-vnet/subnets/default']
-   
+    assert res.get('ipConfigurationPublicIPAddressName') == [
+        '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip']
+    assert res.get('subnetId') == [
+        '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/rg1-vnet/subnets/default']
+
+
 def test_create_rule_command(mocker):
     """
     Given: a rule to be created
@@ -176,7 +183,7 @@ def test_create_rule_command(mocker):
     assert properties.get('protocol') == '*'
     assert properties.get('sourceAddressPrefix') == '*'
     assert 'sourcePortRanges' not in properties.keys()
-    assert ['1', '2', '3', '4-6'] == properties.get('destinationPortRanges')
+    assert properties.get('destinationPortRanges') == ['1', '2', '3', '4-6']
 
 
 def test_update_rule_command(mocker):

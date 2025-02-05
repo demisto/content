@@ -684,9 +684,9 @@ script:
     - contextPath: AzureNSG.VirtualNetwork.properties.subnets.properties.addressPrefix
       description: The virtual network's subnet address prefix.
       type: List
-    - contextPath: AzureNSG.VirtualNetwork.properties.subnets.properties.ipConfigurations
-      description: The virtual network's ip configuration.
-      type: JSON
+    - contextPath: AzureNSG.VirtualNetwork.properties.subnets.properties.ipConfigurations.id
+      description: List of the virtual network's subnets id.
+      type: List
     arguments:
     - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
       name: resource_group_name

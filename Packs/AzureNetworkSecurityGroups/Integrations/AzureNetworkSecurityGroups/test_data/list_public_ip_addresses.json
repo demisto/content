@@ -4,7 +4,7 @@
         "name": "testDNS-ip",
         "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/testDNS-ip",
         "location": "westus",
-        "etag": "etag",
+        "etag": "123etag3",
         "properties": {
           "securityRules": [],
           "provisioningState": "Succeeded",

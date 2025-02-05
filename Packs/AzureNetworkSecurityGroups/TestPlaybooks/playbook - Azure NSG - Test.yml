@@ -87,7 +87,7 @@ tasks:
       - "3"
     scriptarguments:
       security_group_name:
-        simple: DimaTest-nsg
+        simple: alerts-nsg
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -131,13 +131,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: DemistoRule
+              simple: alerts-nsg
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 905
         }
       }
     note: false
@@ -210,7 +210,7 @@ tasks:
       protocol:
         simple: Any
       security_group_name:
-        simple: DimaTest-nsg
+        simple: alerts-nsg
       security_rule_name:
         simple: DemistoRule
       source:
@@ -251,7 +251,7 @@ tasks:
       priority:
         simple: "1234"
       security_group_name:
-        simple: DimaTest-nsg
+        simple: alerts-nsg
       security_rule_name:
         simple: DemistoRule
       source_ports:
@@ -290,7 +290,7 @@ tasks:
       - "8"
     scriptarguments:
       security_group_name:
-        simple: DimaTest-nsg
+        simple: alerts-nsg
       security_rule_name:
         simple: DemistoRule
     separatecontext: false
@@ -327,7 +327,7 @@ tasks:
       - "14"
     scriptarguments:
       security_group_name:
-        simple: DimaTest-nsg
+        simple: alerts-nsg
       security_rule_name:
         simple: DemistoRule
     separatecontext: false
@@ -385,7 +385,7 @@ tasks:
     task:
       id: d4cd8082-45f1-40a5-8e6e-2704754a4264
       version: -1
-      name: Check DimaTest-nsg is a security group
+      name: Check alerts-nsg is a security group
       type: condition
       iscommand: false
       brand: ""
@@ -403,7 +403,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: DimaTest-nsg
+              simple: alerts-nsg
     continueonerrortype: ""
     view: |-
       {
@@ -980,7 +980,7 @@ tasks:
       subnet_name:
         simple: default
       vnet_name:
-        simple: compute-integration-vnet
+        simple: cloud-shell-storage-eastus-vnet
     separatecontext: false
     continueonerrortype: ""
     view: |-

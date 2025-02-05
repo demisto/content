@@ -3,7 +3,7 @@
       {
         "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1",
         "name": "vnet1",
-        "etag": "etag",
+        "etag": "123etag3",
         "type": "Microsoft.Network/virtualNetworks",
         "location": "westus",
         "properties": {
@@ -22,9 +22,9 @@
               "properties": {
                 "addressPrefix": "10.0.0.0/24",
                 "provisioningState": "Succeeded",
-                "ipConfigurations": {
+                "ipConfigurations": [{
                     "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/testDNS649/ipConfigurations/ipconfig1"
-            }
+            }]
               }
             }
           ],

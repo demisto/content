@@ -2,7 +2,7 @@
       {
         "kind": "kind",
         "name": "test-nic",
-        "etag": "etag",
+        "etag": "123etag3",
         "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic",
         "location": "eastus",
         "properties": {
