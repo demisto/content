@@ -408,9 +408,9 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     :param integration_context: Cached object to search for team member in
     :return: Team member ID
     """
-    demisto.debug(f"requested team member: {requested_team_member}")
+    demisto.debug(f"Requested team member: {requested_team_member}")
     teams: list = json.loads(integration_context.get('teams', '[]'))
-    demisto.debug(f"we've got {len(teams)} teams saved in integration context")
+    demisto.debug(f"We've got {len(teams)} teams saved in integration context")
     for team in teams:
         team_members: list = team.get('team_members', [])
         for team_member in team_members:
@@ -418,8 +418,7 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
                 'userPrincipalName', '').lower(), team_member.get('name', '').lower()]
             if requested_team_member.lower() in [value.lower() for value in member_properties]:
                 return team_member.get("id")
-
-    raise ValueError(f'Team member {requested_team_member} was not found')
+    return ""
 
 
 def create_adaptive_card(body: list, actions: list | None = None) -> dict:
@@ -1930,31 +1929,23 @@ def get_team_members(service_url: str, team_id: str) -> list:
     return response
 
 
-def manual_get_team_members_command():
+def update_integration_context_with_all_team_members(integration_context):
     """
-    Retrieves and updates in context the team members of given a team_name
-    :return: List of team members
+    Retrieves all members from all teams and updates members in integration context.
     """
-    team_name = demisto.args().get('team_name')
-    integration_context: dict = get_integration_context()
     service_url: str = integration_context.get('service_url', '')
-    team_id = None
     teams: list = json.loads(integration_context.get('teams', '[]'))
     for team in teams:
-        if team.get('team_name', '') == team_name:
-            team_id = team.get('team_id', '')
-            demisto.debug(f'Following ID: {team_id} for team name: {team_name}')
-            url = f'{service_url}/v3/conversations/{team_id}/members'
-            team_members: list = cast(list[Any], http_request('GET', url, api='bot'))
-            demisto.debug(f'team_name: {team_name} got the following members: {team_members}')
-            team['team_members'] = team_members
-            integration_context['teams'] = json.dumps(teams)
-            set_integration_context(integration_context)
-            return_results(integration_context['teams'])
-            break
-    if not team_id:
-        demisto.error(f'Did not find a team for team name: {team_name}')
-        return_results(f'Did not find a team for team name: {team_name}')
+        team_id = team.get('team_id', '')
+        team_name = team.get('team_name', '')
+        demisto.error(f'DANF Request members for {team_id=} {team_name=}')
+        url = f'{service_url}/v3/conversations/{team_id}/members'
+        team_members: list = cast(list[Any], http_request('GET', url, api='bot'))
+        demisto.error(f'DANF Updating {team_name=} with {team_members=}')
+        team['team_members'] = team_members
+    demisto.error(f'DANF Setting integration_context with {teams=}')
+    integration_context['teams'] = json.dumps(teams)
+    set_integration_context(integration_context)
 
 
 def get_channel_members(team_id: str, channel_id: str) -> list[dict[str, Any]]:
@@ -2113,7 +2104,7 @@ def send_message():
     message: str = demisto.args().get('message', '')
     external_form_url_header: str | None = demisto.args().get(
         'external_form_url_header') or demisto.params().get('external_form_url_header')
-    demisto.debug(f"in send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
+    demisto.debug(f"In send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
     except ValueError:
@@ -2168,6 +2159,13 @@ def send_message():
         channel_id = get_channel_id_for_send_notification(channel_name, message_type)
     elif team_member:
         team_member_id: str = get_team_member_id(team_member, integration_context)
+        if not team_member_id:
+            demisto.debug(f"Did not find '{team_member=}' will update integration context with all team members.")
+            update_integration_context_with_all_team_members(integration_context)
+            team_member_id: str = get_team_member_id(team_member, integration_context)
+        if not team_member_id:
+            demisto.error(f"Could not find team member ID for '{team_member}' in integration context.")
+            raise ValueError(f"Could not find team member ID for '{team_member}'.")
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
 
     recipient: str = channel_id or personal_conversation_id
@@ -3049,7 +3047,6 @@ def main():   # pragma: no cover
         'microsoft-teams-auth-reset': reset_graph_auth_command,
         'microsoft-teams-token-permissions-list': token_permissions_list_command,
         'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command,
-        'microsoft-teams-get-team-members': manual_get_team_members_command
     }
 
     commands_auth_code: dict = {
