@@ -1,0 +1,52 @@
+{
+  "execution_id": "2312c8f962374b_98738_inv",
+  "number_of_results": 10,
+  "query_cost": {
+    "3204872200335": 0.0007363888888888889
+  },
+  "query_name": "",
+  "remaining_quota": 64.9585236111111,
+  "results": [
+    {
+      "app": "ms-ds-smbv3",
+      "count": 80879
+    },
+    {
+      "app": "netbios-dg",
+      "count": 145486
+    },
+    {
+      "app": "ssl",
+      "count": 149358
+    },
+    {
+      "app": "dns-base",
+      "count": 847200
+    },
+    {
+      "app": "netbios-ns",
+      "count": 145722
+    },
+    {
+      "app": "ldap",
+      "count": 81384
+    },
+    {
+      "app": "msrpc-base",
+      "count": 80914
+    },
+    {
+      "app": "google-base",
+      "count": 240229
+    },
+    {
+      "app": "web-browsing",
+      "count": 122016
+    },
+    {
+      "app": "incomplete",
+      "count": 2479222
+    }
+  ],
+  "status": "SUCCESS"
+}

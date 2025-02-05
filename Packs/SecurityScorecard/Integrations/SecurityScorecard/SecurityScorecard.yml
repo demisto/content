@@ -3,6 +3,9 @@ display: SecurityScorecard
 category: Vulnerability Management
 description: Provides scorecards for domains.
 defaultmapperin: SecurityScorecard Alert Mapper
+sectionorder:
+  - Connect
+  - Collect
 commonfields:
   id: SecurityScorecard
   version: -1
@@ -10,6 +13,7 @@ configuration:
 - name: base_url
   display: SecurityScorecard API Base URL
   required: true
+  section: Connect
   defaultvalue: https://api.securityscorecard.io/
   type: 0
 - name: username
@@ -18,45 +22,54 @@ configuration:
   required: true
   type: 9
   displaypassword: API Token
+  section: Connect
 - name: isFetch
   display: Fetch incidents
   type: 8
   required: false
+  section: Collect
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
   additionalinfo: SecurityScorecard is updated on a daily basis therefore there's no need to modify this value.
   defaultvalue: "1440"
   type: 19
   required: false
+  section: Collect
 - name: max_fetch
   display: Fetch Limit
   defaultvalue: '50'
   type: 0
   additionalinfo: Maximum number of alerts per fetch. The maximum is 50.
   required: false
+  section: Collect
 - name: first_fetch
   display: First fetch
   defaultvalue: 2 days
   type: 0
   additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
   required: false
+  section: Collect
 - name: incidentType
   display: Incident type
   defaultvalue: SecurityScorecard Alert
   type: 13
   required: false
+  section: Collect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
   required: false
+  section: Connect
 - display: Portfolio ID
   name: portfolio_id
   type: 0
   required: false
+  section: Connect
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
@@ -66,7 +79,7 @@ script:
   subtype: python3
   isFetchSamples: true
   isfetch: true
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.11.11.1940698
   commands:
   - name: securityscorecard-portfolios-list
     description: List all Portfolios.
@@ -296,9 +309,8 @@ script:
       predefined:
       - "my_scorecard"
       - "any_followed_company"
-    - name: portfolios
-      isArray: true
-      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
+    - name: portfolio
+      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. 
     outputs:
     - contextPath: SecurityScorecard.Alerts.GradeChangeAlert.id
       description: Alert ID.
@@ -326,9 +338,8 @@ script:
       predefined:
       - "my_scorecard"
       - "any_followed_company"
-    - name: portfolios
-      isArray: true
-      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
+    - name: portfolio
+      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. 
     outputs:
     - contextPath: SecurityScorecard.Alerts.ScoreThresholdAlert.id
       description: Alert ID.
@@ -339,13 +350,6 @@ script:
     - name: alert_id
       description: Alert ID.
       required: true
-    - name: alert_type
-      description: Type of Alert to delete.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "score"
-      - "grade"
   - name: securityscorecard-alerts-list
     description: List alerts triggered in the last week.
     arguments:

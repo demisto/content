@@ -1,0 +1,11 @@
+{
+  "execution_id": "xxxxxxxxx",
+  "number_of_results": 1,
+  "query_name": "",
+  "results": [
+    {
+      "_duration": 1234
+    }
+  ],
+  "status": "SUCCESS"
+}

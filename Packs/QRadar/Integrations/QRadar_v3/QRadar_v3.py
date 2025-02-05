@@ -726,8 +726,10 @@ class Client(BaseClient):
 
     def domains_list(self, domain_id: Optional[int] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
                      fields: Optional[str] = None):
+
         id_suffix = f'/{domain_id}' if domain_id else ''
-        params = assign_params(fields=fields) if domain_id else assign_params(filter=filter_, fields=fields)
+        encoded_filter = parse.quote(filter_, safe="") if filter_ else None
+        params = assign_params(fields=fields) if domain_id else assign_params(filter=encoded_filter, fields=fields)
         additional_headers = {'Range': range_} if not domain_id and range_ else None
         return self.http_request(
             method='GET',
