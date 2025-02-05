@@ -330,7 +330,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 class IncidentType(Enum):
     INCIDENT = 'inc'
     LEGACY_ENDPOINT_DETECTION = 'ldt'
-    ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION = ':ind:'  # OFP was joined here since it has ':ind:' too in its id
+    ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION = ':ind:'  # OFP was joined here since it has ':ind:' too in its id test test
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
     ON_DEMAND = 'ods'

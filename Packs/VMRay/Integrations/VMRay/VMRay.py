@@ -6,7 +6,7 @@ import urllib3
 
 from zipfile import ZipFile
 
-''' GLOBAL PARAMS '''
+''' GLOBAL PARAMS test test'''
 API_KEY = demisto.params().get('api_key') or demisto.params().get('credentials', {}).get('password')
 if not API_KEY:
     raise ValueError('The API Key parameter is required.')
