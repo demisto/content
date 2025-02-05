@@ -14,11 +14,6 @@ dill.settings['recurse'] = True
 
 no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)  # type: ignore
 
-OOB_MAJOR_VERSION_INFO_KEY = 'major'
-OOB_MINOR_VERSION_INFO_KEY = 'minor'
-MAJOR_VERSION = 2
-MINOR_DEFAULT_VERSION = 0
-
 KEY_IMAGE_RASTERIZE = "image_b64"
 KEY_IMAGE_HTML = "html"
 
@@ -137,7 +132,6 @@ class Model:
 
 class ModelData(dict[Literal['top_domains', 'logos_dict', 'custom_logo_associated_domain'], dict]):
     '''Abstract class that represents the format of the data stored in the server.'''
-    ...
 
 
 def delete_model():
