@@ -45,11 +45,11 @@ configuration:
   type: 9
   required: false
   hiddenusername: true
-  additionalinfo: Use Personal Access Token for API Authentication
+  additionalinfo: Use the Personal Access Token for API Authentication.
   section: Connect
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
-  additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
+  additionalinfo: The field selected in the "Issue Field to fetch by" can't be used in the query.
   name: fetch_query
   type: 0
   required: false
