@@ -311,7 +311,7 @@ def test_module(client: GwClient, user: str, password: str, token: str) -> str: 
         return "Authentication error, please check ip/user/password/token: [ERROR]"
 
 
-def gcenter103_alerts_list(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_alerts_list_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "date_from": args.get("date_from"),
@@ -376,7 +376,7 @@ def gcenter103_alerts_list(client: GwClient, args: dict[str, Any]) -> CommandRes
        )
 
 
-def gcenter103_alerts_get(client: GwClient, args: dict[str, str]) -> CommandResults:
+def gcenter103_alerts_get_command(client: GwClient, args: dict[str, str]) -> CommandResults:
 
     params = {
         "uuid": args.get("uuid")
@@ -397,7 +397,7 @@ def gcenter103_alerts_get(client: GwClient, args: dict[str, str]) -> CommandResu
    )
 
 
-def gcenter103_alerts_note_add(client: GwClient, args: dict[str, str]) -> CommandResults:
+def gcenter103_alerts_note_add_command(client: GwClient, args: dict[str, str]) -> CommandResults:
 
     params = {
         "note": args.get("note"),
@@ -453,7 +453,7 @@ def gcenter103_alerts_note_add(client: GwClient, args: dict[str, str]) -> Comman
        )
 
 
-def gcenter103_alerts_note_remove(client: GwClient, args: dict[str, str]) -> CommandResults:
+def gcenter103_alerts_note_remove_command(client: GwClient, args: dict[str, str]) -> CommandResults:
 
     params = {
         "uuid": args.get("uuid")
@@ -472,7 +472,7 @@ def gcenter103_alerts_note_remove(client: GwClient, args: dict[str, str]) -> Com
    )
 
 
-def gcenter103_alerts_tags_get(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_alerts_tags_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "uuid": args.get("uuid")
@@ -535,7 +535,7 @@ def match_tags(arg_tags: list[str], gcenter_tags: list[dict[str, Any]]):
                 
     return tags
 
-def gcenter103_alerts_tags_add(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_alerts_tags_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "uuid": args.get("uuid"),
@@ -577,7 +577,7 @@ def gcenter103_alerts_tags_add(client: GwClient, args: dict[str, Any]) -> Comman
    )
 
 
-def gcenter103_alerts_tags_remove(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_alerts_tags_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "uuid": args.get("uuid"),
@@ -636,7 +636,7 @@ def gcenter103_alerts_tags_remove(client: GwClient, args: dict[str, Any]) -> Com
    )
 
 
-def gcenter103_alerts_status_update(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_alerts_status_update_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "note_u": args.get("note_u"),
@@ -709,7 +709,7 @@ def gcenter103_alerts_status_update(client: GwClient, args: dict[str, Any]) -> C
    )
     
 
-def gcenter103_raw_alerts_get(client: GwClient, args: dict[str, str]) -> CommandResults:
+def gcenter103_raw_alerts_get_command(client: GwClient, args: dict[str, str]) -> CommandResults:
 
     params = {
         "id": args.get("uuid")
@@ -730,7 +730,7 @@ def gcenter103_raw_alerts_get(client: GwClient, args: dict[str, str]) -> Command
    )
 
 
-def gcenter103_raw_alerts_file_get(client: GwClient, args: dict[str, str]) -> CommandResults:
+def gcenter103_raw_alerts_file_get_command(client: GwClient, args: dict[str, str]) -> CommandResults:
 
     params = {
         "id": args.get("uuid")
@@ -755,7 +755,7 @@ def gcenter103_raw_alerts_file_get(client: GwClient, args: dict[str, str]) -> Co
    )
 
 
-def gcenter103_file_scan(client: GwClient, args: dict[str, str]) -> CommandResults:
+def gcenter103_file_scan_command(client: GwClient, args: dict[str, str]) -> CommandResults:
 
     params = {
         "engine": args.get("engine"),
@@ -781,7 +781,7 @@ def gcenter103_file_scan(client: GwClient, args: dict[str, str]) -> CommandResul
    )
 
 
-def gcenter103_file_scan_result_get(client: GwClient, args: dict[str, str]) -> CommandResults:
+def gcenter103_file_scan_result_get_command(client: GwClient, args: dict[str, str]) -> CommandResults:
 
     params = {
         "id": args.get("id")
@@ -802,7 +802,7 @@ def gcenter103_file_scan_result_get(client: GwClient, args: dict[str, str]) -> C
    )
 
 
-def gcenter103_assets_list(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_assets_list_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "search": args.get("search"),
@@ -841,7 +841,7 @@ def gcenter103_assets_list(client: GwClient, args: dict[str, Any]) -> CommandRes
    )
 
 
-def gcenter103_assets_alerts_get(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_assets_alerts_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "date_from": args.get("date_from"),
@@ -893,7 +893,7 @@ def gcenter103_assets_alerts_get(client: GwClient, args: dict[str, Any]) -> Comm
    )
 
 
-def gcenter103_assets_get(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_assets_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "date_from": args.get("date_from"),
@@ -921,7 +921,7 @@ def gcenter103_assets_get(client: GwClient, args: dict[str, Any]) -> CommandResu
    )
 
 
-def gcenter103_assets_note_add(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_assets_note_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "note": args.get("note"),
@@ -977,7 +977,7 @@ def gcenter103_assets_note_add(client: GwClient, args: dict[str, Any]) -> Comman
        )
 
 
-def gcenter103_assets_note_remove(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_assets_note_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "asset_name": args.get("asset_name")
@@ -996,7 +996,7 @@ def gcenter103_assets_note_remove(client: GwClient, args: dict[str, Any]) -> Com
    )
 
 
-def gcenter103_assets_tags_get(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_assets_tags_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "asset_name": args.get("asset_name")
@@ -1023,7 +1023,7 @@ def gcenter103_assets_tags_get(client: GwClient, args: dict[str, Any]) -> Comman
    )
 
 
-def gcenter103_assets_tags_add(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_assets_tags_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "asset_name": args.get("asset_name"),
@@ -1065,7 +1065,7 @@ def gcenter103_assets_tags_add(client: GwClient, args: dict[str, Any]) -> Comman
    )
 
 
-def gcenter103_assets_tags_remove(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_assets_tags_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "asset_name": args.get("asset_name"),
@@ -1124,7 +1124,7 @@ def gcenter103_assets_tags_remove(client: GwClient, args: dict[str, Any]) -> Com
    )
 
 
-def gcenter103_users_list(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_users_list_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "search": args.get("search"),
@@ -1161,7 +1161,7 @@ def gcenter103_users_list(client: GwClient, args: dict[str, Any]) -> CommandResu
    )
 
 
-def gcenter103_users_alerts_get(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_users_alerts_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "date_from": args.get("date_from"),
@@ -1213,7 +1213,7 @@ def gcenter103_users_alerts_get(client: GwClient, args: dict[str, Any]) -> Comma
    )
 
 
-def gcenter103_users_get(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_users_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "date_from": args.get("date_from"),
@@ -1241,7 +1241,7 @@ def gcenter103_users_get(client: GwClient, args: dict[str, Any]) -> CommandResul
    )
 
 
-def gcenter103_users_note_add(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_users_note_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "note": args.get("note"),
@@ -1297,7 +1297,7 @@ def gcenter103_users_note_add(client: GwClient, args: dict[str, Any]) -> Command
        )
 
 
-def gcenter103_users_note_remove(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_users_note_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "kuser_name": args.get("kuser_name")
@@ -1316,7 +1316,7 @@ def gcenter103_users_note_remove(client: GwClient, args: dict[str, Any]) -> Comm
    )
 
 
-def gcenter103_users_tags_get(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_users_tags_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "kuser_name": args.get("kuser_name")
@@ -1343,7 +1343,7 @@ def gcenter103_users_tags_get(client: GwClient, args: dict[str, Any]) -> Command
    )
 
 
-def gcenter103_users_tags_add(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_users_tags_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "tags": args.get("tags"),
@@ -1384,7 +1384,7 @@ def gcenter103_users_tags_add(client: GwClient, args: dict[str, Any]) -> Command
    )
 
 
-def gcenter103_users_tags_remove(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_users_tags_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "kuser_name": args.get("kuser_name"),
@@ -1443,7 +1443,7 @@ def gcenter103_users_tags_remove(client: GwClient, args: dict[str, Any]) -> Comm
    )
 
 
-def gcenter103_yara_rules_get(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_yara_rules_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "export": args.get("export")
@@ -1464,7 +1464,7 @@ def gcenter103_yara_rules_get(client: GwClient, args: dict[str, Any]) -> Command
    )
 
 
-def gcenter103_yara_rules_add(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_yara_rules_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "enabled": args.get("enabled"),
@@ -1495,7 +1495,7 @@ def gcenter103_yara_rules_add(client: GwClient, args: dict[str, Any]) -> Command
    )
 
 
-def gcenter103_malcore_fingerprints_get(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_malcore_fingerprints_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "ordering": args.get("ordering"),
@@ -1521,7 +1521,7 @@ def gcenter103_malcore_fingerprints_get(client: GwClient, args: dict[str, Any]) 
    )
 
 
-def gcenter103_malcore_fingerprints_add(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_malcore_fingerprints_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "sha256": args.get("sha256"),
@@ -1555,7 +1555,7 @@ def gcenter103_malcore_fingerprints_add(client: GwClient, args: dict[str, Any]) 
    )
 
 
-def gcenter103_malcore_fingerprints_remove(client: GwClient, args: dict[str, Any]) -> CommandResults:
+def gcenter103_malcore_fingerprints_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
     params = {
         "sha256": args.get("sha256"),
@@ -2135,231 +2135,231 @@ def main() -> None:
         elif command == "gcenter103-alerts-list":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_alerts_list(
+                gcenter103_alerts_list_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_alerts_get(
+                gcenter103_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-note-add":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_alerts_note_add(
+                gcenter103_alerts_note_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-note-remove":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_alerts_note_remove(
+                gcenter103_alerts_note_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-tags-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_alerts_tags_get(
+                gcenter103_alerts_tags_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-tags-add":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_alerts_tags_add(
+                gcenter103_alerts_tags_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-tags-remove":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_alerts_tags_remove(
+                gcenter103_alerts_tags_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-status-update":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_alerts_status_update(
+                gcenter103_alerts_status_update_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-raw-alerts-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_raw_alerts_get(
+                gcenter103_raw_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-raw-alerts-file-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_raw_alerts_file_get(
+                gcenter103_raw_alerts_file_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-file-scan":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_file_scan(
+                gcenter103_file_scan_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-file-scan-result-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_file_scan_result_get(
+                gcenter103_file_scan_result_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-list":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_assets_list(
+                gcenter103_assets_list_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-alerts-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_assets_alerts_get(
+                gcenter103_assets_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_assets_get(
+                gcenter103_assets_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-note-add":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_assets_note_add(
+                gcenter103_assets_note_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-note-remove":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_assets_note_remove(
+                gcenter103_assets_note_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-tags-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_assets_tags_get(
+                gcenter103_assets_tags_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-tags-add":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_assets_tags_add(
+                gcenter103_assets_tags_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-tags-remove":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_assets_tags_remove(
+                gcenter103_assets_tags_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-list":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_users_list(
+                gcenter103_users_list_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-alerts-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_users_alerts_get(
+                gcenter103_users_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_users_get(
+                gcenter103_users_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-note-add":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_users_note_add(
+                gcenter103_users_note_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-note-remove":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_users_note_remove(
+                gcenter103_users_note_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-tags-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_users_tags_get(
+                gcenter103_users_tags_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-tags-add":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_users_tags_add(
+                gcenter103_users_tags_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-tags-remove":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_users_tags_remove(
+                gcenter103_users_tags_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-yara-rules-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_yara_rules_get(
+                gcenter103_yara_rules_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-yara-rules-add":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_yara_rules_add(
+                gcenter103_yara_rules_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-malcore-fingerprints-get":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_malcore_fingerprints_get(
+                gcenter103_malcore_fingerprints_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-malcore-fingerprints-add":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_malcore_fingerprints_add(
+                gcenter103_malcore_fingerprints_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-malcore-fingerprints-remove":
             client: GwClient = gw_client_auth(params=params)
             return_results( # noqa: F405
-                gcenter103_malcore_fingerprints_remove(
+                gcenter103_malcore_fingerprints_remove_command(
                     client=client,
                     args=args)
             )
