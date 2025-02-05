@@ -20,16 +20,17 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | template_name | The name of a template to choose it from 'templates'. |
 | templates | A list of templates to choose from for building an entry. |
 | base_time | The base time for the relative time provided to earliest_time or latest_time \(The default is the first available value from the following: alert.occurred, incident.occurred, alert.created, incident.created, now\). |
-| round_time | The value \(in seconds\) used to round down the base time \(Default = 0\). |
+| round_time | The value \(in seconds\) used to round down the base time \(Default = 0\). If two parameters are provided in a list, they will be applied to the base time for `earliest_time` and `latest_time`, respectively. |
 | earliest_time | The earliest time at which the time range of the query starts \(Default = 24 hours ago\). |
 | latest_time | The latest time at which the time range of the query ends \(Default = now\). |
 | variable_substitution | The pair of default opening and closing markers that enclose a variable name \(Default = $\{,\}\). |
-| triple_quotes_to_string | Set to true to convert a string within triple quotes in the templates to a JSON string if it is of type string. Set to false to use the templates as they are, without any conversion. Both triple single quotes and triple double quotes are supported. \(Default = true\) |
+| triple_quotes_to_string | Set to true to convert a string within triple quotes in the templates to a JSON string if it is of type string. Set to false to use the templates as they are, without any conversion. Both triple single quotes, triple double quotes and triple backquotes are supported. \(Default = true\) |
 | cache_type | The name of the type that defines which data is stored and retrieved from the cache to create the entry \(Default = recordset\). |
 | max_retries | The maximum number of retries to query XQL for recoverable errors \(Default = 10\). |
 | retry_interval | The wait time \(in seconds\) between retries \(Default = 10\). |
 | polling_interval | The polling interval \(in seconds\) to wait for results \(Default = 10\). |
 | query_timeout_duration | The maximum duration (in seconds) allowed for an XQL query to complete after it has started \(Default = 60\). |
+| context_data | The custom context data used in place of the current context data. |
 | xql_query_instance | The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results. |
 
 
@@ -92,7 +93,7 @@ The summary of the template structure in the templates is provided below.
       "time_range": {
         "earliest_time": "<earliest time>",
         "latest_time": "<latest time>",
-        "round_time": "<round time>"
+        "round_time": <round time>
       },
       "conditions": <conditions>
     },
@@ -101,7 +102,9 @@ The summary of the template structure in the templates is provided below.
       "<widget type>": <widget type dependent data>
       "default": {
         "scope": "<scope>",
-        "entry": <default entry>
+        "entry": <default entry>,
+        "no_recordset": <default entry>,
+        "query_skipped": <default entry>
       }
     }
   }
@@ -121,12 +124,16 @@ The summary of the template structure in the templates is provided below.
 ---
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| .query.xql | The XQL query string to retrieve the record set to create an entry. [Variable Substitution](#variable-substitution) is supported. | String |
+| .query.xql | The XQL query string to retrieve the record set to create an entry. | String |
 | .query.command.using | [Optional] The name of the integration instance to execute the XQL query command. It overrides `xql_query_instance` in the argument parameters. | String |
 | .query.time_range.earliest_time | [Optional] The earliest time at which the time range of the query starts. It overrides `earliest_time` in the argument parameters. | String or Number |
 | .query.time_range.latest_time | [Optional] The latest time at which the time range of the query ends. It overrides `latest_time` in the argument parameters. | String or Number |
-| .query.time_range.round_time | [Optional] The value (in seconds) used to round down the base time. It overrides `round_time` in the argument parameters. | String or Number |
-| .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, the `.entry.default` will be applied if it is specified and the conditions defined for it are satisfied, otherwise, an empty record set will be returned. [Variable Substitution](#variable-substitution) is supported. | Any |
+| .query.time_range.round_time | [Optional] The value (in seconds) used to round down the base time. If the value is of type dict, `.query.time_range.round_time.earliest_time` and `.query.time_range.round_time.latest_time` can be provided. This parameter overrides `round_time` in the argument parameters. | String, Number or Dict |
+| .query.time_range.round_time.earliest_time | [Optional] The value (in seconds) used to round down the base time for `earliest_time`. | String or Number |
+| .query.time_range.round_time.latest_time | [Optional] The value (in seconds) used to round down the base time for `latest_time`. | String or Number |
+| .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, the `.entry.default` will be applied if it is specified and the conditions defined for it are satisfied, otherwise, an empty record set will be returned. | Any |
+
+This node supports [Variable Substitution](#variable-substitution) for all parameters.
 
 
 #### Note: .query.conditions
@@ -1224,7 +1231,9 @@ The record set must contain at most one record for the duration widget entry. An
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .scope | [Optional] A list of scope. The possible values are `no_recordset` and `query_skipped,` which indicate when no record set is available or when a query is skipped, respectively (Default = ["no_recordset", "query_skipped"]). | String or List |
-| .entry | The default entry that is returned when the conditions specified in `.scope` are met. | String or Dict |
+| .entry | [Optional] The default entry that is returned when the conditions specified in `.scope` are met, and no specific default entries are available. | String or Dict |
+| .no_recordset | [Optional] The default entry returned when `no_recordset` is given to `.scope`, and the specified conditions are met. | String or Dict |
+| .query_skipped | [Optional] The default entry returned when `query_skipped` is given to `.scope`, and the specified conditions are met. | String or Dict |
 
 The default entry is a fallback value. Instead of creating an entry from the query results,
 it is used to display a message indicating that the query was not executed or that no record set is available.
@@ -1232,7 +1241,7 @@ It will be applied if either of the following conditions is met:
  - `query_skipped` is included in the `.scope`, and the `.query.conditions` in the `query` node evaluates to false.
  - `no_recordset` is included in the `.scope`, and no record set is returned by the XQL query.
 
-The `.entry` must be of type `str` or `dict`.
+The `.no_recordset`, `.query_skipped` and `.entry` must be of type `str` or `dict`.
 If it is of type `str`, it represents markdown text to be displayed as an entry, as shown below:
 
 ```

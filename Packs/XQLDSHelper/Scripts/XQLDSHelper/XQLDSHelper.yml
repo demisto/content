@@ -16,7 +16,7 @@ args:
 - description: 'The base time for the relative time provided to earliest_time or latest_time (The default is the first available value from the following: alert.occurred, incident.occurred, alert.created, incident.created, now).'
   name: base_time
 - defaultValue: '0'
-  description: The value (in seconds) used to round down the base time (Default = 0).
+  description: 'The value (in seconds) used to round down the base time (Default = 0). If two parameters are provided in a list, they will be applied to the base time for earliest_time and latest_time, respectively.'
   name: round_time
 - defaultValue: 24 hours ago
   description: The earliest time at which the time range of the query starts (Default = 24 hours ago).
@@ -54,6 +54,8 @@ args:
 - defaultValue: '60'
   description: The maximum duration (in seconds) allowed for an XQL query to complete after it has started. (Default = 60).
   name: query_timeout_duration
+- description: The custom context data used in place of the current context data.
+  name: context_data
 - description: The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results.
   name: xql_query_instance
 commonfields:
