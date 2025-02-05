@@ -8,7 +8,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Atlassian Jira V3.
-3. **Authentication**: Basic Authentication, Personal Access Token and OAuth 2.0 are used for both Jira Cloud, and OnPrem. Read the [Authentication](#authentication) process in order to configure your instance
+3. **Authentication**: Basic Authentication, Personal Access Token, and OAuth 2.0 are used for Jira Cloud and On-prem. Read the [Authentication](#authentication) process in order to configure your instance
 4. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -20,7 +20,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Callback URL | used only for OAuth 2.0 method | False |
     | Client ID | used only for OAuth 2.0 method | False |
     | Client Secret | used only for OAuth 2.0 method | False |
-    | Personal Access Token | used only for Personal Access Token method | False |
+    | Personal Access Token | used only for the Personal Access Token method | False |
     | Query (in JQL) for fetching incidents | The field that was selected in the "Issue Field to fetch by" can't be used. in the query. | False |
     | Issue Field to fetch by | This is how the field \(e.g, created date\) is applied to the query: created &amp;gt;= \{created date in last run\} ORDER BY created ASC | False |
     | Issue index to start fetching incidents from | This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query. | False |
