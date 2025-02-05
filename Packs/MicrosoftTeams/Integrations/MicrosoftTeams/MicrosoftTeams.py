@@ -2162,7 +2162,7 @@ def send_message():
         if not team_member_id:
             demisto.debug(f"Did not find '{team_member=}' will update integration context with all team members.")
             update_integration_context_with_all_team_members(integration_context)
-            team_member_id: str = get_team_member_id(team_member, integration_context)
+            team_member_id = get_team_member_id(team_member, integration_context)
         if not team_member_id:
             demisto.error(f"Could not find team member ID for '{team_member}' in integration context.")
             raise ValueError(f"Could not find team member ID for '{team_member}'.")
