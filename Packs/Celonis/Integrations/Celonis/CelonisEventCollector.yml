@@ -27,8 +27,8 @@ configuration:
   required: false
   type: 8
   section: Connect
-- additionalinfo: 'Defines the maximum number of audits events per fetch cycle. Default value: 2000.'
-  defaultvalue: "2000"
+- additionalinfo: 'Defines the maximum number of audits events per fetch cycle. Default value: 600.'
+  defaultvalue: "600"
   display: Maximum number of events per fetch
   name: max_events_per_fetch
   required: true

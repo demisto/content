@@ -26,9 +26,9 @@ urllib3.disable_warnings()
 VENDOR = 'Celonis'
 PRODUCT = 'Celonis'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-PAGE_SIZE = 1
+PAGE_SIZE = 200
 PAGE_NUMBER = 0
-DEFAULT_FETCH_LIMIT = 3
+DEFAULT_FETCH_LIMIT = 600
 BEARER_PREFIX = 'Bearer '
 
 """ CLIENT CLASS """
