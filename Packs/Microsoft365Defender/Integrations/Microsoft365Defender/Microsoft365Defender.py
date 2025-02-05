@@ -981,8 +981,8 @@ def mirror_out_entries(client: Client, entries: list[Dict], comment_tag: str, re
                 text = f"({user}): {str(entry.get('contents', ''))}\n\n {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}"
 
             client.update_incident(incident_id=remote_incident_id,
-                                                      timeout=TIMEOUT_INT,
-                                                      comment=text)
+                                   timeout=TIMEOUT_INT,
+                                   comment=text)
             demisto.debug(f"Microsoft Defender 365 - mirror out entries updated incident {remote_incident_id=}")
 
         else:
@@ -1013,13 +1013,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             handle_incident_close_out_or_reactivation(delta, update_remote_system_args.inc_status)
 
             client.update_incident(incident_id=remote_incident_id,
-                                                      status=delta.get('status'),
-                                                      assigned_to=delta.get('assignedTo'),
-                                                      classification=delta.get('classification'),
-                                                      determination=delta.get('determination'),
-                                                      tags=argToList(delta.get('tags')),
-                                                      timeout=TIMEOUT_INT,
-                                                      comment=delta.get('comment'))
+                                   status=delta.get('status'),
+                                   assigned_to=delta.get('assignedTo'),
+                                   classification=delta.get('classification'),
+                                   determination=delta.get('determination'),
+                                   tags=argToList(delta.get('tags')),
+                                   timeout=TIMEOUT_INT,
+                                   comment=delta.get('comment'))
 
             demisto.debug(f"Microsoft Defender 365 - Updated incident {remote_incident_id=}")
         else:
@@ -1030,7 +1030,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         if update_remote_system_args.entries:
             comment_tag = demisto.params().get('comment_tag', COMMENT_TO_MICROSOFT_DEFAULT_TAG)
             demisto.debug(
-                f"Microsoft Defender 365 - new entries were found in the xsoar incident.")
+                "Microsoft Defender 365 - new entries were found in the xsoar incident.")
             mirror_out_entries(client, update_remote_system_args.entries, comment_tag, remote_incident_id)
 
         return remote_incident_id

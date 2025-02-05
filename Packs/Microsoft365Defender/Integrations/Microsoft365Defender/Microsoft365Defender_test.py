@@ -788,7 +788,7 @@ def test_mirror_out_entries_with_comment_tag(mocker):
     assert client.update_incident.call_count == 1
     client.update_incident.assert_any_call(
         incident_id=remote_incident_id,
-        timeout=50,
+        timeout=30,
         comment=f"(user1): Test content\n\n {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}"
     )
 
@@ -874,7 +874,7 @@ def test_update_remote_system_with_incident_changes(mocker):
         classification=None,
         determination=None,
         tags=["test_tag"],
-        timeout=50,
+        timeout=30,
         comment="Test comment"
     )
 
