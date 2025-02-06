@@ -331,7 +331,7 @@ def search_records_soap_request(
     filter_conditions: list[str] = []
 
     if xml_filter_conditions:
-        filter_conditions.extend(xml_filter_conditions)
+        filter_conditions.append(xml_filter_conditions)
 
     if search_value:
         if date_operator:
