@@ -2421,7 +2421,7 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
-  dockerimage: demisto/vendors-sdk:1.0.0.2121370
+  dockerimage: demisto/vendors-sdk:1.0.0.2141458
   runonce: false
   script: '-'
   type: python
@@ -2431,4 +2431,4 @@ script:
   longRunningPort: false
 tests:
 - No test - test 'DomainTools Iris - Test' was moved to NonCircleFolder
-fromversion: 5.5.0
+fromversion: 5.0.0
