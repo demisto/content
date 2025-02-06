@@ -394,8 +394,10 @@ def get_team_member(integration_context: dict, team_member_id: str) -> dict:
         team_members: list = team.get('team_members', [])
         for member in team_members:
             if member.get('id') == team_member_id:
+                demisto.debug(f'get_team_member details: {member=}')
                 team_member['username'] = member.get('name', '')
-                team_member['user_email'] = member.get('userPrincipalName', '')
+                team_member['user_email'] = member.get('email', '')
+                team_member['userPrincipalName'] = member.get('userPrincipalName', '')
                 return team_member
 
     raise ValueError('Team member was not found')
@@ -2448,28 +2450,19 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     team_member: dict = get_team_member(integration_context, user_id)
     if team_member:
         # enrich our data with the sender info
-        demisto.debug(f'Found team member {team_member}')
+        demisto.debug(f'direct_message_handler for: {team_member=}')
         request_body['from'].update(team_member)
 
     username: str = team_member.get('username', '')
-    demisto.debug(f'Found {username=}')
     user_email: str = team_member.get('user_email', '')
-    demisto.debug(f'Found {user_email=}')
-    demisto_user_by_email = demisto.findUser(email=user_email)
-    demisto.debug(f'Found {demisto_user_by_email=}')
-    demisto_user_by_username = demisto.findUser(username=username)
-    demisto.debug(f'Found {demisto_user_by_username=}')
     user_upn = team_member.get('userPrincipalName', '')
-    demisto_user_by_upn = demisto.findUser(email=user_upn)
-    demisto.debug(f'Found {demisto_user_by_upn=}')
     demisto_user = demisto.findUser(email=user_email)
-    demisto.debug(f'findUser by email {demisto_user=}')
     if not demisto_user:
         demisto_user = demisto.findUser(username=username)
-        demisto.debug(f'findUser by username {demisto_user=}')
     if not demisto_user:
-        demisto_user = demisto.findUser(email=demisto_user_by_upn)
-        demisto.debug(f'findUser by upn {demisto_user=}')
+        demisto_user = demisto.findUser(email=user_upn)
+    if not demisto_user:
+        demisto.debug('direct_message_handler Failed to find user by email, username and UPN')
 
     formatted_message = ''
 
