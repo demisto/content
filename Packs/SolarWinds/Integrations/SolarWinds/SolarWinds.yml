@@ -16,7 +16,7 @@ configuration:
 - additionalinfo: 'Port number with which to connect to the Orion server. Default is 17778.'
   display: Port
   name: port
-  required: true
+  required: false
   type: 0
   section: Connect
 - additionalinfo: Admin can create users such as guests from the Orion platform and provide access permission according to need.
