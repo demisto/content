@@ -9,9 +9,18 @@
     "filter": {
       "AND": [
         {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "SPNs cleared from a machine account"
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "SPNs cleared from a machine account"
+            },
+            {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "SPNs cleared from a machine account for the first time"
+            }
+        ]
         }
       ]
     }
