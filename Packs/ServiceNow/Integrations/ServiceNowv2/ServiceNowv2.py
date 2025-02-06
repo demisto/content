@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 from collections.abc import Callable, Iterable
 import jwt
-import datetime
 import uuid
 
 import mimetypes
@@ -2453,8 +2452,24 @@ def test_instance(client: Client):
         if client.incident_name not in ticket:
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
 
-def jwt_authorization(jwt_key_id, jwt_key, jwt_sub):
-    pass
+
+def jwt_authorization(jwt_key_id: str, jwt_key: str, jwt_sub: str) -> str:
+    header = {
+        "alg": "RS256",  # Signing algorithm
+        "typ": "JWT",  # Token type
+        "kid": jwt_key_id  # From ServiceNow (see Jwt Verifier Maps )
+    }
+    payload = {
+        "sub": jwt_sub,  # Subject (e.g., user ID)
+        "aud": jwt_key_id,  # serviceNow client_id
+        "iss": jwt_key_id,  # can be serviceNow client_id
+        "iat": datetime.now(timezone.utc),  # Issued at
+        "exp": datetime.now(timezone.utc) + timedelta(hours=1),  # Expiry time 1 hour
+        "jti": str(uuid.uuid4())    # Unique JWT ID
+    }
+    jwt_token = jwt.encode(payload, jwt_key, algorithm="RS256", headers=header)
+    return jwt_token
+
 
 def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any], bool]:
     """
@@ -3203,9 +3218,6 @@ def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandRe
     return f"Request for {method} method is not successful"
 
 
-
-
-
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -3242,12 +3254,12 @@ def main():
             'use_oauth': use_oauth
         }
     elif use_jwt_outh:
-        jwt_key_id = params.get('jwt_credentials', '')
-        jwt_private_key= params.get('jwt_credentials', '')
+        jwt_key_id = params.get('jwt_credentials', {}).get('identifier')
+        jwt_private_key = params.get('jwt_credentials', {}).get('password')
         jwt_sub = params.get('jwt_sub', '')
         jwt_token = jwt_authorization(jwt_key_id, jwt_private_key, jwt_sub)
         demisto.debug(f'{jwt_token}')
-    
+
     else:  # use basic authentication
         username = params.get('credentials', {}).get('identifier')
         password = params.get('credentials', {}).get('password')
