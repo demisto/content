@@ -7,7 +7,7 @@ type: javascript
 tags:
 - Utility
 comment: |-
-  Delete field from context test test.
+  Delete field from context.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
