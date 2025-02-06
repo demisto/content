@@ -419,6 +419,9 @@ script:
       description: The page of the pulse to retrieve.
       name: page
       required: true
+    - description: TO delete.
+      name: delete
+      required: false   
     description: Searches for pulses in AlienVault OTX.
     name: alienvault-search-pulses
     outputs:
