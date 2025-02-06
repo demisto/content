@@ -551,7 +551,7 @@ def test_module(client: Client) -> str:
 
 def fetch_incidents(
     client: Client, args: dict[str, Any], params: dict[str, Any], current_time: datetime
-) -> tuple[list[dict], dict[str, Any]]:
+) -> tuple[dict[str, Any], list[dict]]:
     """
     Retrieves findings every interval (default is 1 minute).
     By default it's invoked by XSOAR every minute.
@@ -563,9 +563,9 @@ def fetch_incidents(
         params (dict[str, Any]: Instance params from XSOAR.
         end_time (str): The current time string formated.
     Returns:
-        tuple[list[dict], dict[str, Any]]:
-            incidents: List of incidents that will be created in XSOAR.
+        tuple[dict[str, Any], list[dict]]:
             next_run: Contains information that will be used in the next run.
+            incidents: List of incidents that will be created in XSOAR.
     """
     end_time = current_time.strftime(DATE_FORMAT)
     incidents = []
