@@ -622,7 +622,7 @@ def fetch_incidents(
 
     demisto.debug(f"fetch: Update last run time to {new_last_run}.")
     demisto.debug(f"fetch: Fetched {len(incidents)} incidents.")
-    return incidents, {"time": new_last_run}
+    return incidents, {"time": new_last_run}  # type: ignore [return-value]
 
 
 ''' HELPER COMMANDS '''
