@@ -723,12 +723,14 @@ script:
         actions executed by human may take longer.
       defaultValue: "True"
     - name: quarantine_timestamp_limit
-      default: true
       description: Only used if 'limit_quarantine_occurred_time' is set to true.  Sets
         a limit on the quarantines retrieved to include only those where the time
         difference between alert time and quarantined time is less than the number
         of seconds specified. The time is in seconds.
       defaultValue: "120"
+    - name: compare_message_time
+      defaultValue: true
+      description: Whether to retrieve only messages that has the same messageDeliveryTime as the time argument.
     outputs:
     - contextPath: ProofPointTRAP.Quarantine
       description: Results of the email quarantine operation.
