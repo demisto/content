@@ -31,14 +31,14 @@ Returns a list of custom device fields associated with the given device_id, base
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | The system unique identifier of the device. | Required | 
-
+| limit | Maximum number of results to return. Default value is 50. Default is 50. | Optional | 
+| all_results | Whether to all results or not. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Absolute.CustomDeviceField.DeviceUID | String | The system-defined unique identifier of the device. | 
-| Absolute.CustomDeviceField.ESN | String | The unique ESN \(identifier\) assigned to the Absolute agent that is installed on a device. | 
 | Absolute.CustomDeviceField.CDFValues.CDFUID | String | The unique identifier of the custom device field. | 
 | Absolute.CustomDeviceField.CDFValues.FieldKey | String | The unique identifier of the custom device field in the classic version of Absolute. | 
 | Absolute.CustomDeviceField.CDFValues.FieldName | String | The name assigned to the custom device field. | 
@@ -71,8 +71,7 @@ Returns a list of custom device fields associated with the given device_id, base
                     "Type": "Text"
                 }
             ],
-            "DeviceUID": "1234",
-            "ESN": "D0004"
+            "DeviceUID": "1234"
         }
     }
 }
@@ -174,7 +173,7 @@ Creates a new Freeze request for the devices specified in the device_ids argumen
 
 ### absolute-device-remove-freeze-request
 ***
-Creates a new Remove Freeze request for one or more devices, regardless of their Freeze status. You can submit Remove Freeze requests to perform the following actions: unfreeze frozen devices, remove newly submitted Freeze requests, or remove outstanding Scheduled and Offline Freeze requests.
+Creates a new Remove Freeze request for one or more devices, regardless of their Freeze status. You can submit Remove Freeze requests to perform the following actions: unfreeze frozen devices, remove newly submitted Freeze requests, or remove outstanding Scheduled and Offline Freeze requests. In case of removing from offline:  In addition to creating a Remove Freeze request for devices with a status of Frozen by Condition: Offline, removes Offline Freeze requests from devices with a status of Freeze Requested or Freeze Condition - Offline Set. In case of not removing from offline: a Remove Freeze request is created for the devices but the Conditional - Offline Freeze request is not deleted (deprecated).
 
 
 #### Base Command
@@ -186,7 +185,7 @@ Creates a new Remove Freeze request for one or more devices, regardless of their
 | --- | --- | --- |
 | device_ids | A comma-separated list of the unique identifiers of devices included in the request. The recommendation is to use up to 10,000 devices per request. | Required | 
 | remove_scheduled | Whether to remove only a Scheduled Freeze request. Note: When setting to true, if the Freeze request is a Scheduled Freeze request, the Freeze request is removed. Otherwise, when setting to false, if the Freeze request is not a Scheduled Freeze request, the Freeze request is not removed. Possible values are: true, false. | Optional | 
-| remove_offline | Whether to remove only an Offline Freeze request. Note: When setting to true, if the Freeze request is an Offline Freeze request, the Freeze request is removed. Otherwise, when setting to false, if the Freeze request is not an Offline Freeze request, the Freeze request is not removed. Possible values are: true, false. | Optional | 
+| remove_offline | Whether to remove only an Offline Freeze request. Note: When setting to true, if the Freeze request is an Offline Freeze request, the Freeze request is removed. Otherwise, when setting to false, if the Freeze request is not a Offline Freeze request, the Freeze request is not removed. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
@@ -222,18 +221,17 @@ Gets detailed information about the Freeze request specified by request_uid.
 | Absolute.FreezeRequestDetail.ActionRequestUid | String | The system-defined, unique identifier of the Freeze request \(the same as ID\). | 
 | Absolute.FreezeRequestDetail.DeviceUid | String | The system-defined, unique identifier of the device. | 
 | Absolute.FreezeRequestDetail.Statuses.actionUid | String | The system-defined, unique identifier of the Freeze action. | 
-| Absolute.FreezeRequestDetail.Statuses.statusUid | String | The system-defined, unique identifier of the Freeze status. | 
 | Absolute.FreezeRequestDetail.Statuses.messageKey | String | The reference key for the error message or the info message. Error messages start with 'dds'. Info messages start with 'ddsui'. | 
 | Absolute.FreezeRequestDetail.Statuses.messageParams | Unknown | A list of strings describing the error message when the status is LaunchFailed. If the status isn't LaunchFailed, messageParams is empty. | 
 | Absolute.FreezeRequestDetail.Statuses.message | String | The message for the status change that occurred. | 
 | Absolute.FreezeRequestDetail.Statuses.updatedBy | String | The last entity to update the Freeze request. | 
-| Absolute.FreezeRequestDetail.Statuses.updatedUtc | Date | The time \(in Unix epoch\) when the Freeze request was last updated. | 
+| Absolute.FreezeRequestDetail.Statuses.updatedDateTimeUtc | Date | The time \(in Unix epoch\) when the Freeze request was last updated. | 
 | Absolute.FreezeRequestDetail.Statuses.triggerActionUid | String | The system-defined, unique identifier of a new Freeze request that replaces another Freeze request of the same type. | 
 | Absolute.FreezeRequestDetail.Statuses.eventType | String | Device freeze type event. | 
-| Absolute.FreezeRequestDetail.Statuses.ackClientTS | Number | The acknowledgment timestamp \(in Unix epoch local time\) when the request was downloaded on the device. | 
-| Absolute.FreezeRequestDetail.Statuses.ackClientUtc | Number | The acknowledgment timestamp \(in Unix epoch UTC\) when the request was downloaded to the device. | 
+| Absolute.FreezeRequestDetail.Statuses.ackClientTS | Number | The acknowledgment timestamp \(in UNIX epoch local time\) when the request was downloaded on the device. | 
+| Absolute.FreezeRequestDetail.Statuses.ackClientDateTimeUtc | Number | The acknowledgment timestamp \(in UNIX epoch UTC\) when the request was downloaded to the device. | 
 | Absolute.FreezeRequestDetail.Statuses.instruction | String | All action instructions which are sent from the device DFZ agent component. | 
-| Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateUTC | Number | The date and time \(in Unix epoch\) when a Scheduled Freeze request was scheduled to be performed. | 
+| Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateTimeUtc | Number | The date and time \(in Unix epoch\) when a Scheduled Freeze request was scheduled to be performed. | 
 | Absolute.FreezeRequestDetail.Configuration.messageName | String | The user-defined name for the Freeze message. | 
 | Absolute.FreezeRequestDetail.Configuration.htmlClear | String | The user-defined, HTML coded message shown on the device when the Freeze is applied \(the same as Configuration.freezeMessage except it contains the HTML tags\). | 
 | Absolute.FreezeRequestDetail.Configuration.passcodeClear | String | The passcode that can be used to unfreeze the device. | 
@@ -250,15 +248,14 @@ Gets detailed information about the Freeze request specified by request_uid.
 | Absolute.FreezeRequestDetail.Configuration.disableRemoteLogin | Boolean | Whether remote login is disabled on the device. | 
 | Absolute.FreezeRequestDetail.Configuration.disableFileSharing | Boolean | Whether file sharing is disabled on the device. | 
 | Absolute.FreezeRequestDetail.Configuration.Conditions.secondsUntilFreeze | Number | The amount of time \(in seconds\) a device can be offline before the device is frozen. | 
-| Absolute.FreezeRequestDetail.Configuration.Conditions.scheduledFreezeDate | Date | The date and time \(in UTC\) that a Scheduled Freeze request is scheduled to be performed. | 
-| Absolute.FreezeRequestDetail.Configuration.issuedUtc | Date | The date and time \(in Unix epoch\) when the Freeze request was created. | 
+| Absolute.FreezeRequestDetail.Configuration.Conditions.scheduledFreezeDate | Date | The date and time \(in UTC\) when a Scheduled Freeze request is scheduled to be performed. | 
+| Absolute.FreezeRequestDetail.Configuration.issuedDateTimeUTC | Date | The date and time \(in UNIX epoch\) when the Freeze request was created. | 
 | Absolute.FreezeRequestDetail.Configuration.preLoginEnabled | Boolean | Whether pre-login is enabled on the device. | 
 | Absolute.FreezeRequestDetail.Configuration.serviceControlList | String | List of service controls that the server sends to the device. | 
 | Absolute.FreezeRequestDetail.Name | String | The user-defined name for the Freeze request. | 
 | Absolute.FreezeRequestDetail.Requester | String | The user ID of the entity that created the Freeze request. | 
-| Absolute.FreezeRequestDetail.RequesterUid | String | The system-defined unique identifier of the user who created the Freeze request. | 
-| Absolute.FreezeRequestDetail.CreatedUTC | Date | The date and time \(in Unix epoch\) when the Freeze request was created. | 
-| Absolute.FreezeRequestDetail.ChangedUTC | Date | The date and time \(in Unix epoch\) when the Freeze request was last modified. | 
+| Absolute.FreezeRequestDetail.CreatedUTC | Date | The date and time \(in UNIX epoch\) when the Freeze request was created. | 
+| Absolute.FreezeRequestDetail.ChangedUTC | Date | The date and time \(in UNIX epoch\) when the Freeze request was last modified. | 
 | Absolute.FreezeRequestDetail.NotificationEmails | Unknown | An array of user-entered email addresses that will receive an email notification when the status of the Freeze request changes. Supports up to 10 email addresses. | 
 | Absolute.FreezeRequestDetail.EventHistoryId | String | The user-friendly identifier of the request that is displayed in the event history in the Absolute console \(same as freezeId\). | 
 | Absolute.FreezeRequestDetail.PolicyGroupUid | String | The system-defined unique identifier of the policy group that the device belongs to. | 
@@ -363,7 +360,8 @@ Gets all the Freeze messages that are configured for the account by the given me
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message_id | The system-defined, unique identifier of the Freeze message. | Optional | 
-
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page | The page number of the results to retrieve. Default is 0. | Optional | 
 
 #### Context Output
 
@@ -506,18 +504,34 @@ Initiates an unenroll request on a list of eligible devices.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_ids | A comma-separated list of device UIDs that should be unenrolled. | Required | 
+| exclude_missing_devices | Whether to exclude missing devices or not. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Absolute.DeviceUnenroll.DeviceUid | String | The unique GUID identifier of the device. | 
-| Absolute.DeviceUnenroll.SystemName | String | The name assigned to the device. | 
-| Absolute.DeviceUnenroll.Username | String | The unique user name of the user who was logged into the device at the time of the agent call. | 
-| Absolute.DeviceUnenroll.EligibleStatus | Number | The eligibility status of the device. Possible vales are: 0 for eligible, 1 for inactive or disabled, and 2 for stolen. | 
-| Absolute.DeviceUnenroll.Serial | String | The identification number that is assigned to the device by the device manufacturer. | 
-| Absolute.DeviceUnenroll.ESN | String | The unique Electronic SerialNumber \(ESN\) that is assigned to the agent installed on the device. | 
+| Absolute.DeviceUnenroll.TotalDevices | String | The total devices in the request. | 
+| Absolute.DeviceUnenroll.Pending | Number | The number of pending devices. | 
+| Absolute.DeviceUnenroll.Processing | Number | The number of processing devices. | 
+| Absolute.DeviceUnenroll.Completed | Number | The number of completed device unenroll. | 
+| Absolute.DeviceUnenroll.Canceled | Number | The number of canceled device unenroll. | 
+| Absolute.DeviceUnenroll.Failed | Number | The number of failed device unenroll. | 
+| Absolute.DeviceUnenroll.RequestId | String | The unique ID identifier of the request. | 
+| Absolute.DeviceUnenroll.RequestUid | String | The unique GUID identifier of the request. | 
+| Absolute.DeviceUnenroll.RequestStatus | String | The status of the request. | 
+| Absolute.DeviceUnenroll.UpdatedDateTimeUtc | Date | The time \(in Unix epoch\) when the request was last updated. | 
+| Absolute.DeviceUnenroll.CreatedDateTimeUtc | Date | The time \(in Unix epoch\) when the request was created. | 
+| Absolute.DeviceUnenroll.Requester | String | The requester of the request. | 
+| Absolute.DeviceUnenroll.ExcludeMissingDevices | Boolean | Whether the request includes missing devices or not. | 
+| Absolute.DeviceUnenroll.Devices.DeviceUid | String | The unique GUID identifier of the device. | 
+| Absolute.DeviceUnenroll.Devices.ActionUid | String | The unique GUID identifier of the action. | 
+| Absolute.DeviceUnenroll.Devices.RequestUid | String | The unique GUID identifier of the request. | 
+| Absolute.DeviceUnenroll.Devices.DeviceName | String | The unique device name of the device. | 
+| Absolute.DeviceUnenroll.Devices.ActionStatus | String | The status of the action. | 
+| Absolute.DeviceUnenroll.Devices.ESN | String | The unique Electronic SerialNumber \(ESN\) that is assigned to the agent installed on the device. | 
+| Absolute.DeviceUnenroll.Devices.UpdatedDateTimeUtc | Date | The time \(in Unix epoch\) when the request was last updated. | 
+| Absolute.DeviceUnenroll.Devices.CreatedDateTimeUtc | Date | The time \(in Unix epoch\) when the request was created. | 
 
 #### Command example
 ```!absolute-device-unenroll device_ids="1"```
@@ -570,15 +584,14 @@ Gets a list of device records and the corresponding software application data fo
 | --- | --- | --- |
 | filter | The query by which to filter the device applications. If this argument is set, it overrides the others. For example, appName eq 'someName' or availableVirtualMemoryBytes lt 1073741824. | Optional | 
 | return_fields | A comma-separated list of all specific values to return. If not set, all possible values will be returned. | Optional | 
-| account_uids | A comma-separated list of the unique ID associated with this Absolute accounts. | Optional | 
 | device_ids | A comma-separated list of the system-defined unique identifier of the devices. | Optional | 
 | device_names | A comma-separated list of the devices names. | Optional | 
-| app_names | A comma-separated list of the applications names. | Optional | 
+| app_names | A comma-separated list of the application names. | Optional | 
 | app_publishers | A comma-separated list of the name of the software publishers of the application. | Optional | 
 | user_names | A comma-separated list of the user names of the users logged in to the device. | Optional | 
 | os | A comma-separated list of the operating systems that are installed on the device. | Optional | 
 | esn | A comma-separated list of the system-defined unique Electronic Serial Numbers (ESN) assigned to the Absolute agent installed on the device. | Optional | 
-| limit | Maximum number of results to return. The default is 50. Default is 50. | Optional | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 0. Default is 0. | Optional | 
 
 
@@ -588,7 +601,6 @@ Gets a list of device records and the corresponding software application data fo
 | --- | --- | --- |
 | Absolute.DeviceApplication.DeviceAppId | String | The unique ID of the application. | 
 | Absolute.DeviceApplication.DeviceUid | String | The system-defined unique identifier of the device. | 
-| Absolute.DeviceApplication.AccountUid | String | The unique ID associated with this Absolute account. | 
 | Absolute.DeviceApplication.AppId | String | The identifier of the application. | 
 | Absolute.DeviceApplication.AppName | String | The name of the application. | 
 | Absolute.DeviceApplication.AppPublisher | String | The name of the software publisher of the application. | 
@@ -599,7 +611,7 @@ Gets a list of device records and the corresponding software application data fo
 | Absolute.DeviceApplication.DeviceSerialNumber | String | The identification number that is assigned to the device by the device manufacturer. | 
 | Absolute.DeviceApplication.UserName | String | Includes the device name and the username of the user logged in to the device at the time of the agent call. | 
 | Absolute.DeviceApplication.InstallPath | String | The location where the application is installed. | 
-| Absolute.DeviceApplication.InstallDate | Date | The date \(in Unix epoch time\) when the application was installed. | 
+| Absolute.DeviceApplication.InstallDate | Date | The date \(in UNIX epoch time\) when the application was installed. | 
 | Absolute.DeviceApplication.FirstDetectUtc | Date | The date and time \(in Unix epoch time\) when the indicated version of the application was first detected on the device. | 
 | Absolute.DeviceApplication.OsName | String | The operating system that is installed on the device. | 
 | Absolute.DeviceApplication.LastScanTimeUtc | Date | The date and time \(in Unix epoch time\) of the most recent installed software \(SNG\) scan. | 
