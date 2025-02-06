@@ -11289,32 +11289,9 @@ def get_pack_version(pack_name=''):
         case provided. in case not found returns empty string.
     :rtype: ``str``
     """
+    # Due to server performance issues we temporarily removed the code here since it uses the /settings/integration/search route
+    return "99.99.99"
 
-    def _get_packs_by_query(_body_request):
-        packs_body_response = demisto.internalHttpRequest(
-            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
-        )
-        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
-
-    def _load_response(_response):
-        try:
-            return json.loads(_response)
-        except json.JSONDecodeError:  # type: ignore[attr-defined]
-            demisto.debug('Unable to load response {response}'.format(response=_response))
-            return {}
-
-    def _extract_current_pack_version(_packs, _query_type, _entity_name):
-        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
-        if query_type == 'automation' or query_type == 'integration':
-            for pack in _packs:
-                for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
-                    if (content_entity.get('name') or '') == _entity_name:
-                        return pack.get('currentVersion') or ''
-        else:
-            for pack in _packs:
-                if pack.get('name') == _entity_name:
-                    return pack.get('currentVersion') or ''
-        return ''
 
     def _extract_integration_display_name(_integration_brand):
         integrations_body_response = demisto.internalHttpRequest(
