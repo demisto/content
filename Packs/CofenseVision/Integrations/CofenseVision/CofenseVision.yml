@@ -2265,6 +2265,9 @@ script:
         Note: Users can get the list of IDs by executing the "cofense-iocs-list" command.
       name: id
       required: true
+    - description: TO BE deleted.
+      name: delete_me
+      required: false
     description: Retrieves the IOC identified by its unique MD5 ID.
     name: cofense-ioc-get
     outputs:
