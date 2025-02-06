@@ -16,7 +16,7 @@ alter
     xdm.email.attachment.filename = arraystring(arraymap (json_extract_array (messageParts,"$."), json_extract_scalar ("@element", "$.filename")), ","),
     xdm.email.attachment.md5 = arraystring(arraymap (json_extract_array (messageParts,"$."), json_extract_scalar ("@element", "$.md5")), ","),
     xdm.email.attachment.sha256 = arraystring(arraymap (json_extract_array (messageParts,"$."), json_extract_scalar ("@element", "$.sha256")), ","),
-    xdm.email.recipients = if(_log_type ~= "messages", arraymap(json_extract_array(recipient, "$."), trim("@element", "\"")), _log_type ~= "clicks", arraycreate(recipient), arraycreate(recipient)),
+    xdm.email.recipients = if(recipient contains "[", arraymap(recipient -> [], trim("@element", "\"")), arraycreate(recipient)),
     xdm.email.return_path = sender,
     xdm.email.subject = subject,
     xdm.intermediate.host.ipv4_addresses = arraycreate(senderIP),
