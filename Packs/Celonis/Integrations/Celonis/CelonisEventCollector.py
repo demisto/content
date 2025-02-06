@@ -136,7 +136,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
         start = last_run.get('start_date', '')
-        client.set_token(last_run.get('token'))
+        client.set_token(last_run.get('token', ''))
         if not start:
             start = "2025-02-02T09:00:00"  # TODO
             # event_date = get_current_time().strftime(DATE_FORMAT)
