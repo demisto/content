@@ -572,7 +572,7 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
     if not last_run:  # this is the first run
         first_fetch_date_time = dateparser.parse(first_fetch_time)
         if not first_fetch_date_time:
-            raise DemistoException(f"Fetch incidents - Could not parse the first_fetch_time: {first_fetch_time=}")
+            raise DemistoException(f"Microsoft Defender 365 Fetch incidents - Could not parse the first_fetch_time: {first_fetch_time=}")
         last_run = first_fetch_date_time.strftime(DATE_FORMAT)
 
     # creates incidents queue
@@ -826,7 +826,7 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
         if MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR not in comment.get('comment', ''):
             comment_time = dateparser.parse(comment.get('createdTime', ''))
             if not comment_time:
-                demisto.error(f"Could not parse {comment.get('createdTime')} for {comment=}")
+                demisto.error(f"Microsoft Defender 365 Could not parse {comment.get('createdTime')} for {comment=}")
                 continue
             if comment_time > last_update:
                 entries.append(entry := {
@@ -881,7 +881,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     comment_tag = demisto.params().get('comment_tag_from_microsoft365defender', 'CommentFromMicrosoft365Defender')
     last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
     if not last_update:
-        demisto.error(f"get_remote_data_command - Could not parse {remote_args.last_update=}")
+        demisto.error(f"Microsoft Defender 365 get_remote_data_command - Could not parse {remote_args.last_update=}")
         return GetRemoteDataResponse({MICROSOFT_INCIDENT_ID_KEY: remote_incident_id}, entries=[])
     close_incident = argToBoolean(demisto.params().get('close_incident', False))
 
