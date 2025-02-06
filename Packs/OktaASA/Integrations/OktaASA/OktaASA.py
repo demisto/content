@@ -123,7 +123,9 @@ class OktaASAClient(BaseClient):
         token = token_response.get("bearer_token", "")
         self._headers = {'Authorization': f'Bearer {token}'}
 
-    def search_events(self, limit: Optional[int] = 10000, offset: str | None = None) -> tuple[List[Dict], Optional[str]]:
+    def search_events(
+        self, limit: Optional[int] = 10000, offset: str | None = None
+    ) -> tuple[List[Dict], Optional[str], Optional[str]]:
         """
         Searches for Okta ASA events using the '/auditsV2' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -134,25 +136,31 @@ class OktaASAClient(BaseClient):
 
         Returns:
             List[Dict]: events
+            str: id for last run
         """
         results: List[Dict] = []
         descending = False
+        returned_offset = offset
+        returned_timestamp = None
         # We are limited to 1000 results per request, count > 1000 does not work.
-        count = 1000 if limit and limit > 1000 else limit
+        count = min(limit, 1000) if limit else 1000
         while limit and len(results) < limit:
-            descending = bool(not offset)
-            events = self.execute_audit_events_request(offset=offset, count=count, descending=descending, prev=None)
+            descending = bool(not returned_offset)
+            events = self.execute_audit_events_request(
+                offset=returned_offset, count=count, descending=descending, prev=None
+            )
             if not events:
                 break
             event_offset = events[0] if descending else events[len(events) - 1]
-            offset = event_offset.get("id")
+            returned_offset = event_offset.get("id")
             results.extend(events)
-        demisto.debug(f"{INTEGRATION_NAME}: Finish requests with {len(results)} events")
-        number_of_requested_events = limit if limit and len(results) > limit else len(results) - 1
-        demisto.debug(f"{INTEGRATION_NAME}: will return {number_of_requested_events} events")
-        results = results[0:number_of_requested_events + 1]
+            count = min(limit - len(results), 1000)
+        if results:
+            list_last_index = len(results) - 1
+            demisto.debug(f"{INTEGRATION_NAME}: will return {len(results)} events")
+            returned_timestamp = results[list_last_index].get("timestamp")
 
-        return results, results[number_of_requested_events].get('id')
+        return results, returned_offset, returned_timestamp
 
 
 '''HELPER FUNCTIONS'''
@@ -235,7 +243,7 @@ def get_events_command(client: OktaASAClient, args: dict) -> tuple[List[Dict], C
     """
 
     max_audit_events_per_fetch = arg_to_number(args.get('limit')) or 50
-    events, _ = client.search_events(
+    events, _, _ = client.search_events(
         limit=max_audit_events_per_fetch,
         offset=None,
     )
@@ -245,7 +253,7 @@ def get_events_command(client: OktaASAClient, args: dict) -> tuple[List[Dict], C
 
 def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
                          max_audit_events_per_fetch: Optional[int], is_fetch_events: bool = False
-                         ) -> tuple[Dict, List[Dict]]:
+                         ) -> tuple[dict[str, str], List[Dict]]:
     """
     Args:
         client (OktaASAClient): OktaASAClient client to use.
@@ -256,12 +264,12 @@ def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
         list: List of events that will be created in XSIAM.
     """
     if is_fetch_events:
-        events, offset = client.search_events(
+        events, offset, timestamp = client.search_events(
             limit=max_audit_events_per_fetch,
             offset=last_run.get("offset") if last_run else None,
         )
         # Save the next_run as a dict with the last_fetch key to be stored
-        next_run = {"offset": offset} if offset else last_run
+        next_run: dict = {"offset": offset, "timestamp": timestamp} if offset else last_run
     else:
         events = []
         next_run = last_run
