@@ -677,56 +677,56 @@ def test_fetch_demisto_indicators_elastic_v7(mocker):
                                             'skipped': 0,
                                             'failed': 0
                                             },
-                                           'hits': {
-                                               'total': {'value': 1, 'relation': 'eq'},
-                                               'max_score': None,
-                                               'hits': [
-                                                   {'_index': 'index_name',
-                                                    '_type': '_doc',
-                                                    '_id': '1',
-                                                    '_score': None,
-                                                    '_source':
-                                                        {'id': '1',
-                                                         'version': 1,
-                                                         'modified': '2020-01-12T13:27:02.270302Z',
-                                                         'sortValues': None,
-                                                         'comments': [],
-                                                         'account': '',
-                                                         'type': 'IP',
-                                                         'name': '1.1.1.1',
-                                                         'value': '1.1.1.1',
-                                                         'rawName': '1.1.1.1',
-                                                         'createdTime': '2020-01-12T15:27:02.270303+02:00',
-                                                         'investigationIDs': [],
-                                                         'investigationsCount': 0,
-                                                         'isIoc': True,
-                                                         'lastSeen': '2020-01-12T15:27:02.270228+02:00',
-                                                         'firstSeen': '2020-01-12T15:27:02.270228+02:00',
-                                                         'lastSeenEntryID': 'API',
-                                                         'firstSeenEntryID': 'API',
-                                                         'lastReputationRun': '0001-01-01T00:00:00Z',
-                                                         'isShared': False,
-                                                         'calculatedTime': '2020-01-12T15:27:02.270228+02:00',
-                                                         'manualSetTime': '0001-01-01T00:00:00Z',
-                                                         'context': None,
-                                                         'comment': '',
-                                                         'CustomFields': {'internal': False},
-                                                         'ManuallyEditedFields': None,
-                                                         'modifiedTime': '0001-01-01T00:00:00Z',
-                                                         'expiration': '0001-01-01T00:00:00Z',
-                                                         'expirationStatus': 'active',
-                                                         'expirationSource': {
-                                                             'setTime': '2020-01-12T15:27:02.27023+02:00',
-                                                             'source': 'indicatorType',
-                                                             'user': '', 'feedId': '',
-                                                             'expirationPolicy': 'never',
-                                                             'expirationInterval': 0
-                                                         }
-                                                         },
-                                                        'sort': [1578835622270]
-                                                    },
-                                               ]
-                                           }
+                                       'hits': {
+                                           'total': {'value': 1, 'relation': 'eq'},
+                                           'max_score': None,
+                                           'hits': [
+                                               {'_index': 'index_name',
+                                                '_type': '_doc',
+                                                '_id': '1',
+                                                '_score': None,
+                                                '_source':
+                                                    {'id': '1',
+                                                     'version': 1,
+                                                     'modified': '2020-01-12T13:27:02.270302Z',
+                                                     'sortValues': None,
+                                                     'comments': [],
+                                                     'account': '',
+                                                     'type': 'IP',
+                                                     'name': '1.1.1.1',
+                                                     'value': '1.1.1.1',
+                                                     'rawName': '1.1.1.1',
+                                                     'createdTime': '2020-01-12T15:27:02.270303+02:00',
+                                                     'investigationIDs': [],
+                                                     'investigationsCount': 0,
+                                                     'isIoc': True,
+                                                     'lastSeen': '2020-01-12T15:27:02.270228+02:00',
+                                                     'firstSeen': '2020-01-12T15:27:02.270228+02:00',
+                                                     'lastSeenEntryID': 'API',
+                                                     'firstSeenEntryID': 'API',
+                                                     'lastReputationRun': '0001-01-01T00:00:00Z',
+                                                     'isShared': False,
+                                                     'calculatedTime': '2020-01-12T15:27:02.270228+02:00',
+                                                     'manualSetTime': '0001-01-01T00:00:00Z',
+                                                     'context': None,
+                                                     'comment': '',
+                                                     'CustomFields': {'internal': False},
+                                                     'ManuallyEditedFields': None,
+                                                     'modifiedTime': '0001-01-01T00:00:00Z',
+                                                     'expiration': '0001-01-01T00:00:00Z',
+                                                     'expirationStatus': 'active',
+                                                     'expirationSource': {
+                                                         'setTime': '2020-01-12T15:27:02.27023+02:00',
+                                                         'source': 'indicatorType',
+                                                         'user': '', 'feedId': '',
+                                                         'expirationPolicy': 'never',
+                                                         'expirationInterval': 0
+                                                     }
+                                                     },
+                                                'sort': [1578835622270]
+                                                },
+                                           ]
+                                       }
                                        }
     mocker.patch.object(esf.Elasticsearch, '__init__', return_value=None)
     mocker.patch.object(esf.Elasticsearch, 'search', return_value=mocked_search_indicators_res_e7)
@@ -908,3 +908,31 @@ def test_verify_es_server_version_errors(mocker, server_details, server_version,
     with pytest.raises(ValueError) as e:
         esf.verify_es_server_version(server_details)
     assert server_version in str(e.value)
+
+
+def test_feed_main_enrichment_excluded(mocker):
+    """
+        Given: params with tlp_color set to RED and enrichmentExcluded set to False
+        When: Calling feed_main
+        Then: validate enrichment_excluded is set to True
+    """
+    from FeedElasticsearch import main
+
+    params = {
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False,
+        'time_field': 'test',
+        'feed_type': ['test']
+    }
+
+    client_mocker = mocker.patch('FeedElasticsearch.ElasticsearchClient')
+    mocker.patch('FeedElasticsearch.extract_api_from_username_password', return_value=('test', 'test'))
+
+    mocker.patch('FeedElasticsearch.is_xsiam_or_xsoar_saas', return_value=True)
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    # Call the function under test
+    main()
+
+    # Assertion - verify that enrichment_excluded is set to True
+    assert client_mocker.call_args_list[0].args[-1] is True
