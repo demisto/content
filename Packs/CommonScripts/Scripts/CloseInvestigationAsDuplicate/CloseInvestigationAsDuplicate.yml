@@ -13,6 +13,13 @@ args:
 - name: duplicateId
   required: true
   description: Duplicate incident id
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether if to raise error or return result with an error.
+  name: raise_error
+  predefined:
+  - 'true'
+  - 'false'
 scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.11.10.113941
