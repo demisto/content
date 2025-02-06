@@ -307,9 +307,6 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
     first_activity_list = [alert.get('firstActivity') for alert in alerts_list]
     last_activity_list = [alert.get('lastActivity') for alert in alerts_list]
 
-    for comment in raw_incident.get('comments', []):
-        comment.update({'comment': re.sub(r'<.*?>', '', comment.get('comment', ''))})
-
     mailboxes_set = set()
     mailboxes = []
     for alert in alerts_list:
@@ -837,7 +834,7 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
                     'Contents': f"Created By: {comment.get('createdBy', '')}\n"
                                 f"Created On: {comment.get('createdTime', '')}\n"
                                 f"{comment.get('comment', '')}",
-                    'ContentsFormat': EntryFormat.TEXT,
+                    'ContentsFormat': EntryFormat.HTML,
                     'Tags': [comment_tag],
                     'Note': True,
                     'EntryContext': {
