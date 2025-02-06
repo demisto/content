@@ -532,8 +532,7 @@
         {
             "integrations": "Absolute",
             "playbookID": "Absolute_TestPlaybook",
-            "fromversion": "6.0.0",
-            "instance_names": "absolute_instance_1"
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "ServiceDeskPlus",
