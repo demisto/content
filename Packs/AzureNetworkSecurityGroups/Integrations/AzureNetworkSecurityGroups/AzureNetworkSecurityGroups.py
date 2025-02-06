@@ -196,23 +196,22 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
                           readable_output=hr)
 
 
-def extract_inner_dict(data: Dict, inner_dict_keys: List, fields: List = []):
+def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []):
     """
     reformat data by extract nested dict {'key1': 'value1', 'key2': {'key3': 'value3'}}
 
     Args:
         data (Dict): nested dict
-        inner_dict_keys (List): the keys to extract by
+        inner_dict_key (str): the key to extract by
         fields (List, optional): specific fields from the inner dict to extract. Defaults to [].
 
     Returns:
         Dict: reformat data: {'key1': 'value1', 'key3': 'value3'}
     """
-    for inner_dict_key in inner_dict_keys:
-        inner_dict = data.get(inner_dict_key, {})
-        for key in inner_dict:
-            if not fields or key in fields:
-                data[key] = inner_dict.get(key)
+    inner_dict = data.get(inner_dict_key, {})
+    for key in inner_dict:
+        if not fields or key in fields:
+            data[key] = inner_dict.get(key)
 
 
 def extract_list(data: Dict, list_key: str, property_name: str, field_name: str = ''):
@@ -239,6 +238,19 @@ def extract_list(data: Dict, list_key: str, property_name: str, field_name: str 
             property_name = field_name
         data[property_name] = properties
 
+
+def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List = []):
+    for dict in dict_to_extract:
+        fields = []
+        if len(dict) == 2:
+            fields = dict[1]
+        extract_inner_dict(data, dict[0], fields)
+        
+    for list in list_to_extract:
+        name = ''
+        if len(list) == 3:
+            name = list[2]
+        extract_list(data, list[0], list[1] ,name)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -597,8 +609,7 @@ def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, arg
         data_from_response = data_from_response[:limit]
     outputs = [data.copy() for data in data_from_response]
     for output in outputs:
-        extract_inner_dict(output, ['properties'])
-        extract_inner_dict(output, ['dnsSettings'])
+        reformat_data(output, dict_to_extract=[('properties',), ('dnsSettings',)])
         output['etag'] = output.get('etag')[3:-1]
     readable_output = tableToMarkdown('Public IP Addresses List',
                                       outputs,
@@ -640,11 +651,11 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
         data_from_response = data_from_response[:limit]
     outputs = [data.copy() for data in data_from_response]
     for output in outputs:
-        extract_inner_dict(output, ['properties'])
-        extract_inner_dict(output, ['addressSpace'])
-        extract_list(output, 'subnets', 'name', 'subnetName')
-        extract_list(output, 'subnets', 'properties', 'subnetProperties')
-        extract_list(output, 'subnetProperties', 'addressPrefix', 'subnetAdrdressPrefix')
+        reformat_data(output, dict_to_extract=[('properties',), ('addressSpace',)],
+                      list_to_extract=[('subnets', 'name', 'subnetName'),
+                       ('subnets', 'properties', 'subnetProperties'),
+                       ('subnetProperties', 'addressPrefix', 'subnetAdrdressPrefix')
+                       ])
         output['etag'] = output.get('etag')[3:-1]
 
     properties = outputs[0].get('subnetProperties')[0]
@@ -693,7 +704,7 @@ def azure_nsg_security_group_create(client: AzureNSGClient, params: Dict, args: 
     response = client.create_or_update_security_group(subscription_id=subscription_id, resource_group_name=resource_group_name,
                                                       security_group_name=security_group_name, location=location)
     outputs = response.copy()
-    extract_inner_dict(outputs, ['properties'], 'securityRules')
+    reformat_data(outputs, dict_to_extract=[('properties', 'securityRules')])
     outputs['etag'] = outputs.get('etag')[3:-1]
     readable_output = tableToMarkdown('Security Group List',
                                       outputs,
@@ -733,14 +744,15 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
         data_from_response = data_from_response[:limit]
     outputs = [data.copy() for data in data_from_response]
     for output in outputs:
-        extract_inner_dict(output, ['properties'])
-        extract_inner_dict(output, ['dnsSettings'])
-        extract_list(output, 'ipConfigurations', 'name', 'ipConfigurationName')
-        extract_list(output, 'ipConfigurations', 'id', 'ipConfigurationID')
-        extract_list(output, 'ipConfigurations', 'properties', 'ipConfigurationsProperties')
-        extract_list(output, 'ipConfigurationsProperties', 'privateIPAddress', 'ipConfigurationPrivateIPAddress')
-        extract_list(output, 'ipConfigurationsProperties', 'publicIPAddress', 'ipConfigurationPublicIPAddress')
-        extract_list(output, 'ipConfigurationPublicIPAddress', 'id', 'ipConfigurationPublicIPAddressName')
+        reformat_data(output, dict_to_extract=[('properties',), ('dnsSettings',)],
+                      list_to_extract=[
+                          ('ipConfigurations', 'name', 'ipConfigurationName'),
+                          ('ipConfigurations', 'id', 'ipConfigurationID'),
+                          ('ipConfigurations', 'properties', 'ipConfigurationsProperties'),
+                          ('ipConfigurationsProperties', 'privateIPAddress', 'ipConfigurationPrivateIPAddress'),
+                          ('ipConfigurationsProperties', 'publicIPAddress', 'ipConfigurationPublicIPAddress'),
+                          ('ipConfigurationPublicIPAddress', 'id', 'ipConfigurationPublicIPAddressName'),
+                      ])
         vm = output.get('virtualMachine')
         if vm:
             output['virtualMachineId'] = vm.get('id')
@@ -817,17 +829,16 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
     response = client.create_or_update_network_interface(subscription_id=subscription_id, resource_group_name=resource_group_name,
                                                          nic_name=nic_name, data=data)
     outputs = response.copy()
-    extract_inner_dict(outputs, ['properties'])
-    extract_list(outputs, 'ipConfigurations', 'name', 'ipConfigurationName')
-    extract_list(outputs, 'ipConfigurations', 'properties', 'ipConfigurationProperties')
-    extract_list(outputs, 'ipConfigurationProperties', 'privateIPAddress',
-                 'ipConfigurationPrivateIPAddress')
-    extract_list(outputs, 'ipConfigurationProperties', 'publicIPAddress',
-                 'ipConfigurationPublicIPAddress')
-    extract_list(outputs, 'ipConfigurationPublicIPAddress', 'id',
-                 'ipConfigurationPublicIPAddressName')
-    extract_list(outputs, 'ipConfigurationProperties', 'subnet', 'ipConfigurationSub')
-    extract_list(outputs, 'ipConfigurationSub', 'id', 'subnetId')
+    reformat_data(outputs, dict_to_extract=[('properties',)], list_to_extract=[
+        ('ipConfigurations', 'name', 'ipConfigurationName'),
+    ('ipConfigurations', 'properties', 'ipConfigurationProperties'),
+    ('ipConfigurationProperties', 'privateIPAddress', 'ipConfigurationPrivateIPAddress'),
+    ('ipConfigurationProperties', 'publicIPAddress', 'ipConfigurationPublicIPAddress'),
+    ('ipConfigurationPublicIPAddress', 'id', 'ipConfigurationPublicIPAddressName'),
+    ('ipConfigurationProperties', 'subnet', 'ipConfigurationSub'),
+    ('ipConfigurationSub', 'id', 'subnetId'),
+    ])
+    
     outputs['etag'] = outputs.get('etag')[3:-1]
     readable_output = tableToMarkdown('Network Interface',
                                       outputs,

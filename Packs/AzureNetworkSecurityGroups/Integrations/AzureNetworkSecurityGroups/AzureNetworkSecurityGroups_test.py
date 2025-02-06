@@ -59,7 +59,12 @@ def test_list_groups_command(mocker):
 
 def test_azure_nsg_public_ip_addresses_list(mocker):
     """
-    Validate that azure_nsg_public_ip_addresses_list returns the output in the correct format
+    Given:
+        - subscription_id and resource_group_name
+    When:
+        - Calling function azure_nsg_public_ip_addresses_list
+    Then:
+        - Ensure the generated output is as expected.
     """
     from AzureNetworkSecurityGroups import azure_nsg_public_ip_addresses_list
     client = mock_client(mocker, util_load_json('test_data/list_public_ip_addresses.json'))
@@ -79,7 +84,12 @@ def test_azure_nsg_public_ip_addresses_list(mocker):
 
 def test_azure_nsg_virtual_networks_list(mocker):
     """
-    Validate that test_azure_nsg_virtual_networks_list returns the output in the correct format
+    Given:
+        - subscription_id and resource_group_name
+    When:
+        - Calling function azure_nsg_virtual_networks_list
+    Then:
+        - Ensure the generated output is as expected.
     """
     from AzureNetworkSecurityGroups import azure_nsg_virtual_networks_list
     client = mock_client(mocker, util_load_json('test_data/list_virtual_networks.json'))
@@ -99,7 +109,12 @@ networkInterfaces/testDNS649/ipConfigurations/ipconfig1"]
 
 def test_azure_nsg_networks_interfaces_list(mocker):
     """
-    Validate that test_azure_nsg_virtual_networks_list returns the output in the correct format
+    Given:
+        - subscription_id and resource_group_name
+    When:
+        - Calling function azure_nsg_networks_interfaces_list
+    Then:
+        - Ensure the generated output is as expected.
     """
     from AzureNetworkSecurityGroups import azure_nsg_networks_interfaces_list
     client = mock_client(mocker, util_load_json('test_data/list_networks_interfaces.json'))
@@ -120,20 +135,26 @@ def test_azure_nsg_networks_interfaces_list(mocker):
     assert res.get('appliedDnsServers') == []
     assert res.get('internalDomainNameSuffix') == 'test.bx.internal.cloudapp.net'
     assert res.get('macAddress') == '00-0D-3A-1B-C7-21'
-    assert res.get('virtualMachineId') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Compute/virtualMachines/vm1'
+    assert res.get('virtualMachineId') == '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Compute/\
+virtualMachines/vm1'
     assert res.get('location') == 'eastus'
     assert res.get('kind') == 'kind'
 
 
 def test_create_azure_nsg_security_group(mocker):
     """
-    Given: a security group to be created
+    Given:
+        - a security group to be created, subscription_id and resource_group_name
+    When:
+        - Calling function azure_nsg_security_group_create
+    Then:
+        - Ensure the request sent as requested and the generated output is as expected.
     """
     from AzureNetworkSecurityGroups import azure_nsg_security_group_create
     client = mock_client(mocker, util_load_json('test_data/put_data.json'))
     res = azure_nsg_security_group_create(client, args={'security_group_name': 'securityGroup', 'location': 'westus'},
-                                          params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
-
+                                          params={'subscription_id': 'subscriptionID', 'resource_group_name':
+                                              'resourceGroupName'})
     assert '### Security Group' in res.readable_output
     res = res.outputs
     assert res.get('name') == 'test-nic'
@@ -144,14 +165,21 @@ def test_create_azure_nsg_security_group(mocker):
 
 def test_create_azure_nsg_network_interfaces(mocker):
     """
-    Given: a network interface to be created
+    Given:
+        - a network interface (nic_name) to be created, subscription_id, resource_group_name, location,
+        ip_config_name, vnet_name and subnet_name
+    When:
+        - Calling function azure_nsg_network_interfaces_create
+    Then:
+        - Ensure the request sent as requested and the generated output is as expected.
     """
     from AzureNetworkSecurityGroups import azure_nsg_network_interfaces_create
     client = mock_client(mocker, util_load_json('test_data/put_data.json'))
     res = azure_nsg_network_interfaces_create(client, args={'nic_name': 'nic_name', 'location': 'westus',
                                                             'ip_config_name': 'ip_config_name', 'vnet_name': 'vnet_name',
                                                             'subnet_name': 'subnet_name'},
-                                              params={'subscription_id': 'subscriptionID', 'resource_group_name': 'resourceGroupName'})
+                                              params={'subscription_id': 'subscriptionID', 'resource_group_name':
+                                                  'resourceGroupName'})
 
     assert '### Network Interface' in res.readable_output
     res = res.outputs
@@ -357,3 +385,39 @@ def test_auth_code_params(mocker):
     main()
 
     mocked_request.assert_called_with(**expected_args)
+
+''' HELPER FUNCTIONS TESTS '''
+
+def test_reformat_data():
+    """
+   Given:
+        - data
+    When:
+        - Calling function reformat_data
+    Then:
+        - Ensure the reformat_data is as expected.
+    """
+    from AzureNetworkSecurityGroups import reformat_data
+    data = {
+        'a': 'b',
+        'c': {
+            'd': 'e',
+            'f':'g',
+            'k': [{'1': '11','2': '12'}, {'1': '13','2': '14'}]
+        }
+    }
+    
+    excepted_data = {
+        'a': 'b',
+        'c': {
+            'd': 'e',
+            'f':'g',
+            'k': [{'1': '11','2': '12'}, {'1': '13','2': '14'}]
+        },
+    'k': [{'1': '11','2': '12'}, {'1': '13','2': '14'}],
+    'd': 'e',
+    'f': 'g',
+    'new': ['11', '13']
+   }
+    reformat_data(data, dict_to_extract=[('c',)], list_to_extract=[('k', '1', 'new')])
+    assert data == excepted_data

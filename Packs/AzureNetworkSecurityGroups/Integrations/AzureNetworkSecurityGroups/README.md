@@ -954,36 +954,6 @@ Gets all resource groups for a subscription.
 >| cloud-shell-storage-eastus | eastus |  |
 >| demi | centralus | Owner: Demi |
 
-### azure-nsg-virtual-networks-list
-
-***
-Gets virtual networks in a resource group.
-
-#### Base Command
-
-`azure-nsg-virtual-networks-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| limit | The maximum number of records to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureNSG.VirtualNetwork.name | String | The virtual network's name. | 
-| AzureNSG.VirtualNetwork.etag | String | The virtual network's etag. | 
-| AzureNSG.VirtualNetwork.location | String | The virtual network's location. | 
-| AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes | String | A list of address blocks reserved for this virtual network in CIDR notation. | 
-| AzureNSG.VirtualNetwork.properties.subnets.name | List | The virtual network's subnet name. | 
-| AzureNSG.VirtualNetwork.properties.subnets.properties.addressPrefix | List | The virtual network's subnet address prefix. | 
-| AzureNSG.VirtualNetwork.properties.subnets.properties.ipConfigurations | JSON | The virtual network's ip configuration. | 
-
 ### azure-nsg-security-group-create
 
 ***
@@ -1041,6 +1011,36 @@ Gets public IP addresses in a resource group.
 | AzureNSG.PublicIPAdress.ipAddress | String | The public ip address's ip address. | 
 | AzureNSG.PublicIPAdress.domainNameLabel | String | The public ip address's domain name label. | 
 | AzureNSG.PublicIPAdress.fqdn | String | The public ip address's fully qualified domain name \(FQDN\). | 
+
+### azure-nsg-virtual-networks-list
+
+***
+Gets virtual networks in a resource group.
+
+#### Base Command
+
+`azure-nsg-virtual-networks-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.VirtualNetwork.name | String | The virtual network's name. | 
+| AzureNSG.VirtualNetwork.etag | String | The virtual network's etag. | 
+| AzureNSG.VirtualNetwork.location | String | The virtual network's location. | 
+| AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes | String | A list of address blocks reserved for this virtual network in CIDR notation. | 
+| AzureNSG.VirtualNetwork.properties.subnets.name | List | The virtual network's subnet name. | 
+| AzureNSG.VirtualNetwork.properties.subnets.properties.addressPrefix | List | The virtual network's subnet address prefix. | 
+| AzureNSG.VirtualNetwork.properties.subnets.properties.ipConfigurations.id | List | List of the virtual network's subnets id. | 
 
 ### azure-nsg-network-interfaces-create
 
@@ -1114,4 +1114,3 @@ Gets network interfaces in a resource group.
 | AzureNSG.NetworkInterfaces.properties.virtualMachine.id | String | The network interface's virtual machine's id. | 
 | AzureNSG.NetworkInterfaces.location | String | The network interface's location. | 
 | AzureNSG.NetworkInterfaces.kind | String | The network interface's kind. | 
-
