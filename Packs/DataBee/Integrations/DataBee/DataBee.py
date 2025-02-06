@@ -563,9 +563,9 @@ def fetch_incidents(
         params (dict[str, Any]: Instance params from XSOAR.
         end_time (str): The current time string formated.
     Returns:
-        tuple[dict[str, Any], list[dict]]:
-            next_run: Contains information that will be used in the next run.
+        tuple[list[dict], dict[str, Any]]:
             incidents: List of incidents that will be created in XSOAR.
+            next_run: Contains information that will be used in the next run.
     """
     end_time = current_time.strftime(DATE_FORMAT)
     incidents = []
