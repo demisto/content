@@ -1,6 +1,3 @@
-sectionOrder:
-- Connect
-- Collect
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Cofense Vision
@@ -2268,9 +2265,6 @@ script:
         Note: Users can get the list of IDs by executing the "cofense-iocs-list" command.
       name: id
       required: true
-    - description: TO BE deleted.
-      name: delete_me
-      required: false
     description: Retrieves the IOC identified by its unique MD5 ID.
     name: cofense-ioc-get
     outputs:
@@ -2388,7 +2382,7 @@ script:
     - contextPath: Cofense.Config.value
       description: List of headers that are available to create a message search.
       type: Unknown
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3
