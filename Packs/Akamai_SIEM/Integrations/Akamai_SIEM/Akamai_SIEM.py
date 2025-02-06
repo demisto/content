@@ -612,14 +612,12 @@ async def get_events_with_offset_aiohttp(
     url = f"{client._base_url}/{config_ids}"
     demisto.info(f"Running in interval = {counter}. Init session and sending request.")
     loop = asyncio.get_event_loop()
-    import requests
-    # response = await loop.run_in_executor(None, requests.get, url=url, auth=client._auth, params=params)
-    try:
-        response = await loop.run_in_executor(None, functools.partial(requests.get, url, params=params, auth=client._auth, verify=client._verify))
-        response.raise_for_status()  # Check for any HTTP errors
-        raw_response=response.text
-    except aiohttp.ClientResponseError as e:
-        raise DemistoException(f"Running in interval = {counter}. Error occurred when fetching from Akamai: {e.message}")
+    raw_response: str = await loop.run_in_executor(None, functools.partial(client._http_request(
+            method='GET',
+            url_suffix=f'/{config_ids}',
+            params=params,
+            resp_type='text',
+        )))
     demisto.info(f"Running in interval = {counter}. Finished executing request to Akamai, processing")
     events: list[str] = raw_response.split('\n')
     new_offset = None
