@@ -3,8 +3,7 @@ from CommonServerPython import *  # noqa: F401
 """Implementation file for Cofense Vision Integration."""
 
 import traceback
-from typing import Any
-from collections.abc import Callable
+from typing import Any, Dict, Optional, Callable
 
 import urllib3
 from requests import Response
@@ -139,7 +138,7 @@ class VisionClient(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
         # Setting up access token in headers.
-        self._headers: dict[str, Any] = {
+        self._headers: Dict[str, Any] = {
             "Authorization": f"Bearer {self.get_access_token(client_id=client_id, client_secret=client_secret)}"
         }
         self.threat_levels_good = [level.lower() for level in threat_levels_good] + ['low']
@@ -217,7 +216,7 @@ class VisionClient(BaseClient):
 
         return token
 
-    def get_attachment(self, md5: str | None = None, sha256: str | None = None) -> Response:
+    def get_attachment(self, md5: Optional[str] = None, sha256: Optional[str] = None) -> Response:
         """Get an attachment of an email from API.
 
         Args:
@@ -243,7 +242,7 @@ class VisionClient(BaseClient):
         return self._http_request(method='GET', url_suffix=API_ENDPOINTS["GET_MESSAGE"], resp_type='response',
                                   params={"token": token}, error_handler=error_handler)
 
-    def get_message_metadata(self, internet_message_id: str, recipient_address: str) -> dict[str, Any]:
+    def get_message_metadata(self, internet_message_id: str, recipient_address: str) -> Dict[str, Any]:
         """Get content of message that matches specified ID and Recipient Address.
 
         Args:
@@ -274,9 +273,9 @@ class VisionClient(BaseClient):
         return self._http_request(method="POST", url_suffix=API_ENDPOINTS["GET_MESSAGE_TOKEN"], json_data=req_data,
                                   resp_type="text", error_handler=error_handler)
 
-    def quarantine_jobs_list(self, page: int | None, size: int | None, sort: str,
+    def quarantine_jobs_list(self, page: Optional[int], size: Optional[int], sort: str,
                              exclude_quarantine_emails: bool,
-                             body: dict) -> dict[str, Any]:
+                             body: dict) -> Dict[str, Any]:
         """Get quarantine jobs.
 
         Args:
@@ -304,7 +303,7 @@ class VisionClient(BaseClient):
                            url_suffix=API_ENDPOINTS["QUARANTINE_JOB"] + "/" + str(job_id),
                            empty_valid_codes=[200], return_empty_response=True, error_handler=error_handler)
 
-    def create_quarantine_job(self, requests_body: dict[str, Any]) -> dict[str, Any]:
+    def create_quarantine_job(self, requests_body: Dict[str, Any]) -> Dict[str, Any]:
         """Create a quarantine job using internet message id and recipient's address of emails.
 
         Args:
@@ -317,7 +316,7 @@ class VisionClient(BaseClient):
         return self._http_request(method="POST", url_suffix=API_ENDPOINTS["QUARANTINE_JOB"], headers=headers,
                                   json_data=requests_body, error_handler=error_handler)
 
-    def create_search(self, requests_body: dict[str, Any]) -> dict[str, Any]:
+    def create_search(self, requests_body: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new search based on user specified arguments.
 
         Args:
@@ -329,7 +328,7 @@ class VisionClient(BaseClient):
         return self._http_request(method="POST", url_suffix=API_ENDPOINTS["CREATE_MESSAGE_SEARCH"],
                                   json_data=requests_body, error_handler=error_handler)
 
-    def get_search(self, search_id: int) -> dict[str, Any]:
+    def get_search(self, search_id: int) -> Dict[str, Any]:
         """Get Search using search id provided by cofense vision.
 
         Args:
@@ -350,7 +349,7 @@ class VisionClient(BaseClient):
         self._http_request(method="PUT", url_suffix=API_ENDPOINTS["RESTORE_QUARANTINE_JOB"].format(id),
                            return_empty_response=True, empty_valid_codes=(200,), error_handler=error_handler)
 
-    def list_searches(self, page: int = None, size: int = None, sort: str = None) -> dict[str, Any]:
+    def list_searches(self, page: int = None, size: int = None, sort: str = None) -> Dict[str, Any]:
         """List message searches.
 
         Args:
@@ -365,7 +364,7 @@ class VisionClient(BaseClient):
         return self._http_request(method="GET", url_suffix=API_ENDPOINTS["GET_ALL_SEARCHES"] + query,
                                   error_handler=error_handler)
 
-    def get_quarantine_job(self, job_id: str) -> dict[str, Any]:
+    def get_quarantine_job(self, job_id: str) -> Dict[str, Any]:
         """Get the quarantine job with specified ID.
 
         Args:
@@ -390,7 +389,7 @@ class VisionClient(BaseClient):
                            error_handler=error_handler)
 
     def get_search_results(self, search_id: int, page: int = None, size: int = None, sort: str = None) -> \
-            dict[str, Any]:
+            Dict[str, Any]:
         """List message searches.
 
         Args:
@@ -433,7 +432,7 @@ class VisionClient(BaseClient):
         return self._http_request(method="PUT", url_suffix=API_ENDPOINTS["STOP_QUARANTINE_JOB"].format(id),
                                   error_handler=error_handler)
 
-    def get_last_ioc(self, source: str) -> dict[str, Any]:
+    def get_last_ioc(self, source: str) -> Dict[str, Any]:
         """Get the last updated IOC from ioc-source.
 
         Args:
@@ -446,7 +445,7 @@ class VisionClient(BaseClient):
         return self._http_request(method="GET", url_suffix=API_ENDPOINTS["GET_LAST_IOC"], headers=headers,
                                   error_handler=error_handler)
 
-    def update_iocs(self, source, body) -> dict[str, Any]:
+    def update_iocs(self, source, body) -> Dict[str, Any]:
         """Update the IOC with specified source and ID.
 
         Args:
@@ -460,7 +459,7 @@ class VisionClient(BaseClient):
         return self._http_request(method="PUT", url_suffix=API_ENDPOINTS["IOC_REPOSITORY"], headers=headers,
                                   json_data=body, error_handler=error_handler)
 
-    def update_ioc(self, md5_id, body) -> dict[str, Any]:
+    def update_ioc(self, md5_id, body) -> Dict[str, Any]:
         """Update the IOC with specified ID.
 
         Args:
@@ -474,8 +473,8 @@ class VisionClient(BaseClient):
         return self._http_request(method="PUT", url_suffix=API_ENDPOINTS["IOC_REPOSITORY"] + "/" + str(md5_id),
                                   headers=headers, json_data=body, error_handler=error_handler)
 
-    def list_iocs(self, source: str, page: int, size: int, include_expired: bool, since: str | None,
-                  sort_string: str | None) -> dict[str, Any]:
+    def list_iocs(self, source: str, page: int, size: int, include_expired: bool, since: Optional[str],
+                  sort_string: Optional[str]) -> dict[str, Any]:
         """List the IOCs from the source given by the user.
 
         Args:
@@ -512,7 +511,7 @@ class VisionClient(BaseClient):
         return self._http_request(method="GET", url_suffix=API_ENDPOINTS["IOC_REPOSITORY"] + "/" + str(ioc_id),
                                   headers=headers, error_handler=error_handler)
 
-    def list_searchable_headers(self) -> dict[str, Any]:
+    def list_searchable_headers(self) -> Dict[str, Any]:
         """Get list of searchable header keys.
 
         Returns:
@@ -525,7 +524,7 @@ class VisionClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def trim_spaces_from_args(args: dict) -> dict:
+def trim_spaces_from_args(args: Dict) -> Dict:
     """Trim spaces from values of the args dict.
 
     Args:
@@ -547,7 +546,7 @@ def error_handler(response: Response):
     Args:
          response(Response): Response object from API.
     """
-    err_msg = f'Error in API call [{response.status_code}].'
+    err_msg = 'Error in API call [{}].'.format(response.status_code)
     try:
         error_entry = response.json()
         if response.status_code == 401:
@@ -556,11 +555,11 @@ def error_handler(response: Response):
             err_msg += '\n{} : {}.'.format(error_entry.get('status'), ". ".join(error_entry.get('details', [])))
         raise DemistoException(err_msg, res=response)
     except ValueError:
-        err_msg += f'\n{response.text}'
+        err_msg += '\n{}'.format(response.text)
         raise DemistoException(err_msg, res=response)
 
 
-def arg_to_list_with_filter_null_values(argument: Any | None) -> List:
+def arg_to_list_with_filter_null_values(argument: Optional[Any]) -> List:
     """Filter Null values from and convert string of args to python list.
 
     Args:
@@ -573,7 +572,7 @@ def arg_to_list_with_filter_null_values(argument: Any | None) -> List:
     return list(filter(None, arg_to_list(list_of_args)))
 
 
-def arg_to_list(argument: Any | None) -> List:
+def arg_to_list(argument: Optional[Any]) -> List:
     """Convert a string representation of args to a python list.
 
     Args:
@@ -636,7 +635,7 @@ def validate_quarantine_job_id(id: str):
         raise ValueError(ERROR_MESSAGE["INVALID_QUARANTINE_JOB_PARAM"].format("id"))
 
 
-def validate_params_for_attachment_get(md5: str | None = None, sha256: str | None = None):
+def validate_params_for_attachment_get(md5: Optional[str] = None, sha256: Optional[str] = None):
     """Validate arguments for cofense-message-attachment-get command.
 
     Args:
@@ -651,7 +650,7 @@ def validate_params_for_attachment_get(md5: str | None = None, sha256: str | Non
         raise ValueError(ERROR_MESSAGE['INVALID_ARGUMENT'].format(sha256, 'sha256 hash'))
 
 
-def escape_special_characters(hr_dict: dict) -> dict:
+def escape_special_characters(hr_dict: Dict) -> Dict:
     """Escape special characters to show in hr output.
 
     Args:
@@ -675,7 +674,7 @@ def escape_special_characters(hr_dict: dict) -> dict:
     return hr_output
 
 
-def prepare_hr_for_message_metadata_get(message: dict[str, Any]) -> str:
+def prepare_hr_for_message_metadata_get(message: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-message-metadata-get command.
 
     Args:
@@ -711,7 +710,7 @@ def prepare_hr_for_message_metadata_get(message: dict[str, Any]) -> str:
     return tableToMarkdown("Message Metadata:", hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_message_token_get(response: dict[str, Any]) -> str:
+def prepare_hr_for_message_token_get(response: Dict[str, Any]) -> str:
     """Prepare human-readable string for cofense-message-token-get command.
 
     Args:
@@ -763,7 +762,7 @@ def validate_sort(sort_list: list, command: str):
                                                           ', '.join(SUPPORTED_SORT['order_by'])))
 
 
-def validate_page_size(page_size: int | None):
+def validate_page_size(page_size: Optional[int]):
     """Validate that page size parameter is in numeric format or not.
 
     Args:
@@ -793,7 +792,7 @@ def prepare_sort_query(sort_list: list, command: str) -> str:
     return sort_by
 
 
-def prepare_hr_for_message_searches_list(response: dict[str, Any]) -> str:
+def prepare_hr_for_message_searches_list(response: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-message-searches-list command.
 
     Args:
@@ -851,7 +850,7 @@ def prepare_hr_for_message_searches_list(response: dict[str, Any]) -> str:
     return tableToMarkdown("Message Searches:", hr_output, headers, removeNull=True)
 
 
-def prepare_body_for_qurantine_jobs_list_command(args: dict[str, Any]) -> dict:
+def prepare_body_for_qurantine_jobs_list_command(args: Dict[str, Any]) -> Dict:
     """Prepare body to be passed in API request for cofense_quarantine_jobs_list_command.
 
     Args:
@@ -893,7 +892,7 @@ def prepare_body_for_qurantine_jobs_list_command(args: dict[str, Any]) -> dict:
     return {'filterOptions': filter_options}
 
 
-def prepare_hr_for_quarantine_jobs_list(response: dict[str, Any]) -> str:
+def prepare_hr_for_quarantine_jobs_list(response: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-quarantine_jobs_list command.
 
     Args:
@@ -935,7 +934,7 @@ def prepare_hr_for_quarantine_jobs_list(response: dict[str, Any]) -> str:
     return tableToMarkdown("Quarantine Job:", hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_requests_body_for_quarantine_job_create(quarantine_emails: List) -> dict[str, Any]:
+def prepare_requests_body_for_quarantine_job_create(quarantine_emails: List) -> Dict[str, Any]:
     """Prepare requests body for cofence-quarantine-job-create command.
 
     Args:
@@ -959,7 +958,7 @@ def prepare_requests_body_for_quarantine_job_create(quarantine_emails: List) -> 
     return {"quarantineEmails": data}
 
 
-def prepare_hr_for_quarantine_job_create(response: dict[str, Any]) -> str:
+def prepare_hr_for_quarantine_job_create(response: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofence-quarantine-job-create command.
 
     Args:
@@ -990,7 +989,7 @@ def prepare_hr_for_quarantine_job_create(response: dict[str, Any]) -> str:
     return tableToMarkdown(heading, hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_ioc_delete(response: dict[str, Any]) -> str:
+def prepare_hr_for_ioc_delete(response: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofence-ioc-delete command.
 
     Args:
@@ -1012,7 +1011,7 @@ def prepare_hr_for_ioc_delete(response: dict[str, Any]) -> str:
     return tableToMarkdown(heading, hr_outputs, headers=headers, removeNull=True)
 
 
-def validate_search_id(search_id: int | None):
+def validate_search_id(search_id: Optional[int]):
     """Validate Cofense Search ID.
 
     Args:
@@ -1023,7 +1022,7 @@ def validate_search_id(search_id: int | None):
         raise ValueError(ERROR_MESSAGE['INVALID_SEARCH_ID'])
 
 
-def prepare_hr_for_message_search_get(response: dict[str, Any]) -> str:
+def prepare_hr_for_message_search_get(response: Dict[str, Any]) -> str:
     """Prepare Human Readable output for cofense-message-search-get commnad.
 
     Args:
@@ -1076,7 +1075,7 @@ def prepare_hr_for_message_search_get(response: dict[str, Any]) -> str:
     return tableToMarkdown("Message Search:", hr_outputs, headers, removeNull=True)
 
 
-def prepare_hr_for_quarantine_job_get(response: dict[str, Any]) -> str:
+def prepare_hr_for_quarantine_job_get(response: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-quarantine_jobs_get command.
 
     Args:
@@ -1125,10 +1124,10 @@ def prepare_hr_for_quarantine_job_delete(job_id: str) -> str:
     Returns:
         str: Human readable output.
     """
-    return f"## Quarantine Job with ID {job_id} is successfully deleted."
+    return "## Quarantine Job with ID {} is successfully deleted.".format(job_id)
 
 
-def prepare_context_for_message_search_results_get_command(response: dict[str, Any]) -> dict[str, Any]:
+def prepare_context_for_message_search_results_get_command(response: Dict[str, Any]) -> Dict[str, Any]:
     """Prepare context data for cofense-message-search-results-get command.
 
     Args:
@@ -1144,7 +1143,7 @@ def prepare_context_for_message_search_results_get_command(response: dict[str, A
     return remove_empty_elements(context_data)
 
 
-def prepare_hr_for_message_search_results_get_command(response: dict[str, Any]) -> str:
+def prepare_hr_for_message_search_results_get_command(response: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-message-search-results-get command.
 
     Args:
@@ -1228,7 +1227,7 @@ def prepare_hr_for_quarantine_job_stop(response: dict[str, Any]) -> str:
     return tableToMarkdown(title, hr_output, headers=headers, removeNull=True)
 
 
-def validate_create_search_parameter_allowed_search_length(**kwargs: List | None):
+def validate_create_search_parameter_allowed_search_length(**kwargs: Optional[List]):
     """Validate search values length should not be greater than three.
 
     Args:
@@ -1292,7 +1291,7 @@ def validate_arguments_for_message_search_create(**kwargs):
             raise ValueError(ERROR_MESSAGE['INVALID_FORMAT'].format(header, 'headers', SUPPORTED_HEADERS_FORMAT))
 
 
-def prepare_requests_body_for_message_search_create(**kwargs) -> dict[str, Any]:
+def prepare_requests_body_for_message_search_create(**kwargs) -> Dict[str, Any]:
     """Prepare required body parameter for cofense-message-search-create command.
 
     Args:
@@ -1339,7 +1338,7 @@ def prepare_requests_body_for_message_search_create(**kwargs) -> dict[str, Any]:
                          recipient=kwargs.get('recipient'), url=kwargs.get('url'))
 
 
-def prepare_hr_for_message_search_create_command(response: dict[str, Any]) -> str:
+def prepare_hr_for_message_search_create_command(response: Dict[str, Any]) -> str:
     """Prepare Human Readable output for cofense-message-search-create command.
 
     Args:
@@ -1394,7 +1393,7 @@ def prepare_hr_for_message_search_create_command(response: dict[str, Any]) -> st
     return tableToMarkdown(heading, hr_outputs, headers, removeNull=True)
 
 
-def prepare_hr_for_last_ioc_get_command(response: dict[str, Any]) -> str:
+def prepare_hr_for_last_ioc_get_command(response: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofence-last-updated-ioc-get command.
 
     Args:
@@ -1428,7 +1427,7 @@ def prepare_hr_for_last_ioc_get_command(response: dict[str, Any]) -> str:
     return tableToMarkdown("Last IOC:", hr_outputs, headers, removeNull=True)
 
 
-def prepare_and_validate_body_for_iocs_update(request_body: List) -> dict[str, Any]:
+def prepare_and_validate_body_for_iocs_update(request_body: List) -> Dict[str, Any]:
     """Prepare and validate body parameters to be passed in API request for cofense_iocs_update_command.
 
     Args:
@@ -1489,7 +1488,7 @@ def prepare_and_validate_body_for_iocs_update(request_body: List) -> dict[str, A
     return {"data": data}
 
 
-def prepare_body_for_ioc_update(expires_at: str) -> dict[str, Any]:
+def prepare_body_for_ioc_update(expires_at: str) -> Dict[str, Any]:
     """Prepare body to be passed in API request for cofense_ioc_update_command.
 
     Args:
@@ -1509,7 +1508,7 @@ def prepare_body_for_ioc_update(expires_at: str) -> dict[str, Any]:
     return {"data": updated_iocs}
 
 
-def prepare_hr_for_update_iocs(response: dict) -> str:
+def prepare_hr_for_update_iocs(response: Dict) -> str:
     """Prepare Human Readable for cofense-iocs-update command.
 
     Args:
@@ -1545,7 +1544,7 @@ def prepare_hr_for_update_iocs(response: dict) -> str:
                            removeNull=True)
 
 
-def prepare_hr_for_update_ioc(response: dict[str, Any]) -> str:
+def prepare_hr_for_update_ioc(response: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-ioc-update command.
 
     Args:
@@ -1576,7 +1575,7 @@ def prepare_hr_for_update_ioc(response: dict[str, Any]) -> str:
                            headers=headers, removeNull=True)
 
 
-def prepare_hr_for_get_ioc(response: dict[str, Any]) -> str:
+def prepare_hr_for_get_ioc(response: Dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-ioc-get command.
 
     Args:
@@ -1605,7 +1604,7 @@ def prepare_hr_for_get_ioc(response: dict[str, Any]) -> str:
     return tableToMarkdown("IOC:", hr_output, headers=headers, removeNull=True)
 
 
-def validate_arguments_for_iocs_list(source: str, page: int | None, size: int | None) -> None:
+def validate_arguments_for_iocs_list(source: str, page: Optional[int], size: Optional[int]) -> None:
     """Validate arguments for cofense-iocs-list command.
 
     Args:
@@ -1670,7 +1669,7 @@ def prepare_hr_for_iocs_list(response: dict[str, Any]) -> str:
     return tableToMarkdown("IOC:", hr_outputs, headers, removeNull=True)
 
 
-def get_standard_context(client: VisionClient, ioc: dict) -> Common.Indicator | None:
+def get_standard_context(client: VisionClient, ioc: Dict) -> Optional[Common.Indicator]:
     """Get the standard context for IOC.
 
     Args:
@@ -1754,7 +1753,7 @@ def test_module(client: VisionClient) -> str:
     return "ok"
 
 
-def cofense_message_metadata_get_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_message_metadata_get_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve the full content of a message.
 
     Args:
@@ -1779,7 +1778,7 @@ def cofense_message_metadata_get_command(client: VisionClient, args: dict[str, A
     )
 
 
-def cofense_message_get_command(client: VisionClient, args: dict[str, Any]) -> dict:
+def cofense_message_get_command(client: VisionClient, args: Dict[str, Any]) -> Dict:
     """Fetch full content of an email and returns a zip file of an email using a token.
 
     Args:
@@ -1795,7 +1794,7 @@ def cofense_message_get_command(client: VisionClient, args: dict[str, Any]) -> d
     return fileResult(filename='message.zip', data=response.content)
 
 
-def cofense_message_attachment_get_command(client: VisionClient, args: dict[str, Any]) -> dict:
+def cofense_message_attachment_get_command(client: VisionClient, args: Dict[str, Any]) -> Dict:
     """Fetch an attachment by using its MD5 or SHA256 hash and returns the attachment.
 
     Args:
@@ -1886,7 +1885,7 @@ def cofense_quarantine_job_get_command(client: VisionClient, args: dict[str, Any
     )
 
 
-def cofense_quarantine_jobs_list_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_quarantine_jobs_list_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Filter and return a paginated list of matching quarantine jobs.
 
     Args:
@@ -1923,7 +1922,7 @@ def cofense_quarantine_jobs_list_command(client: VisionClient, args: dict[str, A
     )
 
 
-def cofense_quarantine_job_create_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_quarantine_job_create_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Create a new quarantine job using internet message id and recipient's address.
 
     Args:
@@ -1950,7 +1949,7 @@ def cofense_quarantine_job_create_command(client: VisionClient, args: dict[str, 
     )
 
 
-def cofense_message_search_results_get_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_message_search_results_get_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve list of paginated search results.
 
     Args:
@@ -1985,7 +1984,7 @@ def cofense_message_search_results_get_command(client: VisionClient, args: dict[
     )
 
 
-def cofense_message_searches_list_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_message_searches_list_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve list of paginated search results.
 
     Args:
@@ -2016,7 +2015,7 @@ def cofense_message_searches_list_command(client: VisionClient, args: dict[str, 
     )
 
 
-def cofense_quarantine_job_restore_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_quarantine_job_restore_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Restore emails quarantined by the job identified by its ID.
 
     Args:
@@ -2046,7 +2045,7 @@ def cofense_quarantine_job_restore_command(client: VisionClient, args: dict[str,
     )
 
 
-def cofense_message_search_get_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_message_search_get_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve the search identified by id.
 
     Args:
@@ -2106,7 +2105,7 @@ def cofense_quarantine_job_approve_command(client: VisionClient, args: dict[str,
     )
 
 
-def cofense_quarantine_job_delete_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_quarantine_job_delete_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Delete the quarantine job identified by its unique ID.
 
     Args:
@@ -2137,7 +2136,7 @@ def cofense_quarantine_job_delete_command(client: VisionClient, args: dict[str, 
     )
 
 
-def cofense_ioc_delete_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_ioc_delete_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Delete a single active or expired IOC from the local IOC Repository.
 
     Args:
@@ -2198,7 +2197,7 @@ def cofense_quarantine_job_stop_command(client: VisionClient, args: dict[str, An
     )
 
 
-def cofense_message_search_create_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_message_search_create_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Create a search based on user specified arguments.
 
     Args:
@@ -2270,7 +2269,7 @@ def cofense_message_search_create_command(client: VisionClient, args: dict[str, 
     )
 
 
-def cofense_last_ioc_get_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_last_ioc_get_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
     """Synchronize the ioc source and returns last updated IOCs.
 
     Args:
@@ -2326,7 +2325,7 @@ def cofense_iocs_update_command(client: VisionClient, args: dict[str, Any]) -> L
         if isinstance(iocs_json, dict):
             iocs_json = [iocs_json]
     except json.JSONDecodeError:
-        raise ValueError(f'{iocs_json} is an invalid JSON format')
+        raise ValueError('{} is an invalid JSON format'.format(iocs_json))
 
     body = prepare_and_validate_body_for_iocs_update(iocs_json)
 
@@ -2497,7 +2496,7 @@ def main():
     threat_levels_suspicious = argToList(params.get('threat_levels_suspicious', []))
     threat_levels_bad = argToList(params.get('threat_levels_bad', []))
 
-    COFENSE_COMMANDS: dict[str, Callable] = {
+    COFENSE_COMMANDS: Dict[str, Callable] = {
         'cofense-message-metadata-get': cofense_message_metadata_get_command,
         'cofense-message-get': cofense_message_get_command,
         'cofense-message-attachment-get': cofense_message_attachment_get_command,

@@ -4,9 +4,3 @@ ignore=BA124
 [file:ConvertDictOfListToListOfDict.yml]
 ignore=BA124
 
-
-[file:ConfenseVision.yml]
-ignore=RN111
-
-[file:ConfenseVision.yml]
-ignore=ST111
