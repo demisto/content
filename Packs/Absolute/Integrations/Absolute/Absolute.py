@@ -296,7 +296,6 @@ class ClientV3(BaseClient):
                 return response.get('data')
         return None
 
-
     def fetch_events_request(self, query_string: str) -> dict[str, Any]:
         """
         Performs the HTTP request using the signed request data.
@@ -328,7 +327,7 @@ class ClientV3(BaseClient):
             page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
             query_string = self.prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date,
                                                                       end_date=end_date, next_page=next_page_token)
-            response = self.send_request_to_api('GET', '/v3/reporting/siem-events', query_string,  tuple(ok_codes))
+            response = self.send_request_to_api('GET', '/v3/reporting/siem-events', query_string, tuple(ok_codes))
             all_events.extend(response.get('data', []))
             next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
             if not next_page_token:
@@ -1205,7 +1204,6 @@ def main() -> None:  # pragma: no cover
             token_id=token_id,
             secret_key=secret_key
         )
-
 
         client_v3 = ClientV3(
             base_url=base_url,

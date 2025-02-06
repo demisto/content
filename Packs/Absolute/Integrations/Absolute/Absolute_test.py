@@ -586,10 +586,10 @@ def test_fetch_events_between_dates_one_fetch(mocker, absolute_client_v3):
     from datetime import timedelta
     mock_response = util_load_json('test_data/siem_events.json')
     mock_response['metadata']['pagination']['nextPage'] = ''
-    mocker.patch.object(absolute_client_v3, 'fetch_events_request', return_value=mock_response)
+    mocker.patch.object(absolute_client_v3, 'send_request_to_api', return_value=mock_response)
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(minutes=1)
-    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events_request')
+    fetch_events_spy = mocker.spy(absolute_client_v3, 'send_request_to_api')
     all_events = ClientV3.fetch_events_between_dates(absolute_client_v3, 10000, start_date, end_date)
     assert all_events == mock_response.get('data')
     fetch_events_spy.assert_called_once()
@@ -617,7 +617,7 @@ def test_fetch_events_between_dates_multiple_fetches(mocker, absolute_client_v3)
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(minutes=1)
 
-    def fetch_events_side_effect(query_string):
+    def fetch_events_side_effect(method: str, url_suffix: str, query_string: str, ok_codes: tuple):
         if fetch_events_side_effect.call_count == 1:
             fetch_events_side_effect.call_count += 1
             return {
@@ -637,8 +637,8 @@ def test_fetch_events_between_dates_multiple_fetches(mocker, absolute_client_v3)
             }
 
     fetch_events_side_effect.call_count = 1
-    mocker.patch.object(absolute_client_v3, 'fetch_events_request', side_effect=fetch_events_side_effect)
-    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events_request')
+    mocker.patch.object(absolute_client_v3, 'send_request_to_api', side_effect=fetch_events_side_effect)
+    fetch_events_spy = mocker.spy(absolute_client_v3, 'send_request_to_api')
     all_events = ClientV3.fetch_events_between_dates(absolute_client_v3, 10000, start_date, end_date)
 
     assert all_events == mock_response.get('data')
@@ -776,9 +776,9 @@ def test_fetch_events_case_fetch_limit_equal_last_run_events_id(mocker, absolute
     first_mock_response = {'data': mock_response.get('data')[:fetch_limit]}
     second_mock_response = {'data': mock_response.get('data')[fetch_limit:]}
     mocker.patch.object(ClientV3, 'prepare_query_string_for_fetch_events', return_value='')
-    mocker.patch.object(ClientV3, 'fetch_events_request', return_value=first_mock_response)
+    mocker.patch.object(ClientV3, 'send_request_to_api', return_value=first_mock_response)
     events_first_batch, last_run_object = fetch_events(absolute_client_v3, fetch_limit, {})
-    mocker.patch.object(ClientV3, 'fetch_events_request', return_value=second_mock_response)
+    mocker.patch.object(ClientV3, 'send_request_to_api', return_value=second_mock_response)
     events_second_batch, _ = fetch_events(absolute_client_v3, fetch_limit, last_run_object)
     all_events = events_first_batch + events_second_batch
     assert len(events_first_batch) == 2
