@@ -253,8 +253,8 @@ script:
     description: Get an alert with its UUID (corresponds to event.id field) or the GCenter ID of the alert
     deprecated: false
     outputs:
-    - contextPath: Gatewatcher.Alerts.Get
-      description: The alert fetched
+    - contextPath: Gatewatcher.Alerts.Get.uuid
+      description: The UUID of the alert fetched
       type: string
   - arguments:
     - description: The note to set on the alert
@@ -274,7 +274,7 @@ script:
     description: Add or update a note to an alert
     deprecated: false
     outputs:
-    - contextPath: Gatewatcher.Alerts.Note.Add
+    - contextPath: Gatewatcher.Alerts.Note.Add.note
       description: The note added to the alert
       type: string
   - arguments:
@@ -285,8 +285,8 @@ script:
     description: Delete the note of an alert
     deprecated: false
     outputs:
-    - contextPath: Gatewatcher.Alerts.Note.Remove
-      description: The request response code
+    - contextPath: Gatewatcher.Alerts.Note.Remove.uuid
+      description: The UUID of the alert removed note
       type: string
   - arguments:
     - description: The UUID of the alert to get tags (corresponds to event.id field) 
@@ -296,8 +296,11 @@ script:
     description: Get the tags of an alert
     deprecated: false
     outputs:
-    - contextPath: Gatewatcher.Alerts.Tags.Get
+    - contextPath: Gatewatcher.Alerts.Tags.Get.tags
       description: The tags of the alert
+      type: string
+    - contextPath: Gatewatcher.Alerts.Tags.Get.uuid
+      description: The UUID of the alert having these tags
       type: string
   - arguments:
     - description: The UUID of the alert to add tags (corresponds to event.id field) 
@@ -311,8 +314,11 @@ script:
     description: Add or update tags of an alert
     deprecated: false
     outputs:
-    - contextPath: Gatewatcher.Alerts.Tags.Add
+    - contextPath: Gatewatcher.Alerts.Tags.Add.tags
       description: The tags added to the alert
+      type: string
+    - contextPath: Gatewatcher.Alerts.Tags.Add.uuid
+      description: The UUID of the alert where the tags were added
       type: string
   - arguments:
     - description: The UUID of the alert to remove tags (corresponds to event.id field) 
@@ -1280,6 +1286,7 @@ script:
       required: true
     - description: An attached comment (200 chars max)
       name: comment
+      required: true
     - description: Name of the threat for reference (100 chars max)
       name: threat
       required: true
