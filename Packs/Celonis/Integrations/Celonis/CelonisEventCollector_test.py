@@ -63,7 +63,7 @@ def test_fetch_events_reaching_rate_limit(mocker):
     client = create_client()
 
     exception = Exception("Rate limit exceeded")
-    setattr(exception, "res", "LIMIT_RATE_EXCEEDED")
+    setattr(exception, "message", "429")
     last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "token": "123"}
     mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=exception)
     mocker.patch('CelonisEventCollector.demisto.getLastRun', return_value=last_run_mock)

@@ -89,12 +89,12 @@ def add_millisecond(timestamp: str) -> str:
     Returns:
         str: The new timestamp with one millisecond added, formatted in ISO 8601.
     """
-    if '.' not in timestamp:
-        # Handle timestamps without milliseconds
-        dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+
+    if '.' not in timestamp:  # Handle timestamps without milliseconds for get-events command
+        timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
     else:
-        # Handle timestamps with milliseconds
-        dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+        timestamp_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    dt = datetime.strptime(timestamp, timestamp_format)
     dt += timedelta(milliseconds=1)
     return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
@@ -127,7 +127,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             # event_date = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
 
-    demisto.debug(f'Start time={start} and end time={end} for fetch events.')
+    demisto.debug(f'Fetching audit logs events from date={start} to date={end}.')
 
     output: list = []
     while True:
@@ -135,7 +135,8 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             response = client.get_audit_logs(start, end)
         except Exception as e:
             if hasattr(e, "message") and '429' in e.message:
-                demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit} Audit logs.")
+                demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit}"
+                              f" Audit logs. Wait for the next fetch cycle.")
                 # new_last_run = {'start_date': start, 'token': client.token}
                 new_last_run = {'start_date': start}
                 return output, new_last_run
