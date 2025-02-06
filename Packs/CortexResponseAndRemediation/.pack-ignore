@@ -1,3 +1,6 @@
+[file:playbook-Azure_AD_account_unlock_or_password_reset.yml]
+ignore=GR103
+
 [file:playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace.yml]
 ignore=PB106
 

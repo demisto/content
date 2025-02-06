@@ -31,6 +31,26 @@
       }
     }
   },
+  "######### templates_type: base64",
+  {
+    "args": {
+      "templates_type": "base64",
+      "template_name": "test",
+      "templates": "eyJ0ZXN0IjogeyJxdWVyeSI6IHsieHFsIjogIkR1bW15IFhRTCJ9LCAiZW50cnkiOiB7InR5cGUiOiAiZHVyYXRpb24iLCAiZHVyYXRpb24iOiB7ImZpZWxkIjogIl9kdXJhdGlvbiJ9fX19"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
   "######### cache_type: recordset - hit",
   {
     "args": {
@@ -301,6 +321,85 @@
       }
     }
   },
+  "######### cache hit - b85x",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "dataset = microsoft_windows_raw| comp count() as count by _time, auth_outcome| alter time_eng = format_timestamp(\"%b %d:\", _time)"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "_time",
+                "field": "time_eng"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "auth_outcome",
+                  "data-field": "count",
+                  "colors": "rgb(0, 0, 0)"
+                }
+              }
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00",
+      "cache_type": "recordset"
+    },
+    "context": {
+      "XQLDSHelperCache": {
+        "test": {
+          "CacheDataset": {
+            "data": "ABzY8HzS~D0{@GyR*Eml%uQ9YQcyB7Ff!FOFw`|P3NbLS0wX;G1A{0f9R;Pt(vpn:{L+%-e2CiO(&XgS;:o0ga(-!E2~f-s:Oah|pPH8rQsR}Er(kGgrBth<fXxz1vMe#eW{D-xl2`!wQE-#W0000",
+            "type": "gz+b85x"
+          },
+          "QueryHash": "8155a34f94572574a780e779b9638fa6716ae243ed505ef8bc543a9202a86892"
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "stats": [
+            {
+              "name": "Jan 12:",
+              "groups": [
+                {
+                  "name": "success",
+                  "data": [
+                    1
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "Jan 19:",
+              "groups": [
+                {
+                  "name": "success",
+                  "data": [
+                    2
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
   "######### earliest_time/latest_time - default",
   {
     "args": {
@@ -441,6 +540,46 @@
       }
     }
   },
+  "######### earliest_time - overwritten by settings (vars)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "time_range": {
+              "earliest_time": "${earliest_time}"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "round_time": "0",
+      "earliest_time": "2026-01-01T00:00:00Z",
+      "latest_time": "2025-02-01T00:00:00Z"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "earliest_time": "2025-01-01T01:23:45Z"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2025-01-01T01:23:45.000+00:00",
+        "latest_time": "2025-02-01T00:00:00.000+00:00"
+      }
+    }
+  },
   "######### latest_time - overwritten by settings",
   {
     "args": {
@@ -468,6 +607,46 @@
     },
     "xql": {
       "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2025-01-01T00:00:00.000+00:00",
+        "latest_time": "2025-01-01T01:23:45.000+00:00"
+      }
+    }
+  },
+  "######### latest_time - overwritten by settings (vars)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "time_range": {
+              "latest_time": "${latest_time}"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "round_time": "0",
+      "earliest_time": "2025-01-01T00:00:00Z",
+      "latest_time": "2024-01-01T00:00:00Z"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "latest_time": "2025-01-01T01:23:45Z"
     },
     "results": {
       "QueryParams": {
@@ -583,6 +762,79 @@
       }
     }
   },
+  "######### round_time: for earliest_time and latest_time (str)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "base_time": "2025-01-01T01:23:45.1234Z",
+      "round_time": "3600, 1",
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2024-12-31T01:00:00.000+00:00",
+        "latest_time": "2025-01-01T01:23:45.000+00:00"
+      }
+    }
+  },
+  "######### round_time: for earliest_time and latest_time (list)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "base_time": "2025-01-01T01:23:45.1234Z",
+      "round_time": [
+        "3600",
+        "1"
+      ],
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2024-12-31T01:00:00.000+00:00",
+        "latest_time": "2025-01-01T01:23:45.000+00:00"
+      }
+    }
+  },
   "######### round_time - overwritten by settings",
   {
     "args": {
@@ -618,6 +870,47 @@
         "query_string": "Dummy XQL",
         "earliest_time": "2024-12-31T01:00:00.000+00:00",
         "latest_time": "2025-01-01T01:00:00.000+00:00"
+      }
+    }
+  },
+  "######### round_time - overwritten by settings (earliest_time and latest_time)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "time_range": {
+              "round_time": {
+                "earliest_time": 3600,
+                "latest_time": 1
+              }
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "base_time": "2025-01-01T01:23:45.1234Z",
+      "round_time": "1",
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2024-12-31T01:00:00.000+00:00",
+        "latest_time": "2025-01-01T01:23:45.000+00:00"
       }
     }
   },
@@ -1105,6 +1398,78 @@
         "Type": 1,
         "ContentsFormat": "markdown",
         "HumanReadable": "${text}",
+        "Contents": null
+      }
+    }
+  },
+  "######### context_data - str",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${text}"
+            }
+          }
+        }
+      },
+      "context_data": "{\"text\": \"test message\"}"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "dummy"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "test message",
+        "Contents": null
+      }
+    }
+  },
+  "######### context_data - dict",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${text}"
+            }
+          }
+        }
+      },
+      "context_data": {
+        "text": "test message"
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "dummy"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "test message",
         "Contents": null
       }
     }
@@ -1967,6 +2332,40 @@
         "Type": 1,
         "ContentsFormat": "markdown",
         "HumanReadable": "default markdown test message",
+        "Contents": null
+      }
+    }
+  },
+  "######### xql.conditions: return default entry (scope=query_skipped, entry=query_skipped)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": false
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            },
+            "default": {
+              "scope": "query_skipped",
+              "entry": "xxx",
+              "query_skipped": "default markdown message"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "default markdown message",
         "Contents": null
       }
     }
