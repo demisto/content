@@ -808,13 +808,14 @@ def search_quarantine():
     recipient = args.get('recipient')
     limit_quarantine_occurred_time = argToBoolean(args.get('limit_quarantine_occurred_time'))
     quarantine_timestamp_limit = arg_to_number(args.get('quarantine_timestamp_limit'))
-    compare_message_time = argToBoolean(args.get('compare_message_time'))
+    fetch_delta = arg_to_number(args.get('fetch_delta'))
 
 
     request_params = {
         'created_after': datetime.strftime(arg_time - get_time_delta('1 hour'), TIME_FORMAT),  # for safety
-        'fetch_delta': '6 hours',
-        'fetch_limit': '50'
+        'fetch_delta': f'{fetch_delta} hours',
+        'fetch_limit': '50',
+        'message_id': mid
     }
 
     incidents_list = get_incidents_batch_by_time_request(request_params)
@@ -848,8 +849,8 @@ def search_quarantine():
                     found['mid'] = True
                     demisto.debug('PTR: Found the email, adding the alert')
                     emailTRAPtimestamp = int(message_delivery_time / 1000)
-                    demisto.debug(f'PTR: {emailTRAPtimestamp=}, {compare_message_time=}, {incidentTAPtime=}')
-                    if ((not compare_message_time) or (incidentTAPtime == emailTRAPtimestamp)):
+                    demisto.debug(f'PTR: {emailTRAPtimestamp=}, {incidentTAPtime=}')
+                    if (incidentTAPtime == emailTRAPtimestamp):
                         demisto.debug(f'PTR: Adding the alert with id {alert.get("id")}')
                         found['email'] = True
                         lstAlert.append({

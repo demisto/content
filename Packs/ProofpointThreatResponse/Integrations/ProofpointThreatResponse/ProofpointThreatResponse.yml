@@ -728,9 +728,9 @@ script:
         difference between alert time and quarantined time is less than the number
         of seconds specified. The time is in seconds.
       defaultValue: "120"
-    - name: compare_message_time
-      defaultValue: true
-      description: Whether to retrieve only messages that has the same messageDeliveryTime as the time argument.
+    - name: fetch_delta
+      defaultValue: '120'
+      description: The time frame (in hours) used to identify the size of batches when retrieving the messages.
     outputs:
     - contextPath: ProofPointTRAP.Quarantine
       description: Results of the email quarantine operation.
