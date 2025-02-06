@@ -93,14 +93,6 @@ script:
     - description: The number of computer assets to return.
       name: limit
       defaultValue: 10
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Set this argument to True in order to create assets, otherwise the command will only display them.
-      name: should_push_events
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
     description: Gets computer assets from Jamf Protect.
     name: jamf-protect-get-computer-assets
   runonce: false
