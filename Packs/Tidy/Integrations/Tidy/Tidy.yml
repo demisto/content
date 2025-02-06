@@ -602,7 +602,7 @@ script:
   - arguments: []
     description: Install python environment.
     name: tidy-python-env
-  dockerimage: demisto/tidy:1.0.0.117377
+  dockerimage: demisto/tidy:1.0.0.2020237
   script: ''
   subtype: python3
   type: python

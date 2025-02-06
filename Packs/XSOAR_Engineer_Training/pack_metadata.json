@@ -2,7 +2,7 @@
     "name": "XSOAR Engineer Training",
     "description": "XSOAR Engineer Training (XET) Pack, this pack contains content utilized to train you on how to be an XSOAR Engineer.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Mike Beauchamp",
     "url": "",
     "email": "",

@@ -6,7 +6,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 from EWSO365 import (
     SMTP,
-    EWSClient,
     ExpandGroup,
     GetSearchableMailboxes,
     add_additional_headers,
@@ -18,6 +17,7 @@ from EWSO365 import (
     fetch_last_emails,
     find_folders,
     get_attachment_name,
+    get_client_from_params,
     get_expanded_group,
     get_item_as_eml,
     get_searchable_mailboxes,
@@ -29,7 +29,7 @@ from EWSO365 import (
     parse_incident_from_item,
     parse_item_as_dict,
 )
-from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
+from exchangelib import EWSDate, EWSDateTime, EWSTimeZone, FileAttachment
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from exchangelib.properties import MessageHeader
@@ -90,6 +90,9 @@ class TestNormalCommands:
 
         def get_account(self, target_mailbox=None, access_type=None):
             return self.account
+
+        def get_protocol(self):
+            return self.protocol
 
         def get_items_from_mailbox(self, account, item_ids):
             return ""
@@ -479,7 +482,12 @@ def test_handle_html(mocker, html_input, expected_output):
     """
     mocker.patch.object(uuid, 'uuid4', return_value='abcd1234')
     # mocker.patch.object(demisto, 'uniqueFile', return_value='12345678')
-    assert handle_html(html_input) == expected_output
+    clean_html, attachments = handle_html(html_input)
+    assert clean_html == expected_output[0]
+    assert len(attachments) == len(expected_output[1])
+    for i, attachment in enumerate(attachments):
+        attachment_params = {'data': attachment.content, 'name': attachment.name, 'cid': attachment.content_id}
+        assert attachment_params == expected_output[1][i]
 
 
 @freeze_time('2021-05-23 13:18:14.901293+00:00')
@@ -630,7 +638,7 @@ def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_
     mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
 
 
-def test_parse_incident_from_item_with_attachments():
+def test_parse_incident_from_item_with_attachments(mocker):
     """
     Given:
         - Message item with attachment that contains email attachments
@@ -651,13 +659,16 @@ def test_parse_incident_from_item_with_attachments():
         to_recipients=[],
         attachments=[
             ItemAttachment(
+                name='test_attachment.eml',
                 item=Item(mime_content=content, headers=[]),
                 attachment_id=AttachmentId(),
                 last_modified_time=EWSDate(year=2021, month=1, day=25),
             ),
         ],
     )
+    mocker.patch('EWSO365.fileResult')
     incident = parse_incident_from_item(message)
+
     assert incident['attachment']
 
 
@@ -763,13 +774,16 @@ def test_credentials_with_old_secret(mocker, old_credentials, new_credentials, e
     Then:
       - Ensure the new credentials is taken if exist and old if new doesn't exist.
     """
-    mocker.patch.object(EWSClient, '_EWSClient__prepare')
-    client = EWSClient(default_target_mailbox='test',
-                       credentials=new_credentials,
-                       client_secret=old_credentials,
-                       _client_id='new_client_id',
-                       _tenant_id='new_tenant_id')
-
+    mocker.patch('EWSO365.MicrosoftClient.get_access_token', return_value='test_token')
+    params = {
+        'credentials': new_credentials,
+        'client_secret': old_credentials,
+        '_client_id': 'new_client_id',
+        '_tenant_id': 'new_tenant_id',
+        'default_target_mailbox': 'test',
+        'self_deployed': True,
+    }
+    client = get_client_from_params(params)
     assert client.ms_client.client_secret == expected
 
 
@@ -887,7 +901,7 @@ def test_decode_email_data(message_content):
 
 class TestEmailModule(unittest.TestCase):
 
-    @patch('EWSO365.FileAttachment')
+    @patch('EWSO365.FileAttachment.__new__')
     @patch('EWSO365.HTMLBody')
     @patch('EWSO365.Body')
     @patch('EWSO365.Message')
@@ -903,7 +917,7 @@ class TestEmailModule(unittest.TestCase):
 
         mock_message.return_value = MagicMock()
         mock_html_body.return_value = MagicMock()
-        mock_file_attachment.return_value = MagicMock()
+        mock_file_attachment.return_value = MagicMock(spec=FileAttachment)
 
         # Call the function
         result = create_message(
@@ -912,13 +926,13 @@ class TestEmailModule(unittest.TestCase):
 
         # Assertions
         mock_html_body.assert_called_once_with(html_body)
-        mock_file_attachment.assert_called_once_with(
-            name="file.txt", content="data", is_inline=True, content_id="12345"
-        )
+        mock_file_attachment.assert_called_once_with(FileAttachment,
+                                                     name="file.txt", content="data", is_inline=True, content_id="12345"
+                                                     )
         mock_message.assert_called_once()
         assert isinstance(result[0], MagicMock)
 
-    @patch('EWSO365.FileAttachment')
+    @patch('EWSO365.FileAttachment.__new__')
     @patch('EWSO365.HTMLBody')
     @patch('EWSO365.Body')
     @patch('EWSO365.Message')
@@ -936,7 +950,7 @@ class TestEmailModule(unittest.TestCase):
 
         mock_message.return_value = MagicMock()
         mock_html_body.return_value = MagicMock()
-        mock_file_attachment.return_value = MagicMock()
+        mock_file_attachment.return_value = MagicMock(spec=FileAttachment)
         with patch.object(EWSO365.demisto, 'uniqueFile', return_value="1234567"), \
                 patch.object(EWSO365.demisto, 'getFilePath', return_value={"path": "", "name": ""}), \
                 patch.object(uuid, 'uuid4', return_value="111111111"):  # noqa: F821

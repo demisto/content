@@ -309,7 +309,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "0"
+                                            "simple": "0.5"
                                         }
                                     },
                                     "toReplace": {

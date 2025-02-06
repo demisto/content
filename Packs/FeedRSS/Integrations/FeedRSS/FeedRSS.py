@@ -7,9 +7,6 @@ HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 INTEGRATION_NAME = 'RSS Feed'
 
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0" \
-             " Safari/537.36"
-
 
 class Client(BaseClient):
     """Client for RSS Feed - gets Reports from the website
@@ -20,8 +17,8 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45,
-                 read_timeout=20, enrichment_excluded=False):
-        super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl, headers={'User-Agent': USER_AGENT})
+                 read_timeout=20, enrichment_excluded=False, headers=None):
+        super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl, headers=headers)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
         self.content_max_size = content_max_size * 1000
@@ -74,6 +71,16 @@ class Client(BaseClient):
                     'source': self._base_url,
                     'title': indicator.get('title')
                 })
+
+                if indicator.get('links', []):
+                    for tmp_link in indicator['links']:
+                        publications.append({
+                            'timestamp': published_iso,
+                            'link': tmp_link.href,
+                            'source': self._base_url,
+                            'title': indicator.get('title')
+                        })
+
                 text = self.get_url_content(link)
                 if not text:
                     continue
@@ -171,6 +178,14 @@ def check_feed(client: Client) -> str:
 def main():
     params = demisto.params()
     server_url = (params.get('server_url')).rstrip()
+    default_headers = params.get('default_headers')
+    if default_headers:
+        try:
+            default_headers = json.loads(default_headers.strip())
+        except ValueError as e:
+            return_error(
+                'Unable to parse Request headers value. Please verify the headers value is a valid JSON. - ' + str(e))
+
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
@@ -190,7 +205,9 @@ def main():
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')),
                         read_timeout=int(params.get('read_timeout', '20')),
-                        enrichment_excluded=argToBoolean(params.get('enrichmentExcluded', False)))
+                        enrichment_excluded=(argToBoolean(params.get('enrichmentExcluded', False))
+                                             or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas())),
+                        headers=default_headers)
 
         if command == 'test-module':
             return_results(check_feed(client))

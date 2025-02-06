@@ -2,7 +2,7 @@
     "name": "G Suite Security Alert Center",
     "description": "Fetch alert types, delete or recover alerts, retrieve an alert's metadata, and create or view alert feedback.",
     "support": "xsoar",
-    "currentVersion": "1.1.48",
+    "currentVersion": "1.1.49",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

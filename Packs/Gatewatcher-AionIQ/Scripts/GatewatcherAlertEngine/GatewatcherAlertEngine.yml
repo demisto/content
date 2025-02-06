@@ -1,0 +1,18 @@
+commonfields:
+  id: GatewatcherAlertEngine
+  version: -1
+name: GatewatcherAlertEngine
+script: ''
+type: python
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.8.1983910
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

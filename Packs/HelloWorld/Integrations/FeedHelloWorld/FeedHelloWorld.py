@@ -153,7 +153,6 @@ Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
 
-from typing import Dict, List, Optional
 
 import urllib3
 from urllib.parse import urlparse
@@ -173,7 +172,7 @@ class Client(BaseClient):
     For this HelloWorld Feed implementation, no special attributes defined
     """
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -245,8 +244,8 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1,
-                     create_relationships: bool = False) -> List[Dict]:
+def fetch_indicators(client: Client, tlp_color: str | None = None, feed_tags: list = [], limit: int = -1,
+                     create_relationships: bool = False) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -320,8 +319,8 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
 
 
 def get_indicators_command(client: Client,
-                           params: Dict[str, str],
-                           args: Dict[str, str]
+                           params: dict[str, str],
+                           args: dict[str, str]
                            ) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
@@ -346,7 +345,7 @@ def get_indicators_command(client: Client,
     )
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: dict[str, str]) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request

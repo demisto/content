@@ -3,6 +3,9 @@ import re
 import Qualysv2
 import pytest
 import requests
+from requests_mock import Mocker as RequestsMocker
+from pytest_mock import MockerFixture
+from freezegun import freeze_time
 from Qualysv2 import (
     is_empty_result,
     format_and_validate_response,
@@ -22,9 +25,16 @@ from Qualysv2 import (
     parse_raw_response,
     get_simple_response_from_raw,
     validate_required_group,
+    get_vulnerabilities,
     get_activity_logs_events_command,
-    fetch_events, get_activity_logs_events, fetch_assets, fetch_vulnerabilities, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT,
-    HOST_LIMIT
+    send_assets_and_vulnerabilities_to_xsiam,
+    fetch_events, get_activity_logs_events,
+    fetch_assets, fetch_vulnerabilities,
+    fetch_assets_and_vulnerabilities_by_date,
+    fetch_assets_and_vulnerabilities_by_qids,
+    ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT,
+    HOST_LIMIT, API_SUFFIX, VENDOR,
+    DEFAULT_LAST_ASSETS_RUN,
 )
 
 from CommonServerPython import *  # noqa: F401
@@ -45,8 +55,22 @@ WARNING
 ?action=list&since_datetime=2022-12-21T03:42:05Z&truncation_limit=10&id_max=123456"
 ----END_RESPONSE_FOOTER_CSV"""
 
+BASE_URL = 'https://server_url.com/'
+SNAPSHOT_ID = '1737885000'
 
-def test_get_activity_logs_events_command(requests_mock):
+
+@pytest.fixture
+def client() -> Client:
+    """Fixture to create a Qualys.Client instance."""
+    return Client(base_url=BASE_URL, verify=False, headers={}, proxy=False, username='demisto', password='demisto')
+
+
+def util_load_json(path: str):
+    with open(path, encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def test_get_activity_logs_events_command(requests_mock: RequestsMocker, client: Client):
     """
     Given:
     - activity_logs_events_command
@@ -57,18 +81,10 @@ def test_get_activity_logs_events_command(requests_mock):
     Then:
     - Ensure Activity Logs Results in human-readable, and number of results reasonable.
     """
-    base_url = 'https://server_url/'
     with open('test_data/activity_logs.csv') as f:
         logs = f.read()
-    requests_mock.get(f'{base_url}api/2.0/fo/activity_log/'
+    requests_mock.get(f'{BASE_URL}api/2.0/fo/activity_log/'
                       f'?action=list&truncation_limit=0&since_datetime=2023-03-01T00%3A00%3A00Z', text=logs)
-    client = Client(base_url=base_url,
-                    verify=True,
-                    headers={},
-                    proxy=False,
-                    username='demisto',
-                    password='demisto',
-                    )
     args = {'limit': 50, 'since_datetime': '1 March 2023'}
     first_fetch = '2022-03-21T03:42:05Z'
     activity_logs_events, results = get_activity_logs_events_command(client, args, first_fetch)
@@ -81,7 +97,7 @@ def test_get_activity_logs_events_command(requests_mock):
                           ("2023-05-24T09:55:35Z", 0, True),
                           ("2023-05-14T15:04:55Z", 7, True),
                           ("2023-01-01T08:06:44Z", 17, False)])
-def test_fetch_logs_events_command(requests_mock, activity_log_last_run, logs_number, add_footer):
+def test_fetch_logs_events_command(requests_mock, activity_log_last_run, logs_number, add_footer, client: Client):
     """
     Given:
     - fetch events command (fetches logs)
@@ -96,7 +112,6 @@ def test_fetch_logs_events_command(requests_mock, activity_log_last_run, logs_nu
     - Ensure newest event time saved
     """
     first_fetch_str = '2022-12-21T03:42:05Z'
-    base_url = 'https://server_url/'
     truncation_limit = logs_number
     with open('test_data/activity_logs.csv') as f:
         logs = f.read()
@@ -110,17 +125,10 @@ def test_fetch_logs_events_command(requests_mock, activity_log_last_run, logs_nu
         if add_footer:
             new_logs += f'{FOOTER}\n'
 
-    requests_mock.get(f'{base_url}api/2.0/fo/activity_log/'
+    requests_mock.get(f'{BASE_URL}api/2.0/fo/activity_log/'
                       f'?action=list&truncation_limit={truncation_limit}&'
                       f'since_datetime={activity_log_last_run if activity_log_last_run else first_fetch_str}',
                       text=new_logs)
-    client = Client(base_url=base_url,
-                    verify=True,
-                    headers={},
-                    proxy=False,
-                    username='demisto',
-                    password='demisto',
-                    )
     last_run = {ACTIVITY_LOGS_NEWEST_EVENT_DATETIME: activity_log_last_run}
 
     logs_next_run, activity_logs_events = fetch_events(
@@ -139,7 +147,7 @@ def test_fetch_logs_events_command(requests_mock, activity_log_last_run, logs_nu
     assert logs_next_run.get(ACTIVITY_LOGS_NEWEST_EVENT_DATETIME) == "2023-05-24T09:55:35Z"
 
 
-def test_fetch_assets_command(requests_mock):
+def test_fetch_assets_command(requests_mock: RequestsMocker, client: Client):
     """
     Given:
     - fetch_assets_command
@@ -148,20 +156,12 @@ def test_fetch_assets_command(requests_mock):
     Then:
     - Ensure List assets.
     """
-    base_url = 'https://server_url/'
     with open('./test_data/host_list_detections_raw.xml') as f:
         assets = f.read()
-    requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
+    requests_mock.get(f'{BASE_URL}api/2.0/fo/asset/host/vm/detection/'
                       f'?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after='
                       f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', text=assets)
 
-    client = Client(base_url=base_url,
-                    verify=True,
-                    headers={},
-                    proxy=False,
-                    username='demisto',
-                    password='demisto',
-                    )
     assets, last_run, amount_to_report, snapshot_id, set_new_limit = fetch_assets(client=client, assets_last_run={})
     assert len(assets) == 8
     assert amount_to_report == 8
@@ -169,7 +169,7 @@ def test_fetch_assets_command(requests_mock):
     assert last_run['stage'] == 'vulnerabilities'
 
 
-def test_fetch_assets_command_time_out(requests_mock, mocker):
+def test_fetch_assets_command_time_out(requests_mock: RequestsMocker, mocker, client: Client):
     """
     Given:
     - fetch_assets_command
@@ -178,55 +178,68 @@ def test_fetch_assets_command_time_out(requests_mock, mocker):
     Then:
     - Ensure the limit was reduced.
     """
-    base_url = 'https://server_url/'
     with open('./test_data/host_list_detections_raw.xml') as f:
         assets = f.read()
-    requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
+    requests_mock.get(f'{BASE_URL}api/2.0/fo/asset/host/vm/detection/'
                       f'?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after='
                       f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
                       exc=requests.exceptions.ReadTimeout)
 
-    client = Client(base_url=base_url,
-                    verify=True,
-                    headers={},
-                    proxy=False,
-                    username='demisto',
-                    password='demisto',
-                    )
     assets, new_last_run, amount_to_report, snapshot_id, set_new_limit = fetch_assets(client=client, assets_last_run={})
     assert not assets
     assert set_new_limit
 
 
-def test_fetch_vulnerabilities_command(requests_mock):
+def test_fetch_vulnerabilities_command_by_date(requests_mock: RequestsMocker, client: Client):
     """
     Given:
-    - fetch_vulnerabilities_command
+    - last_run dictionary.
     When:
-    - Want to list all existing incidents
-    Then:
-    - Ensure List vulnerabilities.
+    - Calling fetch_vulnerabilities.
+    Assert:
+    - Ensure correct API request to mock address.
+    - Ensure correct next_run and vulnerabilities are as expected.
     """
-    base_url = 'https://server_url/'
     with open('./test_data/vulnerabilities_raw.xml') as f:
-        vulnerabilities = f.read()
+        raw_response = f.read()
 
-    requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/'
-                       f'?action=list&last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
-                       text=vulnerabilities)
+    expected_vulnerabilities = util_load_json('./test_data/fetched_vulnerabilities.json')
 
-    client = Client(base_url=base_url,
-                    verify=True,
-                    headers={},
-                    proxy=False,
-                    username='demisto',
-                    password='demisto',
-                    )
-    last_run = {'since_datetime': {arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}}
-    vulnerabilities, last_run = fetch_vulnerabilities(client=client, last_run=last_run)
-    assert len(vulnerabilities) == 2
-    assert last_run['next_page'] == ''
-    assert last_run['stage'] == 'assets'
+    since_datetime = arg_to_datetime('2025-01-25').strftime(ASSETS_DATE_FORMAT)
+    last_run = {'since_datetime': since_datetime}
+    requests_mock.post(
+        f'{BASE_URL}api/2.0/fo/knowledge_base/vuln/?action=list&last_modified_after={since_datetime}', text=raw_response)
+
+    vulnerabilities, next_run = fetch_vulnerabilities(client=client, last_run=last_run)
+
+    assert vulnerabilities == expected_vulnerabilities
+    assert next_run['next_page'] == ''
+    assert next_run['stage'] == 'assets'
+
+
+def test_fetch_vulnerabilities_command_by_qid(requests_mock: RequestsMocker, client: Client):
+    """
+    Given:
+    - last_run dictionary.
+    When:
+    - Calling fetch_vulnerabilities.
+    Assert:
+    - Ensure correct API request to mock address.
+    - Ensure correct next_run and vulnerabilities are as expected.
+    """
+    with open('./test_data/vulnerabilities_raw.xml') as f:
+        raw_response = f.read()
+
+    expected_vulnerabilities = util_load_json('./test_data/fetched_vulnerabilities.json')
+
+    detection_qids = ['10052', '10186']
+    requests_mock.post(f'{BASE_URL}api/2.0/fo/knowledge_base/vuln/?action=list&ids={",".join(detection_qids)}', text=raw_response)
+
+    vulnerabilities, next_run = fetch_vulnerabilities(client=client, last_run={}, detection_qids=detection_qids)
+
+    assert vulnerabilities == expected_vulnerabilities
+    assert next_run['next_page'] == ''
+    assert next_run['stage'] == 'assets'
 
 
 class TestIsEmptyResult:
@@ -1038,6 +1051,7 @@ class MockResponse:
 
 
 class TestClientClass:
+    client: Client = Client("test.com", "testuser", "testpassword", False, False, {})
     ERROR_HANDLER_INPUTS = [
         (
             MockResponse(
@@ -1075,9 +1089,64 @@ class TestClientClass:
         Then:
         - Ensure readable message is as expected
         """
-        client: Client = Client("test.com", "testuser", "testpassword", False, False, None)
         with pytest.raises(DemistoException, match=re.escape(error_message)):
-            client.error_handler(response)
+            self.client.error_handler(response)
+
+    def test_get_host_list_detections_events(self, mocker):
+        """
+        Given
+            - A Qualys Client instance and a since_datetime value
+        When
+            - Calling Client.get_host_list_detections_events
+        Assert
+            - The correct http request is made
+        """
+        since_datetime = "2024-12-12"
+
+        client_http_request = mocker.patch.object(self.client, "_http_request")
+        self.client.get_host_list_detection(since_datetime=since_datetime, limit=HOST_LIMIT)
+        http_request_kwargs = client_http_request.call_args.kwargs
+
+        assert client_http_request.called_once
+        assert http_request_kwargs["method"] == "GET"
+        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
+        assert http_request_kwargs["params"] == {
+            "truncation_limit": HOST_LIMIT,
+            "vm_scan_date_after": since_datetime,
+            "show_qds": 1,
+            "show_qds_factors": 1
+        }
+
+    @pytest.mark.parametrize(
+        "since_datetime, detection_qids, expected_params",
+        [
+            pytest.param("2024-12-12", None, {"last_modified_after": "2024-12-12"}, id="Specified since datetime"),
+            pytest.param(None, "A,B", {"ids": "A,B"}, id="Specified detection QIDs"),
+        ]
+    )
+    def test_get_vulnerabilities(
+        self,
+        mocker: MockerFixture,
+        since_datetime: str | None, detection_qids: str | None,
+        expected_params: dict,
+    ) -> None:
+        """
+        Given:
+            - Either a since_datetime or detection_qids value.
+        When:
+            - Calling client.get_vulnerabilities.
+        Assert:
+            - Ensure correct request HTTP method, API endpoint, and params.
+        """
+        client_http_request = mocker.patch.object(self.client, "_http_request")
+        self.client.get_vulnerabilities(since_datetime, detection_qids)
+
+        http_request_kwargs = client_http_request.call_args.kwargs
+
+        assert client_http_request.called_once
+        assert http_request_kwargs["method"] == "POST"
+        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+        assert http_request_kwargs["params"] == expected_params
 
 
 class TestInputValidations:
@@ -1532,3 +1601,232 @@ def test_truncate_asset_size(mocker, asset, expected_truncated):
 
     # Reset mock_debug for the next test case
     mock_debug.reset_mock()
+
+
+def test_get_vulnerabilities_invalid_inputs(client: Client):
+    """
+    Given:
+        - Missing both since_datetime and detection_qids.
+    When:
+        - Calling get_vulnerabilities.
+    Assert:
+        - Ensure a ValueError is raised that matches the correct error message.
+    """
+    with pytest.raises(ValueError, match="Either 'since_datetime' or 'detection_qids' need to be specified"):
+        get_vulnerabilities(client)
+
+
+@pytest.mark.parametrize(
+    "since_datetime, detection_qids, expected_params",
+    [
+        pytest.param("2024-12-12", None, {"last_modified_after": "2024-12-12"}, id="Specified since datetime"),
+        pytest.param(None, ["A", "B"], {"ids": "A,B"}, id="Specified detection QIDs"),
+    ]
+)
+def test_get_vulnerabilities_valid_inputs(
+    mocker: MockerFixture,
+    client: Client,
+    since_datetime: str | None,
+    detection_qids: list | None,
+    expected_params: dict,
+) -> None:
+    """
+    Given:
+        - Either a since_datetime or detection_qids value.
+    When:
+        - Calling get_vulnerabilities.
+    Assert:
+        - Ensure correct request HTTP method, API endpoint, and params.
+    """
+    client_http_request = mocker.patch.object(client, "_http_request")
+
+    get_vulnerabilities(client, since_datetime, detection_qids)
+
+    http_request_kwargs = client_http_request.call_args.kwargs
+
+    assert http_request_kwargs["method"] == "POST"
+    assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+    assert http_request_kwargs["params"] == expected_params
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Qualys client and last run dictionary with fetch stage, total assets count, and snapshot ID.
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "assets" stage.
+
+    Assert:
+        - Ensure correct sending to XSIAM and correctly set next assets run.
+    """
+    last_total_assets = 100
+    last_run = {'stage': 'assets', 'total_assets': last_total_assets, 'snapshot_id': SNAPSHOT_ID}
+
+    expected_assets = util_load_json('./test_data/fetched_assets.json')
+    next_page, set_new_limit = '', False
+    mocker.patch('Qualysv2.get_host_list_detections_events', return_value=(expected_assets, next_page, set_new_limit))
+
+    mock_send_data_to_xsiam = mocker.patch('Qualysv2.send_data_to_xsiam')
+    mock_set_assets_last_run = mocker.patch('Qualysv2.demisto.setAssetsLastRun')
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+
+    send_data_to_xsiam_kwargs: dict = mock_send_data_to_xsiam.call_args.kwargs
+    next_run = mock_set_assets_last_run.call_args[0][0]
+
+    assert send_data_to_xsiam_kwargs['data'] == expected_assets
+    assert send_data_to_xsiam_kwargs['vendor'] == VENDOR
+    assert send_data_to_xsiam_kwargs['product'] == 'assets'
+    assert send_data_to_xsiam_kwargs['snapshot_id'] == SNAPSHOT_ID
+    assert send_data_to_xsiam_kwargs['items_count'] == str(last_total_assets + len(expected_assets))
+    assert not send_data_to_xsiam_kwargs['should_update_health_module']
+
+    assert next_run['next_page'] == ''
+    assert next_run['stage'] == 'vulnerabilities'  # next fetch stage should be vulnerabilities because no next assets page
+    assert next_run['total_assets'] == last_total_assets + len(expected_assets)
+    assert next_run['since_datetime'] == '2024-10-03'  # freezed datetime - 90 days
+    assert next_run['snapshot_id'] == SNAPSHOT_ID
+
+
+def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Qualys client and last run dictionary with fetch stage, total vulnerabilities count, and snapshot ID.
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "vulnerabilities" stage.
+
+    Assert:
+        - Ensure correct sending to XSIAM and that next assets run is reset to default (because pulling is finished).
+    """
+    last_total_vulnerabilities = 153
+    last_run = {'stage': 'vulnerabilities', 'total_vulnerabilities': last_total_vulnerabilities, 'snapshot_id': SNAPSHOT_ID}
+
+    expected_vulnerabilities = util_load_json('./test_data/fetched_vulnerabilities.json')
+    mocker.patch('Qualysv2.get_vulnerabilities', return_value=expected_vulnerabilities)
+
+    mock_send_data_to_xsiam = mocker.patch('Qualysv2.send_data_to_xsiam')
+    mock_set_assets_last_run = mocker.patch('Qualysv2.demisto.setAssetsLastRun')
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+
+    send_data_to_xsiam_kwargs: dict = mock_send_data_to_xsiam.call_args.kwargs
+    next_run = mock_set_assets_last_run.call_args[0][0]
+
+    assert send_data_to_xsiam_kwargs['data'] == expected_vulnerabilities
+    assert send_data_to_xsiam_kwargs['vendor'] == VENDOR
+    assert send_data_to_xsiam_kwargs['product'] == 'vulnerabilities'
+
+    assert next_run == DEFAULT_LAST_ASSETS_RUN  # pulling finished, next run stage should be assets
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Qualys client and last run dictionary with total assets and vulnerabilities counts, and snapshot ID.
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_qids.
+
+    Assert:
+        - Ensure correct sending of assets and vulnerabilities to XSIAM.
+        - Ensure correct last run that preserves snapshot ID, sets next trigger to 0, and updates total counts.
+    """
+    last_total_assets = 100
+    last_total_vulns = 66
+    last_run = {'total_assets': last_total_assets, 'total_vulnerabilities': last_total_vulns, 'snapshot_id': SNAPSHOT_ID}
+
+    expected_assets = util_load_json('./test_data/fetched_assets.json')
+    next_page, set_new_limit = f'{BASE_URL}/next/page/abc', False   # has next assets page (so not done pulling assets)
+    mocker.patch('Qualysv2.get_host_list_detections_events', return_value=(expected_assets, next_page, set_new_limit))
+
+    expected_vulnerabilities = util_load_json('./test_data/fetched_vulnerabilities.json')
+    mocker.patch('Qualysv2.fetch_vulnerabilities', return_value=(expected_vulnerabilities, {}))
+
+    mock_send_assets_and_vulnerabilities_to_xsiam = mocker.patch('Qualysv2.send_assets_and_vulnerabilities_to_xsiam')
+    mock_set_assets_last_run = mocker.patch('Qualysv2.demisto.setAssetsLastRun')
+
+    fetch_assets_and_vulnerabilities_by_qids(client, last_run)
+
+    send_assets_and_vulnerabilities_to_xsiam = mock_send_assets_and_vulnerabilities_to_xsiam.call_args.kwargs
+    next_run = mock_set_assets_last_run.call_args[0][0]
+
+    assert send_assets_and_vulnerabilities_to_xsiam['assets'] == expected_assets
+    assert send_assets_and_vulnerabilities_to_xsiam['vulnerabilities'] == expected_vulnerabilities
+    assert send_assets_and_vulnerabilities_to_xsiam['cumulative_assets_count'] == last_total_assets + len(expected_assets)
+    assert send_assets_and_vulnerabilities_to_xsiam['cumulative_vulns_count'] == last_total_vulns + len(expected_vulnerabilities)
+    assert send_assets_and_vulnerabilities_to_xsiam['has_next_page'] is True  # next_page not empty (not done pulling)
+    assert send_assets_and_vulnerabilities_to_xsiam['snapshot_id'] == SNAPSHOT_ID  # keep snapshot ID (not done pulling)
+
+    assert next_run == {
+        'stage': 'assets',
+        'next_page': next_page,
+        'total_assets': last_total_assets + len(expected_assets),
+        'since_datetime': '2024-10-03',  # freezed datetime - 90 days
+        'snapshot_id': SNAPSHOT_ID,
+        'nextTrigger': '0',
+        'type': 1,
+        'total_vulnerabilities': last_total_vulns + len(expected_vulnerabilities),
+    }
+
+
+@pytest.mark.parametrize(
+    "has_assets_next_page, expected_assets_count_to_report, expected_vulns_count_to_report",
+    [
+        pytest.param(True, '1', '1', id="Has next page"),
+        pytest.param(False, '10', '13', id="Specified detection QIDs"),
+    ]
+)
+def test_send_assets_and_vulnerabilities_to_xsiam(
+    mocker: MockerFixture,
+    has_assets_next_page: bool,
+    expected_assets_count_to_report: str,
+    expected_vulns_count_to_report: str,
+):
+    """
+    Given:
+        - Lists of assets and vulnerabilities, along with their respective cumulative counts, and a snapshot ID.
+
+    When:
+        - Calling send_assets_and_vulnerabilities_to_xsiam.
+
+    Assert:
+        - Ensure correct sending of assets and vulnerabilities data to XSIAM with the correct vendor and product.
+        - Ensure reported count is 1 if not done pulling (has next page). Otherwise, count should be the cumulative value.
+    """
+    expected_assets = util_load_json('./test_data/fetched_assets.json')
+    expected_vulnerabilities = util_load_json('./test_data/fetched_vulnerabilities.json')
+    cumulative_assets_count = 10
+    cumulative_vulns_count = 13
+
+    mock_send_data_to_xsiam = mocker.patch('Qualysv2.send_data_to_xsiam')
+
+    send_assets_and_vulnerabilities_to_xsiam(
+        assets=expected_assets,
+        vulnerabilities=expected_vulnerabilities,
+        cumulative_assets_count=cumulative_assets_count,
+        cumulative_vulns_count=cumulative_vulns_count,
+        has_next_page=has_assets_next_page,
+        snapshot_id=SNAPSHOT_ID,
+    )
+
+    # First send_data_to_xsiam call is to send assets, second to send vulnerabilities
+    send_data_to_xsiam_assets_kwargs = mock_send_data_to_xsiam.mock_calls[0].kwargs
+    send_data_to_xsiam_vulns_kwargs = mock_send_data_to_xsiam.mock_calls[1].kwargs
+
+    assert send_data_to_xsiam_assets_kwargs['data'] == expected_assets
+    assert send_data_to_xsiam_assets_kwargs['vendor'] == VENDOR
+    assert send_data_to_xsiam_assets_kwargs['product'] == 'assets'
+    assert send_data_to_xsiam_assets_kwargs['snapshot_id'] == SNAPSHOT_ID
+    assert send_data_to_xsiam_assets_kwargs['items_count'] == expected_assets_count_to_report
+    assert not send_data_to_xsiam_assets_kwargs['should_update_health_module']
+
+    assert send_data_to_xsiam_vulns_kwargs['data'] == expected_vulnerabilities
+    assert send_data_to_xsiam_vulns_kwargs['vendor'] == VENDOR
+    assert send_data_to_xsiam_vulns_kwargs['product'] == 'vulnerabilities'
+    assert send_data_to_xsiam_vulns_kwargs['snapshot_id'] == SNAPSHOT_ID
+    assert send_data_to_xsiam_vulns_kwargs['items_count'] == expected_vulns_count_to_report
+    assert not send_data_to_xsiam_vulns_kwargs['should_update_health_module']

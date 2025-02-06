@@ -4508,6 +4508,26 @@ def test_get_modified_remote_data_command(mocker):
 
 @pytest.mark.parametrize('status',
                          ['new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'])
+def test_update_detection_request_good__legacy(mocker, status):
+    """
+    Given
+        - list of detections IDs
+        - status to change for the given detection in the remote system, which is one of the permitted statuses
+    When
+        - running update_remote_system_command
+    Then
+        - the resolve_detection command is called successfully with the right arguments
+    """
+    from CrowdStrikeFalcon import update_detection_request
+    mock_resolve_detection = mocker.patch('CrowdStrikeFalcon.resolve_detection')
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
+    update_detection_request([input_data.remote_detection_id], status)
+    assert mock_resolve_detection.call_args[1]['ids'] == [input_data.remote_detection_id]
+    assert mock_resolve_detection.call_args[1]['status'] == status
+
+
+@pytest.mark.parametrize('status',
+                         ['new', 'in_progress', 'closed', 'reopened'])
 def test_update_detection_request_good(mocker, status):
     """
     Given
@@ -4520,13 +4540,14 @@ def test_update_detection_request_good(mocker, status):
     """
     from CrowdStrikeFalcon import update_detection_request
     mock_resolve_detection = mocker.patch('CrowdStrikeFalcon.resolve_detection')
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     update_detection_request([input_data.remote_detection_id], status)
     assert mock_resolve_detection.call_args[1]['ids'] == [input_data.remote_detection_id]
     assert mock_resolve_detection.call_args[1]['status'] == status
 
 
 @pytest.mark.parametrize('status', ['other', ''])
-def test_update_detection_request_bad(status):
+def test_update_detection_request_bad__lagacy(status):
     """
     Given
         - list of detections IDs
@@ -4537,6 +4558,25 @@ def test_update_detection_request_bad(status):
         - an exception is raised
     """
     from CrowdStrikeFalcon import update_detection_request
+    with pytest.raises(DemistoException) as de:
+        update_detection_request([input_data.remote_detection_id], status)
+    assert 'CrowdStrike Falcon Error' in str(de.value)
+
+
+@pytest.mark.parametrize('status', ['true_positive', ''])
+def test_update_detection_request_bad(status, mocker):
+    """
+    Given
+        - list of detections IDs
+        - status to change for the given detection in the remote system, which is not one of the permitted statuses
+            'true_positive' is not a valid status for the new version of the API
+    When
+        - running update_remote_system_command
+    Then
+        - an exception is raised
+    """
+    from CrowdStrikeFalcon import update_detection_request
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     with pytest.raises(DemistoException) as de:
         update_detection_request([input_data.remote_detection_id], status)
     assert 'CrowdStrike Falcon Error' in str(de.value)
@@ -4706,21 +4746,45 @@ def test_remote_incident_handle_tags(mocker, tags, action_name):
         assert mock_update_incident_request.call_args_list[0].kwargs['json']['action_parameters'][0]['name'] == action_name
 
 
-def test_get_mapping_fields_command():
+def test_get_mapping_fields_command(mocker):
     """
     Given
         - nothing
     When
-        - running get_mapping_fields_command
+        - running get_mapping_fields_command on the new version of the API
     Then
         - the result fits the expected mapping scheme
     """
     from CrowdStrikeFalcon import get_mapping_fields_command
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     result = get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
     assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
     assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection'
     assert result.scheme_types_mappings[1].fields.keys() == {'status'}
+    assert result.scheme_types_mappings[2].type_name == 'CrowdStrike Falcon OFP Detection'
+    assert result.scheme_types_mappings[2].fields.keys() == {'status'}
+    assert result.scheme_types_mappings[3].type_name == 'CrowdStrike Falcon On-Demand Scans Detection'
+    assert result.scheme_types_mappings[3].fields.keys() == {'status'}
+
+
+def test_get_mapping_fields_command__legacy(mocker):
+    """
+    Given
+        - nothing
+    When
+        - running get_mapping_fields_command on the legacy version of the API
+    Then
+        - the result fits the expected mapping scheme
+    """
+    from CrowdStrikeFalcon import get_mapping_fields_command
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
+    result = get_mapping_fields_command()
+    assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
+    assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
+    assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection - LAGACY'
+    assert result.scheme_types_mappings[1].fields.keys() == {'status'}
+    assert len(result.scheme_types_mappings) == 2
 
 
 def test_error_in_get_detections_by_behaviors(mocker):
