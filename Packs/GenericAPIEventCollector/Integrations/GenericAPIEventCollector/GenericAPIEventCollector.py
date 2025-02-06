@@ -320,9 +320,9 @@ def get_time_field_from_event_to_dt(event: dict[str, Any], timestamp_field_confi
 def is_pagination_needed(events: dict[Any, Any], pagination_logic: PaginationLogic) -> tuple[bool, Any]:
     next_page_value = None
     if pagination_needed := pagination_logic.pagination_needed:
-        if events[pagination_logic.pagination_flag]:
+        if dict_safe_get(events, pagination_logic.pagination_flag):
             pagination_needed = True
-            next_page_value = events[pagination_logic.pagination_field_name]
+            next_page_value = dict_safe_get(events, pagination_logic.pagination_field_name)
         else:
             pagination_needed = False
 
@@ -629,10 +629,10 @@ def get_events_command(client: Client,
     )
 
 
-def extract_pagination_params(params):
+def extract_pagination_params(params: dict[str, str]) -> PaginationLogic:
     pagination_needed: bool = argToBoolean(params.get('pagination_needed', False))
-    pagination_field_name: str | None = params.get('pagination_field_name')
-    pagination_flag: str | None = params.get('pagination_flag')
+    pagination_field_name: list[str] | None = argToList(params.get('pagination_field_name'), '.')
+    pagination_flag: list[str] | None = argToList(params.get('pagination_flag'), '.')
     pagination_logic = PaginationLogic(pagination_needed, pagination_field_name, pagination_flag)
     if pagination_logic.pagination_needed:
         demisto.debug("Pagination logic - Pagination Needed, "
