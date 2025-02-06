@@ -10,12 +10,12 @@ configuration:
   display: Name or IP address of the Orion server
   name: server
   required: true
-  defaultvalue: 17778
   type: 0
   section: Connect
 - additionalinfo: 'Port number with which to connect to the Orion server. Default is 17778.'
   display: Port
   name: port
+  defaultvalue: 17778
   required: false
   type: 0
   section: Connect
