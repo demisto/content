@@ -1,0 +1,1359 @@
+id: silent-SPNs cleared from a machine account
+version: -1
+name: silent-SPNs cleared from a machine account
+description: |-
+  This playbook addresses the following alert:
+
+  - SPNs cleared from a machine account
+  - SPNs cleared from a machine account for the first time
+
+  Playbook Stages:
+
+  Triage:
+
+  - Retrieve additional data about the Account Changed event, including the Machine Account whose SPNs were cleared and the number of times the user cleared SPNs in the last 30 days.
+  Investigation:
+
+  - Search for creation of suspicious account on the Domain Controller.
+  - Search for suspicious TGT/Service ticket requests.
+  - Search for user insights associated with malicious tools related to Kerberos ticket manipulation.
+  - Search for suspicious account renames, particularly to mimic DC name.
+  - Search for additional alerts in the incident that could indicate attempts to find controlled accounts or create accounts.
+
+  Containment:
+
+  - For alerts determined to be true positives, prompt the analyst to decide whether to disable the user account.
+  - Upon analyst approval: Disable the suspicious user account in Active Directory.
+
+  Requirements:
+
+  For response actions, you need the following integrations:
+
+  - Active Directory Query v2.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 92a78776-fe6c-47f2-87b9-5ed54911b0c5
+    type: start
+    task:
+      id: 92a78776-fe6c-47f2-87b9-5ed54911b0c5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 983be7f8-144e-4ed3-81e1-160d088a0f77
+    type: regular
+    task:
+      id: 983be7f8-144e-4ed3-81e1-160d088a0f77
+      version: -1
+      name: Get additional data about the Account Changed event
+      description: Returns information like the Machine Account whose SPNs were cleared, and the number of times the user cleared SPNs in the last 30 days.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 17eff5a4-397c-41f0-8707-e615f16581f8
+    type: title
+    task:
+      id: 17eff5a4-397c-41f0-8707-e615f16581f8
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1dd94cbd-03cd-4206-848d-914cb9528d6f
+    type: regular
+    task:
+      id: 1dd94cbd-03cd-4206-848d-914cb9528d6f
+      version: -1
+      name: Search incident for additional alerts
+      description: Searches for additional alerts in the incident that could indicate attempts to find controlled accounts or create accounts, as the first step of an attack.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      extend-context:
+        simple: RelatedIncidentAlertsResults=
+      fromdate:
+        simple: 2 days ago
+      ignore-outputs:
+        simple: "true"
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix:
+                value:
+                  simple: ' and (name:"A user executed suspicious LDAP enumeration queries" or name:"Multiple suspicious user accounts were created")'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f4cf3cc4-dafc-42ca-8943-92b9e090f730
+    type: title
+    task:
+      id: f4cf3cc4-dafc-42ca-8943-92b9e090f730
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "14"
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 976f7b6c-32a2-4d03-822d-384823a6f871
+    type: regular
+    task:
+      id: 976f7b6c-32a2-4d03-822d-384823a6f871
+      version: -1
+      name: Search for creation of suspicious account on DC
+      description: Searches for Rare Machine Account Creation insight on the Domain Controller of this alert.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      extend-context:
+        simple: RareMachineAccountCreationResults=
+      fromdate:
+        simple: 3 hours ago
+      ignore-outputs:
+        simple: "true"
+      includeinformational:
+        simple: "true"
+      query:
+        simple: name:"Rare machine account creation" and hostname:"${alert.hostname}"
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5efb5e7b-c44d-44cc-85a7-8fee1b1c233d
+    type: regular
+    task:
+      id: 5efb5e7b-c44d-44cc-85a7-8fee1b1c233d
+      version: -1
+      name: Search for user insights for malicious tools
+      description: Searches for insights about the user who cleared the SPNs from the machine account, that are associated with the "Steal or Forge Kerberos Tickets" MITRE technique (T1558). These insights may appear when the user is using tools to manipulate tickets.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      extend-context:
+        simple: SuspiciousToolsResults=
+      fromdate:
+        simple: 3 hours ago
+      ignore-outputs:
+        simple: "true"
+      includeinformational:
+        simple: "true"
+      query:
+        simple: username:"${alert.username.[0]}" and mitreattcktechnique:*T1558*
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 4c00758c-3ef2-4597-81f7-abd84d8f101e
+    type: title
+    task:
+      id: 4c00758c-3ef2-4597-81f7-abd84d8f101e
+      version: -1
+      name: User Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 5a64fad1-8b4d-45ba-894d-535fcb1e8cd4
+    type: title
+    task:
+      id: 5a64fad1-8b4d-45ba-894d-535fcb1e8cd4
+      version: -1
+      name: Host Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2fc7206b-192d-4c91-80a4-e45c1bce0e8f
+    type: title
+    task:
+      id: 2fc7206b-192d-4c91-80a4-e45c1bce0e8f
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b613ac1e-26d8-406c-8b06-2552fc84f296
+    type: title
+    task:
+      id: b613ac1e-26d8-406c-8b06-2552fc84f296
+      version: -1
+      name: Incident Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 5f09e1a7-542b-4825-86b0-c239f4171523
+    type: regular
+    task:
+      id: 5f09e1a7-542b-4825-86b0-c239f4171523
+      version: -1
+      name: Search for suspicious account renames
+      description: Searches for suspicious sAMAccountName change alerts for the user who cleared the SPNs from the machine account. If the user cleared the SPNs of the machine account and made a suspicious account rename this can be part of a privilege escalation attack.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      extend-context:
+        simple: SuspiciousAccountRenamesResults=
+      fromdate:
+        simple: 3 hours ago
+      ignore-outputs:
+        simple: "true"
+      includeinformational:
+        simple: "false"
+      query:
+        simple: (username:"${alert.username.[0]}") and (name:"Suspicious sAMAccountName change" or name:"Suspicious sAMAccountName change to DC hostname")
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: af6c7e1c-d946-4af5-816d-9e2233f8b263
+    type: regular
+    task:
+      id: af6c7e1c-d946-4af5-816d-9e2233f8b263
+      version: -1
+      name: Search for suspicious TGT/Service ticket requests
+      description: |-
+        Searches for alerts regarding Kerberos ticket requests using spoofed sAMAccountNames.
+        A general search of these alerts is first executed, after which another check is done to identify whether the hostname of the alert is the name of the DC (the current alert's agent hostname in the case of SPNs cleared alerts).
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      extend-context:
+        simple: SuspiciousTicketRequestsResults=
+      fromdate:
+        simple: 3 hours ago
+      ignore-outputs:
+        simple: "true"
+      includeinformational:
+        simple: "false"
+      query:
+        simple: name:"TGT request with a spoofed sAMAccountName" or name:"Service ticket request with a spoofed sAMAccountName"
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 5d5aec5d-760f-4643-8b6f-153d1f591c28
+    type: condition
+    task:
+      id: 5d5aec5d-760f-4643-8b6f-153d1f591c28
+      version: -1
+      name: Evaluate if SPN was cleared for malicious purposes
+      description: Checks whether evidence is sufficient to consider this a True Positive and execute remediation. If not, additional conditions are considered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RareMachineAccountCreationResults
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: RelatedIncidentAlertsResults
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousAccountRenamesResults
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousToolsResults
+            iscontext: true
+      - - operator: lessThan
+          left:
+            value:
+              simple: Core.OriginalAlert.event.evtlog_subject_user_count_distinct_target_user_spns_cleared
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 6887409c-6d19-4d47-8a19-217940f742f5
+    type: condition
+    task:
+      id: 6887409c-6d19-4d47-8a19-217940f742f5
+      version: -1
+      name: Check if the account was renamed to mimic DC name
+      description: Checks whether the search for account rename alerts yielded any results that include the "Suspicious sAMAccountName change to DC hostname" alert.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: SuspiciousAccountRenamesResults.Contents.data.name
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: SuspiciousAccountRenamesResults.Contents.data.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Suspicious sAMAccountName change to DC hostname
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 05feda72-f7d3-4522-87c8-f4d171f9f38b
+    type: title
+    task:
+      id: 05feda72-f7d3-4522-87c8-f4d171f9f38b
+      version: -1
+      name: True Positive - Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0838723a-7592-46f5-831f-86114fc32fbe
+    type: regular
+    task:
+      id: 0838723a-7592-46f5-831f-86114fc32fbe
+      version: -1
+      name: Save highly suspicious rename flag
+      description: Saves a context key indicating that the account rename alerts included higher severity alerts about renaming of an account to the name of the DC.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: RenameIsHighlySuspicious
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: ae8c534a-d4e5-40c8-803d-454a1ec56161
+    type: condition
+    task:
+      id: ae8c534a-d4e5-40c8-803d-454a1ec56161
+      version: -1
+      name: Evaluate additional high risk indicators
+      description: Checks whether an account was also renamed to the Domain Controller's name, or whether TGT / Service Tickets were requested by an account using the DC's name.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RenameIsHighlySuspicious
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousTicketRequestsResults
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: e0404c0b-1fe1-4203-8a22-1c0a0555fe03
+    type: condition
+    task:
+      id: e0404c0b-1fe1-4203-8a22-1c0a0555fe03
+      version: -1
+      name: Check if findings require analyst decision
+      description: Checks whether any signs at all of malicious activity were detected in the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RareMachineAccountCreationResults
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: RelatedIncidentAlertsResults
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousAccountRenamesResults
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousToolsResults
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 4ebf4b0e-08d9-4f3b-8ae4-83db06da3770
+    type: collection
+    task:
+      id: 4ebf4b0e-08d9-4f3b-8ae4-83db06da3770
+      version: -1
+      name: Monitor incoming alerts
+      description: |-
+        There were some indications of an attack, but not enough to consider the alert a True Positive.
+
+        Examine the findings:
+
+        Rare machine account creation: `${.=val.RareMachineAccountCreationResults && Object.keys(val.RareMachineAccountCreationResults).length > 0 ? "True" : "False"}`
+
+        Suspicious account renamings:
+        `${.=val.SuspiciousAccountRenamesResults&& Object.keys(val.SuspiciousAccountRenamesResults).length > 0 ? "True" : "False"}`
+
+        Suspicious tools used: `${.=val.SuspiciousToolsResults&& Object.keys(val.SuspiciousToolsResults).length > 0 ? "True" : "False"}`
+
+        Other alerts in the incident: `${.=val.RelatedIncidentAlertsResults&& Object.keys(val.RelatedIncidentAlertsResults).length > 0 ? "True" : "False"}`
+
+        ---
+
+        Check if any of the following alerts trigger in the near future:
+        - TGT request with a spoofed sAMAccountName
+        - Service ticket request with a spoofed sAMAccountName
+
+        If they do, we suggest disabling the offending account.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the closing reason for this alert?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Resolved - True Positive
+        - simple: Resolved - False Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide Closing Details
+      description: After monitoring incoming alerts, and before this alert is closed, please choose the closing reason for the alert.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: eb9d516c-05dd-4b06-8a52-d52ec7b6b839
+    type: regular
+    task:
+      id: eb9d516c-05dd-4b06-8a52-d52ec7b6b839
+      version: -1
+      name: Close alert as True Positive
+      description: Closes the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeReason:
+        simple: Resolved - True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 18668a15-6ea9-4477-814d-35e0d70aa2ad
+    type: title
+    task:
+      id: 18668a15-6ea9-4477-814d-35e0d70aa2ad
+      version: -1
+      name: Inconclusive - Continue Monitoring
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 346ce181-a38f-4214-8526-090553afb107
+    type: condition
+    task:
+      id: 346ce181-a38f-4214-8526-090553afb107
+      version: -1
+      name: Manual - decide whether to disable the user
+      description: |-
+        Review the following findings and decide whether you want to disable the user.
+
+        Username: ${alert.username.[0]}
+
+
+        Below are the findings of the investigation:
+
+        ---
+
+        #### Rare machine account creation
+        If the host insights show that the machine account whose SPN was cleared was created recently, it can indicate an attack.
+
+        Detected: `${.=val.RareMachineAccountCreationResults && Object.keys(val.RareMachineAccountCreationResults).length > 0 ? "True" : "False"}`
+
+        ---
+
+        #### Suspicious account renames
+        If the user has alerts indicating they changed the sAMAccountName of the machine account, this raises the suspicion for an attack.
+
+        Detected: `${.=val.SuspiciousAccountRenamesResults&& Object.keys(val.SuspiciousAccountRenamesResults).length > 0 ? "True" : "False"}`
+
+        ---
+
+        #### Tools associated with Kerberos ticket manipulation
+        Detected: `${.=val.SuspiciousToolsResults&& Object.keys(val.SuspiciousToolsResults).length > 0 ? "True" : "False"}`
+
+        ---
+
+        #### Suspicious ticket requests
+        If an account using a Domain Controller's hostname is requesting a TGT / service ticket from the DC, this is a strong indication that the SPN clearing was done as part of an attack. If a "Name match" is also detected, this means that the same machine that was renamed is also the same machine that requested the suspicious ticket - making the evidence stronger for a TP.
+
+        Detected: `${.=val.SuspiciousTicketRequestsResults&& Object.keys(val.SuspiciousTicketRequestsResults).length > 0 ? "True" : "False"}`
+        Detected name match: `${.=val.ImpersonatingThisDC? "True" : "False"}`
+
+        ---
+
+        #### Additional alerts in the incident:
+        If the same incident shows general reconnaissance indications or creation of other suspicious users - this increases the chances that the SPN clearing was done maliciously.
+
+        Detected: `${.=val.RelatedIncidentAlertsResults&& Object.keys(val.RelatedIncidentAlertsResults).length > 0 ? "True" : "False"}`
+
+        ---
+
+        #### Historical events
+
+        Number of past SPN clearing events: `${Core.OriginalAlert.event.evtlog_subject_user_count_distinct_target_user_spns_cleared}`
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Disable:
+      - "33"
+      Do not disable:
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Disable
+      - Do not disable
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 9f57821b-bf4c-4c44-8824-de1cea40d837
+    type: regular
+    task:
+      id: 9f57821b-bf4c-4c44-8824-de1cea40d837
+      version: -1
+      name: Disable user in AD
+      description: Disables the user that executed the LDAP enumeration queries in Active Directory.
+      script: '|||ad-disable-account'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      username:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: LastArrayElement
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=\\)[^\\]+$
+              unpack_matches: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: b7a0bffd-22e8-4768-8ea4-0bb93725e4ab
+    type: condition
+    task:
+      id: b7a0bffd-22e8-4768-8ea4-0bb93725e4ab
+      version: -1
+      name: Check if the requests were impersonating this DC
+      description: Checks if any alert among all recent Kerberos ticket using spoofed sAMAccountName alerts, includes the name of the DC that handled the SPNs Cleared alert.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: SuspiciousTicketRequestsResults.Contents.data.details
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: SuspiciousTicketRequestsResults.Contents.data.details
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TicketRequestForDCString
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: bf47695c-401c-4e6b-8413-e114a8dc7a59
+    type: regular
+    task:
+      id: bf47695c-401c-4e6b-8413-e114a8dc7a59
+      version: -1
+      name: Save search keywords for investigation
+      description: Saves a search term to help check if the subject host of the suspicious Kerberos ticket request alerts is the same domain controller involved in the SPNs Cleared alert.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: TicketRequestForDCString
+      value:
+        simple: Account ${alert.hostname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: dfabdfc4-4bcf-4d59-8b2f-ef957dbdfc82
+    type: regular
+    task:
+      id: dfabdfc4-4bcf-4d59-8b2f-ef957dbdfc82
+      version: -1
+      name: Save suspicious ticket request flag
+      description: Save a context key indicating that Kerberos ticket request alerts where the requester has the name of the Domain Controller of this alert have been found.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: ImpersonatingThisDC
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: af8ba433-ff25-4514-8e8c-7786fb4e9314
+    type: regular
+    task:
+      id: af8ba433-ff25-4514-8e8c-7786fb4e9314
+      version: -1
+      name: Close alert as False Positive
+      description: Closes the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeReason:
+        simple: Resolved - False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: d3a187f0-5aa7-495a-8ab7-3eb9f9792044
+    type: condition
+    task:
+      id: d3a187f0-5aa7-495a-8ab7-3eb9f9792044
+      version: -1
+      name: Check closing reason
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      True Positive:
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Provide Closing Details.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Resolved - True Positive
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_23_yes": 0.27,
+      "21_25_#default#": 0.47,
+      "22_15_#default#": 0.3,
+      "22_24_yes": 0.53,
+      "25_23_yes": 0.23,
+      "27_30_yes": 0.45,
+      "27_37_#default#": 0.13,
+      "32_29_Do not disable": 0.24,
+      "34_15_#default#": 0.21,
+      "38_29_True Positive": 0.8
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2575,
+        "width": 2080,
+        "x": -410,
+        "y": 160
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+issilent: true
+fromversion: 8.9.0
