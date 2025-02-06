@@ -1,21 +1,20 @@
 import json
 from datetime import datetime, timedelta
-from unittest.mock import patch
 
 import pytest
 from CommonServerPython import *
-from CybelAngel import Client, test_module, fetch_incidents, get_report_by_id_command, post_comment_command, get_comments_command, remediate_command, get_report_pdf_command
+from CybelAngel import (
+    Client, get_report_by_id_command, post_comment_command,
+    get_comments_command, remediate_command,
+    get_report_pdf_command, _datetime_helper, _set_context, get_report_attachment_command, update_status_command,
+    fetch_incidents, test_module)
 
 BASE_URL = "https://platform.cybelangel.com/"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def load_mock_response(file_name: str) -> str:
-    """
-    Load mock response JSON files for use in tests.
-    Args:
-        file_name (str): Name of the mock response JSON file to return.
-    """
+
     with open(f"test_data/{file_name}", encoding="utf-8") as mock_file:
         return mock_file.read()
 
@@ -30,11 +29,7 @@ def client():
     )
 
 
-
 def test_fetch_incidents(client, requests_mock):
-    """
-    Test the `fetch_incidents` function for fetching incidents from the API.
-    """
     mock_response = load_mock_response("fetch_incidents.json")
     requests_mock.get(f"{BASE_URL}api/v2/reports", json=json.loads(mock_response))
 
@@ -114,11 +109,10 @@ def test_update_status(client, requests_mock):
     assert status_code == 200
     output_status = json.loads(status)
     assert output_status["status"] == "success"
-    
-    
-    
-    
-    ### NEW Tests
+
+    # NEW Tests
+
+
 def test_remediate_command(client, requests_mock):
     """
     Test the `remediate_command` function for submitting a remediation request.
@@ -190,3 +184,136 @@ def test_get_report_pdf_command(client, requests_mock):
     assert result["File"] == "test-report-id.pdf"
     # Validate the returned data matches what was mocked
     assert result["FileID"] is not None  # Ensure that FileID is generated for the PDF
+
+
+def test_token_error_handling(client, requests_mock):
+    requests_mock.post("https://auth.cybelangel.com/oauth/token", status_code=500)
+    result = client.fetch_token()
+    assert "Error fetching token" in result["msg"]
+
+
+def test_check_token_initial(client):
+    """Test initial token check when token_time is None"""
+    client.token_time = None
+    client.check_token()
+    assert client.token is not None
+
+
+def test_post_comment_with_parent(client, requests_mock):
+    """Test posting a comment with a parent_id"""
+    mock_response = {"status": "comment_posted"}
+    requests_mock.post(f"{BASE_URL}api/v1/reports/test-report-id/comments", json=mock_response)
+
+    response, status_code = client.post_comment(
+        comment="Reply comment",
+        report_id="test-report-id",
+        tenant_id="test-tenant-id",
+        parent_id="parent-comment-id"
+    )
+    assert status_code == 200
+
+
+def test_get_report_by_id_error(client, requests_mock):
+    """Test error handling in get_report_by_id"""
+    requests_mock.get(f"{BASE_URL}api/v2/reports/invalid-id", status_code=404)
+    result = client.get_report_by_id("invalid-id")
+    assert isinstance(result, list)
+    assert "Error getting report" in result[0]["msg"]
+
+
+def test_get_comments_error(client, requests_mock):
+    """Test error handling in get_comments"""
+    requests_mock.get(f"{BASE_URL}api/v1/reports/test-id/comments",
+                      exc=requests.exceptions.HTTPError)
+    with pytest.raises(SystemExit):
+        client.get_comments("test-id")
+
+
+def test_test_module(client, requests_mock):
+    mock_response = {"reports": [{"id": "test"}]}
+    requests_mock.get(f"{BASE_URL}api/v2/reports", json=mock_response)
+    assert test_module(client) == "ok"
+
+
+def test_test_module_error(client, requests_mock):
+    """Testing error case for test_module"""
+    requests_mock.get(f"{BASE_URL}api/v2/reports", status_code=403)
+    client.token = None  # Force auth error
+    assert test_module(client) == "ok"
+
+
+def test_datetime_helper():
+    """Test the datetime helper function"""
+    past_date = (datetime.utcnow() - timedelta(minutes=30)).strftime(DATE_FORMAT)
+    minutes = _datetime_helper(past_date)
+    assert 29 <= minutes <= 31  # Allow small timing differences
+
+
+def test_set_context(client):
+    client.new_token_fetched = True
+    client.token = "test-token"
+    client.token_time = "2024-02-06 12:00:00.000000"
+    _set_context(client)
+    context = demisto.getIntegrationContext()
+    assert context["token"] == "test-token"
+    assert context.get("first_pull") == "False"  # Comparing strings
+
+
+# --- Command tests
+
+def test_get_report_attachment_command(client, requests_mock):
+    mock_content = b"test attachment content"
+    requests_mock.get(f"{BASE_URL}api/v1/reports/test-id/attachments/att-id", content=mock_content)
+
+    result = get_report_attachment_command(client, {
+        'report_id': 'test-id',
+        'attachment_id': 'att-id',
+        'filename': 'test.txt'
+    })
+    assert result['Type'] == EntryType.FILE
+    assert result['File'] == 'test.txt'
+
+
+def test_get_report_attachment_error(client, requests_mock):
+    requests_mock.get(f"{BASE_URL}api/v1/reports/test-id/attachments/att-id", exc=Exception("Download failed"))
+
+    result = get_report_attachment_command(client, {
+        'report_id': 'test-id',
+        'attachment_id': 'att-id',
+        'filename': 'test.txt'
+    })
+    assert result.readable_output == 'Error downloading attachment: Download failed'
+
+
+def test_update_status_command(client, requests_mock):
+    mock_response = {"status": "updated"}
+    requests_mock.put(f"{BASE_URL}api/v1/reports/test-id/status", json=mock_response)
+
+    result = update_status_command(client, {
+        'report_id': 'test-id',
+        'status': 'resolved'
+    })
+    assert result.outputs_prefix == 'CybelAngel.StatusUpdate'
+    assert 'updated' in result.raw_response[0]
+
+
+def test_update_status_error(client, requests_mock):
+    requests_mock.put(f"{BASE_URL}api/v1/reports/test-id/status", exc=Exception("Update failed"))
+
+    result = update_status_command(client, {
+        'report_id': 'test-id',
+        'status': 'resolved'
+    })
+    assert 'Error Updating status' in result.readable_output
+
+
+def test_fetch_incidents_with_invalid_response(client, requests_mock):
+    requests_mock.get(f"{BASE_URL}api/v2/reports", json={"reports": []})
+
+    incidents = fetch_incidents(client, first_fetch=True, last_run="", first_fetch_interval=1)
+    assert len(incidents) == 0
+
+
+def test_get_report_pdf_command_missing_id(client):
+    result = get_report_pdf_command(client, {})
+    assert result.readable_output == "Report ID not provided."

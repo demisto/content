@@ -2,122 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import datetime as dt
 import requests
-import urllib3
 import json
-from enum import IntEnum, Enum
-from uuid import UUID
-from typing import Optional, List
-from dataclasses import dataclass, field, asdict
-
-"""CybelAngel Integration for Cortex XSOAR.
-
-Provides interaction with the CybelAngel API, enabling incident management,
-report retrieval, remediation, and comment management. Facilitates automated
-incident handling and external risk monitoring by fetching, updating, and
-processing CybelAngel data within Cortex XSOAR.
-
-Resources:
-    CybelAngel Developer Documentation: https://developer.cybelangel.com/
-    XSOAR Developer Documentation: https://xsoar.pan.dev/docs/welcome
-
-Commands:
-    test-module:
-        Tests API connectivity and authentication. This command runs when
-        pressing the 'Test' button in XSOAR.
-        Returns:
-            str: 'ok' if authentication and connectivity are successful.
-
-    fetch-incidents:
-        Fetches incidents (reports) from CybelAngel within a specified time
-        interval.
-        Args:
-            first_fetch_interval (int): The interval in minutes for initial fetch
-            last_run: Timestamp of the last fetch to prevent duplicates
-        Returns:
-            list: XSOAR incidents populated with CybelAngel reports,
-                 categorized by severity and including key details
-
-    cybelangel-get-report-by-id:
-        Retrieves a specific CybelAngel report by its unique ID.
-        Args:
-            report_id (str): The ID of the report to retrieve
-        Returns:
-            dict: Report data, formatted for display in XSOAR
-
-    cybelangel-get-report-attachment:
-        Retrieves an attachment from a specific report.
-        Args:
-            report_id (str): The report ID
-            attachment_id (str): The attachment ID
-            filename (str): The desired filename for the download
-        Returns:
-            File: The attachment file in XSOAR
-
-    cybelangel-remediate:
-        Submits a remediation request for a specific report.
-        Args:
-            report_id (str): The ID of the report for remediation
-            email (str): Email address of the requester
-            requester_fullname (str): Full name of the requester
-        Returns:
-            dict: Status and confirmation of the remediation request
-
-    cybelangel-get-comments:
-        Retrieves comments associated with a specific report.
-        Args:
-            report_id (str): The report ID
-        Returns:
-            list: Comments with metadata (content, author, timestamp)
-
-    cybelangel-post-comment:
-        Adds a comment to a specific report.
-        Args:
-            report_id (str): The report ID
-            comment (str): The comment content
-            tenant_id (str): The tenant ID associated with the report
-            assigned (bool, optional): Specifies if comment is assigned
-                                     Defaults to True
-            parent_id (str, optional): Optional ID for nested comments
-        Returns:
-            dict: Confirmation of comment addition and status code
-
-    cybelangel-update-status:
-        Updates the status of a specific report.
-        Args:
-            report_id (str): The report ID
-            status (str): New status value (e.g., "open", "resolved")
-        Returns:
-            dict: Confirmation with updated report details
-
-    cybelangel-get-report-pdf:
-        Downloads a PDF of the report.
-        Args:
-            report_id (str): The report ID
-        Returns:
-            File: PDF file of the report as download in XSOAR
-
-    test_command:
-        A testing command for development purposes.
-        Not intended for production use.
-
-Implementation Details:
-    Authentication:
-        Uses client ID and secret to fetch and renew tokens automatically.
-
-    Token Management:
-        Manages token expiration and renewal, with caching to reduce API calls.
-
-    Error Handling:
-        Catches exceptions and logs detailed errors for debugging within XSOAR.
-
-    Data Parsing:
-        Parses and structures data from CybelAngel API responses for clear
-        presentation in XSOAR.
-
-    Incident Creation:
-        Maps CybelAngel reports to XSOAR incidents with relevant metadata,
-        including severity and timestamps.
-"""
 
 
 ''' IMPORTS '''
@@ -129,7 +14,11 @@ Implementation Details:
 BASE_URL = "https://platform.cybelangel.com/"
 AUTH_URL = "https://auth.cybelangel.com/oauth/token"
 
-SEVERITIES = {"0": "informational", "1": "low", "2": "moderate", "3": "high", "4": "critical"}
+SEVERITIES = {"0": "informational",
+              "1": "low",
+              "2": "moderate",
+              "3": "high",
+              "4": "critical"}
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
@@ -138,14 +27,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
 
     def __init__(self, client_id: str, client_secret: str, auth_token=None, token_time=None):
         self.base_url = "https://platform.cybelangel.com/"
@@ -173,7 +54,6 @@ class Client(BaseClient):
             return {"msg": f"Error fetching token: {str(e)}"}
 
     def check_token(self):
-        """ Check to see if token exists or if there is still time left with to use the token """
         if self.token_time is None:
             self.fetch_token()
             self.token_time = dt.datetime.utcnow()
@@ -187,19 +67,21 @@ class Client(BaseClient):
                 self.token_time = dt.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
 
     def get_reports(self, interval: int):
-        """ Get all reports from CybelAngel based on specified time interval
-            args:
-            """
         self.check_token()
         headers = {'Content-Type': "application/json",
                    'Authorization': self.token}
+
+        difference = dt.datetime.utcnow() - dt.timedelta(minutes=interval)
+
         params = {
             'end-date': dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M"),
-            'start-date': (dt.datetime.utcnow() - dt.timedelta(minutes=interval)).strftime("%Y-%m-%dT%H:%M")}
+            'start-date': difference.strftime("%Y-%m-%dT%H:%M")
+        }
         try:
             demisto.info(f'Fetching incidents at interval :{interval}')
 
-            response = json.loads(requests.get(f'{self.base_url}api/v2/reports', headers=headers, params=params).text)
+            response = json.loads(requests.get(f'{self.base_url}api/v2/reports',
+                                               headers=headers, params=params).text)
             reports = []
             for report in response['reports']:
                 reports.append(report)
@@ -217,7 +99,8 @@ class Client(BaseClient):
             'end-date': dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M"),
             'start-date': "2000-01-02T01:01:01"}
         try:
-            response = json.loads(requests.get(f'{self.base_url}api/v2/reports', headers=headers, params=params).text)
+            response = json.loads(requests.get(f'{self.base_url}api/v2/reports',
+                                               headers=headers, params=params).text)
             reports = []
             for report in response['reports']:
                 reports.append(report)
@@ -294,10 +177,11 @@ class Client(BaseClient):
         except requests.exceptions.HTTPError as error:
             raise SystemExit(error)
 
-    def post_comment(self, comment: str, report_id: str, tenant_id: str, assigned: bool = True, parent_id=None):
+    def post_comment(self, comment: str, report_id: str,
+                     tenant_id: str, assigned: bool = True, parent_id=None):
         self.check_token()
         url = f"{self.base_url}api/v1/reports/{report_id}/comments"
-        if parent_id:  
+        if parent_id:
             payload = {
                 "content": comment,
                 "discussion_id": f"{report_id}:{tenant_id}",
@@ -358,7 +242,6 @@ class Client(BaseClient):
 
 
 def _set_context(client: Client):
-    """ Stores new token in integration cache if new token is fetched by base client"""
     if client.new_token_fetched:
         new_context = {
             'token': str(client.token),
@@ -370,14 +253,6 @@ def _set_context(client: Client):
 
 
 def _datetime_helper(last_run_date):
-    """_summary_
-
-    Args:
-        last_run_date (_type_): Used to
-
-    Returns:
-        _type_: _description_
-    """
 
     delta = dt.datetime.utcnow() - dt.datetime.strptime(last_run_date, '%Y-%m-%dT%H:%M:%SZ')
     total_minutes = int(delta.total_seconds() / 60)
@@ -387,10 +262,8 @@ def _datetime_helper(last_run_date):
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_incidents(client: Client, first_fetch: bool, last_run, first_fetch_interval: int):
-    """ Fetches reports from specific time range """
-
-    # Change fetch interval from days to minutes if this is first fetch
+def fetch_incidents(client: Client, first_fetch: bool,
+                    last_run, first_fetch_interval: int):
     if first_fetch:
         fetch_interval = first_fetch_interval * 1140
     else:
@@ -429,7 +302,7 @@ def get_report_by_id_command(client: Client, args):
 
         if not result:
             return_results('No report found with the given ID')
-            return
+            return None
 
         command_results = CommandResults(
             outputs_prefix='CybelAngel.Report',
@@ -449,13 +322,11 @@ def get_report_by_id_command(client: Client, args):
         )
 
 
-
 def get_report_attachment_command(client: Client, args):
     report_id = args.get('report_id')
     attachment_id = args.get('attachment_id')
     filename = args.get('filename')
     try:
-        # Retrieve the attachment from the client; assuming it returns the file's binary data
         attachment = client.get_report_attachment(report_id, attachment_id)
 
         return fileResult(filename=filename, data=attachment)
@@ -471,7 +342,8 @@ def remediate_command(client: Client, args):
     email = args.get('email')
     requester_name = args.get('requester_fullname')
     try:
-        response, status_code = client.remediate(report_id, email=email, requester_fullname=requester_name)
+        response, status_code = client.remediate(report_id, email=email,
+                                                 requester_fullname=requester_name)
         _set_context(client)
         return CommandResults(
             outputs_prefix='CybelAngel.Remediation',
@@ -543,58 +415,43 @@ def get_report_pdf_command(client: Client, args: Dict):
         return CommandResults(readable_output="Report ID not provided.")
 
     try:
-        # Retrieve the report PDF using the report ID; assuming it returns the file's binary data
         report_pdf = client.get_report_pdf(report_id=report_id)
         if not report_pdf:
             return CommandResults(
                 readable_output=f"No report found with ID: {report_id}."
             )
 
-        demisto.debug(f"PDF Length: {len(report_pdf)} bytes")  # This ensures we have data before proceeding
+        demisto.debug(f"PDF Length: {len(report_pdf)} bytes")
         filename = f"{report_id}.pdf"
         return fileResult(filename=filename, data=report_pdf)
 
     except Exception as e:
-        demisto.error(f"An error occurred while fetching the PDF: {str(e)}")  
+        demisto.error(f"An error occurred while fetching the PDF: {str(e)}")
         return CommandResults(
             readable_output=f'Error downloading the report: {str(e)}'
         )
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
     message = ''
     try:
         result = client.get_reports(500)
         if result:
             return 'ok'
     except DemistoException as e:
-        if 'Forbidden' in e or 'Authorization' in e: 
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
-            message = e
+            message = str(e)
     demisto.debug(message)
+    return ""
+
 
 ''' MAIN FUNCTION '''
-def main() -> None:
-    """main function, parses params and runs command functions
 
-    :return:
-    :rtype:
-    """
-    
+
+def main() -> None:
+
    # Get Cybelangel credentials
     client_id = demisto.params().get('client_id')
     client_secret = demisto.params().get('client_secret')
@@ -604,7 +461,7 @@ def main() -> None:
     last_run = demisto.getLastRun().get('start_time')
 
     # Manage first fetch from client
-    first_fetch_interval = arg_to_number(demisto.params().get('first_fetch'))
+    first_fetch_interval = arg_to_number(demisto.params().get('first_fetch')) or 0
     first_fetch = "first_pull" not in demisto.getIntegrationContext().keys()
 
     # Get token and token time if it exists
@@ -629,7 +486,8 @@ def main() -> None:
             return_results(result)
 
         if demisto.command() == "fetch-incidents":
-            fetch_incidents(client, first_fetch=first_fetch, last_run=last_run, first_fetch_interval=first_fetch_interval)
+            fetch_incidents(client, first_fetch=first_fetch, last_run=last_run,
+                            first_fetch_interval=first_fetch_interval)
         elif demisto.command() == 'cybelangel-get-report-by-id':
             return_results(get_report_by_id_command(client, args))
         elif demisto.command() == 'cybelangel-get-report-attachment':
@@ -644,8 +502,6 @@ def main() -> None:
             return_results(update_status_command(client, args))
         elif demisto.command() == 'cybelangel-get-report-pdf':
             return_results(get_report_pdf_command(client, args))
-        if demisto.command() == "test_command":
-            test_command(client)
 
     # Log exceptions and return errors
     except Exception as e:
