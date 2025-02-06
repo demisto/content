@@ -7,6 +7,8 @@ alter
     xdm.alert.description = coalesce(threatsInfoMap, threatURL),
     xdm.alert.original_threat_id = coalesce(threatID, threatID_string),
     xdm.alert.subcategory = coalesce(arraystring(arraymap (json_extract_array (threatsInfoMap,"$."), json_extract_scalar ("@element", "$.threatType")), ", "), classification, json_extract_scalar(threatsinfomap, "$['0'].classification")),
+    xdm.alert.original_alert_id = GUID,
+    xdm.alert.original_threat_name = coalesce(classification, json_extract_scalar(threatsinfomap, "$['0'].classification")),
     xdm.event.id = GUID,
     xdm.email.cc = arraymap(json_extract_array(ccAddresses, "$."), trim("@element", "\"")),
     xdm.email.sender = coalesce(fromAddress_string, sender),

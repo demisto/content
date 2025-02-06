@@ -10,7 +10,10 @@
     "categories": [
         "Email"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
