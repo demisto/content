@@ -12,7 +12,7 @@ enabled: true
 args:
 - name: duplicateId
   required: true
-  description: Duplicate incident id
+  description: Duplicate incident id.
 - auto: PREDEFINED
   defaultValue: 'false'
   description: Whether if to raise error or return result with an error.
@@ -22,6 +22,6 @@ args:
   - 'false'
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No tests (auto formatted)
