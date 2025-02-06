@@ -42,6 +42,9 @@ class Client(BaseClient):
         self.token = None
 
     def set_token(self, token: str):
+        """
+        Sets the client token.
+        """
         self.token = token
 
     def create_access_token_for_audit(self) -> None:
@@ -131,7 +134,7 @@ def test_module(client: Client) -> str:
 
 def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
     if get_events_args:  # handle get_event command
-        event_date = get_events_args.get('start_date', '')
+        start = get_events_args.get('start_date', '')
         end = get_events_args.get('end_date', '')
     else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
@@ -142,16 +145,20 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             # event_date = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
 
+    demisto.debug(f'start={start}, end={end}')
+
     output: list = []
+    response = {}
     while True:
         try:
             response = client.get_audit_logs(start, end)
         except Exception as e:
-            if hasattr(e, "res") and e.res == "LIMIT_RATE_EXCEEDED":   # rate limit reached
+            if hasattr(e, "res") and e.res == "LIMIT_RATE_EXCEEDED":
                 demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit} Audit logs.")
                 new_last_run = {'start_date': start, 'token': client.token}
                 return output, new_last_run
             if hasattr(e, "message") and 'Unauthorized' in e.message:  # need to regenerate the token
+                demisto.debug(f"Regenerates token for fetching audit logs.")
                 client.create_access_token_for_audit()
                 response = client.get_audit_logs(start, end)
 
@@ -159,8 +166,6 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         if not events:
             break
         events = sort_events_by_timestamp(events)
-        # if check_if_limit_more_than_0_and_wait_this_time:
-        #     pass
 
         for event in events:
             event_date = event.get('timestamp')
