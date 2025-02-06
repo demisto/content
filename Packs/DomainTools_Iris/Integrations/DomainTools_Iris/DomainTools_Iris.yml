@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: DomainTools Iris
   version: -1
@@ -2435,3 +2432,6 @@ script:
 tests:
 - No test - test 'DomainTools Iris - Test' was moved to NonCircleFolder
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect
