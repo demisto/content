@@ -12,3 +12,4 @@
 !absolute-device-list os_name="Microsoft Windows Server 2019 Datacenter" limit=1
 !absolute-device-get device_names="ABSOLUTE-ASSET-"
 !absolute-device-location-get device_ids=e93f2464-2766-4a6b-8f00-66c8fb13e23a
+!absolute-device-get-events start_date="one minute ago" end_date="now" limit=10
