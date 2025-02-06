@@ -1,6 +1,9 @@
 Absolute is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints.
 This integration was integrated and tested with the API version 1.7 of Absolute.
 
+Some changes have been made that might affect your existing content. 
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---Absolute).
+
 ## Configure Absolute in Cortex
 
 
@@ -1008,3 +1011,40 @@ A few examples of creating a query (i.e., passing a filter argument):
    - Get a list of all devices with less than 1 GB (1073741824 bytes) of available physical ram or less than 1 GB (1073741824 bytes) of available virtual raml: availablePhysicalMemroyBytes lt 1073741824 or availableVirtualMemoryBytes lt 1073741824
 
 For more examples and explanations, see the [Absolute docs](https://www.absolute.com/media/2221/abt-api-working-with-absolute.pdf) (from page 10).
+
+
+## Breaking changes from the previous version of this integration - Absolute
+The following sections list the changes in this version.
+
+
+### Arguments
+#### The following arguments were removed in this version:
+
+In the *absolute-device-application-list* command:
+* *account_uids* - this argument was removed.
+
+
+### Outputs
+- In the ***oabsolute-device-unenroll*** command the following outputs were replaced:
+  * *Absolute.DeviceUnenroll.DeviceUid* - replaced by *Absolute.DeviceUnenroll.Devices.DeviceUid*.
+  * *Absolute.DeviceUnenroll.ESN* - replaced by *OpsGenie.Alert.alertId*.
+  * *Absolute.DeviceUnenroll.EligibleStatus* - replaced by *OpsGenie.Alert.alias*.
+  * *Absolute.DeviceUnenroll.Serial* - replaced by *OpsGenie.Alert.integrationId*.
+  * *Absolute.DeviceUnenroll.SystemName* - replaced by *OpsGenie.Alert.isSuccess*.
+  * *Absolute.DeviceUnenroll.Usernamet* - replaced by *OpsGenie.Alert.processedAt*.
+
+- In the ***absolute-device-freeze-request-get*** command the following outputs were replaced:
+  * *Absolute.FreezeRequestDetail.Configuration.issuedUtc* - replaced by *Absolute.FreezeRequestDetail.Configuration.issuedDateTimeUTC*.
+  * *Absolute.FreezeRequestDetail.RequesterUid* - replaced by *Absolute.FreezeRequestDetail.Requester*.
+  * *Absolute.FreezeRequestDetail.Statuses.ackClientUtc* - replaced by *Absolute.FreezeRequestDetail.Statuses.ackClientDateTimeUtcs*.
+  * *Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateUTC* - replaced by *Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateTimeUtc*.
+  * *Absolute.FreezeRequestDetail.Statuses.updatedUtc* - replaced by *Absolute.FreezeRequestDetail.Statuses.updatedDateTimeUtc*.
+
+- In the ***absolute-device-application-list*** command the following outputs were removed:
+  * *Absolute.DeviceApplication.AccountUid*
+
+- In the ***absolute-custom-device-field-list*** command the following outputs were removed:
+  * *Absolute.CustomDeviceField.ESN*
+
+- In the ***absolute-device-freeze-request-get*** command the following outputs were removed:
+  * *Absolute.FreezeRequestDetail.Statuses.statusUid*
