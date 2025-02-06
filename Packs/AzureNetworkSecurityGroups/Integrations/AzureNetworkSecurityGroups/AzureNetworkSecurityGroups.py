@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2022-09-01'
-NEW_API_VERSION = '2024-05-01'
+PARAMS = {'api-version': '2024-05-01'}
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
                        'Authorization Code': AUTHORIZATION_CODE,
                        'Client Credentials': CLIENT_CREDENTIALS}
@@ -136,35 +136,35 @@ and resource group "{resource_group_name}" was not found.')
                                                    'api-version': '2021-04-01'})
 
     @logger
-    def list_public_ip_addresses(self, subscription_id: str, resource_group_name: str) -> Dict:
+    def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 publicIPAddresses'
-        return self.http_request('GET', full_url=full_url, params={'api-version': NEW_API_VERSION})
+        return self.http_request('GET', full_url=full_url, params=PARAMS)
 
     @logger
-    def list_virtual_networks(self, subscription_id: str, resource_group_name: str) -> Dict:
+    def list_virtual_networks_request(self, subscription_id: str, resource_group_name: str) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 virtualNetworks'
-        return self.http_request('GET', full_url=full_url, params={'api-version': NEW_API_VERSION})
+        return self.http_request('GET', full_url=full_url, params=PARAMS)
 
     @logger
-    def list_networks_interfaces(self, subscription_id: str, resource_group_name: str) -> Dict:
+    def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 networkInterfaces'
-        return self.http_request('GET', full_url=full_url, params={'api-version': NEW_API_VERSION})
+        return self.http_request('GET', full_url=full_url, params=PARAMS)
 
     @logger
-    def create_or_update_security_group(self, subscription_id: str, resource_group_name: str, security_group_name: str, location: str) -> Dict:
+    def create_or_update_security_group_request(self, subscription_id: str, resource_group_name: str, security_group_name: str, location: str) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 networkSecurityGroups/{security_group_name}'
-        return self.http_request('PUT', full_url=full_url, params={'api-version': NEW_API_VERSION}, data={'location': location})
+        return self.http_request('PUT', full_url=full_url, params=PARAMS, data={'location': location})
 
     @logger
-    def create_or_update_network_interface(self, subscription_id: str, resource_group_name: str, nic_name: str,
+    def create_or_update_network_interface_request(self, subscription_id: str, resource_group_name: str, nic_name: str,
                                            data: Dict) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 networkInterfaces/{nic_name}'
-        return self.http_request('PUT', full_url=full_url, params={'api-version': NEW_API_VERSION}, data=data)
+        return self.http_request('PUT', full_url=full_url, params=PARAMS, data=data)
 
 
 '''HELPER FUNCTIONS'''
@@ -196,7 +196,7 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
                           readable_output=hr)
 
 
-def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []):
+def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> None:
     """
     reformat data by extract nested dict {'key1': 'value1', 'key2': {'key3': 'value3'}}
 
@@ -214,7 +214,7 @@ def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []):
             data[key] = inner_dict.get(key)
 
 
-def extract_list(data: Dict, list_key: str, property_name: str, field_name: str = ''):
+def extract_list(data: Dict, list_key: str, property_name: str, field_name: str = '') -> None:
     """
     reformat data: from {'key': [{'k': 'val1'}, {'k': 'val2'}]} to {'key': 'k':['val1', 'val2']}
 
@@ -227,19 +227,20 @@ def extract_list(data: Dict, list_key: str, property_name: str, field_name: str 
     Returns:
         Dict: the reformated data
     """
-    properties = []
-    items = data.get(list_key, [])
-    for item in items:
-        val = item.get(property_name)
-        if val:
-            properties.append(val)
+    properties = [item[property_name] for item in data.get(list_key, []) if property_name in item]
     if properties:
-        if field_name:
-            property_name = field_name
-        data[property_name] = properties
+        data[field_name or property_name] = properties
+    return data
 
+def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List = []) -> None:
+    """
+    reformat data using extract_inner_dict and extract_list
 
-def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List = []):
+    Args:
+        data (Dict): data to reformat
+        dict_to_extract (List, optional): keys of inner dict to extract to outter dict. Defaults to [].
+        list_to_extract (List, optional): keys of inner list to extract to outter dict. Defaults to [].
+    """
     for dict in dict_to_extract:
         fields = []
         if len(dict) == 2:
@@ -586,7 +587,7 @@ def nsg_resource_group_list_command(client: AzureNSGClient, params: Dict, args: 
 
 
 @logger
-def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
+def azure_nsg_public_ip_addresses_list_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     List all public ip addresses in a resource groupe.
     Args:
@@ -603,7 +604,7 @@ def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, arg
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.list_public_ip_addresses(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    response = client.list_public_ip_addresses_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get('value', [])
     if not all_results:
         data_from_response = data_from_response[:limit]
@@ -628,7 +629,7 @@ def azure_nsg_public_ip_addresses_list(client: AzureNSGClient, params: Dict, arg
 
 
 @logger
-def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
+def azure_nsg_virtual_networks_list_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     List all virtual networks in a resource groupe.
     Args:
@@ -645,7 +646,7 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.list_virtual_networks(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    response = client.list_virtual_networks_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get('value', [])
     if not all_results:
         data_from_response = data_from_response[:limit]
@@ -658,12 +659,8 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
                        ])
         output['etag'] = output.get('etag')[3:-1]
 
-    properties = outputs[0].get('subnetProperties')[0]
-    subnets_id = []
-    if properties:
-        ip_conf = properties.get('ipConfigurations')
-        for conf in ip_conf:
-            subnets_id.append(conf.get('id'))
+    properties = outputs[0].get('subnetProperties', [{}])[0] or {}
+    subnets_id = [conf.get('id') for conf in properties.get('ipConfigurations', [])]
     outputs[0]['subnetID'] = subnets_id
 
     readable_output = tableToMarkdown('Virtual Networks List',
@@ -683,7 +680,7 @@ def azure_nsg_virtual_networks_list(client: AzureNSGClient, params: Dict, args: 
 
 
 @logger
-def azure_nsg_security_group_create(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
+def azure_nsg_security_group_create_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     Creates or updates a network security group in the specified resource group.
 
@@ -701,7 +698,7 @@ def azure_nsg_security_group_create(client: AzureNSGClient, params: Dict, args: 
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.create_or_update_security_group(subscription_id=subscription_id, resource_group_name=resource_group_name,
+    response = client.create_or_update_security_group_request(subscription_id=subscription_id, resource_group_name=resource_group_name,
                                                       security_group_name=security_group_name, location=location)
     outputs = response.copy()
     reformat_data(outputs, dict_to_extract=[('properties', 'securityRules')])
@@ -721,7 +718,7 @@ def azure_nsg_security_group_create(client: AzureNSGClient, params: Dict, args: 
 
 
 @logger
-def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
+def azure_nsg_networks_interfaces_list_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     List all network interfaces in a resource groupe.
     Args:
@@ -738,7 +735,7 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.list_networks_interfaces(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    response = client.list_networks_interfaces_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get('value', [])
     if not all_results:
         data_from_response = data_from_response[:limit]
@@ -753,8 +750,7 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
                           ('ipConfigurationsProperties', 'publicIPAddress', 'ipConfigurationPublicIPAddress'),
                           ('ipConfigurationPublicIPAddress', 'id', 'ipConfigurationPublicIPAddressName'),
                       ])
-        vm = output.get('virtualMachine')
-        if vm:
+        if vm := output.get('virtualMachine'):
             output['virtualMachineId'] = vm.get('id')
 
     readable_output = tableToMarkdown('Network Interfaces List',
@@ -780,7 +776,7 @@ def azure_nsg_networks_interfaces_list(client: AzureNSGClient, params: Dict, arg
 
 
 @logger
-def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
+def azure_nsg_network_interfaces_create_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     Creates or updates a network interface.
     Args:
@@ -790,7 +786,7 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
     Returns:
         Command results with raw response, outputs and readable outputs.
     """
-    nic_name = args.pop('nic_name')
+    nic_name = args.get('nic_name')
     nsg_name = args.get('nsg_name')
     private_ip = args.get('private_ip')
     vnet_name = args.get('vnet_name')
@@ -826,7 +822,7 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
     if public_ip_address_name:
         data['properties']['ipConfigurations'][0]['properties']['publicIPAddress'] = {'id': public_ip_address_name}
 
-    response = client.create_or_update_network_interface(subscription_id=subscription_id, resource_group_name=resource_group_name,
+    response = client.create_or_update_network_interface_request(subscription_id=subscription_id, resource_group_name=resource_group_name,
                                                          nic_name=nic_name, data=data)
     outputs = response.copy()
     reformat_data(outputs, dict_to_extract=[('properties',)], list_to_extract=[
@@ -933,11 +929,11 @@ def main() -> None:  # pragma: no cover
             'azure-nsg-security-rule-update': update_rule_command,
             'azure-nsg-security-rule-get': get_rule_command,
             'azure-nsg-resource-group-list': nsg_resource_group_list_command,
-            'azure-nsg-public-ip-addresses-list': azure_nsg_public_ip_addresses_list,
-            'azure-nsg-virtual-networks-list': azure_nsg_virtual_networks_list,
-            'azure-nsg-security-group-create': azure_nsg_security_group_create,
-            'azure-nsg-network-interfaces-list': azure_nsg_networks_interfaces_list,
-            'azure-nsg-network-interfaces-create': azure_nsg_network_interfaces_create,
+            'azure-nsg-public-ip-addresses-list': azure_nsg_public_ip_addresses_list_command,
+            'azure-nsg-virtual-networks-list': azure_nsg_virtual_networks_list_command,
+            'azure-nsg-security-group-create': azure_nsg_security_group_create_command,
+            'azure-nsg-network-interfaces-list': azure_nsg_networks_interfaces_list_command,
+            'azure-nsg-network-interfaces-create': azure_nsg_network_interfaces_create_command,
         }
         commands_without_args = {
             'azure-nsg-auth-start': start_auth,

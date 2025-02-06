@@ -66,9 +66,9 @@ def test_azure_nsg_public_ip_addresses_list(mocker):
     Then:
         - Ensure the generated output is as expected.
     """
-    from AzureNetworkSecurityGroups import azure_nsg_public_ip_addresses_list
+    from AzureNetworkSecurityGroups import azure_nsg_public_ip_addresses_list_command
     client = mock_client(mocker, util_load_json('test_data/list_public_ip_addresses.json'))
-    results = azure_nsg_public_ip_addresses_list(client, args={}, params={'subscription_id': 'subscriptionID',
+    results = azure_nsg_public_ip_addresses_list_command(client, args={}, params={'subscription_id': 'subscriptionID',
                                                                           'resource_group_name': 'resourceGroupName'})
     assert '### Public IP Addresses List' in results.readable_output
     res = results.outputs[0]
@@ -91,9 +91,9 @@ def test_azure_nsg_virtual_networks_list(mocker):
     Then:
         - Ensure the generated output is as expected.
     """
-    from AzureNetworkSecurityGroups import azure_nsg_virtual_networks_list
+    from AzureNetworkSecurityGroups import azure_nsg_virtual_networks_list_command
     client = mock_client(mocker, util_load_json('test_data/list_virtual_networks.json'))
-    results = azure_nsg_virtual_networks_list(client, args={}, params={'subscription_id': 'subscriptionID',
+    results = azure_nsg_virtual_networks_list_command(client, args={}, params={'subscription_id': 'subscriptionID',
                                                                        'resource_group_name': 'resourceGroupName'})
     assert '### Virtual Networks List' in results.readable_output
     res = results.outputs[0]
@@ -116,9 +116,9 @@ def test_azure_nsg_networks_interfaces_list(mocker):
     Then:
         - Ensure the generated output is as expected.
     """
-    from AzureNetworkSecurityGroups import azure_nsg_networks_interfaces_list
+    from AzureNetworkSecurityGroups import azure_nsg_networks_interfaces_list_command
     client = mock_client(mocker, util_load_json('test_data/list_networks_interfaces.json'))
-    results = azure_nsg_networks_interfaces_list(client, args={}, params={'subscription_id': 'subscriptionID',
+    results = azure_nsg_networks_interfaces_list_command(client, args={}, params={'subscription_id': 'subscriptionID',
                                                                           'resource_group_name': 'resourceGroupName'})
     assert '### Network Interfaces List' in results.readable_output
     res = results.outputs[0]
@@ -150,9 +150,9 @@ def test_create_azure_nsg_security_group(mocker):
     Then:
         - Ensure the request sent as requested and the generated output is as expected.
     """
-    from AzureNetworkSecurityGroups import azure_nsg_security_group_create
+    from AzureNetworkSecurityGroups import azure_nsg_security_group_create_command
     client = mock_client(mocker, util_load_json('test_data/put_data.json'))
-    res = azure_nsg_security_group_create(client, args={'security_group_name': 'securityGroup', 'location': 'westus'},
+    res = azure_nsg_security_group_create_command(client, args={'security_group_name': 'securityGroup', 'location': 'westus'},
                                           params={'subscription_id': 'subscriptionID', 'resource_group_name':
                                               'resourceGroupName'})
     assert '### Security Group' in res.readable_output
@@ -173,9 +173,9 @@ def test_create_azure_nsg_network_interfaces(mocker):
     Then:
         - Ensure the request sent as requested and the generated output is as expected.
     """
-    from AzureNetworkSecurityGroups import azure_nsg_network_interfaces_create
+    from AzureNetworkSecurityGroups import azure_nsg_network_interfaces_create_command
     client = mock_client(mocker, util_load_json('test_data/put_data.json'))
-    res = azure_nsg_network_interfaces_create(client, args={'nic_name': 'nic_name', 'location': 'westus',
+    res = azure_nsg_network_interfaces_create_command(client, args={'nic_name': 'nic_name', 'location': 'westus',
                                                             'ip_config_name': 'ip_config_name', 'vnet_name': 'vnet_name',
                                                             'subnet_name': 'subnet_name'},
                                               params={'subscription_id': 'subscriptionID', 'resource_group_name':
