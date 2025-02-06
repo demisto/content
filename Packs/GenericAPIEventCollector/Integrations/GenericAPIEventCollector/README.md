@@ -38,6 +38,76 @@ This is the default integration for this content pack when configured by the Dat
 | Fetch Events |  | False |
 | Events Fetch Interval |  | False |
 
+How to configure the event collector
+---
+
+### Authentication
+You must specify the authentication method required by the server. 
+The supported authentication types include:
+1. Basic authentication (username and password)
+2. Token-based authentication
+3. Bearer token
+4. Api-Key token
+5. Raw Token (for custom token-based authentication)
+6. No Authorization (for publicly accessible data)
+
+### Pagination
+
+When the API supports pagination in the response the collector can fetch more pages of data using the below parameters
+1. Is pagination needed, If the API JSON response supports events pagination.
+2. Pagination field name, Next page field in JSON response, e.g., "cursor", "next_page" | False |
+3. Pagination flag, The Next page existence in JSON response e.g., "has_more", "next"
+
+In the below example the pagination flag is `pagination.has_more`
+The pagination field name is `pagination.next_page`
+```json
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "John Doe",
+            "occupation": "Software Engineer"
+        },
+        {
+            "id": 2,
+            "name": "Jane Smith",
+            "occupation": "Data Scientist"
+        }
+    ],
+    "pagination": {
+        "current_page": 1,
+        "next_page": "https://api.example.com/users?page=2",
+        "has_more": true
+    }
+}
+```
+
+### Substitutions parameters
+
+### Request Data (And initial request data)
+If the product authentication requires more fields to add to the `DATA`.
+Please add it here in a dictionary format.
+Using the initial request data parameter will only be 
+For example:
+```json
+{"field-1": "value_example", "field-2": 1, "field-3": "value_3"}
+```
+
+### Request JSON (And initial request JSON)
+If the product authentication requires more fields to add to the body as JSON, please add it 
+here in a dictionary format.
+For example:
+```json
+{"field-1": "value_example", "field-2": 1, "field-3": "value_3"}
+```
+
+### Query parameters (And Initial Query parameters)
+
+### Timestamp field
+### Events
+### Event ID & Type
+
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
