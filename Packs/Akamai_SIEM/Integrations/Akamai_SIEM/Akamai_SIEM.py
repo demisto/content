@@ -1,3 +1,4 @@
+import functools
 from requests import Request
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -608,33 +609,17 @@ async def get_events_with_offset_aiohttp(
         params["from"] = from_param
         demisto.info(f"Running in interval = {counter}. didn't receive offset. will run a time based request with {from_param=}.")
 
-    url = f"{client._base_url}/"
+    url = f"{client._base_url}/{config_ids}"
     demisto.info(f"Running in interval = {counter}. Init session and sending request.")
-
-    def get_signed_headers(url, method="GET"):  # pragma: no cover
-        auth = client._auth
-
-        # Create a dummy request to generate headers
-        req = Request(method, url)
-        prepared_req = req.prepare()
-
-        # Sign the request using EdgeGridAuth
-        auth(prepared_req)
-
-        return dict(prepared_req.headers)
-
-    headers = get_signed_headers(url)
-
-    async with aiohttp.ClientSession(base_url=url,
-                                     trust_env=True) as session, session.get(url=config_ids,
-                                                                             params=params,
-                                                                             headers=headers,
-                                                                             ssl=client._verify) as response:
-        try:
-            response.raise_for_status()  # Check for any HTTP errors
-            raw_response = await response.text()
-        except aiohttp.ClientResponseError as e:
-            raise DemistoException(f"Running in interval = {counter}. Error occurred when fetching from Akamai: {e.message}")
+    loop = asyncio.get_event_loop()
+    import requests
+    # response = await loop.run_in_executor(None, requests.get, url=url, auth=client._auth, params=params)
+    try:
+        response = await loop.run_in_executor(None, functools.partial(requests.get, url, params=params, auth=client._auth, verify=client._verify))
+        response.raise_for_status()  # Check for any HTTP errors
+        raw_response=response.text
+    except aiohttp.ClientResponseError as e:
+        raise DemistoException(f"Running in interval = {counter}. Error occurred when fetching from Akamai: {e.message}")
     demisto.info(f"Running in interval = {counter}. Finished executing request to Akamai, processing")
     events: list[str] = raw_response.split('\n')
     new_offset = None
@@ -733,12 +718,13 @@ async def process_and_send_events_to_xsiam(events: list[str], should_skip_decode
         latest_event=processed_events[-1],
         base_msg=f"Running in interval = {counter}. Sending {len(processed_events)} events to xsiam."
     )
-    tasks = send_events_to_xsiam_akamai(processed_events, VENDOR, PRODUCT, should_update_health_module=False,
-                                        chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True,
-                                        url_key="host", data_format="json", data_size_expected_to_split_evenly=True,
-                                        counter=counter)
+    demisto.info("skipping sending events to xsiam due to custom content item.")
+    # tasks = send_events_to_xsiam_akamai(processed_events, VENDOR, PRODUCT, should_update_health_module=False,
+    #                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True,
+    #                                     url_key="host", data_format="json", data_size_expected_to_split_evenly=True,
+    #                                     counter=counter)
     demisto.info(f"Running in interval = {counter}. Finished executing send_events_to_xsiam, waiting for tasks to end.")
-    await asyncio.gather(*tasks)
+    # await asyncio.gather(*tasks)
     demisto.info(f"Running in interval = {counter}. Finished gathering all tasks.")
     demisto.info(f"Running in interval = {counter}. Updating module health.")
     set_integration_context({"offset": offset})
