@@ -2964,7 +2964,7 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
             # Extract the query parameters
             query_params = parse_qs(parsed_url.query)
             page = arg_to_number(query_params.get('page', [''])[0], arg_name='page')  # type: ignore
-            page_size = arg_to_number(query_params.get('page_size', [''])[0], arg_name='page_size')
+            page_size = arg_to_number(query_params.get('page_size', [''])[0], arg_name='page_size')  # type: ignore
             command_last_run_date = query_params.get('last_modified_timestamp_gte', [''])[0]
 
         try:
