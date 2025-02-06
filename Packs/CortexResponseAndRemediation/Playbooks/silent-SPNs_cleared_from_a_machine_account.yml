@@ -2,7 +2,7 @@ id: silent-SPNs cleared from a machine account
 version: -1
 name: silent-SPNs cleared from a machine account
 description: |-
-  This playbook addresses the following alert:
+  This playbook addresses the following alerts:
 
   - SPNs cleared from a machine account
   - SPNs cleared from a machine account for the first time
