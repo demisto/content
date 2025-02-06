@@ -2,7 +2,7 @@
     "name": "Trend Micro TippingPoint",
     "description": "Trend Micro TippingPoint protect against known, unknown and undisclosed vulnerabilities in your network",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
