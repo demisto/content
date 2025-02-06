@@ -2,7 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
 from collections.abc import Callable, Iterable
-
+import jwt
+import datetime
+import uuid
 
 import mimetypes
 
@@ -2451,6 +2453,8 @@ def test_instance(client: Client):
         if client.incident_name not in ticket:
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
 
+def jwt_authorization(jwt_key_id, jwt_key, jwt_sub):
+    pass
 
 def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any], bool]:
     """
@@ -3199,6 +3203,9 @@ def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandRe
     return f"Request for {method} method is not successful"
 
 
+
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -3210,6 +3217,7 @@ def main():
     args = demisto.args()
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
+    use_jwt_outh = params.get('use_jwt_outh', False)
     oauth_params = {}
 
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
@@ -3233,6 +3241,13 @@ def main():
             'proxy': params.get('proxy'),
             'use_oauth': use_oauth
         }
+    elif use_jwt_outh:
+        jwt_key_id = params.get('jwt_credentials', '')
+        jwt_private_key= params.get('jwt_credentials', '')
+        jwt_sub = params.get('jwt_sub', '')
+        jwt_token = jwt_authorization(jwt_key_id, jwt_private_key, jwt_sub)
+        demisto.debug(f'{jwt_token}')
+    
     else:  # use basic authentication
         username = params.get('credentials', {}).get('identifier')
         password = params.get('credentials', {}).get('password')

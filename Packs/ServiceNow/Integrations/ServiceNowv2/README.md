@@ -52,6 +52,38 @@ These scripts are wrapped around the incident table, so to wrap them around anot
      
         ![image](../../doc_files/closing-mirror-snow.png)
 
+## JWT Profile Authentication Configuration
+
+Grant access token to admin is not allowed.
+Customer should have non-admin user with all necessary roles(only non-admin roles) in addition to existing  role snc_platform_rest_api_access that required to make API call
+
+Prerequisites in order to support JWT
+Create a Java Key Store and upload it to the instance
+	(Accessing from the upper menu :All→System Definition→Certificates)
+(Private key will be used as integration parameter)
+Configure a JWT signing key (use keystore from above .Keep the Key Id -  it will be used as kid integration parameter) 
+(All→System OAuth→JWT Keys)
+Create a JWT provider with a JWT signing key
+(Customer required to set  in Standard Claims the same values for aud, iss and sub that will be used as integration parameters. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles)
+
+(All→System OAuth→JWT providers)
+Connect to an OAuth provider and create OAuth application registry
+           (aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider
+If necessary.Value of Kid in JWT Verifier Maps has to be the  same as Key Id in JWT signing key -
+ the value can be updated if necessary )
+(All→System OAuth→Application Registry)
+
+
+   5. Create API Access Policy or add Authentication profile to existing Policy
+(All→System Web Services→API Access Policies→Rest API Access Policies )
+
+IMPORTANT:
+
+Standard Authentication Profile of type Oauth should be already present in ServiceNow and this one needs to be added to Policy.
+API Access Policy should be configured as global in order to cover all available resources and not just now/table.
+
+
+
 ## Instance Creation Flow
 This integration supports two types of authorization:
 1. Basic authorization using username and password.
