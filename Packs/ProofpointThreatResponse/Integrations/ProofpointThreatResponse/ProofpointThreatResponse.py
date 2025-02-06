@@ -804,11 +804,11 @@ def search_quarantine():
     incidentTAPtime = format_datetime(arg_time)
     demisto.debug(f"{incidentTAPtime=}")
     lstAlert = []
-    mid = demisto.args().get('message_id')
-    recipient = demisto.args().get('recipient')
-    limit_quarantine_occurred_time = argToBoolean(demisto.args().get('limit_quarantine_occurred_time'))
-    quarantine_timestamp_limit = arg_to_number(demisto.args().get('quarantine_timestamp_limit'))
-    compare_message_time = argToBoolean(demisto.args().get('compare_message_time'))
+    mid = args.get('message_id')
+    recipient = args.get('recipient')
+    limit_quarantine_occurred_time = argToBoolean(args.get('limit_quarantine_occurred_time'))
+    quarantine_timestamp_limit = arg_to_number(args.get('quarantine_timestamp_limit'))
+    compare_message_time = argToBoolean(args.get('compare_message_time'))
 
 
     request_params = {
