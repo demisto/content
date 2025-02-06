@@ -30,6 +30,8 @@ description: |-
   For response actions, you need the following integrations:
 
   - Active Directory Query v2.
+tags:
+- T1078 - Valid Accounts
 starttaskid: "0"
 tasks:
   "0":
