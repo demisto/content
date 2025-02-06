@@ -4,10 +4,12 @@ from CommonServerPython import *  # noqa: F401
 
 NO_INCIDENT_CLOSED_MSG = '0 incidents marked as duplicates'
 
+
 def is_incident_not_closed(response):
     """Check if the incident was closed based on the response contents."""
     content = response[0].get('Contents') or response[0].get('contents')
     return content == NO_INCIDENT_CLOSED_MSG
+
 
 def main():
     current_incident_id = demisto.incidents()[0]['id']
