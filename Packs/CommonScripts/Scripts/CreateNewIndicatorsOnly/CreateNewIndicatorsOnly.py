@@ -93,7 +93,7 @@ def add_new_indicator(indicator_value: Any,
         else:
             raise DemistoException(f'Unknown response from createNewIndicator: str{indicator_value}')
 
-    if associate_to_incident:
+    if indicator[KEY_CREATION_STATUS] != STATUS_UNAVAILABLE and associate_to_incident:
         demisto.debug(f"Associating {indicator_value} to incident.")
         associate_indicator_to_incident(indicator_value)
 
