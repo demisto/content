@@ -129,12 +129,14 @@ ATTACHMENT_TYPE = 'attachmentType'
 TOIS_PATH = '/root/Top of Information Store/'
 
 ENTRY_CONTEXT = "EntryContext"
-CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} == obj.{0} || (val.{1} && obj.{1} && val.{1} == obj.{1}))".format(ITEM_ID,
-                                                                                                               MESSAGE_ID)
+CONTEXT_UPDATE_EWS_ITEM = (
+    f"EWS.Items(val.{ITEM_ID} == obj.{ITEM_ID} || "
+    f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} == obj.{MESSAGE_ID}))"
+)
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
-CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
-CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
-CONTEXT_UPDATE_FOLDER = "EWS.Folders(val.{0} == obj.{0})".format(FOLDER_ID)
+CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FILE_ATTACHMENT = f".FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FOLDER = f"EWS.Folders(val.{FOLDER_ID} == obj.{FOLDER_ID})"
 
 LAST_RUN_TIME = "lastRunTime"
 LAST_RUN_IDS = "ids"
@@ -557,8 +559,12 @@ class MarkAsJunk(EWSAccountService):
         return junk
 
 
-def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_to, html_body=None, attachments=None,
-                          raw_message=None, from_address=None):  # pragma: no cover
+def send_email_to_mailbox(  # pragma: no cover
+    account, to, subject, body, body_type,
+    bcc, cc, reply_to, handle_inline_image: bool = True,
+    html_body=None, attachments=None,
+    raw_message=None, from_address=None
+):
     """
     Send an email to a mailbox.
 
@@ -579,7 +585,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     """
     if not attachments:
         attachments = []
-    message_body, inline_attachments = get_message_for_body_type(body, body_type, html_body)
+    message_body, inline_attachments = get_message_for_body_type(body, body_type, html_body, handle_inline_image)
     attachments += inline_attachments
     m = Message(
         account=account,
@@ -633,7 +639,7 @@ def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
     return clean_body, attachments
 
 
-def get_message_for_body_type(body, body_type, html_body):
+def get_message_for_body_type(body, body_type, html_body, handle_inline_image: bool):
     """
     Compatibility with Data Collection - where body_type is not provided, we will use the html_body if it exists.
     Compatibility with 'send-mail' command - where body_type should be provided, we will use the body_type to decide.
@@ -645,13 +651,19 @@ def get_message_for_body_type(body, body_type, html_body):
     Returns:
         Body: the body of the message.
     """
+    demisto.debug(f"get_message_for_body_type: Received {body_type=}, {handle_inline_image=}")
     attachments: list = []
-    if html_body:
+
+    if html_body and handle_inline_image:
         html_body, attachments = handle_html(html_body)
+        demisto.debug(f"get_message_for_body_type: Processed HTML body with {len(attachments)} attachments")
+
     if body_type is None:  # When called from a data collection task.
         return (HTMLBody(html_body) if html_body else Body(body)), attachments
+
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
         return HTMLBody(html_body), attachments
+
     return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments
 
 
@@ -930,8 +942,12 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
 
     for item in qs:
         try:
-            demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
-                item.subject, item.message_id, item.datetime_created, item.datetime_received))
+            demisto.debug(
+                f'Looking on subject={item.subject}, '
+                f'message_id={item.message_id}, '
+                f'created={item.datetime_created}, '
+                f'received={item.datetime_received}'
+            )
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
                 demisto.debug(f'Appending {item.subject}, {item.message_id}.')
@@ -1293,7 +1309,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                     demisto.debug("Length of message subject is greater than 255, item.save could not handle it, "
                                   "cutting the subject.")
                     sub_subject = "Length of subject greater than 255 characters. " \
-                                  "Partial subject: {}".format(item.subject[:180])
+                                  f"Partial subject: {item.subject[:180]}"
                     item.subject = sub_subject
                     item.save()
                 else:
@@ -2130,6 +2146,7 @@ def send_email(args):
     to = get_none_empty_addresses(argToList(args.get('to')))
     replyTo = get_none_empty_addresses(argToList(args.get('replyTo')))
     render_body = argToBoolean(args.get('renderBody') or False)
+    handle_inline_image: bool = argToBoolean(args.get('handle_inline_image', True))
     subject = args.get('subject')
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
@@ -2139,8 +2156,8 @@ def send_email(args):
     body_type = args.get('bodyType', args.get('body_type'))
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
-        html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
-        from_address=args.get('from')
+        handle_inline_image=handle_inline_image, html_body=args.get('htmlBody'), attachments=attachments,
+        raw_message=args.get('raw_message'), from_address=args.get('from')
     )
     result_object = {
         'from': args.get('from') or account.primary_smtp_address,
@@ -2323,7 +2340,7 @@ def sub_main():  # pragma: no cover
         if isinstance(e, ConnectionError):
             error_message_simple = "Could not connect to the server.\n" \
                                    "Verify that the Hostname or IP address is correct.\n\n" \
-                                   "Additional information: {}".format(str(e))
+                                   f"Additional information: {str(e)}"
         if isinstance(e, ErrorInvalidPropertyRequest):
             error_message_simple = "Verify that the Exchange version is correct."
         else:
