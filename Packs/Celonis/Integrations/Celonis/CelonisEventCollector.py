@@ -1,19 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -145,28 +129,30 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             # event_date = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
 
-    demisto.debug(f'start={start}, end={end}')
+    demisto.debug(f'Start time={start} and end time={end} for fetch events.')
 
     output: list = []
-    response = {}
     while True:
         try:
             response = client.get_audit_logs(start, end)
         except Exception as e:
-            if hasattr(e, "res") and e.res == "LIMIT_RATE_EXCEEDED":
+            if hasattr(e, "message") and '429' in e.message:
                 demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit} Audit logs.")
-                new_last_run = {'start_date': start, 'token': client.token}
+                # new_last_run = {'start_date': start, 'token': client.token}
+                new_last_run = {'start_date': start}
                 return output, new_last_run
             if hasattr(e, "message") and 'Unauthorized' in e.message:  # need to regenerate the token
                 demisto.debug(f"Regenerates token for fetching audit logs.")
                 client.create_access_token_for_audit()
                 response = client.get_audit_logs(start, end)
+            else:
+                raise e
 
-        events = response.get('content')
-        if not events:
+        if not response.get('content'):
             break
-        events = sort_events_by_timestamp(events)
 
+        events = sort_events_by_timestamp(response.get('content'))
+        event_date = ''
         for event in events:
             event_date = event.get('timestamp')
             event['_TIME'] = event_date
@@ -174,12 +160,14 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
 
             if len(output) >= fetch_limit:
                 start = add_millisecond(event_date)
-                new_last_run = {'start_date': start, 'token': client.token}
+                # new_last_run = {'start_date': start, 'token': client.token}
+                new_last_run = {'start_date': start}
                 return output, new_last_run
 
         start = add_millisecond(event_date)
 
-    new_last_run = {'start_date': start, 'token': client.token}
+    # new_last_run = {'start_date': start, 'token': client.token}
+    new_last_run = {'start_date': start}
     return output, new_last_run
 
 
