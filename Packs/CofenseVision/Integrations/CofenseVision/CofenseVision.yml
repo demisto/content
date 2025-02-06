@@ -1,3 +1,6 @@
+sectionOrder:
+- Connect
+- Collect
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Cofense Vision
@@ -2385,7 +2388,7 @@ script:
     - contextPath: Cofense.Config.value
       description: List of headers that are available to create a message search.
       type: Unknown
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:CofenseVision.yml
   runonce: false
   script: '-'
   subtype: python3
