@@ -33,7 +33,7 @@ configuration:
     - demisto
   section: Collect
 - display: Number of Export Requests per Fetch
-  additionalinfo: Number of API calls per fetch to export events for each configured Digital Guardian ARC export profile. The value should be set to between 1 and 4.
+  additionalinfo: Number of API calls per fetch to export events for each configured Digital Guardian ARC export profile. Use with extreme caution as this might impact data ingestion quota limits and performance. Consult with the engineering team before changing this value.
   name: export_calls_per_fetch
   required: false
   defaultvalue: '1'

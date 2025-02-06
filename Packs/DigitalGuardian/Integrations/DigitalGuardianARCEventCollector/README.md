@@ -23,7 +23,7 @@ This is the default integration for this content pack when configured by the Dat
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Export Profiles | Internal document names or GUIDs of the Digital Guardian ARC export profiles. Custom export profiles are not officially supported. Default is defaultExportProfile. | True |
-| Number of Export Requests per Fetch | Number of API calls per fetch to export events for each configured Digital Guardian ARC export profile. The value should be set to between 1 and 4. Default is 1. | False |
+| Number of Export Requests per Fetch | Number of API calls per fetch to export events for each configured Digital Guardian ARC export profile. Use with extreme caution as this might impact data ingestion quota limits and performance. Consult with the engineering team before changing this value. Default is 1. | False |
 
 ## Commands
 

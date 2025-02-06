@@ -124,8 +124,8 @@ def test_module(client: Client, export_profiles: list[str], export_calls_per_fet
     Raises:
         DemistoException | Exception: If request failed.
     """
-    if export_calls_per_fetch < 0 or export_calls_per_fetch > 4:
-        return 'The number of export requests per fetch should be set to between 1 and 4'
+    if export_calls_per_fetch <= 0:
+        return 'The number of export requests per fetch should be a positive integer.'
 
     invalid_export_profiles = set()
 
