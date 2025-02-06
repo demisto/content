@@ -1295,11 +1295,16 @@ class JiraIssueFieldsParser:
         # Since the description can be returned in Atlassian Document Format
         # (which holds nested dictionaries that includes the content and also metadata about it), we check if the response
         # returns the fields rendered in HTML format (by accessing the renderedFields).
-        rendered_issue_fields = issue_data.get('renderedFields', {}) or {}
-        return {'Description': BeautifulSoup(rendered_issue_fields.get('description'),
-                                             features="html.parser").get_text()
-                if rendered_issue_fields
-                else (demisto.get(issue_data, 'fields.description', '') or '')}
+        rendered_issue_fields = issue_data.get('renderedFields', {})
+        description_raw = ""
+        if rendered_issue_fields:
+            description_raw = rendered_issue_fields.get('description', '')
+            description_text: str = BeautifulSoup(description_raw, features="html.parser").get_text()
+        else:
+            description_text: str = demisto.get(issue_data, 'fields.description', '') or ''
+
+        return {'Description': description_text, "Raw_Description": description_raw}
+
 
     @staticmethod
     def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
@@ -1622,7 +1627,7 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
             try:
                 parsed_value = json.loads(value)
             except (json.JSONDecodeError, TypeError):
-                pass    # Some values should not be in a JSON format so it maks sense for them to fail parsing.
+                pass    # Some values should not be in a JSON format so it makes sense for them to fail parsing.
         dotted_string = issue_fields_mapper.get(issue_arg, '')
         if not dotted_string and issue_arg.startswith('customfield'):
             # This is used to deal with the case when the user creates a custom incident field, using
@@ -2562,7 +2567,7 @@ def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
             "value": visibility
         }
     # The edit_comment actually returns the edited comment (the API returns the newly edited comment), but
-    # since I don't know if we have a way to append a CommanResults to a List of CommanResults in the context data,
+    # since I don't know if we have a way to append a CommandResults to a List of CommandResults in the context data,
     # I just call get_comments, which will also get the newly edited comment, and return them.
     client.edit_comment(issue_id_or_key=issue_id_or_key, comment_id=comment_id, json_data=payload)
     res = client.get_comments(issue_id_or_key=issue_id_or_key)
@@ -3751,8 +3756,9 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     Returns:
         Dict[str, Any]: A dictionary that is represents an incident.
     """
-    issue_description: str = JiraIssueFieldsParser.get_description_context(issue_data=issue).get('Description') or ''
-
+    issue_description: dict = JiraIssueFieldsParser.get_description_context(issue_data=issue)
+    issue_raw_description: str = issue_description.get('Description', '')
+    issue_parsed_description: str = issue_description.get('RawDescription', '')
     issue_id = str(issue.get('id'))
     labels = [
         {'type': 'issue', 'value': json.dumps(issue)},
@@ -3766,9 +3772,9 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         {'type': 'reporteremail', 'value': str(demisto.get(issue, 'fields.reporter.emailAddress'))},
         {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
         {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
-        {'type': 'description', 'value': issue_description},
+        {'type': 'description', 'value': issue_raw_description},
     ]
-    issue['parsedDescription'] = issue_description
+    issue['parsedDescription'] = issue_parsed_description
     demisto.debug(f'Extracting extra data for {issue_id}.')
 
     issue |= add_extracted_data_to_incident(issue=issue)
@@ -3812,7 +3818,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     return {
         "name": incident_name,
         "labels": labels,
-        "details": issue_description,
+        "details": issue_description,  #TODO raw or not?
         "severity": severity,
         "attachment": attachments,
         "rawJSON": json.dumps(issue)
@@ -4172,7 +4178,7 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     was left in V3, and an extra condition was added to check if the issue was `resolved`.
 
     Args:
-        issue (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSAOR.
+        issue (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSOAR.
 
     Returns:
         Dict[str, Any]: An entry that indicates that the incident that corresponds to the issue will be closed.
