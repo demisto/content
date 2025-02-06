@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 
 VENDOR = 'Celonis'
 PRODUCT = 'Celonis'
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 PAGE_SIZE = 200
 PAGE_NUMBER = 0
 DEFAULT_FETCH_LIMIT = 600
@@ -89,14 +89,12 @@ def add_millisecond(timestamp: str) -> str:
     Returns:
         str: The new timestamp with one millisecond added, formatted in ISO 8601.
     """
-    # Handle timestamps without milliseconds
     if '.' not in timestamp:
+        # Handle timestamps without milliseconds
         dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
-        dt += timedelta(milliseconds=1)
-        return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
-
-    # Handle timestamps with milliseconds
-    dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+    else:
+        # Handle timestamps with milliseconds
+        dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
     dt += timedelta(milliseconds=1)
     return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
