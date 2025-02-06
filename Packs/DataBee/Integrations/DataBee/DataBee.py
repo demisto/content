@@ -551,7 +551,7 @@ def test_module(client: Client) -> str:
 
 def fetch_incidents(
     client: Client, args: dict[str, Any], params: dict[str, Any], current_time: datetime
-) -> tuple[dict[str, Any], list[dict]]:
+) -> tuple[list[dict], dict[str, Any]]:
     """
     Retrieves findings every interval (default is 1 minute).
     By default it's invoked by XSOAR every minute.
@@ -622,7 +622,7 @@ def fetch_incidents(
 
     demisto.debug(f"fetch: Update last run time to {new_last_run}.")
     demisto.debug(f"fetch: Fetched {len(incidents)} incidents.")
-    return incidents, {"time": new_last_run}  # type: ignore [return-value]
+    return incidents, {"time": new_last_run}
 
 
 ''' HELPER COMMANDS '''
