@@ -12,6 +12,12 @@ configuration:
   required: true
   type: 0
   section: Connect
+- additionalinfo: 'Port number with which to connect to the Orion server. Examples: 17778, 17774.'
+  display: Port
+  name: port
+  required: true
+  type: 0
+  section: Connect
 - additionalinfo: Admin can create users such as guests from the Orion platform and provide access permission according to need.
   display: Username of the account
   name: credentials

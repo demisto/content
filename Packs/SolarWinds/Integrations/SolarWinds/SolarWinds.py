@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 READABLE_DATE_FORMAT = '%d/%m/%Y %I:%M %p'
 
-BASE_URL = "https://{}:17778/SolarWinds/InformationService/v3/Json"
+BASE_URL = "https://{}:{}/SolarWinds/InformationService/v3/Json"
 
 DEFAULT_FETCH_TYPE = "Alert"
 DEFAULT_MAX_FETCH = "15"
@@ -98,9 +98,9 @@ QUERY_PARAM = {
 class Client(BaseClient):
     """Client class to interact with the service API"""
 
-    def __init__(self, server, verify, proxy, credentials):
+    def __init__(self, server, port, verify, proxy, credentials):
         auth = (credentials.get("identifier"), credentials.get('password'))
-        super().__init__(BASE_URL.format(server), verify=verify, proxy=proxy, auth=auth)
+        super().__init__(BASE_URL.format(server, port), verify=verify, proxy=proxy, auth=auth)
 
     def http_request(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None, **kwargs):
         """
@@ -614,6 +614,7 @@ def main() -> None:
         params = demisto.params()
         args = demisto.args()
         server = params['server']
+        port = params['port']
         credentials = params.get('credentials', {})
 
         verify_certificate = not params.get('insecure', False)
@@ -621,6 +622,7 @@ def main() -> None:
 
         client = Client(
             server=server,
+            port=port,
             credentials=credentials,
             verify=verify_certificate,
             proxy=proxy)
