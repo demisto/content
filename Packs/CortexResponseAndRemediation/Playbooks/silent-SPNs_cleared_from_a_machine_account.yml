@@ -1292,6 +1292,7 @@ tasks:
       id: d3a187f0-5aa7-495a-8ab7-3eb9f9792044
       version: -1
       name: Check closing reason
+      description: Checks what closing reason the user chose.
       type: condition
       iscommand: false
       brand: ""
@@ -1356,4 +1357,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 issilent: true
+marketplaces: ["marketplacev2"]
 fromversion: 8.9.0
