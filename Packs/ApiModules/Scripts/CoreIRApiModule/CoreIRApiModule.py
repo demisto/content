@@ -2505,7 +2505,7 @@ def parse_command_injections(commands: list[str] | list | dict[list, list],
                 or bool(filter_bypass_wildcards_regex.findall(str_cmd))
                 ):
             raise DemistoException(
-                f'The command "{command}" contains characters or substrings that can be used to inject malicious commands.')
+                f'The command "{command}" contains characters or substrings that are not allowed.')
 
         parsed_commands.append(command)
 
