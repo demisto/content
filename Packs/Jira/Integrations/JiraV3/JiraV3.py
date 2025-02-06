@@ -1622,7 +1622,7 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
             try:
                 parsed_value = json.loads(value)
             except (json.JSONDecodeError, TypeError):
-                pass    # Some values should not be in a JSON format so it maks sense for them to fail parsing.
+                pass    # Some values should not be in a JSON format so it make sense for them to fail parsing.
         dotted_string = issue_fields_mapper.get(issue_arg, '')
         if not dotted_string and issue_arg.startswith('customfield'):
             # This is used to deal with the case when the user creates a custom incident field, using
@@ -2562,7 +2562,7 @@ def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
             "value": visibility
         }
     # The edit_comment actually returns the edited comment (the API returns the newly edited comment), but
-    # since I don't know if we have a way to append a CommanResults to a List of CommanResults in the context data,
+    # since I don't know if we have a way to append a CommandResults to a List of CommandResults in the context data,
     # I just call get_comments, which will also get the newly edited comment, and return them.
     client.edit_comment(issue_id_or_key=issue_id_or_key, comment_id=comment_id, json_data=payload)
     res = client.get_comments(issue_id_or_key=issue_id_or_key)
@@ -4172,7 +4172,7 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     was left in V3, and an extra condition was added to check if the issue was `resolved`.
 
     Args:
-        issue (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSAOR.
+        issue (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSOAR.
 
     Returns:
         Dict[str, Any]: An entry that indicates that the incident that corresponds to the issue will be closed.
