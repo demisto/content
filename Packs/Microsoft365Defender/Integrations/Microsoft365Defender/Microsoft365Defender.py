@@ -803,7 +803,7 @@ def fetch_modified_incident(client: Client, incident_id: int) -> dict:
     if incident.get('@odata.context'):
         del incident['@odata.context']
     incident.update(_get_meta_data_for_incident(incident))
-    demisto.debug(f"Microsoft Defender 365 - Updated incident {incident_id=} with metadata")
+    demisto.debug(f"Microsoft Defender 365 - Updated incident {incident_id=} with metadata.")
     return incident
 
 
@@ -1001,9 +1001,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     delta = update_remote_system_args.delta
 
     demisto.debug(
-        f"Microsoft Defender 365 -  update_remote_system_command {remote_incident_id=} \n {delta=} \n {data=} \n "
-        f"{update_remote_system_args.incident_changed=} \n {update_remote_system_args.inc_status=}"
-        f" \n {update_remote_system_args.entries=}")
+        f"Microsoft Defender 365 -  update_remote_system_command {remote_incident_id=} \n {delta=} \n  "
+        f"{update_remote_system_args.incident_changed=} \n {update_remote_system_args.inc_status=}")
 
     try:
         if update_remote_system_args.incident_changed and delta:
