@@ -152,6 +152,8 @@ tasks:
         simple: ${inputs.dt_max_ssl_info_organization_count}
       max_ssl_subject_count:
         simple: ${inputs.dt_max_ssl_subject_count}
+      max_name_server_domain_count:
+        simple: ${inputs.dt_max_name_server_domain_count}
     separatecontext: false
     view: |-
       {
