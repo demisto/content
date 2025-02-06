@@ -93,7 +93,7 @@ def test_fetch_events_token_expired(mocker):
 
 
 def test_fetch_events_reaching_limit(mocker):
-    from CelonisEventCollector import fetch_events, sort_events_by_timestamp
+    from CelonisEventCollector import fetch_events
     client = create_client()
 
     raw_response_audit_logs = util_load_json('test_data/raw_response_audit_logs.json')
@@ -113,4 +113,21 @@ def test_fetch_events_reaching_limit(mocker):
 
 
 def test_fetch_events_more_than_exist(mocker):
-    pass
+    from CelonisEventCollector import fetch_events
+    client = create_client()
+
+    raw_response_audit_logs = util_load_json('test_data/raw_response_audit_logs.json')
+
+    last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "token": "123"}
+    mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=[raw_response_audit_logs, {}])
+    mocker.patch('CelonisEventCollector.demisto.getLastRun', return_value=last_run_mock)
+    mocker.patch('CelonisEventCollector.Client.create_access_token_for_audit')
+
+    output, new_last_run = fetch_events(client, fetch_limit=15)
+
+    assert len(output) == 11
+    assert new_last_run.get('start_date') == '2025-02-25T14:52:10.904Z'
+
+    for i in range(0, len(output)):
+        assert output[i]['message']['id'] == f"id{i + 1}"
+
