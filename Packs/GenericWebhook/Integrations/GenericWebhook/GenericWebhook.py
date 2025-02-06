@@ -188,7 +188,7 @@ def generate_events() -> str:
         "version": "1.0"
         }
         import copy
-        for i in range(300000):
+        for i in range(3000):
             duplicated_dict = copy.deepcopy(original_dict)
             duplicated_dict["unique_id"] = i
             events.append(json.dumps(duplicated_dict))
