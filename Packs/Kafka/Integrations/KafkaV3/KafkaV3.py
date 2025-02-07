@@ -72,6 +72,9 @@ class KafkaCommunicator:
             client_cert: The contents of the client certificate.
             client_cert_key: The contents of the client certificate's key
             ssl_password: The password with which the client certificate is protected by.
+            schema_registry_url: The URL of the schema registry.
+            schema_registry_username: The username for the schema registry.
+            schema_registry_password: The password for the schema registry.
         """
 
         # Set producer conf dict
