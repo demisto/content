@@ -1054,7 +1054,7 @@ def gcenter103_assets_tags_get_command(client: GwClient, args: dict[str, Any]) -
 
     if len(res['tags']) == 0:
         return CommandResults(
-           readable_output=f"# gcenter103-assets-tags-get - Asset {params.get('asset_name', "")} has no associated tags",
+           readable_output="# gcenter103-assets-tags-get - This asset has no associated tags",
            outputs_prefix="Gatewatcher.Assets.Tags.Get",
        )
 
