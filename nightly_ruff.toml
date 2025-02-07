@@ -1,6 +1,6 @@
 # This file contains the ruff hook rules when pre-commit is run with the --all flag
 
-select = [
+lint.select = [
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
@@ -34,7 +34,6 @@ select = [
     "E742", # ambiguous-class-name
     "E743", # ambiguous-function-name
     "E902", # io-error
-    "E999", # syntax-error
 
     "F402", # import-shadowed-by-loop-var
     "F404", # late-future-import
@@ -92,7 +91,6 @@ select = [
     "PD012", # pandas-use-of-dot-read-table
     "PD013", # pandas-use-of-dot-stack
     "PD015", # pandas-use-of-pd-merge
-    "PGH002", # deprecated-log-warn
     "PIE807", # reimplemented-list-builtin
     "PLC3002", # unnecessary-direct-lambda-call
     "PLE0100", # yield-in-init
@@ -164,7 +162,6 @@ select = [
     "SIM220", # expr-and-not-expr
     "SIM221", # expr-or-not-expr
     "SIM223", # expr-and-false
-    "SIM910", # dict-get-with-none-default
 
     "T203", # p-print
 
@@ -174,7 +171,6 @@ select = [
     "UP013", # convert-typed-dict-functional-to-class
     "UP017", # datetime-timezone-utc
     "UP021", # replace-universal-newlines
-    "UP027", # unpacked-list-comprehension
     "UP029", # unnecessary-builtin-import
     "UP033", # lru-cache-with-maxsize-none
     "UP037", # quoted-annotation
@@ -197,7 +193,7 @@ select = [
 
 line-length = 130
 
-[per-file-ignores]
+[lint.per-file-ignores]
 ".vulture_whitelist.py" = [
     "F821", # undefined-name
 ]

@@ -1,0 +1,110 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Cloudflare Zero Trust
+  version: -1
+configuration:
+- name: url
+  defaultvalue: https://api.cloudflare.com/
+  display: Server URL
+  required: true
+  type: 0
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- name: max_fetch_account_audit_logs
+  defaultvalue: 5000
+  section: Collect
+  display: Maximum number of account audit logs per fetch
+  advanced: true
+  required: false
+  type: 0
+- name: max_fetch_user_audit_logs
+  defaultvalue: 5000
+  section: Collect
+  display: Maximum number of user audit logs per fetch
+  advanced: true
+  required: false
+  type: 0
+- name: max_fetch_access_authentication_logs
+  defaultvalue: 5000
+  section: Collect
+  display: Maximum number of access authentication logs per fetch
+  advanced: true
+  required: false
+  type: 0
+- display: API email
+  section: Connect
+  displaypassword: Global API key
+  name: credentials
+  type: 9
+  required: true
+- display: Account ID
+  name: account_id
+  type: 0
+  required: true
+  section: Connect
+- display: Event types to fetch
+  name: event_types_to_fetch
+  type: 16
+  defaultvalue: Account Audit Logs, User Audit Logs, Access Authentication Logs
+  section: Collect
+  advanced: true
+  options:
+  - Account Audit Logs
+  - User Audit Logs
+  - Access Authentication Logs
+  required: true
+description: Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and a content distribution network to provide content across its network of servers.
+display: Cloudflare Zero Trust
+name: Cloudflare Zero Trust
+script:
+  commands:
+  - arguments:
+    - description: The number of events to return per type.
+      name: limit
+      defaultValue: 10  
+    - name: should_push_events
+      description: If true, the command will create events, otherwise it will only display them.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The start date from which to filter events.
+      name: start_date
+    - description: A comma-separated list of event types to fetch.
+      name: event_types_to_fetch
+      defaultValue: Account Audit Logs,User Audit Logs
+      auto: PREDEFINED
+      predefined:
+      - Account Audit Logs
+      - User Audit Logs
+      - Access Authentication Logs
+      required: false
+      isArray: true
+    description: Gets events from Cloudflare Zero Trust.
+    name: cloudflare-zero-trust-get-events
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)

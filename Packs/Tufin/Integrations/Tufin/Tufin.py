@@ -524,12 +524,12 @@ def change_info(ticket_id):
         url = f'/securechangeworkflow/api/securechange/tickets/{ticket_id}'
         ticket = tos_request('sc', 'GET', url)
         cur_step = ''
-        if type(ticket['ticket']['current_step']) != str:
+        if type(ticket['ticket']['current_step']) is not str:
             cur_step = ticket['ticket']['current_step']['name']
         else:
             cur_step = ''
         comments = ''
-        if type(ticket['ticket']['comments']) != str:
+        if type(ticket['ticket']['comments']) is not str:
             for comment in ticket['ticket']['comments']['comment']:
                 comments = '{}\n{}: {}'.format(comments, comment['created'], comment['content'])
         else:

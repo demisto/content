@@ -2,7 +2,7 @@
     "name": "XSOAR EDL Checker",
     "description": "Checks EDLs hosted by the XSOAR server to ensure they are functioning.",
     "support": "community",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.4",
     "author": "Mike Beauchamp",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

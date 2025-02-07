@@ -19,23 +19,23 @@ This playbook helps perform the following functionalities:
 * Sends an email containing the owner's information to the primary or secondary contact of the asset.
 * Provides the user with an opportunity to update or remove the asset.
 
-![Enrich Incident With Asset Details - RiskIQ Digital Footprint](https://github.com/demisto/content/raw/89de9c30e0dac047d5a3b66250e804717da35dd2/Packs/RiskIQDigitalFootprint/doc_files/Enrich_Incident_With_Asset_Details_-_RiskIQ_Digital_Footprint.png)
+![Enrich Incident With Asset Details - RiskIQ Digital Footprint](doc_files/Enrich_Incident_With_Asset_Details_-_RiskIQ_Digital_Footprint.png)
 
 #### Update Or Remove Assets - RiskIQ Digital Footprint
 
 This playbook checks if the user wants to update or remove the asset using various user inputs and performs the respective actions.
 
-![Update Or Remove Assets - RiskIQ Digital Footprint](https://github.com/demisto/content/raw/89de9c30e0dac047d5a3b66250e804717da35dd2/Packs/RiskIQDigitalFootprint/doc_files/Update_Or_Remove_Assets_-_RiskIQ_Digital_Footprint.png)
+![Update Or Remove Assets - RiskIQ Digital Footprint](doc_files/Update_Or_Remove_Assets_-_RiskIQ_Digital_Footprint.png)
 
 ### Layouts
 
 #### RiskIQ Asset Management Incident New/Edit Form
-![RiskIQAssetManagement_Incident_New_or_Edit_Form_View](https://github.com/demisto/content/raw/89de9c30e0dac047d5a3b66250e804717da35dd2/Packs/RiskIQDigitalFootprint/doc_files/RiskIQAssetManagement_Incident_New_or_Edit_Form_View.png)
+![RiskIQAssetManagement_Incident_New_or_Edit_Form_View](doc_files/RiskIQAssetManagement_Incident_New_or_Edit_Form_View.png)
 
 #### RiskIQ Asset Management Incident Summary
-![RiskIQAssetManagement_Incident_Summary_View](https://github.com/demisto/content/raw/89de9c30e0dac047d5a3b66250e804717da35dd2/Packs/RiskIQDigitalFootprint/doc_files/RiskIQAssetManagement_Incident_Summary_View.png)
+![RiskIQAssetManagement_Incident_Summary_View](doc_files/RiskIQAssetManagement_Incident_Summary_View.png)
 
 #### RiskIQ Asset Management Incident Quick View
-![RiskIQAssetManagement_Incident_Quick_View](https://github.com/demisto/content/raw/89de9c30e0dac047d5a3b66250e804717da35dd2/Packs/RiskIQDigitalFootprint/doc_files/RiskIQAssetManagement_Incident_Quick_View.png)
+![RiskIQAssetManagement_Incident_Quick_View](doc_files/RiskIQAssetManagement_Incident_Quick_View.png)
 
 As part of this pack, you will also get out-of-the-box RiskIQ Asset Management incident type, RiskIQAsset indicator type, incident & indicator fields, and incident layouts. All of these are easily customizable to suit the needs of your organization.

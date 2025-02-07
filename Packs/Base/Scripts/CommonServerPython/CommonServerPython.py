@@ -46,7 +46,8 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
-XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)  # 4 MB
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
+# So if you're using a "heavy" API it is recommended to use maximum of 4MB chunk size.
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -54,6 +55,8 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
+NUM_OF_WORKERS = 20
+HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -233,6 +236,7 @@ PROFILING_DUMP_ROWS_LIMIT = 20
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
+    import concurrent.futures
 
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
@@ -655,6 +659,7 @@ class ThreatIntel:
         TOOL = 'Tool'
         THREAT_ACTOR = 'Threat Actor'
         INFRASTRUCTURE = 'Infrastructure'
+        TACTIC = 'Tactic'
 
     class ObjectsScore(object):
         """
@@ -671,6 +676,7 @@ class ThreatIntel:
         TOOL = 2
         THREAT_ACTOR = 3
         INFRASTRUCTURE = 2
+        TACTIC = 0
 
     class KillChainPhases(object):
         """
@@ -6432,6 +6438,95 @@ class Common(object):
 
             return ret_value
 
+    class Tactic(Indicator):
+        """
+        Tactic indicator
+
+        :type stix_id: ``str``
+        :param stix_id: The Tactic STIX ID
+
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: The Tactic first seen by source
+
+        :type description: ``str``
+        :param description: The Tactic description
+
+        :type publications: ``str``
+        :param publications: The Tactic publications
+
+        :type mitre_id: ``str``
+        :param mitre_id: The Tactic mitre id.
+
+        :type tags: ``str``
+        :param tags: The Tactic tags.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the Tactic.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  A list of community notes for the Tactic.
+
+        :type external_references: ``ExternalReference``
+        :param external_references:  A list of id's and description of the Tactic via external refs.
+
+        :type value: ``str``
+        :param value: The Tactic value (name) - example: "Plist File Modification"
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Tactic(val.Name && val.Name == obj.Name)'
+
+        def __init__(self, stix_id, first_seen_by_source=None, description=None, publications=None, mitre_id=None, tags=None,
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None, value=None):
+
+            self.community_notes = community_notes
+            self.description = description
+            self.external_references = external_references
+            self.first_seen_by_source = first_seen_by_source
+            self.mitre_id = mitre_id
+            self.publications = publications
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+            self.value = value
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            attack_pattern_context = {
+                'STIXID': self.stix_id,
+                "FirstSeenBySource": self.first_seen_by_source,
+                "Publications": self.publications,
+                "MITREID": self.mitre_id,
+                "Value": self.value,
+                "Tags": self.tags,
+                "Description": self.description
+            }
+
+            if self.external_references:
+                attack_pattern_context['ExternalReferences'] = self.create_context_table(self.external_references)
+
+            if self.traffic_light_protocol:
+                attack_pattern_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                attack_pattern_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
 
 class ScheduledCommand:
     """
@@ -6684,7 +6779,7 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
             ms = ms / 1000.0
 
         if is_utc:
-            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
+            return datetime.fromtimestamp(ms, tz=timezone.utc)
         else:
             return datetime.fromtimestamp(ms)
     if isinstance(arg, str):
@@ -8734,7 +8829,8 @@ def censor_request_logs(request_log):
     :return: The censored request log
     :rtype: ``str``
     """
-    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username", "password", "apiKey"]
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username",
+                          "password", "Key", "identifier", "credential", "client"]
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
@@ -8746,8 +8842,8 @@ def censor_request_logs(request_log):
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
-                # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
-                if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
+                # If the next word is "Bearer", "JWT" or "Basic" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "jwt", "basic"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
                     request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
@@ -10667,6 +10763,10 @@ def support_multithreading():  # pragma: no cover
     :return: No data returned
     :rtype: ``None``
     """
+    global HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE
+    if HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
+        return
+    HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = True
     global demisto
     prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
     demisto.lock = Lock()  # type: ignore[attr-defined]
@@ -11968,7 +12068,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False):
+                         add_proxy_to_request=False, multiple_threads=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12002,10 +12102,16 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type add_proxy_to_request :``bool``
     :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
-    :return: None
-    :rtype: ``None``
+    :type multiple_threads: ``bool``
+    :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
+
+    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
+    for future in concurrent.futures.as_completed(futures):
+        data_size += future.result()
+    :rtype: ``List[Future]`` or ``None``
     """
-    send_data_to_xsiam(
+    return send_data_to_xsiam(
         events,
         vendor,
         product,
@@ -12016,6 +12122,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
+        multiple_threads=multiple_threads
     )
 
 
@@ -12128,7 +12235,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12172,8 +12279,15 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type items_count: ``str``
     :param items_count: the asset snapshot items count.
 
-    :return: None
-    :rtype: ``None``
+    :type multiple_threads: ``bool``
+    :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
+    Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
+
+    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
+    for future in concurrent.futures.as_completed(futures):
+        data_size += future.result()
+    :rtype: ``List[Future]`` or ``None```
     """
     data_size = 0
     params = demisto.params()
@@ -12264,17 +12378,38 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
-    for data_chunk in data_chunks:
-        data_size += len(data_chunk)
+
+    def send_events(data_chunk):
+        chunk_size = len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+        return chunk_size
 
-    if should_update_health_module:
-        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    if multiple_threads:
+        demisto.info("Sending events to xsiam with multiple threads.")
+        all_chunks = [chunk for chunk in data_chunks]
+        demisto.info("Finished appending all data_chunks to a list.")
+        support_multithreading()
+        futures = []
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+        for chunk in all_chunks:
+            future = executor.submit(send_events, chunk)
+            futures.append(future)
+
+        demisto.info('Finished submiting {} Futures.'.format(len(futures)))
+        return futures
+    else:
+        demisto.info("Sending events to xsiam with a single thread.")
+        for chunk in data_chunks:
+            data_size += send_events(chunk)
+
+        if should_update_health_module:
+            demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    return
 
 
 def comma_separated_mapping_to_dict(raw_text):
@@ -12462,11 +12597,11 @@ def content_profiler(func):
             timeout_nanoseconds = demisto.callingContext["context"].get("TimeoutDuration") or default_timeout
             timeout_seconds = timeout_nanoseconds / 1e9
             event_set = signal_event.wait(timeout_seconds - 5)
-            if not event_set:
-                raise DemistoException("The profiled function '{}' failed due to a timeout.".format(func.__name__))
             profiler.disable()
             dump_result()
             demisto.debug("Profiler finished.")
+            if not event_set:
+                return_error("The profiled function '{}' failed due to a timeout.".format(func.__name__))
 
         def function_runner(func, profiler, signal_event,
                             results, *args, **kwargs):

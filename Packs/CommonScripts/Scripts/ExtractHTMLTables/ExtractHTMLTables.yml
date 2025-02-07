@@ -18,12 +18,12 @@ args:
 - name: html
   required: true
   default: true
-  description: The HTML to extract tables from
+  description: The HTML to extract tables from.
 - name: indexes
-  description: Extract only the tables with given indexes - 0 based
+  description: Extract only the tables with given indexes - 0 based.
 outputs:
 - contextPath: HTMLTables
-  description: The extracted HTML tables
+  description: The extracted HTML tables.
 scripttarget: 0
 dockerimage: demisto/bs4-py3:1.0.0.117152
 fromversion: 5.0.0

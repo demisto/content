@@ -15,6 +15,9 @@ def results_return(command, thingtoreturn):
             if item['Malicious']['Vendor']:
                 score = Common.DBotScore.BAD
                 description = ip_reputation['description'] = item['Malicious']['Description']
+            else:
+                score = Common.DBotScore.NONE
+                demisto.debug(f"No Malicious Vendor {score=}")
         except LookupError:
             score = Common.DBotScore.NONE
         dbot_score = Common.DBotScore(

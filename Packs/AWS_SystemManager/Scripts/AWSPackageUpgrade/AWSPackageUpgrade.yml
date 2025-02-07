@@ -36,7 +36,7 @@ comment: This is an AWS script that upgrades a package on the AWS EC2 instance u
 commonfields:
   id: AWSPackageUpgrade
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.11.10.116949
 enabled: true
 engineinfo: {}
 name: AWSPackageUpgrade

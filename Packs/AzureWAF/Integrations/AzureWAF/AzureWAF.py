@@ -487,7 +487,7 @@ def resourcegroups_to_md(subscription_ids: list[dict]) -> str:
 def subscriptions_list_command(client: AzureWAFClient):
     subscriptions_res = client.subscriptions_list()
     subscriptions = subscriptions_res.get('value', []) if subscriptions_res else {}
-    return CommandResults(readable_output=subscriptions_to_md(subscriptions),
+    return CommandResults(readable_output=subscriptions_to_md(subscriptions),  # type: ignore[arg-type]
                           outputs=subscriptions,
                           outputs_key_field='subscriptionId', outputs_prefix='AzureWAF.Subscription',
                           raw_response=subscriptions)

@@ -764,10 +764,6 @@ tasks:
           root: inputs.File
           transformers:
           - operator: uniq
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "8"
     separatecontext: true
     continueonerrortype: ""
     loop:

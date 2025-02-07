@@ -12,6 +12,7 @@ import threading
 import time
 import traceback
 import websocket
+import uuid
 import json
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
@@ -671,13 +672,8 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
             tab.Page.navigate(url=path)
 
         demisto.debug(f'Waiting for tab_ready_event on {tab.id=}')
-        success_flag = tab_ready_event.wait(navigation_timeout)
+        tab_ready_event.wait(navigation_timeout)
         demisto.debug(f'After waiting for tab_ready_event on {tab.id=}')
-
-        if not success_flag:
-            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
-            demisto.error(message)
-            return_error(message)
 
         if wait_time > 0:
             demisto.info(f'Sleeping before capturing screenshot, {wait_time=}')
@@ -850,6 +846,24 @@ def rasterize_thread(browser, chrome_port, path: str,
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
 
+def kill_zombie_processes():
+    # Iterate over all running processes
+    try:
+        for proc in psutil.process_iter(['pid', 'name', 'status']):
+            try:
+                # Check if the process is a zombie
+                if proc.info['status'] == psutil.STATUS_ZOMBIE:
+                    demisto.info(f'found zombie process with pid {proc.pid}')
+                    waitres = os.waitpid(int(proc.pid), os.WNOHANG)
+                    demisto.info(f"waitpid result: {waitres}")
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                # Handle cases where process may have already terminated or access is denied
+                demisto.info(f"failed to kill zombie with pid {proc.pid}")
+                continue
+    except Exception as e:
+        demisto.debug(f'Failed to iterate over processes. Error: {e}')
+
+
 def perform_rasterize(path: str | list[str],
                       rasterize_type: RasterizeType = RasterizeType.PNG,
                       wait_time: int = DEFAULT_WAIT_TIME,
@@ -990,7 +1004,7 @@ def rasterize_email_command():  # pragma: no cover
     offline = demisto.args().get('offline', 'false') == 'true'
 
     rasterize_type_arg = demisto.args().get('type', 'png').lower()
-    file_name = demisto.args().get('file_name', 'email')
+    file_name = demisto.args().get('file_name', uuid.uuid4())
     file_name = f'{file_name}.{rasterize_type_arg}'
     rasterize_type = RasterizeType(rasterize_type_arg)
 
@@ -1197,6 +1211,7 @@ def main():  # pragma: no cover
     demisto.debug(f"main, {demisto.command()=}")
     demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
     threading.excepthook = excepthook_recv_loop
+
     try:
         if demisto.command() == 'test-module':
             module_test()
@@ -1221,6 +1236,8 @@ def main():  # pragma: no cover
 
     except Exception as ex:
         return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+    finally:
+        kill_zombie_processes()
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
