@@ -4,6 +4,7 @@ from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer
     fetch_partitions, consume_message, produce_message, fetch_incidents
 from confluent_kafka.admin import ClusterMetadata, TopicMetadata, PartitionMetadata
 from confluent_kafka import KafkaError, TopicPartition, TIMESTAMP_NOT_AVAILABLE, TIMESTAMP_CREATE_TIME
+from confluent_kafka.schema_registry.avro import AvroSerializer
 
 import pytest
 import KafkaV3
@@ -465,6 +466,83 @@ def test_produce_message(mocker, partition_number):
     flush_mock.assert_called_once()
     return_results_mock.assert_called_once_with(f"Message was successfully produced to topic 'some-topic', "
                                                 f"partition {partition_number}")
+
+
+avro_schema_str = '{ "type": "record", "name": "Mensaje", "fields": [ {"name": "value", "type": "string"}] }'
+
+
+@pytest.mark.parametrize(
+    "value, value_schema_type, "
+    "value_schema_str, value_schema_subject_name",
+    [
+        ('{"value": "test"}', 'AVRO', avro_schema_str, None),
+        ('{"value": "test"}', 'AVRO', None, 'value_schema_subject_name'),
+    ]
+)
+def test_produce_message_with_Schema(
+    mocker,
+    value,
+    value_schema_type,
+    value_schema_str,
+    value_schema_subject_name
+):
+    """
+    Given:
+        - initialized KafkaCommunicator
+    When:
+        - running kafka-produce-msg command.
+    Then:
+        - Assert the relevant results are returned when everything works.
+    """
+    mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
+
+    demisto_args = {
+        'topic': 'some-topic',
+        'partitioning_key': 0,
+        'value': value,
+        'value_schema_type': value_schema_type,
+        'value_schema_str': value_schema_str,
+        'value_schema_subject_name': value_schema_subject_name
+    }
+    produce_mock = mocker.patch.object(KProducer, 'produce')
+    get_kafka_schema_registry_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_schema_registry')
+
+    if value_schema_type == 'AVRO':
+        mocker.patch.object(AvroSerializer, '__call__', return_value=value)
+
+    if value_schema_subject_name:
+        mock_schema = mocker.Mock()
+        mock_schema.schema_type = value_schema_type
+        mock_schema.schema_str = avro_schema_str
+
+        mock_registered_schema = mocker.Mock()
+        mock_registered_schema.schema = mock_schema
+
+        get_kafka_schema_registry_mock.return_value.get_latest_version.return_value = mock_registered_schema
+
+    def run_delivery_report():
+        message = MessageMock(message=value, offset=0, topic='some-topic', partition=0)
+        KafkaCommunicator.delivery_report(None, message)
+
+    flush_mock = mocker.patch.object(KProducer, 'flush', side_effect=run_delivery_report)
+    return_results_mock = mocker.patch.object(KafkaV3, 'return_results')
+
+    produce_message(KAFKA, demisto_args)
+
+    produce_mock.assert_called_once_with(
+        topic='some-topic',
+        partition=0,
+        value=value,
+        on_delivery=KAFKA.delivery_report
+    )
+    get_kafka_schema_registry_mock.assert_called_once()
+    if value_schema_subject_name:
+        get_kafka_schema_registry_mock.return_value.get_latest_version.assert_called_once_with(
+            subject_name=value_schema_subject_name)
+    flush_mock.assert_called_once()
+    return_results_mock.assert_called_once_with("Message was successfully produced to topic 'some-topic', "
+                                                "partition 0")
 
 
 def test_produce_error_message(mocker):
