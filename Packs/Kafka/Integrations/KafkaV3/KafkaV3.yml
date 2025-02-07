@@ -1,4 +1,7 @@
 category: Messaging and Conferencing
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: KafkaV3
   version: -1
@@ -7,76 +10,93 @@ configuration:
   name: brokers
   required: true
   type: 0
+  section: Connect
 - display: Consumer group ID
   additionalinfo: This group ID will be used when fetching incidents and preforming consumer commands. If not set the group id 'xsoar_group' will be used.
   name: group_id
   type: 0
   required: false
+  section: Collect
 - display: Use TLS for connection
   name: use_ssl
   type: 8
   required: false
+  section: Connect
 - display: Use SASL PLAIN for connection (using SSL)
   name: use_sasl
   type: 8
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: CA certificate of Kafka server (.cer)
   name: ca_cert
   type: 12
   required: false
+  section: Connect
 - display: Client certificate (.cer)
   name: client_cert
   type: 12
   required: false
+  section: Connect
 - display: Client certificate key (.key)
   name: client_cert_key
   type: 14
   required: false
+  section: Connect
 - displaypassword: Client certificate key password (if required)
   hiddenusername: true
   name: additional_password
   type: 9
   required: false
+  section: Connect
 - display: SASL PLAIN Username
   name: credentials
   type: 9
   displaypassword: SASL PLAIN Password
   required: false
+  section: Connect
 - display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   type: 0
   required: false
+  section: Collect
 - display: CSV list of partitions to fetch messages from
   name: partition
   type: 0
   required: false
+  section: Collect
 - additionalinfo: The initial offset to start fetching from, not including the value set (e.g., if 3 is set, the first event that will be fetched will be from offset 4). If you want to start from the earliest or latest, type in 'earliest' or 'latest'.
   display: Offset to fetch messages from (Exclusive)
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: '50'
   display: Maximum number of messages to fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - display: Stop consuming upon timeout
   additionalinfo: When fetching a significant number of messages (100+), it's advisable to halt message consumption upon timeout. This ensures that the fetch terminates if no messages are received after a specified duration, instead of requesting messages until reaching the maximum number of messages to fetch.
   name: stop_consuming_upon_timeout
   type: 8
   advanced: true
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - additionalinfo: |-
     The maximum number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process takes a long time, consider increasing this value. Default is '1048576'.
   defaultvalue: '1048576'
@@ -84,15 +104,18 @@ configuration:
   name: max_bytes_per_message
   type: 0
   required: false
+  section: Collect
 - display: Schema Registry URL
   name: schema_registry_url
   required: false
   type: 0
+  section: Connect
 - display: Schema Registry Username
   displaypassword: Schema Registry Password
   name: schema_registry_credentials
   required: false
   type: 9
+  section: Connect
 description: Kafka is an open source distributed streaming platform.
 display: Kafka v3
 name: KafkaV3
