@@ -771,7 +771,7 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
     checkable_offset = False
     numerical_offset = 0
     topics = kafka.get_topics(consumer=consumer)
-    if topic not in topics.keys():
+    if topic not in topics:
         raise DemistoException(f"Did not find topic {topic} in kafka topics.")
 
     if offset and str(offset).lower() not in SUPPORTED_GENERAL_OFFSETS:
