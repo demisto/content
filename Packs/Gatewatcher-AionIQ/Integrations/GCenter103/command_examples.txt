@@ -1,0 +1,33 @@
+gcenter103-alerts-list date_from=2025-01-01 type=malcore
+gcenter103-alerts-get uuid=1be3530b-2e94-4a89-b57f-6fb9f39e1b54
+gcenter103-alerts-note-add note="Test note" overwrite=true uuid=1be3530b-2e94-4a89-b57f-6fb9f39e1b54
+gcenter103-alerts-note-remove uuid=1be3530b-2e94-4a89-b57f-6fb9f39e1b54
+gcenter103-alerts-status-update action=open uuid=1be3530b-2e94-4a89-b57f-6fb9f39e1b54
+gcenter103-alerts-tags-add uuid=1be3530b-2e94-4a89-b57f-6fb9f39e1b54 tags="Major,To do"
+gcenter103-alerts-tags-get uuid=1be3530b-2e94-4a89-b57f-6fb9f39e1b54
+gcenter103-alerts-tags-remove uuid=1be3530b-2e94-4a89-b57f-6fb9f39e1b54 tags="To do"
+gcenter103-assets-list date_from=2025-01-01
+gcenter103-assets-get asset_name=im.a.very.bad.doma.in
+gcenter103-assets-alerts-get asset_name=im.a.very.bad.doma.in
+gcenter103-assets-note-add asset_name=im.a.very.bad.doma.in note="Test note" overwrite=true
+gcenter103-assets-note-remove asset_name=im.a.very.bad.doma.in
+gcenter103-assets-tags-add asset_name=im.a.very.bad.doma.in tags="Major,To do,Minor"
+gcenter103-assets-tags-get asset_name=im.a.very.bad.doma.in"
+gcenter103-assets-tags-remove asset_name=im.a.very.bad.doma.in tags="Minor,To do"
+gcenter103-file-scan engine=malcore entryID=2916@4a78491a-893a-4814-8bf4-ed1693d2f0fa
+gcenter103-file-scan-result-get id=2
+gcenter103-malcore-fingerprints-add sha256=8d14dff49da1dd6504148dc1180265852a4035ac70001165473310218e1fe77c comment="This is just Eicar" list_type=white threat=Ignored
+gcenter103-malcore-fingerprints-get list_type=white
+gcenter103-malcore-fingerprints-remove sha256=8d14dff49da1dd6504148dc1180265852a4035ac70001165473310218e1fe77c list_type=white
+gcenter103-raw-alerts-file-get uuid=6589f099-7f7a-48e1-be19-95d46be4b2e0
+gcenter103-raw-alerts-get uuid=6589f099-7f7a-48e1-be19-95d46be4b2e0
+gcenter103-users-list date_from=2025-01-01
+gcenter103-users-get kuser_name=cli-krb5
+gcenter103-users-alerts-get kuser_name=cli-krb5
+gcenter103-users-note-add kuser_name=cli-krb5 overwrite=true note="Test note"
+gcenter103-users-note-remove kuser_name=cli-krb5
+gcenter103-users-tags-add kuser_name=cli-krb5 tags="Major,Minor,To do"
+gcenter103-users-tags-get kuser_name=cli-krb5
+gcenter103-users-tags-remove kuser_name=cli-krb5 tags="Minor,To do"
+gcenter103-yara-rules-get
+gcenter103-yara-rules-add enabled=true name=Test entryID=2950@4a78491a-893a-4814-8bf4-ed1693d2f0fa
