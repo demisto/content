@@ -16,7 +16,7 @@ configuration:
   name: use_ssl
   type: 8
   required: false
-- display:  Use SASL PLAIN for connection (using SSL)
+- display: Use SASL PLAIN for connection (using SSL)
   name: use_sasl
   type: 8
 - display: Trust any certificate (not secure)
@@ -139,7 +139,7 @@ script:
       - AVRO
     - description: Value schema in string format. Used only if `schema_type` is not None and `schema_subject_name` is not provided. Mutually exclusive with `schema_subject_name`.
       name: value_schema_str
-    - description:  Value schema subject name to retrieve the latest schema version from the registry. Used only if `schema_type` is not None and `schema_str` is not provided. Mutually exclusive with `schema_str`.
+    - description: Value schema subject name to retrieve the latest schema version from the registry. Used only if `schema_type` is not None and `schema_str` is not provided. Mutually exclusive with `schema_str`.
       name: value_schema_subject_name
     description: Publishes a message to Kafka.
     name: kafka-publish-msg
