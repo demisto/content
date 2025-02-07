@@ -37,7 +37,7 @@ DEFAULT_URGENCY_SCORE_MEDIUM_THRESHOLD = 50
 DEFAULT_URGENCY_SCORE_HIGH_THRESHOLD = 80
 MAX_MIRRORING_LIMIT = 5000
 MAX_OUTGOING_NOTE_LIMIT = 8000
-PACK_VERSION = "1.0.10"  # temp replacement for the get_pack_version()
+PACK_VERSION = "1.0.11"  # temp replacement for the get_pack_version()
 UTM_PIVOT = f"?pivot=Vectra-XSOAR-{PACK_VERSION}"
 EMPTY_ASSIGNMENT = [{"id": "", "date_assigned": "", "date_resolved": "", "assigned_to": {"username": ""},
                      "resolved_by": {"username": ""}, "assigned_by": {"username": ""}, "outcome": {"title": ""}}]
