@@ -8,34 +8,41 @@ configuration:
   type: 9
   required: false
   displaypassword: API Key
+  section: Connect
 - display: API Username
   name: username
   required: false
   hidden: true
   type: 0
+  section: Connect
 - display: API Key
   name: apikey
   required: false
   hidden: true
   type: 4
+  section: Connect
 - display: High-Risk Threshold
   name: risk_threshold
   required: true
   type: 0
   defaultvalue: '70'
+  section: Connect
 - defaultvalue: '7'
   display: Young Domain Timeframe (within Days)
   name: young_domain_timeframe
   required: true
   type: 0
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Source Reliability
   name: integrationReliability
   type: 15
@@ -50,6 +57,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  section: Collect
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -60,17 +68,20 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   required: false
+  section: Collect
 - defaultvalue: 500
   name: pivot_threshold
   display: 'Guided Pivot Threshold'
   type: 1
   required: true
   additionalinfo: When a small set of domains share an attribute (e.g. registrar), that can often be pivoted on in order to find other similar domains of interest. DomainTools tracks how many domains share each attribute and can highlight it for further investigation when the number of domains is beneath the set threshold.
+  section: Connect
 - display: 'Enabled on Monitoring Domains by Iris Search Hash'
   name: monitor_iris_search_hash
   defaultvalue: Import Indicators Only
@@ -79,11 +90,13 @@ configuration:
   options:
   - Import Indicators Only
   - Create Incident and Import Indicators
+  section: Collect
 - display: Domaintools Iris Investigate Search Hash
   name: domaintools_iris_search_hash
   type: 12
   required: false
   additionalinfo: The DomainTools Iris Investigate Search hash
+  section: Collect
 - display: 'Enabled on Monitoring Domains by Iris Tags'
   name: monitor_iris_tags
   defaultvalue: Import Indicators Only
@@ -92,29 +105,35 @@ configuration:
   options:
   - Import Indicators Only
   - Create Incident and Import Indicators
+  section: Collect
 - display: Domaintools Iris Tags
   name: domaintools_iris_tags
   type: 12
   required: false
   additionalinfo: The DomainTools Iris Tags (Values should be a comma separated value. e.g. (tag1,tag2))
+  section: Collect
 - display: Maximum number of incidents to fetch
   defaultvalue: '2'
   name: max_fetch
   required: false
   type: 0
   additionalinfo: This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags.
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   defaultvalue: 7 days
   name: first_fetch
   required: false
   type: 0
   additionalinfo: This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags.
+  section: Collect
 description: Together, DomainTools and Cortex XSOAR automate and orchestrate the incident response process with essential domain profile, web crawl, SSL and infrastructure data. SOCs can create custom, automated workflows to trigger Indicator of Compromise (IoC) investigations, block threats based on connected infrastructure, and identify potentially malicious domains before weaponization. The DomainTools App for Cortex XSOAR is shipped with pre-built playbooks to enable automated enrichment, decision logic, ad-hoc investigations, and the ability to persist enriched intelligence.
 display: DomainTools Iris
 name: DomainTools Iris
@@ -469,6 +488,17 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    deprecated: false
+    execution: false
+  - arguments:
+    - description: Specify the domain (e.g., mycompany.com).
+      name: domain
+      required: true
+      default: true
+      isArray: false
+      secret: false
+    description: Returns the most recent Domain-RDAP registration record.
+    name: domainRdap
     deprecated: false
     execution: false
   - arguments:
@@ -835,16 +865,16 @@ script:
     deprecated: false
     execution: false
   - arguments:
-    - description: The domain name (SLD.TLD), or a comma-separated list of up to 6,000 domains.
+    - default: true
+      description: The domain name (SLD.TLD), or a comma-separated list of up to 6,000 domains.
       name: domain
       required: true
-      default: true
       isArray: false
       secret: false
-    - default: false
-      description: Include the investigate results in Context Data. Defaults to true.
-      isArray: false
+    - description: Include the investigate results in Context Data. Defaults to true.
       name: include_context
+      default: false
+      isArray: false
       required: false
       secret: false
       type: String
@@ -1201,8 +1231,8 @@ script:
     - default: false
       description: The domain name to display.
       name: domain
-      required: true
       isArray: false
+      required: true
       secret: false
     - description: Include the enrich results in Context Data. Defaults to true.
       name: include_context
@@ -1554,11 +1584,13 @@ script:
   - arguments:
     - default: false
       description: The domain name.
-      name: domain
       isArray: false
+      name: domain
       required: true
       secret: false
+    deprecated: false
     description: Displays DomainTools Threat Profile data in a markdown format table.
+    execution: false
     name: domaintoolsiris-threat-profile
     outputs:
     - contextPath: Domain.Name
@@ -1891,8 +1923,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    deprecated: false
-    execution: false
   - arguments:
     - default: false
       description: The IP Address.
@@ -1901,25 +1931,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Email Address.
+      description: "The Email Address."
       isArray: false
       name: email
       required: false
       secret: false
     - default: false
-      description: The Name Server IP Address.
+      description: "The Name Server IP Address."
       isArray: false
       name: nameserver_ip
       required: false
       secret: false
     - default: false
-      description: The hash of the SSL.
+      description: "The hash of the SSL."
       isArray: false
       name: ssl_hash
       required: false
       secret: false
     - default: false
-      description: The fully-qualified host name of the name server. For example, ns1.domaintools.net.
+      description: "The fully-qualified host name of the name server. For example, ns1.domaintools.net."
       isArray: false
       name: nameserver_host
       required: false
@@ -2358,13 +2388,11 @@ script:
   - arguments:
     - default: true
       description: A domain name to query (e.g. example.com).
-      isArray: false
       name: domain
       required: true
+      isArray: false
       secret: false
-    deprecated: false
     description: Hosting History will list IP address, name server and registrar history.
-    execution: false
     name: domaintools-hosting-history
     outputs:
     - contextPath: DomainTools.History.Value
@@ -2375,6 +2403,8 @@ script:
       description: Domain Nameserver history data.
     - contextPath: DomainTools.History.RegistrarHistory
       description: Domain Registrar history data.
+    deprecated: false
+    execution: false
   - arguments:
     - default: true
       description: (default) List of one or more terms to search for in the Whois record, separated with the pipe character ( | ).
@@ -2396,13 +2426,13 @@ script:
       description: Search term to reverse whois lookup on.
     - contextPath: DomainTools.ReverseWhois.Results
       description: List of results for reverse whois lookup.
-  - arguments:
+  - name: domaintools-whois
+    arguments:
     - default: true
       description: A domain name or IP address (e.g. example.com or 192.168.1.1).
       name: query
       required: true
     description: The DomainTools Parsed Whois API provides parsed information extracted from the raw Whois record. The API is optimized to quickly retrieve the Whois record, group important data together and return a well-structured format. The Parsed Whois API is ideal for anyone wishing to search for, index, or cross-reference data from one or multiple Whois records.
-    name: domaintools-whois
     outputs:
     - contextPath: Domain.Name
       description: Requested domain name.
@@ -2410,7 +2440,7 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
-  dockerimage: demisto/vendors-sdk:1.0.0.115493
+  dockerimage: demisto/vendors-sdk:1.0.0.2141458
   runonce: false
   script: '-'
   type: python
@@ -2421,3 +2451,6 @@ script:
 tests:
 - No test - test 'DomainTools Iris - Test' was moved to NonCircleFolder
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect

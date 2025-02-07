@@ -152,6 +152,8 @@ tasks:
         simple: ${inputs.dt_max_ssl_info_organization_count}
       max_ssl_subject_count:
         simple: ${inputs.dt_max_ssl_subject_count}
+      max_name_server_domain_count:
+        simple: ${inputs.dt_max_name_server_domain_count}
     separatecontext: false
     view: |-
       {
@@ -1828,9 +1830,9 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: HighRiskPivotedDomains.Name
-  description: The domain name
+  description: The domain name.
 - contextPath: HighRiskPivotedDomains.OverallRiskScore
-  description: The overall risk score of the domain
+  description: The overall risk score of the domain.
 - contextPath: DomainTools.Pivots.PivotedDomains.Name
   description: The DomainTools Domain Name.
   type: String

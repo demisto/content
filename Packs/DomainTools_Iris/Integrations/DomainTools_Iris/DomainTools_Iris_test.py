@@ -1,6 +1,13 @@
+import pytest
+
 from CommonServerPython import *
-from DomainTools_Iris import format_investigate_output, format_enrich_output, main
+from DomainTools_Iris import format_investigate_output, format_enrich_output, main, http_request, API
 from test_data import mock_response, expected
+
+
+@pytest.fixture
+def dt_client():
+    return API(username="test", key="test", verify_ssl=False)
 
 
 def write_test_data(file_path, string_to_write):
@@ -139,3 +146,59 @@ def test_whois_command(mocker):
     results = demisto.results.call_args[0]
 
     assert results[0]['EntryContext']['Domain(val.Name && val.Name == obj.Name)'][0]['Name'] == 'domaintools.com'
+
+
+def test_domainRdap_command(mocker):
+    mocker.patch.object(demisto, "command", return_value="domainRdap")
+    mocker.patch.object(demisto, "args", return_value={"domain": "domaintools.com"})
+
+    mock_resp = {
+        "_raw": mock_response.raw_parsed_domain_rdap_response,
+        "flat": mock_response.flattened_parsed_domain_rdap_response
+    }
+
+    expected_rdap_response_keys = ["domain_rdap", "parsed_domain_rdap", "record_source"]
+
+    mocker.patch('DomainTools_Iris.parsed_domain_rdap', return_value=mock_resp)
+
+    mocker.patch.object(demisto, "results")
+    main()
+    results = demisto.results.call_args[0]
+
+    contents = results[0]['Contents']
+    assert contents["record_source"] == "domaintools.com"
+    assert all(True for key in expected_rdap_response_keys if key in contents)
+
+    human_readable = results[0]["HumanReadable"]
+    assert human_readable == expected.parsed_domain_rdap_table
+
+
+def test_testModule_command(mocker):
+    mocker.patch.object(demisto, "command", return_value="test-module")
+
+    mocker.patch('DomainTools_Iris.http_request', return_value={})
+
+    mocker.patch.object(demisto, "results")
+    main()
+    results = demisto.results.call_args[0]
+    assert "ok" in results[0]
+
+
+@pytest.mark.parametrize("method, attribute, params", [
+    ("parsed-domain-rdap", "parsed_domain_rdap", {"domain": "domaintools.com"})
+])
+def test_http_request(mocker, dt_client, method, attribute, params):
+    expected_response = {
+        "parsed-domain-rdap": mock_response.raw_parsed_domain_rdap_response,
+    }
+
+    mocker.patch("DomainTools_Iris.get_client", return_value=dt_client)
+
+    mocker.patch("DomainTools_Iris.USERNAME", return_value="test_username")
+    mocker.patch("DomainTools_Iris.API_KEY", return_value="test_key")
+
+    mocker.patch.object(dt_client, attribute, return_value=expected_response[method])
+
+    results = http_request(method, params)
+
+    assert results == expected_response[method]

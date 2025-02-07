@@ -3,25 +3,32 @@
 This playbook retrieves the Iris Investigate profile of domain and automatically identifies potential connected infrastructure related to artifacts based on DomainTools Guided Pivot value.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, lists and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * DomainTools Iris
 
 ### Scripts
+
 Please install this scripts by DomainTools first before running the playbook.
-- `CheckPivotableDomains`
-- `AddDomainRiskScoreToContext`
+
+* `CheckPivotableDomains`
+* `AddDomainRiskScoreToContext`
 
 ### Commands
+
 * domain
 * domaintoolsiris-pivot
 
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
@@ -49,6 +56,7 @@ Please install this scripts by DomainTools first before running the playbook.
 
 
 ## Playbook Outputs
+
 ---
 This playbook extracts results from the 'domaintoolsiris-pivot' command and incorporates them into the context. Furthermore, it identifies high-risk domains by applying a risk score threshold to the pivoted commands.
 
