@@ -918,14 +918,14 @@ The DomainTools Parsed Whois API provides parsed information extracted from the 
 | Domain.Whois | unknown | Parsed Whois data. |
 | Domain.WhoisRecords | unknown | Full Whois record. |
 
-### domainProfile
+### domainRdap
 
 ***
 Returns the most recent Domain-RDAP registration record.
 
 #### Base Command
 
-`domainProfile`
+`domainRdap`
 
 #### Input
 

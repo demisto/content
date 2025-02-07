@@ -1608,6 +1608,10 @@ def parsed_domain_rdap_command():
     _raw_response = results.get("_raw") or {}
     flat_response = results.get("flat") or {}
 
+    for key, val in flat_response.items():
+        if "|" in val:
+            flat_response[key] = ", ".join([v.strip() for v in val.split("|")])
+
     headers = list(flat_response.keys())
 
     human_readable = tableToMarkdown(f'DomainTools parsed domain rdap result for {domain}', flat_response, headers=headers)
@@ -1626,7 +1630,7 @@ def main():
     command_mapping: dict[str, Callable] = {
         "test-module": test_module,
         "domain": domain_command,
-        "domainProfile": parsed_domain_rdap_command,
+        "domainRdap": parsed_domain_rdap_command,
         "domaintoolsiris-investigate": domain_command,
         "domaintoolsiris-analytics": domain_analytics_command,
         "domaintoolsiris-threat-profile": threat_profile_command,

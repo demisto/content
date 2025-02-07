@@ -498,7 +498,7 @@ script:
       isArray: false
       secret: false
     description: Returns the most recent Domain-RDAP registration record.
-    name: domainProfile
+    name: domainRdap
     deprecated: false
     execution: false
   - arguments:
