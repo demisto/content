@@ -148,8 +148,8 @@ def test_whois_command(mocker):
     assert results[0]['EntryContext']['Domain(val.Name && val.Name == obj.Name)'][0]['Name'] == 'domaintools.com'
 
 
-def test_domainProfile_command(mocker):
-    mocker.patch.object(demisto, "command", return_value="domainProfile")
+def test_domainRdap_command(mocker):
+    mocker.patch.object(demisto, "command", return_value="domainRdap")
     mocker.patch.object(demisto, "args", return_value={"domain": "domaintools.com"})
 
     mock_resp = {
