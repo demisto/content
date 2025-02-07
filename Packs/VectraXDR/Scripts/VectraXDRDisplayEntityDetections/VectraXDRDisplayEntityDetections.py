@@ -6,7 +6,7 @@ import json
 
 """ CONSTANTS """
 
-UTM_PIVOT = f"?pivot=Vectra-XSOAR-1.0.10"
+UTM_PIVOT = "?pivot=Vectra-XSOAR-1.0.10"
 
 
 def trim_api_version(url: str) -> str:
