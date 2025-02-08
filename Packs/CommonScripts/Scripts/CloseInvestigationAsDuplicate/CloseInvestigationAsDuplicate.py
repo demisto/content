@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 NO_INCIDENT_CLOSED_MSG = '0 incidents marked as duplicates'
+INFORMATIVE_MSG_FOR_USER = 'The incident was not closed. Check if the incident is missing a mandatory field by its type.'
 
 
 def is_incident_not_closed(response):
@@ -17,8 +18,11 @@ def main():
     res = demisto.executeCommand("linkIncidents", {"incidentId": duplicate_id, "linkedIncidentIDs": current_incident_id,
                                                    "action": "duplicate"})
     raise_error = argToBoolean(demisto.args().get('raise_error', False))
-    if raise_error and is_incident_not_closed(res):
-        return_error('The incident was not closed. Check if the incident is missing a mandatory field by its type.')
+    if is_incident_not_closed(res):
+        if raise_error:
+            return_error(INFORMATIVE_MSG_FOR_USER)
+        else:
+            return_results(INFORMATIVE_MSG_FOR_USER)
     else:
         demisto.results(res)
 
