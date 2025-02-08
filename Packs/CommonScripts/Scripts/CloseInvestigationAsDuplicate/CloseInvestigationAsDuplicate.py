@@ -16,7 +16,7 @@ def main():
     duplicate_id = demisto.args()['duplicateId']
     res = demisto.executeCommand("linkIncidents", {"incidentId": duplicate_id, "linkedIncidentIDs": current_incident_id,
                                                    "action": "duplicate"})
-    raise_error = demisto.args().get('raise_error', False)
+    raise_error = argToBoolean(demisto.args().get('raise_error', False))
     if raise_error and is_incident_not_closed(res):
         return_error('The incident was not closed. Check if the incident is missing a mandatory field by its type.')
     else:
