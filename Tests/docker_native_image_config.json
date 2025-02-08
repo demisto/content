@@ -260,8 +260,126 @@
             "ignored_native_images":[
                 "native:8.6"
             ]
+        },
+        {
+            "id": "FraudWatch",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "AWS - Security Hub",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Box v2",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "CrowdStrike Falcon Intel v2",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Cyberpion",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Darktrace Event Collector",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Infinipoint",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Palo Alto Networks IoT",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "SecurityIntelligenceServicesFeed",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "ZoomEventCollector",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "DateStringToISOFormat",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Forescout",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "FireEye ETP Event Collector",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "FormattedDateToEpoch",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "TimeComponents",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "DarktraceMBs",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "OnePassword",
+            "reason": "CIAC-12024, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
         }
-
     ],
     "flags_versions_mapping": {
         "native:dev": "native:dev",

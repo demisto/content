@@ -2,7 +2,7 @@
     "name": "Suspicious Domain Hunting",
     "description": "This pack provides all the necessary tools for the Suspicious Domain Hunting use case. It uses the CertStream integration to ingest new SSL certificates and alert for type-squatting domains with SSL certificate, these alerts are then analyzed and mitigated.",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.11",
     "author": "Cortex XSOAR",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

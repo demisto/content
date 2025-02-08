@@ -2,7 +2,7 @@
     "name": "AWS - ACM",
     "description": "Amazon Web Services Certificate Manager Service (acm)",
     "support": "xsoar",
-    "currentVersion": "1.1.39",
+    "currentVersion": "1.1.40",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

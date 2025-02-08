@@ -82,7 +82,7 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
     with capfd.disabled():
         with pytest.raises(SystemExit) as err:
             Whois.main()
-        assert err.type == SystemExit
+        assert err.type is SystemExit
         assert demisto.results.call_count == 1  # type: ignore
         # call_args is tuple (args list, kwargs). we only need the first one
         results = demisto.results.call_args[0]  # type: ignore
@@ -301,7 +301,7 @@ def test_parse_raw_whois_empty_nameserver():
                                                     (['0000-00-02T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=2))
                                                     ])
 def test_parse_dates_invalid_time(input, expected_result):
-    assert type(Whois.parse_dates(input)[0]) == type(expected_result)
+    assert type(Whois.parse_dates(input)[0]) is type(expected_result)
 
 
 @pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),

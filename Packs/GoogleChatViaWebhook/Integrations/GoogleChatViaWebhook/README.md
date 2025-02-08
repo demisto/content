@@ -1,25 +1,21 @@
 Integration for sending notifications to a Google Chat space via Incoming Webhook.
-## Configure Google Chat via Webhook on Cortex XSOAR
+## Configure Google Chat via Webhook in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Chat via Webhook.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Google Chat Space ID | This is located in the Webhook URL as a query parameter | True |
-    | Google Chat Space Key | Google Chat Space Key \(found in Google Chat Webhook URL\) | True |
-    | Google Chat Space Key |  | True |
-    | Google Chat Space Token | This is located in the Webhook URL as a query parameter | True |
-    | Google Chat Space Token |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Google Chat Space ID | This is located in the Webhook URL as a query parameter | True |
+| Google Chat Space Key | Google Chat Space Key \(found in Google Chat Webhook URL\) | True |
+| Google Chat Space Key |  | True |
+| Google Chat Space Token | This is located in the Webhook URL as a query parameter | True |
+| Google Chat Space Token |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### send-google-chat-message

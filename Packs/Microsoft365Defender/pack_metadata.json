@@ -2,7 +2,7 @@
     "name": "Microsoft 365 Defender",
     "description": "Microsoft Defender XDR (formerly Microsoft 365 Defender) is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.",
     "support": "xsoar",
-    "currentVersion": "4.5.36",
+    "currentVersion": "4.5.41",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -1,23 +1,19 @@
 Manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process.
 This integration was integrated and tested with version 1.37.0 of DelineaDSV
 
-## Configure DelineaDSV on Cortex XSOAR
+## Configure DelineaDSV in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DelineaDSV.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://example.com) | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Client ID | True |
-    | Client Secret | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://example.com) | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Client ID | True |
+| Client Secret | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### dsv-secret-get
 ***

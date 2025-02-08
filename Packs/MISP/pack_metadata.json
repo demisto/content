@@ -2,7 +2,7 @@
     "name": "MISP",
     "description": "Malware information and threat sharing platform.",
     "support": "xsoar",
-    "currentVersion": "2.1.47",
+    "currentVersion": "2.1.50",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

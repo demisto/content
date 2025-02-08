@@ -2,7 +2,7 @@
     "name": "Xsoar-web-server",
     "description": "Contains a minimal webserver and an automation that can be used to generate predictable URLs that can be inserted into emails and the responses can be tracked. Also contains a test playbook meant to be a POC.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.7",
     "author": "Arun Narayanan",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

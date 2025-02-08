@@ -1,0 +1,216 @@
+{
+    "configuration_profile": {
+        "general": {
+            "id": 1,
+            "name": "Corporate Wireless",
+            "description": "string",
+            "level": "System",
+            "site": {
+                "id": -1,
+                "name": "None"
+            },
+            "category": {
+                "id": -1,
+                "name": "Unknown"
+            },
+            "uuid": "55900BDC-347C-58B1-D249-F32244B11D30",
+            "deployment_method": "Install Automatically",
+            "redeploy_on_update": "Newly Assigned",
+            "redeploy_Dayss_before_certificate_expires": 0,
+            "payloads": "string"
+        },
+        "scope": {
+            "all_mobile_devices": true,
+            "all_jss_users": true,
+            "mobile_devices": [
+                {
+                    "mobile_device": {
+                        "id": 1,
+                        "name": "Admins iPad",
+                        "udid": "270aae10800b6e61a2ee2bbc285eb967050b5984",
+                        "wifi_mac_address": "E0:AC:CB:97:36:G4"
+                    }
+                }
+            ],
+            "buildings": [
+                {
+                    "building": {
+                        "id": 1,
+                        "name": "string"
+                    }
+                }
+            ],
+            "departments": [
+                {
+                    "department": {
+                        "id": 1,
+                        "name": "string"
+                    }
+                }
+            ],
+            "mobile_device_groups": [
+                {
+                    "mobile_device_group": {
+                        "id": 1,
+                        "name": "string"
+                    }
+                }
+            ],
+            "jss_users": [
+                {
+                    "user": {
+                        "id": 1,
+                        "name": "string"
+                    }
+                }
+            ],
+            "jss_user_groups": [
+                {
+                    "user_group": {
+                        "id": 1,
+                        "name": "string"
+                    }
+                }
+            ],
+            "limitations": {
+                "users": [
+                    {
+                        "user": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ],
+                "user_groups": [
+                    {
+                        "user_group": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ],
+                "network_segments": [
+                    {
+                        "network_segment": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ],
+                "ibeacons": [
+                    {
+                        "ibeacon": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ]
+            },
+            "exclusions": {
+                "mobile_devices": [
+                    {
+                        "mobile_device": {
+                            "id": 1,
+                            "name": "Johns iPad",
+                            "udid": "270aae10800b6e61a2ee2bbc285eb967050b5984",
+                            "wifi_mac_address": "E0:AC:CB:97:36:G4"
+                        }
+                    }
+                ],
+                "buildings": [
+                    {
+                        "building": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ],
+                "departments": [
+                    {
+                        "department": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ],
+                "mobile_device_groups": [
+                    {
+                        "mobile_device_group": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ],
+                "users": [
+                    {
+                        "user": {
+                            "name": "Adam"
+                        }
+                    }
+                ],
+                "user_groups": [
+                    {
+                        "user_group": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ],
+                "network_segments": [
+                    {
+                        "network_segment": {
+                            "id": 1,
+                            "uid": "string",
+                            "name": "New York"
+                        }
+                    }
+                ],
+                "ibeacons": [
+                    {
+                        "ibeacon": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ],
+                "jss_users": [
+                    {
+                        "user": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ],
+                "jss_user_groups": [
+                    {
+                        "user_group": {
+                            "id": 1,
+                            "name": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        "self_service": {
+            "self_service_description": "Install this profile to access resources on the corporate network",
+            "security_name": {
+                "removal_disallowed": "Never"
+            },
+            "self_service_icon": {
+                "filename": "WiFi.png",
+                "uri": "https://company.jamfcloud.com/iconservelet/?id=1",
+                "data": "string"
+            },
+            "feature_on_main_page": true,
+            "self_service_categories": [
+                {
+                    "category": {
+                        "id": 1,
+                        "name": "Applications",
+                        "priority": 9
+                    }
+                }
+            ]
+        }
+    }
+}

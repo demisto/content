@@ -1,25 +1,21 @@
 ACTI provides intelligence regarding security threats and vulnerabilities.
 This integration was integrated and tested with version 2.93.0 of ACTI
 
-## Configure ACTI Indicator Query on Cortex XSOAR
+## Configure ACTI Indicator Query in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ACTI Indicator Query.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | URL | True |
-    | API Token | The API Token to use for connection | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | URL | True |
+| API Token | The API Token to use for connection | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ip

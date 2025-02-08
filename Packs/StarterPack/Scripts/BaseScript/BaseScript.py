@@ -15,14 +15,14 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 
 from CommonServerUserPython import *
 
-from typing import Dict, Any
+from typing import Any
 
 
 ''' STANDALONE FUNCTION '''
 
 
 # TODO: REMOVE the following dummy function:
-def basescript_dummy(dummy: str) -> Dict[str, str]:
+def basescript_dummy(dummy: str) -> dict[str, str]:
     """Returns a simple python dict with the information provided
     in the input (dummy).
 
@@ -41,7 +41,7 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 
 
 # TODO: REMOVE the following dummy command function
-def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
+def basescript_dummy_command(args: dict[str, Any]) -> CommandResults:
 
     dummy = args.get('dummy', None)
     if not dummy:

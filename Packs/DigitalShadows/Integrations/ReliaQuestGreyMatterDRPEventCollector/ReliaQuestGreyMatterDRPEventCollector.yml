@@ -66,11 +66,11 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetchevents: true
 fromversion: 8.0.0
 supportlevelheader: xsoar
 marketplaces:
-  - marketplacev2
+- marketplacev2
 tests:
 - No tests (auto formatted)

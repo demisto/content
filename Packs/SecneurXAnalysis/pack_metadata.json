@@ -2,7 +2,7 @@
     "name": "SecneurX Analysis",
     "description": "Fully automated malware dynamic analysis sandboxing",
     "support": "partner",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.11",
     "author": "SecneurX Technologies",
     "created": "2022-07-25T12:00:00Z",
     "url": "https://www.secneurx.com/products",

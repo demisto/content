@@ -43,4 +43,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![SANS_Lessons_Learned](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/SANS_-_Lessons_Learned.png)
+![SANS_Lessons_Learned](../doc_files/SANS_-_Lessons_Learned.png)

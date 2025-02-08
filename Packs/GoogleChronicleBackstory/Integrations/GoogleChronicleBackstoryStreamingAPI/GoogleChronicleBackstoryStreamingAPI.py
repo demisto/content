@@ -41,7 +41,8 @@ SEVERITY_MAP = {
     'informational': 0.5,
     'low': 1,
     'medium': 2,
-    'high': 3
+    'high': 3,
+    'critical': 4
 }
 
 MESSAGES = {
@@ -54,8 +55,14 @@ MESSAGES = {
     "INVALID_ARGUMENTS": "Connection refused due to invalid arguments"
 }
 
+DETECTION_TYPES_MAP = {
+    'RULE_DETECTION': 'Rule Detection Alerts',
+    'GCTI_FINDING': 'Curated Rule Detection Alerts',
+}
+
 CHRONICLE_STREAM_DETECTIONS = '[CHRONICLE STREAM DETECTIONS]'
 SKIPPING_CURRENT_DETECTION = f'{CHRONICLE_STREAM_DETECTIONS} Skipping insertion of current detection since it already exists.'
+SKIPPING_DETECTION = 'Skipping current Detection: '
 
 ''' CLIENT CLASS '''
 
@@ -92,6 +99,17 @@ class Client:
             self.region = REGIONS['General']
         self.build_http_client()
 
+        filter_alert_type = argToList(params.get("alert_type", []))
+        self.filter_alert_type = [alert_type.strip() for alert_type in filter_alert_type if alert_type.strip()]
+        filter_severity = argToList(params.get("detection_severity", []))
+        self.filter_severity = [value.strip().lower() for value in filter_severity if value.strip()]
+        filter_rule_names = argToList(params.get("rule_names", []))
+        self.filter_rule_names = [rule_name.strip() for rule_name in filter_rule_names if rule_name.strip()]
+        self.filter_exclude_rule_names = argToBoolean(params.get("exclude_rule_names", False))
+        filter_rule_ids = argToList(params.get("rule_ids", []))
+        self.filter_rule_ids = [rule_id.strip() for rule_id in filter_rule_ids if rule_id.strip()]
+        self.filter_exclude_rule_ids = argToBoolean(params.get("exclude_rule_ids", False))
+
     def build_http_client(self):
         """
         Build an HTTP client which can make authorized OAuth requests.
@@ -111,6 +129,19 @@ class Client:
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def remove_space_from_args(args):
+    """
+    Return a new dictionary with leading and trailing whitespace removed from all string values.
+
+    :param args: Dictionary of arguments.
+    :return: New dictionary with whitespace-stripped string values.
+    """
+    for key in args.keys():
+        if isinstance(args[key], str):
+            args[key] = args[key].strip()
+    return args
 
 
 def validate_response(client: Client, url, method='GET', body=None):
@@ -161,7 +192,7 @@ def validate_response(client: Client, url, method='GET', body=None):
         raise ValueError(MESSAGES['INVALID_JSON_RESPONSE'])
 
 
-def validate_configuration_parameters(param: dict[str, Any], command: str) -> tuple[datetime | None]:
+def validate_configuration_parameters(param: dict[str, Any], command: str) -> Tuple[Optional[datetime]]:
     """
     Check whether entered configuration parameters are valid or not.
 
@@ -323,10 +354,25 @@ def convert_events_to_actionable_incidents(events: list) -> list:
     incidents = []
     for event in events:
         event["IncidentType"] = "DetectionAlert"
+
+        detection = event.get('detection', [])
+        rule_labels = []
+        for element in detection:
+            if isinstance(element, dict) and element.get('ruleLabels'):
+                rule_labels = element.get('ruleLabels', [])
+                break
+
+        event_severity = 'unspecified'
+        for label in rule_labels:
+            if label.get('key', '').lower() == 'severity':
+                event_severity = label.get('value', '').lower()
+                break
         incident = {
             'name': event['detection'][0]['ruleName'],
+            'occurred': event.get('detectionTime'),
             'details': json.dumps(event),
             'rawJSON': json.dumps(event),
+            'severity': SEVERITY_MAP.get(str(event_severity).lower(), 0),
         }
         incidents.append(incident)
 
@@ -547,6 +593,93 @@ def parse_stream(response: requests.Response) -> Iterator[Mapping[str, Any]]:
         }
 
 
+def filter_detections(detections: List, filter_alert_type: List, filter_severity: List, filter_rule_names: List,
+                      filter_exclude_rule_names: bool, filter_rule_ids: List, filter_exclude_rule_ids: bool):
+    """
+    Filters detections based on the provided parameters.
+
+    :type detections: List
+    :param detections: List of detections.
+    :type filter_alert_type: List
+    :param filter_alert_type: List of alert types.
+    :type filter_severity: List
+    :param filter_severity: List of severities.
+    :type filter_rule_names: List
+    :param filter_rule_names: List of rule names.
+    :type filter_exclude_rule_names: bool
+    :param filter_exclude_rule_names: Boolean to exclude rule names.
+    :type filter_rule_ids: List
+    :param filter_rule_ids: List of rule ids.
+    :type filter_exclude_rule_ids: bool
+    :param filter_exclude_rule_ids: Boolean to exclude rule ids.
+
+    :rtype: List
+    """
+    filtered_detections = []
+
+    for detection in detections:
+        detection_type = str(detection.get("type", ""))
+        detection_type = DETECTION_TYPES_MAP.get(detection_type.upper(), detection_type)
+        current_detection_identifier = {"id": detection.get("id", "")}
+
+        if filter_alert_type and (detection_type not in filter_alert_type):
+            demisto.debug(f"{SKIPPING_DETECTION}{current_detection_identifier} of type: {detection_type}")
+            continue
+
+        detection_info = detection.get("detection", [])
+        detection_severity = ""
+
+        if detection_info and isinstance(detection_info, list):
+            detection_info_ = detection_info[0]
+        else:
+            demisto.debug(f"{SKIPPING_DETECTION}{current_detection_identifier} because it has no detection information.")
+            continue  # If detection_info is None, then continue on next detection.
+
+        if detection_type == "Curated Rule Detection Alerts":
+            detection_severity = detection_info_.get("severity", "").lower()
+        else:
+            detection_rule_labels = []
+            for element in detection_info:
+                if isinstance(element, dict) and element.get('ruleLabels'):
+                    detection_rule_labels = element.get('ruleLabels', [])
+                    break
+
+            detection_severity = "unspecified"
+            for label in detection_rule_labels:
+                if label.get("key").lower() == "severity":
+                    detection_severity = label.get("value").lower()
+                    break
+
+        if filter_severity and (detection_severity not in filter_severity):
+            demisto.debug(f"{SKIPPING_DETECTION}{current_detection_identifier} with severity: {detection_severity}")
+            continue
+
+        detection_rule_name = detection_info_.get("ruleName", "")
+
+        # If filter_exclude_rule_names is True and the rule name is in the filter_rule_names list, skip it
+        if filter_rule_names and filter_exclude_rule_names and detection_rule_name in filter_rule_names:
+            demisto.debug(f"{SKIPPING_DETECTION}{current_detection_identifier} with Rule name: {detection_rule_name}")
+            continue
+        # If filter_exclude_rule_names is False and the rule name is not in the filter_rule_names list, skip it
+        if filter_rule_names and not filter_exclude_rule_names and detection_rule_name not in filter_rule_names:
+            demisto.debug(f"{SKIPPING_DETECTION}{current_detection_identifier} with Rule name: {detection_rule_name}")
+            continue
+
+        detection_rule_id = detection_info_.get("ruleId", "")
+        # If filter_exclude_rule_ids is True and the rule id is in the filter_rule_ids list, skip it
+        if filter_rule_ids and filter_exclude_rule_ids and detection_rule_id in filter_rule_ids:
+            demisto.debug(f"{SKIPPING_DETECTION}{current_detection_identifier} with Rule id: {detection_rule_id}")
+            continue
+        # If filter_exclude_rule_ids is False and the rule id is not in the filter_rule_ids list, skip it
+        if filter_rule_ids and not filter_exclude_rule_ids and detection_rule_id not in filter_rule_ids:
+            demisto.debug(f"{SKIPPING_DETECTION}{current_detection_identifier} with Rule id: {detection_rule_id}")
+            continue
+
+        filtered_detections.append(detection)
+
+    return filtered_detections
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -743,7 +876,14 @@ def stream_detection_alerts(
 
                 # Process the batch.
                 detections = batch["detections"]
+
                 demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} No. of detections fetched: {len(detections)}.")
+                # Filter the detections.
+                detections = filter_detections(detections, client.filter_alert_type, client.filter_severity,
+                                               client.filter_rule_names, client.filter_exclude_rule_names,
+                                               client.filter_rule_ids, client.filter_exclude_rule_ids)
+
+                demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} No. of detections received after filter: {len(detections)}.")
                 if not detections:
                     integration_context.update({'continuation_time': continuation_time})
                     set_integration_context(integration_context)
@@ -776,7 +916,6 @@ def stream_detection_alerts(
                 if sample_events:
                     integration_context.update({'sample_events': json.dumps(sample_events)})
                     set_integration_context(integration_context)
-                    demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
                 incidents = detection_incidents
                 incidents.extend(curatedrule_incidents)
                 integration_context.update({'continuation_time': continuation_time})
@@ -906,15 +1045,17 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
 def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
     # initialize configuration parameter
-    proxy = demisto.params().get('proxy')
-    disable_ssl = demisto.params().get('insecure', False)
+    params = remove_space_from_args(demisto.params())
+    remove_nulls_from_dictionary(params)
+    proxy = params.get('proxy')
+    disable_ssl = params.get('insecure', False)
     command = demisto.command()
 
     try:
-        (first_fetch_timestamp,) = validate_configuration_parameters(demisto.params(), command)
+        (first_fetch_timestamp,) = validate_configuration_parameters(params, command)
 
         # Initializing client Object
-        client_obj = Client(demisto.params(), proxy, disable_ssl)
+        client_obj = Client(params, proxy, disable_ssl)
 
         # trigger command based on input
         if command == 'test-module':

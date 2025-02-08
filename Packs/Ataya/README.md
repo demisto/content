@@ -43,4 +43,4 @@ The configuration instruction of Generic Webhook application and Ataya Harmony P
 
 _Check [Ataya Inc.](https://www.ataya.io/) for product details on Ataya Harmony Platform_
 
-[![Ataya Overview](https://www.ataya.io/wp-content/uploads/2022/12/Blue.svg)](https://www.ataya.io/)
+[![Ataya Overview](doc_files/Blue_svg.png)](https://www.ataya.io/)

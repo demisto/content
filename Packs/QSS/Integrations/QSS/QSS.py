@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, cast
+from typing import Any, cast
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -23,12 +23,12 @@ QSS_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 class Client(BaseClient):
 
-    def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
-                      max_results: Optional[int], start_time: Optional[int],
-                      api_key: Optional[str], false_positive: Optional[str]
-                      ) -> List[Dict[str, Any]]:
+    def search_alerts(self, alert_status: str | None, severity: str | None,
+                      max_results: int | None, start_time: int | None,
+                      api_key: str | None, false_positive: str | None
+                      ) -> list[dict[str, Any]]:
 
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         if api_key:
             request_params['apikey'] = api_key
@@ -81,10 +81,10 @@ def test_module(client: Client, first_fetch_time: int, api_key: str) -> str:
     return 'ok'
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], alert_status: Optional[str],
-                    min_severity: str, api_key: Optional[str], false_positive: Optional[str]
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run: dict[str, int],
+                    first_fetch_time: int | None, alert_status: str | None,
+                    min_severity: str, api_key: str | None, false_positive: str | None
+                    ) -> tuple[dict[str, int], list[dict]]:
 
     last_fetch = last_run.get('last_fetch', None)
 
@@ -94,7 +94,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         last_fetch = int(last_fetch)
 
     latest_created_time = cast(int, last_fetch)
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     alerts = client.search_alerts(
         alert_status=alert_status,
         max_results=max_results,
@@ -166,7 +166,7 @@ def main() -> None:
 
         api_key = demisto.params().get('apikey')
 
-        headers: Dict[str, Any] = {
+        headers: dict[str, Any] = {
             # No need for headers in the current version of integration
         }
         client = Client(

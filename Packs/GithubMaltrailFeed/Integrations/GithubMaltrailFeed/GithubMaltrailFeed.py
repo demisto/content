@@ -65,6 +65,9 @@ def fetch_indicators(client: Client, url: str, limit: int = None, params: dict =
     if params:
         feed_tags = argToList(params.get('feedTags', []))
         tlp_color = params.get('tlp_color')
+    else:
+        feed_tags = None
+        tlp_color = None
     response = client.http_request(url)
     indicators_list = []
     demisto.debug('Fetch of indicators started ###')
@@ -84,9 +87,8 @@ def fetch_indicators(client: Client, url: str, limit: int = None, params: dict =
                     else:
                         line = line.split(':')[0]
                     type_ = "IP"
-                elif type_ == "URL":
-                    if not line.startswith('http://') and not line.startswith('https://'):
-                        line = 'http://' + line
+                elif type_ == "URL" and not line.startswith('http://') and not line.startswith('https://'):
+                    line = 'http://' + line
                 raw_data = {
                     'value': line,
                     'type': type_,
@@ -104,9 +106,8 @@ def fetch_indicators(client: Client, url: str, limit: int = None, params: dict =
                     indicator_obj['fields']['trafficlightprotocol'] = tlp_color
                 indicators_list.append(indicator_obj)
                 # If limit is reached, break loop
-                if limit and isinstance(limit, int):
-                    if len(indicators_list) >= limit:
-                        break
+                if limit and isinstance(limit, int) and len(indicators_list) >= limit:
+                    break
     else:
         demisto.error(f"Error: {response.status_code} - {response.json()['message']}")
     return indicators_list

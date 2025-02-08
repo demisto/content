@@ -326,6 +326,9 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
         return command_result_list
 
     try:
+        readable_dict = {}
+        output = {}
+        demisto.debug("Initializing readable_dict & output")
 
         report_type = ""
         if result.get("reports", {}).get("dynamic", {}).get("enabled"):

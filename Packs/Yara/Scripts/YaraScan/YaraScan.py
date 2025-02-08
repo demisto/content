@@ -20,7 +20,7 @@ def main():
         res = demisto.executeCommand("getFilePath", {"id": item})
         if is_error(res):
             return_error(get_error(res))
-        if type(res[0]['Contents']) == dict:
+        if type(res[0]['Contents']) is dict:
             fileInfo = {
                 "name": res[0]['Contents']['name'],
                 "id": res[0]['Contents']['ID'],

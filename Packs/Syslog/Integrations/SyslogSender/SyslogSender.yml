@@ -186,7 +186,7 @@ script:
       - LOG_LOCAL7
     description: Sends a message to Syslog.
     name: syslog-send
-  dockerimage: demisto/syslog:1.0.0.99686
+  dockerimage: demisto/syslog:1.0.0.117331
   runonce: false
   script: '-'
   subtype: python3

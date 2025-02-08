@@ -1,18 +1,14 @@
 Generates mock reports and events for Workday IAM. Use these for testing and development.
 
-## Configure Workday_IAM_Event_Generator on Cortex XSOAR
+## Configure Workday_IAM_Event_Generator in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Workday_IAM_Event_Generator.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Long running instance | True |
-    | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;) | True |
-    | Incident type | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Long running instance | True |
+| Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;) | True |
+| Incident type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Create an instance
 
@@ -35,7 +31,7 @@ https://<server_hostname>/instance/execute/<instance_name>
 Use this URL to configure `Workday_IAM` integration and invoke *Fetch_incidents*
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### workday-generate-hire-event
 ***
@@ -159,4 +155,3 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 >The integration context has been initialized.
-

@@ -1,4 +1,3 @@
-from typing import Tuple
 
 import urllib3
 from CommonServerPython import *
@@ -88,7 +87,7 @@ def test_module(**kwargs):
     http_request('POST', 'url', kwargs.get('api_url'), kwargs.get('use_ssl'))
 
 
-def url_calculate_score(status: str) -> Tuple[int, str]:
+def url_calculate_score(status: str) -> tuple[int, str]:
     """
          Calculate DBot Score for the url command using url status.
 
@@ -107,7 +106,7 @@ def url_calculate_score(status: str) -> Tuple[int, str]:
     raise Exception("Got bad url status")
 
 
-def domain_calculate_score(blacklist: dict) -> Tuple[int, str]:
+def domain_calculate_score(blacklist: dict) -> tuple[int, str]:
     """
          Calculate DBot Score for the domain command using blacklist.
 
@@ -127,19 +126,16 @@ def domain_calculate_score(blacklist: dict) -> Tuple[int, str]:
             return Common.DBotScore.BAD, "The queried Domain is a known phishing domain"
         if spamhaus_dbl == 'botnet_cc_domain':
             return Common.DBotScore.BAD, "The queried Domain is a known botnet C&C domain"
-    if surbl:
-        if surbl == 'listed':
-            return Common.DBotScore.BAD, "The queried Domain is listed on SURBL"
-    if spamhaus_dbl:
-        if spamhaus_dbl == 'not listed':
-            return Common.DBotScore.NONE, "The queried Domain is not listed on Spamhaus DBL"
-    if surbl:
-        if surbl == 'not listed':
-            return Common.DBotScore.NONE, "The queried Domain is not listed on SURBL"
+    if surbl and surbl == 'listed':
+        return Common.DBotScore.BAD, "The queried Domain is listed on SURBL"
+    if spamhaus_dbl and spamhaus_dbl == 'not listed':
+        return Common.DBotScore.NONE, "The queried Domain is not listed on Spamhaus DBL"
+    if surbl and surbl == 'not listed':
+        return Common.DBotScore.NONE, "The queried Domain is not listed on SURBL"
     return Common.DBotScore.GOOD, "There is no information about Domain in the blacklist"
 
 
-def file_calculate_score() -> Tuple[int, str]:
+def file_calculate_score() -> tuple[int, str]:
     """
          Calculate DBot Score for the file command (always malicious).
 
@@ -574,6 +570,7 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
              Returns:
                  result (CommandResults): The CommandResults object representing the file command results.
         """
+    hash_type = ""
     if len(hash) == 32:
         hash_type = 'md5'
     elif len(hash) == 64:

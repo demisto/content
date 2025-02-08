@@ -13,11 +13,8 @@ To use this integration you must have a Service Account with one of the followin
 When clicking on **Reset the "last run" timestamp**, messages that were recently pulled (including pulls via classification mapper) might take a few minutes before they can be fetched again.
 Because the fetch ignores older messages once newer ones were fetched, it's recommended to wait a few minutes following a reset before trying to fetch again, to prevent older messages from being dropped.
 
-## Configure GooglePubSub on Cortex XSOAR
+## Configure GooglePubSub in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GooglePubSub.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -30,9 +27,8 @@ Because the fetch ignores older messages once newer ones were fetched, it's reco
 | default_project | Fetch Incidents Project ID | False |
 | default_max_msgs | Max Incidents Per Fetch | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gcp-pubsub-topics-list
 ***

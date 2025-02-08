@@ -414,7 +414,7 @@ script:
     description: Run a One-Step Action using a OneStepActionRequest. This request is used to start a One-Step Action run with additional information, such as prompt values.
     name: cherwell-run-one-step-action-on-business-object
     outputs: []
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   script: '-'
   type: python

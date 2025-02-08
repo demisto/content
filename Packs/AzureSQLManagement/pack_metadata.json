@@ -2,7 +2,7 @@
     "name": "Azure SQL Management",
     "description": "Microsoft Azure SQL Database is a managed cloud database provided as part of Microsoft Azure",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.2.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

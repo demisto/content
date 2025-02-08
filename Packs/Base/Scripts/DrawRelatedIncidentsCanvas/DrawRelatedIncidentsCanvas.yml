@@ -34,7 +34,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.86554
+dockerimage: demisto/sklearn:1.0.0.117326
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)

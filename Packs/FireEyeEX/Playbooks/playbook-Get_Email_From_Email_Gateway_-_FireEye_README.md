@@ -37,4 +37,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Get Email From Email Gateway - FireEye](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/FireEyeEX/doc_files/Get_Email_From_Email_Gateway_-_FireEye.png)
+![Get Email From Email Gateway - FireEye](../doc_files/Get_Email_From_Email_Gateway_-_FireEye.png)

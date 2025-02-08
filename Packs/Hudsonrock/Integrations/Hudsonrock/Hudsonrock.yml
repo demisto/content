@@ -103,7 +103,7 @@ script:
       description: Username reputation.
       type: string
     description: Send username reputation query.
-  dockerimage: demisto/python3:3.10.14.101217
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   subtype: python3
 fromversion: 6.10.0

@@ -15,4 +15,4 @@ As part of this pack, you will also get out-of-the-box incident fields, layouts 
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/impossible-traveler)_
 
-![Impossible_Traveler](https://raw.githubusercontent.com/demisto/content/3ea4e5a689c3aef028b01e8960588a6861a54c4e/Packs/ImpossibleTraveler/doc_files/Impossible_Traveler.png)
+![Impossible_Traveler](doc_files/Impossible_Traveler.png)

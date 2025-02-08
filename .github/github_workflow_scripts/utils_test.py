@@ -262,7 +262,7 @@ def test_exit_get_content_reviewers(
 
     with pytest.raises(SystemExit) as e:
         get_content_reviewers(content_roles)
-        assert e.type == SystemExit
+        assert e.type is SystemExit
         assert e.value.code == 1
 
 
@@ -337,7 +337,7 @@ def test_exit_get_doc_reviewer(
 
     with pytest.raises(ValueError) as e:
         get_doc_reviewer(content_roles)
-        assert e.type == ValueError
+        assert e.type is ValueError
 
 
 class TestGetContentRoles:

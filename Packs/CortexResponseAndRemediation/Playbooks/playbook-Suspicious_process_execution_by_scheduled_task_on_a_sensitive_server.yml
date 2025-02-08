@@ -1,0 +1,893 @@
+id: Suspicious process execution by scheduled task on a sensitive server
+version: -1
+name: Suspicious process execution by scheduled task on a sensitive server
+description: |-
+  This playbook handles "Suspicious process execution by scheduled task on a sensitive server" alerts.
+
+  Playbook Stages:
+
+  Analysis:
+
+  - Checks the suspicious process reputation.
+
+  Investigation:
+
+  - Searches for related XSIAM agent alerts to identify any malicious activity on the server.
+
+  Remediation:
+
+  If the suspicious process reputation is malicious, or if a related alert is found, the following remediation actions will be taken:
+
+  - Disable the scheduled task responsible for executing the process.
+  - Terminate the malicious process.
+  - Automatically Close the alert.
+tags:
+- TA0002 - Execution
+- T1053 - Scheduled Task/Job
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e27de70b-ada6-422e-81fe-6950a566b050
+    type: start
+    task:
+      id: e27de70b-ada6-422e-81fe-6950a566b050
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+    type: title
+    task:
+      id: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2d5e9ca0-0a58-419b-809f-408f67e88427
+    type: condition
+    task:
+      id: 2d5e9ca0-0a58-419b-809f-408f67e88427
+      version: -1
+      name: Check if the process has a malicious reputation
+      description: |
+        Determines the appropriate verdict based on the process reputation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.targetprocesssha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ababf146-0f9f-4621-8323-18c3256738ee
+    type: title
+    task:
+      id: ababf146-0f9f-4621-8323-18c3256738ee
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d6cce08c-349e-44db-807d-b6348886db73
+    type: title
+    task:
+      id: d6cce08c-349e-44db-807d-b6348886db73
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1af6e23e-8c24-4a76-8cc8-7959b9b6fb1f
+    type: regular
+    task:
+      id: 1af6e23e-8c24-4a76-8cc8-7959b9b6fb1f
+      version: -1
+      name: Get Incident related alerts
+      description: |
+        This task searches for Cortex XSIAM related alerts to the current incident.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8f551570-3805-49d7-879a-cae5facbe566
+    type: condition
+    task:
+      id: 8f551570-3805-49d7-879a-cae5facbe566
+      version: -1
+      name: Found any alerts indicating a malicious process execution?
+      description: Determines whether the alert contains agent alerts indicating that the alert was part of an attack pattern.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.sourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: TRAPS
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.CustomFields.categoryname
+            iscontext: true
+          right:
+            value:
+              simple: Malware
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 4ddeb53e-ca31-47cf-8a68-30b6fd21e81c
+    type: regular
+    task:
+      id: 4ddeb53e-ca31-47cf-8a68-30b6fd21e81c
+      version: -1
+      name: Close Alert - False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      closeNotes:
+        simple: False Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "Suspicious process execution by scheduled task on a sensitive server"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 408e1d97-c97e-439e-80d9-c4a4e8b20cfa
+    type: regular
+    task:
+      id: 408e1d97-c97e-439e-80d9-c4a4e8b20cfa
+      version: -1
+      name: Close Alert - True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious scheduled task detected
+      closeReason:
+        simple: Resolved - Handled by the playbook "Suspicious process execution by scheduled task on a sensitive server"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 8d184163-2d17-405f-8c45-17395f67790f
+    type: title
+    task:
+      id: 8d184163-2d17-405f-8c45-17395f67790f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 4441878b-6246-43e1-89e9-2d39529ab7d1
+    type: regular
+    task:
+      id: 4441878b-6246-43e1-89e9-2d39529ab7d1
+      version: -1
+      name: Run script to locate and disable the malicious scheduled task.
+      description: |
+        The script locates and disables the malicious scheduled task.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "37"
+      '#none#':
+      - "40"
+    scriptarguments:
+      commands:
+        simple: powershell -Command "$ActionPath = '${alert.targetprocesscmd.[0]}'; $tasks = Get-ScheduledTask | Where-Object { $_.Actions | Where-Object { $_.Execute -eq $ActionPath } }; if ($tasks -or $tasks.Count -gt 0) { $tasks | ForEach-Object { Disable-ScheduledTask -TaskPath $_.TaskPath -TaskName $_.TaskName; Write-Host 'The task ' + $_.TaskName + ' has been disabled successfully.' } } else { Write-Host 'No tasks found running the action at ' + $ActionPath }"
+      endpoint_ids:
+        simple: ${alert.agentid}
+      timeout:
+        simple: "120"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: c949acc9-c497-4818-8560-69c5c4044f39
+    type: condition
+    task:
+      id: c949acc9-c497-4818-8560-69c5c4044f39
+      version: -1
+      name: Check if the causality was blocked by the agent
+      description: Checks the incident's alerts for an alert that blocked the causality using the agent.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      Blocked:
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: Blocked
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.cid
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.actionprocessinstanceid
+                      iscontext: true
+                    ignorecase: true
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: a6a1e05b-54c2-4fbd-891c-4089c958040d
+    type: regular
+    task:
+      id: a6a1e05b-54c2-4fbd-891c-4089c958040d
+      version: -1
+      name: Terminate Causality - Action Process
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "38"
+      '#none#':
+      - "13"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.actionprocessinstanceid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 17d5b08e-68f9-4099-8de8-29df0394f8f9
+    type: regular
+    task:
+      id: 17d5b08e-68f9-4099-8de8-29df0394f8f9
+      version: -1
+      name: Disable the malicious scheduled task manually
+      description: |-
+        Dear Analyst,
+
+        The playbook did not successfully disable the scheduled task responsible for executing the suspicious process.
+
+        Please manually identify and disable the scheduled task with the following execution path: ${alert.targetprocesscmd.[0]}
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 95f5747a-f209-47b2-855c-9035ae5fa433
+    type: regular
+    task:
+      id: 95f5747a-f209-47b2-855c-9035ae5fa433
+      version: -1
+      name: Terminate Process Manually
+      description: "Dear Analyst,\n\nThe playbook couldn't terminate the process: ${alert.targetprocessname}\n\nPlease terminate the process manually if possible. "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 1e47b57c-e541-4f30-8de2-d17a7d4d22ed
+    type: regular
+    task:
+      id: 1e47b57c-e541-4f30-8de2-d17a7d4d22ed
+      version: -1
+      name: Check the process reputation
+      description: Checks the file reputation of the specified hash.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      file:
+        simple: ${alert.targetprocesssha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 684f7170-5892-477b-8eae-47b5d3143493
+    type: regular
+    task:
+      id: 684f7170-5892-477b-8eae-47b5d3143493
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 729a62c7-ddec-4f8f-829b-0ea4266ca887
+    type: condition
+    task:
+      id: 729a62c7-ddec-4f8f-829b-0ea4266ca887
+      version: -1
+      name: Has the script disabled the task successfully?
+      description: Verify if the script successfully disabled the task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: AnyMatch
+          left:
+            value:
+              simple: Core.ScriptResult.results.standard_output
+            iscontext: true
+          right:
+            value:
+              simple: '--------'
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 66bdcd2f-9d8b-435a-8b3a-b2896c694ac1
+    type: title
+    task:
+      id: 66bdcd2f-9d8b-435a-8b3a-b2896c694ac1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: edb87387-6638-4845-84b3-ead6433e8f54
+    type: title
+    task:
+      id: edb87387-6638-4845-84b3-ead6433e8f54
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 2d8044c7-5bce-4043-84f2-5044da195500
+    type: condition
+    task:
+      id: 2d8044c7-5bce-4043-84f2-5044da195500
+      version: -1
+      name: Analyst decision to proceed with remediation actions
+      description: Analyst review is required to determine whether to take remediation actions, such as disabling the scheduled task and terminating the process if malicious, or to close the alert as a false positive.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      False Positive:
+      - "5"
+      Remediation:
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: |
+          Dear Analyst,
+
+          The playbook did not identify any related alerts indicating malicious process execution, and the file reputation is not flagged as malicious.
+
+          Please review the alert to determine if remediation actions are necessary, such as disabling the scheduled task and terminating the process, or if the alert should be closed as a false positive.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Remediation
+      - False Positive
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_37_#error#": 0.53,
+      "27_13_Blocked": 0.34,
+      "29_38_#error#": 0.49,
+      "2_3_yes": 0.29,
+      "41_27_yes": 0.4,
+      "44_3_Remediation": 0.39,
+      "44_5_False Positive": 0.4,
+      "8_3_yes": 0.49,
+      "8_44_#default#": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 1560,
+        "x": 20,
+        "y": -220
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0
+marketplaces:
+- marketplacev2

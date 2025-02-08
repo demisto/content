@@ -34,7 +34,7 @@ from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAU
     DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_NAME, DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_KEYS, \
     MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY_ATTACHMENT, RESPONSE_LIST_ACTIVITY_NO_DATA
 
-from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE, \
+from test_data.result_constants import EXPECTED_FETCH_INCIDENT, EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE, \
     EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT, \
     EXPECTED_GET_INCIDENT, EXPECTED_CREATE_INCIDENT, EXPECTED_PERFORM_ACTION_ON_INCIDENT, \
     EXPECTED_LIST_WATCHLISTS, EXPECTED_GET_WATCHLIST, EXPECTED_CREATE_WATCHLIST, EXPECTED_ENTITY_IN_WATCHLIST, \
@@ -150,6 +150,7 @@ def test_fetch_securonix_incidents(mocker):
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'Emails with large File attachments: 100107'
     assert incidents[0].get('severity') == 1
+    assert json.loads(incidents[0].get('rawJSON')) == EXPECTED_FETCH_INCIDENT
 
 
 def test_fetch_securonix_incidents_with_default_severity(mocker):

@@ -1,0 +1,14 @@
+[MODEL:dataset = "shodan_banner_raw"]
+  alter
+    has_triggers_obj = object_create("has_triggers",has_triggers),
+    expires_obj = object_create("expires",expires),
+    expiration_obj = object_create("expiration",expiration),
+    triggers_obj = object_create("triggers",replex(triggers,"[\\\"]","")),
+    internal_ipv4 = arrayindex(regextract(json_extract(filters,"$.ip"),"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+| alter
+    xdm.alert.name = name,
+    xdm.session_context_id = id,
+    xdm.event.description = filters,
+    xdm.alert.description = object_merge(triggers_obj,has_triggers_obj,expires_obj,expiration_obj),
+    xdm.target.host.ipv4_addresses = arraycreate(internal_ipv4),
+    xdm.event.type = "NETWORK";

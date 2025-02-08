@@ -86,7 +86,7 @@ script:
       default: true
       description: OPSWAT scan id.
     description: Get OPSWAT sanitization result (Requires CDR feature).
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   subtype: python3
 tests:
 - No tests - no instance

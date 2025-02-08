@@ -83,8 +83,7 @@ There is no context output for this command.
 >### Syslog Transactions Events
 >|_time|acl_time|business_rule_count|client_transaction|cpu_time|sys_created_on|sys_id|source_log_type|
 >|---|---|---|---|---|---|---|---|
->| 2024-01-28T13:21:43Z | 3 | 1 | false | 6 | 2024-01-28 13:21:43 | 3 | syslog transaction |
->| 2024-01-28T13:21:43Z | 3 | 1 | false | 6 | 2024-01-28 13:21:43 | 3 | syslog transaction |
->| 2024-01-28T13:21:43Z | 3 | 1 | false | 6 | 2024-01-28 13:21:43 | 3 | syslog transaction |
->| 2024-01-28T13:21:43Z | 3 | 1 | false | 6 | 2024-01-28 13:21:43 | 3 | syslog transaction |
-
+>| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
+>| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
+>| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
+>| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |

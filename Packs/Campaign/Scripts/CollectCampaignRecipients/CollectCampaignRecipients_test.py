@@ -79,4 +79,4 @@ def test_collect_campaign_recipients_no_demisto_args(mocker):
     with pytest.raises(SystemExit) as exc_info:
         main()
 
-    assert exc_info.type == SystemExit, 'SystemExit should occurred as return_error was called'
+    assert exc_info.type is SystemExit, 'SystemExit should occurred as return_error was called'

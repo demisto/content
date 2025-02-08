@@ -1,36 +1,32 @@
 Veeam Backup & Replication REST API allows you to query information about Veeam Backup & Replication entities and perform operations with these entities using HTTP requests and standard HTTP methods.
 This integration was integrated and tested with version 1.1-rev2 of VBR REST API.
 
-## Configure Veeam Backup & Replication REST API on Cortex XSOAR
+## Configure Veeam Backup & Replication REST API in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Veeam Backup & Replication REST API.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Username |  | True |
-    | Password |  | True |
-    | Resource URL |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | First fetch time |  | False |
-    | Fetch configuration backup events |  | False |
-    | Days Since Last Configuration Backup | An incident will be created If the last successful configuration backup is older than the specified value. | False |
-    | Fetch backup repository events |  | False |
-    | Backup Repository Free Space (GB) | An incident will be created If the backup repository free space is less than the specified value. | False |
-    | Backup Repository Events Per Request | The maximum number of backup repository events that can be fetched during command execution. | False |
-    | Fetch malware events |  | False |
-    | Malware Events Per Request | The maximum number of malware events that can be fetched during command execution. | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Username |  | True |
+| Password |  | True |
+| Resource URL |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| First fetch time |  | False |
+| Fetch configuration backup events |  | False |
+| Days Since Last Configuration Backup | An incident will be created If the last successful configuration backup is older than the specified value. | False |
+| Fetch backup repository events |  | False |
+| Backup Repository Free Space (GB) | An incident will be created If the backup repository free space is less than the specified value. | False |
+| Backup Repository Events Per Request | The maximum number of backup repository events that can be fetched during command execution. | False |
+| Fetch malware events |  | False |
+| Malware Events Per Request | The maximum number of malware events that can be fetched during command execution. | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### veeam-vbr-create-malware-event

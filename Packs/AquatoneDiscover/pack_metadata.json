@@ -2,7 +2,7 @@
     "name": "AquatoneDiscover (Deprecated)",
     "description": "Deprecated. Use ***AquatoneDiscover*** script from ***Common Scripts** pack instead.\n. aquatone-discover will find the targets nameservers and shuffle DNS lookups between them. Should a lookup fail on the target domains nameservers, aquatone-discover will fall back to using Google public DNS servers to maximize discovery.",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

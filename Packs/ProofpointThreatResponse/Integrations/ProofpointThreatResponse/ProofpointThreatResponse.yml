@@ -723,7 +723,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.11.11.1940698
 tests:
 - No test - beta_integration
 beta: true

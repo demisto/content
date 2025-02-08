@@ -42,4 +42,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![ACTI Indicator Enrichment](https://user-images.githubusercontent.com/40510780/161070840-5246a1bc-b8e9-46f6-83d9-2136a2ee5ca5.png)
+![ACTI Indicator Enrichment](../doc_files/ACTI_Incident_Enrichment.png)

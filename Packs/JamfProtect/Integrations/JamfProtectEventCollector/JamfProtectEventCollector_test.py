@@ -124,49 +124,57 @@ def test_calculate_fetch_dates_without_arguments(client):
 @pytest.mark.parametrize("with_alert_next_page", [True, False])
 @pytest.mark.parametrize("with_audit_next_page", [True, False])
 @pytest.mark.parametrize("with_computer_next_page", [True, False])
+@pytest.mark.parametrize("fetch_all_computers", [True, False])
 def test_nextTrigger(
     with_alert_next_page: bool,
     with_audit_next_page: bool,
     with_computer_next_page: bool,
+    fetch_all_computers: bool,
     mocker: MockerFixture
 ):
     """
     Given: A mock JamfProtect client.
-    When: Running fetch_events with different next pages for alerts, audits and computers.
+    When: Running fetch_events with different next pages for alerts, audits, and computers,
+        and different values of fetch_all_computers.
     Then: Ensure the nextTrigger is set to 0 when there are no next pages, and the next page is set when there are next pages.
     """
     from JamfProtectEventCollector import fetch_events, Client
     mocked_alerts = util_load_json('test_data/raw_alerts.json')
     mocked_audits = util_load_json('test_data/raw_audits.json')
     mocked_computers = util_load_json('test_data/raw_computers.json')
+
     if with_alert_next_page:
         mocked_alerts["data"]["listAlerts"]["pageInfo"]["next"] = "example_next_page"
     if with_audit_next_page:
         mocked_audits["data"]["listAuditLogsByDate"]["pageInfo"]["next"] = "example_next_page"
     if with_computer_next_page:
         mocked_computers["data"]["listComputers"]["pageInfo"]["next"] = "example_next_page"
+
     mocker.patch.object(Client, '_http_request',
                         side_effect=[mocked_alerts, mocked_audits, mocked_computers])
     mocker.patch.object(Client, '_login', return_value="ExampleToken")
     client = Client(base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID,
                     client_password=MOCK_CLIENT_PASSWORD)
 
-    _, _, _, next_run = fetch_events(client, 1, 1, 1)
+    _, _, _, next_run = fetch_events(client, 1, 1, 1, fetch_all_computers)
+
     if with_alert_next_page:
         assert next_run.get("nextTrigger") == "0"
-        assert next_run.get("alert").get("next_page") == "example_next_page"
+        assert next_run.get("alert", {}).get("next_page") == "example_next_page"
     if not with_alert_next_page:
-        assert not next_run.get("alert").get("next_page")
+        assert not next_run.get("alert", {}).get("next_page")
+
     if with_audit_next_page:
         assert next_run.get("nextTrigger") == "0"
-        assert next_run.get("audit").get("next_page") == "example_next_page"
+        assert next_run.get("audit", {}).get("next_page") == "example_next_page"
     if not with_audit_next_page:
-        assert not next_run.get("audit").get("next_page")
+        assert not next_run.get("audit", {}).get("next_page")
+
     if with_computer_next_page:
         assert next_run.get("nextTrigger") == "0"
-        assert next_run.get("computer").get("next_page") == "example_next_page"
-    if not with_computer_next_page:
-        assert not next_run.get("computer").get("next_page")
+        assert next_run.get("computer", {}).get("next_page") == "example_next_page"
+    else:
+        assert not next_run.get("computer", {}).get("next_page")
 
 
 def test_next_trigger(mocker):
@@ -182,4 +190,211 @@ def test_next_trigger(mocker):
                     client_password=MOCK_CLIENT_PASSWORD)
     mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=([], {}))
     mocker.patch('JamfProtectEventCollector.get_events_audit_type', return_value=([], {}))
-    fetch_events(client, 1, 1, 1)
+    fetch_events(client, 1, 1, 1, False)
+
+
+@freeze_time(MOCK_TIME_UTC_NOW)
+@pytest.mark.parametrize("fetch_all_computers", [True, False])
+def test_get_events_computer_type(mocker: MockerFixture, client, fetch_all_computers):
+    """
+    Test get_events_computer_type function with fetch_all_computers True and False.
+
+    Ensures the _http_request is called with the correct parameters.
+    """
+    from JamfProtectEventCollector import get_events_computer_type
+
+    events, new_last_run = get_events_computer_type(
+        client=client,
+        start_date='',
+        max_fetch=200,
+        last_run={},
+        fetch_all_computers=fetch_all_computers,
+    )
+
+    assert client._http_request.call_count > 0  # Use the existing client fixture for assertion
+    assert len(events) > 0
+    assert "last_fetch" in new_last_run
+
+    # Extract the actual query sent in the HTTP request
+    called_args = client._http_request.call_args.kwargs
+    actual_query = called_args["json_data"]["query"]
+    actual_variables = called_args["json_data"]["variables"]
+
+    # Assertions for query content
+    if fetch_all_computers:
+        assert "$created: AWSDateTime" not in actual_query
+    else:
+        assert "$created: AWSDateTime" in actual_query
+        assert "created" in actual_variables
+
+
+def mock_set_last_run(last_run):
+    return last_run
+
+
+def test_alerts_and_next_page_audits_and_next_page(mocker):
+    from JamfProtectEventCollector import main, parse_response
+    mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": MOCK_TIME_UTC_NOW
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": MOCK_TIME_UTC_NOW
+        },
+        "nextTrigger": "0"
+    }
+    mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
+        (parse_response(util_load_json('test_data/raw_alerts.json'))[1], 'next_page_alerts'),
+        (parse_response(util_load_json('test_data/raw_audits.json'))[1], 'next_page_audits'),
+    ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
+
+
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_no_alerts_and_no_next_page_no_audits_and_no_next_page(mocker):
+    from JamfProtectEventCollector import main
+    mock_last_run = {
+        "alert": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+        },
+        "audit": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+        },
+        "computer": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
+        }
+    }
+    mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
+        ([], ''),
+        ([], ''),
+    ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
+
+
+def test_alerts_and_no_next_page_audits_and_no_next_page(mocker):
+    from JamfProtectEventCollector import main, parse_response
+    mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+            "next_page": "next_page_audits"
+        },
+        "computer": {
+            "last_fetch": MOCK_TIME_UTC_NOW
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": "2024-01-01T14:33:12.000000Z",
+        },
+        "audit": {
+            "last_fetch": "2024-01-01T14:17:38.552096Z",
+        },
+        "computer": {
+            "last_fetch": MOCK_TIME_UTC_NOW
+        }
+    }
+    mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
+        (parse_response(util_load_json('test_data/raw_alerts.json'))[1], ''),
+        (parse_response(util_load_json('test_data/raw_audits.json'))[1], ''),
+    ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
+
+
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_no_alerts_and_next_page_no_audits_and_no_next_page(mocker):
+    from JamfProtectEventCollector import main
+    mock_last_run = {
+        "alert": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+            "next_page": "next_page_alerts"
+        },
+        "audit": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+        },
+        "computer": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
+        }
+    }
+    expected_mock_last_run = {
+        "alert": {
+            "last_fetch": MOCK_TIME_UTC_NOW,
+        },
+        "audit": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z",
+        },
+        "computer": {
+            "last_fetch": "2023-01-01T00:00:00.000000Z"
+        }
+    }
+    mocker.patch('JamfProtectEventCollector.get_events', side_effect=[
+        ([], 'next_page_alerts'),
+        ([], ''),
+    ])
+    mocker.patch.object(demisto, 'params', return_value={'fetch_all_computers': False})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mock_next_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
+    mocker.patch('JamfProtectEventCollector.send_events_to_xsiam')
+
+    main()
+
+    assert mock_next_run.call_args.args[0] == expected_mock_last_run
