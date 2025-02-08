@@ -37,7 +37,7 @@ DEFAULT_URGENCY_SCORE_MEDIUM_THRESHOLD = 50
 DEFAULT_URGENCY_SCORE_HIGH_THRESHOLD = 80
 MAX_MIRRORING_LIMIT = 5000
 MAX_OUTGOING_NOTE_LIMIT = 8000
-PACK_VERSION = get_pack_version(pack_name='Vectra XDR') or '1.0.0'
+PACK_VERSION = "1.0.11"  # temp replacement for the get_pack_version()
 UTM_PIVOT = f"?pivot=Vectra-XSOAR-{PACK_VERSION}"
 EMPTY_ASSIGNMENT = [{"id": "", "date_assigned": "", "date_resolved": "", "assigned_to": {"username": ""},
                      "resolved_by": {"username": ""}, "assigned_by": {"username": ""}, "outcome": {"title": ""}}]
@@ -243,6 +243,7 @@ class VectraClient(BaseClient):
             # set new access token
             set_integration_context({'access_token': access_token, 'refresh_token': refresh_token})
             return access_token
+        return ''
 
     def list_users_request(self, username: Optional[str], role=Optional[str],
                            last_login_timestamp=Optional[datetime]) -> dict:
@@ -794,7 +795,7 @@ def validate_list_entity_detections_args(args: dict[Any, Any]):
     if entity_type not in VALID_ENTITY_TYPE:
         raise ValueError(ERRORS['INVALID_COMMAND_ARG_VALUE'].format('entity_type', ', '.join(VALID_ENTITY_TYPE)))
 
-    if detection_category and detection_category not in DETECTION_CATEGORY_TO_ARG.keys():
+    if detection_category and detection_category not in DETECTION_CATEGORY_TO_ARG:
         raise ValueError(ERRORS['INVALID_COMMAND_ARG_VALUE'].format('detection_category',
                                                                     ', '.join(DETECTION_CATEGORY_TO_ARG.keys())))
 
@@ -3179,25 +3180,24 @@ def update_remote_system_command(client: VectraClient, args: dict) -> str:
                                           tags=xsoar_tags)
     # For Closing notes
     delta_keys = parsed_args.delta.keys()
-    if 'closingUserId' in delta_keys:
+    if 'closingUserId' in delta_keys and parsed_args.incident_changed and parsed_args.inc_status == IncidentStatus.DONE:
         # Check if incident status is Done
-        if parsed_args.incident_changed and parsed_args.inc_status == IncidentStatus.DONE:
-            close_notes = parsed_args.data.get('closeNotes', '')
-            close_reason = parsed_args.data.get('closeReason', '')
-            close_user_id = parsed_args.data.get('closingUserId', '')
+        close_notes = parsed_args.data.get('closeNotes', '')
+        close_reason = parsed_args.data.get('closeReason', '')
+        close_user_id = parsed_args.data.get('closingUserId', '')
 
-            if len(close_notes) > MAX_OUTGOING_NOTE_LIMIT:
-                demisto.info(
-                    f"Skipping outgoing mirroring for closing notes with XSOAR Incident ID {xsoar_incident_id}, "
-                    f"because the note length exceeds {MAX_OUTGOING_NOTE_LIMIT} characters.")
-            else:
-                closing_note = f'[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\n' \
-                               f'Close Reason: {close_reason}\n\n' \
-                               f'Closed By: {close_user_id}\n\n' \
-                               f'Close Notes: {close_notes}'
-                demisto.debug(f'Closing Comment: {closing_note}')
-                client.add_entity_note_request(entity_id=mirror_entity_id, entity_type=remote_entity_type,
-                                               note=closing_note)
+        if len(close_notes) > MAX_OUTGOING_NOTE_LIMIT:
+            demisto.info(
+                f"Skipping outgoing mirroring for closing notes with XSOAR Incident ID {xsoar_incident_id}, "
+                f"because the note length exceeds {MAX_OUTGOING_NOTE_LIMIT} characters.")
+        else:
+            closing_note = f'[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\n' \
+                f'Close Reason: {close_reason}\n\n' \
+                f'Closed By: {close_user_id}\n\n' \
+                f'Close Notes: {close_notes}'
+            demisto.debug(f'Closing Comment: {closing_note}')
+            client.add_entity_note_request(entity_id=mirror_entity_id, entity_type=remote_entity_type,
+                                           note=closing_note)
 
     return remote_entity_id
 
