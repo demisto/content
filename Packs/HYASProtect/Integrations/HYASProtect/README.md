@@ -4,21 +4,17 @@ HYAS Protect is a generational leap forward utilizing authoritative knowledge of
 Use the HYAS Protect integration to get the verdict information for FQDN, IP Address and NameServer.
 This integration was integrated and tested with version 1.0.0 of HYAS Protect.
 
-## Configure HYAS Protect on Cortex XSOAR
+## Configure HYAS Protect in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HYAS Protect.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | HYAS Protect Api Key | HYAS Protect API Key. | True |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Use system proxy settings | Use system proxy settings. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| HYAS Protect Api Key | HYAS Protect API Key. | True |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
+| Use system proxy settings | Use system proxy settings. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### hyas-get-domain-verdict
 ***
@@ -259,4 +255,3 @@ Returns verdict information for the provided Nameserver.
 >|Verdict|
 >|---|
 >| ALLOW |
-

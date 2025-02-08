@@ -24,7 +24,7 @@ script:
   - arguments: []
     description: Get News from all outlets
     name: get-news-generic-all
-  dockerimage: demisto/bs4-py3:1.0.0.102502
+  dockerimage: demisto/bs4-py3:1.0.0.117152
   script: ''
   subtype: python3
   type: python

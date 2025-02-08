@@ -49,11 +49,11 @@ script:
     - description: |-
         Sorts the result before applying take and skip.
         Can be any property name of the alert object.
-        For example: "insertionDate Descending"
+        For example: "insertionDate Descending".
       name: sort
-    - description: 'The start of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z'
+    - description: 'The start of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z.'
       name: start_date
-    - description: 'The end of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z'
+    - description: 'The end of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z.'
       name: end_date
     description: Returns all alerts in the system.
     name: fidelis-endpoint-list-alerts
@@ -1243,7 +1243,7 @@ script:
     - contextPath: FidelisEndpoint.Query.EntityType
       description: Entity type.
       type: Number
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   script: '-'

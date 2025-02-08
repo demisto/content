@@ -28,7 +28,7 @@ args:
   predefined:
   - 'True'
   - 'False'
-  description: Use system proxy settings
+  description: Use system proxy settings.
   auto: PREDEFINED
   defaultValue: 'False'
 - name: insecure
@@ -63,4 +63,4 @@ scripttarget: 0
 tests:
 - "No test"
 fromversion: 6.5.0
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.11.10.116949

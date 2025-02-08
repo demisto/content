@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import urllib3
-from typing import Any, Dict, Tuple, List, Optional, cast
+from typing import Any, cast
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -81,7 +81,7 @@ class Client(BaseClient):
         Returns:
             list: list of RunZero system event logs as dicts.
         """
-        request_params: Dict[str, str] = {"search": search_query}
+        request_params: dict[str, str] = {"search": search_query}
 
         return self.http_request(
             method='GET',
@@ -124,7 +124,7 @@ def sort_events(events: list) -> list:
 
 def get_events_command(
     client: Client, query_string: str, limit: int
-) -> Tuple[List[Dict[str, Any]], CommandResults]:
+) -> tuple[list[dict[str, Any]], CommandResults]:
     """
     Gets all the events from the RunZero API for each log type.
     Args:
@@ -134,7 +134,7 @@ def get_events_command(
         list: A list containing the events
         CommandResults: A CommandResults object that contains the events in a table format.
     """
-    events: List[Dict] = []
+    events: list[dict] = []
     hr = ''
     temp_events = client.fetch_system_event_logs(query_string)
     temp_events = sort_events(temp_events)
@@ -157,8 +157,8 @@ def add_time_to_event(event: dict):
     return event
 
 
-def fetch_events(client: Client, max_results: int, last_run: Dict[str, int],
-                 first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_events(client: Client, max_results: int, last_run: dict[str, int],
+                 first_fetch_time: int | None) -> tuple[dict[str, int], list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that events are fetched only onces and no events are missed.
@@ -185,7 +185,7 @@ def fetch_events(client: Client, max_results: int, last_run: Dict[str, int],
 
     latest_created_time = cast(int, last_fetch)
 
-    events: List[Dict[str, Any]] = []
+    events: list[dict[str, Any]] = []
     search_query = f'created_at:>{latest_created_time}'
     temp_events = client.fetch_system_event_logs(
         search_query=search_query

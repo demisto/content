@@ -1,6 +1,10 @@
 The integration uses the Panorama XML API.
-To obtain an API Key, run the following REST command and copy the key:
-https://[PanoramaIP]/api/?type=keygen&user=[user]&password=[password]
+To obtain an API key, run the following CURL command and copy the key:
+```shell
+curl -H "Content-Type: application/x-www-form-urlencoded" -X POST https://[PanoramaIP]/api/\?type\=keygen -d 'user=[user]&password=[password]'
+```
+
+***Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.***
  
 For more information, visit the [Palo Alto Networks documentation](https://docs.paloaltonetworks.com/panorama).
  

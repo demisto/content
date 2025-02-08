@@ -2,7 +2,7 @@
     "name": "HackerOne",
     "description": "HackerOne is a vulnerability coordination and bug bounty platform that connects businesses with penetration testers and cyber-security researchers.",
     "support": "partner",
-    "currentVersion": "1.0.14",
+    "currentVersion": "1.0.15",
     "author": "HackerOne",
     "url": "https://docs.hackerone.com/",
     "email": "support@hackerone.com",

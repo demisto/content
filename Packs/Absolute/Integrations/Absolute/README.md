@@ -1,23 +1,22 @@
 Absolute is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints.
 This integration was integrated and tested with the API version 1.7 of Absolute.
 
-## Configure Absolute on Cortex XSOAR
+## Configure Absolute in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Absolute.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your Absolute server URL |  | True |
-    | Token ID | Token ID and Secret Key. | True |
-    | Secret Key |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description**          | **Required** |
+| --- |--------------------------| --- |
+| Your Absolute server URL |                          | True |
+| Token ID | Token ID and Secret Key. | True |
+| Secret Key |                          | True |
+| Trust any certificate (not secure) |                          | False |
+| Use system proxy settings |                          | False |
+| Events Fetch Interval |        Only in XSIAM                  | False |
+| Max number of events per fetch |     Only in XSIAM                     | False |
+| Fetch Events | Only in XSIAM            | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### absolute-custom-device-field-list
 ***
@@ -951,6 +950,28 @@ Gets a list of devices geo locations records and their corresponding data that m
 #### Human Readable Output
 
 >No device locations found in Absolute for the given filters: {'device_ids': '1234'}
+
+
+### absolute-device-get-events
+
+***
+Retrieves a list of events from the Absolute device instance.
+
+#### Base Command
+
+`absolute-device-get-events`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                        | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
+| start_date | Filters the results to the records on or after the start date.                                                                                         | Optional |
+| end_date | Filters the results to the records until the end date.                                                                                                 | Optional |
+| limit | The maximum number of records to return per page. Note, this may be restricted by fixed system limits.                                                 | Optional | 
+
+#### Command Example
+```!absolute-device-get-events start_date="one minute ago" end_date="now" limit=10```
 
 
 ### Creating a filtering and sorting query

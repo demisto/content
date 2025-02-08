@@ -2,7 +2,7 @@
     "name": "Microsoft Graph Applications",
     "description": "Use this pack to manage connected applications and services",
     "support": "xsoar",
-    "currentVersion": "1.2.47",
+    "currentVersion": "1.2.48",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

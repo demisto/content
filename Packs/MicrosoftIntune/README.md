@@ -14,7 +14,7 @@ In order to use the collector, you need to use the following option:
   - [Collect Events from Vendor](#collect-events-from-vendor)
     - [Azure Event Hub Integration](#azure-event-hub-integration)
 
-![MSFT_Intune_Collector_Settings](https://raw.githubusercontent.com/demisto/content/cbecb05aa723b2beba6081e91f445a870997c82d/Packs/MicrosoftIntune/doc_files/MSFT_Intune_Collector_Settings.png)
+![MSFT_Intune_Collector_Settings](doc_files/MSFT_Intune_Collector_Settings.png)
 
 To collect logs from Microsoft Intune, use the information described [here](https://learn.microsoft.com/en-us/mem/intune/fundamentals/review-logs-using-azure-monitor) to configure log streaming from Microsoft Intune to Azure Event Hub.
 

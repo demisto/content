@@ -2,15 +2,23 @@
     "name": "Brandefense",
     "description": "Branddefense is looking for data for each brand and collecting information and alarming the related brand about dark web finding (credentials, similar domain names etc.) related to the firm.With Brandefense integration it is possible to automate Brand related alarms and breach notifications, actions and much more.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "asimsarpkurt",
     "url": "https://app.brandefense.io/",
     "email": "asimsarpkurt@gmail.com",
     "created": "2023-12-25T14:59:45Z",
-    "categories": ["Network Security"],
-    "tags": ["Security"],
-    "useCases": ["Breach Notification"],
-    "keywords": ["Threat Intelligence"],
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Security"
+    ],
+    "useCases": [
+        "Breach Notification"
+    ],
+    "keywords": [
+        "Threat Intelligence"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

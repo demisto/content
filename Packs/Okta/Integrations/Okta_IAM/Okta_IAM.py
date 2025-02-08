@@ -114,10 +114,10 @@ class Client(BaseClient):
         )
 
         base_properties = res.get('definitions', {}).get('base', {}).get('properties', {})
-        okta_fields.update({k: base_properties[k].get('title') for k in base_properties.keys()})
+        okta_fields.update({k: base_properties[k].get('title') for k in base_properties})
 
         custom_properties = res.get('definitions', {}).get('custom', {}).get('properties', {})
-        okta_fields.update({k: custom_properties[k].get('title') for k in custom_properties.keys()})
+        okta_fields.update({k: custom_properties[k].get('title') for k in custom_properties})
 
         return okta_fields
 
@@ -489,7 +489,7 @@ def get_user_command(client, args, mapper_in, mapper_out):
             user_profile.set_result(
                 action=IAMActions.GET_USER,
                 success=True,
-                active=False if okta_user.get('status') == DEPROVISIONED_STATUS else True,
+                active=okta_user.get('status') != DEPROVISIONED_STATUS,
                 iden=okta_user.get('id'),
                 email=okta_user.get('profile', {}).get('email'),
                 username=okta_user.get('profile', {}).get('login'),
@@ -559,7 +559,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
                 user_profile.set_result(
                     action=IAMActions.CREATE_USER,
                     success=True,
-                    active=False if created_user.get('status') == DEPROVISIONED_STATUS else True,
+                    active=created_user.get('status') != DEPROVISIONED_STATUS,
                     iden=created_user.get('id'),
                     email=created_user.get('profile', {}).get('email'),
                     username=created_user.get('profile', {}).get('login'),
@@ -607,7 +607,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                     user_profile.set_result(
                         action=IAMActions.UPDATE_USER,
                         success=True,
-                        active=False if okta_user.get('status') == DEPROVISIONED_STATUS else True,
+                        active=okta_user.get('status') != DEPROVISIONED_STATUS,
                         iden=updated_user.get('id'),
                         email=updated_user.get('profile', {}).get('email'),
                         username=updated_user.get('profile', {}).get('login'),
@@ -841,6 +841,7 @@ def get_group_command(client, args):
                 generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
                                                     errorMessage="Group Not Found", details=res_json)
             else:
+                generic_iam_context = OutputContext()
                 group_search_result = res_json
         else:
             generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,

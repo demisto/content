@@ -114,6 +114,12 @@ configuration:
   section: Collect
   required: false
   advanced: true
+- display: OFP Detection fetch query
+  name: ofp_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -172,7 +178,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. Note that the "On-Demand Scans Detection" option is not available in the legacy version.
+  additionalinfo: |-
+   Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
+   2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
   - Endpoint Incident
@@ -181,6 +189,7 @@ configuration:
   - Indicator of Attack
   - Mobile Detection
   - On-Demand Scans Detection
+  - OFP Detection
 - additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
   display: 'Reopen Statuses'
@@ -204,7 +213,7 @@ configuration:
   advanced: true
   required: false
 - additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
-  defaultvalue: 1
+  defaultvalue: 2
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
   type: 0
@@ -5054,7 +5063,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.117220
   isfetch: true
   ismappable: true
   isremotesyncin: true

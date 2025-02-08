@@ -1,0 +1,19 @@
+{
+  "trigger_id": "f7f6758a6905f037fec8a37308f1739a",
+  "playbook_id": "Suspicious process execution by scheduled task on a sensitive server",
+  "suggestion_reason": "Recommended for the 'Suspicious process execution by scheduled task on a sensitive server' alert",
+  "description": "This trigger is responsible for handling 'Suspicious process execution by scheduled task on a sensitive server' alert",
+  "trigger_name": "Suspicious process execution by scheduled task on a sensitive server",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Suspicious process execution by scheduled task on a sensitive server"
+        }
+      ]
+    }
+  }
+}

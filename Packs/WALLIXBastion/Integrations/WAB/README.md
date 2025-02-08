@@ -1,28 +1,23 @@
 Centralized Control and Monitoring of Privileged Access to Sensitive Assets.
 This integration was integrated and tested with version 12 of WALLIX Bastion.
 
-## Configure WALLIX Bastion on Cortex XSOAR
+## Configure WALLIX Bastion in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for WALLIX Bastion.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. localhost) | True |
-    | API Auth User | True |
-    | API Auth Key or user password | False |
-    | Password authentication mode (set false if you provided an API key) | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | API version to use. Leave the field empty to use the latest API version available. | False |
-    | API requests timeout in seconds. The default value is 60 seconds. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. localhost) | True |
+| API Auth User | True |
+| API Auth Key or user password | False |
+| Password authentication mode (set false if you provided an API key) | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| API version to use. Leave the field empty to use the latest API version available. | False |
+| API requests timeout in seconds. The default value is 60 seconds. | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### wab-add-session-target-to-target-group
@@ -124,6 +119,41 @@ category: Timeframes.
 #### Context Output
 
 There is no context output for this command.
+
+### wab-add-global-domain
+
+***
+Add a global domain
+category: Domains
+
+#### Base Command
+
+`wab-add-global-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_post_domain_name | The domain name. /:*?"&lt;&gt;\|@ are forbidden. | Required | 
+| domain_post_domain_real_name | The domain name used for connection to a target. | Optional | 
+| domain_post_description | The domain description. | Optional | 
+| domain_post_enable_password_change | Enable the change of password on this domain. Possible values are: true, false. | Optional | 
+| domain_post_kerberos_kdc | IP address or hostname the KDC. | Optional | 
+| domain_post_kerberos_realm | The Kerberos realm. | Optional | 
+| domain_post_kerberos_port | The Kerberos port (88 by default). | Optional | 
+| domain_post_password_change_policy | The name of password change policy for this domain. (enter null for null value). | Optional | 
+| domain_post_password_change_plugin | The name of plugin used to change passwords on this domain. (enter null for null value). | Optional | 
+| domain_post_password_change_plugin_parameters | Parameters for the plugin used to change credentials, formatted in json: {\"key\":\"value\"}. | Optional | 
+| domain_post_ca_private_key | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | Optional | 
+| domain_post_passphrase | The passphrase that was used to encrypt the private key. If provided, it must be between 4 and 1024 characters long. | Optional | 
+| domain_post_vault_plugin | The name of vault plugin used to manage all accounts defined on this domain. (enter null for null value). | Optional | 
+| domain_post_vault_plugin_parameters | Parameters for the vault plugin, formatted in json: {\"key\":\"value\"}. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_global_domain.id | String | id of the created object. | 
 
 ### wab-get-account-references
 
@@ -373,6 +403,114 @@ category: Accounts
 
 There is no context output for this command.
 
+### wab-get-application-account-credentials
+
+***
+Get the application account credentials
+category: Application Account Credentials
+
+#### Base Command
+
+`wab-get-application-account-credentials`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | The application id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| q | Searches for a resource matching parameters. The search is performed on the field 'type' only. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'type'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.app_account_credential_get.id | String | The credential id. Usable in the "sort" parameter. | 
+| WAB.app_account_credential_get.type | String | The credential type. Usable in the "sort" parameter. | 
+| WAB.app_account_credential_get.url | String | The API URL to the resource. | 
+
+### wab-add-credential-to-application-account
+
+***
+Add a credential to an application account on a local domain
+category: Application Account Credentials
+
+#### Base Command
+
+`wab-add-credential-to-application-account`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | The application id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| app_account_credential_post_password | The account password. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_credential_to_application_account.id | String | id of the created object. | 
+
+### wab-get-application-account-credential
+
+***
+Get the application account credential
+category: Application Account Credentials
+
+#### Base Command
+
+`wab-get-application-account-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | The application id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| credential_id | The credential id. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.app_account_credential_get.id | String | The credential id. Usable in the "sort" parameter. | 
+| WAB.app_account_credential_get.type | String | The credential type. Usable in the "sort" parameter. | 
+| WAB.app_account_credential_get.url | String | The API URL to the resource. | 
+
+### wab-edit-credential-of-application-account
+
+***
+Edit a credential of an application account on a local domain
+category: Application Account Credentials
+
+#### Base Command
+
+`wab-edit-credential-of-application-account`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | The application id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| credential_id | The credential id to edit. | Required | 
+| app_account_credential_put_password | The account password. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-application-accounts
 
 ***
@@ -595,6 +733,34 @@ category: Application Local Domains
 | WAB.localdomain_app_get.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.localdomain_app_get.url | String | The API URL to the resource. | 
 
+### wab-add-local-domain-in-application
+
+***
+Add a local domain in an application
+category: Application Local Domains
+
+#### Base Command
+
+`wab-add-local-domain-in-application`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | The application id or name. | Required | 
+| localdomain_app_post_domain_name | The domain name. /:*?"&lt;&gt;\|@ are forbidden. | Required | 
+| localdomain_app_post_description | The domain description. | Optional | 
+| localdomain_app_post_enable_password_change | Enable the change of password on this domain. Possible values are: true, false. | Optional | 
+| localdomain_app_post_password_change_policy | The name of password change policy for this domain. (enter null for null value). | Optional | 
+| localdomain_app_post_password_change_plugin | The name of plugin used to change passwords on this domain. (enter null for null value). | Optional | 
+| password_change_plugin_parameters | Parameters for the plugin used to change credentials, formatted in json: {\"key\":\"value\"}. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_local_domain_in_application.id | String | id of the created object. | 
+
 ### wab-get-local-domain-data-for-application
 
 ***
@@ -627,6 +793,27 @@ category: Application Local Domains
 | WAB.localdomain_app_get.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
 | WAB.localdomain_app_get.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.localdomain_app_get.url | String | The API URL to the resource. | 
+
+### wab-delete-local-domain-from-application
+
+***
+Delete a local domain from an application
+category: Application Local Domains
+
+#### Base Command
+
+`wab-delete-local-domain-from-application`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | The application id or name. | Required | 
+| domain_id | The local domain id or name to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
 
 ### wab-get-applications
 
@@ -668,10 +855,17 @@ category: Applications
 | WAB.application_get.local_domains.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
 | WAB.application_get.local_domains.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.application_get.local_domains.url | String | The API URL to the resource. | 
+| WAB.application_get.cluster | String | The application cluster/device name. | 
+| WAB.application_get.target | String | The application target/cluster name. | 
+| WAB.application_get.paths.target | String | The application target. | 
+| WAB.application_get.paths.program | String | The application path. | 
+| WAB.application_get.paths.working_dir | String | The application working directory. | 
+| WAB.application_get.global_domains | String | The global domains names. | 
 | WAB.application_get.tags.key | String | The tag key. Must not start or end with a space. | 
 | WAB.application_get.tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.application_get.connection_policy | String | The connection policy name. Usable in the "q" parameter. | 
 | WAB.application_get.url | String | The API URL to the resource. | 
+| WAB.application_get.application_url | String | The application url. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 
 ### wab-get-application
 
@@ -710,10 +904,17 @@ category: Applications
 | WAB.application_get.local_domains.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
 | WAB.application_get.local_domains.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.application_get.local_domains.url | String | The API URL to the resource. | 
+| WAB.application_get.cluster | String | The application cluster/device name. | 
+| WAB.application_get.target | String | The application target/cluster name. | 
+| WAB.application_get.paths.target | String | The application target. | 
+| WAB.application_get.paths.program | String | The application path. | 
+| WAB.application_get.paths.working_dir | String | The application working directory. | 
+| WAB.application_get.global_domains | String | The global domains names. | 
 | WAB.application_get.tags.key | String | The tag key. Must not start or end with a space. | 
 | WAB.application_get.tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.application_get.connection_policy | String | The connection policy name. Usable in the "q" parameter. | 
 | WAB.application_get.url | String | The API URL to the resource. | 
+| WAB.application_get.application_url | String | The application url. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 
 ### wab-edit-application
 
@@ -1336,7 +1537,26 @@ category: Auth Domains
 | WAB.auth_domain_get.mappings.domain | String | The name of the domain for which the mapping is defined. | 
 | WAB.auth_domain_get.mappings.user_group | String | The name of the Bastion users group. | 
 | WAB.auth_domain_get.mappings.external_group | String | The name of the external group \(LDAP/AD: Distinguished Name, Azure AD: name or ID\), "\*" means fallback mapping. | 
+| WAB.auth_domain_get.certificate_authority | String | The certificate authority name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.enable_ca | Boolean | The value indicate if certificate authority is enabled Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.check_x509_san_email | Boolean | Match the X509v3 SAN email. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.san_domain_name | String | The domain name to match SAN email \(only for AD server\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.x509_condition | String | Condition to match a LDAP domain with the X509 certificate variables \(only for LDAP server\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.x509_search_filter | String | LDAP search filter for X509 authentication \(only for LDAP server\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.group_attribute | String | The group attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.display_name_attribute | String | The display name attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.pubkey_attribute | String | The SSH public key attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.email_attribute | String | The email attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.language_attribute | String | The language attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.auth_domain_get.url | String | The API URL to the resource. | 
+| WAB.auth_domain_get.label | String | The label to display on the login page. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.entity_id | String | The entity \(tenant\) ID. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.client_id | String | The application \(client\) ID. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.client_secret | String | The client secret Usable in the "q" parameter. | 
+| WAB.auth_domain_get.certificate | String | The client certificate. | 
+| WAB.auth_domain_get.private_key | String | The client private key. | 
+| WAB.auth_domain_get.idp_initiated_url | String | URL used in Identity Provider \(IdP\) initiated Single Sign-On \(SSO\) flows. | 
+| WAB.auth_domain_get.force_authn | Boolean | Force SAML authentication on IdP at each login. Usable in the "q" parameter. Usable in the "sort" parameter. / Force authentication on IdP at each login. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 
 ### wab-get-auth-domain
 
@@ -1373,7 +1593,26 @@ category: Auth Domains
 | WAB.auth_domain_get.mappings.domain | String | The name of the domain for which the mapping is defined. | 
 | WAB.auth_domain_get.mappings.user_group | String | The name of the Bastion users group. | 
 | WAB.auth_domain_get.mappings.external_group | String | The name of the external group \(LDAP/AD: Distinguished Name, Azure AD: name or ID\), "\*" means fallback mapping. | 
+| WAB.auth_domain_get.certificate_authority | String | The certificate authority name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.enable_ca | Boolean | The value indicate if certificate authority is enabled Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.check_x509_san_email | Boolean | Match the X509v3 SAN email. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.san_domain_name | String | The domain name to match SAN email \(only for AD server\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.x509_condition | String | Condition to match a LDAP domain with the X509 certificate variables \(only for LDAP server\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.x509_search_filter | String | LDAP search filter for X509 authentication \(only for LDAP server\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.group_attribute | String | The group attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.display_name_attribute | String | The display name attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.pubkey_attribute | String | The SSH public key attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.email_attribute | String | The email attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.language_attribute | String | The language attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.auth_domain_get.url | String | The API URL to the resource. | 
+| WAB.auth_domain_get.label | String | The label to display on the login page. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.entity_id | String | The entity \(tenant\) ID. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.client_id | String | The application \(client\) ID. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.auth_domain_get.client_secret | String | The client secret Usable in the "q" parameter. | 
+| WAB.auth_domain_get.certificate | String | The client certificate. | 
+| WAB.auth_domain_get.private_key | String | The client private key. | 
+| WAB.auth_domain_get.idp_initiated_url | String | URL used in Identity Provider \(IdP\) initiated Single Sign-On \(SSO\) flows. | 
+| WAB.auth_domain_get.force_authn | Boolean | Force SAML authentication on IdP at each login. Usable in the "q" parameter. Usable in the "sort" parameter. / Force authentication on IdP at each login. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 
 ### wab-get-authentications
 
@@ -1907,6 +2146,7 @@ category: Connection Policies
 | WAB.connectionpolicy_get.description | String | The connection policy description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.connectionpolicy_get.protocol | String | The connection policy protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.connectionpolicy_get.is_default | Boolean | True if the connection policy is a default one. | 
+| WAB.connectionpolicy_get.authentication_methods | String | The allowed authentication methods. | 
 | WAB.connectionpolicy_get.url | String | The API URL to the resource. | 
 
 ### wab-add-connection-policy
@@ -1928,7 +2168,7 @@ category: Connection Policies
 | connectionpolicy_post_description | The connection policy description. | Optional | 
 | connectionpolicy_post_protocol | The connection policy protocol. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
 | connectionpolicy_post_authentication_methods | The allowed authentication methods.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT. | Optional | 
-| options | Options for the connection policy, formatted in json. | Optional | 
+| options | Options for the connection policy, formatted in json: {\"key":\"value\"}. | Optional | 
 
 #### Context Output
 
@@ -1963,6 +2203,7 @@ category: Connection Policies
 | WAB.connectionpolicy_get.description | String | The connection policy description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.connectionpolicy_get.protocol | String | The connection policy protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.connectionpolicy_get.is_default | Boolean | True if the connection policy is a default one. | 
+| WAB.connectionpolicy_get.authentication_methods | String | The allowed authentication methods. | 
 | WAB.connectionpolicy_get.url | String | The API URL to the resource. | 
 
 ### wab-edit-connection-policy
@@ -1984,7 +2225,7 @@ category: Connection Policies
 | connectionpolicy_put_connection_policy_name | The connection policy name. | Optional | 
 | connectionpolicy_put_description | The connection policy description. | Optional | 
 | connectionpolicy_put_authentication_methods | The allowed authentication methods.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT. | Optional | 
-| options | Options for the connection policy, formatted in json. | Optional | 
+| options | Options for the connection policy, formatted in json: {\"key":\"value\"}. | Optional | 
 
 #### Context Output
 
@@ -2005,6 +2246,136 @@ category: Connection Policies
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | connection_policy_id | The connection policy id or name to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-get-device-account-credentials
+
+***
+Get all credentials of an account on a device local domain
+category: Device Account Credentials
+
+#### Base Command
+
+`wab-get-device-account-credentials`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The device id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| key_format | Format of the returned SSH public key of the account. Accepted values are 'openssh' (default value) and 'ssh.com'. | Optional | 
+| q | Searches for a resource matching parameters. The search is performed on the field 'type' only. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'type'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.credential_get.id | String | The credential id. Usable in the "sort" parameter. Usable in the "sort" parameter. | 
+| WAB.credential_get.type | String | The credential type. Usable in the "sort" parameter. Usable in the "sort" parameter. | 
+| WAB.credential_get.private_key | String | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.credential_get.passphrase | String | The passphrase for the private key \(only for an encrypted private key\). If provided, it must be between 4 and 1024 characters long. | 
+| WAB.credential_get.public_key | String | The account public key. | 
+| WAB.credential_get.key_type | String | The key type. | 
+| WAB.credential_get.key_len | Number | The key length. | 
+| WAB.credential_get.key_id | String | The key identity: random value used for revocation. | 
+| WAB.credential_get.certificate | String | The certificate. | 
+| WAB.credential_get.url | String | The API URL to the resource. | 
+
+### wab-add-credential-to-device-account
+
+***
+Add a credential to a device account on a local domain
+category: Device Account Credentials
+
+#### Base Command
+
+`wab-add-credential-to-device-account`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The device id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| credential_post_type | The credential type. Possible values are: password, ssh_key. | Required | 
+| credential_post_password | The account password. | Optional | 
+| credential_post_private_key | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | Optional | 
+| credential_post_passphrase | The passphrase for the private key (only for an encrypted private key). If provided, it must be between 4 and 1024 characters long. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_credential_to_device_account.id | String | id of the created object. | 
+
+### wab-get-device-account-credential
+
+***
+Get one credential of an account on a device local domain
+category: Device Account Credentials
+
+#### Base Command
+
+`wab-get-device-account-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The device id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| credential_id | The credential id. | Required | 
+| key_format | Format of the returned SSH public key of the account. Accepted values are 'openssh' (default value) and 'ssh.com'. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.credential_get.id | String | The credential id. Usable in the "sort" parameter. Usable in the "sort" parameter. | 
+| WAB.credential_get.type | String | The credential type. Usable in the "sort" parameter. Usable in the "sort" parameter. | 
+| WAB.credential_get.private_key | String | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.credential_get.passphrase | String | The passphrase for the private key \(only for an encrypted private key\). If provided, it must be between 4 and 1024 characters long. | 
+| WAB.credential_get.public_key | String | The account public key. | 
+| WAB.credential_get.key_type | String | The key type. | 
+| WAB.credential_get.key_len | Number | The key length. | 
+| WAB.credential_get.key_id | String | The key identity: random value used for revocation. | 
+| WAB.credential_get.certificate | String | The certificate. | 
+| WAB.credential_get.url | String | The API URL to the resource. | 
+
+### wab-edit-credential-of-device-account
+
+***
+Edit a credential of an account on a local domain of a device
+category: Device Account Credentials
+
+#### Base Command
+
+`wab-edit-credential-of-device-account`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The device id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| credential_id | The credential id. | Required | 
+| credential_put_type | The credential type. Possible values are: password, ssh_key. | Required | 
+| credential_put_password | The account password. | Optional | 
+| credential_put_private_key | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | Optional | 
+| credential_put_passphrase | The passphrase for the private key (only for an encrypted private key). If provided, it must be between 4 and 1024 characters long. | Optional | 
 
 #### Context Output
 
@@ -2348,6 +2719,36 @@ category: Device Local Domains
 | WAB.localdomain_get.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.localdomain_get.url | String | The API URL to the resource. | 
 
+### wab-add-local-domain-in-device
+
+***
+Add a local domain in a device
+category: Device Local Domains
+
+#### Base Command
+
+`wab-add-local-domain-in-device`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The device id or name. | Required | 
+| localdomain_post_domain_name | The domain name. /:*?"&lt;&gt;\|@ are forbidden. | Required | 
+| localdomain_post_description | The domain description. | Optional | 
+| localdomain_post_enable_password_change | Enable the change of password on this domain. Possible values are: true, false. | Optional | 
+| localdomain_post_password_change_policy | The name of password change policy for this domain. (enter null for null value). | Optional | 
+| localdomain_post_password_change_plugin | The name of plugin used to change passwords on this domain. (enter null for null value). | Optional | 
+| localdomain_post_ca_private_key | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | Optional | 
+| localdomain_post_passphrase | The passphrase that was used to encrypt the private key. If provided, it must be between 4 and 1024 characters long. | Optional | 
+| password_change_plugin_parameters | Parameters for the plugin used to change credentials, formatted in json: {\"key\":\"value\"}. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_local_domain_in_device.id | String | id of the created object. | 
+
 ### wab-get-local-domain-of-device
 
 ***
@@ -2381,6 +2782,27 @@ category: Device Local Domains
 | WAB.localdomain_get.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.localdomain_get.url | String | The API URL to the resource. | 
 
+### wab-delete-local-domain-from-device
+
+***
+Delete a local domain from a device
+category: Device Local Domains
+
+#### Base Command
+
+`wab-delete-local-domain-from-device`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The device id or name. | Required | 
+| domain_id | The local domain id or name to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-services-of-device
 
 ***
@@ -2410,9 +2832,14 @@ category: Device Services
 | WAB.service_get.service_name | String | The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.service_get.protocol | String | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.service_get.port | Number | The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.service_get.subprotocols | String | The sub protocols. | 
 | WAB.service_get.connection_policy | String | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.service_get.global_domains | String | The global domains names. | 
 | WAB.service_get.url | String | The API URL to the resource. | 
+| WAB.service_get.multi_tunneling.enabled | Boolean | The multi-tunneling is enabled. | 
+| WAB.service_get.multi_tunneling.additional_interfaces.ip | String | The ip address. | 
+| WAB.service_get.multi_tunneling.additional_interfaces.port | Number | The port address. | 
+| WAB.service_get.seamless_connection | Boolean | The seamless connection. | 
 
 ### wab-add-service-in-device
 
@@ -2470,9 +2897,14 @@ category: Device Services
 | WAB.service_get.service_name | String | The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.service_get.protocol | String | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.service_get.port | Number | The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.service_get.subprotocols | String | The sub protocols. | 
 | WAB.service_get.connection_policy | String | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.service_get.global_domains | String | The global domains names. | 
 | WAB.service_get.url | String | The API URL to the resource. | 
+| WAB.service_get.multi_tunneling.enabled | Boolean | The multi-tunneling is enabled. | 
+| WAB.service_get.multi_tunneling.additional_interfaces.ip | String | The ip address. | 
+| WAB.service_get.multi_tunneling.additional_interfaces.port | Number | The port address. | 
+| WAB.service_get.seamless_connection | Boolean | The seamless connection. | 
 
 ### wab-edit-service-of-device
 
@@ -2566,9 +2998,14 @@ category: Devices
 | WAB.device_get.services.service_name | String | The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.services.protocol | String | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.services.port | Number | The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.device_get.services.subprotocols | String | The sub protocols. | 
 | WAB.device_get.services.connection_policy | String | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.services.global_domains | String | The global domains names. | 
 | WAB.device_get.services.url | String | The API URL to the resource. | 
+| WAB.device_get.services.multi_tunneling.enabled | Boolean | The multi-tunneling is enabled. | 
+| WAB.device_get.services.multi_tunneling.additional_interfaces.ip | String | The ip address. | 
+| WAB.device_get.services.multi_tunneling.additional_interfaces.port | Number | The port address. | 
+| WAB.device_get.services.seamless_connection | Boolean | The seamless connection. | 
 | WAB.device_get.tags.key | String | The tag key. Must not start or end with a space. | 
 | WAB.device_get.tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.device_get.onboard_status | String | Onboarding status of the device Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -2652,9 +3089,14 @@ category: Devices
 | WAB.device_get.services.service_name | String | The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.services.protocol | String | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.services.port | Number | The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.device_get.services.subprotocols | String | The sub protocols. | 
 | WAB.device_get.services.connection_policy | String | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.services.global_domains | String | The global domains names. | 
 | WAB.device_get.services.url | String | The API URL to the resource. | 
+| WAB.device_get.services.multi_tunneling.enabled | Boolean | The multi-tunneling is enabled. | 
+| WAB.device_get.services.multi_tunneling.additional_interfaces.ip | String | The ip address. | 
+| WAB.device_get.services.multi_tunneling.additional_interfaces.port | Number | The port address. | 
+| WAB.device_get.services.seamless_connection | Boolean | The seamless connection. | 
 | WAB.device_get.tags.key | String | The tag key. Must not start or end with a space. | 
 | WAB.device_get.tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.device_get.onboard_status | String | Onboarding status of the device Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -2717,6 +3159,130 @@ category: Devices
 #### Context Output
 
 There is no context output for this command.
+
+### wab-get-global-domain-account-credentials
+
+***
+Get the credentials of a global domain account
+category: Domain Account Credentials
+
+#### Base Command
+
+`wab-get-global-domain-account-credentials`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The global domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| q | Searches for a resource matching parameters. The search is performed on the field 'type' only. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'type'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.credential_get.id | String | The credential id. Usable in the "sort" parameter. Usable in the "sort" parameter. | 
+| WAB.credential_get.type | String | The credential type. Usable in the "sort" parameter. Usable in the "sort" parameter. | 
+| WAB.credential_get.private_key | String | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.credential_get.passphrase | String | The passphrase for the private key \(only for an encrypted private key\). If provided, it must be between 4 and 1024 characters long. | 
+| WAB.credential_get.public_key | String | The account public key. | 
+| WAB.credential_get.key_type | String | The key type. | 
+| WAB.credential_get.key_len | Number | The key length. | 
+| WAB.credential_get.key_id | String | The key identity: random value used for revocation. | 
+| WAB.credential_get.certificate | String | The certificate. | 
+| WAB.credential_get.url | String | The API URL to the resource. | 
+
+### wab-get-global-domain-account-credential
+
+***
+Get the credential of a global domain account
+category: Domain Account Credentials
+
+#### Base Command
+
+`wab-get-global-domain-account-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The global domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| credential_id | The credential id. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.credential_get.id | String | The credential id. Usable in the "sort" parameter. Usable in the "sort" parameter. | 
+| WAB.credential_get.type | String | The credential type. Usable in the "sort" parameter. Usable in the "sort" parameter. | 
+| WAB.credential_get.private_key | String | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.credential_get.passphrase | String | The passphrase for the private key \(only for an encrypted private key\). If provided, it must be between 4 and 1024 characters long. | 
+| WAB.credential_get.public_key | String | The account public key. | 
+| WAB.credential_get.key_type | String | The key type. | 
+| WAB.credential_get.key_len | Number | The key length. | 
+| WAB.credential_get.key_id | String | The key identity: random value used for revocation. | 
+| WAB.credential_get.certificate | String | The certificate. | 
+| WAB.credential_get.url | String | The API URL to the resource. | 
+
+### wab-edit-credential-of-global-domain-account
+
+***
+Edit a credential of a global domain account
+category: Domain Account Credentials
+
+#### Base Command
+
+`wab-edit-credential-of-global-domain-account`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The global domain id or name. | Required | 
+| account_id | The account id or name. | Required | 
+| credential_id | The credential id to edit. | Required | 
+| credential_put_type | The credential type. Possible values are: password, ssh_key. | Required | 
+| credential_put_password | The account password. | Optional | 
+| credential_put_private_key | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | Optional | 
+| credential_put_passphrase | The passphrase for the private key (only for an encrypted private key). If provided, it must be between 4 and 1024 characters long. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-add-credential-to-global-domain-account
+
+***
+Add a credential to a global domain account
+category: Domain Account Credentials
+
+#### Base Command
+
+`wab-add-credential-to-global-domain-account`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_name | The name of the global domain. | Required | 
+| account_id | The name or id of the account. | Required | 
+| credential_post_type | The credential type. Possible values are: password, ssh_key. | Required | 
+| credential_post_password | The account password. | Optional | 
+| credential_post_private_key | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | Optional | 
+| credential_post_passphrase | The passphrase for the private key (only for an encrypted private key). If provided, it must be between 4 and 1024 characters long. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_credential_to_global_domain_account.id | String | id of the created object. | 
 
 ### wab-get-accounts-of-global-domain
 
@@ -3021,6 +3587,191 @@ category: Domains
 | WAB.domain_get.is_editable | Boolean | True if the domain is editable by the user who made the query. This might be slow to compute for a domain with many accounts if the user has limitations. | 
 | WAB.domain_get.url | String | The API URL to the resource. | 
 
+### wab-delete-global-domain
+
+***
+Delete a global domain
+category: Domains
+
+#### Base Command
+
+`wab-delete-global-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The global domain id or name to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-get-external-authentications
+
+***
+Get the external authentications
+category: External Authentications
+
+#### Base Command
+
+`wab-get-external-authentications`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'authentication_name'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.externalauth_get.id | String | The authentication id. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.authentication_name | String | The authentication name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.type | String | Protocol used for authentication. Usable in the "q" parameter. Usable in the "sort" parameter. / Protocol used for authentication. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.description | String | Description of the authentication. Usable in the "q" parameter. Usable in the "sort" parameter. / Description of the authentication. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.port | Number | The port number. Usable in the "q" parameter. Usable in the "sort" parameter. / The port number. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.host | String | The host name. Usable in the "q" parameter. Usable in the "sort" parameter. / The host name. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.ker_dom_controller | String | Kerberos domain controller whose role is to recognize the tickets issued by the Key Distribution Center. Usable in the "sort" parameter. / Kerberos domain controller whose role is torecognizes the tickets issued bythe Key Distribution Center. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.use_primary_auth_domain | Boolean | Use the primary auth domain. | 
+| WAB.externalauth_get.keytab | String | The keytab file, containing pairs of principal and encrypted keys. / The keytab file, containing pairs of principal and encrypted keys. The content of the file needed must be converted to base64 before being sent. | 
+| WAB.externalauth_get.grouping_id | String | The grouping id. Usable in the "q" parameter. | 
+| WAB.externalauth_get.principal_list | String | The list of principals contained in keytab. | 
+| WAB.externalauth_get.url | String | The API URL to the resource. | 
+| WAB.externalauth_get.timeout | Number | LDAP timeout. Usable in the "q" parameter. Usable in the "sort" parameter. / Server timeout. Usable in the "q" parameter. Usable in the "sort" parameter. / PINGID timeout. Usable in the "q" parameter. Usable in the "sort" parameter. / SAML request timeout. Usable in the "q" parameter. Usable in the "sort" parameter. / OIDC request timeout. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.is_active_directory | Boolean | This LDAP uses an active directory. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.is_protected_user | Boolean | The AD user is protected. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.is_ssl | Boolean | This LDAP is secure \(with SSL/TLS\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.is_starttls | Boolean | This LDAP uses STARTTLS Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.certificate | String | Client certificate. / The certificate of the Service Provider. | 
+| WAB.externalauth_get.private_key | String | Client key. / The private key of the Service Provider. | 
+| WAB.externalauth_get.ca_certificate | String | CA certificate. | 
+| WAB.externalauth_get.is_anonymous_access | Boolean | The user is anonymous. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.login | String | The login. | 
+| WAB.externalauth_get.login_attribute | String | The login attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.cn_attribute | String | The username attribute Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.password | String | The password. | 
+| WAB.externalauth_get.ldap_base | String | The LDAP base scheme. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.passphrase | String | The Passphrase for the private key \(only for an encrypted private key\). | 
+| WAB.externalauth_get.secret | String | The secret. | 
+| WAB.externalauth_get.use_mobile_device | Boolean | Use mobile device to authenticate. | 
+| WAB.externalauth_get.settings_file | String | File containing several account-specific settings, needed when creating a PingID API request message. Usable in the "q" parameter. | 
+| WAB.externalauth_get.force_otp | Boolean | Force OTP authentication. | 
+| WAB.externalauth_get.application_logo_url | String | URL pointing to an image file of the service provider's logo \(PNG file\), which is displayed within the PingID application during authentication. Usable in the "q" parameter. | 
+| WAB.externalauth_get.service_name | String | Name of the service requesting authentication, which is displayed within the PingID app during authentication. Usable in the "q" parameter. | 
+| WAB.externalauth_get.organization_logo_url | String | URL pointing to an image to use as the organization logo \(the company icon at the top of the PingID authentication screen\). Usable in the "q" parameter. | 
+| WAB.externalauth_get.background_color | String | HEX color code for the PingID authentication screen background color Usable in the "q" parameter. | 
+| WAB.externalauth_get.background_image_url | String | URL pointing to an image to use as the background of the PingID authentication screen. Usable in the "q" parameter. | 
+| WAB.externalauth_get.first_time_after_pairing | Boolean | Indicates whether this is the first time that authentication is requested after a device was paired with this user. This flag can be used to display a 'successful pairing' message during authentication. Usable in the "q" parameter. | 
+| WAB.externalauth_get.idp_metadata | String | Identity Provider metadata \(XML format\). | 
+| WAB.externalauth_get.idp_entity_id | String | Identifier of the IdP entity. | 
+| WAB.externalauth_get.saml_request_url | String | Single Sign-On URL. | 
+| WAB.externalauth_get.saml_request_method | String | Single Sign-On binding. | 
+| WAB.externalauth_get.sp_metadata | String | Service Provider metadata \(XML format\). | 
+| WAB.externalauth_get.sp_entity_id | String | Identifier of the SP entity. | 
+| WAB.externalauth_get.sp_assertion_consumer_service | String | Assertion Consumer Service URL \(Service Provider\). | 
+| WAB.externalauth_get.sp_single_logout_service | String | Single Logout Service URL \(Service Provider\). | 
+| WAB.externalauth_get.client_id | String | The client id. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.client_secret | String | The client secret. | 
+| WAB.externalauth_get.discovery_url | String | URL where the OpenID server publishes its metadata Usable in the "sort" parameter. | 
+| WAB.externalauth_get.redirect_uri | String | Redirection URI to which the response will be sent. | 
+| WAB.externalauth_get.oidc_advanced_attributes.issuer | String | Unique URL identifying the entity delivering the tokens. | 
+| WAB.externalauth_get.oidc_advanced_attributes.scope | String | The permissions given to the token. | 
+| WAB.externalauth_get.oidc_advanced_attributes.authorization_endpoint | String | Endpoint performing the end-user authentication. | 
+| WAB.externalauth_get.oidc_advanced_attributes.token_endpoint | String | Endpoint to obtain an Access Token, an ID Token, and optionally a Refresh Token. | 
+| WAB.externalauth_get.oidc_advanced_attributes.userinfo_url_endpoint | String | Endpoint that returns Claims about the authenticated End-User. | 
+| WAB.externalauth_get.oidc_advanced_attributes.grant_type | String | Authorization type. | 
+| WAB.externalauth_get.oidc_advanced_attributes.response_type | String | Informs the Autorization Server of the desired authorization processing flow. | 
+| WAB.externalauth_get.oidc_advanced_attributes.jwks_uri | String | URL of the OpenID Provider. | 
+| WAB.externalauth_get.oidc_advanced_attributes.id_token_signing_alg_values_supported | String | JSON array containing a list of the JWS signing algorithms. | 
+| WAB.externalauth_get.x509_certificate | String | The certificate of the Service Provider. | 
+
+### wab-get-external-authentication
+
+***
+Get the external authentication
+category: External Authentications
+
+#### Base Command
+
+`wab-get-external-authentication`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| authentication_id | An external authentication id or name.  If specified, only this external authentication is returned. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.externalauth_get.id | String | The authentication id. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.authentication_name | String | The authentication name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.type | String | Protocol used for authentication. Usable in the "q" parameter. Usable in the "sort" parameter. / Protocol used for authentication. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.description | String | Description of the authentication. Usable in the "q" parameter. Usable in the "sort" parameter. / Description of the authentication. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.port | Number | The port number. Usable in the "q" parameter. Usable in the "sort" parameter. / The port number. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.host | String | The host name. Usable in the "q" parameter. Usable in the "sort" parameter. / The host name. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.ker_dom_controller | String | Kerberos domain controller whose role is to recognize the tickets issued by the Key Distribution Center. Usable in the "sort" parameter. / Kerberos domain controller whose role is torecognizes the tickets issued bythe Key Distribution Center. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.use_primary_auth_domain | Boolean | Use the primary auth domain. | 
+| WAB.externalauth_get.keytab | String | The keytab file, containing pairs of principal and encrypted keys. / The keytab file, containing pairs of principal and encrypted keys. The content of the file needed must be converted to base64 before being sent. | 
+| WAB.externalauth_get.grouping_id | String | The grouping id. Usable in the "q" parameter. | 
+| WAB.externalauth_get.principal_list | String | The list of principals contained in keytab. | 
+| WAB.externalauth_get.url | String | The API URL to the resource. | 
+| WAB.externalauth_get.timeout | Number | LDAP timeout. Usable in the "q" parameter. Usable in the "sort" parameter. / Server timeout. Usable in the "q" parameter. Usable in the "sort" parameter. / PINGID timeout. Usable in the "q" parameter. Usable in the "sort" parameter. / SAML request timeout. Usable in the "q" parameter. Usable in the "sort" parameter. / OIDC request timeout. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.is_active_directory | Boolean | This LDAP uses an active directory. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.is_protected_user | Boolean | The AD user is protected. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.is_ssl | Boolean | This LDAP is secure \(with SSL/TLS\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.is_starttls | Boolean | This LDAP uses STARTTLS Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.certificate | String | Client certificate. / The certificate of the Service Provider. | 
+| WAB.externalauth_get.private_key | String | Client key. / The private key of the Service Provider. | 
+| WAB.externalauth_get.ca_certificate | String | CA certificate. | 
+| WAB.externalauth_get.is_anonymous_access | Boolean | The user is anonymous. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.login | String | The login. | 
+| WAB.externalauth_get.login_attribute | String | The login attribute. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.cn_attribute | String | The username attribute Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.password | String | The password. | 
+| WAB.externalauth_get.ldap_base | String | The LDAP base scheme. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.passphrase | String | The Passphrase for the private key \(only for an encrypted private key\). | 
+| WAB.externalauth_get.secret | String | The secret. | 
+| WAB.externalauth_get.use_mobile_device | Boolean | Use mobile device to authenticate. | 
+| WAB.externalauth_get.settings_file | String | File containing several account-specific settings, needed when creating a PingID API request message. Usable in the "q" parameter. | 
+| WAB.externalauth_get.force_otp | Boolean | Force OTP authentication. | 
+| WAB.externalauth_get.application_logo_url | String | URL pointing to an image file of the service provider's logo \(PNG file\), which is displayed within the PingID application during authentication. Usable in the "q" parameter. | 
+| WAB.externalauth_get.service_name | String | Name of the service requesting authentication, which is displayed within the PingID app during authentication. Usable in the "q" parameter. | 
+| WAB.externalauth_get.organization_logo_url | String | URL pointing to an image to use as the organization logo \(the company icon at the top of the PingID authentication screen\). Usable in the "q" parameter. | 
+| WAB.externalauth_get.background_color | String | HEX color code for the PingID authentication screen background color Usable in the "q" parameter. | 
+| WAB.externalauth_get.background_image_url | String | URL pointing to an image to use as the background of the PingID authentication screen. Usable in the "q" parameter. | 
+| WAB.externalauth_get.first_time_after_pairing | Boolean | Indicates whether this is the first time that authentication is requested after a device was paired with this user. This flag can be used to display a 'successful pairing' message during authentication. Usable in the "q" parameter. | 
+| WAB.externalauth_get.idp_metadata | String | Identity Provider metadata \(XML format\). | 
+| WAB.externalauth_get.idp_entity_id | String | Identifier of the IdP entity. | 
+| WAB.externalauth_get.saml_request_url | String | Single Sign-On URL. | 
+| WAB.externalauth_get.saml_request_method | String | Single Sign-On binding. | 
+| WAB.externalauth_get.sp_metadata | String | Service Provider metadata \(XML format\). | 
+| WAB.externalauth_get.sp_entity_id | String | Identifier of the SP entity. | 
+| WAB.externalauth_get.sp_assertion_consumer_service | String | Assertion Consumer Service URL \(Service Provider\). | 
+| WAB.externalauth_get.sp_single_logout_service | String | Single Logout Service URL \(Service Provider\). | 
+| WAB.externalauth_get.client_id | String | The client id. Usable in the "sort" parameter. | 
+| WAB.externalauth_get.client_secret | String | The client secret. | 
+| WAB.externalauth_get.discovery_url | String | URL where the OpenID server publishes its metadata Usable in the "sort" parameter. | 
+| WAB.externalauth_get.redirect_uri | String | Redirection URI to which the response will be sent. | 
+| WAB.externalauth_get.oidc_advanced_attributes.issuer | String | Unique URL identifying the entity delivering the tokens. | 
+| WAB.externalauth_get.oidc_advanced_attributes.scope | String | The permissions given to the token. | 
+| WAB.externalauth_get.oidc_advanced_attributes.authorization_endpoint | String | Endpoint performing the end-user authentication. | 
+| WAB.externalauth_get.oidc_advanced_attributes.token_endpoint | String | Endpoint to obtain an Access Token, an ID Token, and optionally a Refresh Token. | 
+| WAB.externalauth_get.oidc_advanced_attributes.userinfo_url_endpoint | String | Endpoint that returns Claims about the authenticated End-User. | 
+| WAB.externalauth_get.oidc_advanced_attributes.grant_type | String | Authorization type. | 
+| WAB.externalauth_get.oidc_advanced_attributes.response_type | String | Informs the Autorization Server of the desired authorization processing flow. | 
+| WAB.externalauth_get.oidc_advanced_attributes.jwks_uri | String | URL of the OpenID Provider. | 
+| WAB.externalauth_get.oidc_advanced_attributes.id_token_signing_alg_values_supported | String | JSON array containing a list of the JWS signing algorithms. | 
+| WAB.externalauth_get.x509_certificate | String | The certificate of the Service Provider. | 
+
 ### wab-get-external-authentication-group-mappings
 
 ***
@@ -3248,7 +3999,6 @@ category: Notifications
 | notification_post_notification_name | The notification name. | Required | 
 | notification_post_description | The notification description. | Optional | 
 | notification_post_enabled | Notification is enabled. Possible values are: true, false. | Required | 
-| notification_post_type | Notification type. Possible values are: email. | Required | 
 | notification_post_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Required | 
 | notification_post_language | The notification language (in email). Possible values are: de, en, es, fr, ru. | Required | 
 | notification_post_events | The list of events that will trigger a notification.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint. | Optional | 
@@ -3308,7 +4058,6 @@ category: Notifications
 | notification_put_notification_name | The notification name. | Optional | 
 | notification_put_description | The notification description. | Optional | 
 | notification_put_enabled | Notification is enabled. Possible values are: true, false. | Optional | 
-| notification_put_type | Notification type. Possible values are: email. | Optional | 
 | notification_put_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Optional | 
 | notification_put_language | The notification language (in email). Possible values are: de, en, es, fr, ru. | Optional | 
 | notification_put_events | The list of events that will trigger a notification.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint. | Optional | 
@@ -3364,7 +4113,23 @@ category: Onboarding Objects
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | WAB.onboarding_objects_get.id | String | The device id. Usable in the "q" parameter. Usable in the "sort" parameter. / The account id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.device_name | String | The device name. \\ /:\*?"&lt;&gt;|@ and space are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.onboarding_objects_get.description | String | The device description. Usable in the "q" parameter. Usable in the "sort" parameter. / The account description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.alias | String | The device alias. \\ /:\*?"&lt;&gt;|@ and space are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.host | String | The device host address. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.last_connection | String | The last connection on this device.\(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.local_domains.id | String | The domain id. | 
+| WAB.onboarding_objects_get.local_domains.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. | 
+| WAB.onboarding_objects_get.local_domains.description | String | The domain description. | 
+| WAB.onboarding_objects_get.local_domains.enable_password_change | Boolean | Enable the change of password on this domain. | 
+| WAB.onboarding_objects_get.local_domains.admin_account | String | The administrator account used to change passwords on this domain \(format: "account_name"\). | 
+| WAB.onboarding_objects_get.local_domains.password_change_policy | String | The name of password change policy for this domain. | 
+| WAB.onboarding_objects_get.local_domains.password_change_plugin | String | The name of plugin used to change passwords on this domain. | 
+| WAB.onboarding_objects_get.local_domains.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.onboarding_objects_get.local_domains.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
+| WAB.onboarding_objects_get.local_domains.url | String | The API URL to the resource. | 
+| WAB.onboarding_objects_get.tags.key | String | The tag key. Must not start or end with a space. | 
+| WAB.onboarding_objects_get.tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.onboarding_objects_get.onboard_status | String | Onboarding status of the device Usable in the "q" parameter. Usable in the "sort" parameter. / Onboarding status of the account Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.onboarding_objects_get.first_seen.id | String | The scan job id. | 
 | WAB.onboarding_objects_get.first_seen.type | String | Scan type. | 
@@ -3379,6 +4144,65 @@ category: Onboarding Objects
 | WAB.onboarding_objects_get.last_seen.start | String | Scan job start timestamp. | 
 | WAB.onboarding_objects_get.last_seen.end | String | Scan job end timestamp. | 
 | WAB.onboarding_objects_get.url | String | The API URL to the resource. | 
+| WAB.onboarding_objects_get.accounts.id | String | The mapping id. | 
+| WAB.onboarding_objects_get.accounts.account_name | String | The account name. /:\*?"&lt;&gt;|@ and space are forbidden. | 
+| WAB.onboarding_objects_get.accounts.account_login | String | The account login. | 
+| WAB.onboarding_objects_get.accounts.description | String | The account description. | 
+| WAB.onboarding_objects_get.accounts.credentials.id | String | The credential id. | 
+| WAB.onboarding_objects_get.accounts.credentials.type | String | The credential type. | 
+| WAB.onboarding_objects_get.accounts.credentials.password | String | The account password. | 
+| WAB.onboarding_objects_get.accounts.credentials.private_key | String | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.onboarding_objects_get.accounts.credentials.passphrase | String | The passphrase for the private key \(only for an encrypted private key\). If provided, it must be between 4 and 1024 characters long. | 
+| WAB.onboarding_objects_get.accounts.credentials.public_key | String | The account public key. | 
+| WAB.onboarding_objects_get.accounts.credentials.key_type | String | The key type. | 
+| WAB.onboarding_objects_get.accounts.credentials.key_len | Number | The key length. | 
+| WAB.onboarding_objects_get.accounts.credentials.key_id | String | The key identity: random value used for revocation. | 
+| WAB.onboarding_objects_get.accounts.credentials.certificate | String | The certificate. | 
+| WAB.onboarding_objects_get.accounts.domain_password_change | Boolean | True if the password change is configured on the domain \(change policy and plugin are set\). | 
+| WAB.onboarding_objects_get.accounts.auto_change_password | Boolean | Automatically change the password. It is enabled by default on a new account. | 
+| WAB.onboarding_objects_get.accounts.auto_change_ssh_key | Boolean | Automatically change the ssh key. It is enabled by default on a new account. | 
+| WAB.onboarding_objects_get.accounts.checkout_policy | String | The account checkout policy. | 
+| WAB.onboarding_objects_get.accounts.certificate_validity | String | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | 
+| WAB.onboarding_objects_get.accounts.can_edit_certificate_validity | Boolean | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | 
+| WAB.onboarding_objects_get.accounts.onboard_status | String | Onboarding status of the account. | 
+| WAB.onboarding_objects_get.accounts.first_seen.id | String | The scan job id. | 
+| WAB.onboarding_objects_get.accounts.first_seen.type | String | Scan type. | 
+| WAB.onboarding_objects_get.accounts.first_seen.error | String | Error message. | 
+| WAB.onboarding_objects_get.accounts.first_seen.status | String | Scan job status. | 
+| WAB.onboarding_objects_get.accounts.first_seen.start | String | Scan job start timestamp. | 
+| WAB.onboarding_objects_get.accounts.first_seen.end | String | Scan job end timestamp. | 
+| WAB.onboarding_objects_get.accounts.last_seen.id | String | The scan job id. | 
+| WAB.onboarding_objects_get.accounts.last_seen.type | String | Scan type. | 
+| WAB.onboarding_objects_get.accounts.last_seen.error | String | Error message. | 
+| WAB.onboarding_objects_get.accounts.last_seen.status | String | Scan job status. | 
+| WAB.onboarding_objects_get.accounts.last_seen.start | String | Scan job start timestamp. | 
+| WAB.onboarding_objects_get.accounts.last_seen.end | String | Scan job end timestamp. | 
+| WAB.onboarding_objects_get.accounts.url | String | The API URL to the resource. | 
+| WAB.onboarding_objects_get.accounts.last_login | String | Last login time \(format: "yyyy-mm-dd hh:mm:ss"\). | 
+| WAB.onboarding_objects_get.accounts.is_admin | Boolean | True if the account was used to log on the device. | 
+| WAB.onboarding_objects_get.accounts.scanned_groups | String | The groups to which the user belong to, on the scanned device. | 
+| WAB.onboarding_objects_get.account_name | String | The account name. /:\*?"&lt;&gt;|@ and space are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.domain | String | The domain name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.device | String | The device name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.application | String | The application name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.account_login | String | The account login. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.credentials.id | String | The credential id. | 
+| WAB.onboarding_objects_get.credentials.type | String | The credential type. | 
+| WAB.onboarding_objects_get.credentials.password | String | The account password. | 
+| WAB.onboarding_objects_get.credentials.private_key | String | The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.onboarding_objects_get.credentials.passphrase | String | The passphrase for the private key \(only for an encrypted private key\). If provided, it must be between 4 and 1024 characters long. | 
+| WAB.onboarding_objects_get.credentials.public_key | String | The account public key. | 
+| WAB.onboarding_objects_get.credentials.key_type | String | The key type. | 
+| WAB.onboarding_objects_get.credentials.key_len | Number | The key length. | 
+| WAB.onboarding_objects_get.credentials.key_id | String | The key identity: random value used for revocation. | 
+| WAB.onboarding_objects_get.credentials.certificate | String | The certificate. | 
+| WAB.onboarding_objects_get.domain_password_change | Boolean | True if the password change is configured on the domain \(change policy and plugin are set\). | 
+| WAB.onboarding_objects_get.auto_change_password | Boolean | Automatically change the password. It is enabled by default on a new account. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.auto_change_ssh_key | Boolean | Automatically change the ssh key. It is enabled by default on a new account. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.checkout_policy | String | The account checkout policy. Usable in the "q" parameter. | 
+| WAB.onboarding_objects_get.certificate_validity | String | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.can_edit_certificate_validity | Boolean | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.onboarding_objects_get.resources | String | The account resources. | 
 
 ### wab-get-password-change-policies
 
@@ -3600,6 +4424,20 @@ category: Password Rights
 | WAB.passwordrights_get.authorization | String | The authorization name. Usable in the "sort" parameter. | 
 | WAB.passwordrights_get.authorization_description | String | The authorization description. Usable in the "sort" parameter. | 
 | WAB.passwordrights_get.right_fingerprint | String | The fingerprint of the right \(hash of authorization and target uid\). | 
+| WAB.passwordrights_get.timeframes | String | The group timeframe\(s\). | 
+| WAB.passwordrights_get.device | String | The device name. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.device_alias | String | The device alias. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.device_host | String | The device hostname or IP address. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.device_description | String | The device description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.device_tags.id | String | The tag id. | 
+| WAB.passwordrights_get.device_tags.key | String | The tag key. Must not start or end with a space. | 
+| WAB.passwordrights_get.device_tags.value | String | The tag value. Must not start or end with a space. | 
+| WAB.passwordrights_get.application | String | The application name. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.application_description | String | The application description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.application_tags.id | String | The tag id. | 
+| WAB.passwordrights_get.application_tags.key | String | The tag key. Must not start or end with a space. | 
+| WAB.passwordrights_get.application_tags.value | String | The tag value. Must not start or end with a space. | 
+| WAB.passwordrights_get.group_timeframes | String | The group timeframe\(s\). | 
 
 ### wab-get-passwordrights-user-name
 
@@ -3634,6 +4472,20 @@ category: Password Rights
 | WAB.passwordrights_get.authorization | String | The authorization name. Usable in the "sort" parameter. | 
 | WAB.passwordrights_get.authorization_description | String | The authorization description. Usable in the "sort" parameter. | 
 | WAB.passwordrights_get.right_fingerprint | String | The fingerprint of the right \(hash of authorization and target uid\). | 
+| WAB.passwordrights_get.timeframes | String | The group timeframe\(s\). | 
+| WAB.passwordrights_get.device | String | The device name. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.device_alias | String | The device alias. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.device_host | String | The device hostname or IP address. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.device_description | String | The device description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.device_tags.id | String | The tag id. | 
+| WAB.passwordrights_get.device_tags.key | String | The tag key. Must not start or end with a space. | 
+| WAB.passwordrights_get.device_tags.value | String | The tag value. Must not start or end with a space. | 
+| WAB.passwordrights_get.application | String | The application name. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.application_description | String | The application description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.application_tags.id | String | The tag id. | 
+| WAB.passwordrights_get.application_tags.key | String | The tag key. Must not start or end with a space. | 
+| WAB.passwordrights_get.application_tags.value | String | The tag value. Must not start or end with a space. | 
+| WAB.passwordrights_get.group_timeframes | String | The group timeframe\(s\). | 
 | WAB.passwordrights_get.user_name | String | the user_name. | 
 
 ### wab-get-profiles
@@ -3885,7 +4737,20 @@ category: Scans
 | WAB.scan_get.last_job.start | String | Timestamp of the job start. | 
 | WAB.scan_get.last_job.end | String | Timestamp of the job end. | 
 | WAB.scan_get.type | String | Scan type Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.scan_get.subnets | String | List of subnets to scan. Usable in the "q" parameter. | 
+| WAB.scan_get.protocols.protocol | String | protocol. | 
+| WAB.scan_get.protocols.port | Number | The port number. | 
+| WAB.scan_get.banner_regex | String | Regexes to mach on SSH banner. | 
+| WAB.scan_get.scan_for_accounts | Boolean | Scan for accounts on discovered devices. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.scan_get.master_accounts | String | The master accounts used to log and the devices empty if scan_for_accounts is false. | 
 | WAB.scan_get.url | String | The API URL to the resource. | 
+| WAB.scan_get.search_filter | String | Active Directory search filter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.scan_get.userauth.auth_id | String | ID of the Active Directory user authentication. | 
+| WAB.scan_get.userauth.auth_name | String | Name of the authentication. | 
+| WAB.scan_get.dn_list | String | List of Distinguished Names to search. Usable in the "q" parameter. | 
+| WAB.scan_get.devices | String | The devices to scan. | 
+| WAB.scan_get.protocol.protocol | String | protocol. | 
+| WAB.scan_get.protocol.port | Number | The port number. | 
 
 ### wab-get-scan
 
@@ -3919,7 +4784,20 @@ category: Scans
 | WAB.scan_get.last_job.start | String | Timestamp of the job start. | 
 | WAB.scan_get.last_job.end | String | Timestamp of the job end. | 
 | WAB.scan_get.type | String | Scan type Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.scan_get.subnets | String | List of subnets to scan. Usable in the "q" parameter. | 
+| WAB.scan_get.protocols.protocol | String | protocol. | 
+| WAB.scan_get.protocols.port | Number | The port number. | 
+| WAB.scan_get.banner_regex | String | Regexes to mach on SSH banner. | 
+| WAB.scan_get.scan_for_accounts | Boolean | Scan for accounts on discovered devices. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.scan_get.master_accounts | String | The master accounts used to log and the devices empty if scan_for_accounts is false. | 
 | WAB.scan_get.url | String | The API URL to the resource. | 
+| WAB.scan_get.search_filter | String | Active Directory search filter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.scan_get.userauth.auth_id | String | ID of the Active Directory user authentication. | 
+| WAB.scan_get.userauth.auth_name | String | Name of the authentication. | 
+| WAB.scan_get.dn_list | String | List of Distinguished Names to search. Usable in the "q" parameter. | 
+| WAB.scan_get.devices | String | The devices to scan. | 
+| WAB.scan_get.protocol.protocol | String | protocol. | 
+| WAB.scan_get.protocol.port | Number | The port number. | 
 
 ### wab-edit-scan
 
@@ -4004,17 +4882,37 @@ category: Session Rights
 | WAB.sessionrights_get.account_description | String | The account description. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.domain | String | The domain name. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.domain_description | String | The domain description. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.device | String | The device name. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.device_alias | String | The device alias. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.device_host | String | The device hostname or IP address. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.device_description | String | The device description. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.service | String | The service name. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.service_port | Number | The service port. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.service_protocol | String | The protocol name. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.subprotocols | String | The sub protocols. | 
 | WAB.sessionrights_get.authorization_approval | Boolean | True if an approval workflow is defined in the authorization, otherwise False. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.authorization | String | The authorization name. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.authorization_description | String | The authorization description. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.session_sharing | String | Value of Session Sharing option for the corresponding authorization. | 
 | WAB.sessionrights_get.account_mapping | Boolean | Account mapping. | 
 | WAB.sessionrights_get.account_mapping_vault | Boolean | Account mapping with a vault account. | 
 | WAB.sessionrights_get.interactive_login | Boolean | Interactive login. | 
+| WAB.sessionrights_get.authentication_methods | String | The authentication methods allowed by the connection policy. | 
+| WAB.sessionrights_get.device_tags.id | String | The tag id. | 
+| WAB.sessionrights_get.device_tags.key | String | The tag key. Must not start or end with a space. | 
+| WAB.sessionrights_get.device_tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.sessionrights_get.right_fingerprint | String | The fingerprint of the right \(hash of authorization and target uid\). | 
 | WAB.sessionrights_get.timeframes | String | The timeframes during which the user can access the target. | 
 | WAB.sessionrights_get.last_connection | String | The date of the last connection \(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.service_options.multi_tunneling.enabled | Boolean | The multi-tunneling is enabled. | 
+| WAB.sessionrights_get.service_options.multi_tunneling.additional_interfaces.ip | String | The ip address. | 
+| WAB.sessionrights_get.service_options.multi_tunneling.additional_interfaces.port | Number | The port address. | 
+| WAB.sessionrights_get.service_options.seamless_connection | Boolean | The seamless connection. | 
+| WAB.sessionrights_get.application | String | The application name. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.application_description | String | The application description. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.application_tags.id | String | The tag id. | 
+| WAB.sessionrights_get.application_tags.key | String | The tag key. Must not start or end with a space. | 
+| WAB.sessionrights_get.application_tags.value | String | The tag value. Must not start or end with a space. | 
 
 ### wab-get-sessionrights-user-name
 
@@ -4044,17 +4942,37 @@ category: Session Rights
 | WAB.sessionrights_get.account_description | String | The account description. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.domain | String | The domain name. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.domain_description | String | The domain description. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.device | String | The device name. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.device_alias | String | The device alias. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.device_host | String | The device hostname or IP address. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.device_description | String | The device description. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.service | String | The service name. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.service_port | Number | The service port. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.service_protocol | String | The protocol name. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.subprotocols | String | The sub protocols. | 
 | WAB.sessionrights_get.authorization_approval | Boolean | True if an approval workflow is defined in the authorization, otherwise False. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.authorization | String | The authorization name. Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.authorization_description | String | The authorization description. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.session_sharing | String | Value of Session Sharing option for the corresponding authorization. | 
 | WAB.sessionrights_get.account_mapping | Boolean | Account mapping. | 
 | WAB.sessionrights_get.account_mapping_vault | Boolean | Account mapping with a vault account. | 
 | WAB.sessionrights_get.interactive_login | Boolean | Interactive login. | 
+| WAB.sessionrights_get.authentication_methods | String | The authentication methods allowed by the connection policy. | 
+| WAB.sessionrights_get.device_tags.id | String | The tag id. | 
+| WAB.sessionrights_get.device_tags.key | String | The tag key. Must not start or end with a space. | 
+| WAB.sessionrights_get.device_tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.sessionrights_get.right_fingerprint | String | The fingerprint of the right \(hash of authorization and target uid\). | 
 | WAB.sessionrights_get.timeframes | String | The timeframes during which the user can access the target. | 
 | WAB.sessionrights_get.last_connection | String | The date of the last connection \(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.service_options.multi_tunneling.enabled | Boolean | The multi-tunneling is enabled. | 
+| WAB.sessionrights_get.service_options.multi_tunneling.additional_interfaces.ip | String | The ip address. | 
+| WAB.sessionrights_get.service_options.multi_tunneling.additional_interfaces.port | Number | The port address. | 
+| WAB.sessionrights_get.service_options.seamless_connection | Boolean | The seamless connection. | 
+| WAB.sessionrights_get.application | String | The application name. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.application_description | String | The application description. Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.application_tags.id | String | The tag id. | 
+| WAB.sessionrights_get.application_tags.key | String | The tag key. Must not start or end with a space. | 
+| WAB.sessionrights_get.application_tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.sessionrights_get.user_name | String | the user_name. | 
 
 ### wab-get-sessions
@@ -4761,6 +5679,34 @@ category: User Groups
 | WAB.usergroups_get.restrictions.subprotocol | String | The restriction subprotocol. | 
 | WAB.usergroups_get.url | String | The API URL to the resource. | 
 
+### wab-add-user-group
+
+***
+Add a user group
+category: User Groups
+
+#### Base Command
+
+`wab-add-user-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| usergroups_post_group_name | The group name. | Required | 
+| usergroups_post_profile | The group profile. (enter null for null value). | Optional | 
+| usergroups_post_description | The group description. | Optional | 
+| usergroups_post_timeframes | The group timeframe(s).<br/>Comma-separated list (use [] for an empty list). | Required | 
+| usergroups_post_users | The users in the group.<br/>Comma-separated list (use [] for an empty list). | Optional | 
+| usergroups_post_language | Language of the notifications. Possible values are: de, en, es, fr, ru. | Optional | 
+| usergroups_post_email_list | Approvers' email addresses, separated by semicolons ";". | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_user_group.id | String | id of the created object. | 
+
 ### wab-get-user-group
 
 ***
@@ -4795,6 +5741,54 @@ category: User Groups
 | WAB.usergroups_get.restrictions.rules | String | The restriction rules. | 
 | WAB.usergroups_get.restrictions.subprotocol | String | The restriction subprotocol. | 
 | WAB.usergroups_get.url | String | The API URL to the resource. | 
+
+### wab-edit-user-group
+
+***
+Edit a user group
+category: User Groups
+
+#### Base Command
+
+`wab-edit-user-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The group id or name to edit. | Required | 
+| force | The default value is false. When it is set to true the values of the users, timeframes and restrictions are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
+| usergroups_put_group_name | The group name. | Optional | 
+| usergroups_put_profile | The group profile. (enter null for null value). | Optional | 
+| usergroups_put_description | The group description. | Optional | 
+| usergroups_put_timeframes | The group timeframe(s).<br/>Comma-separated list (use [] for an empty list). | Optional | 
+| usergroups_put_users | The users in the group.<br/>Comma-separated list (use [] for an empty list). | Optional | 
+| usergroups_put_language | Language of the notifications. Possible values are: de, en, es, fr, ru. | Optional | 
+| usergroups_put_email_list | Approvers' email addresses, separated by semicolons ";". | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-delete-user-group
+
+***
+Delete a user group
+category: User Groups
+
+#### Base Command
+
+`wab-delete-user-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The group id or name to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
 
 ### wab-get-users
 

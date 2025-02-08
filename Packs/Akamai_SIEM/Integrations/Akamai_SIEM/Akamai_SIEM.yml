@@ -65,22 +65,20 @@ configuration:
   defaultvalue: 1 hours
   required: false
   section: Collect
-  hidden:
-  - marketplacev2
 - display: Fetch limit (minimum is 20)
   name: fetchLimit
   type: 0
   defaultvalue: '20'
   required: false
-  additionalinfo: Limit on the number of incidents retrieved in a single fetch.
+  additionalinfo: Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.
   section: Collect
 - display: Akamai Page size
   name: page_size
   type: 0
   required: false
   section: Collect
-  defaultvalue: '50000'
-  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 600,000.
+  defaultvalue: '20000'
+  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 80k. Note that if your API has higher ingestion rate, the integration will be able to detect it and immediately starts the next run in order to fetch events quicker.
   hidden:
   - xsoar
   advanced: true
@@ -123,12 +121,47 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  additionalinfo: Make sure this feature is not used with long running configured in the integration params and that there's no config ID used for 2 different instances / features.
+- display: Skip events decoding
+  name: should_skip_decode_events
+  additionalinfo: Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate.
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+- display: Long running instance
+  name: longRunning
+  additionalinfo: This is a beta feature for high performance fetch events. Use this param only if advised by CS. Make sure this feature is not used with fetch events configured in the integration params and that there's no config ID used for 2 different instances / features.
+  type: 8
+  required: false
+  hidden:
+  - xsoar
+  section: Collect
+- display: Page Size - high performance mode
+  name: beta_page_size
+  type: 0
+  defaultvalue: '200000'
+  required: false
+  additionalinfo: The number of events to fetch per request to akamai Default is 200k, maximum is 600k as per Akamai documentation. Use this only when using the long running beta feature.
+  section: Collect
+  hidden:
+  - xsoar
+- display: Max allowed concurrent tasks 
+  name: max_concurrent_tasks
+  type: 0
+  defaultvalue: '100'
+  required: false
+  additionalinfo: The number of tasks that can run concurrently - the higher the number, the bigger the gap between the ingested events and the events pulled from akamai can be. Maximum is 10k. Use this only when using the long running beta feature.
+  section: Collect
+  hidden:
+  - xsoar
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
 script:
   commands:
-  - description: Reset the last offset in case the offset is invalid.
+  - description: Reset the last offset to start fetching from the first fetch timestamp, use this command when the instance is disabled.
     name: akamai-siem-reset-offset
   - arguments:
     - description: 'Unique identifier for each security configuration. To report on more than one configuration, separate the integer identifiers with semicolons (;), for example: 12892;29182;82912.'
@@ -220,11 +253,12 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.116752
+  dockerimage: demisto/auth-utils:1.0.0.1968974
   isfetch: true
   isfetch:marketplacev2: false
   isfetchevents: true
   isfetchevents:xsoar: false
+  longRunning: true
   runonce: false
   script: '-'
   subtype: python3

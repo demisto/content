@@ -56,12 +56,12 @@ name: SecurityTrails
 script:
   commands:
   - arguments:
-    - description: The hostname
+    - description: The hostname.
       name: hostname
       required: true
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Only return children subdomains
+      description: Only return children subdomains.
       name: children_only
       predefined:
       - 'true'
@@ -70,237 +70,237 @@ script:
     name: securitytrails-get-subdomains
     outputs:
     - contextPath: SecurityTrails.Domain.name
-      description: Hostname
+      description: Hostname.
       type: string
     - contextPath: SecurityTrails.Domain.subdomains
-      description: Subdomains
+      description: Subdomains.
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: Domain.Subdomains
-      description: Subdomains
+      description: Subdomains.
       type: string
     - contextPath: SecurityTrails.Domain.subdomain_count
-      description: Subdomain Count
+      description: Subdomain Count.
       type: number
   - arguments:
-    - description: The hostname
+    - description: The hostname.
       name: hostname
       required: true
     description: Returns the current data about the given hostname. In addition to the current data, you also get the current statistics associated with a particular record. For example, for a records you'll get how many other hostnames have the same IP.
     name: securitytrails-get-domain-details
     outputs:
     - contextPath: SecurityTrails.Domain.name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: SecurityTrails.Domain.alexa_rank
-      description: Alexa rank
+      description: Alexa rank.
       type: number
     - contextPath: SecurityTrails.Domain.apex_domain
-      description: Apex domain
+      description: Apex domain.
       type: string
     - contextPath: SecurityTrails.Domain.current_dns
-      description: Current DNS records
+      description: Current DNS records.
     - contextPath: SecurityTrails.Domain.subdomain_count
-      description: Subdomain count
+      description: Subdomain count.
       type: number
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: Domain.NameServers
-      description: Name servers
+      description: Name servers.
       type: string
   - arguments:
-    - description: Hostname
+    - description: Hostname.
       name: hostname
       required: true
-    description: Returns tags for a given hostname
+    description: Returns tags for a given hostname.
     name: securitytrails-get-tags
     outputs:
     - contextPath: SecurityTrails.Domain.name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: SecurityTrails.Domain.tags
-      description: Domain tags
+      description: Domain tags.
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: Domain.Tags
-      description: Domain tags
+      description: Domain tags.
       type: string
   - arguments:
-    - description: Domain
+    - description: Domain.
       name: domain
       required: true
     description: Returns details for a company domain.
     name: securitytrails-get-company-details
     outputs:
     - contextPath: SecurityTrails.Domain.name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: SecurityTrails.Domain.company
-      description: Company name
+      description: Company name.
       type: string
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: Domain.Organization
-      description: Organization
+      description: Organization.
       type: string
     - contextPath: Domain.Registrant.Name
-      description: Domain registrant name
+      description: Domain registrant name.
       type: string
     - contextPath: WHOIS.Registrant.Name
-      description: Domain registrant name
+      description: Domain registrant name.
       type: string
   - arguments:
-    - description: Domain
+    - description: Domain.
       name: domain
       required: true
     description: Returns associated IPs for a company domain. The data is based on whois data with the names matched to the domains.
     name: securitytrails-get-company-associated-ips
     outputs:
     - contextPath: SecurityTrails.Domain.name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: SecurityTrails.Domain.assocaitedips
-      description: Associated IPs
+      description: Associated IPs.
     - contextPath: SecurityTrails.Domain.assocaitedip_count
-      description: Associated IP Count
+      description: Associated IP Count.
       type: number
   - arguments:
-    - description: Hostname
+    - description: Hostname.
       name: hostname
       required: true
-    description: Returns the current WHOIS data about a given hostname with the stats merged together
+    description: Returns the current WHOIS data about a given hostname with the stats merged together.
     name: securitytrails-get-domain-whois
     outputs:
     - contextPath: SecurityTrails.Domain.expiresDate
-      description: Expires date
+      description: Expires date.
       type: date
     - contextPath: SecurityTrails.Domain.nameServers
-      description: Name servers
+      description: Name servers.
     - contextPath: SecurityTrails.Domain.updatedDate
-      description: Updated date
+      description: Updated date.
       type: date
     - contextPath: SecurityTrails.Domain.name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: SecurityTrails.Domain.status
-      description: Status
+      description: Status.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.countryCode
-      description: Country code
+      description: Country code.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.organization_count
-      description: Organization count
+      description: Organization count.
       type: number
     - contextPath: SecurityTrails.Domain.contacts.telephone
-      description: Telephone
+      description: Telephone.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.postalCode_count
-      description: Postal code count
+      description: Postal code count.
       type: number
     - contextPath: SecurityTrails.Domain.contacts.fax_count
-      description: Fax count
+      description: Fax count.
       type: number
     - contextPath: SecurityTrails.Domain.contacts.street1
-      description: Street 1
+      description: Street 1.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.state
-      description: State
+      description: State.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.organization
-      description: Organization
+      description: Organization.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.telephone_count
-      description: Telephone count
+      description: Telephone count.
       type: number
     - contextPath: SecurityTrails.Domain.contacts.country
-      description: Country
+      description: Country.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.postalCode
-      description: Postcode
+      description: Postcode.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.type
-      description: Type
+      description: Type.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.city_count
-      description: City count
+      description: City count.
       type: number
     - contextPath: SecurityTrails.Domain.contacts.name_count
-      description: Name count
+      description: Name count.
       type: number
     - contextPath: SecurityTrails.Domain.contacts.email
-      description: Email
+      description: Email.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.fax
-      description: Fax
+      description: Fax.
       type: string
     - contextPath: SecurityTrails.Domain.contacts.street1_count
-      description: Street 1 count
+      description: Street 1 count.
       type: number
     - contextPath: SecurityTrails.Domain.private_registration
-      description: Private registration
+      description: Private registration.
       type: boolean
     - contextPath: SecurityTrails.Domain.createdDate
-      description: Created date
+      description: Created date.
       type: date
     - contextPath: SecurityTrails.Domain.registrarName
-      description: Registrar name
+      description: Registrar name.
       type: string
     - contextPath: SecurityTrails.Domain.contactEmail
-      description: Contact email
+      description: Contact email.
       type: string
     - contextPath: Domain.Admin.Country
-      description: Country
+      description: Country.
       type: string
     - contextPath: Domain.Admin.Email
-      description: Email
+      description: Email.
       type: string
     - contextPath: Domain.Admin.Name
-      description: Name
+      description: Name.
       type: string
     - contextPath: Domain.Admin.Phone
-      description: Phone
+      description: Phone.
       type: string
     - contextPath: Domain.DomainStatus
-      description: Status
+      description: Status.
       type: string
     - contextPath: Domain.Name
-      description: Name
+      description: Name.
       type: string
     - contextPath: Domain.NameServers
-      description: Name server
+      description: Name server.
       type: string
     - contextPath: Domain.UpdatedDate
-      description: Updated date
+      description: Updated date.
       type: date
     - contextPath: Domain.WHOIS.CreationDate
-      description: Creation date
+      description: Creation date.
       type: date
     - contextPath: Domain.WHOIS.DomainStatus
-      description: Status
+      description: Status.
       type: string
     - contextPath: Domain.WHOIS.ExpirationDate
-      description: Expiration date
+      description: Expiration date.
       type: date
     - contextPath: Domain.WHOIS.NameServers
-      description: Name servers
+      description: Name servers.
       type: string
     - contextPath: Domain.WHOIS.Registrar.Name
-      description: Name
+      description: Name.
       type: string
     - contextPath: Domain.WHOIS.UpdatedDate
-      description: Updated date
+      description: Updated date.
       type: date
   - arguments:
-    - description: Hostname
+    - description: Hostname.
       name: hostname
       required: true
     - auto: PREDEFINED
       defaultValue: a
-      description: Type
+      description: Type.
       name: type
       predefined:
       - a
@@ -314,72 +314,72 @@ script:
     name: securitytrails-get-dns-history
     outputs:
     - contextPath: SecurityTrails.Domain.a_history_records.first_seen
-      description: First seen
+      description: First seen.
       type: string
     - contextPath: SecurityTrails.Domain.a_history_records.last_seen
-      description: Last seen
+      description: Last seen.
       type: string
     - contextPath: SecurityTrails.Domain.a_history_records.organizations
-      description: Organizations
+      description: Organizations.
     - contextPath: SecurityTrails.Domain.a_history_records.type
-      description: Type
+      description: Type.
       type: string
     - contextPath: SecurityTrails.Domain.a_history_records.values.ip
-      description: IP
+      description: IP.
       type: string
     - contextPath: SecurityTrails.Domain.a_history_records.values.ipv6
-      description: IPv6
+      description: IPv6.
       type: string
     - contextPath: SecurityTrails.Domain.mx_history_records.values.host
-      description: Host
+      description: Host.
       type: string
     - contextPath: SecurityTrails.Domain.mx_history_records.values.mx_count
-      description: MX count
+      description: MX count.
       type: number
     - contextPath: SecurityTrails.Domain.mx_history_records.values.priority
-      description: Priority
+      description: Priority.
       type: number
     - contextPath: SecurityTrails.Domain.name
-      description: Name
+      description: Name.
       type: string
     - contextPath: SecurityTrails.Domain.ns_history_records.values.nameserver
-      description: Name server
+      description: Name server.
       type: string
     - contextPath: SecurityTrails.Domain.ns_history_records.values.nameserver_count
-      description: Name server count
+      description: Name server count.
       type: number
     - contextPath: SecurityTrails.Domain.soa_history_records.values.email
-      description: Email
+      description: Email.
       type: string
     - contextPath: SecurityTrails.Domain.soa_history_records.values.email_count
-      description: Email count
+      description: Email count.
       type: number
     - contextPath: SecurityTrails.Domain.soa_history_records.values.ttl
-      description: TTL
+      description: TTL.
       type: number
     - contextPath: SecurityTrails.Domain.txt_history_records.values.value
-      description: Value
+      description: Value.
       type: string
     - contextPath: SecurityTrails.Domain.a_history_record_pages
-      description: A record pages count
+      description: A record pages count.
       type: number
     - contextPath: SecurityTrails.Domain.aaaa_history_record_pages
-      description: AAAA record pages count
+      description: AAAA record pages count.
       type: number
     - contextPath: SecurityTrails.Domain.mx_history_record_pages
-      description: MX record pages count
+      description: MX record pages count.
       type: number
     - contextPath: SecurityTrails.Domain.ns_history_record_pages
-      description: NS record pages count
+      description: NS record pages count.
       type: number
     - contextPath: SecurityTrails.Domain.soa_history_record_pages
-      description: SOA record pages count
+      description: SOA record pages count.
       type: number
     - contextPath: SecurityTrails.Domain.txt_history_record_pages
-      description: TXT record pages count
+      description: TXT record pages count.
       type: number
   - arguments:
-    - description: Hostname
+    - description: Hostname.
       name: hostname
       required: true
     - description: The page of the returned results, starting at 1. A page returns 100 results.
@@ -388,146 +388,146 @@ script:
     name: securitytrails-get-whois-history
     outputs:
     - contextPath: SecurityTrails.Domain.name
-      description: Name
+      description: Name.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.telephone
-      description: Telephone
+      description: Telephone.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.city
-      description: City
+      description: City.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.name
-      description: Name
+      description: Name.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.street1
-      description: Street 1
+      description: Street 1.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.state
-      description: State
+      description: State.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.organization
-      description: Organization
+      description: Organization.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.country
-      description: Country
+      description: Country.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.postalCode
-      description: Postal code
+      description: Postal code.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.type
-      description: Type
+      description: Type.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.email
-      description: Email
+      description: Email.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.contact.fax
-      description: Fax
+      description: Fax.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.started
-      description: Started
+      description: Started.
       type: number
     - contextPath: SecurityTrails.Domain.whois_history.expiresDate
-      description: Expires date
+      description: Expires date.
       type: number
     - contextPath: SecurityTrails.Domain.whois_history.domain
-      description: Domain
+      description: Domain.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.nameServers
-      description: Name servers
+      description: Name servers.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.gtld
-      description: GTLD
+      description: GTLD.
       type: boolean
     - contextPath: SecurityTrails.Domain.whois_history.updatedDate
-      description: Updated date
+      description: Updated date.
       type: number
     - contextPath: SecurityTrails.Domain.whois_history.status
-      description: Status
+      description: Status.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.full_domain
-      description: Full domain
+      description: Full domain.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.createdDate
-      description: Created date
+      description: Created date.
       type: number
     - contextPath: SecurityTrails.Domain.whois_history.registrarName
-      description: Registrar name
+      description: Registrar name.
       type: string
     - contextPath: SecurityTrails.Domain.whois_history.ended
-      description: Ended date
+      description: Ended date.
       type: number
     - contextPath: SecurityTrails.Domain.whois_history_count
-      description: WHOIS history count
+      description: WHOIS history count.
       type: number
     - contextPath: Domain.Name
-      description: Name
+      description: Name.
       type: string
     - contextPath: Domain.WHOIS/History.Admin.Email
-      description: Email
+      description: Email.
       type: string
     - contextPath: Domain.WHOIS/History.Admin.Name
-      description: Name
+      description: Name.
       type: string
     - contextPath: Domain.WHOIS/History.Admin.Phone
-      description: Phone
+      description: Phone.
       type: string
     - contextPath: Domain.WHOIS/History.CreationDate
-      description: Creation date
+      description: Creation date.
       type: date
     - contextPath: Domain.WHOIS/History.DomainStatus
-      description: Status
+      description: Status.
       type: string
     - contextPath: Domain.WHOIS/History.ExpirationDate
-      description: Expiration date
+      description: Expiration date.
       type: date
     - contextPath: Domain.WHOIS/History.NameServers
-      description: Name servers
+      description: Name servers.
       type: string
     - contextPath: Domain.WHOIS/History.Registrant.Email
-      description: Email
+      description: Email.
       type: string
     - contextPath: Domain.WHOIS/History.Registrant.Name
-      description: Name
+      description: Name.
       type: string
     - contextPath: Domain.WHOIS/History.Registrant.Phone
-      description: Phone
+      description: Phone.
       type: string
     - contextPath: Domain.WHOIS/History.Registrar.Email
-      description: Email
+      description: Email.
       type: string
     - contextPath: Domain.WHOIS/History.Registrar.Name
-      description: Name
+      description: Name.
       type: string
     - contextPath: Domain.WHOIS/History.Registrar.Phone
-      description: Phone
+      description: Phone.
       type: string
     - contextPath: Domain.WHOIS/History.UpdatedDate
-      description: Updated date
+      description: Updated date.
       type: date
   - arguments:
-    - description: Starting IP address (optionally with CIDR subnet mask)
+    - description: Starting IP address (optionally with CIDR subnet mask).
       name: ipaddress
       required: true
-    description: 'Returns the neighbors in any given IP level range and essentially allows you to explore closeby IP addresses. It will divide the range into 16 groups. Example: a /28 would be divided into 16 /32 blocks or a /24 would be divided into 16 /28 blocks'
+    description: 'Returns the neighbors in any given IP level range and essentially allows you to explore closeby IP addresses. It will divide the range into 16 groups. Example: a /28 would be divided into 16 /32 blocks or a /24 would be divided into 16 /28 blocks.'
     name: securitytrails-get-ip-neighbors
     outputs:
     - contextPath: SecurityTrails.IP.ip
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: SecurityTrails.IP.block.active_egress
-      description: Active Egress
+      description: Active Egress.
       type: boolean
     - contextPath: SecurityTrails.IP.block.hostnames
-      description: Hostnames
+      description: Hostnames.
       type: string
     - contextPath: SecurityTrails.IP.block.ports
-      description: Port
+      description: Port.
       type: number
     - contextPath: SecurityTrails.IP.block.sites
-      description: Sites
+      description: Sites.
       type: number
     - contextPath: IP.Address
-      description: Address
+      description: Address.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -554,60 +554,60 @@ script:
     name: securitytrails-search-domain
     outputs:
     - contextPath: SecurityTrails.Domain.Search.alexa_rank
-      description: Alexa rank
+      description: Alexa rank.
       type: number
     - contextPath: SecurityTrails.Domain.Search.computed.company_name
-      description: Company name
+      description: Company name.
       type: string
     - contextPath: SecurityTrails.Domain.Search.host_provider
-      description: Host provider
+      description: Host provider.
       type: string
     - contextPath: SecurityTrails.Domain.Search.hostname
-      description: Hostname
+      description: Hostname.
       type: string
     - contextPath: SecurityTrails.Domain.Search.mail_provider.[0]
-      description: Mail provider
+      description: Mail provider.
       type: string
     - contextPath: SecurityTrails.Domain.Search.whois.createdDate
-      description: Created date
+      description: Created date.
       type: number
     - contextPath: SecurityTrails.Domain.Search.whois.expiresDate
-      description: Expires date
+      description: Expires date.
       type: number
     - contextPath: SecurityTrails.Domain.Search.whois.registrar
-      description: Registrar
+      description: Registrar.
       type: string
   - arguments:
     - description: The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
       name: query
     - description: JSON dicitonary of filter terms (https://docs.securitytrails.com/reference#domain-search). Can not be used together with query.
       name: filter
-    description: Domain statistics
+    description: Domain statistics.
     name: securitytrails-statistics-domain
     outputs:
     - contextPath: SecurityTrails.Domain.Search.DomainStats.domain_count
-      description: Domain count
+      description: Domain count.
       type: number
     - contextPath: SecurityTrails.Domain.Search.DomainStats.hostname_count.relation
-      description: Relation
+      description: Relation.
       type: string
     - contextPath: SecurityTrails.Domain.Search.DomainStats.hostname_count.value
-      description: Value
+      description: Value.
       type: number
     - contextPath: SecurityTrails.Domain.Search.DomainStats.tld_count
-      description: TLD count
+      description: TLD count.
       type: number
     - contextPath: SecurityTrails.Domain.Search.DomainStats.top_organizations.count
-      description: Count
+      description: Count.
       type: number
     - contextPath: SecurityTrails.Domain.Search.DomainStats.top_organizations.key
-      description: Key
+      description: Key.
       type: string
     - contextPath: SecurityTrails.Domain.Search.DomainStats.whois_organization_count
-      description: WHOIS count
+      description: WHOIS count.
       type: number
   - arguments:
-    - description: Hostname
+    - description: Hostname.
       name: hostname
       required: true
     - description: The page of the returned results, starting at 1. A page returns 100 results.
@@ -616,31 +616,31 @@ script:
     name: securitytrails-get-associated-domains
     outputs:
     - contextPath: SecurityTrails.Domain.associated_domains.alexa_rank
-      description: Alexa Rank
+      description: Alexa Rank.
       type: number
     - contextPath: SecurityTrails.Domain.associated_domains.computed.company_name
-      description: Company Name
+      description: Company Name.
       type: string
     - contextPath: SecurityTrails.Domain.associated_domains.host_provider
-      description: Host Provider
+      description: Host Provider.
       type: string
     - contextPath: SecurityTrails.Domain.associated_domains.hostname
-      description: Hostname
+      description: Hostname.
       type: string
     - contextPath: SecurityTrails.Domain.associated_domains.mail_provider
-      description: Mail Provider
+      description: Mail Provider.
       type: string
     - contextPath: SecurityTrails.Domain.associated_domains.whois.createdDate
-      description: Created Date
+      description: Created Date.
       type: number
     - contextPath: SecurityTrails.Domain.associated_domains.whois.expiresDate
-      description: Expires Date
+      description: Expires Date.
       type: number
     - contextPath: SecurityTrails.Domain.associated_domains.whois.registrar
-      description: Registrar
+      description: Registrar.
       type: string
     - contextPath: SecurityTrails.Domain.associated_domain_count
-      description: Associated Domain Count
+      description: Associated Domain Count.
       type: number
   - arguments:
     - defaultValue: '1'
@@ -653,81 +653,81 @@ script:
     name: securitytrails-search-ip
     outputs:
     - contextPath: SecurityTrails.IP.Search.ip
-      description: IP Address
+      description: IP Address.
       type: string
     - contextPath: SecurityTrails.IP.Search.ports.port
-      description: Port
+      description: Port.
       type: number
     - contextPath: SecurityTrails.IP.Search.ports.date_checked
-      description: Date checked
+      description: Date checked.
       type: number
     - contextPath: SecurityTrails.IP.Search.ptr
-      description: PTR Record
+      description: PTR Record.
       type: string
     - contextPath: IP.Address
-      description: Address
+      description: Address.
       type: string
     - contextPath: IP.Hostname
-      description: Hostname
+      description: Hostname.
       type: string
     - contextPath: IP.Ports
-      description: Ports
+      description: Ports.
       type: string
   - arguments:
     - description: The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
       name: query
       required: true
-    description: Statistics like Reverse DNS pattern identification (RDNS entries are grouped and displayed as x), ports (number of open ports found) or total results are returned
+    description: Statistics like Reverse DNS pattern identification (RDNS entries are grouped and displayed as x), ports (number of open ports found) or total results are returned.
     name: securitytrails-statistics-ip
     outputs:
     - contextPath: SecurityTrails.IP.Search.IPStats.ports.count
-      description: Count
+      description: Count.
       type: number
     - contextPath: SecurityTrails.IP.Search.IPStats.ports.key
-      description: Key
+      description: Key.
       type: number
     - contextPath: SecurityTrails.IP.Search.IPStats.top_ptr_patterns.count
-      description: Count
+      description: Count.
       type: number
     - contextPath: SecurityTrails.IP.Search.IPStats.top_ptr_patterns.key
-      description: Key
+      description: Key.
       type: string
     - contextPath: SecurityTrails.IP.Search.IPStats.total.relation
-      description: Relation
+      description: Relation.
       type: string
     - contextPath: SecurityTrails.IP.Search.IPStats.total.value
-      description: Value
+      description: Value.
       type: number
   - arguments:
-    - description: IP Address
+    - description: IP Address.
       name: ipaddress
       required: true
     name: securitytrails-get-ip-whois
     description: Returns IPs information based on whois information.
     outputs:
     - contextPath: SecurityTrails.IP.contact_email
-      description: Email
+      description: Email.
       type: string
     - contextPath: SecurityTrails.IP.contacts.email
-      description: Email
+      description: Email.
       type: string
     - contextPath: SecurityTrails.IP.contacts.organization
-      description: Organization
+      description: Organization.
       type: string
     - contextPath: SecurityTrails.IP.contacts.telephone
-      description: Telephone
+      description: Telephone.
       type: string
     - contextPath: SecurityTrails.IP.contacts.type
-      description: Type
+      description: Type.
       type: string
     - contextPath: SecurityTrails.IP.ip
-      description: IP
+      description: IP.
       type: string
     - contextPath: SecurityTrails.IP.source
-      description: Source
+      description: Source.
       type: string
   - arguments:
-    - description: IP Address
+    - description: IP Address.
       name: ipaddress
       required: true
     - defaultValue: '1'
@@ -737,55 +737,55 @@ script:
     name: securitytrails-get-useragents
     outputs:
     - contextPath: SecurityTrails.IP.ip
-      description: IP Address
+      description: IP Address.
       type: string
     - contextPath: SecurityTrails.IP.useragent_records_count
-      description: Count
+      description: Count.
       type: number
     - contextPath: SecurityTrails.IP.useragents.browser_family
-      description: Browser Family
+      description: Browser Family.
       type: string
     - contextPath: SecurityTrails.IP.useragents.client.engine
-      description: Client Engine
+      description: Client Engine.
       type: string
     - contextPath: SecurityTrails.IP.useragents.client.engine_version
-      description: Client Engine Version
+      description: Client Engine Version.
       type: string
     - contextPath: SecurityTrails.IP.useragents.client.name
-      description: Client Engine Name
+      description: Client Engine Name.
       type: string
     - contextPath: SecurityTrails.IP.useragents.client.type
-      description: Client Engine Type
+      description: Client Engine Type.
       type: string
     - contextPath: SecurityTrails.IP.useragents.client.version
-      description: Client Version
+      description: Client Version.
       type: string
     - contextPath: SecurityTrails.IP.useragents.device.brand
-      description: Device Brand
+      description: Device Brand.
       type: string
     - contextPath: SecurityTrails.IP.useragents.device.model
-      description: Device Model
+      description: Device Model.
       type: string
     - contextPath: SecurityTrails.IP.useragents.device.type
-      description: Device Type
+      description: Device Type.
       type: string
     - contextPath: SecurityTrails.IP.useragents.lastseen
-      description: Last Seen
+      description: Last Seen.
       type: string
     - contextPath: SecurityTrails.IP.useragents.os.name
-      description: OS Name
+      description: OS Name.
       type: string
     - contextPath: SecurityTrails.IP.useragents.os.platform
-      description: OS Platform
+      description: OS Platform.
       type: string
     - contextPath: SecurityTrails.IP.useragents.os.version
-      description: OS Version
+      description: OS Version.
       type: string
     - contextPath: SecurityTrails.IP.useragents.os_family
-      description: OS Family
+      description: OS Family.
       type: string
     - contextPath: SecurityTrails.IP.useragents.user_agent
-      description: User Agent
+      description: User Agent.
       type: string
   - arguments:
     - name: domain
@@ -866,7 +866,7 @@ script:
       description: The phone number of the registrant.
       type: String
     - contextPath: Domain.WHOIS.Registrar.Name
-      description: 'The name of the registrar, for example: `GoDaddy`'
+      description: 'The name of the registrar, for example: `GoDaddy`.'
       type: String
     - contextPath: Domain.WHOIS.Registrar.Email
       description: The email address of the contact.
@@ -897,13 +897,13 @@ script:
       type: Number
   - arguments:
     - name: sql
-      description: 'The SQL query to execute (example: SELECT attribute FROM table WHERE condition = "value")'
+      description: 'The SQL query to execute (example: SELECT attribute FROM table WHERE condition = "value").'
       required: true
       defaultValue: ''
       predefined:
       - ''
     - name: timeout
-      description: Read timeout for calls (default is 20 seconds)
+      description: Read timeout for calls (default is 20 seconds).
       defaultValue: '20'
       predefined:
       - ''
@@ -911,29 +911,29 @@ script:
     description: 'Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL API provides a powerful SQL-like query interface to data via certain API endpoints. For a full reference of properties and operators please check the following link: https://securitytrails.com/reference/sql'
     outputs:
     - contextPath: Securitytrails.SQL.total
-      description: The total number of hits discovered
+      description: The total number of hits discovered.
       type: Number
     - contextPath: Securitytrails.SQL.records
-      description: The records returned
+      description: The records returned.
       type: Unknown
     - contextPath: Securitytrails.SQL.id
-      description: The ID to use for further GET calls to retrieve more results
+      description: The ID to use for further GET calls to retrieve more results.
       type: String
     - contextPath: Securitytrails.SQL.query
-      description: The original query used
+      description: The original query used.
       type: String
     - contextPath: Securitytrails.SQL.pages
-      description: The total number of pages that would need to be called to retrieve the rest of the results
+      description: The total number of pages that would need to be called to retrieve the rest of the results.
       type: Number
   - arguments:
     - name: id
-      description: The ID to use to retrieve the next page of results
+      description: The ID to use to retrieve the next page of results.
       required: true
       defaultValue: ''
       predefined:
       - ''
     - name: timeout
-      description: Read timeout for calls (default is 20 seconds)
+      description: Read timeout for calls (default is 20 seconds).
       defaultValue: '20'
       predefined:
       - ''
@@ -941,17 +941,17 @@ script:
     description: Retrieves the next page of results returned from a SQL query where the results exceeded the last page.
     outputs:
     - contextPath: Securitytrails.SQL.total
-      description: The total number of hits discovered
+      description: The total number of hits discovered.
       type: number
     - contextPath: Securitytrails.SQL.records
-      description: The records returned
+      description: The records returned.
     - contextPath: Securitytrails.SQL.id
-      description: The ID to use for further GET calls to retrieve more results
+      description: The ID to use for further GET calls to retrieve more results.
       type: string
     - contextPath: Securitytrails.SQL.query
-      description: The original query used
+      description: The original query used.
       type: string
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: ''
   subtype: python3

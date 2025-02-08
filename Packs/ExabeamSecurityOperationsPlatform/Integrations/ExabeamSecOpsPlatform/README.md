@@ -1,31 +1,27 @@
 Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 This integration was integrated and tested with version v1.0 of ExabeamSecOpsPlatform.
 
-## Configure Exabeam Security Operations Platform on Cortex XSOAR
+## Configure Exabeam Security Operations Platform in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Exabeam Security Operations Platform.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Client ID | True |
-    | Client Secret | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  |
-    | Maximum Incidents Per Fetch |  |
-    | Fetch query |  |
-    | Fetch incidents |  |
-    | Incident type |  |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Client ID | True |
+| Client Secret | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  |
+| Maximum Incidents Per Fetch |  |
+| Fetch query |  |
+| Fetch incidents |  |
+| Incident type |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### exabeam-platform-event-search
@@ -341,4 +337,3 @@ Search for cases that match one or more search criteria. For example, you can se
 | ExabeamPlatform.Case.mitres.tacticKey | String | Key of the MITRE tactic associated with the case. | 
 | ExabeamPlatform.Case.mitres.technique | String | MITRE technique associated with the case. | 
 | ExabeamPlatform.Case.mitres.techniqueKey | String | Key of the MITRE technique associated with the case. | 
-

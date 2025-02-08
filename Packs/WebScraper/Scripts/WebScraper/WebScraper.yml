@@ -1,29 +1,29 @@
 args:
-- description: Page url to scrap
+- description: Page url to scrap.
   name: page_url
   predefined:
   - ''
-- description: HTML page to scrap
+- description: HTML page to scrap.
   name: page_html
   predefined:
   - ''
-- description: Request headers
+- description: Request headers.
   name: headers
-- description: Request parameters
+- description: Request parameters.
   name: params
-- description: 'HTML tags navigation tree, example: "body.table"'
+- description: 'HTML tags navigation tree, example: "body.table".'
   name: navigator_tree
 - defaultValue: 'False'
-  description: Ignore certificate validation errors
+  description: Ignore certificate validation errors.
   name: insecure
-comment: An Automation Script to Web Scrap a URL or HTML Page
+comment: An Automation Script to Web Scrap a URL or HTML Page.
 commonfields:
   id: WebScraper
   version: -1
 name: WebScraper
 outputs:
 - contextPath: WebScraper.Tree
-  description: Scraped Pages
+  description: Scraped Pages.
   type: String
 script: '-'
 subtype: python3
@@ -31,7 +31,7 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: demisto/bs4-py3:1.0.0.100299
+dockerimage: demisto/bs4-py3:1.0.0.117152
 fromversion: 6.0.0
 tests:
 - No tests

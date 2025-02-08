@@ -3,7 +3,7 @@ version: -1
 name: Detonate URL - ThreatStream
 fromversion: 5.0.0
 description: |-
-  Detonates one or more URLs using the Anomali ThreatStream v2 sandbox integration.
+  Detonates one or more URLs using the Anomali ThreatStream sandbox integration.
   Returns relevant reports to the War Room and URL reputations to the context data.
 starttaskid: "0"
 tasks:
@@ -222,13 +222,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 569601dc-c5d2-430b-8fe7-df84b0d9c3a9
+    taskid: 7fbe1c8e-6a43-4d15-84f1-8ea2b45e0090
     type: condition
     task:
-      id: 569601dc-c5d2-430b-8fe7-df84b0d9c3a9
+      id: 7fbe1c8e-6a43-4d15-84f1-8ea2b45e0090
       version: -1
-      name: Is Anomali ThreatStream v2 enabled?
-      description: Checks if there is an active instance of the Anomali ThreatStream v2 integration enabled.
+      name: Is Anomali ThreatStream v2 or v3 enabled?
+      description: Checks if there is an active instance of the Anomali ThreatStream integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -265,6 +265,32 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Anomali ThreatStream v3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
     view: |-
       {
         "position": {
@@ -282,10 +308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7f0c228f-a0db-4763-8b00-2bb406f56c91
+    taskid: 253118c5-9d67-4913-861f-04cf558fe1d9
     type: regular
     task:
-      id: 7f0c228f-a0db-4763-8b00-2bb406f56c91
+      id: 253118c5-9d67-4913-861f-04cf558fe1d9
       version: -1
       name: ThreatStream Get Report
       description: Returns a report of the file or URL that was submitted to the sandbox.

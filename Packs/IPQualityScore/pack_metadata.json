@@ -2,7 +2,7 @@
     "name": "IPQualityScore (IPQS) Threat Risk Scoring",
     "description": "Detect threats with real-time risk scoring by IPQS. Playbook analyzes IP addresses, email addresses, and domains or URLs for high risk behavior.",
     "support": "partner",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.11",
     "author": "IPQualityScore",
     "url": "https://www.ipqualityscore.com",
     "email": "support@ipqualityscore.com",

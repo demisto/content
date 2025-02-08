@@ -9,7 +9,7 @@ import urllib3
 from typing import Dict, List, Tuple, Any, Union, cast
 import xml.etree.ElementTree as ET_PHONE_HOME
 from copy import deepcopy
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from dateutil.parser import parse as parsedate
 
 # Disable insecure warnings
@@ -398,7 +398,7 @@ def web_api_login():
     """
     global LAST_JWT_FETCH
     global WEB_AUTH
-    if not LAST_JWT_FETCH or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
+    if not LAST_JWT_FETCH or datetime.now(UTC) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
         url_suffix = '/api/login'
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         params = {'username': WEB_API_USERNAME, 'password': WEB_API_PASSWORD}

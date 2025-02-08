@@ -559,7 +559,7 @@ script:
     - contextPath: GoogleCloudSCC.Finding.securityMarks.marks
       description: Mutable user specified security marks belonging to the parent resource.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.116623
+  dockerimage: demisto/google-api-py3:1.0.0.1839966
   isfetch: true
   runonce: false
   script: '-'

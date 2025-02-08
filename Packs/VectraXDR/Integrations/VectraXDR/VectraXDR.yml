@@ -2168,7 +2168,7 @@ script:
     - contextPath: Vectra.Group.rules.description
       description: Description of the rule.
       type: String
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/python3:3.11.10.116949
   feed: false
   isfetch: true
   isremotesyncin: true

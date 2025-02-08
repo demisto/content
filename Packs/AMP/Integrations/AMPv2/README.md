@@ -1,28 +1,24 @@
 Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
 This integration was integrated and tested with version 1 of CiscoAMP.
 
-## Configure Cisco AMP Secure Endpoint on Cortex XSOAR
+## Configure Cisco AMP Secure Endpoint in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco AMP Secure Endpoint.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | 3rd Party API Client ID |  | True |
-    | API Key |  | True |
-    | Trust any certificate (unsecure) |  | False |
-    | Use system proxy |  | False |
-    | Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 200. | False |
-    | Incident severity to fetch. |  | False |
-    | First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
-    | Event types | Comma-separated list of Event Type IDs. | False |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| 3rd Party API Client ID |  | True |
+| API Key |  | True |
+| Trust any certificate (unsecure) |  | False |
+| Use system proxy |  | False |
+| Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 200. | False |
+| Incident severity to fetch. |  | False |
+| First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
+| Event types | Comma-separated list of Event Type IDs. | False |
+| Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cisco-amp-computer-list
 ***

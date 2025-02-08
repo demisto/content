@@ -2,6 +2,13 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
+## Retirement of RBAC Application Impersonation
+
+As of February 2025, the Impersonation access type of the integration is deprecated by Microsoft, read about it [here](https://techcommunity.microsoft.com/blog/exchange/critical-update-applicationimpersonation-rbac-role-deprecation-in-exchange-onlin/4295762).
+To avoid disruptions, it is imperative that administrators begin transitioning their applications immediately.
+To identify accounts using the ApplicationImpersonation role use the Exchange Online PowerShell command:
+`Get-ManagementRoleAssignment -Role ApplicationImpersonation -GetEffectiveUsers -Delegating:$false`
+
 ## Use Cases
 
 The EWS integration can be used for the following use cases.
@@ -49,8 +56,8 @@ For more details about the authentication used in this integration, see [Microso
 
 In order to function as expected, the service account should have:
 
-**Impersonation rights** - In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and instructions on how to set up the permission, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
-Most commands require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
+**Impersonation rights** (deprecated) - In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and instructions on how to set up the permission, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
+Most commands require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
 
 **eDiscovery** permissions to the Exchange Server. For users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information, see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
 The need for this permission is specified in each relevant command's Permission section.
@@ -61,7 +68,7 @@ To set this permission follow these steps:
 1. Navigate to **Home** > **App registrations**.
 2. Search for your app under *all applications*.
 3. Click **API permissions** > **Add permission**.
-4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission. 
+4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission.
 
 For more information on this permission, see [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
 
@@ -75,7 +82,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Token / Tenant ID | Token can be received after following the System Integration Setup (Device side steps). | False |
 | Key / Application Secret | Key can be received after following the System Integration Setup (Device side steps). | False |
 | Azure Cloud | Azure Cloud environment. Options are: _Worldwide_ (The publicly accessible Azure Cloud), _US GCC_ (Azure cloud for the USA Government Cloud Community), _US GCC-High_ (Azure cloud for the USA Government Cloud Community High), _DoD_ (Azure cloud for the USA Department of Defense), _Germany_ (Azure cloud for the German Government), _China_ (Azure cloud for the Chinese Government ) | False|
-| Email Address | Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365/#additional-information | True |
+| Email Address | Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365/#additional-information | True |
 | UPN Address | When provided, the target mailbox if it's different from the Email Address. Otherwise, the Email Address is used. | False |
 | Name of the folder from which to fetch incidents | Supports Exchange Folder ID and sub-folders, e.g., Inbox/Phishing. | True |
 | Access Type | Run the commands using `Delegate` or `Impersonation` access types. | False |
@@ -847,7 +854,7 @@ There is no context output for this command.
 
 ### ews-mark-item-as-junk
 
-Marks an item as junk. This is commonly used to block an email address. For more information, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx).
+Marks an item as junk. This is used to block an email address (meaning all future emails from this sender will be sent to the junk folder). For more information, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx).
 
 #### Permissions
 
@@ -1053,7 +1060,7 @@ No known limitations.
 |EWS.Items.FileAttachments.attachmentName|unknown|Attachment name of the file attachment.|
 |EWS.Items.ItemAttachments.attachmentName|unknown|Attachment name of the item attachment.|
 |EWS.Items.isRead|String|The read status of the email.|
-|EWS.Items.categories|String|Categories of the email.| 
+|EWS.Items.categories|String|Categories of the email.|
 
 #### Examples
 
@@ -1169,7 +1176,7 @@ No known limitations.
 |EWS.Items.FileAttachments.attachmentName|unknown|Attachment name of the file attachment.|
 |EWS.Items.ItemAttachments.attachmentName|unknown|Attachment name of the item attachment.|
 |EWS.Items.isRead|String|The read status of the email.|
-|EWS.Items.categories|String|Categories of the email.| 
+|EWS.Items.categories|String|Categories of the email.|
 |Email.CC|String|Email addresses CC'ed to the email.|
 |Email.BCC|String|Email addresses BCC'ed to the email.|
 |Email.To|String|The recipient of the email.|
@@ -1445,12 +1452,16 @@ No known limitations.
 
 ### send-mail
 
+***
 Sends an email.
+
+#### Base Command
+
+`send-mail`
 
 #### Permissions
 
 Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
-
 
 #### Limitations
 
@@ -1460,30 +1471,29 @@ When sending the email to an Outlook account, Outlook UI fails to display custom
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | Email addresses for the 'To' field. Supports comma-separated values | Optional | 
-| cc | Email addresses for the 'Cc' field. Supports comma-separated values | Optional | 
-| bcc | Email addresses for the 'Bcc' field. Supports comma-separated values | Optional | 
-| subject | Subject for the email to be sent | Optional | 
-| body | The contents (body) of the email to be sent in plain text | Optional | 
-| htmlBody | The contents (body) of the email to be sent in HTML format | Optional | 
-| attachIDs | A comma-separated list of IDs of war room entries that contains the files that should be attached to the email | Optional | 
-| attachNames | A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3) | Optional | 
-| attachCIDs | A comma-separated list of CIDs to embed attachments inside the email itself | Optional | 
-| transientFile | Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
-| transientFileContent | Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
-| transientFileCID | CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
-| templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not. | Optional | 
-| additionalHeader | A comma-separated list list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
-| raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional | 
-| from_address | The email address from which to reply. | Optional |
+| to | Email addresses for the 'To' field. Supports comma-separated values. | Optional |
+| cc | Email addresses for the 'Cc' field. Supports comma-separated values. | Optional |
+| bcc | Email addresses for the 'Bcc' field. Supports comma-separated values. | Optional |
+| subject | Subject for the email to be sent. | Optional | 
+| body | The contents (body) of the email to be sent in plain text. | Optional | 
+| htmlBody | The contents (body) of the email to be sent in HTML format. | Optional |
+| attachIDs | A comma-separated list of War Room entry IDs that contain the files to attach to the email. | Optional |
+| attachNames | A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3. | Optional |
+| attachCIDs | A comma-separated list of CIDs to embed attachments inside the email itself. | Optional |
+| transientFile | A name for the attached file. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional |
+| transientFileContent | Content for the attached file. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional |
+| transientFileCID | CID for the attached file if it's inline. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional |
+| templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document, such ase {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key from which to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not. | Optional |
+| additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional |
+| raw_message | Raw email message. If provided, all other arguments will be ignored except "to", "cc", and "bcc". | Optional |
+| from | The email address from which to reply. | Optional |
 | replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
-| importance | Sets the importance/Priority of the email. Default value is Normal. | Optional |
+| importance | Sets the importance/Priority of the email. Default value is Normal. Possible values are: High, Normal, Low. Default is Normal. | Optional |
+| handle_inline_image | Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML and attached to the email as an inline attachment object. Note that in some cases, attaching the image as an object may cause the image to disappear when replying to the email. Additionally, sending the image in the html body as base64 data (inline image) may cause the image to disappear if the image is too large or recognized as malicious and subsequently deleted. Possible values are: True, False. Default is True. | Optional |
 
-
-#### Outputs
+#### Context Output
 
 There is no context output for this command.
-
 
 #### Examples
 
@@ -1516,24 +1526,24 @@ No known limitations.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item-id | The item ID of item to upload as and EML file. | Required | 
-| target-mailbox | The mailbox in which this email was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox. | Optional | 
+| item-id | The item ID of item to upload as and EML file. | Required |
+| target-mailbox | The mailbox in which this email was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox. | Optional |
 
 #### Outputs
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Size | String | The size of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.SSDeep | String | The SSDeep hash of the file. | 
-| File.EntryID | String | EntryID of the file | 
-| File.Info | String | Information about the file. | 
-| File.Type | String | The file type. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.Extension | String | The extension of the file. | 
+| File.Size | String | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | EntryID of the file |
+| File.Info | String | Information about the file. |
+| File.Type | String | The file type. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The extension of the file. |
 
 #### Examples
 >
@@ -1561,16 +1571,16 @@ No known limitations.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| inReplyTo | ID of the item to reply to. | Required | 
-| to | A comma-separated list of email addresses for the 'to' field. | Required | 
-| cc | A comma-separated list of email addresses for the 'cc' field. | Optional | 
-| bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional | 
-| subject | Subject for the email to be sent. | Optional | 
-| body | The contents (body) of the email to send. | Optional | 
-| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
-| attachIDs | A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
-| attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
-| attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional | 
+| inReplyTo | ID of the item to reply to. | Required |
+| to | A comma-separated list of email addresses for the 'to' field. | Required |
+| cc | A comma-separated list of email addresses for the 'cc' field. | Optional |
+| bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional |
+| subject | Subject for the email to be sent. | Optional |
+| body | The contents (body) of the email to send. | Optional |
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional |
+| attachIDs | A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional |
+| attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
+| attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional |
 
 
 #### Outputs
@@ -1630,7 +1640,7 @@ There is no context output for this command.
 <details><summary><h3 style={{display: 'inline'}}> Fetch command </h3></summary>
 
 * If incidents are not being fetched, verify that no `pre-process` rule is configured that might filter some incidents out.
-* "address parts cannot contain CR or LF" error message in the logs means a corrupted email might have failed the process. In order to resolve this, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
+* "address parts cannot contain CR or LF" error message in the logs means a corrupted email might have failed the process. In order to resolve this, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted.
 
 </details>
 

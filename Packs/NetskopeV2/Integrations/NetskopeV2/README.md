@@ -1,23 +1,19 @@
 Block URLs, domains and file hashes.
 This integration was integrated and tested with version 91.0.6.575 of Netskope (API v2) for contribution to marketplace
 
-## Configure Netskope (API v2) for contribution to marketplace on Cortex XSOAR
+## Configure Netskope (API v2) for contribution to marketplace in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Netskope (API v2).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | URL of Netskope Tenant (e.g. https://tenant.goskope.com) | True |
-    | API Key | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| URL of Netskope Tenant (e.g. https://tenant.goskope.com) | True |
+| API Key | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### netskopev2-add-url
 ***
@@ -165,4 +161,3 @@ Get URL list by ID
 ``` ```
 
 #### Human Readable Output
-

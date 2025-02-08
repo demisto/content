@@ -3,6 +3,7 @@ from defusedxml import ElementTree
 import pytest
 import requests_mock
 from pytest_mock import MockerFixture
+from requests_mock.mocker import Mocker as RequestsMock
 
 import demistomock as demisto
 from unittest.mock import patch, MagicMock
@@ -7945,3 +7946,103 @@ def test_fetch_incidents_offset(mocker: MockerFixture):
     assert last_id_dict == LastIDs(Correlation=10)
     assert max_fetch_dict == MaxFetch(Correlation=5)
     assert offset_dict == Offset(Correlation=2)
+
+
+def test_build_master_key_create_or_update_cmd():
+    """
+    Given:
+        - Command arguments for updating Panorama / PAN-OS master key
+
+    When:
+        - Calling build_master_key_create_or_update_cmd.
+
+    Assert:
+        - Correct XML command string.
+    """
+    from Panorama import build_master_key_create_or_update_cmd
+
+    # Set
+    args = {
+        'current_master_key': 'MyFakeMasterKey1',
+        'new_master_key': 'MyFakeMasterKey2',
+        'lifetime_in_hours': '2160',
+        'reminder_in_hours': '1992',
+    }
+    # Arrange
+    cmd = build_master_key_create_or_update_cmd(args, action='update')
+
+    # Assert
+    assert cmd == (
+        '<request><master-key><lifetime>2160</lifetime><reminder>1992</reminder>'
+        '<new-master-key>MyFakeMasterKey2</new-master-key>'
+        '<current-master-key>MyFakeMasterKey1</current-master-key>'
+        '<on-hsm>no</on-hsm></master-key></request>'
+    )
+
+
+def test_pan_os_create_master_key_command(requests_mock: RequestsMock):
+    """
+    Given:
+        - Command arguments for creating Panorama / PAN-OS master key
+
+    When:
+        - Calling pan_os_create_master_key_command.
+
+    Assert:
+        - Correct human readable output and raw response.
+    """
+    from Panorama import pan_os_create_master_key_command, xml2json
+    import Panorama
+
+    # Set
+    args = {'master_key': 'MyFakeMasterKey1', 'lifetime_in_hours': '2160', 'reminder_in_hours': '1992'}
+    Panorama.URL = 'https://1.1.1.1:443/api/'
+
+    xml_root = load_xml_root_from_test_file('test_data/create_master_key.xml')
+    response_result = xml_root.find('result').text
+
+    xml_response_text = ElementTree.tostring(xml_root, encoding='unicode')
+    requests_mock.get(Panorama.URL, text=xml_response_text)
+
+    # Arrange
+    command_results: CommandResults = pan_os_create_master_key_command(args)
+
+    # Assert
+    assert command_results.readable_output == (
+        f'{response_result}. \n\n⚠️ The current API key is no longer valid! (by design) '
+        'Generate a new API key and update it in the integration instance configuration to keep using the integration.'
+    )
+    assert command_results.raw_response == json.loads(xml2json(xml_response_text))
+
+
+def test_pan_os_get_master_key_details_command(mocker: MockerFixture, requests_mock: RequestsMock):
+    """
+    When:
+        - Calling pan_os_get_master_key_command.
+
+    Assert:
+        - Correct human readable, context output, and raw response.
+    """
+    from Panorama import pan_os_get_master_key_details_command, xml2json
+    import Panorama
+
+    # Set
+    Panorama.URL = 'https://1.1.1.1:443/api/'
+
+    xml_root = load_xml_root_from_test_file('test_data/get_master_key.xml')
+    xml_response_text = ElementTree.tostring(xml_root, encoding='unicode')
+    requests_mock.get(Panorama.URL, text=xml_response_text)
+
+    table_to_markdown = mocker.patch('Panorama.tableToMarkdown')
+
+    # Arrange
+    command_results: CommandResults = pan_os_get_master_key_details_command()
+    table_name: str = table_to_markdown.call_args[0][0]
+    table_data: dict = table_to_markdown.call_args[0][1]
+    raw_response: dict = json.loads(xml2json(xml_response_text))
+
+    # Assert
+    assert table_name == 'Master Key Details'
+    assert table_data == raw_response['response']['result']
+    assert command_results.outputs == raw_response['response']['result']
+    assert command_results.raw_response == raw_response

@@ -23,18 +23,18 @@ This playbook helps perform the following actions:
 * If the threshold is breached, the playbook fetches all accounts associated with the Identity that are represented in IdentityIQ.
 * For each account, a provisioning request is made to disable that users access.
 
-![SailPoint IdentityIQ Disable User Account Access Playbook](https://github.com/demisto/content/raw/2e4e0056580ea5de30f55dcbe2ccacaadf01b74e/Packs/SailPointIdentityIQ/doc_files/SailPoint_IdentityIQ_Disable_User_Account_Access.png)
+![SailPoint IdentityIQ Disable User Account Access Playbook](doc_files/SailPoint_IdentityIQ_Disable_User_Account_Access.png)
 
 #### IdentityIQ Screenshots
 
 1) Identity in IdentityIQ has SailPoint risk score higher than 500.
-![Identity with High Risk Score](https://github.com/demisto/content/raw/2e4e0056580ea5de30f55dcbe2ccacaadf01b74e/Packs/SailPointIdentityIQ/doc_files/High_Risk_User.png)
+![Identity with High Risk Score](doc_files/High_Risk_User.png)
 
 2) Identity has active 'Active Directory' account.
-![Active Account Associated with User](https://github.com/demisto/content/raw/2e4e0056580ea5de30f55dcbe2ccacaadf01b74e/Packs/SailPointIdentityIQ/doc_files/IdentityIQ_Accounts_Active.png)
+![Active Account Associated with User](doc_files/IdentityIQ_Accounts_Active.png)
 
 3) As a result of playbook execution, provisioning request submitted and completed to de-activate Active Directory account.
-![Provisioning Request from Web Services (XSOAR)](https://github.com/demisto/content/raw/2e4e0056580ea5de30f55dcbe2ccacaadf01b74e/Packs/SailPointIdentityIQ/doc_files/IdentityIQ_Provisioning_Success.png)
+![Provisioning Request from Web Services (XSOAR)](doc_files/IdentityIQ_Provisioning_Success.png)
 
 4) Identity now has inactive Active Directory account.
-![Inactive Account Associated with User](https://github.com/demisto/content/raw/2e4e0056580ea5de30f55dcbe2ccacaadf01b74e/Packs/SailPointIdentityIQ/doc_files/IdentityIQ_Accounts_Inactive.png)
+![Inactive Account Associated with User](doc_files/IdentityIQ_Accounts_Inactive.png)

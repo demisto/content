@@ -613,7 +613,7 @@ script:
     - contextPath: AzureNSG.ResourceGroup.tags.type
       description: 'The type tag associated with the Azure Network Security Groups resource group.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.111961
+  dockerimage: demisto/crypto:1.0.0.114611
   runonce: false
   script: '-'
   subtype: python3

@@ -10,7 +10,7 @@ tags:
 comment: Common code that will be merged into each PowerShell script/integration when it runs.
 system: true
 fromversion: 5.5.0
-dockerimage: demisto/powershell:7.4.2.103657
+dockerimage: demisto/powershell:7.4.6.116823
 tests:
   - PowerShellCommon-Test
   - XsoarPowershellTesting-Test

@@ -1,32 +1,28 @@
 The CyCognito integration fetches issues discovered by the CyCognito platform, thereby providing users with a view of their organization's internet-exposed attack surface. These issues include identification, prioritization, and recommendations for remediation of the risks faced by the organization. The integration contains commands to query assets and issues detected by the CyCognito platform, and includes a rich dashboard and layout with issue management capability.
 This integration was integrated and tested with CyCognito V1 API.
 
-## Configure CyCognito on Cortex XSOAR
+## Configure CyCognito in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CyCognito.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key | The API Key required to authenticate to the service. | True |
-    | Incident type | Incident type to map if no classifier is provided. | False |
-    | Incident Mirroring Direction | The mirroring direction in which to mirror the incident. You can mirror only in \(from CyCognito to XSOAR\), out \(from XSOAR to CyCognito\), or in both directions. | False |
-    | Fetch incidents | Indicates whether to fetch incident from the instance. | False |
-    | First Fetch Time | The date or relative timestamp from which to begin fetching incidents.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z | False |
-    | Max Fetch | The maximum number of incidents to fetch every time. The maximum value is '1000'. | False |
-    | Issue Type | The type of issue to fetch. By default, all types of issues will be fetched. Multiple selection is supported. | False |
-    | Locations | Filters incidents according to the geographic locations in which the issue is found. Multiple selection is supported.| False |
-    | Severity | The severity levels of the issues to fetch from CyCognito. By default, all the severity levels will be fetched, Multiple selection is supported. | False |
-    | Investigation Status | The investigation status of the issues to fetch from CyCognito. By default, it fetches uninvestigated issues. | False |
-    | Advanced Filter | Applies a filter to the list of issues based on a JSON-specific query.<br/><br/>Format:<br/>\[\{<br/>    "field": "issue-type",<br/>    "op": "in",<br/>    "values": \[<br/>       "Unsafe Authentication",<br/>       "Vulnerable Software"<br/>    \]	<br/>\},<br/>\{<br/>    "op": "not-in",<br/>    "field": "severity-score",<br/>    "values": \[10, 9\]<br/>\}\]<br/><br/>Note: When using several filtering options \(e.g., 'Issue Type' and 'Advanced Filter'\), Advanced Filter parameters will take precedence over other parameters.<br/>For a complete reference to the CyCognito fields and operations, please refer to the CyCognito API V0 documentation at <br/>https://docs.cycognito.com/reference/query-issues | False |
-    | Trust any certificate (not secure) | Indicates whether to allow connections without verifying SSL certificate's validity. | False |
-    | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
-    | Incidents Fetch Interval | Time interval for fetching incidents. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | The API Key required to authenticate to the service. | True |
+| Incident type | Incident type to map if no classifier is provided. | False |
+| Incident Mirroring Direction | The mirroring direction in which to mirror the incident. You can mirror only in \(from CyCognito to XSOAR\), out \(from XSOAR to CyCognito\), or in both directions. | False |
+| Fetch incidents | Indicates whether to fetch incident from the instance. | False |
+| First Fetch Time | The date or relative timestamp from which to begin fetching incidents.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z | False |
+| Max Fetch | The maximum number of incidents to fetch every time. The maximum value is '1000'. | False |
+| Issue Type | The type of issue to fetch. By default, all types of issues will be fetched. Multiple selection is supported. | False |
+| Locations | Filters incidents according to the geographic locations in which the issue is found. Multiple selection is supported.| False |
+| Severity | The severity levels of the issues to fetch from CyCognito. By default, all the severity levels will be fetched, Multiple selection is supported. | False |
+| Investigation Status | The investigation status of the issues to fetch from CyCognito. By default, it fetches uninvestigated issues. | False |
+| Advanced Filter | Applies a filter to the list of issues based on a JSON-specific query.<br/><br/>Format:<br/>\[\{<br/>    "field": "issue-type",<br/>    "op": "in",<br/>    "values": \[<br/>       "Unsafe Authentication",<br/>       "Vulnerable Software"<br/>    \]	<br/>\},<br/>\{<br/>    "op": "not-in",<br/>    "field": "severity-score",<br/>    "values": \[10, 9\]<br/>\}\]<br/><br/>Note: When using several filtering options \(e.g., 'Issue Type' and 'Advanced Filter'\), Advanced Filter parameters will take precedence over other parameters.<br/>For a complete reference to the CyCognito fields and operations, please refer to the CyCognito API V0 documentation at <br/>https://docs.cycognito.com/reference/query-issues | False |
+| Trust any certificate (not secure) | Indicates whether to allow connections without verifying SSL certificate's validity. | False |
+| Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
+| Incidents Fetch Interval | Time interval for fetching incidents. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cycognito-issue-get
 ***

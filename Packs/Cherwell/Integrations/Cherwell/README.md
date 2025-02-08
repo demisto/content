@@ -1,31 +1,27 @@
 Cloud-based IT service management solution
 This integration was integrated and tested with version 10.1.1 of Cherwell
 
-## Configure Cherwell on Cortex XSOAR
+## Configure Cherwell in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cherwell.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | URL (example: https://my.domain.com) | True |
-    | Username | True |
-    | Password | True |
-    | Client id | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | CSV list of objects to fetch. The default is incident, for example: incident,problem,service) | False |
-    | Max results to fetch (defualt is 30) | False |
-    | Advanced Query to fetch (see integration detailed instructions) | False |
-    | Fetch attachments (include attachements in fetch process) | False |
-    | Fetch incidents | False |
-    | Incident type | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| URL (example: https://my.domain.com) | True |
+| Username | True |
+| Password | True |
+| Client id | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+| CSV list of objects to fetch. The default is incident, for example: incident,problem,service) | False |
+| Max results to fetch (defualt is 30) | False |
+| Advanced Query to fetch (see integration detailed instructions) | False |
+| Fetch attachments (include attachements in fetch process) | False |
+| Fetch incidents | False |
+| Incident type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cherwell-create-business-object
 ***

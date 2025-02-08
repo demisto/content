@@ -337,8 +337,8 @@ def main() -> None:
     try:
         port = int(params.get('longRunningPort'))
     except (ValueError, TypeError):
-        raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
-    if port < 0 or MAX_PORT < port:
+        raise DemistoException('Please select an engine and insert a valid listen port.')
+    if port < 0 or port > MAX_PORT:
         raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
 
     demisto.debug(f'Command being called is {demisto.command()}')

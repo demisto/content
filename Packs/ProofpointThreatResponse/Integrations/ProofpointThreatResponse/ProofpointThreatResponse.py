@@ -793,6 +793,7 @@ def close_incident_command():
 
 def search_quarantine():
     arg_time = dateparser.parse(demisto.args().get('time'))
+    emailTAPtime = 0
     if isinstance(arg_time, datetime):
         emailTAPtime = int(arg_time.timestamp())
     else:

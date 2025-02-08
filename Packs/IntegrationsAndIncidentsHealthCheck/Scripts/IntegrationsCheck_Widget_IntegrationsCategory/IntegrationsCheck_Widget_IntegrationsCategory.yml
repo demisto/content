@@ -2,7 +2,7 @@ comment: Data output script for populating the dashboard pie graph widget with t
 commonfields:
   id: IntegrationsCheck-Widget-IntegrationsCategory
   version: -1
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: IntegrationsCheck-Widget-IntegrationsCategory
 runas: DBotWeakRole

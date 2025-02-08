@@ -25,7 +25,7 @@ sendgrid = "^6.11"
 slack_sdk = "^3.31.0"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.32.4" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
+demisto-sdk = "1.35.0" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
 pytest = ">=7.1.2"
 requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
@@ -54,6 +54,22 @@ types-PyYAML = "6.0.12.20240311"
 types-emoji = "2.1.0.3"
 
 [tool.ruff]
+fix = true
+extend-exclude = [
+    "CommonServerPython",
+    "test_data",
+    "conftest.py",
+    "demistomock.py",
+]
+line-length = 130
+target-version = "py311"
+src = [
+    "Packs/Base/Scripts/CommonServerPython",
+    "Tests/demistomock",
+    "Packs/ApiModules/Scripts/*",
+]
+
+[tool.ruff.lint]
 select = [
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
@@ -116,7 +132,6 @@ select = [
     "E742", # ambiguous-class-name
     "E743", # ambiguous-function-name
     "E902", # io-error
-    "E999", # syntax-error
 
     "F401", # unused-import
     "F402", # import-shadowed-by-loop-var
@@ -183,8 +198,7 @@ select = [
     "PD013", # pandas-use-of-dot-stack
     "PD015", # pandas-use-of-pd-merge
 
-    "PGH001", # eval
-    "PGH002", # deprecated-log-warn
+    "S307", # eval
 
     "PIE790", # unnecessary-pass
     "PIE794", # duplicate-class-field-definition
@@ -219,7 +233,6 @@ select = [
     "PLR0133", # comparison-of-constant
     "PLR0206", # property-with-parameters
     "PLR0402", # manual-from-import
-    "PLR1701", # repeated-isinstance-calls
     "PLR1711", # useless-return
     "PLR1722", # sys-exit-alias
 
@@ -304,7 +317,6 @@ select = [
     "SIM223", # expr-and-false
     "SIM300", # yoda-conditions
     "SIM401", # if-else-block-instead-of-dict-get
-    "SIM910", # dict-get-with-none-default
 
     "T201", # print
     "T203", # p-print
@@ -335,7 +347,6 @@ select = [
     "UP024", # os-error-alias
     "UP025", # unicode-kind-prefix
     "UP026", # deprecated-mock-import
-    "UP027", # unpacked-list-comprehension
     "UP028", # yield-in-for-loop
     "UP029", # unnecessary-builtin-import
     "UP030", # format-literals
@@ -369,21 +380,12 @@ ignore = [
 
     "W605", # invalid-escape-sequence
 ]
-extend-exclude = ["CommonServerPython", "test_data", "conftest.py", "demistomock.py"]
 
 unfixable = [
     "RUF001"  # ambiguous-unicode-character-string
 ]
 
-line-length = 130
-target-version = "py310"
-src = [
-    "Packs/Base/Scripts/CommonServerPython",
-    "Tests/demistomock",
-    "Packs/ApiModules/Scripts/*",
-]
-
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "**/*_test.py" = []
 # Ignore any Python update in ApiModules, until we can proprtly determine their desired version.
 "**/*ApiModule.py"  = [ "UP" ]

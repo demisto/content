@@ -1156,7 +1156,7 @@
 						"x": 2,
 						"y": 2,
                         "description": "The indicators extracted from the threat hunting results.",
-                        "query": "99900222-7570-4e56-8fa6-1206e76be060",
+                        "query": "displayCloudIndicators",
                         "queryType": "script",
                         "type": "dynamic"
 					},
@@ -2781,5 +2781,6 @@
 		"system": false,
 	"version": -1,
     "fromVersion": "6.8.0",
-	"description": ""
+	"description": "",
+    "marketplaces": ["xsoar"]
 }

@@ -1,0 +1,31 @@
+{
+    "id": "incident_crowdstrikefalconmacrosdisplayname",
+    "version": -1,
+    "modified": "2024-12-16T15:41:25.28823161Z",
+    "name": "CrowdStrike Falcon Macros Display Name",
+    "ownerOnly": false,
+    "cliName": "crowdstrikefalconmacrosdisplayname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CrowdStrike Falcon OFP Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

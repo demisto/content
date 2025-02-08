@@ -1450,12 +1450,13 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.113207
+  dockerimage: demisto/ippysocks-py3:1.0.0.117488
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - whois_test
+- Whois A new layout implemented with python-whois service
 fromversion: 5.0.0
 defaultEnabled: false

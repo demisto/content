@@ -9,28 +9,24 @@ The user making the API call will need to have admin privileges, and the applica
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Box Event Collector on Cortex XSOAR
+## Configure Box Event Collector in Cortex
 
 To acquire the "Credential JSON", you need to get a JWT token and an app from Box.
 You can use the guide from [Box V2](https://xsoar.pan.dev/docs/reference/integrations/box-v2#configure-the-box-application-to-interface-with-xsoar) to get those credentials.
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Box Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Verify SSL Certificate | False |
-    | Credentials JSON | True |
-    | Fetch Events | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | The maximum amount of events to fetch at once. 500 is maximum | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Verify SSL Certificate | False |
+| Credentials JSON | True |
+| Fetch Events | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+| The maximum amount of events to fetch at once. 500 is maximum | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### box-get-events

@@ -2,26 +2,22 @@ Logsign SIEM provides comprehensive visibility and control of your data lake by 
 
 This integration was integrated and tested with version 4.6.x of Logsign SIEM
 
-## Configure Logsign SIEM on Cortex XSOAR
+## Configure Logsign SIEM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Logsign SIEM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | Logsign SIEM API URL | True |
-    | API Key | The API Key to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Last Run Time (ISO8601 format with UTC) | Last run time format like '%Y-%m-%dT%H:%M:%SZ' | True |
-    | First Fetch Time (default 1 hour) | First Fetch Time \(e.g 1 hour\) | False |
-    | isFetch |  | False |
-    | Max Fetch | Maximum number of incidents per fetch \(Recommended less than 200\) | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://192.168.0.1) | Logsign SIEM API URL | True |
+| API Key | The API Key to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Last Run Time (ISO8601 format with UTC) | Last run time format like '%Y-%m-%dT%H:%M:%SZ' | True |
+| First Fetch Time (default 1 hour) | First Fetch Time \(e.g 1 hour\) | False |
+| isFetch |  | False |
+| Max Fetch | Maximum number of incidents per fetch \(Recommended less than 200\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### logsign-fetch-incidents
 ***
@@ -204,7 +200,7 @@ Gets Incidents from Logsign SIEM
 
 #### Human Readable Output
 
-![Logsign-FetchIncident-HumanReadable-Data](doc_imgs/logsign-fetch-inc-HR.jpg)
+![Logsign-FetchIncident-HumanReadable-Data](../../doc_files/logsign-fetch-inc-HR.jpg)
 
 ### logsign-get-columns-query
 ***
