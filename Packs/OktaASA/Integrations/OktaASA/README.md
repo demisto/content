@@ -1,4 +1,4 @@
-Okta Advanced Server Access integration for XSIAM.
+Okta Advanced Server Access integration for Cortex XSIAM.
 
 ## Configure Okta ASA in Cortex
 
@@ -8,7 +8,7 @@ Okta Advanced Server Access integration for XSIAM.
 | Server URL (e.g. https://app.scaleft.com) |  | True |
 | API Key ID | The API Key ID to use for connection. | True |
 | API Key Secret | The API Key Secret to use for connection. | True |
-| The name of your team. |  | True |
+| Team Name | A named group of users who can authenticate with Okta. | True |
 | The maximum number of audit events per fetch. |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |

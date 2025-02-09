@@ -9,4 +9,4 @@
 6. Click **Create API Key**. The API Key Secret Rotated page appears.
 7. Copy and store your API key ID and your API key secret from this page.
 
-Note: You cannot retrieve this information after closing the window. If you lose this information, you must generate a new API ID & key.
+Note: You cannot retrieve this information after closing the window. If you lose this information, you must generate a new API ID and key.

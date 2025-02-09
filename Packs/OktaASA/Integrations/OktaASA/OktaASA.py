@@ -199,7 +199,7 @@ def add_time_to_events(events: List[Dict] | None):
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client: OktaASAClient) -> str:
+def test_module(client: OktaASAClient, team_name: str) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -208,6 +208,7 @@ def test_module(client: OktaASAClient) -> str:
 
     Args:
         client (OktaASAClient): OktaASAClient client to use.
+        team_name (str): the name of the team.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
@@ -217,7 +218,8 @@ def test_module(client: OktaASAClient) -> str:
             client=client,
             last_run={},
             max_audit_events_per_fetch=1,
-            is_fetch_events=True
+            is_fetch_events=True,
+            team_name=team_name
         )
 
     except Exception as e:
@@ -252,24 +254,30 @@ def get_events_command(client: OktaASAClient, args: dict) -> tuple[List[Dict], C
 
 
 def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
-                         max_audit_events_per_fetch: Optional[int], is_fetch_events: bool = False
+                         team_name: str,
+                         max_audit_events_per_fetch: Optional[int],
+                         is_fetch_events: bool = False,
                          ) -> tuple[dict[str, str], List[Dict]]:
     """
     Args:
         client (OktaASAClient): OktaASAClient client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        max_audit_events_per_fetch (int): number of events per fetch
+        max_audit_events_per_fetch (int): number of events per fetch.
+        is_fetch_events (bool): Whether the option to fetch events is selected.
+        team_name (str): The name of the team.
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
+    if last_run and last_run.get("team_name") != team_name:
+        demisto.debug(f'{INTEGRATION_NAME}: Reset last run the name of the group has changed.')
     if is_fetch_events:
         events, offset, timestamp = client.search_events(
             limit=max_audit_events_per_fetch,
-            offset=last_run.get("offset") if last_run else None,
+            offset=last_run.get("offset") if last_run and last_run.get("team_name") == team_name else None,
         )
         # Save the next_run as a dict with the last_fetch key to be stored
-        next_run: dict = {"offset": offset, "timestamp": timestamp} if offset else last_run
+        next_run: dict = {"offset": offset, "timestamp": timestamp, "team_name": team_name} if offset else last_run
     else:
         events = []
         next_run = last_run
@@ -290,7 +298,7 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     api_key_id = params.get('api_key_id', {}).get('password')
     api_key_secret = params.get('api_key_secret', {}).get('password')
-    team_name = params.get('team_name')
+    team_name = params.get('team_name', "").lower()
     base_url = urljoin(params.get('url'), f'/v1/teams/{team_name}')
     verify_certificate = not params.get('insecure', False)
     max_audit_events_per_fetch = arg_to_number(params.get('max_audit_events_per_fetch', "10000"))
@@ -307,7 +315,7 @@ def main() -> None:  # pragma: no cover
             proxy=proxy)
 
         if command == 'test-module':
-            result = test_module(client)
+            result = test_module(client, team_name)
             return_results(result)
 
         elif command == 'okta-asa-get-events':
@@ -328,7 +336,8 @@ def main() -> None:  # pragma: no cover
                 client=client,
                 last_run=last_run,
                 max_audit_events_per_fetch=max_audit_events_per_fetch,
-                is_fetch_events=is_fetch_events
+                team_name=team_name,
+                is_fetch_events=is_fetch_events,
             )
 
             add_time_to_events(events)

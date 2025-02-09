@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://app.scaleft.com
-  display: Server URL (e.g. https://app.scaleft.com)
+  display: Server URL (e.g., https://app.scaleft.com)
   name: url
   required: true
   type: 0
@@ -26,7 +26,8 @@ configuration:
   section: Connect
   hiddenusername: true
   type: 9
-- display: The name of your team.
+- display: Team Name
+  additionalinfo: A named group of users who can authenticate with Okta.
   name: team_name
   type: 0
   section: Connect
@@ -48,7 +49,7 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: Okta Advanced Server Access integration for XSIAM.
+description: Okta Advanced Server Access integration for Cortex XSIAM.
 display: Okta ASA
 name: OktaASA
 script:
