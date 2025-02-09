@@ -2923,19 +2923,6 @@
             "fromversion": "5.5.0",
             "timeout": 300,
             "instance_names": [
-                "non_https_cert",
-                "instance_execute"
-            ]
-        },
-        {
-            "integrations": [
-                "TAXII Server",
-                "TAXIIFeed"
-            ],
-            "playbookID": "TAXII_Feed_Test",
-            "fromversion": "5.5.0",
-            "timeout": 300,
-            "instance_names": [
                 "https_cert",
                 "local_https"
             ]
