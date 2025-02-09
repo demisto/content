@@ -226,7 +226,7 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.cvv | unknown | The compromised card's Card Verification Value (CVV). | 
 | CyberBlindspot.RemoteIncident.expiry_month | unknown | The compromised card's expiration month. | 
 | CyberBlindspot.RemoteIncident.expiry_year | unknown | The compromised card's expiration year. | 
-| CyberBlindspot.RemoteIncident.breach_source | unknown | The source of breached data. | 
+| CyberBlindspot.RemoteIncident.breach_source | unknown | The source of the breached data. | 
 | CyberBlindspot.RemoteIncident.domain | unknown | The domain related to the breached data. | 
 | CyberBlindspot.RemoteIncident.email | unknown | Email found in the breached data. | 
 | CyberBlindspot.RemoteIncident.username | unknown | Username found in the breached data. | 
