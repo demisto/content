@@ -572,7 +572,8 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
     if not last_run:  # this is the first run
         first_fetch_date_time = dateparser.parse(first_fetch_time)
         if not first_fetch_date_time:
-            raise DemistoException(f"Microsoft Defender 365 Fetch incidents - Could not parse the first_fetch_time: {first_fetch_time=}")
+            raise DemistoException(f"Microsoft Defender 365 Fetch incidents - "
+                                   f"Could not parse the first_fetch_time: {first_fetch_time=}")
         last_run = first_fetch_date_time.strftime(DATE_FORMAT)
 
     # creates incidents queue
@@ -829,7 +830,7 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
                 demisto.error(f"Microsoft Defender 365 Could not parse {comment.get('createdTime')} for {comment=}")
                 continue
             if comment_time > last_update:
-                entries.append(entry := {
+                entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': f"Created By: {comment.get('createdBy', '')}\n"
                                 f"Created On: {comment.get('createdTime', '')}\n"
@@ -997,7 +998,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     """
     update_remote_system_args = UpdateRemoteSystemArgs(args)
     remote_incident_id = update_remote_system_args.remote_incident_id
-    data = update_remote_system_args.data
     delta = update_remote_system_args.delta
 
     demisto.debug(
