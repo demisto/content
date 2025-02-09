@@ -615,7 +615,6 @@ async def get_events_with_offset_aiohttp(
             url_suffix=f'/{config_ids}',
             params=params,
             resp_type='text',
-            headers={'Authorization': 'Basic YTph'}
         ))
     demisto.info(f"Running in interval = {counter}. Finished executing request to Akamai, processing")
     events: list[str] = raw_response.split('\n')
