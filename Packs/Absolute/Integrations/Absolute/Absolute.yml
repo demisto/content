@@ -338,7 +338,7 @@ script:
   - arguments:
     - description: The system-defined, unique identifier of the Freeze message.
       name: message_id
-    - description: Maximum number of results to return. Default value is 50.
+    - description: Maximum number of results to return.
       name: limit
       defaultValue: '50'
     - defaultValue: '0'
@@ -503,7 +503,7 @@ script:
     - description: A comma-separated list of the system-defined unique Electronic Serial Numbers (ESN) assigned to the Absolute agent installed on the device.
       isArray: true
       name: esn
-    - description: Maximum number of results to return. Default value is 50.
+    - description: Maximum number of results to return.
       name: limit
       defaultValue: '50'
     - defaultValue: '0'
