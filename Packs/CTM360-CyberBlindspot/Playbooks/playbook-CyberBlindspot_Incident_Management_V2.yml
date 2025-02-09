@@ -399,7 +399,7 @@ tasks:
         top-user: The user who most commonly owns this type of incident.
         less-busy-user: The less busy analyst will be picked to be the incident owner.
         online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
-        current: The user that executed the command
+        current: The user who executed the command.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
