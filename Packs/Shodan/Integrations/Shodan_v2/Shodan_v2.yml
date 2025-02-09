@@ -380,4 +380,5 @@ script:
   isfetchevents:xsoar: false
 tests:
 - Test-Shodan_v2
+- Shodan_use_case_test
 fromversion: 5.0.0
