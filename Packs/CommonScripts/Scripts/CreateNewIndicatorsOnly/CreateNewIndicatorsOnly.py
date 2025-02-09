@@ -9,6 +9,7 @@ STATUS_EXISTING = 'existing'
 STATUS_UNAVAILABLE = 'unavailable'
 
 KEY_CREATION_STATUS = 'CreationStatus'
+KEY_VALUE = "value"
 
 MAX_FIND_INDICATOR_RETRIES = 10
 SLEEP_TIME = 2
@@ -66,6 +67,11 @@ def add_new_indicator(indicator_value: Any,
     if indicators := execute_command('findIndicators', {'value': escaped_indicator_value}):
         indicator = indicators[0]
         indicator[KEY_CREATION_STATUS] = STATUS_EXISTING
+
+        # findIndicators might find an indicator with different letter case.
+        # Unfortunately associate_indicator_to_incident does not ignore case
+        # and as a result in some cases is unable to associate indicator.
+        indicator_value = indicator[KEY_VALUE]
     else:
         args = dict(create_new_indicator_args, value=indicator_value)
         indicator = execute_command('createNewIndicator', args)
@@ -87,7 +93,7 @@ def add_new_indicator(indicator_value: Any,
         else:
             raise DemistoException(f'Unknown response from createNewIndicator: str{indicator_value}')
 
-    if associate_to_incident:
+    if indicator[KEY_CREATION_STATUS] != STATUS_UNAVAILABLE and associate_to_incident:
         demisto.debug(f"Associating {indicator_value} to incident.")
         associate_indicator_to_incident(indicator_value)
 
