@@ -268,7 +268,7 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
     }
     else{
         var method = 'GET';
-        var headers = {};
+        var headers = {'Connection': ['Keep-Alive'],'Keep-Alive': ['timeout=60']};
         var save_to_file = true;
         // download pack zip file
         logDebug('Calling http() with pack_url = ' + pack_url + ', Method = ' + method + ', SaveToFile = ' + save_to_file);
@@ -359,7 +359,8 @@ Returns:
  */
 var uploadFile= function(incident_id, entry_id) {
     logDebug('Calling httpMultipart with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id);
-    var res = httpMultipart(`/entry/upload/${incident_id}`, entry_id);
+    var headers = {'Connection': ['Keep-Alive'],'Keep-Alive': ['timeout=60']};
+    var res = httpMultipart(`/entry/upload/${incident_id}`, entry_id, {Headers: headers});
     logDebug('After Calling to httpMultipart with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id + '. The satus code: ' + res.StatusCode);
     if (isError(res[0])) {
         throw res[0].Contents;
