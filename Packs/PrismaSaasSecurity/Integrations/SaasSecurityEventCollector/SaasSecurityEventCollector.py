@@ -96,11 +96,11 @@ class Client(BaseClient):
             'Content-Type': 'application/x-www-form-urlencoded; charset=ISO-8859-1',
             'Authorization': f'Basic {base64_encoded_creds}',
         }
-        params = {
+        data = {
             'grant_type': 'client_credentials',
             'scope': 'api_access',
         }
-        token_response = self._http_request('POST', url_suffix='/oauth/token', params=params, headers=headers)
+        token_response = self._http_request('POST', url_suffix='/oauth/token', data=data, headers=headers)
         return token_response.get('access_token'), token_response.get('expires_in')
 
     def get_events_request(self, size: int = MAX_EVENTS_PER_REQUEST):
