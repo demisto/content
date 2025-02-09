@@ -2,7 +2,7 @@
     "name": "TAXII Server",
     "description": "This pack provides TAXII Services for system indicators (Outbound feed).",
     "support": "xsoar",
-    "currentVersion": "2.1.1",
+    "currentVersion": "2.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
