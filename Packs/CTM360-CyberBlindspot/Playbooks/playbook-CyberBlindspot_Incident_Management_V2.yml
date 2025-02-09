@@ -434,7 +434,7 @@ tasks:
       id: 3a9ad2a9-96f5-4b7d-81fb-fd359fcfc97d
       version: -1
       name: Prompt User to Close Incident or Request Takedown of Asset
-      description: Ask the user whether the user wants to close the incident or request a take-down of the related asset/subject.
+      description: Ask the user whether to close the incident or request a take-down of the related asset/subject.
       type: condition
       iscommand: false
       brand: ""
