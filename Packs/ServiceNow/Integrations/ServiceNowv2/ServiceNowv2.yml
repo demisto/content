@@ -4,7 +4,7 @@ sectionOrder:
 - Collect Basic
 - Collect Advanced
 commonfields:
-  id: ServiceNow v2
+  id: ServiceNow v2_test
   version: -1
 configuration:
 - display: ServiceNow URL, in the format https://company.service-now.com/
@@ -309,8 +309,8 @@ configuration:
   required: false
   section: Collect Advanced
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
-display: ServiceNow v2
-name: ServiceNow v2
+display: ServiceNow v2_test
+name: ServiceNow v2_test
 script:
   commands:
   - arguments:
@@ -1702,7 +1702,7 @@ script:
       required: true
     description: Retrieves attachments from a ticket.
     name: servicenow-get-ticket-attachments
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/auth-utils:1.0.0.116752
   isfetch: true
   ismappable: true
   isremotesyncin: true

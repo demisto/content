@@ -4,7 +4,6 @@ import re
 from collections.abc import Callable, Iterable
 import jwt
 import uuid
-
 import mimetypes
 
 # disable insecure warnings
@@ -19,6 +18,9 @@ SIR_INCIDENT = 'sn_si_incident'
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
+TOKEN_RENEWAL_TIME_LIMIT = 60  # In seconds. The minimum time before the token expires to renew it.
 
 DATE_FORMAT_OPTIONS = {
     'MM-dd-yyyy': '%m-%d-%Y %H:%M:%S',
@@ -585,7 +587,7 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict | None = None, version: str | None = None, look_back: int = 0,
+                 incident_name: str, oauth_params: dict | None = None,jwt_params: dict | None = None , version: str | None = None, look_back: int = 0,
                  use_display_value: bool = False, display_date_format: str = ''):
         """
 
@@ -597,6 +599,8 @@ class Client(BaseClient):
             password: SNOW password
             oauth_params: (optional) the parameters for the ServiceNowClient that should be used to create an
                           access token when using OAuth2 authentication.
+            jwt_params: (optional) the parameters for the ServiceNowClient that should be used to create an
+                        token when using JWT authentication.
             verify: whether to verify the request
             fetch_time: first time fetch for fetch_incidents
             sysparm_query: system query
@@ -608,11 +612,13 @@ class Client(BaseClient):
             look_back: defines how much backwards (minutes) should we go back to try to fetch incidents.
         """
         oauth_params = oauth_params if oauth_params else {}
+        jwt_params = jwt_params if jwt_params else {}
         self._base_url = server_url
         self._sc_server_url = sc_server_url
         self._cr_server_url = cr_server_url
         self._version = version
         self._verify = verify
+        demisto.debug('here 3')
         self._username = username
         self._password = password
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
@@ -628,6 +634,7 @@ class Client(BaseClient):
         self.look_back = look_back
         self.use_display_value = use_display_value
         self.display_date_format = DATE_FORMAT_OPTIONS.get(display_date_format)
+        self.use_jwt = bool(jwt_params)
         if self.use_display_value:
             assert self.display_date_format, 'A display date format must be selected in the instance configuration when ' \
                                              'using the `Use Display Value` option.'
@@ -641,7 +648,19 @@ class Client(BaseClient):
                                                                   verify=oauth_params.get('verify', False),
                                                                   proxy=oauth_params.get('proxy', False),
                                                                   headers=oauth_params.get('headers', ''))
+        elif self.use_jwt:
+            self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
+                                                                  use_jwt=self.use_jwt,
+                                                                  client_id='',
+                                                                  jwt_key_id=jwt_params.get('jwt_key_id', ''),
+                                                                  jwt_key= jwt_params.get('jwt_key', ''),
+                                                                  jwt_sub= jwt_params.get('jwt_sub', ''),
+                                                                  url=oauth_params.get('url', ''),
+                                                                  verify=oauth_params.get('verify', False),
+                                                                  proxy=oauth_params.get('proxy', False),
+                                                                  headers=oauth_params.get('headers', ''))           
         else:
+            demisto.debug('here 4')
             self._auth = (self._username, self._password)
 
     def generic_request(self, method: str, path: str, body: Optional[dict] = None, headers: Optional[dict] = None,
@@ -727,6 +746,14 @@ class Client(BaseClient):
                             })
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': file_info}, verify=self._verify, proxies=self._proxies)
+                        elif self.use_jwt:
+                            jwt_token = self.snow_client.get_jwt_token()
+                            headers.update({'assertion': jwt_token,
+                                                'grant_type' : 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+                            })
+                            res = requests.request(method, url, headers=headers, data=body, params=params,
+                                                   files={'file': file_info}, verify=self._verify, proxies=self._proxies)
+                            
                         else:
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': file_info}, auth=self._auth,
@@ -740,6 +767,13 @@ class Client(BaseClient):
                         'Authorization': f'Bearer {access_token}'
                     })
                     res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                                           params=params, verify=self._verify, proxies=self._proxies)
+                elif self.use_jwt:
+                            jwt_token = self.snow_client.get_jwt_token()
+                            headers.update({'assertion': jwt_token,
+                                                'grant_type' : 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+                            })
+                            res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
                                            params=params, verify=self._verify, proxies=self._proxies)
                 else:
                     res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
@@ -881,7 +915,14 @@ class Client(BaseClient):
                 access_token = self.snow_client.get_access_token()
                 headers.update({'Authorization': f'Bearer {access_token}'})
                 file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
+            elif self.use_jwt:
+                jwt_token = self.snow_client.get_jwt_token()
+                headers.update({'assertion': jwt_token,
+                                                'grant_type' : 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+                            })
+                file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
             else:
+                demisto.debug('here 5')
                 file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
                                         proxies=self._proxies)
 
@@ -2453,24 +2494,6 @@ def test_instance(client: Client):
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
 
 
-def jwt_authorization(jwt_key_id: str, jwt_key: str, jwt_sub: str) -> str:
-    header = {
-        "alg": "RS256",  # Signing algorithm
-        "typ": "JWT",  # Token type
-        "kid": jwt_key_id  # From ServiceNow (see Jwt Verifier Maps )
-    }
-    payload = {
-        "sub": jwt_sub,  # Subject (e.g., user ID)
-        "aud": jwt_key_id,  # serviceNow client_id
-        "iss": jwt_key_id,  # can be serviceNow client_id
-        "iat": datetime.now(timezone.utc),  # Issued at
-        "exp": datetime.now(timezone.utc) + timedelta(hours=1),  # Expiry time 1 hour
-        "jti": str(uuid.uuid4())    # Unique JWT ID
-    }
-    jwt_token = jwt.encode(payload, jwt_key, algorithm="RS256", headers=header)
-    return jwt_token
-
-
 def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any], bool]:
     """
     Test the instance configurations when using basic authorization.
@@ -2479,6 +2502,9 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     if client.use_oauth:
         raise Exception('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login '
                         'command followed by the !servicenow-oauth-test command to test the instance.')
+    elif client.use_jwt:
+            jwt_token = client.snow_client.get_jwt_token()
+            return 'ok', {'jwt_token': jwt_token}, {}, True
 
     if client._version == 'v2' and client.get_attachments:
         raise DemistoException('Retrieving incident attachments is not supported when using the V2 API.')
@@ -2516,7 +2542,7 @@ def login_command(client: Client, args: dict[str, Any]) -> tuple[str, dict[Any, 
         raise Exception('!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization.\n Please '
                         'select the `Use OAuth Login` checkbox in the instance configuration before running this '
                         'command.')
-
+    demisto.debug('here 7')
     username = args.get('username', '')
     password = args.get('password', '')
     try:
@@ -3218,6 +3244,14 @@ def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandRe
     return f"Request for {method} method is not successful"
 
 
+def if_refresh_jwt_token(jwt_context):
+    jwt_expiration_time = jwt_context.get('created_time', '')
+    return jwt_last_created and jwt_context
+    
+    
+    
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -3230,12 +3264,14 @@ def main():
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
     use_jwt_outh = params.get('use_jwt_outh', False)
+    client_id = params.get('credentials', {}).get('identifier')
+    integration_context = get_integration_context()
     oauth_params = {}
+    jwt_params = {}
 
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         username = ''
         password = ''
-        client_id = params.get('credentials', {}).get('identifier')
         client_secret = params.get('credentials', {}).get('password')
         oauth_params = {
             'credentials': {
@@ -3254,15 +3290,24 @@ def main():
             'use_oauth': use_oauth
         }
     elif use_jwt_outh:
-        jwt_key_id = params.get('jwt_credentials', {}).get('identifier')
-        jwt_private_key = params.get('jwt_credentials', {}).get('password')
-        jwt_sub = params.get('jwt_sub', '')
-        jwt_token = jwt_authorization(jwt_key_id, jwt_private_key, jwt_sub)
-        demisto.debug(f'{jwt_token}')
-
+        jwt_params = {
+            'client_id': client_id,
+            'jwt_key_id': params.get('jwt_credentials', {}).get('identifier'),
+            'jwt_private_key': params.get('jwt_credentials', {}).get('password'),
+            'jwt_sub': params.get('jwt_sub', '')
+            }
+        # jwt_key_id = params.get('jwt_credentials', {}).get('identifier')
+        # jwt_private_key = replace_spaces_in_credential(params.get('jwt_credentials', {}).get('password'))
+        # demisto.debug(f'{jwt_prvate_key=}')
+        # jwt_sub = params.get('jwt_sub', '')
+        #jwt_token = generate_jwt_token(jwt_key_id,client_id, jwt_private_key, jwt_sub)
+        #demisto.debug(f'{jwt_token}')
+        #return_results(jwt_token)
     else:  # use basic authentication
+        demisto.debug('here 1')
         username = params.get('credentials', {}).get('identifier')
         password = params.get('credentials', {}).get('password')
+        demisto.debug('here 2')
 
     version = params.get('api_version')
 
@@ -3337,7 +3382,7 @@ def main():
                         username=username, password=password, verify=verify, fetch_time=fetch_time,
                         sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
-                        incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back,
+                        incident_name=incident_name, oauth_params=oauth_params,jwt_params=jwt_params, version=version, look_back=look_back,
                         use_display_value=use_display_value, display_date_format=display_date_format)
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             'test-module': test_module,
