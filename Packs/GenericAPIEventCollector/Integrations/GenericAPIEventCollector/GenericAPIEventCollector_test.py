@@ -9,7 +9,7 @@ from GenericAPIEventCollector import (
     get_time_field_from_event_to_dt, is_pagination_needed, iso8601_to_datetime_str, try_load_json,
     parse_json_param, generate_authentication_headers,
     extract_pagination_params, PaginationLogic, TimestampFieldConfig, organize_events_to_xsiam_format, setup_search_events,
-    RequestData
+    RequestData, generate_headers
 )
 
 
@@ -329,7 +329,8 @@ def test_setup_search_events_first_fetch():
         'timestamp_field_name': 'timestamp',
         'timestamp_format': '%Y-%m-%dT%H:%M:%SZ',
         'initial_query_params': '{"initial_param_key": "initial_param_value"}',
-        'initial_pagination_params': {"pagination_needed": "true", "pagination_field_name": "next_page", "pagination_flag": "has_more"},
+        'initial_pagination_params': {"pagination_needed": "true", "pagination_field_name": "next_page",
+                                      "pagination_flag": "has_more"},
         'initial_request_data': '{"initial_key": "initial_value"}',
         'initial_request_json': '{"initial_json_key": "initial_json_value"}'
     }
@@ -341,4 +342,76 @@ def test_setup_search_events_first_fetch():
 
     assert last_fetched_datetime == first_fetch_datetime
     assert pagination_logic == PaginationLogic(True, ['next_page'], ['has_more'])
-    assert request_data == RequestData({'initial_key': 'initial_value'}, {'initial_json_key': 'initial_json_value'}, {'initial_param_key': 'initial_param_value'})
+    assert request_data == RequestData({'initial_key': 'initial_value'}, {'initial_json_key': 'initial_json_value'},
+                                       {'initial_param_key': 'initial_param_value'})
+
+
+@patch('GenericAPIEventCollector.generate_authentication_headers')
+def test_generate_headers_basic(mock_generate_authentication_headers):
+    params = {
+        'authentication': 'Basic',
+        'credentials': {'identifier': 'user', 'password': 'pass'},
+        'add_fields_to_header': '{"Custom-Header": "CustomValue"}'
+    }
+    mock_generate_authentication_headers.return_value = {'Authorization': 'Basic d5Nl4jp3YX2z'}
+    headers = generate_headers(params)
+    assert headers == {'Authorization': 'Basic d5Nl4jp3YX2z', 'Custom-Header': 'CustomValue'}
+
+
+@patch('GenericAPIEventCollector.generate_authentication_headers')
+def test_generate_headers_bearer(mock_generate_authentication_headers):
+    params = {
+        'authentication': 'Bearer',
+        'token': {'password': 'test_token'},
+        'add_fields_to_header': '{"Custom-Header": "CustomValue"}'
+    }
+    mock_generate_authentication_headers.return_value = {'Authorization': 'Bearer test_token'}
+    headers = generate_headers(params)
+    assert headers == {'Authorization': 'Bearer test_token', 'Custom-Header': 'CustomValue'}
+
+
+@patch('GenericAPIEventCollector.generate_authentication_headers')
+def test_generate_headers_token(mock_generate_authentication_headers):
+    params = {
+        'authentication': 'Token',
+        'token': {'password': 'test_token'},
+        'add_fields_to_header': '{"Custom-Header": "CustomValue"}'
+    }
+    mock_generate_authentication_headers.return_value = {'Authorization': 'Token test_token'}
+    headers = generate_headers(params)
+    assert headers == {'Authorization': 'Token test_token', 'Custom-Header': 'CustomValue'}
+
+
+@patch('GenericAPIEventCollector.generate_authentication_headers')
+def test_generate_headers_api_key(mock_generate_authentication_headers):
+    params = {
+        'authentication': 'Api-Key',
+        'token': {'password': 'test_token'},
+        'add_fields_to_header': '{"Custom-Header": "CustomValue"}'
+    }
+    mock_generate_authentication_headers.return_value = {'api-key': 'test_token'}
+    headers = generate_headers(params)
+    assert headers == {'api-key': 'test_token', 'Custom-Header': 'CustomValue'}
+
+
+@patch('GenericAPIEventCollector.generate_authentication_headers')
+def test_generate_headers_raw_token(mock_generate_authentication_headers):
+    params = {
+        'authentication': 'RawToken',
+        'token': {'password': 'test_token'},
+        'add_fields_to_header': '{"Custom-Header": "CustomValue"}'
+    }
+    mock_generate_authentication_headers.return_value = {'Authorization': 'test_token'}
+    headers = generate_headers(params)
+    assert headers == {'Authorization': 'test_token', 'Custom-Header': 'CustomValue'}
+
+
+@patch('GenericAPIEventCollector.generate_authentication_headers')
+def test_generate_headers_no_auth(mock_generate_authentication_headers):
+    params = {
+        'authentication': 'No Authorization',
+        'add_fields_to_header': '{"Custom-Header": "CustomValue"}'
+    }
+    mock_generate_authentication_headers.return_value = {}
+    headers = generate_headers(params)
+    assert headers == {'Custom-Header': 'CustomValue'}
