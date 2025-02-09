@@ -2462,7 +2462,7 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     if not demisto_user:
         demisto_user = demisto.findUser(email=user_upn)
     if not demisto_user:
-        demisto.debug('direct_message_handler Failed to find user by email, username and UPN')
+        demisto.error('direct_message_handler Failed to find user by email, username and UPN')
 
     formatted_message = ''
 
