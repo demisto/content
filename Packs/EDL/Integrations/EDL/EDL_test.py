@@ -651,6 +651,11 @@ class TestHelperFunctions:
         assert not is_large_cidr(ipv6_small_cidr, 11)
         assert not is_large_cidr(ipv4_small_cidr, 11)
 
+        ipv4_large_cidr = '1.2.3.5/8'
+        ipv6_large_cide = '2001:0db8:85a3:0000:0000:8a2e:0370:7334/8'
+        assert not is_large_cidr(ipv4_large_cidr, 8)
+        assert not is_large_cidr(ipv6_large_cide, 8)
+
     def test_is_large_cidr_not_valid(self):
         from EDL import is_large_cidr
         not_valid = "doesntwork/oh"
