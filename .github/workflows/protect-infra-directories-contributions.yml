@@ -2,12 +2,14 @@ name: Protect Infrastructure Directories (Contributions)
 
 on:
   pull_request:
-    types: [opened, synchronize, labeled, unlabeled]
+    types:
+      - opened
+      - synchronize
 
 jobs:
   protect-non-packs:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content'
+    if: 'startsWith(github.head_ref, ''contrib'') || (github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.base.ref, ''contrib''))'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

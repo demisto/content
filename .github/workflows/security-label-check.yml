@@ -5,7 +5,7 @@ on:
 jobs:
   security-check:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content'
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false
     steps:
     - name: Checkout code
       uses: actions/checkout@v3

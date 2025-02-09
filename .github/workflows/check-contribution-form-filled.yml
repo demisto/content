@@ -10,7 +10,7 @@ jobs:
   contribution_form_filled_verification:
     runs-on: ubuntu-latest
     # This status check only runs for: forked PRS that don't contain the '[Marketplace Contribution]' in their title and the head branch is not a test branch.
-    if: github.repository == 'demisto/content'
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false && contains(github.event.pull_request.title, '[Marketplace Contribution]') == false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
