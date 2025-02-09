@@ -164,7 +164,7 @@ script:
     - contextPath: CyberBlindspot.RemoteIncident.expiry_year
       description: The compromised card's expiration year.
     - contextPath: CyberBlindspot.RemoteIncident.breach_source
-      description: The source of breached data.
+      description: The source of the breached data.
     - contextPath: CyberBlindspot.RemoteIncident.domain
       description: The domain related to the breached data.
     - contextPath: CyberBlindspot.RemoteIncident.email
