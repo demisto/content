@@ -51,9 +51,7 @@ select = [
     "ST110", "ST111",
     "TR100",
 ]
-warning = [
-
-]
+warning = ["PB130", "PB131"]
 
 
 [path_based_validations]
@@ -85,7 +83,7 @@ select = [
     "ST110",
     "TR100"
 ]
-warning = ["RM108"]
+warning = ["RM108", "PB130", "PB131"]
 
 
 [Custom_Categories]
