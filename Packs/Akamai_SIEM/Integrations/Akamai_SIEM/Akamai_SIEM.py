@@ -1,5 +1,4 @@
 import functools
-from requests import Request
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
@@ -609,15 +608,15 @@ async def get_events_with_offset_aiohttp(
         params["from"] = from_param
         demisto.info(f"Running in interval = {counter}. didn't receive offset. will run a time based request with {from_param=}.")
 
-    url = f"{client._base_url}/{config_ids}"
     demisto.info(f"Running in interval = {counter}. Init session and sending request.")
     loop = asyncio.get_event_loop()
-    raw_response: str = await loop.run_in_executor(None, functools.partial(client._http_request(
+    raw_response = await loop.run_in_executor(None, functools.partial(client._http_request,
             method='GET',
             url_suffix=f'/{config_ids}',
             params=params,
             resp_type='text',
-        )))
+            headers={'Authorization': 'Basic YTph'}
+        ))
     demisto.info(f"Running in interval = {counter}. Finished executing request to Akamai, processing")
     events: list[str] = raw_response.split('\n')
     new_offset = None
@@ -1152,11 +1151,11 @@ def main():  # pragma: no cover
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy'),
-        auth=EdgeGridAuth(
-            client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
-            access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
-            client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
-        )
+        # auth=EdgeGridAuth(
+        #     client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
+        #     access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
+        #     client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
+        # )
     )
     commands = {
         "test-module": test_module_command,
