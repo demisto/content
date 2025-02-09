@@ -1326,6 +1326,13 @@ script:
     - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
       isArray: true
       name: proxyIPs
+    - description: 'Indicate the action of adding an IP to an existing zone or overriding the existing IPs.'
+      isArray: false
+      name: updateType
+      auto: PREDEFINED
+      predefined:
+        - "APPEND"
+        - "OVERRIDE"
     description: Update an Okta Zone.
     name: okta-update-zone
     outputs:
