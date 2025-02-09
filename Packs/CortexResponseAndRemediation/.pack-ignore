@@ -1,3 +1,6 @@
+[file:playbook-Azure_AD_account_unlock_or_password_reset.yml]
+ignore=GR103
+
 [file:playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace.yml]
 ignore=PB106
 
@@ -13,6 +16,10 @@ ignore=GR103
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
+[file:silent-playbook-MFA_was_disabled_for_an_Azure_identity.yml]
+ignore=GR103
+
+# See CIAC-7711, CIAC-11954
 [file:playbook-Excessive_User_Account_Lockouts.yml]
 ignore=GR103
 
@@ -22,6 +29,10 @@ ignore=GR103
 
 # GR103 fails on SearchAlertsv2
 [file:playbook-A_user_executed_multiple_LDAP_enumeration_queries.yml]
+ignore=GR103
+
+# GR103 fails on SearchAlertsv2
+[file:playbook-SSO_Authentication_With_Suspicious_Characteristics.yml]
 ignore=GR103
 
 [known_words]
