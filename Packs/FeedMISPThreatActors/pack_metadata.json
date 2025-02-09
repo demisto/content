@@ -9,7 +9,10 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Plug & Fetch",
+        "Free Feed"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

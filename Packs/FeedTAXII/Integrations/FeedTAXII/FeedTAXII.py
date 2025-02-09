@@ -586,7 +586,7 @@ class TAXIIClient:
         self.tags = argToList(feedTags)
         self.tlp_color = tlp_color
         self.ttps: dict[str, dict] = {}
-        self.enrichment_excluded = enrichmentExcluded
+        self.enrichment_excluded = enrichmentExcluded or (tlp_color == 'RED' and is_xsiam_or_xsoar_saas())
 
         # authentication
         if credentials:
