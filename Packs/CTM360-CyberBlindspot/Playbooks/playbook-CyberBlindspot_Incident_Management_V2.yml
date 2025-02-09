@@ -396,7 +396,7 @@ tasks:
         By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
         Otherwise, the analyst will be picked according to the 'assignBy' arguments.
         machine-learning: DBot will calculated and decide who is the best analyst for the job.
-        top-user: The user that is most commonly owns this type of incident
+        top-user: The user who most commonly owns this type of incident.
         less-busy-user: The less busy analyst will be picked to be the incident owner.
         online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
         current: The user that executed the command
