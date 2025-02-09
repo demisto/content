@@ -22,7 +22,6 @@ To add the registration, refer to the following [Microsoft article](https://lear
 - Microsoft Graph - permission `offline_access` of type Delegated
 
 To add a permission:
-
 1. Navigate to **Home** > **App registrations**.
 2. Search for your app under 'all applications'.
 3. Click **API permissions** > **Add permission**.
@@ -150,7 +149,6 @@ List all network security groups.
 #### Human Readable Output
 
 > ### Network Security Groups
-
 >|etag|id|location|name|tags|type|
 >|---|---|---|---|---|---|
 >| W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg | westeurope | alerts-nsg |  | Microsoft.Network/networkSecurityGroups |
@@ -232,7 +230,6 @@ List all rules of the specified security groups.
 #### Human Readable Output
 
 > ### Rules in alerts-nsg
-
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -374,7 +371,6 @@ Create a security rule.
 #### Human Readable Output
 
 > ### Rules rulerule
-
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | * | * | Inbound | W/"276dc93a-488d-47a1-8971-19a1171242a9" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/rulerule | rulerule | 4096 | * | Updating | 1.1.1.1 | * | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -462,7 +458,6 @@ Update a security rule. If one does not exist, it will be created.
 #### Human Readable Output
 
 > ### Rules XSOAR_Rule
-
 >|access|description|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | description | 11.0.0.0/8 | 8080 | Outbound | W/"9fad6036-4c3a-4d60-aac9-18281dba3305" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/XSOAR_Rule | XSOAR_Rule | 100 | * | Succeeded | 10.0.0.0/8 | * | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -543,7 +538,6 @@ Get a specific rule.
 #### Human Readable Output
 
 > ### Rules wow
-
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -571,7 +565,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-> To sign in, use a web browser to open the page <https://microsoft.com/devicelogin>
+> To sign in, use a web browser to open the page https://microsoft.com/devicelogin
 > and enter the code CODECODE to authenticate.
 > Run the ***!azure-nsg-auth-complete*** command in the War Room.
 
@@ -795,7 +789,6 @@ There is no context output for this command.
 #### Human Readable Output
 
 > ### Authorization instructions
->
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
     You will be automatically redirected to a link with the following structure:
     ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -878,7 +871,6 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ### Azure Network Security Groups Subscriptions list
-
 >|subscriptionId|tenantId|displayName|state|
 >|---|---|---|---|
 >| 057b1785-fd7b-4 | ebac1a16-81bf-449 | Access to Azure Active Directory | Enabled |
@@ -957,12 +949,10 @@ Gets all resource groups for a subscription.
 #### Human Readable Output
 
 > ### Resource Groups List
-
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell-storage-eastus | eastus |  |
 >| demi | centralus | Owner: Demi |
-
 ### azure-nsg-security-group-create
 
 ***
@@ -990,6 +980,7 @@ Creates a network security group in the specified resource group.
 | AzureNSG.SecurityGroup.location | String | The network security group's location. | 
 | AzureNSG.SecurityGroup.properties.securityRules | List | A collection of security rules of the network security group. | 
 
+
 ### azure-nsg-public-ip-addresses-list
 
 ***
@@ -1012,14 +1003,14 @@ Gets public IP addresses in a resource group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureNSG.PublicIPAdress.name | String | The public ip address's name. | 
-| AzureNSG.PublicIPAdress.id | String | The public ip address's id. | 
-| AzureNSG.PublicIPAdress.etag | String | The public ip address's etag. | 
-| AzureNSG.PublicIPAdress.provisioningState | String | The public ip address's provisioning state. | 
-| AzureNSG.PublicIPAdress.publicIPAddressVersion | String | The public ip address's version. | 
-| AzureNSG.PublicIPAdress.ipAddress | String | The public ip address's ip address. | 
-| AzureNSG.PublicIPAdress.domainNameLabel | String | The public ip address's domain name label. | 
-| AzureNSG.PublicIPAdress.fqdn | String | The public ip address's fully qualified domain name \(FQDN\). | 
+| AzureNSG.PublicIPAdress.name | String | The public IP address's name. | 
+| AzureNSG.PublicIPAdress.id | String | The public IP address's ID. | 
+| AzureNSG.PublicIPAdress.etag | String | The public IP address's etag. | 
+| AzureNSG.PublicIPAdress.provisioningState | String | The public IP address's provisioning state. | 
+| AzureNSG.PublicIPAdress.publicIPAddressVersion | String | The public IP address's version. | 
+| AzureNSG.PublicIPAdress.ipAddress | String | The public IP address's IP address. | 
+| AzureNSG.PublicIPAdress.domainNameLabel | String | The public IP address's domain name label. | 
+| AzureNSG.PublicIPAdress.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). | 
 
 ### azure-nsg-virtual-networks-list
 
@@ -1048,8 +1039,8 @@ Gets virtual networks in a resource group.
 | AzureNSG.VirtualNetwork.location | String | The virtual network's location. | 
 | AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes | String | A list of address blocks reserved for this virtual network in CIDR notation. | 
 | AzureNSG.VirtualNetwork.properties.subnets.name | List | The virtual network's subnet name. | 
-| AzureNSG.VirtualNetwork.properties.subnets.properties.addressPrefix | List | The virtual network's subnet address prefix. | 
-| AzureNSG.VirtualNetwork.properties.subnets.properties.ipConfigurations.id | List | List of the virtual network's subnets id. | 
+| AzureNSG.VirtualNetwork.subnetAdrdressPrefix | List | The virtual network's subnet address prefix. | 
+| AzureNSG.VirtualNetwork.subnetID | List | List of the virtual network's subnets ID. | 
 
 ### azure-nsg-network-interfaces-create
 
@@ -1067,13 +1058,13 @@ Creates or updates a network interface.
 | nic_name | The network interface name. | Required | 
 | resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
 | subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| nsg_name | Existing network security group name. Note: use azure-nsg-security-groups-list in order to find existing network security group name. | Optional | 
-| ip_config_name | Existing ip configuration name Note: use azure-nsg-public-ip-adresses-list in order to find available ip configuration. | Required | 
-| private_ip | The private ip. | Optional | 
-| public_ip_address_name | The public ip address name. | Optional | 
+| nsg_name | Existing network security group name. Note: Use azure-nsg-security-groups-list in order to find existing network security group name. | Optional | 
+| ip_config_name | Existing IP configuration name. Note: Use azure-nsg-public-ip-adresses-list in order to find available ip configuration. | Required | 
+| private_ip | The private IP. | Optional | 
+| public_ip_address_name | The public IP address name. | Optional | 
 | vnet_name | The virtual network name. | Required | 
 | subnet_name | The subnet name. | Required | 
-| location | The Resource location. | Required | 
+| location | The resource location. | Required | 
 
 #### Context Output
 
@@ -1083,9 +1074,10 @@ Creates or updates a network interface.
 | AzureNSG.NetworkInterface.etag | String | The network interface's etag. | 
 | AzureNSG.NetworkInterface.properties.provisioningState | String | The network interface's provisioning state. | 
 | AzureNSG.NetworkInterface.properties.ipConfigurations.name | List | The name of the resource that is unique within a resource group. | 
-| AzureNSG.NetworkInterface.properties.ipConfigurations.properties.privateIPAddress | List | The private IP address of the IP configuration. | 
-| AzureNSG.NetworkInterface.properties.ipConfigurations.properties.publicIPAddress.id | List | The id of the public IP address of the IP configuration. | 
-| AzureNSG.NetworkInterface.properties.ipConfigurations.properties.subnet.id | List | The subnet id of the ip configuration. | 
+| AzureNSG.NetworkInterface.ipConfigurationPrivateIPAddress | List | The private IP address of the IP configuration. | 
+| AzureNSG.NetworkInterface.ipConfigurationPublicIPAddressName | List | The ID of the public IP address of the IP configuration. | 
+| AzureNSG.NetworkInterface.subnetId | List | The subnet ID of the IP configuration. | 
+
 
 ### azure-nsg-network-interfaces-list
 
@@ -1110,16 +1102,17 @@ Gets network interfaces in a resource group.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureNSG.NetworkInterfaces.name | String | The network interface's name. | 
-| AzureNSG.NetworkInterfaces.id | String | The network interface's id. | 
+| AzureNSG.NetworkInterfaces.id | String | The network interface's ID. | 
 | AzureNSG.NetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. | 
-| AzureNSG.NetworkInterfaces.properties.ipConfigurations.name | List | The name of the resource that is unique within a resource group. | 
-| AzureNSG.NetworkInterfaces.properties.ipConfigurations.id | List | The Resource ID. | 
-| AzureNSG.NetworkInterfaces.properties.ipConfigurations.properties.privateIPAddress | List | The private IP address of the IP configuration. | 
-| AzureNSG.NetworkInterfaces.properties.ipConfigurations.properties.publicIPAddress.id | List | The id of the public IP address of the IP configuration. | 
-| AzureNSG.NetworkInterfaces.properties.dnsSettings.dnsServers | List | List of DNS servers IP addresses. | 
-| AzureNSG.NetworkInterfaces.properties.dnsSettings.appliedDnsServers | List | List of all DNS servers from all NICs that are part of the Availability Set. | 
-| AzureNSG.NetworkInterfaces.properties.dnsSettings.internalDomainNameSuffix | String | The network interface's internal domain name suffix. | 
+| AzureNSG.NetworkInterfaces.ipConfigurationName | List | The name of the resource that is unique within a resource group. | 
+| AzureNSG.NetworkInterfaces.ipConfigurationID | List | The resource ID. | 
+| AzureNSG.NetworkInterfaces.ipConfigurationPrivateIPAddress | List | The private IP address of the IP configuration. | 
+| AzureNSG.NetworkInterfaces.ipConfigurationPublicIPAddressName | List | The ID of the public IP address of the IP configuration. | 
+| AzureNSG.NetworkInterfaces.dnsServers | List | List of DNS servers IP addresses. | 
+| AzureNSG.NetworkInterfaces.appliedDnsServers | List | List of all DNS servers from all NICs that are part of the Availability Set. | 
+| AzureNSG.NetworkInterfaces.internalDomainNameSuffix | String | The network interface's internal domain name suffix. | 
 | AzureNSG.NetworkInterfaces.properties.macAddress | String | The network interface's mac address. | 
 | AzureNSG.NetworkInterfaces.properties.virtualMachine.id | String | The network interface's virtual machine's id. | 
 | AzureNSG.NetworkInterfaces.location | String | The network interface's location. | 
 | AzureNSG.NetworkInterfaces.kind | String | The network interface's kind. | 
+
