@@ -346,7 +346,7 @@ def fetch_events(client: Client,
     id_type_lower: str | None = None
     id_keys: list[str] = argToList(params.get('id_keys'), '.')
     if id_keys:
-        id_type: str = params.get('id_type')
+        id_type: str = params.get('id_type')  # type: ignore[arg-type]
         if id_type:
             id_type_lower = id_type.lower()
             if id_type_lower not in ALL_ID_TYPES:
@@ -392,14 +392,14 @@ def fetch_events(client: Client,
         # Handle the last event id.
         if id_keys:
             current_id: Any = dict_safe_get(event, id_keys)
-            if last_fetched_id is None:
-                last_fetched_id = current_id
+            if (
+                last_fetched_id is not None
+                and id_type_lower == IdTypes.INTEGER.value
+            ):
+                last_fetched_id = str(max(int(last_fetched_id), int(current_id)))  # noqa
             else:
-                if id_type_lower == IdTypes.INTEGER.value:
-                    last_fetched_id = str(max(int(last_fetched_id), int(current_id)))  # noqa
-                else:
-                    # We assume the last event contains the last id.
-                    last_fetched_id = current_id
+                # We assume the last event contains the last id.
+                last_fetched_id = current_id
 
     # region Saves important parameters here to Integration context / last run
     demisto.debug(f'next run:{latest_created_datetime}')
@@ -715,7 +715,7 @@ def main() -> None:
             test_module(
                 client=client,
                 endpoint=endpoint,
-                http_method=http_method,
+                http_method=http_method,  # type: ignore[arg-type]
                 request_data=request_data,
             )
 
@@ -728,7 +728,7 @@ def main() -> None:
                 last_run=last_run,
                 first_fetch_datetime=first_fetch_datetime,
                 endpoint=endpoint,
-                http_method=http_method,
+                http_method=http_method,  # type: ignore[arg-type]
                 events_keys=events_keys,
                 timestamp_field_config=timestamp_field_config,
             )
@@ -747,7 +747,8 @@ def main() -> None:
             limit: int = arg_to_number(args.get("limit", DEFAULT_LIMIT), "limit", True)  # type: ignore[assignment]
             last_fetched_datetime, pagination_logic, request_data = setup_search_events(
                 first_fetch_datetime, demisto.getLastRun(), params, timestamp_field_config)
-            raw_events, results = get_events_command(client, endpoint, http_method,
+            raw_events, results = get_events_command(client, endpoint,
+                                                     http_method,  # type: ignore[arg-type]
                                                      request_data, events_keys, limit)
             return_results(results)
 
