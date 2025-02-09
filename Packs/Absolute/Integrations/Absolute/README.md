@@ -1025,13 +1025,9 @@ In the *absolute-device-application-list* command:
 
 
 ### Outputs
-- In the ***oabsolute-device-unenroll*** command the following outputs were replaced:
+- In the ***absolute-device-unenroll*** command the following outputs were replaced:
   * *Absolute.DeviceUnenroll.DeviceUid* - replaced by *Absolute.DeviceUnenroll.Devices.DeviceUid*.
-  * *Absolute.DeviceUnenroll.ESN* - replaced by *OpsGenie.Alert.alertId*.
-  * *Absolute.DeviceUnenroll.EligibleStatus* - replaced by *OpsGenie.Alert.alias*.
-  * *Absolute.DeviceUnenroll.Serial* - replaced by *OpsGenie.Alert.integrationId*.
-  * *Absolute.DeviceUnenroll.SystemName* - replaced by *OpsGenie.Alert.isSuccess*.
-  * *Absolute.DeviceUnenroll.Usernamet* - replaced by *OpsGenie.Alert.processedAt*.
+  * *Absolute.DeviceUnenroll.ESN* - replaced by *Absolute.DeviceUnenroll.Devices.ESN*.
 
 - In the ***absolute-device-freeze-request-get*** command the following outputs were replaced:
   * *Absolute.FreezeRequestDetail.Configuration.issuedUtc* - replaced by *Absolute.FreezeRequestDetail.Configuration.issuedDateTimeUTC*.
@@ -1048,3 +1044,10 @@ In the *absolute-device-application-list* command:
 
 - In the ***absolute-device-freeze-request-get*** command the following outputs were removed:
   * *Absolute.FreezeRequestDetail.Statuses.statusUid*
+  * *Absolute.FreezeRequestDetail.RequesterUid*
+
+- In the ***absolute-device-unenroll*** command the following outputs were removed:
+  * *Absolute.DeviceUnenroll.EligibleStatus*
+  * *Absolute.DeviceUnenroll.Serial*
+  * *Absolute.DeviceUnenroll.SystemName*
+  * *Absolute.DeviceUnenroll.Username*
