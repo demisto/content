@@ -2146,12 +2146,11 @@ def cybereason_process_attack_tree_command(client: Client, args: dict):
 
 
 def update_malop_investigation_status_command(client: Client, args: dict):
-    malop_guid = args.get('malopGuid')
-    investigation_status = args.get('investigationStatus')
+    malop_guid = str(args.get('malopGuid'))
+    investigation_status = str(args.get('investigationStatus'))
 
     if investigation_status not in INVESTIGATION_STATUS_MAP.keys():
-        raise Exception(
-            f'Invalid investigation status. Given investigation status must be one of the following: {", ".join(INVESTIGATION_STATUS_MAP.keys())}')
+        raise Exception(f"Invalid investigation status. Must be one of: {', '.join(INVESTIGATION_STATUS_MAP.keys())}")
 
     update_malop_investigation_status(client, malop_guid, investigation_status)
 
@@ -2170,8 +2169,7 @@ def update_malop_investigation_status(client: Client, malop_guid: str, investiga
 
     response = client.cybereason_api_call('PUT', f'/rest/mmng/v2/malops/{malop_guid}', json_body=json_body)
     if response['status'] != 'SUCCESS':
-        raise DemistoException(
-            f"Failed to update malop {malop_guid} investigation status to \"{investigation_status}\". Message: {response['message']}")
+        raise DemistoException(f"Failed to update malop {malop_guid} to \"{investigation_status}\": {response['message']}")
 
 
 def get_machine_details_command_pagination_params(args: dict) -> dict:
