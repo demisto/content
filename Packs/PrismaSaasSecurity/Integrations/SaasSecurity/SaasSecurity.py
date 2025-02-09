@@ -224,6 +224,34 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def get_max_fetch(limit: Optional[int]) -> int:
+    """
+    Validate and get the max fetch according to the following rules:
+
+    1. if the limit is negative, raise an exception.
+    2. if the limit is less than 10, the limit will be equal to 10.
+    3. if the limit is not dividable by 10, make sure it gets rounded down to a number that is dividable by 10.
+    4. if limit > MAX_LIMIT (200) - make sure it will always be MAX_LIMIT (200).
+    5. if a limit is not provided, set it up for the default limit which is 50.
+    """
+    demisto.debug(f'limit before validate: {limit}')
+    if limit:
+        if limit <= 0:
+            raise DemistoException('fetch limit parameter cannot be negative number or zero')
+        if limit < LIMIT_MIN:
+            limit = LIMIT_MIN
+        if limit > LIMIT_MAX:  # do not allow a limit of more than 200 to avoid timeouts
+            limit = LIMIT_MAX
+        if limit % 10 != 0:  # max limit must be a multiplier of 10 (SaaS api limit)
+            # round down the limit
+            limit = int(limit // 10) * 10
+    else:
+        limit = LIMIT_DEFAULT
+
+    demisto.debug(f'limit after validate: {limit}')
+    return limit
+
+
 def get_passed_mins(start_time, end_time_str, tz=None):
     """
     Calculates the amount of minutes passed between 2 dates.
@@ -653,7 +681,7 @@ def main() -> None:
 
     # Fetch incident related params:
     first_fetch_time = params.get('first_fetch', '3 days')
-    fetch_limit = arg_to_number(params.get('max_fetch', LIMIT_DEFAULT))
+    fetch_limit = get_max_fetch(arg_to_number(params.get('max_fetch')))
     fetch_state = params.get('state')
     fetch_severity = params.get('severity')
     fetch_status = ','.join(STATUS_MAP.get(x) for x in argToList(params.get('status', [])))  # type: ignore[misc]
