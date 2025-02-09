@@ -898,7 +898,8 @@ def search_quarantine():
 
     if quarantineFoundcpt > 0:
         return CommandResults(
-            readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined, but time between alert received and the quarantine starting exceeded the quarantine_limit provided")
+            readable_output=(f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined, but time between alert "
+                             f"received and the quarantine starting exceeded the quarantine_limit provided"))
     if not found['mid']:
         return CommandResults(readable_output=f"Message ID {mid} not found in TRAP incidents")
 
