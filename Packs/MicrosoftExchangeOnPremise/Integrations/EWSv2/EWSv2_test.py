@@ -10,6 +10,7 @@ import logging
 
 import dateparser
 import pytest
+from pytest_mock import MockerFixture
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
 from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address, get_attachment_name
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
@@ -349,12 +350,12 @@ MESSAGES = [
             datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC'))
             ),
 ]
-CASE_FIRST_RUN_NO_INCIDENT = (
+CASE_FIRST_RUN_NO_INCIDENT: tuple = (
     {},
     [],
     {'lastRunTime': None, 'folderName': 'Inbox', 'ids': [], 'errorCounter': 0}
 )
-CASE_FIRST_RUN_FOUND_INCIDENT = (
+CASE_FIRST_RUN_FOUND_INCIDENT: tuple = (
     {},
     MESSAGES[:1],
     {'lastRunTime': '2021-07-14T13:00:00Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0}
@@ -368,7 +369,7 @@ CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN = (
 CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN = (
     {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2']}, MESSAGES[1:3],
     {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2', 'message3'], 'errorCounter': 0})
-CASE_SECOND_RUN_NO_INCIDENTS = (
+CASE_SECOND_RUN_NO_INCIDENTS: tuple = (
     {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, [],
     {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
 CASE_SECOND_RUN_DIFFERENT_CREATED_RECEIVED_TIME = (
@@ -751,7 +752,7 @@ def test_parse_item_as_dict_with_empty_field():
 
 def test_get_entry_for_object_empty():
     from EWSv2 import get_entry_for_object
-    obj = {}
+    obj: dict = {}
     assert get_entry_for_object("test", "keyTest", obj) == "There is no output results"
 
 
@@ -764,7 +765,7 @@ def test_get_entry_for_object():
 def test_get_time_zone(mocker):
     """
     When -
-        trying to send/reply an email we check the XOSAR user time zone
+        trying to send/reply an email we check the XSOAR user time zone
 
     Then -
         verify that info returns
@@ -885,70 +886,120 @@ def test_format_identifier(input, output):
     assert EWSv2.format_identifier(input) == output
 
 
-def test_get_message_for_body_type_no_body_type_with_html_body():
+@pytest.mark.parametrize(
+    "handle_inline_image",
+    [
+        pytest.param(True, id="handle_inline_image is True"),
+        pytest.param(False, id="handle_inline_image is False")
+    ]
+)
+def test_get_message_for_body_type_no_body_type_with_html_body(handle_inline_image: bool):
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
-    result = get_message_for_body_type(body, None, html_body)
+    result = get_message_for_body_type(body, None, html_body, handle_inline_image)
     assert isinstance(result[0], HTMLBody)
     assert result[0] == HTMLBody(html_body)
 
 
-def test_get_message_for_body_type_no_body_type_with_html_body_and_image(mocker):
+def test_get_message_for_body_type_no_body_type_with_html_body_and_image_and_handle_image_is_true(mocker: MockerFixture):
     from exchangelib import FileAttachment
     mocker.patch.object(uuid, 'uuid4', return_value='123456')
     body = "This is a plain text body"
     html_body = '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
-    result = get_message_for_body_type(body, None, html_body)
+    result = get_message_for_body_type(body, None, html_body, True)
     assert isinstance(result[0], HTMLBody)
     assert isinstance(result[1][0], FileAttachment)
     assert result[0] == HTMLBody('<p>This is an HTML body</p><p><img src="cid:image0@123456_123456"/></p>')
 
 
+def test_get_message_for_body_type_no_body_type_with_html_body_and_image_and_handle_image_is_false():
+    """Test get_message_for_body_type with no body type, HTML body, and image without handle.
+
+    Given:
+        - A plain text body and an HTML body with an embedded image.
+
+    When:
+        - Calling get_message_for_body_type with no body type and handle set to False.
+
+    Then:
+        - Ensure the result is an instance of HTMLBody.
+        - Ensure the result is a list.
+        - Ensure the HTML body content matches the expected value.
+    """
+    body = "This is a plain text body"
+    html_body = '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
+    result = get_message_for_body_type(body, None, html_body, False)
+    assert isinstance(result[0], HTMLBody)
+    assert isinstance(result[1], list)
+    assert result[0] == HTMLBody(html_body)
+
+
 def test_get_message_for_body_type_no_body_type_with_no_html_body():
     body = "This is a plain text body"
-    result = get_message_for_body_type(body, None, None)
+    result = get_message_for_body_type(body, None, None, True)
     assert isinstance(result[0], Body)
     assert result[0] == Body(body)
 
 
-def test_get_message_for_body_type_html_body_type_with_html_body():
+@pytest.mark.parametrize(
+    "handle_inline_image",
+    [
+        pytest.param(True, id="handle_inline_image is True"),
+        pytest.param(False, id="handle_inline_image is False")
+    ]
+)
+def test_get_message_for_body_type_html_body_type_with_html_body(handle_inline_image: bool):
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
-    result = get_message_for_body_type(body, 'html', html_body)
+    result = get_message_for_body_type(body, 'html', html_body, handle_inline_image)
     assert isinstance(result[0], HTMLBody)
     assert result[0] == HTMLBody(html_body)
 
 
-def test_get_message_for_body_type_text_body_type_with_html_body():
+@pytest.mark.parametrize(
+    "handle_inline_image",
+    [
+        pytest.param(True, id="handle_inline_image is True"),
+        pytest.param(False, id="handle_inline_image is False")
+    ]
+)
+def test_get_message_for_body_type_text_body_type_with_html_body(handle_inline_image: bool):
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
-    result = get_message_for_body_type(body, 'text', html_body)
+    result = get_message_for_body_type(body, 'text', html_body, handle_inline_image)
     assert isinstance(result[0], Body)
     assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_html_body_type_with_no_html_body():
     body = "This is a plain text body"
-    result = get_message_for_body_type(body, 'html', None)
+    result = get_message_for_body_type(body, 'html', None, True)
     assert isinstance(result[0], Body)
     assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_text_body_type_with_no_html_body():
     body = "This is a plain text body"
-    result = get_message_for_body_type(body, 'text', None)
+    result = get_message_for_body_type(body, 'text', None, True)
     assert isinstance(result[0], Body)
     assert result[0] == Body(body)
 
 
-def test_get_message_for_body_type_text_body_type_with_html_body_no_body():
+@pytest.mark.parametrize(
+    "handle_inline_image",
+    [
+        pytest.param(True, id="handle_inline_image is True"),
+        pytest.param(False, id="handle_inline_image is False")
+    ]
+)
+def test_get_message_for_body_type_text_body_type_with_html_body_no_body(handle_inline_image):
     """
     Given: html_body, no body, the default 'text' as body_type.
     When: Constructing the message body.
     Then: Assert that the result is an html body.
     """
     html_body = "<p>This is an HTML body</p>"
-    result = get_message_for_body_type('', 'text', html_body)
+    result = get_message_for_body_type('', 'text', html_body, handle_inline_image)
     assert isinstance(result[0], HTMLBody)
     assert result[0] == HTMLBody(html_body)
 

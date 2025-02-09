@@ -1,5 +1,5 @@
 name: CiscoASA Parsing Rule
-id: CiscoASA Parsing Rule
+id: Cisco_ASA_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''
