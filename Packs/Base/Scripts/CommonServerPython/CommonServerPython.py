@@ -47,8 +47,7 @@ _MODULES_LINE_MAPPING = {
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
-MAX_ALLOWED_ENTRY_SIZE = 5 * (10 ** 6)  # 5 MB, this is the maximum allowed size of a single entry.
-# So if you're using a "heavy" API it is recommended to use maximum of 9MB chunk size.
+# So if you're using a "heavy" API it is recommended to use maximum of 4MB chunk size.
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -12060,13 +12059,8 @@ def split_data_to_chunks(data, target_chunk_size):
             yield chunk
             chunk = []
             chunk_size = 0
-        data_part_size = sys.getsizeof(data_part)
-        if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
-            demisto.error("entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
-                                                                                                                       MAX_ALLOWED_ENTRY_SIZE))
-            continue
         chunk.append(data_part)
-        chunk_size += data_part_size
+        chunk_size += sys.getsizeof(data_part)
     if chunk_size != 0:
         demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
