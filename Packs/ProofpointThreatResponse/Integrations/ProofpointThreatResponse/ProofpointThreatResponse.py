@@ -798,16 +798,17 @@ def format_datetime(date) -> int | None:
         return None
 
 def search_quarantine():
-    args = demisto.args()
-    arg_time = dateparser.parse(args.get('time'))
-    demisto.debug(f"{arg_time=}")
-    incidentTAPtime = format_datetime(arg_time)
-    demisto.debug(f"{incidentTAPtime=}")
+    arg_time = dateparser.parse(demisto.args().get('time'))
+    emailTAPtime = 0
+    if isinstance(arg_time, datetime):
+        emailTAPtime = int(arg_time.timestamp())
+    else:
+        return_error("Timestamp was bad")
     lstAlert = []
     mid = args.get('message_id')
     recipient = args.get('recipient')
-    limit_quarantine_occurred_time = argToBoolean(args.get('limit_quarantine_occurred_time'))
-    quarantine_timestamp_limit = arg_to_number(args.get('quarantine_timestamp_limit'))
+    limit_quarantine_occurred_time = argToBoolean(args.get('limit_quarantine_occurred_time', 'True'))
+    quarantine_timestamp_limit = arg_to_number(args.get('quarantine_timestamp_limit', '120'))
     fetch_delta = arg_to_number(args.get('fetch_delta'))
 
 
@@ -819,14 +820,14 @@ def search_quarantine():
     }
 
     incidents_list = get_incidents_batch_by_time_request(request_params)
-    demisto.debug(f"PTR {incidents_list=}")
+    demisto.debug(f'PTR {incidents_list=}')
+
 
     found = {'email': False, 'mid': False, 'quarantine': False}
     resQ = []
 
     # Collecting emails inside alert to find those with same recipient and messageId
     for incident in incidents_list:
-        demisto.debug(f"{incident=}")
         for alert in incident.get('events'):
             demisto.debug(f'New alert being processed with Alertid = {alert.get("id")}')
             for email in alert.get('emails'):
@@ -849,8 +850,7 @@ def search_quarantine():
                     found['mid'] = True
                     demisto.debug('PTR: Found the email, adding the alert')
                     emailTRAPtimestamp = int(message_delivery_time / 1000)
-                    demisto.debug(f'PTR: {emailTRAPtimestamp=}, {incidentTAPtime=}')
-                    if (incidentTAPtime == emailTRAPtimestamp):
+                    if emailTAPtime == emailTRAPtimestamp:
                         demisto.debug(f'PTR: Adding the alert with id {alert.get("id")}')
                         found['email'] = True
                         lstAlert.append({
@@ -877,8 +877,9 @@ def search_quarantine():
                 tsalert = dateparser.parse(alert.get("alerttime"))
                 if isinstance(tsquarantine, datetime) and isinstance(tsalert, datetime):
                     diff = (tsquarantine - tsalert).total_seconds()
-                    # we want to make sure quarantine starts within the timestamp limit set after creating the alert if limit_quarantine_occurred_time is set to true, if false return quarantine regardless.
-                    if not limit_quarantine_occurred_time or 0 < diff < quarantine_timestamp_limit:
+                    # Always append alerts if limit_quarantine_occurred_time=False, else checks that diff is less then quarantine_timestamp_limit
+                    if ((not limit_quarantine_occurred_time) or
+                        (quarantine_timestamp_limit and 0 < diff < quarantine_timestamp_limit)):
                         resQ.append({
                             'quarantine': quarantine,
                             'alert': {
@@ -898,7 +899,7 @@ def search_quarantine():
 
     if quarantineFoundcpt > 0:
         return CommandResults(
-            readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
+            readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined, but time between alert recieved and the quarantine starting exceeded the quarantine_timestamp_limit provided")
     if not found['mid']:
         return CommandResults(readable_output=f"Message ID {mid} not found in TRAP incidents")
 
