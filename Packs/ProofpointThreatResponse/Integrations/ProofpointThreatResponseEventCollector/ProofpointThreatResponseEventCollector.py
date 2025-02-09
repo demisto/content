@@ -249,8 +249,13 @@ def get_incidents_batch_by_time_request(client, params):
         # updating params according to the new times
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
+        
+        if not new_incidents:
+            demisto.debug("Got no incidents, breaking while loop")
+            break
+        
         demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} events")
-
+        
     # fetching the last batch when created_before is bigger then current time = fetching new events
     if len(incidents_list) < fetch_limit:  # type: ignore[operator]
         # fetching the last batch
