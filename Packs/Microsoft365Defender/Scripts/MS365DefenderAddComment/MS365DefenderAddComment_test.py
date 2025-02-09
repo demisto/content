@@ -1,5 +1,4 @@
 def test_add_comment(mocker):
-    # test add_comment function
     from MS365DefenderAddComment import add_comment, demisto
     mocker.patch.object(demisto, 'executeCommand')
     add_comment({'id': '1', 'comment': 'test'})

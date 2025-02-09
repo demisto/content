@@ -1,5 +1,4 @@
-def test_count_dict(mocker):
-    # test add_comment function
+def test_count_dict():
     from MS365DefenderCountIncidentCategories import count_dict
     input_value = "Impact,Malware,Impact,Malware,Impact,InitialAccess"
     expected_output = [
