@@ -5,7 +5,7 @@ import json
 from CommonServerPython import DemistoException, EntryType, EntryFormat
 from datetime import datetime
 
-from SaasSecurity import Client
+from SaasSecurity import Client, get_max_fetch, LIMIT_MIN, LIMIT_MAX, LIMIT_DEFAULT, DemistoException
 import demistomock as demisto
 
 
@@ -400,3 +400,45 @@ def test_update_remote_system_command(requests_mock, mocker, client, args, expec
 
     assert result == args.get("remoteId")
     assert expected_debug_message in debug_result.call_args[0][0]
+
+
+def test_get_max_fetch():
+    """
+    Test the get_max_fetch function behavior under various input conditions.
+
+    Given: Different input values for the limit parameter.
+    When: The get_max_fetch function is called with these inputs.
+    Then: The function should return the expected validated limit values.
+
+    Test cases:
+    1. Negative limit: Should raise a DemistoException
+    2. Limit less than 10: Should return LIMIT_MIN (10)
+    3. Limit not divisible by 10: Should round down to nearest multiple of 10
+    4. Limit greater than MAX_LIMIT: Should return LIMIT_MAX (200)
+    5. No limit provided: Should return LIMIT_DEFAULT (50)
+    6. Valid limit within range: Should return the input value
+    7. Limits at boundaries: Should return LIMIT_MIN for 10 and LIMIT_MAX for 200
+    """
+
+    # Test with negative limit
+    with pytest.raises(DemistoException, match='fetch limit parameter cannot be negative number or zero'):
+        get_max_fetch(-1)
+
+    # Test with limit less than 10
+    assert get_max_fetch(5) == LIMIT_MIN
+
+    # Test with limit not dividable by 10
+    assert get_max_fetch(55) == 50
+
+    # Test with limit greater than MAX_LIMIT
+    assert get_max_fetch(250) == LIMIT_MAX
+
+    # Test with no limit provided
+    assert get_max_fetch(None) == LIMIT_DEFAULT
+
+    # Test with valid limit
+    assert get_max_fetch(100) == 100
+
+    # Test with limit at boundaries
+    assert get_max_fetch(10) == LIMIT_MIN
+    assert get_max_fetch(200) == LIMIT_MAX
