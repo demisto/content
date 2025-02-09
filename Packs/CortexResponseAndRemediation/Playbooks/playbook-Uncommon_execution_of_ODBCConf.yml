@@ -35,6 +35,7 @@ description: |-
     - Automatically Close the alert.
 tags:
 - 'T1218.008 - System Binary Proxy Execution: Odbcconf'
+- TA0005 - Defense Evasion
 starttaskid: "0"
 tasks:
   "0":
@@ -729,5 +730,5 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
+fromversion: 8.8.0
 marketplaces: ["marketplacev2"]
