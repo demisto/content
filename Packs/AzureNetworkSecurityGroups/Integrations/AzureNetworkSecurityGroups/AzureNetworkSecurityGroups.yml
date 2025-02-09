@@ -681,10 +681,10 @@ script:
     - contextPath: AzureNSG.VirtualNetwork.properties.subnets.name
       description: The virtual network's subnet name.
       type: List
-    - contextPath: AzureNSG.VirtualNetwork.properties.subnets.properties.addressPrefix
+    - contextPath: AzureNSG.VirtualNetwork.subnetAdrdressPrefix
       description: The virtual network's subnet address prefix.
       type: List
-    - contextPath: AzureNSG.VirtualNetwork.properties.subnets.properties.ipConfigurations.id
+    - contextPath: AzureNSG.VirtualNetwork.subnetID
       description: List of the virtual network's subnets id.
       type: List
     arguments:
@@ -762,25 +762,25 @@ script:
     - contextPath: AzureNSG.NetworkInterfaces.properties.provisioningState
       description: The network interface's provisioning state.
       type: String
-    - contextPath: AzureNSG.NetworkInterfaces.properties.ipConfigurations.name
+    - contextPath: AzureNSG.NetworkInterfaces.ipConfigurationName
       description: The name of the resource that is unique within a resource group.
       type: List
-    - contextPath: AzureNSG.NetworkInterfaces.properties.ipConfigurations.id
+    - contextPath: AzureNSG.NetworkInterfaces.ipConfigurationID
       description: The Resource ID.
       type: List
-    - contextPath: AzureNSG.NetworkInterfaces.properties.ipConfigurations.properties.privateIPAddress
+    - contextPath: AzureNSG.NetworkInterfaces.ipConfigurationPrivateIPAddress
       description: The private IP address of the IP configuration.
       type: List
-    - contextPath: AzureNSG.NetworkInterfaces.properties.ipConfigurations.properties.publicIPAddress.id
+    - contextPath: AzureNSG.NetworkInterfaces.ipConfigurationPublicIPAddressName
       description: The id of the public IP address of the IP configuration.
       type: List
-    - contextPath: AzureNSG.NetworkInterfaces.properties.dnsSettings.dnsServers
+    - contextPath: AzureNSG.NetworkInterfaces.dnsServers
       description: List of DNS servers IP addresses.
       type: List
-    - contextPath: AzureNSG.NetworkInterfaces.properties.dnsSettings.appliedDnsServers
+    - contextPath: AzureNSG.NetworkInterfaces.appliedDnsServers
       description: List of all DNS servers from all NICs that are part of the Availability Set.
       type: List
-    - contextPath: AzureNSG.NetworkInterfaces.properties.dnsSettings.internalDomainNameSuffix
+    - contextPath: AzureNSG.NetworkInterfaces.internalDomainNameSuffix
       description: The network interface's internal domain name suffix.
       type: String
     - contextPath: AzureNSG.NetworkInterfaces.properties.macAddress
@@ -833,13 +833,13 @@ script:
     - contextPath: AzureNSG.NetworkInterface.properties.ipConfigurations.name
       description: The name of the resource that is unique within a resource group.
       type: List
-    - contextPath: AzureNSG.NetworkInterface.properties.ipConfigurations.properties.privateIPAddress
+    - contextPath: AzureNSG.NetworkInterface.ipConfigurationPrivateIPAddress
       description: The private IP address of the IP configuration.
       type: List
-    - contextPath: AzureNSG.NetworkInterface.properties.ipConfigurations.properties.publicIPAddress.id
+    - contextPath: AzureNSG.NetworkInterface.ipConfigurationPublicIPAddressName
       description: The id of the public IP address of the IP configuration.
       type: List
-    - contextPath: AzureNSG.NetworkInterface.properties.ipConfigurations.properties.subnet.id
+    - contextPath: AzureNSG.NetworkInterface.subnetId
       description: The subnet id of the ip configuration.
       type: List
     arguments:
@@ -903,7 +903,7 @@ script:
       type: String
       isArray: false
       required: true
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2005673
   runonce: false
   script: '-'
   subtype: python3

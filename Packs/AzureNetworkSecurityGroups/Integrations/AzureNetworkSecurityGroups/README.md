@@ -22,6 +22,7 @@ To add the registration, refer to the following [Microsoft article](https://lear
 - Microsoft Graph - permission `offline_access` of type Delegated
 
 To add a permission:
+
 1. Navigate to **Home** > **App registrations**.
 2. Search for your app under 'all applications'.
 3. Click **API permissions** > **Add permission**.
@@ -149,6 +150,7 @@ List all network security groups.
 #### Human Readable Output
 
 > ### Network Security Groups
+
 >|etag|id|location|name|tags|type|
 >|---|---|---|---|---|---|
 >| W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg | westeurope | alerts-nsg |  | Microsoft.Network/networkSecurityGroups |
@@ -230,6 +232,7 @@ List all rules of the specified security groups.
 #### Human Readable Output
 
 > ### Rules in alerts-nsg
+
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -371,6 +374,7 @@ Create a security rule.
 #### Human Readable Output
 
 > ### Rules rulerule
+
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | * | * | Inbound | W/"276dc93a-488d-47a1-8971-19a1171242a9" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/rulerule | rulerule | 4096 | * | Updating | 1.1.1.1 | * | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -458,6 +462,7 @@ Update a security rule. If one does not exist, it will be created.
 #### Human Readable Output
 
 > ### Rules XSOAR_Rule
+
 >|access|description|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | description | 11.0.0.0/8 | 8080 | Outbound | W/"9fad6036-4c3a-4d60-aac9-18281dba3305" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/XSOAR_Rule | XSOAR_Rule | 100 | * | Succeeded | 10.0.0.0/8 | * | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -538,6 +543,7 @@ Get a specific rule.
 #### Human Readable Output
 
 > ### Rules wow
+
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -565,7 +571,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-> To sign in, use a web browser to open the page https://microsoft.com/devicelogin
+> To sign in, use a web browser to open the page <https://microsoft.com/devicelogin>
 > and enter the code CODECODE to authenticate.
 > Run the ***!azure-nsg-auth-complete*** command in the War Room.
 
@@ -789,6 +795,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 > ### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
     You will be automatically redirected to a link with the following structure:
     ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -871,6 +878,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ### Azure Network Security Groups Subscriptions list
+
 >|subscriptionId|tenantId|displayName|state|
 >|---|---|---|---|
 >| 057b1785-fd7b-4 | ebac1a16-81bf-449 | Access to Azure Active Directory | Enabled |
@@ -949,6 +957,7 @@ Gets all resource groups for a subscription.
 #### Human Readable Output
 
 > ### Resource Groups List
+
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell-storage-eastus | eastus |  |

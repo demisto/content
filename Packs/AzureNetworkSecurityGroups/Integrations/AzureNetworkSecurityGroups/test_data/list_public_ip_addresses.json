@@ -10,7 +10,7 @@
           "provisioningState": "Succeeded",
           "publicIPAddressVersion": "IPv4",
           "publicIPAllocationMethod": "Dynamic",
-          "ipAddress": "40.85.154.247",
+          "ipAddress": "1.1.1.1",
           "idleTimeoutInMinutes": 4,
           "dnsSettings": {
           "domainNameLabel": "testlbl",
