@@ -283,7 +283,7 @@ class TestFetchEvents:
         """
         import SaasSecurityEventCollector
 
-        should_push_events = True if max_fetch == 100 else False
+        should_push_events = max_fetch == 100
         mocker.patch.object(Client, 'http_request', side_effect=queue)
         send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
 
