@@ -12,6 +12,12 @@ configuration:
   type: 0
   additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
   section: Connect
+- display: Cloud ID
+  name: cloud_id
+  required: false
+  type: 0
+  additionalinfo: The Elasticsearch server cloud ID. Use this parameter for Elasticsearch v8 cloud deployments only. You can find the cloud ID value within the "Manage Deployment" page after you have created a cluster (look in the top-left if you’re in Kibana).
+  section: Connect
 - additionalinfo: Provide Username + Password instead of API key + API ID
   display: Username for server login
   name: credentials

@@ -39,6 +39,7 @@ API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD: str = demisto.params().get('credentials', {}).get('password')
+CLOUD_ID = demisto.params().get('cloud_id', '')
 API_KEY_ID = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
 if API_KEY_ID:
     USERNAME = ""
@@ -164,7 +165,7 @@ def elasticsearch_builder(proxies):
         # Adding the proxy related parameters to the Elasticsearch client v7 and below or OpenSearch (BC)
         connection_args["connection_class"] = RequestsHttpConnection  # type: ignore[assignment]
         connection_args["proxies"] = proxies
-
+    
     # The input of proxy configuration is currently missing on client v8 - in this case we are dependent on the client using the
     # proxy environment variables. To add the proxy parameter to the Elasticsearch client v8 - uncomment the following section.
     # and import the RequestsHttpNode class from elastic_transport (for client v8).
@@ -176,6 +177,10 @@ def elasticsearch_builder(proxies):
     #             super().__init__(*args, **kwargs)
     #             self.session.proxies = proxies
     #     connection_args['node_class'] = CustomHttpNode
+    
+    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8 and CLOUD_ID:
+        # used for Elasticsearch version v8 cloud deployments only
+        connection_args["cloud_id"] = CLOUD_ID
 
     if API_KEY_ID:
         connection_args["api_key"] = API_KEY
