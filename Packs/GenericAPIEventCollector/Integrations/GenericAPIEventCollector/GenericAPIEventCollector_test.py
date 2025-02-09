@@ -8,7 +8,8 @@ from GenericAPIEventCollector import (
     datetime_to_timestamp_format, timestamp_format_to_datetime, recursive_replace,
     get_time_field_from_event_to_dt, is_pagination_needed, iso8601_to_datetime_str, try_load_json,
     parse_json_param, generate_authentication_headers,
-    extract_pagination_params, PaginationLogic, TimestampFieldConfig, organize_events_to_xsiam_format
+    extract_pagination_params, PaginationLogic, TimestampFieldConfig, organize_events_to_xsiam_format, setup_search_events,
+    RequestData
 )
 
 
@@ -265,31 +266,79 @@ def test_extract_pagination_params():
     assert pagination_logic.pagination_needed is True
     assert pagination_logic.pagination_field_name == ["next_page"]
     assert pagination_logic.pagination_flag == ["has_more"]
-#
-# def run_tests():
-#     test_functions = [
-#         test_datetime_to_timestamp_format,
-#         test_timestamp_format_to_datetime,
-#         test_recursive_replace,
-#         test_get_log_timestamp,
-#         test_identify_time_format,
-#         test_get_time_field_from_event,
-#         test_get_time_field_from_event_to_dt,
-#         test_is_pagination_needed,
-#         test_iso8601_to_datetime_str,
-#         test_try_load_json,
-#         test_parse_json_param,
-#         test_generate_headers,
-#         test_generate_authentication_headers,
-#         test_extract_pagination_params
-#     ]
-#
-#     for test in test_functions:
-#         try:
-#             test()
-#             print(f"{test.__name__} passed")
-#         except AssertionError as e:
-#             print(f"{test.__name__} failed: {str(e)}")
-#
-# if __name__ == "__main__":
-#     run_tests()
+
+
+def test_setup_search_events():
+    first_fetch_datetime = datetime(2023, 1, 1, 0, 0, 0)
+    last_run = {}
+    params = {
+        'request_data': '{"key": "value"}',
+        'request_json': '{"json_key": "json_value"}',
+        'query_params': '{"param_key": "param_value"}',
+        'pagination_needed': 'true',
+        'pagination_field_name': 'next_page',
+        'pagination_flag': 'has_more',
+        'timestamp_field_name': 'timestamp',
+        'timestamp_format': '%Y-%m-%dT%H:%M:%SZ'
+    }
+    timestamp_field_config = TimestampFieldConfig(['timestamp'], '%Y-%m-%dT%H:%M:%SZ')
+
+    last_fetched_datetime, pagination_logic, request_data = setup_search_events(
+        first_fetch_datetime, last_run, params, timestamp_field_config
+    )
+
+    assert last_fetched_datetime == first_fetch_datetime
+    assert pagination_logic == PaginationLogic(True, ['next_page'], ['has_more'])
+    assert request_data == RequestData({'key': 'value'}, {'json_key': 'json_value'}, {'param_key': 'param_value'})
+
+
+def test_setup_search_events_with_last_run():
+    first_fetch_datetime = datetime(2023, 1, 1, 0, 0, 0)
+    last_run = {'@last_fetched_datetime': '2023-01-02T00:00:00'}
+    params = {
+        'request_data': '{"key": "value"}',
+        'request_json': '{"json_key": "json_value"}',
+        'query_params': '{"param_key": "param_value"}',
+        'pagination_needed': 'true',
+        'pagination_field_name': 'next_page',
+        'pagination_flag': 'has_more',
+        'timestamp_field_name': 'timestamp',
+        'timestamp_format': '%Y-%m-%dT%H:%M:%SZ'
+    }
+    timestamp_field_config = TimestampFieldConfig(['timestamp'], '%Y-%m-%dT%H:%M:%SZ')
+
+    last_fetched_datetime, pagination_logic, request_data = setup_search_events(
+        first_fetch_datetime, last_run, params, timestamp_field_config
+    )
+
+    assert last_fetched_datetime == datetime(2023, 1, 2, 0, 0, 0)
+    assert pagination_logic == PaginationLogic(True, ['next_page'], ['has_more'])
+    assert request_data == RequestData({'key': 'value'}, {'json_key': 'json_value'}, {'param_key': 'param_value'})
+
+
+def test_setup_search_events_first_fetch():
+    first_fetch_datetime = datetime(2023, 1, 1, 0, 0, 0)
+    last_run = {}
+    params = {
+        'request_data': '{"key": "value"}',
+        'request_json': '{"json_key": "json_value"}',
+        'query_params': '{"param_key": "param_value"}',
+        'pagination_needed': 'true',
+        'pagination_field_name': 'next_page',
+        'pagination_flag': 'has_more',
+        'timestamp_field_name': 'timestamp',
+        'timestamp_format': '%Y-%m-%dT%H:%M:%SZ',
+        'initial_query_params': '{"initial_param_key": "initial_param_value"}',
+        'initial_pagination_params': {"pagination_needed": "true", "pagination_field_name": "next_page", "pagination_flag": "has_more"},
+        'initial_request_data': '{"initial_key": "initial_value"}',
+        'initial_request_json': '{"initial_json_key": "initial_json_value"}'
+    }
+    timestamp_field_config = TimestampFieldConfig(['timestamp'], '%Y-%m-%dT%H:%M:%SZ')
+
+    last_fetched_datetime, pagination_logic, request_data = setup_search_events(
+        first_fetch_datetime, last_run, params, timestamp_field_config
+    )
+
+    assert last_fetched_datetime == first_fetch_datetime
+    assert pagination_logic == PaginationLogic(True, ['next_page'], ['has_more'])
+    assert request_data == RequestData({'initial_key': 'initial_value'}, {'initial_json_key': 'initial_json_value'}, {'initial_param_key': 'initial_param_value'})
