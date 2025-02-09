@@ -792,7 +792,8 @@ def close_incident_command():
 
 
 def search_quarantine():
-    arg_time = dateparser.parse(demisto.args().get('time'))
+    args = demisto.args()
+    arg_time = dateparser.parse(args.get('time'))
     emailTAPtime = 0
     if isinstance(arg_time, datetime):
         emailTAPtime = int(arg_time.timestamp())
@@ -803,7 +804,7 @@ def search_quarantine():
     mid = args.get('message_id')
     recipient = args.get('recipient')
     limit_quarantine_occurred_time = argToBoolean(args.get('limit_quarantine_occurred_time', 'True'))
-    quarantine_timestamp_limit = arg_to_number(args.get('quarantine_timestamp_limit', '120'))
+    quarantine_limit = arg_to_number(args.get('quarantine_limit', '120'))
     fetch_delta = arg_to_number(args.get('fetch_delta'))
 
 
@@ -836,10 +837,9 @@ def search_quarantine():
                     message_delivery_time = dateparser.parse(message_delivery_time)
                     if message_delivery_time:
                         message_delivery_time = int(message_delivery_time.timestamp() * 1000)
-                        demisto.debug(f'Message delivery time processed as str and converted to integer with value {message_delivery_time}')
                     else:
                         demisto.info(f'PTR: Could not parse time of incident {incident.get("id")}, got '
-                                        f'{email.get("messageDeliveryTime", "")=}')
+                                        f'{message_delivery_time=}')
                         continue
                 if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and message_delivery_time:
                     found['mid'] = True
@@ -857,9 +857,11 @@ def search_quarantine():
                             'quarantine_results': incident.get('quarantine_results')
                         })
                     else:
-                        demisto.debug(f'PTR: Alert id {alert.get("id")} found but not added to lstAlert list as emailTAPtime ({emailTAPtime}) did not match emailTRAPtimestamp ({emailTRAPtimestamp})')
+                        demisto.info(f'PTR: Alert id {alert.get("id")} found but not added to lstAlert list as emailTAPtime '
+                                      f'({emailTAPtime}) did not match emailTRAPtimestamp ({emailTRAPtimestamp})')
                 else:
-                    demisto.debug(f'Email metadata did not match user inputs, skipped.  mid from email = {email.get("messageId")} vs user input {mid}. Recipient from alert = {email.get("recipient").get("email")} vs user input {recipient}.')
+                    demisto.info(f'Email metadata did not match user inputs, skipped. {email.get("messageId")=} but search {mid}.'
+                                 f' {email.get("recipient").get("email")=} but searched {recipient}.')
 
     quarantineFoundcpt = 0
 
@@ -872,9 +874,10 @@ def search_quarantine():
                 tsalert = dateparser.parse(alert.get("alerttime"))
                 if isinstance(tsquarantine, datetime) and isinstance(tsalert, datetime):
                     diff = (tsquarantine - tsalert).total_seconds()
-                    # Always append alerts if limit_quarantine_occurred_time=False, else checks that diff is less then quarantine_timestamp_limit
+                    # Append alerts if limit_quarantine_occurred_time=False
+                    # else checks diff is less then quarantine_limit
                     if ((not limit_quarantine_occurred_time) or
-                        (quarantine_timestamp_limit and 0 < diff < quarantine_timestamp_limit)):
+                        (quarantine_limit and 0 < diff < quarantine_limit)):
                         resQ.append({
                             'quarantine': quarantine,
                             'alert': {

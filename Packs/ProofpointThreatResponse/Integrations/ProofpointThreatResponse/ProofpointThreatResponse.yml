@@ -722,7 +722,7 @@ script:
         actions for example typically occur within 120 seconds of alert firing. Manual
         actions executed by human may take longer.
       defaultValue: "True"
-    - name: quarantine_timestamp_limit
+    - name: quarantine_limit
       description: Only used if 'limit_quarantine_occurred_time' is set to true.  Sets
         a limit on the quarantines retrieved to include only those where the time
         difference between alert time and quarantined time is less than the number
