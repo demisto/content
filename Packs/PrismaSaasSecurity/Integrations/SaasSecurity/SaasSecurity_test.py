@@ -5,7 +5,7 @@ import json
 from CommonServerPython import DemistoException, EntryType, EntryFormat
 from datetime import datetime
 
-from SaasSecurity import Client, get_max_fetch, LIMIT_MIN, LIMIT_MAX, LIMIT_DEFAULT, DemistoException
+from SaasSecurity import Client, validate_limit, LIMIT_MIN, LIMIT_MAX, LIMIT_DEFAULT, DemistoException
 import demistomock as demisto
 
 
@@ -402,12 +402,12 @@ def test_update_remote_system_command(requests_mock, mocker, client, args, expec
     assert expected_debug_message in debug_result.call_args[0][0]
 
 
-def test_get_max_fetch():
+def test_validate_limit():
     """
-    Test the get_max_fetch function behavior under various input conditions.
+    Test the validate_limit function behavior under various input conditions.
 
     Given: Different input values for the limit parameter.
-    When: The get_max_fetch function is called with these inputs.
+    When: The validate_limit function is called with these inputs.
     Then: The function should return the expected validated limit values.
 
     Test cases:
@@ -421,24 +421,24 @@ def test_get_max_fetch():
     """
 
     # Test with negative limit
-    with pytest.raises(DemistoException, match='fetch limit parameter cannot be negative number or zero'):
-        get_max_fetch(-1)
+    with pytest.raises(DemistoException, match='The limit parameter cannot be negative number or zero'):
+        validate_limit(-1)
 
     # Test with limit less than 10
-    assert get_max_fetch(5) == LIMIT_MIN
+    assert validate_limit(5) == LIMIT_MIN
 
     # Test with limit not dividable by 10
-    assert get_max_fetch(55) == 50
+    assert validate_limit(55) == 50
 
     # Test with limit greater than MAX_LIMIT
-    assert get_max_fetch(250) == LIMIT_MAX
+    assert validate_limit(250) == LIMIT_MAX
 
     # Test with no limit provided
-    assert get_max_fetch(None) == LIMIT_DEFAULT
+    assert validate_limit(None) == LIMIT_DEFAULT
 
     # Test with valid limit
-    assert get_max_fetch(100) == 100
+    assert validate_limit(100) == 100
 
     # Test with limit at boundaries
-    assert get_max_fetch(10) == LIMIT_MIN
-    assert get_max_fetch(200) == LIMIT_MAX
+    assert validate_limit(10) == LIMIT_MIN
+    assert validate_limit(200) == LIMIT_MAX
