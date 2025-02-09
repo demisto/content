@@ -3757,8 +3757,8 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         Dict[str, Any]: A dictionary that is represents an incident.
     """
     issue_description: dict = JiraIssueFieldsParser.get_description_context(issue_data=issue)
-    issue_raw_description: str = issue_description.get('Description', '')
-    issue_parsed_description: str = issue_description.get('RawDescription', '')
+    issue_parsed_description: str = issue_description.get('Description', '')
+    issue_raw_description: str = issue_description.get('RawDescription', '')
     issue_id = str(issue.get('id'))
     labels = [
         {'type': 'issue', 'value': json.dumps(issue)},
@@ -3772,7 +3772,8 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         {'type': 'reporteremail', 'value': str(demisto.get(issue, 'fields.reporter.emailAddress'))},
         {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
         {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
-        {'type': 'description', 'value': issue_raw_description},
+        {'type': 'description', 'value': issue_parsed_description},
+        {'type': 'raw_description', 'value': issue_raw_description},
     ]
     issue['parsedDescription'] = issue_parsed_description
     demisto.debug(f'Extracting extra data for {issue_id}.')
@@ -3818,7 +3819,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     return {
         "name": incident_name,
         "labels": labels,
-        "details": issue_description,  #TODO raw or not?
+        "details": issue_description,
         "severity": severity,
         "attachment": attachments,
         "rawJSON": json.dumps(issue)
@@ -4038,8 +4039,11 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         parse_custom_fields(issue=issue,
                             issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
         demisto.debug(f'Raw issue response: {issue}')
-        issue['parsedDescription'] = JiraIssueFieldsParser.get_description_context(
-            issue).get('Description') or ''
+        issue_description: dict = JiraIssueFieldsParser.get_description_context(issue_data=issue)
+        issue_parsed_description: str = issue_description.get('Description', '')
+        issue_raw_description: str = issue_description.get('RawDescription', '')
+
+        issue['parsedDescription'] = issue_parsed_description
         issue |= add_extracted_data_to_incident(issue=issue)
         user_timezone_name = get_user_timezone(client=client)
         _ = get_system_timezone()
