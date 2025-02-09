@@ -1150,11 +1150,11 @@ def main():  # pragma: no cover
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy'),
-        # auth=EdgeGridAuth(
-        #     client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
-        #     access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
-        #     client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
-        # )
+        auth=EdgeGridAuth(
+            client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
+            access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
+            client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
+        )
     )
     commands = {
         "test-module": test_module_command,
