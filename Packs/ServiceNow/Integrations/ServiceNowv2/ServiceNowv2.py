@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
 from collections.abc import Callable, Iterable
-import jwt
-import uuid
 import mimetypes
 
 # disable insecure warnings
@@ -587,7 +585,7 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict | None = None,jwt_params: dict | None = None , version: str | None = None, look_back: int = 0,
+                 incident_name: str, oauth_params: dict | None = None, jwt_params: dict | None = None, version: str | None = None, look_back: int = 0,
                  use_display_value: bool = False, display_date_format: str = ''):
         """
 
@@ -653,12 +651,12 @@ class Client(BaseClient):
                                                                   use_jwt=self.use_jwt,
                                                                   client_id='',
                                                                   jwt_key_id=jwt_params.get('jwt_key_id', ''),
-                                                                  jwt_key= jwt_params.get('jwt_key', ''),
-                                                                  jwt_sub= jwt_params.get('jwt_sub', ''),
+                                                                  jwt_key=jwt_params.get('jwt_key', ''),
+                                                                  jwt_sub=jwt_params.get('jwt_sub', ''),
                                                                   url=oauth_params.get('url', ''),
                                                                   verify=oauth_params.get('verify', False),
                                                                   proxy=oauth_params.get('proxy', False),
-                                                                  headers=oauth_params.get('headers', ''))           
+                                                                  headers=oauth_params.get('headers', ''))
         else:
             demisto.debug('here 4')
             self._auth = (self._username, self._password)
@@ -749,11 +747,11 @@ class Client(BaseClient):
                         elif self.use_jwt:
                             jwt_token = self.snow_client.get_jwt_token()
                             headers.update({'assertion': jwt_token,
-                                                'grant_type' : 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-                            })
+                                            'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+                                            })
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': file_info}, verify=self._verify, proxies=self._proxies)
-                            
+
                         else:
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': file_info}, auth=self._auth,
@@ -769,11 +767,11 @@ class Client(BaseClient):
                     res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
                                            params=params, verify=self._verify, proxies=self._proxies)
                 elif self.use_jwt:
-                            jwt_token = self.snow_client.get_jwt_token()
-                            headers.update({'assertion': jwt_token,
-                                                'grant_type' : 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-                            })
-                            res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                    jwt_token = self.snow_client.get_jwt_token()
+                    headers.update({'assertion': jwt_token,
+                                    'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+                                    })
+                    res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
                                            params=params, verify=self._verify, proxies=self._proxies)
                 else:
                     res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
@@ -918,8 +916,8 @@ class Client(BaseClient):
             elif self.use_jwt:
                 jwt_token = self.snow_client.get_jwt_token()
                 headers.update({'assertion': jwt_token,
-                                                'grant_type' : 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-                            })
+                                'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+                                })
                 file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
             else:
                 demisto.debug('here 5')
@@ -2503,8 +2501,8 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
         raise Exception('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login '
                         'command followed by the !servicenow-oauth-test command to test the instance.')
     elif client.use_jwt:
-            jwt_token = client.snow_client.get_jwt_token()
-            return 'ok', {'jwt_token': jwt_token}, {}, True
+        jwt_token = client.snow_client.get_jwt_token()
+        return 'ok', {'jwt_token': jwt_token}, {}, True
 
     if client._version == 'v2' and client.get_attachments:
         raise DemistoException('Retrieving incident attachments is not supported when using the V2 API.')
@@ -3257,7 +3255,6 @@ def main():
     use_oauth = params.get('use_oauth', False)
     use_jwt_outh = params.get('use_jwt_outh', False)
     client_id = params.get('credentials', {}).get('identifier')
-    integration_context = get_integration_context()
     oauth_params = {}
     jwt_params = {}
 
@@ -3287,14 +3284,7 @@ def main():
             'jwt_key_id': params.get('jwt_credentials', {}).get('identifier'),
             'jwt_private_key': params.get('jwt_credentials', {}).get('password'),
             'jwt_sub': params.get('jwt_sub', '')
-            }
-        # jwt_key_id = params.get('jwt_credentials', {}).get('identifier')
-        # jwt_private_key = replace_spaces_in_credential(params.get('jwt_credentials', {}).get('password'))
-        # demisto.debug(f'{jwt_prvate_key=}')
-        # jwt_sub = params.get('jwt_sub', '')
-        #jwt_token = generate_jwt_token(jwt_key_id,client_id, jwt_private_key, jwt_sub)
-        #demisto.debug(f'{jwt_token}')
-        #return_results(jwt_token)
+        }
     else:  # use basic authentication
         demisto.debug('here 1')
         username = params.get('credentials', {}).get('identifier')
@@ -3374,7 +3364,7 @@ def main():
                         username=username, password=password, verify=verify, fetch_time=fetch_time,
                         sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
-                        incident_name=incident_name, oauth_params=oauth_params,jwt_params=jwt_params, version=version, look_back=look_back,
+                        incident_name=incident_name, oauth_params=oauth_params, jwt_params=jwt_params, version=version, look_back=look_back,
                         use_display_value=use_display_value, display_date_format=display_date_format)
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             'test-module': test_module,
