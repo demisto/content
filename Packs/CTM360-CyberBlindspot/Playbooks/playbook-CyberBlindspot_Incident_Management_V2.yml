@@ -664,7 +664,7 @@ tasks:
       id: 2bc678e3-59f8-4395-8308-934ee41c872d
       version: -1
       name: Inform User Regarding Incident Status On Remote
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
