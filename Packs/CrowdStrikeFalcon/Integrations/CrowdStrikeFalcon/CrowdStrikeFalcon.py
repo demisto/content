@@ -2943,7 +2943,7 @@ def fetch_incidents():
     current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
     fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
-    look_back = int(params.get('look_back') or 1)
+    look_back = int(params.get('look_back') or 2)
     fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
@@ -4082,7 +4082,7 @@ def search_device_command():
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
             headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
         else:
-            if device_groups := single_device['groups']:
+            if device_groups := single_device.get('groups'):
                 single_device.update({'group_names': list(enrich_groups(device_groups).values())})
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_VERBOSE_KEY_MAP)
             headers = list(SEARCH_DEVICE_VERBOSE_KEY_MAP.values())
