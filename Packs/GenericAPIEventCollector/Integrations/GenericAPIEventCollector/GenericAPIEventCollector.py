@@ -196,9 +196,6 @@ class Client(BaseClient):
             list: list of events as dicts.
         """
         demisto.debug(f"Searching events for {endpoint}")
-        demisto.debug(f"{request_data.request_json=}")
-        demisto.debug(f"{request_data.request_data=}")
-        demisto.debug(f"{request_data.query_params=}")
 
         return self._http_request(  # type: ignore
             method=http_method,
@@ -214,102 +211,8 @@ def organize_events_to_xsiam_format(raw_events: Any, events_keys: list[str]) -> 
     return events
 
 
-# region Auto-detection functionality
-def detect_where_is_the_events_to_xsiam_format(events):
-    raw_events = events
-    events_to_xsiam = []
-    events_list: Dict[Any, Any]
-
-    if isinstance(raw_events, dict):
-        for event in raw_events:
-            if isinstance(raw_events[event], list):
-                full_event_list = raw_events[event]
-                for full_event in full_event_list:
-                    events_list = {}
-                    for key, value in full_event.items():
-
-                        if isinstance(value, int | str):
-                            events_list[key] = value
-
-                        elif isinstance(value, dict):
-
-                            dict_values_to_extract_back_to_list = value
-                            new_value: Any = {key: value}
-                            events_list.update(new_value)
-
-                            for item in dict_values_to_extract_back_to_list:
-                                key = item
-                                value = dict_values_to_extract_back_to_list[item]
-                                new_value = {key: value}
-                                events_list.update(new_value)
-
-                    events_to_xsiam.append(events_list)
-
-    elif isinstance(raw_events, list):
-        full_event_list = raw_events
-        for event in full_event_list:
-            events_list = {}
-            for key, value in event.items():
-
-                if isinstance(value, int | str):
-                    events_list[key] = value
-
-                elif isinstance(value, dict):
-
-                    dict_values_to_extract_back_to_list = value
-                    events_list[key] = value
-
-                    for item in dict_values_to_extract_back_to_list:
-                        key = item
-                        value = dict_values_to_extract_back_to_list[item]
-                        new_value = {key: value}
-                        events_list.update(new_value)
-
-            events_to_xsiam.append(events_list)
-
-    return events_to_xsiam
-
-
-def get_log_timestamp(log):
-    field = next((field for field in POSSIBLE_TIMESTAMP_FIELDS if field in log), None)
-    if field:
-        return field
-    raise ValueError("No valid timestamp field found in the log")
-
-
-def identify_time_format(log_source_time):
-    log_source_time = iso8601_to_datetime_str(log_source_time)
-    for fmt in KNOWN_TIME_FORMATS:
-        with contextlib.suppress(ValueError):
-            datetime.strptime(log_source_time, fmt)
-            return fmt
-    return None
-
-
-def get_time_field_from_event(events_list):
-    event_time_field = None
-
-    if len(events_list) > 0:
-        event_sample = events_list[0]
-    else:
-        event_sample = None
-
-    if event_sample is not None:
-        for key in event_sample:
-            if isinstance(event_sample[key], str):
-                field_time_format = identify_time_format(events_list[0][key])
-                if field_time_format:
-                    event_time_field = key
-                    break
-
-    return event_time_field
-
-
-# endregion
-
-
 def get_time_field_from_event_to_dt(event: dict[str, Any], timestamp_field_config: TimestampFieldConfig) -> datetime:
-    timestamp: str | None = dict_safe_get(event, timestamp_field_config.timestamp_field_name, return_type=str)  # noqa
+    timestamp: str | None = dict_safe_get(event, timestamp_field_config.timestamp_field_name)  # noqa
     if timestamp is None:
         raise DemistoException(f"Timestamp field: {timestamp_field_config.timestamp_field_name} not found in event")
     timestamp_str: str = iso8601_to_datetime_str(timestamp)
@@ -510,10 +413,6 @@ def parse_json_param(json_param_value: Any, json_param_name) -> dict | None:
             err_msg = f"Argument {json_param_name} could not be parsed as a valid JSON: {exception}"
             demisto.error(err_msg)
             raise DemistoException(err_msg, exception) from exception
-        except KeyError as exception:
-            err_msg = f"Argument {json_param_name} could not be parsed: {exception}"
-            demisto.error(err_msg)
-            raise DemistoException(err_msg, exception) from exception
     return None
 
 
@@ -647,7 +546,7 @@ def extract_pagination_params(params: dict[str, str]) -> PaginationLogic:
     return pagination_logic
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions.
     """
@@ -761,5 +660,5 @@ def main() -> None:
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
