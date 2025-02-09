@@ -69,7 +69,7 @@ model_runs = {
                 "logo_found": False,
                 "image_bytes": "",
                 "debug_image": '{"amazon.png": "One of the image is not array", "ebay.png": "One of the image is not array", "facebook.png": "One of the image is not array", "gmail.png": "One of the image is not array", "google.png": "One of the image is not array", "instagram.png": "One of the image is not array", "linkedin.png": "One of the image is not array", "microsoft.png": "One of the image is not array", "outlook.png": "One of the image is not array", "paypal.png": "One of the image is not array", "paypal_1.png": "One of the image is not array"}',
-                "url_score": 0.3499706764471456,
+                "url_score": 0.2785198102058783,
             },
         },
         {
@@ -91,7 +91,7 @@ model_runs = {
                 "logo_found": False,
                 "image_bytes": "",
                 "debug_image": '{"amazon.png": "Less than MIN_MATCH_COUNT: 6", "ebay.png": "Less than MIN_MATCH_COUNT: 4", "facebook.png": "Less than MIN_MATCH_COUNT: 8", "gmail.png": "Less than MIN_MATCH_COUNT: 0", "google.png": "Less than MIN_MATCH_COUNT: 1", "instagram.png": "Less than MIN_MATCH_COUNT: 4", "linkedin.png": "Less than MIN_MATCH_COUNT: 5", "microsoft.png": "Less than MIN_MATCH_COUNT: 3", "outlook.png": "Less than MIN_MATCH_COUNT: 0", "paypal.png": "Less than MIN_MATCH_COUNT: 1", "paypal_1.png": "Less than MIN_MATCH_COUNT: 0"}',
-                "url_score": 0.31839382654872034,
+                "url_score": 0.22545566668346304,
             },
         },
         {
@@ -111,7 +111,7 @@ model_runs = {
                 "logo_found": False,
                 "image_bytes": "",
                 "debug_image": '{"amazon.png": "Less than MIN_MATCH_COUNT: 4", "ebay.png": "Less than MIN_MATCH_COUNT: 4", "facebook.png": "Less than MIN_MATCH_COUNT: 8", "gmail.png": "Less than MIN_MATCH_COUNT: 0", "google.png": "Less than MIN_MATCH_COUNT: 4", "instagram.png": "Less than MIN_MATCH_COUNT: 4", "linkedin.png": "Less than MIN_MATCH_COUNT: 5", "microsoft.png": "Less than MIN_MATCH_COUNT: 2", "outlook.png": "Less than MIN_MATCH_COUNT: 0", "paypal.png": "Less than MIN_MATCH_COUNT: 4", "paypal_1.png": "Less than MIN_MATCH_COUNT: 0"}',
-                "url_score": 0.22351300515081174,
+                "url_score": 0.16509467162684754,
             },
         },
     ],
