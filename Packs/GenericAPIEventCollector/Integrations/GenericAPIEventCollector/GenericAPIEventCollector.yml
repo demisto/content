@@ -199,12 +199,6 @@ configuration:
     additionalinfo: 'ID field of type integer are comparable and when last fetched id is the 
     maximum ID between the fetched events, when the type is string, the last fetched ID is the last event returned from the API.'
   - section: Collect
-    display: First fetch time
-    name: first_fetch
-    defaultvalue: 3 days
-    type: 0
-    required: true
-  - section: Collect
     display: Fetch Events
     advanced: true
     name: isFetchEvents
