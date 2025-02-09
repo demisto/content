@@ -5,7 +5,7 @@ import json
 from CommonServerPython import DemistoException, EntryType, EntryFormat
 from datetime import datetime
 
-from SaasSecurity import Client, validate_limit, LIMIT_MIN, LIMIT_MAX, LIMIT_DEFAULT, DemistoException
+from SaasSecurity import Client, validate_limit, LIMIT_MIN, LIMIT_MAX, LIMIT_DEFAULT
 import demistomock as demisto
 
 
