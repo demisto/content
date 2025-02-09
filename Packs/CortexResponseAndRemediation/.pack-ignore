@@ -16,6 +16,10 @@ ignore=GR103
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
+[file:silent-playbook-MFA_was_disabled_for_an_Azure_identity.yml]
+ignore=GR103
+
+# See CIAC-7711, CIAC-11954
 [file:playbook-Excessive_User_Account_Lockouts.yml]
 ignore=GR103
 
