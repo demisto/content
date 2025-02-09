@@ -790,12 +790,6 @@ def close_incident_command():
 
     return_outputs(f'The incident {incident_id} was successfully closed', {}, {})
 
-def format_datetime(date) -> int | None:
-    if isinstance(date, datetime):
-        return int(date.timestamp())
-    else:
-        return_error("Timestamp was bad")
-        return None
 
 def search_quarantine():
     arg_time = dateparser.parse(demisto.args().get('time'))
@@ -804,6 +798,7 @@ def search_quarantine():
         emailTAPtime = int(arg_time.timestamp())
     else:
         return_error("Timestamp was bad")
+
     lstAlert = []
     mid = args.get('message_id')
     recipient = args.get('recipient')
