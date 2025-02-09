@@ -129,7 +129,6 @@ def test_organize_events_to_xsiam_format_no_events_key():
     assert organize_events_to_xsiam_format(raw_events, events_keys) == expected_output
 
 
-
 def test_generate_authentication_headers_basic():
     params = {
         "authentication": "Basic",
@@ -254,8 +253,6 @@ def test_generate_authentication_headers_invalid_auth(mock_error, mock_return_er
         "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken"
         "No Authorization, got: InvalidAuth"
     )
-
-
 
 
 def test_extract_pagination_params():
