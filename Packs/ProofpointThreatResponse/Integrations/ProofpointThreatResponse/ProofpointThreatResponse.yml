@@ -709,7 +709,7 @@ script:
     - description: The recipient of the email.
       name: recipient
       required: true
-    - description: 'The creation time of the incident in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z.'
+    - description: 'The reception time of the email in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z.'
       name: time
       required: true
     - name: limit_quarantine_occurred_time
