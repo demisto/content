@@ -1333,6 +1333,7 @@ script:
       predefined:
         - "APPEND"
         - "OVERRIDE"
+      defaultValue: 'OVERRIDE'
     description: Update an Okta Zone.
     name: okta-update-zone
     outputs:

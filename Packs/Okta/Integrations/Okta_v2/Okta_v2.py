@@ -1247,30 +1247,34 @@ def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs, updateType="O
 
     gateways = []
     proxies = []
+    existing_gateways: list = zoneObject.get('gateways')
+    existing_proxies: list = zoneObject.get('proxies')
 
-    # Set IPs in CIDR mode. Single IPs will be added as /32.
     if gatewayIPs:
         for ip in gatewayIPs:
             if '-' in ip:  # Check for IP range notation
-                gateways.append({"type": "Range", "value": ip})
+                gateways.append({"type": "RANGE", "value": ip})
             else:  # If not a range, treat it as a single IP
                 cidr_value = f"{ip}/32" if '/' not in ip else f'{ip}'
                 gateways.append({"type": "CIDR", "value": cidr_value})
 
+        if existing_gateways is not None and updateType == "APPEND":
+            zoneObject["gateways"] = existing_gateways + gateways
+        else:
+            zoneObject["gateways"] = gateways
+
     if proxyIPs:
         for ip in proxyIPs:
             if '-' in ip:  # Check for IP range notation
-                proxies.append({"type": "Range", "value": ip})
+                proxies.append({"type": "RANGE", "value": ip})
             else:  # If not a range, treat it as a single IP
                 cidr_value = f"{ip}/32" if '/' not in ip else f'{ip}'
                 proxies.append({"type": "CIDR", "value": cidr_value})
 
-    if updateType == "APPEND":
-        zoneObject["gateways"] = zoneObject.get('gateways').extend(gateways)
-        zoneObject["proxies"] = zoneObject.get('proxies').extend(proxies)
-    else:
-        zoneObject["gateways"] = gateways
-        zoneObject["proxies"] = proxies
+        if existing_proxies is not None and updateType == "APPEND":
+            zoneObject["proxies"] = existing_proxies + proxies
+        else:
+            zoneObject["proxies"] = proxies
 
     return zoneObject
 
