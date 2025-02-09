@@ -1,6 +1,7 @@
-id: SSO Brute Force
+id: silent-SSO Brute Force Test
 version: -1
-name: SSO Brute Force
+name: silent-SSO Brute Force Test
+issilent: true
 description: |-
   This playbook addresses the following alerts:
 
@@ -1052,6 +1053,6 @@ outputSections:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
+fromversion: 8.9.0
 marketplaces:
 - marketplacev2
