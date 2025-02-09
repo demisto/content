@@ -43,7 +43,9 @@ getStandardAuthMethodHeaders = function(key, auth_id, content_type) {
                 'Authorization': [key],
                 'x-xdr-auth-id': [auth_id],
                 'Content-Type': [content_type],
-                'Accept': ['application/json']
+                'Accept': ['application/json'],
+                'Connection': ['Keep-Alive'],
+                'Keep-Alive': ['timeout=60']
             }
 }
 
@@ -60,7 +62,9 @@ getAdvancedAuthMethodHeaders = function(key, auth_id, content_type,) {
                 'x-xdr-auth-id': [auth_id],
                 'Authorization': [auth_key_hash],
                 'Content-Type': [content_type],
-                'Accept': ['application/json']
+                'Accept': ['application/json'],
+                'Connection': ['Keep-Alive'],
+                'Keep-Alive': ['timeout=60']
             }
     }
 
@@ -110,6 +114,7 @@ sendMultipart = function (uri, entryID, body) {
     var res;
     var tries = 0;
     do {
+        logDebug('Calling httpMultipart, try number ' + tries + ' with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', Headers = ' + headers + ', body = ' + body + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file.');
         res = httpMultipart(
             requestUrl,
             entryID,
@@ -127,8 +132,11 @@ sendMultipart = function (uri, entryID, body) {
     logDebug("Ran httpMultipart() " + tries + " time(s)")
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        logDebug('httpMultipart request to requestUrl = ' + requestUrl + ' failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.');
+        throw 'Core REST APIs - Request to requestUrl = ' + requestUrl + ' Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
     }
+    logDebug('httpMultipart request to requestUrl = ' + requestUrl + ' was successful.');
+
     try {
         var response = res.Body;
         try {
@@ -138,7 +146,7 @@ sendMultipart = function (uri, entryID, body) {
         }
         return {response: response};
     } catch (ex) {
-        throw 'Core REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
+        throw 'Core REST APIs - Error parsing response in httpMultipart request - ' + ex + '\nBody:' + res.Body;
     }
 
 };
@@ -162,6 +170,7 @@ var sendRequest = function(method, uri, body, raw) {
         }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
+    logDebug('Calling http() with requestUrl = ' + requestUrl + ', method = ' + method + ', body = ' + body + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy);
     var res = http(
         requestUrl,
         {
@@ -175,7 +184,11 @@ var sendRequest = function(method, uri, body, raw) {
     );
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        logDebug('http() request to requestUrl = ' + requestUrl + ' failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.');
+        throw 'Core REST APIs - Request to requestUrl = ' + requestUrl + ' Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+    }
+    else {
+        logDebug('http() request to requestUrl = ' + requestUrl + ' was successful.');
     }
     if (raw) {
         return res;
@@ -189,7 +202,7 @@ var sendRequest = function(method, uri, body, raw) {
             }
             return {response: response};
         } catch (ex) {
-            throw 'Core REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
+            throw 'Core REST APIs - Error parsing response - http() request to requestUrl = ' + requestUrl + '\nError: ' + ex + '\nBody:' + res.Body;
         }
     }
 };
@@ -254,13 +267,17 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
         file_path = entry_id;
     }
     else{
+        var method = 'GET';
+        var headers = {};
+        var save_to_file = true;
         // download pack zip file
+        logDebug('Calling http() with pack_url = ' + pack_url + ', Method = ' + method + ', SaveToFile = ' + save_to_file);
         var res = http(
         pack_url,
         {
-            Method: 'GET',
-            Headers: {},
-            SaveToFile: true
+            Method: method,
+            Headers: headers,
+            SaveToFile: save_to_file
         });
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -341,7 +358,9 @@ Returns:
 """
  */
 var uploadFile= function(incident_id, entry_id) {
+    logDebug('Calling httpMultipart with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id);
     var res = httpMultipart(`/entry/upload/${incident_id}`, entry_id);
+    logDebug('After Calling to httpMultipart with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id + '. The satus code: ' + res.StatusCode);
     if (isError(res[0])) {
         throw res[0].Contents;
     }
@@ -422,11 +441,16 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     }
     var fileId = '';
     if ((!entryID)) {
+        logDebug('Calling saveFile for the file ' + file_name);
         fileId = saveFile(file_content);
+        logDebug('Calling uploadFile for the incident ' + incident_id + ' with fileId = ' + fileId);
         response = uploadFile(incident_id, fileId);
+        logDebug('After the call to uploadFile for the incident ' + incident_id + ' with fileId = ' + fileId + '. Status code: ' + response.StatusCode);
     } else {
         if (file_name === undefined) {
+            logDebug('Calling dq with the invContext of incident ' + incident_id + ' and the transformation string: File(val.EntryID == ${entryID}).Name');
             file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);
+            logDebug('After calling dq. The returned file name is ' + file_name + '. The parameters were the invContext of incident ' + incident_id + ' and the transformation string: File(val.EntryID == ${entryID}).Name');
         }
         if (Array.isArray(file_name)) {
             if (file_name.length > 0) {
