@@ -532,8 +532,7 @@
         {
             "integrations": "Absolute",
             "playbookID": "Absolute_TestPlaybook",
-            "fromversion": "6.0.0",
-            "instance_names": "absolute_instance_1"
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "ServiceDeskPlus",
@@ -2923,6 +2922,19 @@
             "fromversion": "5.5.0",
             "timeout": 300,
             "instance_names": [
+                "non_https_cert",
+                "instance_execute"
+            ]
+        },
+        {
+            "integrations": [
+                "TAXII Server",
+                "TAXIIFeed"
+            ],
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 300,
+            "instance_names": [
                 "https_cert",
                 "local_https"
             ]
@@ -5222,8 +5234,7 @@
         {
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
-            "marketplaces": "xsoar_saas",
-            "timeout": 170
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -6099,7 +6110,11 @@
         "Netskope_V2_Test": "No instance - developed by Qmasters",
         "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
-        "BoxV2_TestPlaybook": "CRTX-145174"
+        "BoxV2_TestPlaybook": "CRTX-145174",
+        "PaloAltoNetworks_PrismaCloudCompute-Test": "CRTX-147998",
+        "QRadar_v3-test": "CRTX-141972",
+        "QRadar - Get Offense Logs Test": "CRTX-141972",
+        "QRadar Indicator Hunting Test": "CRTX-141972"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
