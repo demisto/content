@@ -8,7 +8,7 @@ CTM360 is a Software-as-a-Service (SaaS) technology platform that provides Exter
 
 ## What does this pack do?
 
-This pack allows you to integrate HackerView & CyberBlindspot incidents with XSOAR. Automated integration fetches and populates incidents into XSOAR from HackerView & CyberBlindspot platforms along with all the details of the incident and leads XSOAR analyst to take relevant actions over the incidents such as:
+This pack allows you to integrate HackerView & CyberBlindspot incidents with Cortex XSOAR. Automated integration fetches and populates incidents into Cortex XSOAR from HackerView & CyberBlindspot platforms along with all the details of the incident and leads the Cortex XSOAR analyst to take relevant actions over the incidents such as:
 
 - HackerView:
   - Incident response and feedback.
