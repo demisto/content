@@ -152,7 +152,7 @@ configuration:
   - To Ranges
 - additionalinfo: 'CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.'
   defaultvalue: 8
-  display: 'Maximum CIDR network prefix bits size'
+  display: 'CIDR network prefix bits size'
   name: maximum_cidr_size
   type: 0
   section: Collect

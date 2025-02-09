@@ -666,7 +666,7 @@ def is_valid_ip(ip: str) -> bool:
 
 def is_large_cidr(cidr: str, prefix_threshold: int):
     try:
-        return IPNetwork(cidr).prefixlen <= prefix_threshold
+        return IPNetwork(cidr).prefixlen < prefix_threshold
     except Exception as e:
         demisto.debug(str(e))
         return False
