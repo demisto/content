@@ -804,8 +804,8 @@ def search_quarantine():
     mid = args.get('message_id')
     recipient = args.get('recipient')
     limit_quarantine_occurred_time = argToBoolean(args.get('limit_quarantine_occurred_time', 'True'))
-    quarantine_limit = arg_to_number(args.get('quarantine_limit', '120'))
-    fetch_delta = arg_to_number(args.get('fetch_delta'))
+    quarantine_limit = arg_to_number(args.get('quarantine_limit', 120))
+    fetch_delta = arg_to_number(args.get('fetch_delta', 6))
 
     request_params = {
         'created_after': datetime.strftime(arg_time - get_time_delta('1 hour'), TIME_FORMAT),  # for safety
@@ -890,13 +890,15 @@ def search_quarantine():
                     else:
                         quarantineFoundcpt += 1
                         demisto.debug(
-                            f'PTR: Quarantine found for {quarantine.get("messageId")} but not returned as it did not meet filter requirements.  limit_quarantine_occurred_time = {limit_quarantine_occurred_time} with type {type(limit_quarantine_occurred_time)}. diff = {diff}, quarantine_timestamp_limit = {quarantine_timestamp_limit}')
+                            f'PTR: Quarantine found for {quarantine.get("messageId")} but not returned as it did not meet filter'
+                            f' requirements.  limit_quarantine_occurred_time = {limit_quarantine_occurred_time} with type '
+                            f'{type(limit_quarantine_occurred_time)}. diff = {diff}, quarantine_limit = {quarantine_limit}')
                 else:
                     demisto.debug(f"PTR: Failed to parse timestamp of incident: {alert=} {quarantine=}.")
 
     if quarantineFoundcpt > 0:
         return CommandResults(
-            readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined, but time between alert recieved and the quarantine starting exceeded the quarantine_timestamp_limit provided")
+            readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined, but time between alert received and the quarantine starting exceeded the quarantine_limit provided")
     if not found['mid']:
         return CommandResults(readable_output=f"Message ID {mid} not found in TRAP incidents")
 
