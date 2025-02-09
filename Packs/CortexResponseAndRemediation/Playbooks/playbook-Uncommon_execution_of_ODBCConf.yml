@@ -124,11 +124,22 @@ tasks:
     conditions:
     - label: Malicious
       condition:
-      - - operator: isEmpty
+      - - operator: isNotEqualString
           left:
             value:
-              simple: alert.cgosigner
+              complex:
+                root: alert.cgosignature
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: alert.cgosignature
+                      iscontext: true
             iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
@@ -508,11 +519,22 @@ tasks:
             value:
               simple: "False"
           ignorecase: true
-        - operator: isEmpty
+        - operator: isNotEqualString
           left:
             value:
-              simple: alert.cgosigner
+              complex:
+                root: alert.cgosignature
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: alert.cgosignature
+                      iscontext: true
             iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
