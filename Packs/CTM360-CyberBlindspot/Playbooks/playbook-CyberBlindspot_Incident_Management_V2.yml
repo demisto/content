@@ -491,7 +491,7 @@ tasks:
       id: b92cd2a5-2caf-4c22-8805-6cf5d5def247
       version: -1
       name: Entity Enrichment - Generic v3
-      description: Add more value to indicators that were extracted
+      description: Add more value to indicators that were extracted.
       playbookName: Entity Enrichment - Generic v3
       type: playbook
       iscommand: false
