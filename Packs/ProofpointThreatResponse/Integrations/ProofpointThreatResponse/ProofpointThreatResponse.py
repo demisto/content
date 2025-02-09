@@ -443,7 +443,7 @@ def get_incidents_request(params):
         if incidents_list.status_code == 502 or incidents_list.status_code == 504:
             return_error('The operation failed. There is a possibility you are trying to get too many incidents.\n'
                          'You may consider adding a filter argument to the command.\n'
-                         'URL: {}, StatusCode: {}'.format(fullurl, incidents_list.status_code))
+                         f'URL: {fullurl}, StatusCode: {incidents_list.status_code}')
         else:
             return_error(f'The operation failed. URL: {fullurl}, StatusCode: {incidents_list.status_code}')
 
@@ -666,8 +666,8 @@ def add_comment_to_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Add comment to incident command failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+        return_error(f'Add comment to incident command failed. URL: {fullurl}, '
+                     f'StatusCode: {incident_data.status_code}')
 
     incident_data = incident_data.json()
     human_readable = create_add_comment_human_readable(incident_data)
@@ -702,8 +702,8 @@ def add_user_to_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Add comment to incident command failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+        return_error(f'Add comment to incident command failed. URL: {fullurl}, '
+                     f'StatusCode: {incident_data.status_code}')
 
     return_outputs(f'The user was added successfully to incident {incident_id}', {}, {})
 
@@ -757,8 +757,8 @@ def ingest_alert_command():
     )
 
     if alert_data.status_code < 200 or alert_data.status_code >= 300:
-        return_error('Failed to ingest the alert into TRAP. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, alert_data.status_code))
+        return_error(f'Failed to ingest the alert into TRAP. URL: {fullurl}, '
+                     f'StatusCode: {alert_data.status_code}')
 
     return_outputs('The alert was successfully ingested to TRAP', {}, {})
 
@@ -785,8 +785,8 @@ def close_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Incident closure failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+        return_error(f'Incident closure failed. URL: {fullurl}, '
+                     f'StatusCode: {incident_data.status_code}')
 
     return_outputs(f'The incident {incident_id} was successfully closed', {}, {})
 
@@ -807,7 +807,6 @@ def search_quarantine():
     quarantine_limit = arg_to_number(args.get('quarantine_limit', '120'))
     fetch_delta = arg_to_number(args.get('fetch_delta'))
 
-
     request_params = {
         'created_after': datetime.strftime(arg_time - get_time_delta('1 hour'), TIME_FORMAT),  # for safety
         'fetch_delta': f'{fetch_delta} hours',
@@ -817,7 +816,6 @@ def search_quarantine():
 
     incidents_list = get_incidents_batch_by_time_request(request_params)
     demisto.debug(f'PTR {incidents_list=}')
-
 
     found = {'email': False, 'mid': False, 'quarantine': False}
     resQ = []
@@ -839,7 +837,7 @@ def search_quarantine():
                         message_delivery_time = int(message_delivery_time.timestamp() * 1000)
                     else:
                         demisto.info(f'PTR: Could not parse time of incident {incident.get("id")}, got '
-                                        f'{message_delivery_time=}')
+                                     f'{message_delivery_time=}')
                         continue
                 if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and message_delivery_time:
                     found['mid'] = True
@@ -858,7 +856,7 @@ def search_quarantine():
                         })
                     else:
                         demisto.info(f'PTR: Alert id {alert.get("id")} found but not added to lstAlert list as emailTAPtime '
-                                      f'({emailTAPtime}) did not match emailTRAPtimestamp ({emailTRAPtimestamp})')
+                                     f'({emailTAPtime}) did not match emailTRAPtimestamp ({emailTRAPtimestamp})')
                 else:
                     demisto.info(f'Email metadata did not match user inputs, skipped. {email.get("messageId")=} but search {mid}.'
                                  f' {email.get("recipient").get("email")=} but searched {recipient}.')
@@ -876,8 +874,8 @@ def search_quarantine():
                     diff = (tsquarantine - tsalert).total_seconds()
                     # Append alerts if limit_quarantine_occurred_time=False
                     # else checks diff is less then quarantine_limit
-                    if ((not limit_quarantine_occurred_time) or
-                        (quarantine_limit and 0 < diff < quarantine_limit)):
+                    if ((not limit_quarantine_occurred_time)
+                            or (quarantine_limit and 0 < diff < quarantine_limit)):
                         resQ.append({
                             'quarantine': quarantine,
                             'alert': {
@@ -891,7 +889,8 @@ def search_quarantine():
                         })
                     else:
                         quarantineFoundcpt += 1
-                        demisto.debug(f'PTR: Quarantine found for {quarantine.get("messageId")} but not returned as it did not meet filter requirements.  limit_quarantine_occurred_time = {limit_quarantine_occurred_time} with type {type(limit_quarantine_occurred_time)}. diff = {diff}, quarantine_timestamp_limit = {quarantine_timestamp_limit}')
+                        demisto.debug(
+                            f'PTR: Quarantine found for {quarantine.get("messageId")} but not returned as it did not meet filter requirements.  limit_quarantine_occurred_time = {limit_quarantine_occurred_time} with type {type(limit_quarantine_occurred_time)}. diff = {diff}, quarantine_timestamp_limit = {quarantine_timestamp_limit}')
                 else:
                     demisto.debug(f"PTR: Failed to parse timestamp of incident: {alert=} {quarantine=}.")
 
