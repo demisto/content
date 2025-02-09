@@ -3244,14 +3244,6 @@ def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandRe
     return f"Request for {method} method is not successful"
 
 
-def if_refresh_jwt_token(jwt_context):
-    jwt_expiration_time = jwt_context.get('created_time', '')
-    return jwt_last_created and jwt_context
-    
-    
-    
-
-
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
