@@ -179,6 +179,7 @@ configuration:
   name: hsts_header
   type: 8
   required: false
+  section: Collect
 - additionalinfo: For use with McAfee Web Gateway format - set the indicator list type.
   display: "McAfee Gateway: Indicator List Type"
   name: mwg_type
