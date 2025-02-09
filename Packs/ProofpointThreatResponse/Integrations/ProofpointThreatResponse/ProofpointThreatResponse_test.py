@@ -559,8 +559,8 @@ def test_search_quarantine_command_mismatch_time(mocker, requests_mock):
     res = search_quarantine()
 
     assert res.readable_output == ("<ABCD1234@cpus> Message ID found in TRAP alerts, but timestamp between email delivery time "
-                                    "and time given as argument doesn't match")
-    
+                                   "and time given as argument doesn't match")
+
 
 def test_search_quarantine_command_with_incident_far_from_alert_time_fail(mocker, requests_mock):
     """
@@ -614,7 +614,7 @@ def test_search_quarantine_command_with_incident_far_from_alert_time_succeed(moc
         "recipient": "sabrina.test@test.com",
         "time": "2021-04-30T11:17:39Z",
         "quarantine_limit": "2665996"
-        
+
     })
     res = search_quarantine()
 

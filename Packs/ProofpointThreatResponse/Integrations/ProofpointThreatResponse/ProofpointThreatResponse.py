@@ -443,7 +443,7 @@ def get_incidents_request(params):
         if incidents_list.status_code == 502 or incidents_list.status_code == 504:
             return_error('The operation failed. There is a possibility you are trying to get too many incidents.\n'
                          'You may consider adding a filter argument to the command.\n'
-                         'URL: {}, StatusCode: {}'.format(fullurl, incidents_list.status_code))
+                         f'URL: {fullurl}, StatusCode: {incidents_list.status_code}')
         else:
             return_error(f'The operation failed. URL: {fullurl}, StatusCode: {incidents_list.status_code}')
 
@@ -666,8 +666,8 @@ def add_comment_to_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Add comment to incident command failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+        return_error(f'Add comment to incident command failed. URL: {fullurl}, '
+                     f'StatusCode: {incident_data.status_code}')
 
     incident_data = incident_data.json()
     human_readable = create_add_comment_human_readable(incident_data)
@@ -702,8 +702,8 @@ def add_user_to_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Add comment to incident command failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+        return_error(f'Add comment to incident command failed. URL: {fullurl}, '
+                     f'StatusCode: {incident_data.status_code}')
 
     return_outputs(f'The user was added successfully to incident {incident_id}', {}, {})
 
@@ -757,8 +757,8 @@ def ingest_alert_command():
     )
 
     if alert_data.status_code < 200 or alert_data.status_code >= 300:
-        return_error('Failed to ingest the alert into TRAP. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, alert_data.status_code))
+        return_error(f'Failed to ingest the alert into TRAP. URL: {fullurl}, '
+                     f'StatusCode: {alert_data.status_code}')
 
     return_outputs('The alert was successfully ingested to TRAP', {}, {})
 
@@ -785,8 +785,8 @@ def close_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Incident closure failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+        return_error(f'Incident closure failed. URL: {fullurl}, '
+                     f'StatusCode: {incident_data.status_code}')
 
     return_outputs(f'The incident {incident_id} was successfully closed', {}, {})
 
