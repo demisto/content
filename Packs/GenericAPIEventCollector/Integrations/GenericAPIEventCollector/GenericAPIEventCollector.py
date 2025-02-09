@@ -249,7 +249,7 @@ def fetch_events(client: Client,
     id_type_lower: str | None = None
     id_keys: list[str] = argToList(params.get('id_keys'), '.')
     if id_keys:
-        id_type: str = params.get('id_type')  # type: ignore[arg-type]
+        id_type: str = params.get('id_type')  # type: ignore[arg-type,assignment]
         if id_type:
             id_type_lower = id_type.lower()
             if id_type_lower not in ALL_ID_TYPES:
