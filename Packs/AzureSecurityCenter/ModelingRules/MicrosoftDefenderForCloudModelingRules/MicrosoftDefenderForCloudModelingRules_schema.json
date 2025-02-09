@@ -59,6 +59,50 @@
         "SystemAlertId": {
             "type": "string",
             "is_array": false
+        },
+        "ProductName": {
+            "type": "string",
+            "is_array": false
+        },
+        "ProductComponentName": {
+            "type": "string",
+            "is_array": false
+        },
+        "SystemAlertId": {
+            "type": "string",
+            "is_array": false
+        },
+        "http_method": {
+            "type": "string",
+            "is_array": false
+        },
+        "AlertSeverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "Tactics": {
+            "type": "string",
+            "is_array": false
+        },
+        "Techniques": {
+            "type": "string",
+            "is_array": false
+        },
+        "ProviderName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Description": {
+            "type": "string",
+            "is_array": false
+        },
+        "AlertName": {
+            "type": "string",
+            "is_array": false
+        },
+        "VendorOriginalId": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
