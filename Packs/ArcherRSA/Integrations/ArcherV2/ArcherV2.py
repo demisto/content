@@ -328,7 +328,7 @@ def search_records_soap_request(
         + f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
     )
 
-    filter_conditions: list[str] = []
+    filter_conditions: list[str] = []  # API uses "AND" logical operator by default to join multiple filters
 
     if xml_filter_conditions:
         filter_conditions.append(xml_filter_conditions)
@@ -1813,7 +1813,7 @@ def fetch_incidents(
     max_results = arg_to_number(params.get("fetch_limit")) or 10
     fields_to_display = argToList(params.get("fields_to_fetch"))
     fields_to_display.append(date_field)
-    xml_filter_conditions = params.get("fetch_xml")
+    xml_filter_conditions = params.get("fetch_xml")  # API uses "AND" logical operator by default to join multiple filters
 
     # If XML filter is given, verify syntax and check no additional date filter that would interfere with the fetch filter
     if xml_filter_conditions:
