@@ -22,7 +22,7 @@ configuration:
   section: Collect
 - defaultvalue: Incidents
   display: Module To Use
-  additionalinfo: "Choose the module you want to use: Incidents, or Leaks."
+  additionalinfo: "Choose the module you want to use: Incidents, Compromised Cards, Breached Credentials, and Domain/Subdomain Infringements."
   name: module_to_use
   required: false
   type: 15
