@@ -7,7 +7,6 @@ from typing import Any
 from pytest_mock import MockerFixture
 import pytest
 
-import demistomock
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
@@ -24,17 +23,17 @@ Core_URL = 'https://api.xdrurl.com'
 POWERSHELL_COMMAND_CASES = [
     pytest.param(
         "Write-Output 'Hello, world, it`s me!'",
-        "powershell -Command 'Write-Output ''Hello, world, it`s me!'''",
+        "powershell -Command \"Write-Output ''Hello, world, it`s me!''\"",
         id='Hello World message',
     ),
     pytest.param(
         r"New-Item -Path 'C:\Users\User\example.txt' -ItemType 'File'",
-        "powershell -Command 'New-Item -Path ''C:\\Users\\User\\example.txt'' -ItemType ''File'''",
+        "powershell -Command \"New-Item -Path ''C:\\Users\\User\\example.txt'' -ItemType ''File''\"",
         id='New file in path with backslashes',
     ),
     pytest.param(
         "$message = 'This is a test with special chars: `&^%$#@!'; Write-Output $message",
-        "powershell -Command '$message = ''This is a test with special chars: `&^%$#@!''; Write-Output $message'",
+        "powershell -Command \"$message = ''This is a test with special chars: `&^%$#@!''; Write-Output $message\"",
         id='Special characters message',
     ),
     pytest.param(
@@ -46,13 +45,41 @@ POWERSHELL_COMMAND_CASES = [
             "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }"
         ),
         (
-            "powershell -Command '$users = @(JohnDoe) -split '';''; query user | Select-Object -Skip 1 | "
+            "powershell -Command \"$users = @(JohnDoe) -split '';''; query user | Select-Object -Skip 1 | "
             "ForEach-Object { $sessionInfo = $_ -split ''\\s+'' | "
             "Where-Object { $_ -ne '''' -and $_ -notlike ''Disc'' }; "
             "if ($sessionInfo.Length -ge 6) { $username = $sessionInfo[0].TrimStart(''>''); "
-            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }'"
+            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }\""
         ),
         id='End RDP session for users',
+    ),
+]
+
+# params: commands, expected_commands, is_chained
+COMMAND_INJECTION_CASES = [
+    pytest.param(
+        ["echo hello"],
+        ["echo hello"],
+        False,
+        id='sanity',
+    ),
+    pytest.param(
+        ["ipconfig && hostname"],
+        [],
+        False,
+        id='chained',
+    ),
+    pytest.param(
+        ["ipconfig && hostname"],
+        ["ipconfig && hostname"],
+        True,
+        id='chained',
+    ),
+    pytest.param(
+        ["echo $(ifconfig)"],
+        [],
+        False,
+        id='chained',
     ),
 ]
 
@@ -2051,6 +2078,28 @@ def test_form_powershell_command(command_input: str, expected_command: str):
 
     assert not command_input.startswith('powershell -Command ')
     assert command == expected_command
+
+
+@pytest.mark.parametrize('commands, expected_commands, is_chained', COMMAND_INJECTION_CASES)
+def test_parse_command_injections(commands: list[str], expected_commands: str, is_chained: bool):
+    """
+    Given:
+        - A command with regexes used for injections
+
+    When:
+        - Calling the parse_command_injections function
+
+    Assert:
+        - The command passes the regex validation or raises an error if validation failed
+    """
+    from CoreIRApiModule import parse_command_injections
+
+    try:
+        command = parse_command_injections(commands, is_chained_command=is_chained)
+        assert command == expected_commands
+
+    except DemistoException:
+        assert not expected_commands
 
 
 def test_run_script_execute_commands_command(requests_mock):
