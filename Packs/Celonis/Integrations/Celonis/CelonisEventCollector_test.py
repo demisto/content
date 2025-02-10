@@ -57,6 +57,11 @@ def test_add_millisecond():
 
 
 def test_fetch_events_reaching_rate_limit(mocker):
+    """
+    Given: A rate limit exceeded error (HTTP 429).
+    When: Fetching events and encountering the rate limit exception.
+    Then: Ensure no events are returned, and the last run timestamp remains unchanged.
+    """
     from CelonisEventCollector import fetch_events
     client = create_client()
 
@@ -72,6 +77,11 @@ def test_fetch_events_reaching_rate_limit(mocker):
 
 
 def test_fetch_events_token_expired(mocker):
+    """
+    Given: An exception error of expired audit token.
+    When: Fetching events and encountering an unauthorized access error.
+    Then: Ensure the token is refreshed, events are fetched successfully, and the last run timestamp is updated correctly.
+    """
     from CelonisEventCollector import fetch_events
     client = create_client()
 
@@ -91,6 +101,11 @@ def test_fetch_events_token_expired(mocker):
 
 
 def test_fetch_events_reaching_limit(mocker):
+    """
+    Given: A mock raw response containing audit logs events.
+    When: Fetching events with a fetch limit smaller than the number of available logs.
+    Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
+    """
     from CelonisEventCollector import fetch_events
     client = create_client()
 
@@ -111,6 +126,11 @@ def test_fetch_events_reaching_limit(mocker):
 
 
 def test_fetch_events_more_than_exist(mocker):
+    """
+    Given: A mock raw response containing audit logs events.
+    When: Fetching events with a fetch limit greater than the available logs.
+    Then: Ensure the function returns all available events and updates the last run timestamp correctly.
+    """
     from CelonisEventCollector import fetch_events
     client = create_client()
 
