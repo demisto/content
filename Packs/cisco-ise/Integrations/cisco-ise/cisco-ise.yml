@@ -279,7 +279,7 @@ script:
       required: true
     description: Queries an IP address and returns its session data from an active endpoint.
     name: cisco-ise-get-session-data-by-ip
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   type: python

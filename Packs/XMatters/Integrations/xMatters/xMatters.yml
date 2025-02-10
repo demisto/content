@@ -189,7 +189,7 @@ script:
     - contextPath: xMatters.GetEvent.SubmitterName
       description: The user or integration that created the event.
     description: Get a single event from xMatters.
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   script: '-'
   subtype: python3

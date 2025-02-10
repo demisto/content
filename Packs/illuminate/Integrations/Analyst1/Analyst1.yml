@@ -746,7 +746,7 @@ script:
     - contextPath: Analyst1.EvidenceStatus.processingComplete
       description: True or false to indicate if processing of the Evidence upload is done. Determined by evaluating the id or message are present and populated. If an id is returned but blank, this is false, indicating the upload is still in progress.
     description: Check on the status of the analyst1-evidence-submit action by using its output UUID.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   subtype: python3
   runonce: false
 fromversion: 5.0.0
