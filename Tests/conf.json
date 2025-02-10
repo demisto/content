@@ -1585,7 +1585,8 @@
         {
             "playbookID": "ContentPackInstaller_Test",
             "integrations": "Core REST API",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 500
         },
         {
             "playbookID": "Default - Test",
