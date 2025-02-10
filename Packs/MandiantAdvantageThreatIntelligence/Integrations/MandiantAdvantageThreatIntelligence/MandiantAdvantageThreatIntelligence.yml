@@ -485,7 +485,7 @@ script:
       - Actors
       required: true
     description: Get Mandiant Indicators.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'

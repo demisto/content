@@ -53,7 +53,7 @@ script:
     description: Get the Ncurion Log server list.
     name: ncurion-get-log-list
     outputs: []
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isFetchSamples: true
   isfetch: true
   script: ''

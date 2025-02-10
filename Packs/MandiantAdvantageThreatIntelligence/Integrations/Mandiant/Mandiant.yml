@@ -856,7 +856,7 @@ script:
       description: A list of alias objects associated with the Campaign.
       type: list
     description: Retrieve information about a Campaign from Mandiant.
-  dockerimage: demisto/python3:3.11.10.115887
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: false
   runonce: false
   script: '-'

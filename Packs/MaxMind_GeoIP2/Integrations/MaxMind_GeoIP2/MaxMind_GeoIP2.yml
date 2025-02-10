@@ -155,7 +155,7 @@ script:
       type: String
     description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds.
   runonce: false
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - MaxMind Test
 fromversion: 5.0.0
