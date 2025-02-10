@@ -1,4 +1,5 @@
 import mimetypes
+from pathlib import Path
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -9,19 +10,18 @@ logger.addHandler(DemistoHandler)  # type: ignore[attr-defined]
 
 
 def remove_bom(file_path: str) -> tuple[str, str, str]:
-    with open(file_path, 'rb') as f:
-        content = f.read()
+    path = Path(file_path)
+    content = path.read_bytes()
     if content.startswith(b'\xef\xbb\xbf'):
         content = content[3:]
     # Write the cleaned content to a new file or overwrite the original file
-    cleaned_file_path = 'cleaned_' + os.path.basename(file_path)
-    with open(cleaned_file_path, 'wb') as f:
-        f.write(content)
+    cleaned_file_path = path.with_name('cleaned_' + path.name)
+    cleaned_file_path.write_bytes(content)
     # Get the MIME type
     mime_type, _ = mimetypes.guess_type(cleaned_file_path)
     # Get the file name
-    file_name = os.path.basename(cleaned_file_path)
-    return cleaned_file_path, mime_type, file_name
+    file_name = cleaned_file_path.name
+    return str(cleaned_file_path), mime_type, file_name
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False) -> str:
