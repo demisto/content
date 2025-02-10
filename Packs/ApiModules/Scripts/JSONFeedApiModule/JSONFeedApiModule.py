@@ -444,7 +444,8 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
     auto_detect = params.get('auto_detect_type')
     feedTags = argToList(params.get('feedTags'))
     limit = int(demisto.args().get('limit', 10))
-    enrichment_excluded = params.get('enrichmentExcluded', False)
+    enrichment_excluded = (params.get('enrichmentExcluded', False)
+                           or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     command = demisto.command()
     if prefix and not prefix.endswith('-'):
         prefix += '-'

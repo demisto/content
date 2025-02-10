@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from freezegun import freeze_time
 from JSONFeedApiModule import Client, fetch_indicators_command, jmespath, get_no_update_value
 from CommonServerPython import *
@@ -274,6 +276,7 @@ def test_get_no_update_value(mocker):
         headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                    'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
         status_code = 200
+
     no_update = get_no_update_value(MockResponse(), 'feed_name')
     assert not no_update
     assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
@@ -361,6 +364,7 @@ def test_get_no_update_value_without_headers(mocker):
     class MockResponse:
         headers = {}
         status_code = 200
+
     no_update = get_no_update_value(MockResponse(), 'feed_name')
     assert not no_update
     assert demisto.debug.call_args[0][0] == 'Last-Modified and Etag headers are not exists, ' \
@@ -444,7 +448,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_no_update(mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
 
     with requests_mock.Mocker() as m:
-        m.get('https://ip-ranges.amazonaws.com/ip-ranges.json', json=ip_ranges, status_code=304,)
+        m.get('https://ip-ranges.amazonaws.com/ip-ranges.json', json=ip_ranges, status_code=304, )
 
         client = Client(
             url='https://ip-ranges.amazonaws.com/ip-ranges.json',
@@ -556,7 +560,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
 
         fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'], auto_detect=False)
         assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
-            ' createIndicators will be executed with noUpdate=False.'
+                                                ' createIndicators will be executed with noUpdate=False.'
         assert "AMAZON$$CIDR" in last_run.call_args[0][0]
 
 
@@ -592,14 +596,42 @@ def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_pass
     client.build_iterator(feed={}, feed_name="https://api.github.com/meta")
     assert mock_session.call_args[1].get('headers') == expected_result
 
+def test_feed_main_enrichment_excluded(mocker):
+    """
+        Given: params with tlp_color set to RED and enrichmentExcluded set to False
+        When: Calling feed_main
+        Then: validate enrichment_excluded is set to True
+    """
+    from JSONFeedApiModule import feed_main
+
+    params = {
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False
+    }
+    feed_name = 'test_feed'
+    prefix = 'test_prefix'
+
+    with patch('JSONFeedApiModule.Client') as client_mock:
+        client_instance = mocker.Mock()
+        client_mock.return_value = client_instance
+        fetch_indicators_command_mock = mocker.patch('JSONFeedApiModule.fetch_indicators_command', return_value=([], []))
+        mocker.patch('JSONFeedApiModule.is_xsiam_or_xsoar_saas', return_value=True)
+        mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+
+        # Call the function under test
+        feed_main(params, feed_name, prefix)
+
+        # Assertion - verify that enrichment_excluded is set to True
+        assert fetch_indicators_command_mock.call_args.kwargs['enrichment_excluded'] is True
+        
 def test_build_iterator__result_is_none(mocker):
     """
-    Given
-        - A mock response of the JSONFeedApiModule.jmespath.search function with no indicators (response = None)
-    When
-        - Running the build_iterator method.
-    Then
-        - Verify that the returned result is an empty list and that a debug log of "no results found" is added.
+      Given
+          - A mock response of the JSONFeedApiModule.jmespath.search function with no indicators (response = None)
+      When
+          - Running the build_iterator method.
+      Then
+          - Verify that the returned result is an empty list and that a debug log of "no results found" is added.
 
     """
     feed_name = 'mock_feed_name'
