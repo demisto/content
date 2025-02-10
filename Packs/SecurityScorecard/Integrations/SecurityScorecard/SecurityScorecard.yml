@@ -3,9 +3,6 @@ display: SecurityScorecard
 category: Vulnerability Management
 description: Provides scorecards for domains.
 defaultmapperin: SecurityScorecard Alert Mapper
-sectionorder:
-  - Connect
-  - Collect
 commonfields:
   id: SecurityScorecard
   version: -1
@@ -13,9 +10,9 @@ configuration:
 - name: base_url
   display: SecurityScorecard API Base URL
   required: true
-  section: Connect
   defaultvalue: https://api.securityscorecard.io/
   type: 0
+  section: Connect
 - name: username
   display: Username/Email
   additionalinfo: The SecurityScorecard username/email.
@@ -310,7 +307,7 @@ script:
       - "my_scorecard"
       - "any_followed_company"
     - name: portfolio
-      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. 
+      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
     outputs:
     - contextPath: SecurityScorecard.Alerts.GradeChangeAlert.id
       description: Alert ID.
@@ -339,7 +336,7 @@ script:
       - "my_scorecard"
       - "any_followed_company"
     - name: portfolio
-      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. 
+      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
     outputs:
     - contextPath: SecurityScorecard.Alerts.ScoreThresholdAlert.id
       description: Alert ID.
@@ -478,4 +475,26 @@ script:
     - contextPath: SecurityScorecard.Metadata.Issues.recommendation
       type: string
       description: issue recommendation.
+  - name: securityscorecard-alert-rules-list
+    description: List alert subscriptions for the user.
+    arguments: []
+    outputs:
+    - contextPath: SecurityScorecard.AlertRules.Rule.id
+      description: Alert Rule ID.
+      type: String
+    - contextPath: SecurityScorecard.AlertRules.Rule.name
+      description: Alert Rule name.
+      type: String
+    - contextPath: SecurityScorecard.AlertRules.Rule.target
+      description: Target of the Rule.
+      type: String
+    - contextPath: SecurityScorecard.AlertRules.Rule.updated_at
+      description: Timestamp when the alert rule was last updated.
+      type: Date
+    - contextPath: SecurityScorecard.AlertRules.Rule.paused_at
+      description: Timestamp when the alert rule was paused.
+      type: Date
   runonce: false
+sectionorder:
+- Connect
+- Collect
