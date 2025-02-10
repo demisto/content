@@ -20,9 +20,9 @@ Key capabilities include retrieving incidents, isolating endpoints, executing re
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (copy URL from Cortex XDR) | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click **Copy API URL**. | True |
+| Server URL | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click **Copy API URL**. | True |
 | API Key ID | In Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys** and copy the Key ID from the ID column. | False |
-| API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**`, set Security Level to Standard, select an appropriate Role, and copy the Generated Key. | False |
+| API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**, set Security Level to Standard, select an appropriate Role, and copy the Generated Key. | False |
 | Run on | Select an engine to run on. | False |
 | HTTP Timeout | The timeout of the HTTP request sent to Cortex XDR API (in seconds). | False|
 | Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified. | False |
