@@ -536,7 +536,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- No tests
 fromversion: 6.5.0
 defaultmapperin: Varonis SaaS Incident - Incoming Mapper
 
