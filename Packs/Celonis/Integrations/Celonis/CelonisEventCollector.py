@@ -56,13 +56,12 @@ class Client(BaseClient):
         Returns:
             dict: The audit logs in JSON format.
         """
-        headers = {
-            'Authorization': f'{BEARER_PREFIX}{self.token}',
-        }
         results = self._http_request(
             method="GET",
             url_suffix=f"/log/api/external/audit?pageNumber={PAGE_NUMBER}&pageSize={PAGE_SIZE}&from={start_date}&to={end_date}",
-            headers=headers
+            headers={
+                'Authorization': f'{BEARER_PREFIX}{self.token}',
+            }
         )
         return results
 
@@ -161,7 +160,6 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         start = add_millisecond(event_date)
         demisto.debug("Waiting 10 seconds before calling the next request.")
         time.sleep(10)
-
 
     new_last_run = {'start_date': start, 'audit_token': client.token}
     # new_last_run = {'start_date': start}
