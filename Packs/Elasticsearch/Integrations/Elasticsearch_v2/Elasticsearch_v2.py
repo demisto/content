@@ -192,6 +192,7 @@ def elasticsearch_builder(proxies):
             connection_args["http_auth"] = (USERNAME, PASSWORD)
 
     es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
+    demisto.debug(f"es is: {es}")
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
     if API_KEY_ID and hasattr(es, 'transport'):
         es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(  # type: ignore[attr-defined]
@@ -331,6 +332,7 @@ def search_command(proxies):
     else:
         que = QueryString(query=query)
         search = Search(using=es, index=index).query(que)[base_page:base_page + size]
+        demisto.debug(f"search is: {search}")
         if explain:
             # if 'explain parameter is set to 'true' - adds explanation section to search results
             search = search.extra(explain=True)
@@ -567,6 +569,7 @@ def verify_es_server_version(res):
     Args:
         res(dict): requests.models.Response object including information regarding the elasticsearch server.
     """
+    demisto.debug(f"res is: {res}")
     es_server_version = res.get('version', {}).get('number', '')
     demisto.debug(f"Elasticsearch server version is: {es_server_version}")
     if es_server_version:
