@@ -136,7 +136,7 @@ script:
     outputs:
     - contextPath: FireMonSecurityManager.CollectorStatus
       description: Firemon Collector Status.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   script: ''
   subtype: python3

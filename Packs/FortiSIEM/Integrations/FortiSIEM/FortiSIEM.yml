@@ -373,7 +373,7 @@ script:
     description: Lists all elements in a resource list.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No Test
 fromversion: 5.0.0

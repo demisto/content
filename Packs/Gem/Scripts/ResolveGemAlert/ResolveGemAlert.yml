@@ -2,7 +2,7 @@ comment: "Post Processing Script that will resolve the relevant Threat in the Ge
 commonfields:
   id: ResolveGemAlert
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: ResolveGemAlert
 runas: DBotWeakRole
