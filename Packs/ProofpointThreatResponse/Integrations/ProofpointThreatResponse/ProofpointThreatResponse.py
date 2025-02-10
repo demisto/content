@@ -829,7 +829,6 @@ def search_quarantine():
                 demisto.debug(f'PTR: Got {message_delivery_time=} with type {type(message_delivery_time)}.')
                 if message_delivery_time and isinstance(message_delivery_time, dict):
                     message_delivery_time = message_delivery_time.get('millis')
-                    demisto.debug(f'Message delivery time processed as dict and set to {message_delivery_time}')
                 elif message_delivery_time and isinstance(message_delivery_time, str):
                     message_delivery_time = dateparser.parse(message_delivery_time)
                     if message_delivery_time:
@@ -838,6 +837,7 @@ def search_quarantine():
                         demisto.info(f'PTR: Could not parse time of incident {incident.get("id")}, got '
                                      f'{message_delivery_time=}')
                         continue
+
                 if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and message_delivery_time:
                     found['mid'] = True
                     demisto.debug('PTR: Found the email, adding the alert')
