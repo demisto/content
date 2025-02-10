@@ -9,6 +9,9 @@
 				"CTM360 CyberBlindspot Course of Action": {
 					"simple": "CustomFields.cbs_coa"
 				},
+				"CTM360 CyberBlindspot Module": {
+					"simple": "CustomFields.cbs_type"
+				},
 				"External Status": {
 					"simple": "externalstatus"
 				},

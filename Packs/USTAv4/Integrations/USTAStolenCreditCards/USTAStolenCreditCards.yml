@@ -1,0 +1,103 @@
+category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: USTA Stolen Credit Cards
+  version: -1
+configuration:
+- defaultvalue: https://usta.prodaft.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: API Key
+  additionalinfo: The API Key to use for connection
+  name: api_key
+  required: true
+  type: 4
+  section: Connect
+- display: Fetch incidents by status
+  defaultvalue: All
+  name: status
+  options:
+  - All
+  - Open
+  - Closed
+  type: 15
+  required: false
+  section: Collect
+- defaultvalue: '100'
+  display: Maximum number of alerts per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- display: First Fetch Time
+  additionalinfo: 'The time range to consider for the initial data fetch. Warning: Fetching a large time range may cause performance issues!'
+  defaultvalue: 3 days
+  name: first_fetch
+  type: 0
+  required: true
+  section: Collect
+description: 'This integration offers organizations the ability to track stolen credit card data across the web, providing comprehensive insight into compromised card information sourced from underground markets, dark web forums, and other malicious platforms.'
+display: USTA Stolen Credit Cards
+name: USTA Stolen Credit Cards
+defaultclassifier: USTA Incident Classifier
+defaultmapperin: USTA Incident Mapper
+defaultmapperout: 'null'
+script:
+  commands:
+  - arguments:
+    - description: 'Credit card number to search.'
+      name: card_number
+      required: true
+    - description: Number of vendors that should appear on each page. Each page of data will have at most this many vendors.
+      name: page_size
+    - description: 1-indexed page number to get a particular page of results.
+      name: page
+    description: 'Search for stolen credit card number.'
+    name: usta-scc-search
+    outputs:
+    - contextPath: USTA.StolenCreditCards.id
+      description: The alert ID of the alert.
+      type: Number
+    - contextPath: USTA.StolenCreditCards.card_number
+      description: The stolen credit card number.
+      type: String
+    - contextPath: USTA.StolenCreditCards.expire
+      description: The expiration date of the stolen credit card.
+      type: String
+    - contextPath: USTA.StolenCreditCards.created
+      description: The creation date of the stolen credit card.
+      type: String
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

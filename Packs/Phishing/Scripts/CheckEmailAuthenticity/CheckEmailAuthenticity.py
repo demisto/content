@@ -30,7 +30,12 @@ def get_spf(auth, spf):
     if sender_ip:
         spf_context['Sender-IP'] = sender_ip[0]
     if spf is not None:
-        spf_context['Reason'] = re.findall(r'\((.+)\)', spf)[0]
+        if reason := re.findall(r'\((.+)\)', spf):
+            spf_context['Reason'] = reason[0]
+        else:
+            reason = spf.split(" ", 1)
+            spf_context['Reason'] = reason[1] if len(reason) > 1 else ""
+
     return spf_context
 
 

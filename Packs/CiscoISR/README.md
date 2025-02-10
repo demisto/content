@@ -37,6 +37,11 @@ copy running-config startup-config
 ```
 And wait for system confirmation.
 
+Timestamp ingestion is currently supported for the following formats in UTC time zone;
+* mmm dd HH:MM:SS.sss - E.g. Jan 01 10:00:00.123
+* mmm  d YYYY HH:MM:SS.sss - E.g. Feb  3 2025 22:04:01.776
+* mmm dd YYYY HH:MM:SS.sss - E.g. Mar 01 2021 10:00:00.123
+
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
