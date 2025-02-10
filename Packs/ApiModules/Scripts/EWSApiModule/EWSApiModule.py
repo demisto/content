@@ -560,9 +560,10 @@ class EWSClient:
         :param subject: Subject of the email
         :param bcc: List of 'BCC' email addresses
         :param cc: List of 'CC' email addresses
-        :param html_body: HTML body of the email (overrides body)
+        :param htmlBody: HTML body of the email (overrides body)
         :param attachments: List of attachments to include in the email
         :param from_mailbox: Email address of the sender (optional)
+        :param account: Account for the mailbox containing the email to reply to (optional)
 
         :return: The sent message
         """
