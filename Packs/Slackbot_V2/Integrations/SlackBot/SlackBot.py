@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from multiprocessing import Process
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
-from slack_sdk import WebClient
 import json
 import os
 import random
