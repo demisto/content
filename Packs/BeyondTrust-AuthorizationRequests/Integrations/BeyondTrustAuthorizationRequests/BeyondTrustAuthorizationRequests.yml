@@ -57,7 +57,7 @@ script:
       required: true
     description: retrieves an existing ticket.
     name: bt-get-ticket
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: ''
   subtype: python3

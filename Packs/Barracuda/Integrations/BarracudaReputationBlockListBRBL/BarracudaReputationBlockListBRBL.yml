@@ -75,7 +75,7 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: String
     description: Get IP Reputation.
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   subtype: python3
 fromversion: 6.0.0
