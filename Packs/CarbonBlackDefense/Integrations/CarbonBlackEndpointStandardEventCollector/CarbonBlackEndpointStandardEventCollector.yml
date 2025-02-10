@@ -77,7 +77,7 @@ script:
       defaultValue: 2500
     description: 'Fetch alerts and audit logs from Carbon Black Endpoint Standard.'
     name: carbonblack-endpoint-standard-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3
