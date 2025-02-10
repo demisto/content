@@ -1,7 +1,7 @@
 commonfields:
   id: DisplayEmailHtml
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: DisplayEmailHtml
 runas: DBotWeakRole

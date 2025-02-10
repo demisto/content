@@ -132,7 +132,7 @@ script:
   - description: Prints the max client offset stored in the integration context.
     execution: true
     name: cyren-threat-indepth-get-client-offset
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   subtype: python3

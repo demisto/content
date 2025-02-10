@@ -91,7 +91,7 @@ script:
       name: limit
     description: Gets the feed indicators.
     name: bruteforceblocker-get-indicators
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'
