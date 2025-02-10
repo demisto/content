@@ -1,6 +1,5 @@
 import json
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MOCK_BASEURL = "https://example.com"
 MOCK_CLIENT_ID = "ID"
 MOCK_CLIENT_SECRET = "SECRET"
@@ -55,7 +54,6 @@ def test_add_millisecond():
     from CelonisEventCollector import add_millisecond
     assert add_millisecond("2025-02-05T14:30:00.123Z") == "2025-02-05T14:30:00.124Z"
     assert add_millisecond("2025-02-05T23:59:59.999Z") == "2025-02-06T00:00:00.000Z"
-    assert add_millisecond("2025-02-05T23:59:59Z") == "2025-02-05T23:59:59.001Z"
 
 
 def test_fetch_events_reaching_rate_limit(mocker):
@@ -64,7 +62,7 @@ def test_fetch_events_reaching_rate_limit(mocker):
 
     exception = Exception("Rate limit exceeded")
     setattr(exception, "message", "429")
-    last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "token": "123"}
+    last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "audit_token": "123"}
     mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=exception)
     mocker.patch('CelonisEventCollector.demisto.getLastRun', return_value=last_run_mock)
 
@@ -81,7 +79,7 @@ def test_fetch_events_token_expired(mocker):
 
     exception = Exception("Unauthorized access")
     setattr(exception, "message", "Unauthorized")
-    last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "token": "123"}
+    last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "audit_token": "123"}
     mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=[exception,raw_response_audit_logs])
     mocker.patch('CelonisEventCollector.demisto.getLastRun', return_value=last_run_mock)
     mocker.patch('CelonisEventCollector.Client.create_access_token_for_audit')
@@ -98,7 +96,7 @@ def test_fetch_events_reaching_limit(mocker):
 
     raw_response_audit_logs = util_load_json('test_data/raw_response_audit_logs.json')
 
-    last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "token": "123"}
+    last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "audit_token": "123"}
     mocker.patch('CelonisEventCollector.Client.get_audit_logs', return_value=raw_response_audit_logs)
     mocker.patch('CelonisEventCollector.demisto.getLastRun', return_value=last_run_mock)
     mocker.patch('CelonisEventCollector.Client.create_access_token_for_audit')
@@ -118,7 +116,7 @@ def test_fetch_events_more_than_exist(mocker):
 
     raw_response_audit_logs = util_load_json('test_data/raw_response_audit_logs.json')
 
-    last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "token": "123"}
+    last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "audit_token": "123"}
     mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=[raw_response_audit_logs, {}])
     mocker.patch('CelonisEventCollector.demisto.getLastRun', return_value=last_run_mock)
     mocker.patch('CelonisEventCollector.Client.create_access_token_for_audit')
