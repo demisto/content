@@ -104,10 +104,12 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     AGILE_API_ENDPOINT = 'rest/agile/1.0'
 
     def __init__(self, base_url: str, proxy: bool, verify: bool,
-                 callback_url: str, api_version: str, username: str, api_key: str):
+                 callback_url: str, api_version: str, username: str, api_key: str, pat: str):
         self.username = username
         self.api_key = api_key
         self.is_basic_auth = bool(self.username and self.api_key)
+        self.pat = pat
+        self.is_pat_auth = bool(self.pat)
         headers: Dict[str, str] = {'Accept': 'application/json'}
         self.callback_url = callback_url
         self.api_version = api_version
@@ -160,6 +162,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """This function is in charge of returning the access token stored in the integration's context. If the access token
         has expired, we try to retrieve another access token using a refresh token that is configured in the integration's context
 
+        If a personal access token is configured use it instead.
+
         Raises:
             DemistoException: If no access token was configured.
             DemistoException: If no refresh token was configured.
@@ -167,6 +171,9 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             str: The access token to send with the requests.
         """
+        if self.is_pat_auth:
+            return self.pat
+
         integration_context = get_integration_context()
         token = integration_context.get('token', '')
         if not token:
@@ -888,7 +895,7 @@ class JiraCloudClient(JiraBaseClient):
     ATLASSIAN_AUTH_URL = 'https://auth.atlassian.com'
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
-                 callback_url: str, cloud_id: str, server_url: str, username: str, api_key: str):
+                 callback_url: str, cloud_id: str, server_url: str, username: str, api_key: str, pat: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.cloud_id = cloud_id
@@ -907,7 +914,7 @@ class JiraCloudClient(JiraBaseClient):
             'offline_access']
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
                          base_url=urljoin(server_url, cloud_id), api_version='3',
-                         username=username, api_key=api_key)
+                         username=username, api_key=api_key, pat=pat)
 
     def test_instance_connection(self) -> None:
         self.get_user_info()
@@ -1056,13 +1063,13 @@ class JiraOnPremClient(JiraBaseClient):
     """
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
-                 callback_url: str, server_url: str, username: str, api_key: str):
+                 callback_url: str, server_url: str, username: str, api_key: str, pat: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.scopes = 'WRITE'
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
                          base_url=f'{server_url}', api_version='2',
-                         username=username, api_key=api_key)
+                         username=username, api_key=api_key, pat=pat)
 
     def oauth_start(self) -> str:
         return self.oauth2_start(scopes=self.scopes)
@@ -3432,7 +3439,7 @@ def test_module(client: JiraBaseClient) -> str:
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
-    if client.is_basic_auth:
+    if client.is_basic_auth or client.is_pat_auth:
         client.test_instance_connection()  # raises on failure
         return "ok"
     else:
@@ -4442,16 +4449,18 @@ def get_issue_id_or_key(issue_id: str = '', issue_key: str = '') -> str:
 
 
 def validate_auth_params(
-    username: str, api_key: str, client_id: str, client_secret: str
+    username: str, api_key: str, client_id: str, client_secret: str, pat: str
 ) -> None:
     is_basic_auth = bool(username or api_key)
     is_oauth2 = bool(client_id or client_secret)
+    is_pat_auth = bool(pat)
 
-    if (not is_basic_auth) and (not is_oauth2):
+    if (not is_basic_auth) and (not is_oauth2) and (not is_pat_auth):
         raise DemistoException("The required parameters were not provided. See the help window for more information.")
-    if is_basic_auth and is_oauth2:
+    if sum([is_basic_auth, is_oauth2, is_pat_auth]) > 1:
         raise DemistoException("The `User name` or `API key` parameters cannot be provided together"
-                               " with the `Client ID` or `Client Secret` parameters. See the help window for more information.")
+                               " with the `Client ID` or `Client Secret` parameters"
+                               " or with the `Personal Access Token` parameters. See the help window for more information.")
     if is_basic_auth and not (username and api_key):
         raise DemistoException(
             "To use basic authentication, the 'User name' and 'API key' parameters are mandatory."
@@ -4477,8 +4486,9 @@ def main():  # pragma: no cover
     client_id = params.get('credentials', {}).get('identifier', '')
     client_secret = params.get('credentials', {}).get('password', '')
     callback_url = params.get('callback_url', '')
+    personal_access_token = params.get('pat_credential', {}).get('password', '')
 
-    validate_auth_params(username, api_key, client_id, client_secret)
+    validate_auth_params(username, api_key, client_id, client_secret, personal_access_token)
 
     # Cloud configuration params
     cloud_id = params.get('cloud_id', '')
@@ -4563,7 +4573,8 @@ def main():  # pragma: no cover
                 callback_url=callback_url,
                 server_url=server_url,
                 username=username,
-                api_key=api_key)
+                api_key=api_key,
+                pat=personal_access_token)
         else:
             # Configure JiraOnPremClient
             client = JiraOnPremClient(
@@ -4574,7 +4585,8 @@ def main():  # pragma: no cover
                 callback_url=callback_url,
                 server_url=server_url,
                 username=username,
-                api_key=api_key)
+                api_key=api_key,
+                pat=personal_access_token)
         demisto.debug(f'The configured Jira client is: {type(client)}')
 
         if command == 'test-module':

@@ -1,0 +1,15 @@
+{
+    "first_seen": "25-12-2024 09:16:59 AM",
+    "last_seen": "25-12-2024 09:16:59 AM",
+    "card_number": "0123456789012345",
+    "cvv": "123",
+    "expiry_month": 4,
+    "expiry_year": 2026,
+    "brand": "Demo Bank",
+    "id": "LC-A1E4B2F49",
+    "status": "new",
+    "timestamp": 1735107419000,
+    "severity":"Low",
+    "type":"Compromised Cards",
+    "remarks":"Compromised Card 0123456789012345"
+}
