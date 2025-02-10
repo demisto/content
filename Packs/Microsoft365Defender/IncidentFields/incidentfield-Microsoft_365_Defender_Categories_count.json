@@ -1,5 +1,5 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
     "associatedTypes": [
         "Microsoft 365 Defender Incident"
     ],
@@ -44,7 +44,7 @@
     "group": 0,
     "hidden": false,
     "id": "incident_microsoft365defendercategoriescount",
-    "isReadOnly": true,
+    "isReadOnly": false,
     "locked": false,
     "name": "Microsoft 365 Defender Categories count",
     "neverSetAsRequired": false,
