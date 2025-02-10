@@ -1,5 +1,5 @@
 {
-    "name": "Slackbot_v2",
+    "name": "Slackbolt_v2",
     "description": "This integration uses slack bolt library to implement slash commands on slack. It also includes classifier, mapper and incident fields. The integration is a framework to enable building slack slash commands. These slash commands can generate incidents on XSOAR. ",
     "support": "community",
     "currentVersion": "1.0.0",
