@@ -26,7 +26,7 @@ comment: "Parses the output from the !SSLVerifierV2 automation into a markdown t
 commonfields:
   id: SSLVerifierV2_ParseOutput
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: SSLVerifierV2_ParseOutput
 outputs:

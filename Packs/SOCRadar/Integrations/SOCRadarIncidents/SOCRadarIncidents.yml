@@ -104,7 +104,7 @@ script:
       name: comments
     description: Marks incident as resolved in SOCRadar platform.
     name: socradar-mark-incident-resolved
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'
