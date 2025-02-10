@@ -68,8 +68,7 @@
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
             "instance_names": "Azure_Log_Analytics_client_cred",
-            "timeout": 800,
-
+            "timeout": 800
         },
         {
             "integrations": "CSCDomainManager",
@@ -110,8 +109,7 @@
         },
         {
             "integrations": "ThreatConnect v3",
-            "playbookID": "test-threatConnectv3",
-
+            "playbookID": "test-threatConnectv3"
         },
         {
             "playbookID": "Enrichment for Verdict - Test",
@@ -145,9 +143,7 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE - Retrieve File",
             "instance_names": "microsoft_defender_atp_dev",
-            "timeout": 1200,
-
-
+            "timeout": 1200
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -204,7 +200,6 @@
             ],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.1.0",
-,
             "instance_names": "FeedMandiant",
             "timeout": 2400
         },
@@ -221,8 +216,7 @@
             "playbookID": "Base64Decode - Test"
         },
         {
-            "playbookID": "SupportMultithreading - Test",
-
+            "playbookID": "SupportMultithreading - Test"
         },
         {
             "fromversion": "5.0.0",
@@ -242,7 +236,6 @@
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_device_code",
-,
             "timeout": 700,
             "memory_threshold": 900
         },
@@ -250,7 +243,6 @@
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_client_credentials",
-,
             "timeout": 700,
             "memory_threshold": 500
         },
@@ -349,8 +341,7 @@
             ],
             "playbookID": "AzureADTest",
             "fromversion": "6.0.0",
-            "timeout": 3000,
-
+            "timeout": 3000
         },
         {
             "integrations": "GoogleCalendar",
@@ -539,8 +530,7 @@
             "playbookID": "Service Desk Plus Test",
             "instance_names": "sdp_instance_1",
             "fromversion": "5.0.0",
-            "toversion": "5.9.9",
-
+            "toversion": "5.9.9"
         },
         {
             "integrations": "ServiceDeskPlus",
@@ -553,8 +543,7 @@
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test",
             "instance_names": "sdp_instance_2",
-            "fromversion": "6.0.0",
-
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "ServiceDeskPlus",
@@ -680,8 +669,7 @@
         },
         {
             "integrations": "Trend Micro Apex",
-            "playbookID": "Trend Micro Apex - Test",
-
+            "playbookID": "Trend Micro Apex - Test"
         },
         {
             "integrations": "Blocklist_de Feed",
@@ -696,14 +684,12 @@
         {
             "integrations": "AzureFeed",
             "playbookID": "AzureFeed - Test",
-            "fromversion": "5.5.0",
-
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
-            "fromversion": "5.5.0",
-
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cofense Feed",
@@ -766,14 +752,12 @@
         {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
-            "instance_names": "ms_azure_compute_prod",
-
+            "instance_names": "ms_azure_compute_prod"
         },
         {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Login Test",
-            "instance_names": "ms_azure_compute_prod",
-
+            "instance_names": "ms_azure_compute_prod"
         },
         {
             "integrations": "Azure Compute v2",
@@ -800,8 +784,7 @@
         {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod",
-
+            "instance_names": "ms_azure_sc_prod"
         },
         {
             "integrations": "Azure Security Center v2",
@@ -810,8 +793,7 @@
         },
         {
             "integrations": "JsonWhoIs",
-            "playbookID": "JsonWhoIs-Test",
-
+            "playbookID": "JsonWhoIs-Test"
         },
         {
             "integrations": "Maltiverse",
@@ -837,7 +819,6 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
             "instance_names": "ms_graph_mail_prod",
-,
             "memory_threshold": 300
         },
         {
@@ -997,8 +978,7 @@
         },
         {
             "integrations": "Cloaken",
-            "playbookID": "Cloaken-Test",
-
+            "playbookID": "Cloaken-Test"
         },
         {
             "integrations": "ThreatX",
@@ -1097,8 +1077,7 @@
         },
         {
             "integrations": "Thinkst Canary",
-            "playbookID": "CanaryTools Test",
-
+            "playbookID": "CanaryTools Test"
         },
         {
             "integrations": "ThreatMiner",
@@ -1147,8 +1126,7 @@
         {
             "integrations": "ServiceNow v2",
             "playbookID": "servicenow_test_v2",
-            "instance_names": "snow_basic_auth",
-
+            "instance_names": "snow_basic_auth"
         },
         {
             "integrations": "ServiceNow v2",
@@ -1642,14 +1620,12 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test",
-,
             "fromversion": "5.0.0",
             "toversion": "6.1.9"
         },
         {
             "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test With Polling",
-,
             "fromversion": "6.2.0",
             "timeout": 1100
         },
@@ -1906,16 +1882,14 @@
             "integrations": "McAfee ESM v2",
             "instance_names": "v11.1.3",
             "playbookID": "McAfee ESM v2 - Test v11.1.3",
-            "fromversion": "5.0.0",
-
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v11.3",
             "playbookID": "McAfee ESM v2 (v11.3) - Test",
             "fromversion": "5.0.0",
-            "timeout": 300,
-
+            "timeout": 300
         },
         {
             "integrations": "McAfee ESM v2",
@@ -1950,8 +1924,7 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100,
-
+            "memory_threshold": 100
         },
         {
             "integrations": "EWS v2",
@@ -1982,8 +1955,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 5000,
-
+            "timeout": 5000
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -1995,8 +1967,7 @@
         {
             "integrations": "Jira V3",
             "playbookID": "JiraV3 Test",
-            "instance_names": "jira_basic_auth",
-
+            "instance_names": "jira_basic_auth"
         },
         {
             "integrations": "ipinfo",
@@ -2038,22 +2009,19 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
             "memory_threshold": 250,
-            "instance_names": "use_default_handler",
-
+            "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy-Test-V2_default_handler",
             "memory_threshold": 500,
-            "instance_names": "use_default_handler",
-
+            "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler",
-
+            "instance_names": "use_default_handler"
         },
         {
             "integrations": "AnsibleTower",
@@ -2064,15 +2032,13 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler",
-
+            "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy_KV_commands_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler",
-
+            "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
@@ -2084,15 +2050,13 @@
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test_requests_handler",
             "memory_threshold": 500,
-            "instance_names": "use_python_requests_handler",
-
+            "instance_names": "use_python_requests_handler"
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test_requests_handler",
             "memory_threshold": 200,
-            "instance_names": "use_python_requests_handler",
-
+            "instance_names": "use_python_requests_handler"
         },
         {
             "integrations": "SplunkPy",
@@ -2108,8 +2072,7 @@
         {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
-            "timeout": 500,
-
+            "timeout": 500
         },
         {
             "integrations": "TCPIPUtils",
@@ -2161,8 +2124,7 @@
         {
             "integrations": "carbonblackliveresponse",
             "playbookID": "Carbon Black Live Response Test",
-            "fromversion": "5.0.0",
-
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "urlscan.io",
@@ -2173,14 +2135,12 @@
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
-,
             "timeout": 500
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewsv2_separate_process",
-,
             "timeout": 500
         },
         {
@@ -2238,8 +2198,7 @@
                 "virus_total_general"
             ],
             "timeout": 1400,
-            "fromversion": "5.5.0",
-
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cisco ASA",
@@ -2259,7 +2218,6 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
             "instance_names": "microsoft_defender_atp_prod",
-,
             "timeout": 500
         },
         {
@@ -2277,20 +2235,17 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed",
-
+            "instance_names": "microsoft_defender_atp_dev_self_deployed"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev",
-
+            "instance_names": "microsoft_defender_atp_dev"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_prod",
-
+            "instance_names": "microsoft_defender_atp_prod"
         },
         {
             "integrations": "Microsoft 365 Defender",
@@ -2325,14 +2280,12 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod",
-            "instance_names": "ms_graph_security_prod",
-
+            "instance_names": "ms_graph_security_prod"
         },
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test self deployed",
-            "instance_names": "ms_graph_security_client_cred",
-
+            "instance_names": "ms_graph_security_client_cred"
         },
         {
             "integrations": "Microsoft Graph",
@@ -2343,14 +2296,12 @@
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod v2",
             "instance_names": "ms_graph_security_prod_v2",
-,
             "timeout": 500
         },
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test self deployed v2",
-            "instance_names": "ms_graph_security_client_cred_v2",
-
+            "instance_names": "ms_graph_security_client_cred_v2"
         },
         {
             "integrations": "Microsoft Graph",
@@ -2365,8 +2316,7 @@
         {
             "integrations": "Microsoft Graph User",
             "playbookID": "Microsoft Graph User - Test",
-            "instance_names": "ms_graph_user_prod",
-
+            "instance_names": "ms_graph_user_prod"
         },
         {
             "integrations": "Microsoft Graph Groups",
@@ -2376,8 +2326,7 @@
         {
             "integrations": "Microsoft Graph Groups",
             "playbookID": "Microsoft Graph Groups - Test prod",
-            "instance_names": "ms_graph_groups_prod",
-
+            "instance_names": "ms_graph_groups_prod"
         },
         {
             "integrations": "Microsoft_Graph_Files",
@@ -2391,7 +2340,6 @@
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
             "fromversion": "5.0.0",
-,
             "timeout": 1600
         },
         {
@@ -2402,8 +2350,7 @@
         {
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test prod",
-            "instance_names": "ms_graph_calendar_prod",
-
+            "instance_names": "ms_graph_calendar_prod"
         },
         {
             "integrations": "Microsoft Graph Device Management",
@@ -2415,8 +2362,7 @@
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test_prod",
             "instance_names": "ms_graph_device_management_oproxy_prod",
-            "fromversion": "5.0.0",
-
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
@@ -2440,8 +2386,7 @@
         {
             "integrations": "QRadar_v2",
             "playbookID": "test_Qradar_v2",
-            "fromversion": "6.0.0",
-
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "VMware",
@@ -2452,7 +2397,6 @@
         {
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test",
-,
             "fromversion": "5.5.0"
         },
         {
@@ -2651,8 +2595,7 @@
                 "Cylance Protect v2"
             ],
             "playbookID": "Retrieve File from Endpoint - Generic V2 Test",
-            "fromversion": "5.0.0",
-
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Zscaler",
@@ -2889,8 +2832,7 @@
             "integrations": [
                 "VirusTotal (API v3)",
                 "Cylance Protect v2"
-            ],
-
+            ]
         },
         {
             "integrations": [
@@ -3130,8 +3072,7 @@
             "instance_names": "aws_alloacte_host",
             "fromversion": "5.0.0",
             "memory_threshold": 90,
-            "timeout": 700,
-
+            "timeout": 700
         },
         {
             "integrations": "AWS - EC2",
@@ -3179,8 +3120,7 @@
         {
             "integrations": "AWS - S3",
             "playbookID": "AWS - S3 Test Playbook",
-            "memory_threshold": 80,
-
+            "memory_threshold": 80
         },
         {
             "integrations": "AwsSecretsManager",
@@ -3324,8 +3264,7 @@
         {
             "integrations": "Shodan_v2",
             "playbookID": "Test-Shodan_v2",
-            "timeout": 1000,
-
+            "timeout": 1000
         },
         {
             "integrations": "Threat Crowd",
@@ -3535,8 +3474,7 @@
             "playbookID": "Splunk Indicator Hunting Test",
             "fromversion": "5.0.0",
             "memory_threshold": 500,
-            "instance_names": "use_default_handler",
-
+            "instance_names": "use_default_handler"
         },
         {
             "integrations": "AutoFocus Feed",
@@ -3550,8 +3488,7 @@
         },
         {
             "integrations": "SaasSecurity",
-            "playbookID": "SaasSecurity-Test",
-
+            "playbookID": "SaasSecurity-Test"
         },
         {
             "integrations": "Recorded Future Feed",
@@ -3582,8 +3519,7 @@
         {
             "integrations": "DShield Feed",
             "playbookID": "playbook-DshieldFeed_test",
-            "fromversion": "5.5.0",
-
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AlienVault Reputation Feed",
@@ -3773,8 +3709,7 @@
             "instance_names": [
                 "Create Test Incidents - Phishing Mock"
             ],
-            "timeout": 300,
-
+            "timeout": 300
         },
         {
             "playbookID": "GetIndicatorsByQuery - Test"
@@ -3951,7 +3886,6 @@
             "integrations": "Rundeck",
             "playbookID": "Rundeck_test",
             "fromversion": "5.5.0",
-,
             "marketplaces": "xsoar_saas"
         },
         {
@@ -3972,8 +3906,7 @@
         },
         {
             "integrations": "Cryptocurrency",
-            "playbookID": "Cryptocurrency-Test",
-
+            "playbookID": "Cryptocurrency-Test"
         },
         {
             "integrations": "Public DNS Feed",
@@ -4007,8 +3940,7 @@
         {
             "integrations": "Azure Storage",
             "playbookID": "Azure Storage - Test",
-            "instance_names": ["Azure_Storage", "azure_storage_client_cred"],
-
+            "instance_names": ["Azure_Storage", "azure_storage_client_cred"]
         },
         {
             "integrations": "MicrosoftGraphApplications",
@@ -4040,8 +3972,7 @@
             "instance_names": [
                 "virus_total_v3",
                 "virus_total_v3_premium"
-            ],
-
+            ]
         },
         {
             "integrations": "VirusTotal (API v3)",
@@ -4092,8 +4023,7 @@
             "playbookID": "QRadar_v3-test",
             "instance_names": "QRadar_20",
             "fromversion": "6.0.0",
-            "timeout": 1200,
-
+            "timeout": 1200
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -4150,14 +4080,12 @@
         {
             "integrations": "Carbon Black Endpoint Standard",
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
-            "fromversion": "5.5.0",
-
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Carbon Black Endpoint Standard v3",
             "playbookID": "carbonBlackEndpointStandardV3TestPlaybook",
-            "fromversion": "6.10.0",
-
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "Proofpoint TAP v2",
@@ -4187,8 +4115,7 @@
         {
             "integrations": "CarbonBlackLiveResponseCloud",
             "playbookID": "CarbonBlackLiveResponseCloud-Test",
-            "fromversion": "5.5.0",
-
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "CarbonBlackProtectionV2",
@@ -4231,7 +4158,6 @@
             ],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.0.0",
-,
             "timeout": 2400
         },
         {
@@ -4259,7 +4185,6 @@
             "playbookID": "ServiceNow_Fetch_Incidents_Test",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.8.0",
-,
             "timeout": 2400
         },
         {
@@ -4269,7 +4194,6 @@
             ],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.0.0",
-,
             "instance_names": "malwarebazzar_auto",
             "timeout": 2400
         },
@@ -4412,8 +4336,7 @@
             "fromversion": "6.9.0",
             "integrations": [
                 "VenafiTLSProtect"
-            ],
-
+            ]
         },
         {
             "playbookID": "3da36d51-3cdf-4120-882a-cee03b038b89",
@@ -4700,8 +4623,7 @@
         {
             "playbookID": "Test-GitLab-v2",
             "fromversion": "6.5.0",
-            "integrations": "GitLabv2",
-
+            "integrations": "GitLabv2"
         },
         {
             "playbookID": "LGTM-test-playbook",
@@ -4767,7 +4689,6 @@
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
             "instance_names": "aks_device_code_instance",
-,
             "integrations": [
                 "Azure Kubernetes Services"
             ]
@@ -4917,8 +4838,7 @@
             "memory_threshold": 250,
             "integrations": [
                 "CrowdStrike Falcon X"
-            ],
-
+            ]
         },
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
@@ -4950,8 +4870,7 @@
                 "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 350,
-            "pid_threshold": 200,
-
+            "pid_threshold": 200
         },
         {
             "playbookID": "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test",
@@ -5325,7 +5244,6 @@
         {
             "integrations": "Azure Sentinel",
             "fromversion": "5.5.0",
-,
             "playbookID": "TestAzureSentinelPlaybookV2",
             "instance_names": "azure_sentinel_dev"
         },
@@ -5433,7 +5351,6 @@
             ],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.0.0",
-,
             "instance_names": "MISP_feed_instance",
             "timeout": 2400
         },
@@ -5444,7 +5361,6 @@
             ],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.0.0",
-,
             "instance_names": "CrowdStrike_feed_instance",
             "timeout": 2400
         },
@@ -5590,7 +5506,6 @@
                 "Grafana",
                 "Core REST API"
             ],
-,
             "timeout": 2400
         },
         {
@@ -5622,8 +5537,7 @@
             "fromversion": "6.2.0",
             "timeout": 6000,
             "memory_threshold": 900,
-            "pid_threshold": 12,
-
+            "pid_threshold": 12
         },
         {
             "integrations": "FortiSIEMV2",
@@ -5811,8 +5725,7 @@
         },
         {
             "integrations": "AWS - Route53",
-            "playbookID": "playbook-create_delete_record_Test",
-
+            "playbookID": "playbook-create_delete_record_Test"
         },
         {
             "integrations": "Cylance Protect v2",
@@ -5836,8 +5749,7 @@
         },
         {
             "integrations": "Forcepoint Security Management Center",
-            "playbookID": "ForcepointSecurityManagementCenter_test",
-
+            "playbookID": "ForcepointSecurityManagementCenter_test"
         },
         {
             "integrations": "AWS - Organizations",
@@ -5870,8 +5782,7 @@
             "instance_names": [
                 "AWS-SNS-Listener",
                 "AWSSNS"
-            ],
-
+            ]
         },
         {
             "integrations": "Redmine",
