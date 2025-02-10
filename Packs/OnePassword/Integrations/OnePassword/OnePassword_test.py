@@ -242,7 +242,7 @@ def test_get_events_from_client_skip_ids(authenticated_client: Client, mocker: M
         max_events=max_events,
         already_fetched_ids_to_skip=already_fetched_ids_to_skip)
 
-    assert client_get_events.called_once == 1
+    assert client_get_events.call_count == 1
     assert events == []  # No new events because event ID in response has already been fetched and should be skipped
 
 
