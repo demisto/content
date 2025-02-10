@@ -9,7 +9,7 @@ logger = logging.getLogger('parse-email')  # type: ignore[assignment]
 logger.addHandler(DemistoHandler)  # type: ignore[attr-defined]
 
 
-def remove_bom(file_path: str) -> tuple[str, str, str]:
+def remove_bom(file_path: str) -> tuple[str, Optional[str], str]:
     path = Path(file_path)
     content = path.read_bytes()
     if content.startswith(b'\xef\xbb\xbf'):
