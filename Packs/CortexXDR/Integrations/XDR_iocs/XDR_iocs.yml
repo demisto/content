@@ -141,6 +141,7 @@ configuration:
   defaultvalue: 'true'
   hidden: true
   required: false
+  section: Collect
 - additionalinfo: The Cortex XSOAR indicator field used as severity.
   display: XSOAR Severity Field
   name: xsoar_severity_field
@@ -159,6 +160,7 @@ configuration:
   type: 16
   advanced: true
   required: false
+  section: Collect
 - additionalinfo: If left blank, the original severity level of the indicator will be used.
   display: Override severity value
   name: severity
