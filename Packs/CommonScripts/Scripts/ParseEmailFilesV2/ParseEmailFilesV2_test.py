@@ -1,3 +1,6 @@
+import tempfile
+from pathlib import Path
+
 import pytest
 
 import demistomock as demisto
@@ -584,3 +587,36 @@ def test_smime_without_to_from_subject(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['EntryContext']['Email']['FileName'] == 'Attachment.eml'
+
+
+def test_remove_bom(self):
+    """
+    Given:
+        an eml file which contains BOM
+    When:
+        executing the remove_bom function
+    Then:
+        - Ensure the new file does not contain BOM
+        - Ensure the new file content is as expected
+    """
+    from ParseEmailFilesV2 import remove_bom
+
+    # Create a temporary file with BOM
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(b'\xef\xbb\xbfThis is a test file with BOM.')
+        temp_file_path = temp_file.name
+
+    # Call the remove_bom function
+    cleaned_file_path, file_type, file_name = remove_bom(temp_file_path, "message/rfc822", temp_file_path)
+
+    # Read the content of the cleaned file
+    with open(cleaned_file_path, 'rb') as cleaned_file:
+        cleaned_content = cleaned_file.read()
+
+    # Assert that the BOM has been removed
+    self.assertFalse(cleaned_content.startswith(b'\xef\xbb\xbf'))
+    self.assertEqual(cleaned_content, b'This is a test file with BOM.')
+
+    # Clean up temporary files
+    Path(temp_file_path).unlink()
+    Path(cleaned_file_path).unlink()
