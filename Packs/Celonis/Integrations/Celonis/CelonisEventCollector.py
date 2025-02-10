@@ -117,8 +117,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         start = last_run.get('start_date', '')
         client.set_token(last_run.get('audit_token', ''))
         if not start:
-            start = "2025-02-02T09:00:00"  # TODO
-            # event_date = get_current_time().strftime(DATE_FORMAT)
+            event_date = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
 
     demisto.debug(f'Fetching audit logs events from date={start} to date={end}.')
@@ -132,7 +131,6 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
                 demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit}"
                               f" Audit logs. Wait for the next fetch cycle.")
                 new_last_run = {'start_date': start, 'audit_token': client.token}
-                # new_last_run = {'start_date': start}
                 return output, new_last_run
             if hasattr(e, "message") and 'Unauthorized' in e.message:  # need to regenerate the token
                 demisto.debug(f"Regenerates token for fetching audit logs.")
@@ -145,7 +143,6 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             break
 
         events = sort_events_by_timestamp(response.get('content'))
-        # event_date = ''
         for event in events:
             event_date = event.get('timestamp')
             event['_TIME'] = event_date
@@ -154,7 +151,6 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             if len(output) >= fetch_limit:
                 start = add_millisecond(event_date)
                 new_last_run = {'start_date': start, 'audit_token': client.token}
-                # new_last_run = {'start_date': start}
                 return output, new_last_run
 
         start = add_millisecond(event_date)
@@ -162,7 +158,6 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         time.sleep(10)
 
     new_last_run = {'start_date': start, 'audit_token': client.token}
-    # new_last_run = {'start_date': start}
     return output, new_last_run
 
 
@@ -191,7 +186,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     return output, command_results
 
 
-def main():
+def main():  # pragma: no cover
     """main function, parses params and runs command functions"""
     params = demisto.params()
     args = demisto.args()
