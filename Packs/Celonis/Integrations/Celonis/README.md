@@ -4,14 +4,15 @@ This integration was integrated and tested with version 4.0 of Celonis.
 ## Configure Celonis in Cortex
 
 
-| **Parameter** | **Description** | **Required** |
-| --- |----| --- |
+| **Parameter** | **Description**                                                                                                                    | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------| --- |
 | Server URL | The endpoint URL is constructed using the team name and realm in the format: https://&lt;teamname&gt;.&lt;realm&gt;.celonis.cloud. | True |
-| Client ID | The Client ID to use for connection.| True |
-| Client Secret | The Client Secret to use for connection.| True |
-| Trust any certificate (not secure) |    | False |
-| Use system proxy settings |    | False |
-| Maximum number of events per fetch | Defines the maximum number of audits events per fetch cycle. Default value: 2000. | True |
+| Server URL | The endpoint URL is constructed using the team name and realm in the format: https://&lt;teamname&gt;.&lt;realm&gt;.celonis.cloud. | True |
+| Client ID | The Client ID to use for connection.                                                                                               | True |
+| Client Secret | The Client Secret to use for connection.                                                                                           | True |
+| Trust any certificate (not secure) |                                                                                                                                    | False |
+| Use system proxy settings |                                                                                                                                    | False |
+| Maximum number of events per fetch | Defines the maximum number of audits events per fetch cycle. Default value: 600.                                                   | True |
 
 ## Commands
 
