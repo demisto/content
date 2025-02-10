@@ -767,6 +767,12 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information about the file.
       type: String
+    - contextPath: Ticket.Description
+      description: The ticket's description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
+      type: String
   - arguments:
     - description: The maximum number of results to return. Default is 50 and maximum is 5000.
       name: limit
