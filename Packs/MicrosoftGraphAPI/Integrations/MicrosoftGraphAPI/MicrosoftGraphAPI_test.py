@@ -1,5 +1,6 @@
 import json
 import os
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -187,3 +188,33 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+@pytest.mark.parametrize("headers, expected_headers", [
+    ("ConsistencyLevel:eventual,User-Agent:MyApp/1.0", {
+        "ConsistencyLevel": "eventual",
+        "User-Agent": "MyApp/1.0"
+    }),
+    (None, None),  # No headers case
+])
+def test_generic_command_headers(headers, expected_headers):
+    client = MagicMock(spec=MsGraphClient)
+    client.generic_request = MagicMock(return_value={"response": "success"})
+
+    args = {
+        "resource": "/test/resource",
+        "http_method": "GET",
+        "api_version": "v1.0",
+        "headers": headers,
+        "request_body": json.dumps({"key": "value"})
+    }
+
+    generic_command(client, args)
+
+    client.generic_request.assert_called_once_with(
+        resource="/test/resource",
+        http_method="GET",
+        api_version="v1.0",
+        odata="",
+        request_body={"key": "value"},
+        headers=expected_headers
+    )
