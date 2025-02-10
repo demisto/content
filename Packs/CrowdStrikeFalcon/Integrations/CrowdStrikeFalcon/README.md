@@ -152,7 +152,7 @@ Searches for a device that matches the query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | extended_data | Whether or not to get additional data about the device. Possible values are: Yes, No. | Optional | 
-| filter | The query by which to filter the device. | Optional | 
+| filter | The query by which to filter the device. The query format should be `filter_parameter_name:'filter_value'`. | Optional | 
 | limit | The maximum records to return [1-5000]. Default is 50. | Optional | 
 | offset | The offset to start retrieving records from. | Optional | 
 | ids | A comma-separated list of device IDs to limit the results. | Optional | 
