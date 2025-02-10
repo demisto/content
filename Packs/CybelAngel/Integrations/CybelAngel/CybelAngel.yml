@@ -6,12 +6,12 @@ configuration:
   display: CybelAngel Client ID
   name: client_id
   required: true
-  type: 4
+  type: 9
 - additionalinfo: Client Secret for OAuth 2.0 Authentication for CybelAngel API
   display: CybelAngel Client Secret
   name: client_secret
   required: true
-  type: 4
+  type: 9
 - additionalinfo: CybelAngel Tenant ID to create comments on reports
   display: CybelAngel Tenant ID
   name: tenant_id
@@ -142,7 +142,7 @@ script:
     - contextPath: CybelAngel.StatusUpdate
       description: Status update details.
       type: String
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: ''
