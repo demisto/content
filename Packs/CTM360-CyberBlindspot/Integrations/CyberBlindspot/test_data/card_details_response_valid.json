@@ -1,0 +1,16 @@
+{
+    "first_seen": "24-11-2024 09:23:11 PM",
+    "last_seen": "24-11-2024 09:23:11 PM",
+    "breach_source": [
+        "Pure Incubation"
+    ],
+    "domain": "example.local",
+    "type": "",
+    "remarks": "Pure Incubation Breach - yash.abc@example.local",
+    "email": "yash.abc@example.local",
+    "username": "yser",
+    "password": "ypass123!",
+    "brand": "RiskAssess Demo",
+    "id": "BC-0D7FDA777",
+    "status": "new"
+}
