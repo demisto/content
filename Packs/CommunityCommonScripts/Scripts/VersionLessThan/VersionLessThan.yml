@@ -12,7 +12,7 @@ comment: 'Tests whether left side version number is less than right side version
 commonfields:
   id: VersionLessThan
   version: -1
-dockerimage: demisto/powershell:7.4.6.116823
+dockerimage: demisto/powershell:7.4.6.117357
 enabled: true
 name: VersionLessThan
 runas: DBotWeakRole
