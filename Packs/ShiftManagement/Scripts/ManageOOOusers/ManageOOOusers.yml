@@ -28,7 +28,7 @@ args:
   description: The name of the analyst to add to the list. The default is the current analyst. Must be provided when running as part of a playbook.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
