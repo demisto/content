@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: mirroring-in-xsiam-sdk-check
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: mirroring-in-xsiam-sdk-check
     project: "${CI_PROJECT_NAMESPACE}/infra"
