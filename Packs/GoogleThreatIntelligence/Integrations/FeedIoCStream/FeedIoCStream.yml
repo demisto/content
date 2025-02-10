@@ -130,7 +130,7 @@ script:
       name: filter
     description: Gets the indicators from Google Threat Intelligence IoC Stream.
     name: gti-iocstream-get-indicators
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'

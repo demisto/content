@@ -2,7 +2,7 @@ comment: "Identify custom and detached system incidents type  \nChecking if 'Aut
 commonfields:
   id: HealthCheckIncidentTypes
   version: -1
-dockerimage: demisto/python3:3.11.10.111526
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: HealthCheckIncidentTypes
 runas: DBotWeakRole

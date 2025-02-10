@@ -153,7 +153,7 @@ script:
     - name: urls
       description: Provide a single or comma separated list of sites from which to perform the search on.
     description: Use the google search engine to search a query.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   subtype: python3
 fromversion: 6.2.0

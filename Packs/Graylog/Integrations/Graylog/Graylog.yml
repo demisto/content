@@ -188,7 +188,7 @@ script:
       description: Search results of Absolute search
       type: String
     description: Search with absolute times
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

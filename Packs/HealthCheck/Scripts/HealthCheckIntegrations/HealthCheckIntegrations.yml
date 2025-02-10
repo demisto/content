@@ -2,7 +2,7 @@ comment: Collect integrations name and count number of engines.
 commonfields:
   id: HealthCheckIntegrations
   version: -1
-dockerimage: demisto/python3:3.11.10.111526
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: HealthCheckIntegrations
 runas: DBotWeakRole
