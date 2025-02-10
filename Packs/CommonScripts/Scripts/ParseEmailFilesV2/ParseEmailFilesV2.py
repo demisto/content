@@ -1,9 +1,27 @@
+import mimetypes
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from parse_emails.parse_emails import EmailParser
 
 logger = logging.getLogger('parse-email')  # type: ignore[assignment]
 logger.addHandler(DemistoHandler)  # type: ignore[attr-defined]
+
+
+def remove_bom(file_path: str) -> tuple[str, str, str]:
+    with open(file_path, 'rb') as f:
+        content = f.read()
+    if content.startswith(b'\xef\xbb\xbf'):
+        content = content[3:]
+    # Write the cleaned content to a new file or overwrite the original file
+    cleaned_file_path = 'cleaned_' + os.path.basename(file_path)
+    with open(cleaned_file_path, 'wb') as f:
+        f.write(content)
+    # Get the MIME type
+    mime_type, _ = mimetypes.guess_type(cleaned_file_path)
+    # Get the file name
+    file_name = os.path.basename(cleaned_file_path)
+    return cleaned_file_path, mime_type, file_name
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False) -> str:
@@ -139,8 +157,11 @@ def main():
     file_type, file_path, file_name = extract_file_info(entry_id)
     demisto.debug(f'{file_type=}, {file_path=}, {file_name=}')
 
+    # Remove BOM and parse the email
+    cleaned_file_path, file_type, file_name = remove_bom(file_path)
+
     try:
-        email_parser = EmailParser(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
+        email_parser = EmailParser(file_path=cleaned_file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
                                    file_info=file_type, forced_encoding=forced_encoding,
                                    default_encoding=default_encoding, file_name=file_name)
         output = email_parser.parse()
