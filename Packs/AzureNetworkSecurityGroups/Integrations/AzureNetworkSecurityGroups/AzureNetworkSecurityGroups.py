@@ -812,13 +812,14 @@ def azure_nsg_network_interfaces_create_command(client: AzureNSGClient, params: 
     }
 
     if nsg_name:
-        data['properties'].update({'networkSecurityGroup': {'id': f'{prefix}networkSecurityGroups/{nsg_name}'}})
+        data['properties'].update({'networkSecurityGroup':  # type: ignore[union-attr, dict-item]
+                                   {'id': f'{prefix}networkSecurityGroups/{nsg_name}'}})
 
-    conf_properties = data['properties']['ipConfigurations'][0]['properties']
+    conf_properties = data['properties']['ipConfigurations'][0]['properties']  # type: ignore[union-attr, index]
     if private_ip:
-        conf_properties.update({'privateIPAddress': private_ip})
+        conf_properties.update({'privateIPAddress': private_ip})  # type: ignore[union-attr]
     if public_ip_address_name:
-        conf_properties.update({'publicIPAddress': {'id': public_ip_address_name}})
+        conf_properties.update({'publicIPAddress': {'id': public_ip_address_name}})  # type: ignore[union-attr]
 
     response = client.create_or_update_network_interface_request(subscription_id=subscription_id,
                                                                  resource_group_name=resource_group_name,
