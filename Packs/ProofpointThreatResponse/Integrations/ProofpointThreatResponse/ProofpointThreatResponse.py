@@ -854,11 +854,12 @@ def search_quarantine():
                             'quarantine_results': incident.get('quarantine_results')
                         })
                     else:
-                        demisto.info(f'PTR: Alert id {alert.get("id")} found but not added to lstAlert list as emailTAPtime '
-                                     f'({emailTAPtime}) did not match emailTRAPtimestamp ({emailTRAPtimestamp})')
+                        demisto.info(f'PTR: Alert id {alert.get("id")} found but not added to lstAlert list as '
+                                     f'{emailTAPtime=} did not match {emailTRAPtimestamp=}')
                 else:
-                    demisto.info(f'Email metadata did not match user inputs, skipped. {email.get("messageId")=} but search {mid}.'
-                                 f' {email.get("recipient").get("email")=} but searched {recipient}.')
+                    demisto.info(f'PTR: skipped message with ID {email.get("messageId")} and recipient'
+                                 f' {email.get("recipient").get("email")}. As it did not match {mid=} and'
+                                 f' recipient={email.get("recipient").get("email")}')
 
     quarantineFoundcpt = 0
 
