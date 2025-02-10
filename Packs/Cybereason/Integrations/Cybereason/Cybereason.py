@@ -61,14 +61,17 @@ PROCESS_FIELDS = [element['field'] for element in PROCESS_INFO]
 PROCESS_HEADERS = [element['header'] for element in PROCESS_INFO]
 
 MALOP_HEADERS = [
-    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachine', 'InvolvedHash']
+    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects',
+    'AffectedMachine', 'InvolvedHash']
 
 SINGLE_MALOP_HEADERS = [
-    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'InvolvedHash', 'Severity', 'Machines', 'Users', "DecisionStatuses", "DetectionTypes", "DetectionEngines", "MitreTechniques", "MalopCloserName"]
+    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'InvolvedHash', 'Severity',
+    'Machines', 'Users', 'DecisionStatuses', 'DetectionTypes', 'DetectionEngines',
+    'MitreTechniques', 'MalopCloserName']
 
 DOMAIN_HEADERS = [
-    'Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 'WasEverResolvedAsASecondLevelDomain', 'Malicious',
-    'SuspicionsCount']
+    'Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved',
+    'WasEverResolvedAsASecondLevelDomain', 'Malicious', 'SuspicionsCount']
 
 USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
 
@@ -574,7 +577,7 @@ def poll_malops(client: Client, start_time):
 
 def query_malops(
     client: Client, total_result_limit: int = None, per_group_limit: int = None, template_context: str = None,
-        filters: list = None, guid_list: str = None) -> Any:
+        filters: list = None, guid_list: Optional[List[str]] = None) -> Any:
     demisto.info(f"guid list in query_malop function: {guid_list}")
     json_body = {
         'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
@@ -1616,10 +1619,14 @@ def fetch_incidents(client: Client):
         offset = 0
     if not total_malops_fetched:
         total_malops_fetched = 0
-    demisto.debug(
-        f"Polling starts.total_malops_fetched: {total_malops_fetched} offset: {offset} start_time: {start_time} end_time:{end_time}")
+    
     malop_management_response = get_malop_management_data(client, start_time, end_time, offset)
     demisto.info(f"mmng/v2 response: {malop_management_response}")
+    demisto.debug((
+    f"Polling starts. total_malops_fetched: {total_malops_fetched} "
+    f"offset: {offset} start_time: {start_time} end_time: {end_time}"
+    ))
+
     edr_guid_list, non_edr_guid_list = [], []
     total_malops_available = malop_management_response["data"]["totalHits"]
     malop_management_response = malop_management_response["data"]["data"]
@@ -1706,8 +1713,11 @@ def fetch_incidents(client: Client):
     integration_context['offset'] = offset
     set_integration_context(integration_context)
     demisto.debug("Saved integration context data for mmng/v2")
-    demisto.debug(
-        f"Polling ends. total_malops_available:{total_malops_available}  total_malops_fetched: {total_malops_fetched} offset:{offset}")
+    demisto.debug((
+    f"Polling ends. total_malops_available: {total_malops_available} "
+    f"total_malops_fetched: {total_malops_fetched} offset: {offset}"
+    ))
+
 
 
 def login(client: Client):
