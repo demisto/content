@@ -8,7 +8,7 @@ args:
 commonfields:
   id: TagIndicatorButton
   version: -1
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 comment: This is a wrapper around the setIndicators script.
 name: TagIndicatorButton

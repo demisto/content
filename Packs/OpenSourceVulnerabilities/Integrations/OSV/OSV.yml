@@ -146,7 +146,7 @@ script:
     - contextPath: OSV.VulnerabilityList.vulns.references.url
       description: Reference URL for more details.
       type: string
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   script: ''
   subtype: python3
   type: python

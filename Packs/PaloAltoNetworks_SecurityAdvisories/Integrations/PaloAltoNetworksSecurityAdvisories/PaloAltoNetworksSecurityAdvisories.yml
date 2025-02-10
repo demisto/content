@@ -136,7 +136,7 @@ script:
     - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
       description: List of affected versions strings.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'
