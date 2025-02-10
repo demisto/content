@@ -1,8 +1,8 @@
 commonfields:
-  id: Jira V3
+  id: Jira V3_dev
   version: -1
-name: Jira V3
-display: Atlassian Jira v3
+name: Jira V3_dev
+display: Atlassian Jira v3_dev
 category: Case Management
 description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
 configuration:
@@ -317,6 +317,9 @@ script:
     - contextPath: Ticket.Description
       description: The ticket's description.
       type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
+      type: String
     - contextPath: Ticket.Labels
       description: The ticket's labels.
       type: Array
@@ -486,6 +489,9 @@ script:
     - contextPath: Ticket.Description
       description: The ticket's project description.
       type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
+      type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
       type: Array
@@ -542,6 +548,9 @@ script:
       type: String
     - contextPath: Ticket.Description
       description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
       type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
