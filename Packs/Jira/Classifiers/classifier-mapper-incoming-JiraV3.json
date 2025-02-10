@@ -142,6 +142,9 @@
                 },
                 "IncomingMirrorError": {
                     "simple": "in_mirror_error"
+                },
+                "Jira Raw Description": {
+                    "simple": "renderedFields.description"
                 }
             }
         },

@@ -1296,14 +1296,14 @@ class JiraIssueFieldsParser:
         # (which holds nested dictionaries that includes the content and also metadata about it), we check if the response
         # returns the fields rendered in HTML format (by accessing the renderedFields).
         rendered_issue_fields = issue_data.get('renderedFields', {})
-        description_raw = ""
+
         if rendered_issue_fields:
             description_raw = rendered_issue_fields.get('description', '')
             description_text: str = BeautifulSoup(description_raw, features="html.parser").get_text()
         else:
             description_text: str = demisto.get(issue_data, 'fields.description', '') or ''
-
-        return {'Description': description_text, "Raw_Description": description_raw}
+            description_raw: str = demisto.get(issue_data, 'renderedFields.description', '') or ''
+        return {'Description': description_text, "RawDescription": description_raw}
 
 
     @staticmethod
@@ -3773,7 +3773,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
         {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
         {'type': 'description', 'value': issue_parsed_description},
-        {'type': 'raw_description', 'value': issue_raw_description},
+        {'type': 'rawDescription', 'value': issue_raw_description},
     ]
     issue['parsedDescription'] = issue_parsed_description
     demisto.debug(f'Extracting extra data for {issue_id}.')
@@ -3819,7 +3819,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     return {
         "name": incident_name,
         "labels": labels,
-        "details": issue_description,
+        "details": issue_parsed_description,
         "severity": severity,
         "attachment": attachments,
         "rawJSON": json.dumps(issue)
@@ -4039,11 +4039,8 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         parse_custom_fields(issue=issue,
                             issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
         demisto.debug(f'Raw issue response: {issue}')
-        issue_description: dict = JiraIssueFieldsParser.get_description_context(issue_data=issue)
-        issue_parsed_description: str = issue_description.get('Description', '')
-        issue_raw_description: str = issue_description.get('RawDescription', '')
-
-        issue['parsedDescription'] = issue_parsed_description
+        issue['parsedDescription'] = JiraIssueFieldsParser.get_description_context(
+            issue).get('Description') or ''
         issue |= add_extracted_data_to_incident(issue=issue)
         user_timezone_name = get_user_timezone(client=client)
         _ = get_system_timezone()
