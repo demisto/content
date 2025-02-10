@@ -151,8 +151,6 @@ configuration:
   section: Collect
   required: false
   defaultvalue: 'true'
-  hidden:
-  - marketplacev2
 - display: Incident type
   name: incidentType
   type: 13
