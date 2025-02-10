@@ -1,0 +1,134 @@
+{
+    "description": "",
+    "feed": false,
+    "fromVersion": "6.10.0",
+    "id": "USTA Incident Mapper",
+    "mapping": {
+        "USTA Account Takeover Prevention": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "USTA Account Takeover Prevention Created": {
+                    "simple": "created"
+                },
+                "USTA Account Takeover Prevention ID": {
+                    "simple": "id"
+                },
+                "USTA Account Takeover Prevention Is Corporate": {
+                    "simple": "content.is_corporate"
+                },
+                "USTA Account Takeover Prevention Password": {
+                    "simple": "content.password"
+                },
+                "USTA Account Takeover Prevention Source": {
+                    "simple": "content.source"
+                },
+                "USTA Account Takeover Prevention URL": {
+                    "simple": "content.url"
+                },
+                "USTA Account Takeover Prevention Username": {
+                    "simple": "content.username"
+                },
+                "USTA Account Takeover Prevention Victim Details CPU": {
+                    "simple": "content.victim_detail.cpu"
+                },
+                "USTA Account Takeover Prevention Victim Details Computer Name": {
+                    "simple": "content.victim_detail.computer_name"
+                },
+                "USTA Account Takeover Prevention Victim Details Computer Username": {
+                    "simple": "content.victim_detail.username"
+                },
+                "USTA Account Takeover Prevention Victim Details Country": {
+                    "simple": "content.victim_detail.country"
+                },
+                "USTA Account Takeover Prevention Victim Details GPU": {
+                    "simple": "content.victim_detail.gpu"
+                },
+                "USTA Account Takeover Prevention Victim Details IP Adress": {
+                    "simple": "content.victim_detail.ip"
+                },
+                "USTA Account Takeover Prevention Victim Details Infection Date": {
+                    "simple": "content.victim_detail.infection_date"
+                },
+                "USTA Account Takeover Prevention Victim Details Language": {
+                    "simple": "content.victim_detail.language"
+                },
+                "USTA Account Takeover Prevention Victim Details Malware": {
+                    "simple": "content.victim_detail.malware"
+                },
+                "USTA Account Takeover Prevention Victim Details Memory": {
+                    "simple": "content.victim_detail.memory"
+                },
+                "USTA Account Takeover Prevention Victim Details Phone Number": {
+                    "simple": "content.victim_detail.phone_number"
+                },
+                "USTA Account Takeover Prevention Victim Details Victim OS": {
+                    "simple": "content.victim_detail.victim_os"
+                },
+                "Usta Alert URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "https://usta.prodaft.com/intelligence/tickets/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "USTA Stolen Credit Card": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Usta Stolen Credit Cards Created": {
+                    "simple": "created"
+                },
+                "Usta Stolen Credit Cards Expire Date": {
+                    "simple": "content.expiration_date"
+                },
+                "Usta Stolen Credit Cards Card Number": {
+                    "simple": "content.number"
+                },
+                "Usta Stolen Credit Cards Id": {
+                    "simple": "id"
+                },
+                "Usta Alert URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "https://usta.prodaft.com/intelligence/tickets/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "USTA Incident Mapper",
+    "type": "mapping-incoming",
+    "version": -1
+}
