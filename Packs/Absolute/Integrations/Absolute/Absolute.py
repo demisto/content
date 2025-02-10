@@ -167,7 +167,7 @@ class ClientV3(BaseClient):
             "issuedAt": round(time.time() * 1000)
         }
 
-        demisto.debug(f'ABS: Making JWS token with headers: {headers}')
+        demisto.debug(f'ABS: Making JWS token with headers: {headers}, request_payload_data: {request_payload_data}')
 
         return jwt.encode(request_payload_data, self._secret_key, algorithm='HS256', headers=headers)
 
@@ -261,9 +261,10 @@ class ClientV3(BaseClient):
         """
         demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
 
-        if success_status_code is None:
+        if not success_status_code:
             success_status_code = [200]
         query_string = self.prepare_query_string_for_canonical_request(query_string)
+
         if method == 'GET':
             if specific_page:
                 data = self.get_specific_page_data(url_suffix, page, page_size, query_string, ok_codes=tuple(success_status_code))
@@ -295,19 +296,6 @@ class ClientV3(BaseClient):
                 # response is not empty
                 return response.get('data')
         return None
-
-    def fetch_events_request(self, query_string: str) -> dict[str, Any]:
-        """
-        Performs the HTTP request using the signed request data.
-
-        Args:
-            query_string (str): The query string parameters for the events to be fetched.
-
-        Returns:
-            dict: A dictionary containing the response object from the HTTP request.
-        """
-        signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
-        return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL)
 
     def fetch_events_between_dates(self, fetch_limit: int, start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
         """
@@ -991,8 +979,9 @@ def parse_geo_location_outputs(response):
         parsed_device['State'] = geo_data.get('geoAddress', {}).get('state')
         parsed_device['CountryCode'] = geo_data.get('geoAddress', {}).get('countryCode')
         parsed_device['Country'] = geo_data.get('geoAddress', {}).get('country')
-        parsed_device['ID'] = device.get('id')
+        parsed_device['ID'] = device.get('deviceUid')
 
+        remove_nulls_from_dictionary(parsed_device)
         parsed_response.append(parsed_device)
 
     if len(parsed_response) == 1:
@@ -1009,13 +998,19 @@ def get_device_application_list_command(args, client) -> CommandResults:
     query_string = create_filter_query_from_args(args)
     query_string = parse_return_fields(args.get('return_fields'), query_string)
 
-    res = client.api_request_absolute('GET', '/v3/reporting/applications-advanced', query_string=query_string,
-                                      page=page, page_size=limit, specific_page=True)
+    try:
+        res = client.api_request_absolute('GET', '/v3/reporting/applications-advanced', query_string=query_string,
+                                        page=page, page_size=limit, specific_page=True)
+    except Exception as e:
+        if 'Your request is invalid, please contact us for details.' in str(e):
+            raise Exception(f'Error in request - make sure your filter is in accordance to the Absolute documentation.\n{e}')
+        else:
+            raise e
+
     if res:
         outputs = parse_device_list_response(res, application_list=True)
-        # outputs = parse_new_values_for_device_application_outputs(outputs, res)
         human_readable = tableToMarkdown(f'{INTEGRATION} device applications list:', outputs, removeNull=True)
-        human_readable += f"\nAbove results are with page number: {page} and with size: {limit}."
+        human_readable += f"\nAbove results are with page number: {page} and with limit: {limit}."
         return CommandResults(outputs_prefix='Absolute.DeviceApplication',
                               outputs=outputs,
                               outputs_key_field='Appid',
@@ -1033,15 +1028,21 @@ def device_list_command(args, client) -> CommandResults:
 
     query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
     query_string = parse_return_fields(",".join(DEVICE_LIST_RETURN_FIELDS), query_string)
+    try:
+        res = client.api_request_absolute('GET', '/v3/reporting/devices', query_string=query_string,
+                                            page=page, page_size=limit, specific_page=True)
+    except Exception as e:
+        if 'Your request is invalid, please contact us for details.' in str(e):
+            raise Exception(f'Error in request - make sure your filter is in accordance to the Absolute documentation.\n{e}')
+        else:
+            raise e
 
-    res = client.api_request_absolute('GET', '/v3/reporting/devices', query_string=query_string,
-                                      page=page, page_size=limit, specific_page=True)
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res), keep_os_in_list=False)
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs,
                                          headers=['Id', 'LastConnectedUtc', 'LocalIp', 'AgentStatus', 'Esn', 'FullSystemName'],
                                          removeNull=True)
-        human_readable += f"\nAbove results are with page number: {page} and with size: {limit}."
+        human_readable += f"\nAbove results are with page number: {page} and with limit: {limit}."
         return CommandResults(outputs_prefix='Absolute.Device',
                               outputs=outputs,
                               outputs_key_field="Id",
@@ -1066,10 +1067,10 @@ def get_device_command(args, client) -> CommandResults:
         query_string = parse_return_fields(",".join(custom_fields_to_return), query_string)
     else:
         query_string = parse_return_fields(",".join(DEVICE_GET_COMMAND_RETURN_FIELDS), query_string)
+
     res = client.api_request_absolute('GET', '/v3/reporting/devices', query_string=query_string)
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res))
-        # outputs = parse_new_values_for_get_device_outputs(outputs, res)
         human_readable = tableToMarkdown(f'{INTEGRATION} devices list:', outputs, removeNull=True)
         return CommandResults(outputs_prefix='Absolute.Device',
                               outputs=outputs,
@@ -1196,14 +1197,6 @@ def main() -> None:  # pragma: no cover
         proxy = params.get('proxy', False)
 
         demisto.debug(f'Command being called is {demisto.command()}')
-
-        client_v3 = ClientV3(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            token_id=token_id,
-            secret_key=secret_key
-        )
 
         client_v3 = ClientV3(
             base_url=base_url,
