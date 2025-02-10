@@ -5,7 +5,6 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk import WebClient
 import json
-import logging
 import os
 import random
 import requests
@@ -22,9 +21,6 @@ class StatusCode(Enum):
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
-# Set default logging
-logging.basicConfig(level=logging.INFO)
 
 # Set integration parameters
 SLACK_BOT_TOKEN = demisto.params().get("bot_token", {}).get("password", "")
@@ -104,7 +100,7 @@ def map_status_code(status_code):
         return status_mapping.get(StatusCode(status_code), "Pending")
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 """
@@ -137,7 +133,7 @@ def convert_playbook_timeout(timeout="90 seconds"):
         return conversion
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 """Helper function is """
@@ -148,7 +144,7 @@ def find_list_by_listname(list_output, list_name):
     try:
         data_list = ast.literal_eval(list_output)
     except (ValueError, SyntaxError) as e:
-        logging.error(f"Error evaluating data: {e}")
+        demisto.error(f"Error evaluating data: {e}")
         return None  # Return None if there's an issue with parsing
 
     # Step 2: Search for the item with the matching id
@@ -173,7 +169,7 @@ def get_xsoar_list(list_name):
         api_response = demisto_client.generic_request_func(self=api_instance, path="/xsoar/lists", method="GET")
         return (find_list_by_listname(api_response[0], list_name))
     except ApiException as e:
-        logging.error("Exception when calling generic api: %s\n" % e)
+        demisto.error("Exception when calling generic api: %s\n" % e)
 
 
 """
@@ -192,13 +188,11 @@ def get_channel_id(channel_name, client):
             if channel["name"] == channel_name:
                 return channel["id"]
 
-        logging.info("Channel not found")
         demisto.debug("Channel not found")
         return None
 
     except Exception as e:
-        demisto.debug(f"Error fetching channels: {e}")
-        logging.error(f"Error fetching channels: {e}")
+        demisto.error(f"Error fetching channels: {e}")
         return None
 
 
@@ -238,7 +232,7 @@ def craft_incident_trigger_success_message(created_incident):
         return success_message
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 #############
@@ -284,7 +278,7 @@ def load_new_template():
         return loading_template
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 ################
@@ -307,7 +301,7 @@ def update_home_tab(client, event):
         )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("xsoar-help-app-home-button-click")
@@ -330,7 +324,7 @@ def xsoar_help_app_home_button_click(ack, body, client):
         )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("xsoar-create-ticket-app-home-button-click")
@@ -353,7 +347,7 @@ def xsoar_create_ticket_app_home(ack, body, client):
         )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("xsoar-indicator-actions-app-home-button-click")
@@ -376,7 +370,7 @@ def xsoar_indicator_actions_app_home(ack, body, client):
         )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 ######################
@@ -394,7 +388,7 @@ def say_wave(ack, message, say, body):
         say(text=f"Hi there, <@{user}>! Right back at ya! :wave:")
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.message("hello|hi|hey")
@@ -407,7 +401,7 @@ def say_hello(ack, message, say, body):
         say(text=f"Hi there, <@{user}>! Thanks for the greeting!")
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.message("help|need help|I need help")
@@ -430,7 +424,7 @@ def say_help(ack, message, say, body):
         say(blocks=help_blocks)
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 ######################
@@ -445,7 +439,7 @@ def say_mention(event, body, say):
         say(f"Hi there, thanks for thinking of me! :)")
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 ##############################################################################
@@ -480,7 +474,7 @@ def xsoar_help(ack, body, client):
         )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("xsoar-integration-docs-button-click")
@@ -490,7 +484,7 @@ def xsoar_integration_docs_button_click(ack, body):
         ack()
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("slack-bolt-docs-button-click")
@@ -500,7 +494,7 @@ def slack_bolt_docs_button_click(ack, body):
         ack()
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("block-kit-builder-button-click")
@@ -510,7 +504,7 @@ def block_kit_builder_button_click(ack, body):
         ack()
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("xsoar-aha-button-click")
@@ -520,7 +514,7 @@ def xsoar_aha_button_click(ack, body):
         ack()
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("xsoar-indicator-actions-help-button-click")
@@ -544,7 +538,7 @@ def xsoar_indication_actions_button_click(ack, body, client):
         )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("xsoar-create-ticket-help-button-click")
@@ -568,7 +562,7 @@ def xsoar_create_ticket_button_click(ack, body, client):
         )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 ##############################################################################
 
@@ -601,7 +595,7 @@ def xsoar_create_ticket(ack, body, client):
         )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("vendor-ticket-selection")
@@ -635,7 +629,7 @@ def vendor_ticket_selection(ack, body, client):
             )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.view("xsoar-create-ticket")
@@ -739,8 +733,7 @@ def view_xsoar_create_tickets_submission(ack, body, client, say):
         # Craft the failure message and send to user
         failure_response_blocks = get_xsoar_list(list_name="SlackIncidentTriggerFailure")
         say(channel=user_id, blocks=failure_response_blocks)
-        demisto.debug(f"Error: {e}")
-        logging.error(f"Error: {e}")
+        demisto.error(f"Error: {e}")
 
 
 ##############################################################################
@@ -773,7 +766,7 @@ def indicator_actions_command(ack, body, client, logger):
         )
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("indicator-select-action")
@@ -782,7 +775,7 @@ def indicator_action_selection(ack, body, logger):
         ack()
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.action("update-on-demand-only-action")
@@ -791,7 +784,7 @@ def update_on_demand_selection(ack, body, logger):
         ack()
 
     except Exception as e:
-        logging.error(e)
+        demisto.error(e)
 
 
 @app.view("xsoar-indicator-actions")
@@ -890,7 +883,7 @@ def view_xsoar_indicator_actions_submission(ack, body, client, say):
         # Craft the failure message and send to user
         failure_response_blocks = get_xsoar_list(list_name="SlackIncidentTriggerFailure")
         say(channel=user_id, blocks=failure_response_blocks)
-        logging.error(f"Error: {e}")
+        demisto.error(f"Error: {e}")
 
 
 ###############################################################################################################################################################################################################
