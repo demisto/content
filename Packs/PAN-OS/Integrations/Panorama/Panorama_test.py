@@ -3310,11 +3310,10 @@ class TestUniversalCommand:
 
         result = UniversalCommand.show_jobs(mock_topology)
         # Check all attributes of result data have values
-        for result_dataclass in result:
-            for key, value in result_dataclass.__dict__.items():
-                # Nullable Values
-                if key not in ["description", "user", "details", "warnings"]:
-                    assert value
+        for key, value in result.__dict__.items():
+            # Nullable Values
+            if key not in ["description", "user", "details", "warnings"]:
+                assert value
 
     @patch("Panorama.run_op_command")
     @patch("Panorama.demisto.debug")
