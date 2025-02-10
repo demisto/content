@@ -1,13 +1,10 @@
 category: Data Enrichment & Threat Intelligence
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 commonfields:
   id: Cortex XDR - IOC
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - display: Server URL
   name: url
