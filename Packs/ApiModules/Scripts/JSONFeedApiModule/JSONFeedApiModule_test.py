@@ -591,3 +591,28 @@ def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_pass
 
     client.build_iterator(feed={}, feed_name="https://api.github.com/meta")
     assert mock_session.call_args[1].get('headers') == expected_result
+
+def test_build_iterator__result_is_none(mocker):
+    """
+    Given
+        - A mock response of the JSONFeedApiModule.jmespath.search function with no indicators (response = None)
+    When
+        - Running the build_iterator method.
+    Then
+        - Verify that the returned result is an empty list and that a debug log of "no results found" is added.
+
+    """
+    feed_name = 'mock_feed_name'
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mocker.patch('JSONFeedApiModule.jmespath.search', return_value=None)
+    
+    with requests_mock.Mocker() as m:
+        m.get('https://api.github.com/meta', status_code=200, json="{'test':'1'}")
+
+        client = Client(
+            url='https://api.github.com/meta'
+        )
+        result, _ = client.build_iterator(feed={'url': 'https://api.github.com/meta'}, feed_name=feed_name)
+        assert result == []
+        assert "No results found - retrieved data is: {'test':'1'}" in demisto.debug.call_args[0][0]
