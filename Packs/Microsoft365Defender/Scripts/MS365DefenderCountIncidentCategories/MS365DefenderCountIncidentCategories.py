@@ -15,7 +15,7 @@ def count_dict(value: str) -> List[dict]:
     return [{'category': key, 'count': value} for key, value in dict(Counter(categories)).items()]
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(count_dict(**demisto.args()))
     except Exception as e:
