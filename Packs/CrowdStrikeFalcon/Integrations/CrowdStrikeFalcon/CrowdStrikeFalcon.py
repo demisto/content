@@ -325,7 +325,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
     'every four weeks': 28,
     'monthly': 30,
 }
-
+mail = "Weyland-Yutani@us.abb.com"
 
 class IncidentType(Enum):
     INCIDENT = 'inc'
