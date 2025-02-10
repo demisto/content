@@ -439,7 +439,7 @@ def update_custom_device_field_command(args, client) -> CommandResults:
 
     payload = [{'cdfUid': cdf_uid, 'cdfFieldValue': field_value}]
     client.api_request_absolute('PUT', f'/v3/configurations/customfields/devices/{device_id}',
-                                body=payload, resp_type="response")
+                                body=payload, success_status_code=[202], resp_type="response")
     return CommandResults(readable_output=f"Device {device_id} with value {field_value} was updated successfully.")
 
 
