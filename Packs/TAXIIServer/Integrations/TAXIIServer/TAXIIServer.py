@@ -711,6 +711,7 @@ def get_port(params: dict = demisto.params()) -> int:
     return port
 
 
+
 def get_collections(params: dict = demisto.params()) -> dict:
     """
     Gets the indicator query collections from the integration parameters.
