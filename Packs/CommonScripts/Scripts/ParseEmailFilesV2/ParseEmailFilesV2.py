@@ -28,7 +28,7 @@ def remove_bom(file_path: str, file_type: str, file_name: str) -> tuple[str, Opt
         file_name = cleaned_file_path.name
         return str(cleaned_file_path), mime_type, file_name
     else:  # keep the exists behaviour (without BOM)
-        file_path, file_type, file_name
+        return file_path, file_type, file_name
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False) -> str:
