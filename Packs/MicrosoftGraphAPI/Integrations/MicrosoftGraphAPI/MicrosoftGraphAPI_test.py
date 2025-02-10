@@ -189,6 +189,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
 
+
 @pytest.mark.parametrize("headers, expected_headers", [
     ("ConsistencyLevel:eventual,User-Agent:MyApp/1.0", {
         "ConsistencyLevel": "eventual",
