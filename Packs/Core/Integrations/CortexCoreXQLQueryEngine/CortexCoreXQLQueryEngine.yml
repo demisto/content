@@ -1415,6 +1415,8 @@ script:
       description: The result product.
       type: String
   - arguments:
+    - description: delete menu.
+      name: delete
     - description: XDR endpoint ID to run the query on.
       isArray: true
       name: endpoint_id
