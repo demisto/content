@@ -815,7 +815,6 @@ def search_quarantine():
     }
 
     incidents_list = get_incidents_batch_by_time_request(request_params)
-    demisto.debug(f'PTR {incidents_list=}')
 
     found = {'email': False, 'mid': False, 'quarantine': False}
     resQ = []
