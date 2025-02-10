@@ -170,13 +170,8 @@ When closing incidents from XSOAR to Microsoft 365 Defender, the following logic
 1. **General Status Update**:  
    When an incident is marked as closed in XSOAR, the `status` field in Microsoft 365 Defender will always be set to **Resolved**.  
 
-2. **Close Reason: Resolved**  
-  If the **Close Reason** in XSOAR is **Resolved**, the **Microsoft 365 Defender Classification** field is mirrored to classification and determination fields **as-is** into Microsoft 365 Defender without any changes.  
-
-3. **Close Reason: False Positive**  
-   If the **Close Reason** in XSOAR is **FalsePositive**, but the `classification` field does not already equal `FalsePositive`, the following updates occur:  
-   * **classification** → `FalsePositive`  
-   * **determination** → `Other`  
+2. **Close Reason: Resolved or False Positive**  
+  If the **Close Reason** in XSOAR is **Resolved**, the **Microsoft 365 Defender Classification** field is mirrored to classification and determination fields **as-is** into Microsoft 365 Defender without any changes.
 
 3. **Close Reason: Other or Duplicate**  
    If the **Close Reason** in XSOAR is either **Other** or **Duplicate**, the following updates occur:  
