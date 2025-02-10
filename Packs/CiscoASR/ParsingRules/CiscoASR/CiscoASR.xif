@@ -1,12 +1,14 @@
 [INGEST:vendor="cisco", product="asr", target_dataset="cisco_asr_raw", no_hit=keep]
-// Support only date time of format: MMM dd hh:mm:ss.nnn or format: yyyy MMM dd hh:mm:ss.nnn TZ. For example: "2021 Jan 01 10:00:00.123 UTC".
+/*
+ This parsing rule supports only date time of the following formats: MMM dd hh:mm:ss.nnn / yyyy MMM dd hh:mm:ss.nnn TZ / MMM  dd yyyy hh:mm:ss.nnn TZ. For example: "2021 Jan 01 10:00:00.123 UTC".
+*/
 filter _raw_log ~= "\:[^\:]+\s\d{2}:\d{2}:\d{2}[^\:]+\:"
 | alter
     tmp_get_log_datetime = arraystring(regextract(_raw_log, "\:([^\:]+\s\d{2}:\d{2}:\d{2}[^\:]+)\:"), "")
 | alter
     tmp_get_year = if(tmp_get_log_datetime ~= "\d{4}", arraystring(regextract(tmp_get_log_datetime, "\d{4}"), ""), "1970"),
     tmp_get_time_milli = arraystring(regextract(tmp_get_log_datetime, "\d{2}:\d{2}:\d{2}\.\d{3}"), ""),
-    tmp_get_month_day = arraystring(regextract(tmp_get_log_datetime, "(\S+\s\d+)\s"), "")
+    tmp_get_month_day = arraystring(regextract(tmp_get_log_datetime, "(\w+\s+\d+)\s"), "")
 | alter
     tmp_full_timestamp = arraystring(arraycreate(tmp_get_year, tmp_get_month_day, tmp_get_time_milli), " ")
 | alter
