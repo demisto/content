@@ -515,33 +515,53 @@ class EWSClient:
 
         :return: exchangelib Folder
         """
-        if account is None:
-            account = self.get_account()
-        # handle exchange folder id
-        if len(path) == FOLDER_ID_LEN:
-            folders_map = account.root._folders_map
-            if path in folders_map:
-                return account.root._folders_map[path]
+        demisto.debug(f'get_folder_by_path | args: {path=}, {account=}, {is_public=}')
+        try:
+            if account is None:
+                demisto.debug('account is None')
+                account = self.get_account()
+                demisto.debug(f'{account=}')
+            # handle exchange folder id
+            if len(path) == FOLDER_ID_LEN:
+                folders_map = account.root._folders_map
+                demisto.debug(f'{folders_map=}')
+                if path in folders_map:
+                    demisto.debug(f'{account.root._folders_map[path]=}')
+                    return account.root._folders_map[path]
 
-        if is_public:
-            folder = account.public_folders_root
-        elif self.version == 'O365' and path == 'AllItems':
-            # AllItems is only available on Office365, directly under root
-            folder = account.root
-        else:
-            # Default, contains all of the standard folders (Inbox, Calendar, trash, etc.)
-            folder = account.root.tois
+            if is_public:
+                demisto.debug('if is_public')
+                folder = account.public_folders_root
+                demisto.debug(f'{folder=}')
+            elif self.version == 'O365' and path == 'AllItems':
+                demisto.debug('elif self.version == 'O365' and path == 'AllItems'')
+                # AllItems is only available on Office365, directly under root
+                folder = account.root
+                demisto.debug(f'{folder=}')
+            else:
+                demisto.debug('else')
+                # Default, contains all of the standard folders (Inbox, Calendar, trash, etc.)
+                folder = account.root.tois
+                demisto.debug(f'{folder=}')
 
-        path = path.replace('/', '\\')
-        path_parts = path.split('\\')
-        for part in path_parts:
-            try:
-                demisto.debug(f'resolving {part=} {path_parts=}')
-                folder = folder // part
-            except Exception as e:
-                demisto.debug(f'got error {e}')
-                raise ValueError(f'No such folder {path_parts}')
-        return folder
+            demisto.debug(f'path before .replace: {path=}')
+            path = path.replace('/', '\\')
+            demisto.debug(f'path after .replace: {path=}')
+            path_parts = path.split('\\')
+            demisto.debug(f'{path_parts=}')
+            for part in path_parts:
+                try:
+                    demisto.debug(f'resolving {part=} {path_parts=}')
+                    folder = folder // part
+                    demisto.debug(f'{folder=}')
+                except Exception as e:
+                    demisto.debug(f'got error {e}')
+                    raise ValueError(f'No such folder {path_parts}')
+            return folder
+        except Exception as e:
+            demisto.debug("Exception | " + str(e))
+            raise e
+
 
     def send_email(self, message: Message):
         """
