@@ -15,6 +15,6 @@ args:
   description: "The name of the incident custom field of type date"
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No tests (auto formatted)
