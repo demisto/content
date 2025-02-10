@@ -837,7 +837,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Un
                 formatted_indicators.write(new_line + domain)
                 new_line = '\n'
 
-        if ioc_type in [FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR] and is_large_cidr(indicator, 
+        if ioc_type in [FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR] and is_large_cidr(indicator,
                                                                                               request_args.maximum_cidr_size):
             log_stats = log_indicator_line(raw_indicator=indicator_raw,
                                            indicator=indicator,
