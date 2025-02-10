@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+  - Connect
+  - Collect
 commonfields:
   id: Cortex XDR - IOC
   version: -1
@@ -11,33 +14,39 @@ configuration:
   required: true
   type: 0
   additionalinfo: Copy API URL from Cortex XDR
+  section: Connect
 - display: ''
   name: apikey_id_creds
   type: 9
   displaypassword: API Key ID
   hiddenusername: true
   required: true
+  section: Connect
 - display: ''
   name: apikey_creds
   type: 9
   displaypassword: API Key
   hiddenusername: true
   required: true
+  section: Connect
 - display: API Key ID
   name: apikey_id
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API Key
   name: apikey
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Fetch indicators
   name: feed
   type: 8
   defaultvalue: 'true'
   required: false
+  section: Collect
 - defaultvalue: '15'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -103,6 +112,7 @@ configuration:
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
+  section: Collect
 - display: 'Traffic Light Protocol Color'
   name: tlp_color
   type: 15
@@ -113,6 +123,7 @@ configuration:
   - WHITE
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   required: false
+  section: Collect
 - display: ''
   name: feedExpirationPolicy
   type: 17
@@ -121,10 +132,12 @@ configuration:
   - interval
   - indicatorType
   required: false
+  section: Collect
 - display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
 - display: Incremental Feed
   name: feedIncremental
   type: 8
@@ -147,7 +160,6 @@ configuration:
   - indicator_link
   - comments
   type: 16
-  section: Collect
   advanced: true
   required: false
 - additionalinfo: If left blank, the original severity level of the indicator will be used.
@@ -194,6 +206,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  section: Connect
 description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Cortex XDR - IOC
 name: Cortex XDR - IOC
@@ -252,7 +265,7 @@ script:
       required: true
     description: Disables IOCs in the XDR server.
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'

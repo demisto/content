@@ -19,26 +19,26 @@ def util_load_bytes_file(path: str):
 
 
 @patch.object(JiraBaseClient, '__abstractmethods__', set())
-def jira_base_client_mock(username: str = "", api_key: str = "") -> JiraBaseClient:
+def jira_base_client_mock(username: str = "", api_key: str = "", pat: str = "") -> JiraBaseClient:
     """The way to mock an abstract class is using the trick @patch.object(Abstract_Class, __abstractmethods__, set()),
     since Python, behind the scenes, checks the __abstractmethods__ property, which contains a set of the names of all
     the abstract methods defined on the abstract class, if it is not empty, we won't be able to instantiate the abstract class,
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
     return JiraBaseClient(base_url='dummy_url', proxy=False, verify=False, callback_url='dummy_callback',
-                          api_version='999', username=username, api_key=api_key)
+                          api_version='999', username=username, api_key=api_key, pat=pat)
 
 
 def jira_cloud_client_mock() -> JiraCloudClient:
     return JiraCloudClient(proxy=False, verify=False, client_id='dummy_client_id',
                            client_secret='dummy_secret', callback_url='dummy_url', cloud_id='dummy_cloud_id',
-                           server_url='dummy_server_url', username="", api_key="")
+                           server_url='dummy_server_url', username="", api_key="", pat="")
 
 
 def jira_onprem_client_mock() -> JiraOnPremClient:
     return JiraOnPremClient(proxy=False, verify=False, client_id='dummy_client_id',
                             client_secret='dummy_secret', callback_url='dummy_url',
-                            server_url='dummy_server_url', username="", api_key="")
+                            server_url='dummy_server_url', username="", api_key="", pat="")
 
 
 def test_v2_args_to_v3():
@@ -230,26 +230,28 @@ def test_get_issue_id_or_key(issue_id, issue_key, expected_issue_id_or_key):
 
 
 @pytest.mark.parametrize(
-    "username, api_key",
+    "username, api_key, pat",
     [
         (
             "dummy_username",
             "dummy_api_key",
+            ""
         ),
-        ("", ""),
+        ("", "", ""),
+        ("", "", "dummy_pat"),
     ],
 )
-def test_http_request(mocker, username: str, api_key: str):
+def test_http_request(mocker, username: str, api_key: str, pat: str):
     """
     Given:
-        - username and api_key
+        - username, api_key and pat
     When:
         - run http_request method
     Then:
         - Ensure when the username and api_key are provided then only the 'get_headers_with_basic_auth' method is called
         - Ensure when the username and api_key are not provided then only the 'get_headers_with_access_token' method is called
     """
-    client = jira_base_client_mock(username=username, api_key=api_key)
+    client = jira_base_client_mock(username=username, api_key=api_key, pat=pat)
 
     basic_auth_mock = mocker.patch.object(
         client, "get_headers_with_basic_auth", return_value={}
@@ -279,6 +281,21 @@ def test_test_module_basic_auth(mocker):
     assert test_module(client) == "ok"
 
 
+def test_test_module_pat(mocker):
+    """
+    Given:
+        - mock client with personal access token (pat)
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure no error is raised, and return `ok`
+    """
+    from JiraV3 import test_module
+    client = jira_base_client_mock(pat="dummy_pat")
+    mocker.patch.object(client, "test_instance_connection")
+    assert test_module(client) == "ok"
+
+
 def test_module_oauth2(mocker):
     """
     Given:
@@ -302,33 +319,51 @@ def test_module_oauth2(mocker):
     "params, expected_exception",
     [
         pytest.param(
-            {"username": "", "api_key": "", "client_id": "", "client_secret": ""},
+            {
+                "username": "",
+                "api_key": "",
+                "client_id": "",
+                "client_secret": "",
+                "pat": "",
+            },
             "The required parameters were not provided. See the help window for more information.",
-            id="no auth params provided"
+            id="no auth params provided",
         ),
         pytest.param(
             {
                 "username": "dummy_username",
                 "api_key": "dummy_api_key",
                 "client_id": "dummy_client_id",
-                "client_secret": "dummy_client_secret"
+                "client_secret": "dummy_client_secret",
+                "pat": "dummy_pat",
             },
-            "The `User name` or `API key` parameters cannot be provided together"
-            " with the `Client ID` or `Client Secret` parameters. See the help window"
-            " for more information.",
-            id="both types of auth params are provided"
+            "The `User name` or `API key` parameters cannot be provided together with the `Client ID` or `Client Secret`"
+            " parameters or with the `Personal Access Token` parameters. See the help window for more information.",
+            id="multiple types of auth params are provided",
         ),
         pytest.param(
-            {"username": "dummy_username", "api_key": "", "client_id": "", "client_secret": ""},
+            {
+                "username": "dummy_username",
+                "api_key": "",
+                "client_id": "",
+                "client_secret": "",
+                "pat": "",
+            },
             "To use basic authentication, the 'User name' and 'API key' parameters are mandatory",
-            id="only `username` parameter was provided"
+            id="only `username` parameter was provided",
         ),
         pytest.param(
-            {"username": "", "api_key": "", "client_id": "dummy_client_id", "client_secret": ""},
+            {
+                "username": "",
+                "api_key": "",
+                "client_id": "dummy_client_id",
+                "client_secret": "",
+                "pat": "",
+            },
             "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory",
-            id="only `client_id` parameter was provided"
-        )
-    ]
+            id="only `client_id` parameter was provided",
+        ),
+    ],
 )
 def test_validate_params_failure(params: dict[str, str], expected_exception: str):
     """
@@ -352,7 +387,8 @@ def test_validate_params_failure(params: dict[str, str], expected_exception: str
                 "username": "dummy_username",
                 "api_key": "dummy_api_key",
                 "client_id": "",
-                "client_secret": ""
+                "client_secret": "",
+                "pat": ""
             },
             id="Only basic auth params were provided"
         ),
@@ -361,9 +397,20 @@ def test_validate_params_failure(params: dict[str, str], expected_exception: str
                 "username": "",
                 "api_key": "",
                 "client_id": "dummy_client_id",
-                "client_secret": "dummy_client_secret"
+                "client_secret": "dummy_client_secret",
+                "pat": ""
             },
             id="Only oauth2 params were provided oauth2"
+        ),
+        pytest.param(
+            {
+                "username": "",
+                "api_key": "",
+                "client_id": "",
+                "client_secret": "",
+                "pat": "dummy_pat_secret"
+            },
+            id="Only pat param was provided pat"
         )
     ]
 )

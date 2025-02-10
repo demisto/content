@@ -37,7 +37,7 @@ The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (
 | Mapper (incoming) | Determines how indicators fields from Cortex XDR are mapped to Cortex XSOAR indicator's fields. | False|
 | Feed Fetch Interval | Feed Fetch Interval (make sure to set it to at least 15 minutes). | False |
 | Sync Query | The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR. | True |
-| Tags | Supports CSV values. | False|
+| Tags | Appears in Cortex XSOAR if a modification was made on the Cortex XDR side and is being "mirrored" to Cortex XSOAR. Supports CSV values. | False |  
 | Auto Sync | When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators. | False |
 | Indicator Reputation | Indicator Reputation. | False |
 | XSOAR Severity Field | The Cortex XSOAR indicator field used as severity. | True |
