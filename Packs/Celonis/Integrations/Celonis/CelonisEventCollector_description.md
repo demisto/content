@@ -7,15 +7,15 @@ https://developer.celonis.com/celonis-apis/audit-log-api/#creating-an-applicatio
 https://docs.celonis.com/en/using-oauth-2-0.html
 
 1. To start, you need to create an OAuth client in your team and then grant this client API permissions.
-2. Click Admin & Settings and select Applications.
-3. Click Add New Application - OAuth client and create your OAuth client.
+2. Click **Admin & Settings** and select **Applications**.
+3. Click **Add New Application - OAuth client** and create your OAuth client.
 When creating your OAuth client, use the following configurations: **Authentication method: Client secret post**.
-4. Scopes to select:
+4. Select the following scopes:
    - **audit.log:read (For the Audit Log API)**.
    - **platform-adoption.tracking-events:read** (For the Studio Adoption API).
    - **team.login-history:read** (For the Login History API).
-5. Click Create and then copy the client ID and client secret to your clipboard for later use.
-6. Click Permissions and edit Team permissions.
-7. Assign Audit Log API, Login History API, and Studio Adoption APIs permissions to your newly created application as required.
-8. Click Save.
-9. The OAuth client now has the relevant API permissions. 
+5. Click **Create** and then copy the client ID and client secret to your clipboard for later use.
+6. Click **Permissions** and edit Team permissions.
+7. Assign **Audit Log API**, ***Login History API**, and **Studio Adoption APIs** permissions to your newly created application as required.
+8. Click **Save**.
+The OAuth client now has the relevant API permissions. 
