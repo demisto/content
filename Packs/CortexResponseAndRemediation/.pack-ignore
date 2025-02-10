@@ -1,3 +1,6 @@
+[file:playbook-Azure_AD_account_unlock_or_password_reset.yml]
+ignore=GR103
+
 [file:playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace.yml]
 ignore=PB106
 
@@ -10,6 +13,10 @@ ignore=GR103
 
 # See CIAC-7711, CIAC-11954
 [file:playbook-Suspicious_Local_Administrator_Login.yml]
+ignore=GR103
+
+# See CIAC-7711, CIAC-11954
+[file:silent-playbook-MFA_was_disabled_for_an_Azure_identity.yml]
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
