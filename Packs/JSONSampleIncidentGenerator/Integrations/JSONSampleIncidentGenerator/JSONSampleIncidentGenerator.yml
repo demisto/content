@@ -37,7 +37,7 @@ script:
       name: value
     description: Read the provided JSON and return the results to the Context and Warroom.  Can use key and value arg to change a JSON values if desired.
     name: json-sample-incident-generator-command
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   script: ''
   subtype: python3

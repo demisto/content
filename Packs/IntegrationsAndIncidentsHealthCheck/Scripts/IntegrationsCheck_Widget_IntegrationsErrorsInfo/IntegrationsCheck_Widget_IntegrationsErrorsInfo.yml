@@ -2,7 +2,7 @@ comment: Data output script for populating the dashboard table graph widget with
 commonfields:
   id: IntegrationsCheck-Widget-IntegrationsErrorsInfo
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: IntegrationsCheck-Widget-IntegrationsErrorsInfo
 runas: DBotWeakRole
