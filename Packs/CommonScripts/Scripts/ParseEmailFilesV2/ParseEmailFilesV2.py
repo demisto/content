@@ -9,19 +9,26 @@ logger = logging.getLogger('parse-email')  # type: ignore[assignment]
 logger.addHandler(DemistoHandler)  # type: ignore[attr-defined]
 
 
-def remove_bom(file_path: str) -> tuple[str, Optional[str], str]:
+def remove_bom(file_path: str, file_type: str, file_name: str) -> tuple[str, Optional[str], str]:
+    """
+    Removes the Byte Order Mark (BOM) from a file, saves the cleaned content,
+    and returns the path to the cleaned file, its MIME type, and its file name.
+    If no BOM, keep the previous behaviour.
+    """
     path = Path(file_path)
     content = path.read_bytes()
     if content.startswith(b'\xef\xbb\xbf'):
         content = content[3:]
-    # Write the cleaned content to a new file or overwrite the original file
-    cleaned_file_path = path.with_name('cleaned_' + path.name)
-    cleaned_file_path.write_bytes(content)
-    # Get the MIME type
-    mime_type, _ = mimetypes.guess_type(cleaned_file_path)
-    # Get the file name
-    file_name = cleaned_file_path.name
-    return str(cleaned_file_path), mime_type, file_name
+        # Write the cleaned content to a new file or overwrite the original file
+        cleaned_file_path = path.with_name('cleaned_' + path.name)
+        cleaned_file_path.write_bytes(content)
+        # Get the MIME type
+        mime_type, _ = mimetypes.guess_type(cleaned_file_path)
+        # Get the file name
+        file_name = cleaned_file_path.name
+        return str(cleaned_file_path), mime_type, file_name
+    else:  # keep the exists behaviour (without BOM)
+        file_path, file_type, file_name
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False) -> str:
@@ -158,7 +165,7 @@ def main():
     demisto.debug(f'{file_type=}, {file_path=}, {file_name=}')
 
     # Remove BOM and parse the email
-    cleaned_file_path, file_type, file_name = remove_bom(file_path)
+    cleaned_file_path, file_type, file_name = remove_bom(file_path, file_type, file_name)
 
     try:
         email_parser = EmailParser(file_path=cleaned_file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,

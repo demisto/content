@@ -381,14 +381,14 @@ def test_md_output_empty_body_text():
         'Text': None
     }
     expected = '### Results:\n' \
-               u'* From:\temail2@paloaltonetworks.com\n' \
-               u'* To:\temail1@paloaltonetworks.com\n' \
-               u'* CC:\t\n' \
-               u'* BCC:\t\n' \
-               u'* Subject:\t\n' \
-               u'* Attachments:\t\n\n\n' \
-               u'### HeadersMap\n' \
-               u'**No entries.**\n'
+               '* From:\temail2@paloaltonetworks.com\n' \
+               '* To:\temail1@paloaltonetworks.com\n' \
+               '* CC:\t\n' \
+               '* BCC:\t\n' \
+               '* Subject:\t\n' \
+               '* Attachments:\t\n\n\n' \
+               '### HeadersMap\n' \
+               '**No entries.**\n'
 
     md = data_to_md(email_data)
     assert expected == md
@@ -398,14 +398,14 @@ def test_md_output_empty_body_text():
         'From': 'email2@paloaltonetworks.com',
     }
     expected = '### Results:\n' \
-               u'* From:\temail2@paloaltonetworks.com\n' \
-               u'* To:\temail1@paloaltonetworks.com\n' \
-               u'* CC:\t\n' \
-               u'* BCC:\t\n' \
-               u'* Subject:\t\n' \
-               u'* Attachments:\t\n\n\n' \
-               u'### HeadersMap\n' \
-               u'**No entries.**\n'
+               '* From:\temail2@paloaltonetworks.com\n' \
+               '* To:\temail1@paloaltonetworks.com\n' \
+               '* CC:\t\n' \
+               '* BCC:\t\n' \
+               '* Subject:\t\n' \
+               '* Attachments:\t\n\n\n' \
+               '### HeadersMap\n' \
+               '**No entries.**\n'
 
     md = data_to_md(email_data)
     assert expected == md
@@ -428,15 +428,15 @@ def test_md_output_with_body_text():
         'Text': '<email text>'
     }
     expected = '### Results:\n' \
-               u'* From:\temail2@paloaltonetworks.com\n' \
-               u'* To:\temail1@paloaltonetworks.com\n' \
-               u'* CC:\t\n' \
-               u'* BCC:\t\n' \
-               u'* Subject:\t\n' \
-               u'* Body/Text:\t[email text]\n' \
-               u'* Attachments:\t\n\n\n' \
-               u'### HeadersMap\n' \
-               u'**No entries.**\n'
+               '* From:\temail2@paloaltonetworks.com\n' \
+               '* To:\temail1@paloaltonetworks.com\n' \
+               '* CC:\t\n' \
+               '* BCC:\t\n' \
+               '* Subject:\t\n' \
+               '* Body/Text:\t[email text]\n' \
+               '* Attachments:\t\n\n\n' \
+               '### HeadersMap\n' \
+               '**No entries.**\n'
 
     md = data_to_md(email_data)
     assert expected == md
