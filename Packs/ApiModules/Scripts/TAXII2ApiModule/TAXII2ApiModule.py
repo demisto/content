@@ -379,8 +379,8 @@ class XSOAR2STIXParser:
         else:
             demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
             return {}
-        date_added = arg_to_datetime(xsoar_indicator.get('timestamp'), is_utc=False)
-        version = arg_to_datetime(xsoar_indicator.get('modified'), is_utc=False)
+        date_added = arg_to_datetime(xsoar_indicator.get('timestamp'))
+        version = arg_to_datetime(xsoar_indicator.get('modified'))
         demisto.debug(f"T2API: create_manifest_entry {xsoar_indicator.get('timestamp')=} {xsoar_indicator.get('modified')=}")
         entry = {
             'id': stix_id,
@@ -421,12 +421,12 @@ class XSOAR2STIXParser:
             return {}, {}, {}
 
         demisto.debug(f"T2API: {xsoar_indicator=}")
-        timestamp_datetime = arg_to_datetime(xsoar_indicator.get('timestamp', ''), is_utc=False)
+        timestamp_datetime = arg_to_datetime(xsoar_indicator.get('timestamp', ''))
         created_parsed = timestamp_datetime.strftime(STIX_DATE_FORMAT) if timestamp_datetime else ''
         demisto.debug(f"T2API: {created_parsed=}")
 
         try:
-            modified_datetime = arg_to_datetime(xsoar_indicator.get('modified', ''), is_utc=False)
+            modified_datetime = arg_to_datetime(xsoar_indicator.get('modified', ''))
             modified_parsed = modified_datetime.strftime(STIX_DATE_FORMAT) if modified_datetime else ''
             demisto.debug(f"T2API: {modified_parsed=}")
         except Exception:
@@ -568,7 +568,7 @@ class XSOAR2STIXParser:
         """
         try:
             demisto.debug(f"T2API: convert_sco_to_indicator_sdo {xsoar_indicator.get('expiration')=}")
-            expiration_datetime = arg_to_datetime(xsoar_indicator.get('expiration'), is_utc=False)
+            expiration_datetime = arg_to_datetime(xsoar_indicator.get('expiration'))
             expiration_parsed = expiration_datetime.strftime(STIX_DATE_FORMAT) if expiration_datetime else ''
             demisto.debug(f"T2API: convert_sco_to_indicator_sdo {expiration_parsed=}")
         except Exception:
@@ -739,8 +739,8 @@ class XSOAR2STIXParser:
                 continue
             try:
                 demisto.debug(f"T2API: in create_relationships_objects {relationship=}")
-                created_datetime = arg_to_datetime(relationship.get('createdInSystem'), is_utc=False)
-                modified_datetime = arg_to_datetime(relationship.get('modified'), is_utc=False)
+                created_datetime = arg_to_datetime(relationship.get('createdInSystem'))
+                modified_datetime = arg_to_datetime(relationship.get('modified'))
                 created_parsed = created_datetime.strftime(STIX_DATE_FORMAT) if created_datetime else ''
                 modified_parsed = modified_datetime.strftime(STIX_DATE_FORMAT) if modified_datetime else ''
                 demisto.debug(f"T2API: {created_parsed=} {modified_parsed=}")
