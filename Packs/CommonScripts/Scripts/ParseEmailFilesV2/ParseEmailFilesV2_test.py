@@ -614,8 +614,8 @@ def test_remove_bom(self):
         cleaned_content = cleaned_file.read()
 
     # Assert that the BOM has been removed
-    self.assertFalse(cleaned_content.startswith(b'\xef\xbb\xbf'))
-    self.assertEqual(cleaned_content, b'This is a test file with BOM.')
+    assert not cleaned_content.startswith(b'\xef\xbb\xbf')
+    assert cleaned_content == b'This is a test file with BOM.'
 
     # Clean up temporary files
     Path(temp_file_path).unlink()
