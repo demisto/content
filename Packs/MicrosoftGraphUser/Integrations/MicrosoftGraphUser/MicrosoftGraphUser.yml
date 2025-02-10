@@ -61,6 +61,7 @@ configuration:
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   type: 4
+  section: Connect
   hidden: true
   required: false
 - display: Certificate Thumbprint
@@ -98,6 +99,7 @@ configuration:
   required: false
 - name: creds_auth_code
   type: 9
+  section: Connect
   displaypassword: Authorization code (for Self Deployed - Authorization Code Flow)
   hiddenusername: true
   required: false
