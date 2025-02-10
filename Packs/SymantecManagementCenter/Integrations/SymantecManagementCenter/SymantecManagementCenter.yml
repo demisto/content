@@ -521,7 +521,7 @@ script:
       name: description
     description: Updates content in a policy in Symantec MC.
     name: symantec-mc-update-policy-content
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: ''
   type: python
