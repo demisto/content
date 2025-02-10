@@ -620,3 +620,30 @@ def test_remove_bom():
     # Clean up temporary files
     Path(temp_file_path).unlink()
     Path(cleaned_file_path).unlink()
+
+def test_remove_bom_no_bom():
+    """
+    Given:
+        an eml file which does not contain BOM
+    When:
+        executing the remove_bom function
+    Then:
+        - Ensure the all arguments were sent to remove_bom, remained as they are (file_path, file_type, file_name)
+    """
+    from ParseEmailFilesV2 import remove_bom
+
+    # Create a temporary file with BOM
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(b'This is a test file with BOM.')
+        temp_file_path = temp_file.name
+
+    # Call the remove_bom function
+    cleaned_file_path, file_type, file_name = remove_bom(temp_file_path, "message/rfc822", temp_file_path)
+
+    # Assert all arguments remained as they are
+    assert cleaned_file_path == temp_file_path
+    assert file_type == "message/rfc822"
+    assert temp_file_path == file_name
+
+    # Clean up temporary files
+    Path(temp_file_path).unlink()
