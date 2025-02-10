@@ -1,6 +1,9 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 commonfields:
-  id: Celonis
+  id: CelonisEventCollector
   version: -1
 configuration:
 - defaultvalue: https://<teamname>.<realm>.celonis.cloud
@@ -37,7 +40,7 @@ configuration:
   advanced: true
 description: 'Celonis Event Collector is an integration that supports fetching audit log events.'
 display: Celonis
-name: Celonis
+name: CelonisEventCollector
 script:
   commands:
   - name: celonis-get-events
