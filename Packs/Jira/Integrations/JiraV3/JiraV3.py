@@ -1295,7 +1295,7 @@ class JiraIssueFieldsParser:
         # Since the description can be returned in Atlassian Document Format
         # (which holds nested dictionaries that includes the content and also metadata about it), we check if the response
         # returns the fields rendered in HTML format (by accessing the renderedFields).
-        rendered_issue_fields = issue_data.get('renderedFields', {})
+        rendered_issue_fields = issue_data.get('renderedFields', {}) or {}
 
         if rendered_issue_fields:
             description_raw = rendered_issue_fields.get('description', '')
