@@ -621,6 +621,7 @@ def test_remove_bom():
     Path(temp_file_path).unlink()
     Path(cleaned_file_path).unlink()
 
+
 def test_remove_bom_no_bom():
     """
     Given:
