@@ -34,8 +34,8 @@ Retrieves a list of audit logs events from the Celonis instance.
 | --- | --- | --- |
 | should_push_events | Set this argument to true in order to create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
 | limit | Maximum number of events to return. | Required | 
-| start_date | The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS" or "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z. | Required | 
-| end_date | The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS" or "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z. | Required | 
+| start_date | The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z. | Required | 
+| end_date | The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z. | Required | 
 
 #### Context Output
 
