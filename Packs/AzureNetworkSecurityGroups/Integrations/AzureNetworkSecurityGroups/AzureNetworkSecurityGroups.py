@@ -206,9 +206,6 @@ def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> No
         data (Dict): nested dict
         inner_dict_key (str): the key to extract by
         fields (List, optional): specific fields from the inner dict to extract. Defaults to [].
-
-    Returns:
-        Dict: reformat data: {'key1': 'value1', 'key3': 'value3'}
     """
     inner_dict = data.get(inner_dict_key, {})
     for key in inner_dict:
@@ -225,14 +222,10 @@ def extract_list(data: Dict, list_key: str, property_name: str, field_name: str 
         list_key (str): the key of the list
         property_name (str): the property to extract
         field_name (str, optional): new name for the dict key
-
-    Returns:
-        Dict: the reformated data
     """
     properties = [item[property_name] for item in data.get(list_key, []) if property_name in item]
     if properties:
         data[field_name or property_name] = properties
-    return data
 
 
 def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List = []) -> None:
@@ -701,7 +694,8 @@ def azure_nsg_security_group_create_command(client: AzureNSGClient, params: Dict
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.create_or_update_security_group_request(subscription_id=subscription_id, resource_group_name=resource_group_name,
+    response = client.create_or_update_security_group_request(subscription_id=subscription_id,
+                                                              resource_group_name=resource_group_name,
                                                               security_group_name=security_group_name, location=location)
     outputs = deepcopy(response)
     reformat_data(outputs, dict_to_extract=[('properties', 'securityRules')])
@@ -818,13 +812,16 @@ def azure_nsg_network_interfaces_create_command(client: AzureNSGClient, params: 
     }
 
     if nsg_name:
-        data['properties']['networkSecurityGroup'] = {'id': f'{prefix}networkSecurityGroups/{nsg_name}'}
-    if private_ip:
-        data['properties']['ipConfigurations'][0]['properties']['privateIPAddress'] = private_ip
-    if public_ip_address_name:
-        data['properties']['ipConfigurations'][0]['properties']['publicIPAddress'] = {'id': public_ip_address_name}
+        data['properties'].update({'networkSecurityGroup': {'id': f'{prefix}networkSecurityGroups/{nsg_name}'}})
 
-    response = client.create_or_update_network_interface_request(subscription_id=subscription_id, resource_group_name=resource_group_name,
+    conf_properties = data['properties']['ipConfigurations'][0]['properties']
+    if private_ip:
+        conf_properties.update({'privateIPAddress': private_ip})
+    if public_ip_address_name:
+        conf_properties.update({'publicIPAddress': {'id': public_ip_address_name}})
+
+    response = client.create_or_update_network_interface_request(subscription_id=subscription_id,
+                                                                 resource_group_name=resource_group_name,
                                                                  nic_name=nic_name, data=data)
     outputs = deepcopy(response)
     reformat_data(outputs, dict_to_extract=[('properties',)], list_to_extract=[

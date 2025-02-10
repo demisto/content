@@ -67,9 +67,13 @@ def test_azure_nsg_public_ip_addresses_list(mocker):
         - Ensure the generated output is as expected.
     """
     from AzureNetworkSecurityGroups import azure_nsg_public_ip_addresses_list_command
-    client = mock_client(mocker, util_load_json('test_data/list_public_ip_addresses.json'))
+    client = mock_client(mocker)
+    http_mock_request = mocker.patch.object(client, 'http_request',
+                                            return_value=util_load_json('test_data/list_public_ip_addresses.json'))
     results = azure_nsg_public_ip_addresses_list_command(client, args={}, params={'subscription_id': 'subscriptionID',
                                                                                   'resource_group_name': 'resourceGroupName'})
+    http_mock_request.assert_called_with('GET', full_url='https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.Network/publicIPAddresses',
+                                         params={'api-version': '2024-05-01'})
     assert '### Public IP Addresses List' in results.readable_output
     res = results.outputs[0]
     assert res.get('name') == 'testDNS-ip'
@@ -92,9 +96,14 @@ def test_azure_nsg_virtual_networks_list(mocker):
         - Ensure the generated output is as expected.
     """
     from AzureNetworkSecurityGroups import azure_nsg_virtual_networks_list_command
-    client = mock_client(mocker, util_load_json('test_data/list_virtual_networks.json'))
+    client = mock_client(mocker)
+    http_mock_request = mocker.patch.object(client, 'http_request',
+                                            return_value=util_load_json('test_data/list_virtual_networks.json'))
     results = azure_nsg_virtual_networks_list_command(client, args={}, params={'subscription_id': 'subscriptionID',
                                                                                'resource_group_name': 'resourceGroupName'})
+    http_mock_request.assert_called_with('GET', full_url='https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.Network/virtualNetworks',
+                                         params={'api-version': '2024-05-01'})
+
     assert '### Virtual Networks List' in results.readable_output
     res = results.outputs[0]
     assert res.get('name') == 'vnet1'
@@ -116,10 +125,16 @@ def test_azure_nsg_networks_interfaces_list(mocker):
     Then:
         - Ensure the generated output is as expected.
     """
+
+    client = mock_client(mocker)
     from AzureNetworkSecurityGroups import azure_nsg_networks_interfaces_list_command
-    client = mock_client(mocker, util_load_json('test_data/list_networks_interfaces.json'))
+    client = mock_client(mocker)
+    http_mock_request = mocker.patch.object(client, 'http_request',
+                                            return_value=util_load_json('test_data/list_networks_interfaces.json'))
     results = azure_nsg_networks_interfaces_list_command(client, args={}, params={'subscription_id': 'subscriptionID',
                                                                                   'resource_group_name': 'resourceGroupName'})
+    http_mock_request.assert_called_with('GET', full_url='https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.Network/networkInterfaces',
+                                         params={'api-version': '2024-05-01'})
     assert '### Network Interfaces List' in results.readable_output
     res = results.outputs[0]
     assert res.get('name') == 'test-nic'
@@ -151,10 +166,13 @@ def test_create_azure_nsg_security_group(mocker):
         - Ensure the request sent as requested and the generated output is as expected.
     """
     from AzureNetworkSecurityGroups import azure_nsg_security_group_create_command
-    client = mock_client(mocker, util_load_json('test_data/put_data.json'))
+    client = mock_client(mocker)
+    http_mock_request = mocker.patch.object(client, 'http_request', return_value=util_load_json('test_data/put_data.json'))
     res = azure_nsg_security_group_create_command(client, args={'security_group_name': 'securityGroup', 'location': 'westus'},
                                                   params={'subscription_id': 'subscriptionID', 'resource_group_name':
                                                   'resourceGroupName'})
+    http_mock_request.assert_called_with('PUT', full_url='https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.Network/networkSecurityGroups/securityGroup',
+                                         params={'api-version': '2024-05-01'}, data={'location': 'westus'})
     assert '### Security Group' in res.readable_output
     res = res.outputs
     assert res.get('name') == 'test-nic'
@@ -174,12 +192,31 @@ def test_create_azure_nsg_network_interfaces(mocker):
         - Ensure the request sent as requested and the generated output is as expected.
     """
     from AzureNetworkSecurityGroups import azure_nsg_network_interfaces_create_command
-    client = mock_client(mocker, util_load_json('test_data/put_data.json'))
+    client = mock_client(mocker)
+    http_mock_request = mocker.patch.object(client, 'http_request', return_value=util_load_json('test_data/put_data.json'))
     res = azure_nsg_network_interfaces_create_command(client, args={'nic_name': 'nic_name', 'location': 'westus',
                                                                     'ip_config_name': 'ip_config_name', 'vnet_name': 'vnet_name',
                                                                     'subnet_name': 'subnet_name'},
                                                       params={'subscription_id': 'subscriptionID', 'resource_group_name':
                                                       'resourceGroupName'})
+    data = {
+        'location': 'westus',
+        'properties': {
+            'ipConfigurations': [
+                {
+                    'name': 'ip_config_name',
+                    'properties': {
+                        'subnet': {
+                            'id': '/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.Network'
+                            '/virtualNetworks/vnet_name/subnets/subnet_name'
+                        }
+                    }
+                }
+            ]
+        }
+    }
+    http_mock_request.assert_called_with('PUT', full_url='https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.Network/networkInterfaces/nic_name',
+                                         params={'api-version': '2024-05-01'}, data=data)
 
     assert '### Network Interface' in res.readable_output
     res = res.outputs
