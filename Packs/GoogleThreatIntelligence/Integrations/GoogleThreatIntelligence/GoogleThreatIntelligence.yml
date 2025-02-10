@@ -5,6 +5,9 @@ name: GoogleThreatIntelligence
 display: Google Threat Intelligence
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
@@ -13,6 +16,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -26,92 +30,110 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: false
+  section: Collect
 - display: GTI Malicious Verdict. Check Google Threat Intelligence verdict to consider the file malicious.
   name: gti_malicious
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - display: GTI Suspicious Verdict. Check Google Threat Intelligence verdict to consider the file suspicious.
   name: gti_suspicious
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - display: File Malicious Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: File Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the file suspicious.
   name: fileSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
+  section: Collect
 - display: IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
   name: ipThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: IP Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the IP suspicious.
   name: ipSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
+  section: Collect
 - display: Disable reputation lookups for private IP addresses
   name: disable_private_ip_lookup
   defaultvalue: 'false'
   type: 8
   required: false
   additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
+  section: Collect
 - display: 'URL Malicious Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.'
   name: urlThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: 'URL Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the URL suspicious.'
   name: urlSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
+  section: Collect
 - display: Domain Malicious Threshold. Minimum number of positive results from VT scanners to consider the Domain malicious.
   name: domainThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: Domain Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the Domain suspicious.
   name: domainSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
-- display: 'Preferred Vendors List. CSV list of vendors who are considered more trustworthy.'
+  section: Collect
+- display: Preferred Vendors List. CSV list of vendors who are considered more trustworthy.
   name: preferredVendors
   defaultvalue: ''
   type: 12
   required: false
-- display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious. '
+  section: Collect
+- display: Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.
   name: preferredVendorsThreshold
   defaultvalue: '5'
   type: 0
   required: false
-- display: 'Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS'
+  section: Collect
+- display: Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS.
   name: crowdsourced_yara_rules_enabled
   type: 8
   defaultvalue: 'true'
   required: false
+  section: Collect
 - display: Crowdsourced Yara Rules Threshold
   name: yaraRulesThreshold
   type: 0
   defaultvalue: '1'
   required: false
+  section: Collect
 - display: Sigma and Intrusion Detection Rules Threshold
   name: SigmaIDSThreshold
   type: 0
   defaultvalue: '5'
   required: false
-- display: 'Domain Popularity Ranking Threshold'
+  section: Collect
+- display: Domain Popularity Ranking Threshold
   name: domain_popularity_ranking
   type: 0
   defaultvalue: '10000'
   required: false
+  section: Collect
 - display: IP Relationships
   name: ip_relationships
   type: 16
@@ -123,6 +145,7 @@ configuration:
   - referrer files
   - 'urls'
   defaultvalue: 'communicating files,downloaded files,referrer files,urls'
+  section: Collect
 - additionalinfo: Select the list of relationships to retrieve from the API.
   display: Domain Relationships
   name: domain_relationships
@@ -143,6 +166,7 @@ configuration:
   type: 16
   defaultvalue: 'cname records,caa records,communicating files,downloaded files,immediate parent,mx records,ns records,parent,referrer files,siblings,soa records,subdomains,urls'
   required: false
+  section: Collect
 - additionalinfo: Select the list of relationships to retrieve from the API.
   display: URL Relationships
   name: url_relationships
@@ -160,6 +184,7 @@ configuration:
   type: 16
   defaultvalue: 'communicating files,contacted domains,contacted ips,downloaded files,last serving ip address,network location,redirecting urls,redirects to,referrer files,referrer urls'
   required: false
+  section: Collect
 - display: File Relationships
   name: file_relationships
   type: 16
@@ -189,14 +214,17 @@ configuration:
   - pe resource parents
   - 'similar files'
   defaultvalue: 'carbonblack children,carbonblack parents,compressed parents,contacted domains,contacted ips,contacted urls,dropped files,email attachments,email parents,embedded domains,embedded ips,embedded urls,execution parents,itw domains,itw ips,overlay children,overlay parents,pcap children,pcap parents,pe resource children,pe resource parents,similar files'
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: python

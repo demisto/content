@@ -2206,10 +2206,7 @@ def url_scan_and_get_analysis(
     return CommandResults(scheduled_command=scheduled_command)
 
 
-def private_url_scan_and_get_analysis(
-        client: Client,
-        args: dict
-):
+def private_url_scan_and_get_analysis(client: Client, args: dict):
     """Calls to gti-privatescanning-url-scan and gti-privatescanning-analysis-get."""
     interval = int(args.get('interval_in_seconds', 60))
 
