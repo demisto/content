@@ -57,7 +57,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
 
-Test of mirroring! again and again
+Test of mirroring! 1. 2. 3.
 
 ## Incident Mirroring (Cortex XSOAR Only)
 
