@@ -34,8 +34,8 @@ Returns a list of custom device fields associated with the given device_id, base
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | The system unique identifier of the device. | Required | 
-| limit | Maximum number of results to return. Default value is 50. Default is 50. | Optional | 
-| all_results | Whether to all results or not. Possible values are: true, false. | Optional | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results or not. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -514,7 +514,7 @@ Initiates an unenroll request on a list of eligible devices.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Absolute.DeviceUnenroll.TotalDevices | String | The total devices in the request. | 
+| Absolute.DeviceUnenroll.TotalDevices | String | The total number of devices in the request. | 
 | Absolute.DeviceUnenroll.Pending | Number | The number of pending devices. | 
 | Absolute.DeviceUnenroll.Processing | Number | The number of processing devices. | 
 | Absolute.DeviceUnenroll.Completed | Number | The number of completed device unenroll. | 
@@ -1020,8 +1020,8 @@ The following sections list the changes in this version.
 ### Arguments
 #### The following arguments were removed in this version:
 
-In the *absolute-device-application-list* command:
-* *account_uids* - this argument was removed.
+In the ***absolute-device-application-list*** command, the following argument was removed:
+* *account_uids*
 
 
 ### Outputs
@@ -1036,10 +1036,10 @@ In the *absolute-device-application-list* command:
   * *Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateUTC* - replaced by *Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateTimeUtc*.
   * *Absolute.FreezeRequestDetail.Statuses.updatedUtc* - replaced by *Absolute.FreezeRequestDetail.Statuses.updatedDateTimeUtc*.
 
-- In the ***absolute-device-application-list*** command the following outputs were removed:
+- In the ***absolute-device-application-list*** command the following output was removed:
   * *Absolute.DeviceApplication.AccountUid*
 
-- In the ***absolute-custom-device-field-list*** command the following outputs were removed:
+- In the ***absolute-custom-device-field-list*** command the following output was removed:
   * *Absolute.CustomDeviceField.ESN*
 
 - In the ***absolute-device-freeze-request-get*** command the following outputs were removed:

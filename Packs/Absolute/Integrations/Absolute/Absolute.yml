@@ -63,11 +63,11 @@ script:
     - description: The system unique identifier of the device.
       name: device_id
       required: true
-    - description: Maximum number of results to return. Default value is 50.
+    - description: Maximum number of results to return.
       name: limit
       defaultValue: '50'
     - auto: PREDEFINED
-      description: Whether to all results or not.
+      description: Whether to retrieve all results or not.
       name: all_results
       predefined:
       - 'true'
@@ -414,7 +414,7 @@ script:
     name: absolute-device-unenroll
     outputs:
     - contextPath: Absolute.DeviceUnenroll.TotalDevices
-      description: The total devices in the request.
+      description: The total number of devices in the request.
       type: String
     - contextPath: Absolute.DeviceUnenroll.Pending
       description: The number of pending devices.
