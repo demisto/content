@@ -625,8 +625,9 @@ script:
       name: user
       required: true
     description: |-
-      Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
-      Permission: Directory.AccessAsUser.All(Delegated).
+      Revoke a user session by invalidating all refresh tokens issued to applications for a user. 
+      This command requires an administrator role.
+      Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-user-generate-login-url
