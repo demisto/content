@@ -1,10 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import bz2
-import io
-import json
-import tarfile
 import urllib3
 
 # Disable insecure warnings.
@@ -12,11 +8,20 @@ urllib3.disable_warnings()
 
 
 FEED_STR = {
-    'apt': 'APT',
-    'cve': 'CVE',
+    'cryptominer': 'Cryptominer',
+    'first-stage-delivery-vectors': 'First stage delivery vectors',
+    'infostealer': 'Infostealer',
     'iot': 'IoT',
+    'linux': 'Linux',
+    'malicious-network-infrastructure': 'Malicious network infrastructure',
+    'malware': 'Malware',
     'mobile': 'Mobile',
+    'osx': 'OSX',
+    'phishing': 'Phishing',
     'ransomware': 'Ransomware',
+    'threat-actor': 'Threat actor',
+    'trending': 'Trending',
+    'vulnerability-weaponization': 'Vulnerability weaponization',
 }
 
 
@@ -27,53 +32,229 @@ def _get_current_hour():
     return hour
 
 
-def _get_indicators(response):
-    """Gets indicators from response."""
-    indicators = []
-    decompressed_data = bz2.decompress(response)
-    tar_bytes = io.BytesIO(decompressed_data)
-    with tarfile.open(fileobj=tar_bytes, mode='r:') as tar:
-        for member in tar.getmembers():
-            file_data = tar.extractfile(member)
-            if file_data:
-                while line := file_data.readline():
-                    decoded_data = line.decode('utf-8')
-                    indicator = json.loads(decoded_data)
-                    indicators.append(indicator)
-    return indicators
+class DetectionRatio:
+    """Class for detections."""
+    malicious = 0
+    total = 0
+
+    def __init__(self, last_analysis_stats: dict):
+        self.malicious = last_analysis_stats.get('malicious', 0)
+        self.total = sum(last_analysis_stats.values())
+
+    def __repr__(self):
+        return f'{self.malicious}/{self.total}'
 
 
 class Client(BaseClient):
     """Client for Google Threat Intelligence API."""
 
-    def fetch_indicators(self, feed_type: str = 'apt', hour: str = None):
+    def fetch_indicators(self, feed_type: str = 'malware', hour: str = None) -> dict:
         """Fetches indicators given a feed type and an hour."""
         if not hour:
             hour = _get_current_hour()
         return self._http_request(
             'GET',
-            f'threat_feeds/{feed_type}/hourly/{hour}',
-            resp_type='content',
+            f'threat_lists/{feed_type}/{hour}',
         )
 
     def get_threat_feed(self, feed_type: str) -> list:
         """Retrieves matches for a given feed type."""
         last_threat_feed = demisto.getIntegrationContext().get('last_threat_feed')
-
         hour = _get_current_hour()
 
         if last_threat_feed == hour:
             return []
 
         response = self.fetch_indicators(feed_type, hour)
-        matches = _get_indicators(response)
         demisto.setIntegrationContext({'last_threat_feed': hour})
-        return matches
+        return response.get('iocs', [])
 
 
 def test_module(client: Client) -> str:
     client.fetch_indicators()
     return 'ok'
+
+
+def _add_gti_attributes(indicator_obj: dict, item: dict):
+    """Addes GTI attributes."""
+
+    # GTI assessment
+    attributes = item.get('attributes', {})
+    gti_assessment = attributes.get('gti_assessment', {})
+    gti_threat_score = gti_assessment.get('threat_score', {}).get('value')
+    gti_severity = gti_assessment.get('severity', {}).get('value')
+    gti_verdict = gti_assessment.get('verdict', {}).get('value')
+
+    # Relationships
+    relationships = item.get('relationships', {})
+    malware_families: list[str] = [
+        x['attributes']['name']
+        for x in relationships.get('malware_families', {}).get('data', [])
+    ]
+    malware_families = list(set(malware_families))
+    threat_actors: list[str] = [
+        x['attributes']['name']
+        for x in relationships.get('threat_actors', {}).get('data', [])
+    ]
+    threat_actors = list(set(threat_actors))
+
+    indicator_obj['fields'].update({
+        'gtithreatscore': gti_threat_score,
+        'gtiseverity': gti_severity,
+        'gtiverdict': gti_verdict,
+        'malwarefamily': malware_families,
+        'actor': threat_actors,
+    })
+    indicator_obj.update({
+        'gti_threat_score': gti_threat_score,
+        'gti_severity': gti_severity,
+        'gti_verdict': gti_verdict,
+        'malware_families': malware_families,
+        'threat_actors': threat_actors,
+        'relationships': [
+            EntityRelationship(
+                name=EntityRelationship.Relationships.PART_OF,
+                entity_a=indicator_obj['value'],
+                entity_a_type=indicator_obj['type'],
+                entity_b=malware_family.title(),
+                entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
+                reverse_name=EntityRelationship.Relationships.CONTAINS,
+            ).to_indicator() for malware_family in malware_families
+        ] + [
+            EntityRelationship(
+                name=EntityRelationship.Relationships.ATTRIBUTED_BY,
+                entity_a=indicator_obj['value'],
+                entity_a_type=indicator_obj['type'],
+                entity_b=threat_actor.title(),
+                entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                reverse_name=EntityRelationship.Relationships.ATTRIBUTED_TO,
+            ).to_indicator() for threat_actor in threat_actors
+        ],
+    })
+
+    return indicator_obj
+
+
+def _get_indicator_type(item: dict):
+    """Gets indicator type."""
+    if item['type'] == 'file':
+        return FeedIndicatorType.File
+    if item['type'] == 'domain':
+        return FeedIndicatorType.Domain
+    if item['type'] == 'url':
+        return FeedIndicatorType.URL
+    if item['type'] == 'ip_address':
+        return FeedIndicatorType.IP
+    raise ValueError(f'Unknown type: {item["type"]}. ID: {item["id"]}')
+
+
+def _get_indicator_id(item: dict) -> str:
+    """Gets indicator ID."""
+    if item['type'] == 'url':
+        return item.get('attributes', {}).get('url') or item['id']
+    return item['id']
+
+
+def _add_file_attributes(indicator_obj: dict, attributes: dict) -> dict:
+    """Adds file attributes."""
+    indicator_obj['fields'].update({
+        'md5': attributes.get('md5'),
+        'sha1': attributes.get('sha1'),
+        'sha256': attributes.get('sha256'),
+        'ssdeep': attributes.get('ssdeep'),
+        'fileextension': attributes.get('type_extension'),
+        'filetype': attributes.get('type_tag'),
+        'imphash': attributes.get('pe_info', {}).get('imphash'),
+        'displayname': attributes.get('meaningful_name'),
+        'name': attributes.get('meaningful_name'),
+        'size': attributes.get('size'),
+        'creationdate': attributes.get('creation_date'),
+        'firstseenbysource': attributes.get('first_submission_date'),
+        'lastseenbysource': attributes.get('last_submission_date'),
+    })
+
+    return indicator_obj
+
+
+def _add_domain_attributes(indicator_obj: dict, attributes: dict) -> dict:
+    """Adds domain attributes."""
+    indicator_obj['fields'].update({
+        'creationdate': attributes.get('creation_date'),
+        'registrarname': attributes.get('registrar'),
+        'firstseenbysource': attributes.get('first_seen_itw_date'),
+        'lastseenbysource': attributes.get('last_seen_itw_date'),
+    })
+
+    return indicator_obj
+
+
+def _add_url_attributes(indicator_obj: dict, attributes: dict) -> dict:
+    """Adds URL attributes."""
+    indicator_obj['fields'].update({
+        'firstseenbysource': attributes.get('first_submission_date'),
+        'lastseenbysource': attributes.get('last_submission_date'),
+    })
+
+    return indicator_obj
+
+
+def _add_ip_attributes(indicator_obj: dict, attributes: dict) -> dict:
+    """Adds IP attributes."""
+    indicator_obj['fields'].update({
+        'countrycode': attributes.get('country'),
+        'firstseenbysource': attributes.get('first_seen_itw_date'),
+        'lastseenbysource': attributes.get('last_seen_itw_date'),
+    })
+
+    return indicator_obj
+
+
+def _add_dedicated_attributes(indicator_obj: dict, attributes: dict) -> dict:
+    """Adds dedicated attributes to indicator object."""
+    if indicator_obj['type'] == FeedIndicatorType.File:
+        return _add_file_attributes(indicator_obj, attributes)
+    if indicator_obj['type'] == FeedIndicatorType.Domain:
+        return _add_domain_attributes(indicator_obj, attributes)
+    if indicator_obj['type'] == FeedIndicatorType.URL:
+        return _add_url_attributes(indicator_obj, attributes)
+    if indicator_obj['type'] == FeedIndicatorType.IP:
+        return _add_ip_attributes(indicator_obj, attributes)
+    raise ValueError(f'Unknown type: {indicator_obj["type"]}. ID: {indicator_obj["id"]}')
+
+
+def _create_indicator(item: dict) -> dict:
+    """Creates indicator object."""
+    indicator_type = _get_indicator_type(item)
+    indicator_id = _get_indicator_id(item)
+
+    attributes: dict = item.get('attributes', {})
+
+    detection_ratio = DetectionRatio(attributes.get('last_analysis_stats', {}))
+
+    indicator_obj = {
+        'type': indicator_type,
+        'value': indicator_id,
+        'service': 'Google Threat Intelligence',
+        'fields': {
+            'tags': attributes.get('tags') or None,
+            'updateddate': attributes.get('last_modification_date'),
+            'detectionengines': detection_ratio.total,
+            'positivedetections': detection_ratio.malicious,
+        },
+        'rawJSON': {
+            'type': indicator_type,
+            'value': indicator_id,
+            'attributes': attributes,
+            'relationships': item.get('relationships', {}),
+        },
+        'id': indicator_id,
+        'detections': str(detection_ratio),
+    }
+
+    indicator_obj = _add_gti_attributes(indicator_obj, item)
+    indicator_obj = _add_dedicated_attributes(indicator_obj, attributes)
+
+    return indicator_obj
 
 
 def fetch_indicators_command(client: Client,
@@ -82,7 +263,7 @@ def fetch_indicators_command(client: Client,
                              feed_tags: list = None,
                              limit: int = None,
                              minimum_score: int = 0) -> list[dict]:
-    """Retrieves indicators from the feed
+    """Retrieves indicators from the feed.
     Args:
         client (Client): Client object with request
         tlp_color (str): Traffic Light Protocol color
@@ -99,52 +280,11 @@ def fetch_indicators_command(client: Client,
 
     # extract values from iterator
     for item in iterator:
-        attributes = item.get('attributes', {})
-
-        type_ = FeedIndicatorType.File
-        raw_data = {
-            'value': attributes['sha256'],
-            'type': type_,
-            'attributes': attributes,
-        }
-
-        gti_assessment = attributes.get('gti_assessment', {})
-        attribution = attributes.get('attribution', {})
-        malware_families = [x['family'] for x in attribution.get('malware_families', [])]
-        malware_families = list(set(malware_families))
-        threat_actors = attribution.get('threat_actors', [])
-        threat_actors = list(set(threat_actors))
-
-        # Create indicator object for each value.
-        # The object consists of a dictionary with required and optional keys and values, as described blow.
-        indicator_obj = {
-            # The indicator value.
-            'value': attributes['sha256'],
-            # The indicator type as defined in Cortex XSOAR.
-            # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
-            'type': type_,
-            # The name of the service supplying this feed.
-            'service': 'Google Threat Intelligence',
-            # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
-            # One can use this section in order to map custom indicator fields previously defined
-            # in Cortex XSOAR to their values.
-            'fields': {
-                'md5': attributes.get('md5'),
-                'sha1': attributes.get('sha1'),
-                'sha256': attributes['sha256'],
-                'size': attributes.get('size'),
-                'tags': attributes.get('tags'),
-            },
-            # A dictionary of the raw data returned from the feed source about the indicator.
-            'rawJSON': raw_data,
-            'sha256': attributes['sha256'],
-            'gti_threat_score': gti_assessment.get('threat_score', {}).get('value'),
-            'gti_severity': gti_assessment.get('severity', {}).get('value'),
-            'gti_verdict': gti_assessment.get('verdict', {}).get('value'),
-            'malware_families': malware_families or None,
-            'threat_actors': threat_actors or None,
-            'fileType': attributes.get('type_description'),
-        }
+        try:
+            indicator_obj = _create_indicator(item['data'])
+        except ValueError as exc:
+            demisto.info(str(exc))
+            continue
 
         if feed_tags:
             indicator_obj['fields']['tags'] = feed_tags
@@ -152,10 +292,14 @@ def fetch_indicators_command(client: Client,
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
-        if (indicator_obj.get('gti_threat_score') or 0) >= minimum_score:
+        if int(indicator_obj['fields'].get('gtithreatscore') or 0) >= minimum_score:
             indicators.append(indicator_obj)
         else:
-            existing_indicators = list(IndicatorsSearcher(value=indicator_obj['value']))
+            try:
+                existing_indicators = list(IndicatorsSearcher(value=indicator_obj['value']))
+            except SystemExit as exc:
+                demisto.debug(exc)
+                existing_indicators = []
             if len(existing_indicators) > 0 and int(existing_indicators[0].get('total', 0)) > 0:
                 indicators.append(indicator_obj)
 
@@ -184,7 +328,7 @@ def get_indicators_command(client: Client,
         tlp_color,
         feed_tags,
         limit,
-        minimum_score
+        minimum_score,
     )
 
     human_readable = tableToMarkdown(
@@ -213,19 +357,19 @@ def get_indicators_command(client: Client,
 
 
 def reset_last_threat_feed():
-    """Reset last threat feed from the integration context"""
+    """Reset last threat feed from the integration context."""
     demisto.setIntegrationContext({})
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
 def main():
-    """main function, parses params and runs command functions"""
+    """main function, parses params and runs command functions."""
     params = demisto.params()
 
     # If your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    insecure = not params.get('insecure', False)
+    secure = not params.get('insecure', False)
 
     # If your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
@@ -239,7 +383,7 @@ def main():
     try:
         client = Client(
             base_url='https://www.virustotal.com/api/v3/',
-            verify=insecure,
+            verify=secure,
             proxy=proxy,
             headers={
                 'x-apikey': params['credentials']['password'],

@@ -11,14 +11,23 @@ configuration:
   hiddenusername: true
 - display: Feed type
   name: feed_type
-  defaultvalue: apt
+  defaultvalue: malware
   type: 15
   options:
-  - apt
-  - cve
+  - cryptominer
+  - first-stage-delivery-vectors
+  - infostealer
   - iot
+  - linux
+  - malicious-network-infrastructure
+  - malware
   - mobile
+  - osx
+  - phishing
   - ransomware
+  - threat-actor
+  - trending
+  - vulnerability-weaponization
 - display: Fetch indicators
   name: feed
   defaultvalue: "true"
