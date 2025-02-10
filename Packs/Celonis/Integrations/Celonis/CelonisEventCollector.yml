@@ -57,10 +57,10 @@ script:
       - description: 'Maximum number of events to return.'
         name: limit
         required: true
-      - description: 'The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS" or "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
+      - description: 'The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
         name: start_date
         required: true
-      - description: 'The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS" or "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
+      - description: 'The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
         name: end_date
         required: true
   isfetch: false
