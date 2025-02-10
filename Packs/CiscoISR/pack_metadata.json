@@ -9,9 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "cisco",
+        "isr",
+        "integrated service router"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
