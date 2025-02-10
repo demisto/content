@@ -145,14 +145,6 @@ configuration:
   hidden:
   - marketplacev2
   additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
-- display: Fetch incidents
-  name: isFetch
-  type: 8
-  section: Collect
-  required: false
-  defaultvalue: 'true'
-  hidden:
-  - marketplacev2
 - display: Incident type
   name: incidentType
   type: 13
