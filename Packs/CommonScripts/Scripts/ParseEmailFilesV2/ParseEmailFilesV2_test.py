@@ -589,7 +589,7 @@ def test_smime_without_to_from_subject(mocker):
     assert results[0]['EntryContext']['Email']['FileName'] == 'Attachment.eml'
 
 
-def test_remove_bom(self):
+def test_remove_bom():
     """
     Given:
         an eml file which contains BOM
