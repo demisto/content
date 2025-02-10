@@ -169,7 +169,7 @@ script:
       - 'true'
       - 'false'
     - name: headers
-      description: 'A comma separated list of headers to send in the request, for example: ConsistencyLevel:eventual,User-Agent:MyApp/1.0.'
+      description: 'A comma-separated list of headers to send in the request, for example: ConsistencyLevel:eventual,User-Agent:MyApp/1.0.'
       isArray: true
     description: Run a Microsoft Graph API query.
     name: msgraph-api-request
