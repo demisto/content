@@ -1,6 +1,339 @@
 exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|docs
 files: ''
 repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: check-json
+  - id: check-yaml
+  - id: check-ast
+    min_py_version: '3.7'
+  - id: check-merge-conflict
+  - id: debug-statements
+    language_version: python3
+    min_py_version: '3.7'
+  - id: name-tests-test
+    min_py_version: '3.7'
+    files: .+_test.py$
+- repo: https://github.com/python-poetry/poetry
+  rev: 1.8.2
+  hooks:
+  - id: poetry-check
+    args:
+    - --lock
+    files: ^pyproject.toml$
+- repo: https://github.com/hadialqattan/pycln
+  rev: v2.1.2
+  hooks:
+  - id: pycln
+    min_py_version: '3.7'
+    args:
+    - --all
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: v0.0.272
+  hooks:
+  - id: ruff
+    parallel: false
+    min_py_version: '3.7'
+    args:
+    - --fix
+    args:nightly:
+    - --config=nightly_ruff.toml
+    args:ci:
+    - --config=nightly_ruff.toml
+    skip:docker_autoupdate: true
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: v2.0.4
+  hooks:
+  - id: autopep8
+    exclude_support_level:ci:
+    - community
+    exclude_support_level:nightly:
+    - community
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v0.982
+  hooks:
+  - id: mypy
+    min_py_version: '3.7'
+    args:
+    - --ignore-missing-imports
+    - --check-untyped-defs
+    - --show-error-codes
+    - --follow-imports=silent
+    - --allow-redefinition
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py
+    language: system
+    entry: mypy
+
+- repo: local
+  hooks:
+  - id: xsoar-lint
+    name: xsoar-lint
+    description: Run xsoar-linter on the code in content packs
+    entry: demisto-sdk xsoar-lint
+    files: ^Packs\/.*\.py$
+    exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
+    require_serial: true
+    language: system
+    # skip nightly since we don't care about warnings in nightly
+    skip:nightly: true
+    skip:docker_autoupdate: true
+
+  - id: pylint-in-docker
+    name: pylint-in-docker
+    description: Run pylint on the code in content packs
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
+    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image: from-yml
+    entry: pylint
+    files: Packs\/.*\.py$
+    exclude: _test\.py|.vulture_whitelist\.py|test_data
+    args:
+    - --ignore=demistomock.py,CommonServerPython.py,CommonServerUserPython.py,conftest.py,.venv
+    - -E
+    - --disable=bad-option-value,unsubscriptable-object
+    - -d duplicate-string-formatting-argument
+    - "--msg-template='{path}:{line}:{column}: {msg_id} {obj}: {msg}'"
+    - --generated-members=requests.packages.urllib3,requests.codes.ok
+    config_file_arg:
+      arg_name: --rcfile
+      file_name: .pylintrc
+    skip:commit: true
+    pass_docker_extra_args:ci: --rm=false
+    pass_docker_extra_args:nightly: --rm=false
+    
+  - id: pytest-in-docker
+    name: pytest-in-docker
+    description: Run pytest on the code in content packs
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
+    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image: from-yml
+    entry: python
+    language: docker
+    files: Packs\/.*_test\.py$
+    # The exclude list includes the list of all integration/scripts which require network for testing
+    exclude: test_data|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
+    env:
+      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
+    args:
+    - /src/Tests/scripts/script_runner.py
+    - coverage
+    - run
+    - -p
+    - --source=.
+    - -m
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --color=yes
+    - --files
+    args:docker_autoupdate:
+    - /src/Tests/scripts/script_runner.py
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --color=yes
+    - --files
+    copy_files:
+    - Tests/scripts/dev_envs/pytest/conftest.py
+    skip:commit: true
+    pass_docker_extra_args:ci: --rm=false --network=none
+    pass_docker_extra_args:nightly: --rm=false --network=none
+    pass_docker_extra_args: --network=none
+
+  - id: pytest-network-in-docker
+    name: pytest-network-in-docker
+    description: Run pytest with network enabled on the code in content packs
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
+    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image: from-yml
+    entry: coverage
+    language: docker
+    files: Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
+    env:
+      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
+    args:
+    - run
+    - -p
+    - --source=.
+    - -m
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --color=yes
+    copy_files:
+    - Tests/scripts/dev_envs/pytest/conftest.py
+    skip:commit: true
+    run_isolated: true
+    skip:docker_autoupdate: true
+    pass_docker_extra_args:ci: --rm=false
+    pass_docker_extra_args:nightly: --rm=false
+
+  - id: validate-deleted-files
+    name: validate-deleted-files
+    entry: validate-deleted-files
+    skip:docker_autoupdate: true
+    language: system
+    require_serial: true
+    pass_filenames: false
+    skip:nightly: true
+    args:
+    - Packs
+    - Tests
+    - Utils
+
+  - id: validate-content-paths
+    name: validate-content-paths
+    skip:docker_autoupdate: true
+    entry: validate-content-path
+    language: system
+    require_serial: true
+    args:
+    -  validate
+    -  --skip-depth-one-file
+    -  --skip-depth-one-folder
+    -  --skip-integration-script-file-name
+    -  --skip-markdown
+    -  --skip-suffix
+
+
+  - id: validate-conf-json
+    name: validate-conf-json
+    description: validate conf.json
+    files: Tests/conf.json
+    skip:commit: true
+    skip:nightly: true
+    skip:docker_autoupdate: true
+    entry: validate-conf-json
+    pass_filenames: false
+    language: system
+
+  - id: pwsh-test-in-docker
+    name: pwsh-test-in-docker
+    description: Run powershell tests
+    entry: pwsh
+    args:
+    - -Command
+    - Invoke-Pester
+    - -Output
+    - Detailed
+    - -CI
+    - -Path
+    files: .Tests.ps1$
+    copy_files:
+    - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
+    - Tests/demistomock/demistomock.ps1
+    run_isolated: true
+    pass_docker_extra_args:ci: --rm=false --network=none
+    pass_docker_extra_args:nightly: --rm=false --network=none
+    pass_docker_extra_args: --network=none
+    skip:commit: true
+
+  - id: pwsh-analyze-in-docker
+    name: pwsh-analyze-in-docker
+    description: Run powershell analyze
+    entry: pwsh
+    args:
+    - -Command
+    - Invoke-ScriptAnalyzer
+    - -EnableExit
+    - -Severity
+    - Error
+    - -Path
+    files: .ps1$
+    exclude: .Tests.ps1$|test_data
+    copy_files:
+    - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
+    - Tests/demistomock/demistomock.ps1
+    run_isolated: true
+    skip:commit: true
+    pass_docker_extra_args:ci: --rm=false --network=none
+    pass_docker_extra_args:nightly: --rm=false --network=none
+    pass_docker_extra_args: --network=none
+
+  - id: validate
+    name: validate
+    description: validate content
+    entry: demisto-sdk validate
+    args:
+    - --skip-pack-dependencies
+    - --config-path=validation_config.toml
+    pass_filenames: false
+    language: system
+    require_serial: true
+    skip:commit: true
+    skip:nightly: true
+    skip:docker_autoupdate: true
+
+  - id: format
+    name: format
+    description: Format non-code files, to comply with XSOAR standards.
+    entry: demisto-sdk format
+    args:
+    - -ud
+    - -n
+    - --no-validate
+    language: system
+    pass_filenames: false
+    require_serial: true
+    skip:docker_autoupdate: true
+
+  - id: secrets
+    name: secrets
+    description: Check for secrets in files.
+    entry: demisto-sdk secrets
+    args:
+    - --ignore-entropy
+    pass_filenames: false
+    language: system
+    skip:ci: true
+    skip:nightly: true
+
+  - id: merge-pytest-reports
+    name: merge-pytest-reports
+    entry: merge-pytest-reports
+    language: system
+    require_serial: true
+    pass_filenames: false
+    needs:
+    - pytest-in-docker
+
+  - id: coverage-pytest-analyze
+    name: coverage-pytest-analyze
+    entry: demisto-sdk coverage-analyze
+    description: Running demisto-sdk coverage-analyze and showing a coverage report.
+    language: system
+    pass_filenames: false
+    args:
+    - -i
+    - .coverage
+    - --report-dir
+    - coverage_report
+    - --report-type
+    - all
+    - --previous-coverage-report-url
+    - https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+    args:nightly:
+    - -i
+    - .coverage
+    - --report-dir
+    - coverage_report
+    - --report-type
+    - all
+    - --allowed-coverage-degradation-percentage
+    - '100'
+    needs:
+    - pytest-in-docker
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:
