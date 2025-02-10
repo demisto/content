@@ -228,7 +228,7 @@ def validate_limit(limit: Optional[int]) -> int:
     """
     Validate the limit according to the following rules:
 
-    1. if the limit is negative, raise an exception.
+    1. if the limit is 0 or negative, raise an exception.
     2. if the limit is less than 10, the limit will be equal to 10.
     3. if the limit is not dividable by 10, make sure it gets rounded down to a number that is dividable by 10.
     4. if limit > MAX_LIMIT (200) - make sure it will always be MAX_LIMIT (200).
