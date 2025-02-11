@@ -31,6 +31,9 @@ ignore=IF115
 [file:incidentfield-GIB_Malware_CNC_Domain.json]
 ignore=IF115
 
+[file:incidentfield-GIB_Nation-State_Cybercriminals_Threat_Actor_Roles.json]
+ignore=IF115
+
 [file:incidentfield-GIB_DDOS_Date_Registration.json]
 ignore=IF115
 
@@ -395,13 +398,13 @@ ignore=IF115
 [file:incidentfield-GIB_DDOS_Target_Country_Name.json]
 ignore=IF115
 
-[file:incidentfield-GIB_GIB_Href.json]
+[file:incidentfield-GIB_Href.json]
 ignore=IF115
 
 [file:incidentfield-GIB_Target_Region.json]
 ignore=IF115
 
-[file:incidentfield-GIB_GIB_Cybercriminal_Forums_Table.json]
+[file:incidentfield-GIB_Cybercriminal_Forums_Table.json]
 ignore=IF115
 
 [file:incidentfield-GIB_Proxy_Sources.json]
