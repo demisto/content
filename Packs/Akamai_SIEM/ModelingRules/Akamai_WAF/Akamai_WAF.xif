@@ -18,6 +18,7 @@ alter // pre-modeling extractions
     as_number = geo -> asn
 
 | alter // initialize the url components 
+// test
     // set url scheme according to protocol which is an enum of either 80 or 443 
     scheme = if(port = 80, "http://", port = 443, "https://", ""),
 
