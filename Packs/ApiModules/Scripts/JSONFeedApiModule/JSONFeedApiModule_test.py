@@ -596,6 +596,7 @@ def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_pass
     client.build_iterator(feed={}, feed_name="https://api.github.com/meta")
     assert mock_session.call_args[1].get('headers') == expected_result
 
+
 def test_feed_main_enrichment_excluded(mocker):
     """
         Given: params with tlp_color set to RED and enrichmentExcluded set to False
@@ -623,7 +624,8 @@ def test_feed_main_enrichment_excluded(mocker):
 
         # Assertion - verify that enrichment_excluded is set to True
         assert fetch_indicators_command_mock.call_args.kwargs['enrichment_excluded'] is True
-        
+
+
 def test_build_iterator__result_is_none(mocker):
     """
       Given
@@ -638,7 +640,7 @@ def test_build_iterator__result_is_none(mocker):
     mocker.patch.object(demisto, 'debug')
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mocker.patch('JSONFeedApiModule.jmespath.search', return_value=None)
-    
+
     with requests_mock.Mocker() as m:
         m.get('https://api.github.com/meta', status_code=200, json="{'test':'1'}")
 
