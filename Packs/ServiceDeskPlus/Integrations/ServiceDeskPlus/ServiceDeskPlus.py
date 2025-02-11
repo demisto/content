@@ -13,14 +13,13 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 API_VERSION = '/api/v3/'
-OAUTH = 'https://accounts.zoho.com/oauth/v2/token'
 
 OAUTH = {
-    'United States': 'https://sdpondemand.manageengine.com',
-    'Europe': 'https://sdpondemand.manageengine.eu',
-    'India': 'https://sdpondemand.manageengine.in',
-    'China': 'https://servicedeskplus.cn',
-    'Australia': 'https://servicedeskplus.net.au',
+    'United States': 'https://accounts.zoho.com/oauth/v2/token',
+    'Europe': 'https://accounts.zoho.eu/oauth/v2/token',
+    'India': 'https://accounts.zoho.in/oauth/v2/token',
+    'China': 'https://accounts.zoho.cn/oauth/v2/token',
+    'Australia': 'https://accounts.zoho.com.au/oauth/v2/token',
 }
 
 REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority',
@@ -50,7 +49,8 @@ class Client(BaseClient):
 
     def __init__(self, url: str, use_ssl: bool, use_proxy: bool, client_id: str = None, client_secret: str = None,
                  refresh_token: str = None, technician_key: str = None, fetch_time: str = '7 days',
-                 fetch_status: list = None, fetch_limit: int = 50, fetch_filter: str = '', on_premise: bool = False):
+                 fetch_status: list = None, fetch_limit: int = 50, fetch_filter: str = '', on_premise: bool = False,
+                 oauth_url: str = ''):
         if fetch_status is None:
             fetch_status = []
         self.client_id = client_id
@@ -62,6 +62,7 @@ class Client(BaseClient):
         self.fetch_limit = fetch_limit
         self.fetch_filter = fetch_filter
         self.on_premise = on_premise
+        self.oauth_url = oauth_url
         if on_premise:
             super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={
                 'Accept': 'application/v3+json',
@@ -92,7 +93,7 @@ class Client(BaseClient):
                 'client_secret': self.client_secret
             }
             try:
-                res = self.http_request('POST', url_suffix='', full_url=OAUTH, params=params)
+                res = self.http_request('POST', url_suffix='', full_url=self.oauth_url, params=params)
                 if 'error' in res:
                     return_error(
                         f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
@@ -858,7 +859,9 @@ def main():
                         on_premise=True)
     else:
         server_url = SERVER_URL[params.get('server_url')]
+        oauth_url = OAUTH[params.get('server_url')]
         client = Client(url=server_url + API_VERSION,
+                        oauth_url=oauth_url,
                         use_ssl=not params.get('insecure', False),
                         use_proxy=params.get('proxy', False),
                         client_id=client_id,
