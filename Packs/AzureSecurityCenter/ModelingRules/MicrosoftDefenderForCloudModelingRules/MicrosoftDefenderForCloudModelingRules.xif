@@ -45,7 +45,7 @@ filter  _collector_type != "Azure Event Hub"
 	xdm.target.host.ipv4_addresses = coalesce(address, clientIPAddress),
 	xdm.target.host.hostname = coalesce(json_extract_scalar(properties, "$.compromisedEntity"), hostname);
 
-filter _collector_type = "Azure Event Hub" and (ProductName = null or ProductName ="")
+filter _collector_type = "Azure Event Hub"
 | alter
         Entities = Entities ->[],
         ResourceIdentifiers = ResourceIdentifiers -> []
@@ -186,7 +186,7 @@ filter _collector_type = "Azure Event Hub" and (ProductName = null or ProductNam
         xdm.source.process.executable.filename = Entities_process_image_filename,
         xdm.target.host.os = Entities_host_OS;
     
-filter _collector_type = "Azure Event Hub" and ProductName = "Azure Security Center for IoT" //Azure defender of iot logs
+/*filter _collector_type = "Azure Event Hub" and ProductName = "Azure Security Center for IoT" //Azure defender of iot logs
 | alter http_method = json_extract_scalar(ExtendedProperties, "$['HTTP Request Method']")
 | alter 
         xdm.event.type = type, 
@@ -212,4 +212,4 @@ filter _collector_type = "Azure Event Hub" and ProductName = "Azure Security Cen
         xdm.event.description = object_create("HasMultipleViolations",json_extract_scalar(extendedproperties, "$.HasMultipleViolations"),"isNew",json_extract_scalar(extendedproperties, "$.isNew"),"ProcessedBySentinel",json_extract_scalar(extendedproperties, "$.ProcessedBySentinel"),"isLearnable",json_extract_scalar(extendedproperties, "$.isLearnable")),
         xdm.source.host.device_id = VendorOriginalId,
         xdm.source.user.username = json_extract_scalar(ExtendedProperties, "$.userprincipalname"),
-        xdm.target.host.hostname = json_extract_scalar(extendedproperties, "$.DestinationDevice");
+        xdm.target.host.hostname = json_extract_scalar(extendedproperties, "$.DestinationDevice");*/
