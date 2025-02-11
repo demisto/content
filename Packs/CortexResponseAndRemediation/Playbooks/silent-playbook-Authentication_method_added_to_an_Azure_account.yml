@@ -39,6 +39,7 @@ tags:
 - T1078 - Valid Accounts
 - TA0003 - Persistence
 starttaskid: "0"
+issilent: true
 tasks:
   "0":
     id: "0"
