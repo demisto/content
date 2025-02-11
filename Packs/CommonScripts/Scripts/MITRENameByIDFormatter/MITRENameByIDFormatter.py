@@ -15,7 +15,7 @@ def get_mitre_technique_name(mitre_id: str) -> dict[str, str]:
     """
     try:
         technique_names = {}
-        query = f'mitreid:{mitre_id}'
+        query = f'mitreid:{mitre_id} and type:(Tactic "Attack Pattern")'
         demisto.debug(f'Querying for {query} in TIM')
 
         success, response = execute_command(command="SearchIndicator",
@@ -52,7 +52,7 @@ def get_mitre_technique_name(mitre_id: str) -> dict[str, str]:
 def is_valid_attack_pattern(items) -> list:
     mitre_ids = argToList(items)
     results = []
-    techniques = get_mitre_technique_name(mitre_id=" or ".join(mitre_ids))
+    techniques = get_mitre_technique_name(mitre_id=" ".join(mitre_ids))
     for mitre_id in mitre_ids:
         if mitre_id not in techniques:
             demisto.debug(f"Invalid MITRE ID: {mitre_id}")
