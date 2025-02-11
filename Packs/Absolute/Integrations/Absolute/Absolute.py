@@ -1000,7 +1000,7 @@ def get_device_application_list_command(args, client) -> CommandResults:
 
     try:
         res = client.api_request_absolute('GET', '/v3/reporting/applications-advanced', query_string=query_string,
-                                        page=page, page_size=limit, specific_page=True)
+                                          page=page, page_size=limit, specific_page=True)
     except Exception as e:
         if 'Your request is invalid, please contact us for details.' in str(e):
             raise Exception(f'Error in request - make sure your filter is in accordance to the Absolute documentation.\n{e}')
@@ -1030,7 +1030,7 @@ def device_list_command(args, client) -> CommandResults:
     query_string = parse_return_fields(",".join(DEVICE_LIST_RETURN_FIELDS), query_string)
     try:
         res = client.api_request_absolute('GET', '/v3/reporting/devices', query_string=query_string,
-                                            page=page, page_size=limit, specific_page=True)
+                                          page=page, page_size=limit, specific_page=True)
     except Exception as e:
         if 'Your request is invalid, please contact us for details.' in str(e):
             raise Exception(f'Error in request - make sure your filter is in accordance to the Absolute documentation.\n{e}')
