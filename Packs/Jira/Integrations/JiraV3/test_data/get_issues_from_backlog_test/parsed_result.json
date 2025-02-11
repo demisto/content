@@ -603,7 +603,8 @@
                     ],
                     "Assignee": "Example User()",
                     "Creator": "Example User(admin@demistodev.com)",
-                    "Description": "Complete this issue"
+                    "Description": "Complete this issue",
+                    "RawDescription": ""
                 },
                 {
                     "LastSeen": "",
@@ -621,7 +622,8 @@
                     "Labels": [],
                     "Assignee": "Example User(admin@demistodev.com)",
                     "Creator": "Example User(admin@demistodev.com)",
-                    "Description": ""
+                    "Description": "",
+                    "RawDescription": ""
                 }
             ]
         }

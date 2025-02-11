@@ -742,7 +742,8 @@
                     ],
                     "Assignee": "Example User()",
                     "Creator": "Example User(admin@demistodev.com)",
-                    "Description": "You better be created"
+                    "Description": "You better be created",
+                    "RawDescription": ""
                 },
                 {
                     "LastSeen": "2023-03-20T17:49:48.853+0200",
@@ -760,7 +761,8 @@
                     "Labels": [],
                     "Assignee": "Example User()",
                     "Creator": "Example User(admin@demistodev.com)",
-                    "Description": ""
+                    "Description": "",
+                    "RawDescription": ""
                 }
             ]
         }

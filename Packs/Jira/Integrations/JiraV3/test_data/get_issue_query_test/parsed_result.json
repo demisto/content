@@ -673,7 +673,7 @@
                 }
             }
         },
-        "HumanReadable": "### Issue COMPANYSA-28\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User() | 2023-01-29T20:47:43.378+0200 | Example User(admin@demistodev.com) |  | 2023-09-09 | 21422 | Task | COMPANYSA-28 |  | Highest | Company Snoozing App | Example User() | Done | Issue for demo | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21422 |\n",
+        "HumanReadable": "### Issue COMPANYSA-28\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Raw Description|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User() | 2023-01-29T20:47:43.378+0200 | Example User(admin@demistodev.com) |  | 2023-09-09 | 21422 | Task | COMPANYSA-28 |  | Highest | Company Snoozing App |  | Example User() | Done | Issue for demo | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21422 |\n",
         "EntryContext": {
             "Ticket(val.Id && val.Id == obj.Id)": {
                 "LastSeen": "2023-05-01T00:24:04.756+0300",
@@ -692,6 +692,7 @@
                 "Assignee": "Example User()",
                 "Creator": "Example User(admin@demistodev.com)",
                 "Description": "",
+                "RawDescription": "",
                 "watches": {
                     "issueFieldDisplayName": "Watchers",
                     "rawData": {
@@ -1165,7 +1166,7 @@
                 }
             }
         },
-        "HumanReadable": "### Issue COMPANYSA-14\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User() | 2023-01-26T19:50:03.576+0200 | Example User(admin@demistodev.com) | You better be created | 2023-04-04 | 21404 | Story | COMPANYSA-14 | Collab,<br>GoodJob | High | Company Snoozing App | Example User() | Done | You have to work | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21404 |\n",
+        "HumanReadable": "### Issue COMPANYSA-14\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Raw Description|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User() | 2023-01-26T19:50:03.576+0200 | Example User(admin@demistodev.com) | You better be created | 2023-04-04 | 21404 | Story | COMPANYSA-14 | Collab,<br>GoodJob | High | Company Snoozing App | <p>You better be created</p> | Example User() | Done | You have to work | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21404 |\n",
         "EntryContext": {
             "Ticket(val.Id && val.Id == obj.Id)": {
                 "LastSeen": "2023-04-09T21:39:04.125+0300",
@@ -1191,6 +1192,7 @@
                 "Assignee": "Example User()",
                 "Creator": "Example User(admin@demistodev.com)",
                 "Description": "You better be created",
+                "RawDescription": "<p>You better be created</p>",
                 "watches": {
                     "issueFieldDisplayName": "Watchers",
                     "rawData": {

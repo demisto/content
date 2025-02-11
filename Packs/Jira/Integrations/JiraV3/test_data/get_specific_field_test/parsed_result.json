@@ -1437,7 +1437,7 @@
             }
         }
     },
-    "HumanReadable": "### Issue COMPANYSA-35\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User(admin@demistodev.com) | 2023-03-01T11:34:49.730+0200 | Example User(admin@demistodev.com) | XSOAR description stam | 2024-12-30 | 21487 | Story | COMPANYSA-35 | Demisto,<br>XSOAR,<br>dummy-label,<br>dummy-label2,<br>xsoar-mirror | Low | Company Snoozing App | Example User(admin@demistodev.com) | Backlog | Testing summary XSOAR mirroring | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21487 |\n",
+    "HumanReadable": "### Issue COMPANYSA-35\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Raw Description|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User(admin@demistodev.com) | 2023-03-01T11:34:49.730+0200 | Example User(admin@demistodev.com) | XSOAR description stam | 2024-12-30 | 21487 | Story | COMPANYSA-35 | Demisto,<br>XSOAR,<br>dummy-label,<br>dummy-label2,<br>xsoar-mirror | Low | Company Snoozing App | <p>XSOAR description stam</p> | Example User(admin@demistodev.com) | Backlog | Testing summary XSOAR mirroring | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21487 |\n",
     "EntryContext": {
         "Ticket(val.Id && val.Id == obj.Id)": {
             "LastSeen": "2023-04-30T22:56:00.723+0300",
@@ -1485,6 +1485,7 @@
             ],
             "Assignee": "Example User(admin@demistodev.com)",
             "Creator": "Example User(admin@demistodev.com)",
+            "RawDescription": "<p>XSOAR description stam</p>",
             "Description": "XSOAR description stam",
             "watches": {
                 "issueFieldDisplayName": "Watchers",

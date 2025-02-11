@@ -780,7 +780,8 @@
                     "Labels": [],
                     "Assignee": "",
                     "Creator": "Example User(admin@demistodev.com)",
-                    "Description": ""
+                    "Description": "",
+                    "RawDescription": ""
                 },
                 {
                     "LastSeen": "",
@@ -798,7 +799,8 @@
                     "Labels": [],
                     "Assignee": "",
                     "Creator": "Example User(admin@demistodev.com)",
-                    "Description": ""
+                    "Description": "",
+                    "RawDescription": ""
                 }
             ],
             "boardId": "12",

@@ -722,7 +722,8 @@
                     "Labels": [],
                     "Assignee": "",
                     "Creator": "Example User(admin@demistodev.com)",
-                    "Description": "Please finish this ASAP."
+                    "Description": "Please finish this ASAP.",
+                    "RawDescription": ""
                 },
                 {
                     "LastSeen": "",
@@ -740,7 +741,8 @@
                     "Labels": [],
                     "Assignee": "",
                     "Creator": "Example User(admin@demistodev.com)",
-                    "Description": ""
+                    "Description": "",
+                    "RawDescription": ""
                 }
             ],
             "boardId": "12",
