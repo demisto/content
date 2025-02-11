@@ -3,11 +3,6 @@
     "detailsV2": {
         "tabs": [
             {
-                "id": "overview",
-                "name": "Overview",
-                "type": "overview"
-            },
-            {
                 "id": "assets_and_artifacts",
                 "name": "Key Assets \u0026 Artifacts",
                 "type": "assets_and_artifacts"
