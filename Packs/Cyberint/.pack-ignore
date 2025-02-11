@@ -17,7 +17,7 @@ ignore=IF115,IF106,BA116,IF113
 ignore=RN115
 
 [file:Packs/Cyberint/ReleaseNotes/1_1_5.md]
-ignore=RN115
+ignore=RN115,RN114
 
 [known_words]
 Cyberint
