@@ -1,0 +1,20 @@
+{
+    "trigger_id": "bdebb4b10ded975f41ee4caaddbdd145",
+    "playbook_id": "Authentication method added to an Azure account",
+    "suggestion_reason": "Recommended for 'Suspicious authentication method addition to Azure account' alert",
+    "description": "This trigger is responsible for handling the 'Suspicious authentication method addition to Azure account' alert",
+    "trigger_name": "silent-Authentication method added to an Azure account",
+    "issilent": true,
+    "fromVersion": "8.9.0",
+    "alerts_filter": {
+      "filter": {
+          "AND": [
+            {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Suspicious authentication method addition to Azure account"
+            }
+          ]
+        }
+    }
+  }
