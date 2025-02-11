@@ -585,7 +585,7 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict | None = None, jwt_params: dict | None = None, version: str | None = None, look_back: int = 0,
+                 incident_name: str, oauth_params: dict = {},use_oauth_token: bool = False,use_jwt_token: bool = False, version: str | None = None, look_back: int = 0,
                  use_display_value: bool = False, display_date_format: str = ''):
         """
 
@@ -609,18 +609,16 @@ class Client(BaseClient):
             incident_name: the ServiceNow ticket field to be set as the incident name
             look_back: defines how much backwards (minutes) should we go back to try to fetch incidents.
         """
-        oauth_params = oauth_params if oauth_params else {}
-        jwt_params = jwt_params if jwt_params else {}
         self._base_url = server_url
         self._sc_server_url = sc_server_url
         self._cr_server_url = cr_server_url
         self._version = version
         self._verify = verify
-        demisto.debug('here 3')
         self._username = username
         self._password = password
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-        self.use_oauth = bool(oauth_params)
+        self.use_oauth = use_oauth_token
+        self.use_jwt = use_jwt_token
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -632,7 +630,6 @@ class Client(BaseClient):
         self.look_back = look_back
         self.use_display_value = use_display_value
         self.display_date_format = DATE_FORMAT_OPTIONS.get(display_date_format)
-        self.use_jwt = bool(jwt_params)
         if self.use_display_value:
             assert self.display_date_format, 'A display date format must be selected in the instance configuration when ' \
                                              'using the `Use Display Value` option.'
@@ -649,16 +646,16 @@ class Client(BaseClient):
         elif self.use_jwt:
             self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
                                                                   use_jwt=self.use_jwt,
-                                                                  client_id='',
-                                                                  jwt_key_id=jwt_params.get('jwt_key_id', ''),
-                                                                  jwt_key=jwt_params.get('jwt_key', ''),
-                                                                  jwt_sub=jwt_params.get('jwt_sub', ''),
+                                                                  client_id=oauth_params.get('client_id', ''),
+                                                                  client_secret=oauth_params.get('client_secret', ''),
                                                                   url=oauth_params.get('url', ''),
                                                                   verify=oauth_params.get('verify', False),
                                                                   proxy=oauth_params.get('proxy', False),
-                                                                  headers=oauth_params.get('headers', ''))
+                                                                  headers=oauth_params.get('headers', ''),
+                                                                  jwt_key_id=oauth_params.get('jwt_key_id', ''),
+                                                                  jwt_key=oauth_params.get('jwt_private_key', ''),
+                                                                  jwt_sub=oauth_params.get('jwt_sub', ''))
         else:
-            demisto.debug('here 4')
             self._auth = (self._username, self._password)
 
     def generic_request(self, method: str, path: str, body: Optional[dict] = None, headers: Optional[dict] = None,
@@ -2540,7 +2537,6 @@ def login_command(client: Client, args: dict[str, Any]) -> tuple[str, dict[Any, 
         raise Exception('!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization.\n Please '
                         'select the `Use OAuth Login` checkbox in the instance configuration before running this '
                         'command.')
-    demisto.debug('here 7')
     username = args.get('username', '')
     password = args.get('password', '')
     try:
@@ -3248,21 +3244,16 @@ def main():
     """
     command = demisto.command()
     LOG(f'Executing command {command}')
-
     params = demisto.params()
     args = demisto.args()
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
-    use_jwt_outh = params.get('use_jwt_outh', False)
+    use_jwt_oauth = params.get('use_jwt_outh', False)
     client_id = params.get('credentials', {}).get('identifier')
-    oauth_params = {}
-    jwt_params = {}
-
-    if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
-        username = ''
-        password = ''
-        client_secret = params.get('credentials', {}).get('password')
-        oauth_params = {
+    client_secret = params.get('credentials', {}).get('password')
+    username = ''
+    password = ''
+    oauth_params = {
             'credentials': {
                 'identifier': username,
                 'password': password
@@ -3275,24 +3266,18 @@ def main():
                 'Accept': 'application/json'
             },
             'verify': verify,
-            'proxy': params.get('proxy'),
-            'use_oauth': use_oauth
-        }
-    elif use_jwt_outh:
-        jwt_params = {
-            'client_id': client_id,
-            'jwt_key_id': params.get('jwt_credentials', {}).get('identifier'),
-            'jwt_private_key': params.get('jwt_credentials', {}).get('password'),
-            'jwt_sub': params.get('jwt_sub', '')
-        }
+            'proxy': params.get('proxy')}
+
+    if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
+        oauth_params['use_oauth']= use_oauth
+    elif use_jwt_oauth:
+        oauth_params['jwt_key_id']= params.get('jwt_credentials', {}).get('identifier')
+        oauth_params['jwt_private_key']=  params.get('jwt_credentials', {}).get('password')
+        oauth_params['jwt_sub'] = params.get('jwt_sub', '')
     else:  # use basic authentication
-        demisto.debug('here 1')
         username = params.get('credentials', {}).get('identifier')
         password = params.get('credentials', {}).get('password')
-        demisto.debug('here 2')
-
     version = params.get('api_version')
-
     force_default_url = argToBoolean(args.get('force_default_url', 'false'))
     if version and not force_default_url:
         api = f'/api/now/{version}/'
@@ -3362,9 +3347,9 @@ def main():
     try:
         client = Client(server_url=server_url, sc_server_url=sc_server_url, cr_server_url=cr_server_url,
                         username=username, password=password, verify=verify, fetch_time=fetch_time,
-                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
+                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,use_oauth_token=use_oauth, use_jwt_token=use_jwt_oauth,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
-                        incident_name=incident_name, oauth_params=oauth_params, jwt_params=jwt_params, version=version, look_back=look_back,
+                        incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back,
                         use_display_value=use_display_value, display_date_format=display_date_format)
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             'test-module': test_module,

@@ -204,7 +204,7 @@ class ServiceNowClient(BaseClient):
             return previous_token.get('jwt_token')
         
         expiration_time = current_time + timedelta(minutes=TOKEN_EXPIRATION_TIME)
-        header = {
+        headers = {
             "alg": "RS256",  # Signing algorithm
             "typ": "JWT",  # Token type
             "kid": self.jwt_key_id,  # From ServiceNow 
@@ -218,7 +218,7 @@ class ServiceNowClient(BaseClient):
             "jti": str(uuid.uuid4())
         }
         jwt_token = jwt.encode(payload, self.jwt_key,
-                            algorithm="RS256", headers=header)
+                            algorithm="RS256", headers=headers)
         new_jwt_token = {
                         'jwt_token': jwt_token,
                         'expiration_time': date_to_timestamp(expiration_time, date_format='%Y-%m-%dT%H:%M:%S'),
