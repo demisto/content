@@ -129,7 +129,7 @@ When incidents are mirrored out from XSOAR to Microsoft 365 Defender:
    * **Note**: Comments cannot be edited or deleted in Microsoft 365 Defender, as this functionality is not supported.
 
 3. If an incident is closed in XSOAR and Close Mirrored Microsoft 365 Defender Incidents is enabled:  
-   * The **Close Reason** field is mirrored to the `status` and `classification` fields in Microsoft 365 Defender.  
+   * The **Close Reason** field is mirrored to the `status`, `classification` and `determination` fields in Microsoft 365 Defender.  
 
 
 ### Closing Logic
@@ -165,8 +165,10 @@ When an incident is resolved in Microsoft 365 Defender:
 
 #### Outgoing Closing Logic (XSOAR → Microsoft 365 Defender)
 
-When closing incidents from XSOAR to Microsoft 365 Defender, the following logic is applied to map the **Close Reason** and **Microsoft 365 Defender Classification** fields:
+Disclaimer: The closing form currently does not support the **Microsoft 365 Defender Classification** field, and False Positive Classification is not yet enforced when selecting "False Positive" as the close reason. 
+If classification is required, please manually update the **Microsoft 365 Defender Classification** via the layout before closing the incident.
 
+When closing incidents from XSOAR to Microsoft 365 Defender, the following logic is applied to map the **Close Reason** field:
 1. **General Status Update**:  
    When an incident is marked as closed in XSOAR, the `status` field in Microsoft 365 Defender will always be set to **Resolved**.  
 
