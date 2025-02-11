@@ -515,7 +515,6 @@ ignore=GR103
 [file:incidentfield-GIB_Phishing_Status.json]
 ignore=GR103
 
-
 [file:incidentfield-GIB_Screenshot.json]
 ignore=GR103
 
@@ -575,7 +574,6 @@ ignore=LO107
 
 [file:layoutscontainer-GIB_Nation-State_Cybercriminals_Threat_Layout.json]
 ignore=LO107
-
 
 [file:layoutscontainer-GIB_Cybercriminal_Threat_Layout.json]
 ignore=LO107
