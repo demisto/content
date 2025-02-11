@@ -452,14 +452,11 @@ Scope: `read:jira-work`
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The JQL query string. | Required |
-| start_at | The index (integer) of the first issue to return (0-based). | Optional |
-| startAt | Deprecated. Please use start_at. | Optional |
-| max_results | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated. | Optional |
-| maxResults | Deprecated. Please use max_results. | Optional |
-| headers | Displays the headers in human readable format. | Optional |
-| fields | A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command. | Optional |
-| extraFields | Deprecated. Please use fields. | Optional |
+| query | The JQL query string. | Required | 
+| start_at | The index (integer) of the first issue to return (0-based). | Optional | 
+| max_results | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated. | Optional | 
+| headers | Displays the headers in human readable format. | Optional | 
+| fields | A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command. | Optional | 
 
 #### Context Output
 
@@ -471,6 +468,7 @@ Scope: `read:jira-work`
 | Ticket.Creator | String | The user who created the ticket. |
 | Ticket.Summary | String | The ticket summary. |
 | Ticket.Description | String | The ticket's description. |
+| Ticket.RawDescription | String | The ticket's raw description. |
 | Ticket.Labels | Array | The ticket's labels. |
 | Ticket.Components | Array | The ticket's components. |
 | Ticket.Status | String | The ticket status. |
@@ -831,6 +829,7 @@ Scope: `write:jira-work`
 | Ticket.Creator | String | The user who created the ticket. |
 | Ticket.Summary | String | The ticket summary. |
 | Ticket.Description | String | The ticket's project description. |
+| Ticket.RawDescription | String | The ticket's project raw description. |
 | Ticket.Labels | Array | The ticket's project labels. |
 | Ticket.Status | String | The ticket status. |
 | Ticket.Priority | String | The ticket priority. |
@@ -926,6 +925,7 @@ Scope: `write:jira-work`
 | Ticket.Creator | String | The user who created the ticket. |
 | Ticket.Summary | String | The ticket summary. |
 | Ticket.Description | String | The ticket's project description. |
+| Ticket.RawDescription | String | The ticket's project raw description. | 
 | Ticket.Labels | Array | The ticket's project labels. |
 | Ticket.Status | String | The ticket status. |
 | Ticket.Priority | String | The ticket priority. |
@@ -990,9 +990,6 @@ Scope: `write:jira-work`
 >|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
-
-
-
 
 ### jira-create-issue
 
@@ -1103,6 +1100,8 @@ Scope: `read:jira-work`
 | Ticket.Assignee | String | The user assigned to the ticket, in the form \`Username\(User email address\)\`. |
 | Ticket.Creator | String | The user who created the ticket. |
 | Ticket.Summary | String | The ticket summary. |
+| Ticket.Description | String | The ticket's project description. |
+| Ticket.RawDescription | String | The ticket's project raw description. |
 | Ticket.Status | String | The ticket status. |
 | Ticket.Labels | Array | The ticket's labels. |
 | Ticket.Components | Array | The ticket's components. |
@@ -3197,4 +3196,3 @@ Returns a page of field metadata for a specified project and issue type.
 | Jira.IssueField.Schema.custom | String | If the field is a custom field, the URI of the field. | 
 | Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
 | Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
-
