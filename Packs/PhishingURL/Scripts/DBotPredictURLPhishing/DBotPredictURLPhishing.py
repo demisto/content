@@ -152,7 +152,8 @@ def save_model_data(model_data: ModelData):
             'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT, SUSPICIOUS_VERDICT],
             'modelOverride': 'true',
             'modelHidden': True,
-            'modelType': 'url_phishing'
+            'modelType': 'url_phishing',
+            'modelExtraInfo': {}
         }
     )
     if is_error(res):
