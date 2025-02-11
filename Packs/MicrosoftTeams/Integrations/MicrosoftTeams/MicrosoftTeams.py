@@ -1402,6 +1402,7 @@ def create_chat(chat_type: str, users: list, chat_name: str = "") -> dict:
 
     members += [create_conversation_member(user_id, [USER_TYPE_TO_USER_ROLE.get(user_type)])
                 for user_id, user_type in users]
+    demisto.debug(f"Chat members are: {members}")
 
     request_json: dict = {
         "chatType": chat_type,
@@ -1521,9 +1522,12 @@ def add_bot_to_chat(chat_id: str):
 
     # bot is already part of the chat
     if is_bot_in_chat(chat_id):
+        demisto.debug(f"Bot is already part of the chat - chat ID: {chat_id}")
         return
     res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
                        params={"$filter": f"externalId eq '{BOT_ID}'"})
+    demisto.debug(f"res is: {res}")
+    demisto.debug(f"res type is: {type(res)}")
     app_data = res.get('value')[0]      # type: ignore
     bot_internal_id = app_data.get('id')
 
