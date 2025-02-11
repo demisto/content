@@ -11187,7 +11187,7 @@ class UniversalCommand:
             return result_data[0]  # type: ignore
 
         if not result_data and id:  # in case of an empty list and a specific ID, it means ID not found in all devices
-            raise DemistoException(f"The given ID {id} is not found in all device of the topology")
+            raise DemistoException(f"The given ID {id} is not found in all devices of the topology")
 
         return result_data
 
