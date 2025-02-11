@@ -1,37 +1,26 @@
 id: Recovery Plan
 version: -1
 name: Recovery Plan
-description: |-
-  This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:
-  * Unisolate endpoint
-  * Restore quarantined file
-
-  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
-starttaskid: "0"
+description: "This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:\n* Unisolate endpoint\n* Restore quarantined file\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 6664776c-7209-42a0-8272-5f7f66756511
     type: start
     task:
       id: 6664776c-7209-42a0-8272-5f7f66756511
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "4"
+      - '1'
+      - '4'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 40
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 40\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -39,8 +28,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 82bb4625-493c-4e79-8ba2-9ded7a609000
     type: condition
     task:
@@ -50,15 +39,15 @@ tasks:
       description: Whether to unisolate the endpoint.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "2"
+      - '3'
+      yes:
+      - '2'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -68,15 +57,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 200
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -84,8 +67,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: f44d89fc-f4c3-4c8b-84f1-c219fe4544ad
     type: regular
     task:
@@ -96,22 +79,16 @@ tasks:
       script: '|||core-unisolate-endpoint'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       endpoint_id:
         complex:
           root: inputs.endpointID
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 400
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -119,8 +96,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 10b17a6b-93a9-4d5a-8d84-7950f294732a
     type: title
     task:
@@ -129,16 +106,10 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 570
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 570\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -146,8 +117,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 1f8e95ae-1cf7-44c0-896b-576fb895a635
     type: condition
     task:
@@ -157,15 +128,15 @@ tasks:
       description: Whether to restore the quarantined file.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "5"
+      - '3'
+      yes:
+      - '5'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -175,15 +146,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 200
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -191,8 +156,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 80ff52ba-235e-49e9-8813-e4f79b1bd407
     type: regular
     task:
@@ -203,10 +168,10 @@ tasks:
       script: '|||core-restore-file'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       endpoint_id:
         complex:
@@ -215,13 +180,7 @@ tasks:
         complex:
           root: inputs.FileHash
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 400
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -229,33 +188,17 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "1_2_yes": 0.51,
-      "1_3_#default#": 0.54,
-      "4_3_#default#": 0.54,
-      "4_5_yes": 0.43
-    },
-    "paper": {
-      "dimensions": {
-        "height": 595,
-        "width": 940,
-        "x": 170,
-        "y": 40
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"1_2_yes\": 0.51,\n    \"1_3_#default#\": 0.54,\n    \"4_3_#default#\": 0.54,\n    \"4_5_yes\": 0.43\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 595,\n      \"width\": 940,\n      \"x\": 170,\n      \"y\": 40\n    }\n  }\n}"
 inputs:
 - key: unIsolateEndpoint
   value:
-    simple: "true"
+    simple: 'true'
   required: false
   description: Set to True to cancel the endpoint isolation.
   playbookInputQuery:
 - key: releaseFile
   value:
-    simple: "false"
+    simple: 'false'
   required: false
   description: Set to True to release the quarantined file.
   playbookInputQuery:
@@ -275,4 +218,5 @@ tests:
 marketplaces:
 - marketplacev2
 - xpanse
+- platform
 fromversion: 6.6.0

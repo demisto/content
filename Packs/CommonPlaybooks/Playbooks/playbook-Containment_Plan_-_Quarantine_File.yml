@@ -1,36 +1,26 @@
 id: Containment Plan - Quarantine File
 version: -1
 name: Containment Plan - Quarantine File
-description: |-
-  ## Containment Plan - Quarantine File
-
-  This playbook is a sub-playbook within the containment plan playbook.
-  The playbook quarantines files using core commands.
-starttaskid: "0"
+description: "## Containment Plan - Quarantine File\n\nThis playbook is a sub-playbook within the containment plan playbook.\nThe playbook quarantines files using core commands."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 0c4f76b8-840e-49d6-83ea-28853fed1128
     type: start
     task:
       id: 0c4f76b8-840e-49d6-83ea-28853fed1128
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": -480
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": -480\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -38,8 +28,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 397f4b57-3b4f-40ed-8871-59fb281d5a77
     type: title
     task:
@@ -48,17 +38,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -260,
-          "y": 1360
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1360\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -66,8 +50,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: a0ceb1ef-9c66-4295-8ab8-8ff9b8cbbf2f
     type: regular
     task:
@@ -78,10 +62,10 @@ tasks:
       script: '|||core-get-quarantine-status'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       endpoint_id:
         complex:
@@ -112,14 +96,8 @@ tasks:
                 iscontext: true
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": -120
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 560,\n    \"y\": -120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -127,8 +105,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 30398ddb-5182-4c19-84f2-6f06e62eabca
     type: regular
     task:
@@ -139,10 +117,10 @@ tasks:
       script: '|||core-quarantine-files'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       endpoint_id_list:
         complex:
@@ -191,18 +169,12 @@ tasks:
                   simple: inputs.FilePath
                 iscontext: true
       interval_in_seconds:
-        simple: "20"
+        simple: '20'
       timeout_in_seconds:
-        simple: "120"
+        simple: '120'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 240
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 570,\n    \"y\": 240\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -210,8 +182,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 2b43ad1d-1312-47cd-87af-a0e39b15ab76
     type: regular
     task:
@@ -225,7 +197,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       key:
         simple: QuarantinedFilesFromEndpoints
@@ -234,14 +206,8 @@ tasks:
           root: Core.quarantineFiles
           accessor: actionIds
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 1150
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 570,\n    \"y\": 1150\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -249,8 +215,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 1208d3af-a6d7-4126-86f2-1c84f8659895
     type: condition
     task:
@@ -260,15 +226,15 @@ tasks:
       description: Whether to quarantine the files based on the input values and the incident context.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "8"
+      - '2'
+      yes:
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -278,7 +244,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isEqualString
           left:
@@ -299,16 +265,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "False"
+              simple: 'False'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": 40
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 560,\n    \"y\": 40\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -316,8 +276,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 410c04ef-0afc-4578-8b1b-b1a3de96debf
     type: condition
     task:
@@ -327,15 +287,15 @@ tasks:
       description: Checks if the quarantining of the file was successful.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "22"
-      "yes":
-      - "16"
+      - '22'
+      yes:
+      - '16'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEqualString
           left:
@@ -355,14 +315,8 @@ tasks:
                 root: Core.GetActionStatus
                 accessor: status
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 790
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": 790\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -370,8 +324,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 7e2c6273-86db-4fdd-8165-79a451736b14
     type: regular
     task:
@@ -385,7 +339,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       key:
         simple: QuarantinedFilesFromEndpoints
@@ -394,14 +348,8 @@ tasks:
           root: Core.quarantineFiles
           accessor: actionIds
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 960
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 570,\n    \"y\": 960\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -409,8 +357,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: fd83526a-3995-475b-8ea6-60233a3f1636
     type: condition
     task:
@@ -420,14 +368,14 @@ tasks:
       description: Whether to isolate the device automatically based on the input values.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
+      - '2'
       Auto:
-      - "7"
+      - '7'
       Manual:
-      - "23"
+      - '23'
     separatecontext: false
     conditions:
     - label: Auto
@@ -440,7 +388,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isNotEmpty
           left:
@@ -470,7 +418,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isNotEmpty
           left:
@@ -490,14 +438,8 @@ tasks:
               complex:
                 root: inputs.FileHash
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": -340
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": -340\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -505,8 +447,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 8395bf84-b9be-42af-8c0b-cdf64c82b8fa
     type: regular
     task:
@@ -517,10 +459,10 @@ tasks:
       script: '|||core-get-quarantine-status'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       endpoint_id:
         complex:
@@ -536,20 +478,14 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "64"
+                  simple: '64'
       file_path:
         complex:
           root: FilePath
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 240
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 240\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -557,8 +493,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: a04c8ae8-b9a2-4a06-8d64-8463dd6582d9
     type: condition
     task:
@@ -568,15 +504,15 @@ tasks:
       description: Whether to quarantine the files based on the input values and the incident context.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "20"
+      - '2'
+      yes:
+      - '20'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -586,7 +522,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isEqualString
           left:
@@ -607,16 +543,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "False"
+              simple: 'False'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 410
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 410\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -624,8 +554,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 48f240fd-334d-4f88-8e66-726f9971ba3c
     type: regular
     task:
@@ -636,10 +566,10 @@ tasks:
       script: '|||core-quarantine-files'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       endpoint_id_list:
         complex:
@@ -655,23 +585,17 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "64"
+                  simple: '64'
       file_path:
         complex:
           root: FilePath
       interval_in_seconds:
-        simple: "20"
+        simple: '20'
       timeout_in_seconds:
-        simple: "120"
+        simple: '120'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 600
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 600\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -679,8 +603,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 36226619-1561-46d4-8cc6-c52b2fc1044c
     type: regular
     task:
@@ -691,22 +615,16 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       message:
         simple: Quarantine failed.
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 960
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 960\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -714,8 +632,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: c4b074c0-d8a1-4ef8-80a4-0b3ba35a3e76
     type: regular
     task:
@@ -726,10 +644,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       key:
         simple: FilePath
@@ -763,14 +681,8 @@ tasks:
                 value:
                   simple: \\
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": -120
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": -120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -778,8 +690,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: e0e42cd2-c5a4-4148-855a-3f99dc7a6c91
     type: regular
     task:
@@ -790,10 +702,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       key:
         simple: FileHash
@@ -818,14 +730,8 @@ tasks:
                 value:
                   simple: No value
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 40
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 40\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -833,28 +739,11 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "13_2_#default#": 0.1,
-      "15_16_yes": 0.6,
-      "17_2_#default#": 0.1,
-      "19_20_yes": 0.44,
-      "19_2_#default#": 0.15
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1905,
-        "width": 1210,
-        "x": -260,
-        "y": -480
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"13_2_#default#\": 0.1,\n    \"15_16_yes\": 0.6,\n    \"17_2_#default#\": 0.1,\n    \"19_20_yes\": 0.44,\n    \"19_2_#default#\": 0.15\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1905,\n      \"width\": 1210,\n      \"x\": -260,\n      \"y\": -480\n    }\n  }\n}"
 inputs:
 - key: FileContainment
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to 'True' to quarantine the identified file.
   playbookInputQuery:
@@ -893,3 +782,4 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
+- platform

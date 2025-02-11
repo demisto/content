@@ -13,7 +13,7 @@ configuration:
   name: tenant_code
   required: true
   type: 0
-- display: ""
+- display: ''
   displaypassword: API Key for the authentication.
   name: credentials
   type: 9
@@ -48,8 +48,8 @@ configuration:
   display: Use system proxy settings
   type: 8
   required: false
-description: 'Retrieve access, authentication, and audit logs and store them on a Security Information and Event Management (SIEM) system, local repository, or syslog file server. You can retrieve the logs only for the tenant that is associated with the API key, or for a direct or delegated child of that tenant.'
-display: 'Thales SafeNet Trusted Access Event Collector'
+description: Retrieve access, authentication, and audit logs and store them on a Security Information and Event Management (SIEM) system, local repository, or syslog file server. You can retrieve the logs only for the tenant that is associated with the API key, or for a direct or delegated child of that tenant.
+display: Thales SafeNet Trusted Access Event Collector
 name: SafeNetTrustedAccessEventCollector
 supportlevelheader: xsoar
 script:
@@ -63,13 +63,13 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: 'Since date.'
+    - description: Since date.
       name: since
-    - description: 'Until date.'
+    - description: Until date.
       name: until
     - description: A string pointing at the next page of results. The marker can be found within the previous response.
       name: marker
-    description: 'Get access, authentication, and audit logs from SafeNet Trusted Access.'
+    description: Get access, authentication, and audit logs from SafeNet Trusted Access.
     name: sta-get-events
   script: '-'
   type: python
@@ -78,6 +78,7 @@ script:
   dockerimage: demisto/python3:3.11.10.115186
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

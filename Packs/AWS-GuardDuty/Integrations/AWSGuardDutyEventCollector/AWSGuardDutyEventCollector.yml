@@ -19,7 +19,7 @@ configuration:
   type: 0
   required: false
 - display: Role Session Duration
-  additionalinfo: 'The maximum length of each session in seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.'
+  additionalinfo: The maximum length of each session in seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.
   name: sessionDuration
   type: 0
   required: false
@@ -38,7 +38,7 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
   type: 0
   required: false
 - display: PrivateLink service URL.
@@ -64,7 +64,7 @@ configuration:
   required: false
 - display: First fetch time
   name: first_fetch
-  defaultvalue: '3 days ago'
+  defaultvalue: 3 days ago
   type: 0
   required: false
 - display: Number of events to fetch per fetch.
@@ -78,10 +78,10 @@ configuration:
   type: 15
   additionalinfo: 'The severity level or higher of findings to be fetched. Possible values: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched.'
   options:
-  - 'Low'
-  - 'Medium'
-  - 'High'
-  defaultvalue: 'Low'
+  - Low
+  - Medium
+  - High
+  defaultvalue: Low
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -94,7 +94,7 @@ description: Amazon Web Services Guard Duty Service (gd) event collector integra
 display: AWS - GuardDuty Event Collector
 name: AWS - GuardDuty Event Collector
 script:
-  script: ""
+  script: ''
   type: python
   commands:
   - arguments:
@@ -107,13 +107,13 @@ script:
       - 'false'
       required: true
     - auto: PREDEFINED
-      defaultValue: 'Low'
+      defaultValue: Low
       description: The minimum severity of the events to fetch (inclusive).
       name: severity
       predefined:
-      - 'Low'
-      - 'Medium'
-      - 'High'
+      - Low
+      - Medium
+      - High
       required: true
     - description: The date to start collecting the events from.
       name: collect_from
@@ -126,6 +126,7 @@ script:
   subtype: python3
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No test
 fromversion: 6.8.0

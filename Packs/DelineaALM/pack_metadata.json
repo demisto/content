@@ -15,6 +15,7 @@
         "Thycotic"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

@@ -2,31 +2,25 @@ id: XCloud Cryptomining - Set Verdict
 version: -1
 name: XCloud Cryptojacking - Set Verdict
 description: "This playbook sets the alert's verdict as malicious if one of the following conditions is true:\n1. If the source IP address is malicious\n2. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"Cloud identity reached a throttling API rate\" (medium/high severity)\n3. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"Suspicious heavy allocation of compute resources - possible mining activity\" \n4. If the incident includes \"Unusual allocation of multiple cloud compute resources\" with medium/high severity, the source ASN isn't known, and the source IP isn't known as well.\n5. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"A cloud compute instance was created in a dormant region\"\n\nIf none of the conditions is true, the playbook will wait for an analyst's decision."
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 16048485-8f1a-405d-8967-e6099c4cf457
     type: start
     task:
       id: 16048485-8f1a-405d-8967-e6099c4cf457
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -60
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -60\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -34,8 +28,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 02ad508c-bada-4b55-8675-b64f30e593d2
     type: regular
     task:
@@ -46,24 +40,18 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       key:
         simple: alertVerdict
       value:
         simple: Malicious
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1190
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1190\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -71,8 +59,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 6b65b50e-1f31-4ab4-81c9-37a1aa9f92d0
     type: condition
     task:
@@ -82,12 +70,12 @@ tasks:
       description: Checks the verdict logic. Please refer to the playbook description for detailed information.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "5"
+      - '5'
       Malicious:
-      - "2"
+      - '2'
     separatecontext: false
     conditions:
     - label: Malicious
@@ -111,15 +99,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
+              simple: '2'
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -127,8 +109,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 02c69028-b6d5-4f54-8442-ce03f5e9ee71
     type: condition
     task:
@@ -138,12 +120,12 @@ tasks:
       description: Checks the verdict logic. Please refer to the playbook description for detailed information.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "6"
+      - '6'
       Malicious:
-      - "2"
+      - '2'
     separatecontext: false
     conditions:
     - label: Malicious
@@ -170,14 +152,8 @@ tasks:
             value:
               simple: Suspicious heavy allocation of compute resources - possible mining activity
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 20,
-          "y": 590
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 20,\n    \"y\": 590\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -185,8 +161,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: dc2f18b5-5140-4b77-8e5d-fb05ad2043ed
     type: condition
     task:
@@ -196,12 +172,12 @@ tasks:
       description: Checks the verdict logic. Please refer to the playbook description for detailed information.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
+      - '4'
       Malicious:
-      - "2"
+      - '2'
     separatecontext: false
     conditions:
     - label: Malicious
@@ -247,14 +223,8 @@ tasks:
             value:
               simple: Cloud identity reached a throttling API rate
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 210,
-          "y": 410
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 410\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -262,8 +232,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 190764a3-16cd-416d-8bac-75ea1f4b6af9
     type: condition
     task:
@@ -273,12 +243,12 @@ tasks:
       description: Checks the verdict logic. Please refer to the playbook description for detailed information.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "7"
+      - '7'
       Malicious:
-      - "2"
+      - '2'
     separatecontext: false
     conditions:
     - label: Malicious
@@ -296,7 +266,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: "2"
+                        simple: '2'
                   - operator: isEqualString
                     left:
                       value:
@@ -304,7 +274,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: "3"
+                        simple: '3'
                 accessor: name
             iscontext: true
           right:
@@ -318,7 +288,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0"
+              simple: '0'
       - - operator: isEqualNumber
           left:
             value:
@@ -326,15 +296,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -170,
-          "y": 770
-        }
-      }
+              simple: '0'
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -170,\n    \"y\": 770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -342,8 +306,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: fa41d49c-9f02-4bc1-8671-b6e61d8d67c1
     type: condition
     task:
@@ -353,12 +317,12 @@ tasks:
       description: Checks the verdict logic. Please refer to the playbook description for detailed information.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "9"
+      - '9'
       Malicious:
-      - "2"
+      - '2'
     separatecontext: false
     conditions:
     - label: Malicious
@@ -385,14 +349,8 @@ tasks:
             value:
               simple: A cloud compute instance was created in a dormant region
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -360,
-          "y": 940
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -360,\n    \"y\": 940\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -400,8 +358,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 935e4015-da75-4294-8887-5c1842969aa1
     type: regular
     task:
@@ -412,24 +370,18 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       key:
         simple: alertVerdict
       value:
         simple: userVerification
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -360,
-          "y": 1190
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -360,\n    \"y\": 1190\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -437,8 +389,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 5a36a74a-812b-48dc-82d8-e577434c0cd5
     type: title
     task:
@@ -447,17 +399,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1370
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1370\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -465,43 +411,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 7622e9b0-cbc1-42c9-87e2-2f8cd899559a
     type: regular
     task:
       id: 7622e9b0-cbc1-42c9-87e2-2f8cd899559a
       version: -1
       name: Get additional alerts
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       fromdate:
         simple: 2 hours ago
       query:
         simple: hostip:${inputs.sourceIP}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 70
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 70\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -509,26 +442,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "3_2_Malicious": 0.14,
-      "4_2_Malicious": 0.24,
-      "5_2_Malicious": 0.21,
-      "6_2_Malicious": 0.19,
-      "6_7_#default#": 0.8,
-      "7_2_Malicious": 0.21,
-      "7_9_#default#": 0.59
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1495,
-        "width": 1190,
-        "x": -360,
-        "y": -60
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"3_2_Malicious\": 0.14,\n    \"4_2_Malicious\": 0.24,\n    \"5_2_Malicious\": 0.21,\n    \"6_2_Malicious\": 0.19,\n    \"6_7_#default#\": 0.8,\n    \"7_2_Malicious\": 0.21,\n    \"7_9_#default#\": 0.59\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1495,\n      \"width\": 1190,\n      \"x\": -360,\n      \"y\": -60\n    }\n  }\n}"
 inputs:
 - key: sourceIP
   value: {}
@@ -541,5 +455,7 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.6.0

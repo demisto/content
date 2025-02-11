@@ -44,7 +44,7 @@ configuration:
 - display: Trust any certificate (not secure)
   name: verify
   type: 8
-  defaultvalue: "true"
+  defaultvalue: 'true'
   section: Connect
   advanced: true
   required: false
@@ -55,7 +55,7 @@ configuration:
   advanced: true
   required: false
 script:
-  script: ""
+  script: ''
   type: python
   commands:
   - arguments:
@@ -67,7 +67,7 @@ script:
       - 'True'
       - 'False'
       required: true
-    - defaultValue: '1 day'
+    - defaultValue: 1 day
       description: "Specifies the start time of the search. This filter is optional. Default is 1 day. Syntax: start_time=YYYY-MM-DDTHH:mm or '1 hour/day/month'."
       name: from_date
       required: false
@@ -78,6 +78,7 @@ script:
   subtype: python3
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
 tests:
 - No tests

@@ -26,6 +26,7 @@
     "githubUser": "ariel-wiz",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

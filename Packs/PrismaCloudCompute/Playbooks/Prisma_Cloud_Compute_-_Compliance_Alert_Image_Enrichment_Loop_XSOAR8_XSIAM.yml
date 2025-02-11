@@ -1,42 +1,26 @@
 id: Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
 version: -1
 name: Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
-description: |-
-  This is a sub playbook of the "Prisma Cloud Compute - Compliance Alert v2" playbook.
-  It will loop through all of the given compliance issue IDs and will retrieve the following information for each affected image based on the compliance issue ID:
-  - Image ID
-  - Compliance Issues
-  - Compliance Distribution
-  - Hosts
-  - Image Instances
-  - Cloud MetaData
-
-  The enriched information will be displayed in the layout in a dedicated table under the "Image Compliance Information" tab.
-starttaskid: "0"
+description: "This is a sub playbook of the \"Prisma Cloud Compute - Compliance Alert v2\" playbook.\nIt will loop through all of the given compliance issue IDs and will retrieve the following information for each affected image based on the compliance issue ID:\n- Image ID\n- Compliance Issues\n- Compliance Distribution\n- Hosts\n- Image Instances\n- Cloud MetaData\n\nThe enriched information will be displayed in the layout in a dedicated table under the \"Image Compliance Information\" tab."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: a32eb95f-96d5-4559-8574-f3b909791cc8
     type: start
     task:
       id: a32eb95f-96d5-4559-8574-f3b909791cc8
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 810
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 810\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -44,8 +28,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: eff669cf-0844-44cf-8e80-d4319eb94d50
     type: regular
     task:
@@ -56,27 +40,21 @@ tasks:
       script: '|||prisma-cloud-compute-images-scan-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       all_results:
-        simple: "true"
+        simple: 'true'
       compact:
-        simple: "true"
+        simple: 'true'
       compliance_ids:
         complex:
           root: inputs.ComplianceIssueID
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1010
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1010\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -84,8 +62,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: a0f0d5fb-ea2a-4402-8f2b-966346972a46
     type: title
     task:
@@ -94,17 +72,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 2660
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 2660\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -112,8 +84,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: efe4b9bc-d64f-4647-880e-c68faeea1829
     type: regular
     task:
@@ -124,15 +96,15 @@ tasks:
       script: '|||prisma-cloud-compute-images-scan-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       all_results:
-        simple: "true"
+        simple: 'true'
       compact:
-        simple: "false"
+        simple: 'false'
       id:
         complex:
           root: PrismaCloudCompute.ReportsImagesScan
@@ -140,14 +112,8 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1420
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1420\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -155,8 +121,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 6f2fd56b-3c20-43f3-8e39-9f0a574ef74d
     type: regular
     task:
@@ -167,10 +133,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       key:
         simple: EnrichedComplianceIssue
@@ -190,14 +156,8 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1610
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1610\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -205,8 +165,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 73330d89-9046-49f6-82ca-5e3ab0b368ef
     type: regular
     task:
@@ -217,26 +177,20 @@ tasks:
       scriptName: PrismaCloudComputeComplianceTable
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "17"
-      - "14"
-      - "19"
+      - '17'
+      - '14'
+      - '19'
     scriptarguments:
       gridID:
         simple: prismacloudcomputeimagecomplianceissues
       resourceType:
         simple: Image
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1800
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1800\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -244,26 +198,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: 5f140456-01b8-4f5f-8d32-7e528d913440
     type: condition
     task:
       id: 5f140456-01b8-4f5f-8d32-7e528d913440
-      description: ""
+      description: ''
       version: -1
       name: Any images were retrieved?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "18"
-      "yes":
-      - "6"
+      - '18'
+      yes:
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -274,14 +228,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1200
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -289,8 +237,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: e62228b8-fd92-4928-8f31-d0a1c8c3531e
     type: regular
     task:
@@ -304,19 +252,13 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       prismacloudcomputeshowcompliancetab:
         simple: image
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 2230
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2230\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -324,24 +266,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 195e26b9-1ebd-4132-86fa-e663b1f62076
     type: playbook
     task:
       id: 195e26b9-1ebd-4132-86fa-e663b1f62076
       version: -1
       name: Prisma Cloud Compute - Jira Compliance Issue
-      description: |
-        This playbook is a sub playbook of the "Prisma Cloud Compute - Compliance Alert Host Enrichment Loop" playbook.
-        It create or update existing Jira issue for each compliance ID retrieved in the original Prisma Cloud compliance alert, with enriched data for each resource (host, image or container).
+      description: "This playbook is a sub playbook of the \"Prisma Cloud Compute - Compliance Alert Host Enrichment Loop\" playbook.\nIt create or update existing Jira issue for each compliance ID retrieved in the original Prisma Cloud compliance alert, with enriched data for each resource (host, image or container).\n"
       playbookName: Prisma Cloud Compute - Jira Compliance Issue
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       ComplianceIssueDescription:
         complex:
@@ -362,19 +302,13 @@ tasks:
         complex:
           root: inputs.JiraProjectName
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 930,
-          "y": 2290
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": 2290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -382,8 +316,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 20b507cf-3d36-419a-84b6-bd2c34a94479
     type: title
     task:
@@ -392,20 +326,14 @@ tasks:
       name: Create external ticket
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 1970
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1160,\n    \"y\": 1970\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -413,25 +341,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: b7a4f132-4778-439f-8441-887dd222d661
     type: condition
     task:
       id: b7a4f132-4778-439f-8441-887dd222d661
-      description: ""
+      description: ''
       version: -1
       name: Which external ticketing system should be used?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "18"
+      - '18'
       Jira:
-      - "13"
+      - '13'
       ServiceNow:
-      - "16"
+      - '16'
     separatecontext: false
     conditions:
     - label: Jira
@@ -458,14 +386,8 @@ tasks:
             value:
               simple: ServiceNow
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 2100
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1160,\n    \"y\": 2100\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -473,8 +395,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 9d795c97-e62d-4f5c-8cf5-bd978fb594cd
     type: playbook
     task:
@@ -484,14 +406,14 @@ tasks:
       playbookName: Prisma Cloud Compute - ServiceNow Compliance Ticket
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       AttachFileByDefault:
-        simple: "False"
+        simple: 'False'
       ComplianceIssueDescription:
         complex:
           root: EnrichedComplianceIssue
@@ -505,19 +427,13 @@ tasks:
           root: EnrichedComplianceIssue
           accessor: severity
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1400,
-          "y": 2290
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1400,\n    \"y\": 2290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -525,8 +441,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 8e813b27-38fb-4002-8ecb-a1db229cad4c
     type: condition
     task:
@@ -536,15 +452,15 @@ tasks:
       description: The Compliance Alert incident layout displays several tabs based on different filtering conditions. This task checks if the “Image Compliance Information” tab should be visible or not, based on previous tasks results.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "12"
-      "yes":
-      - "18"
+      - '12'
+      yes:
+      - '18'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -555,14 +471,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 2035
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2035\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -570,43 +480,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: daaf223f-4c65-41c5-8299-6fe4f2cae13b
     type: regular
     task:
       id: daaf223f-4c65-41c5-8299-6fe4f2cae13b
       version: -1
       name: Delete context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       subplaybook:
         simple: auto
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 2465
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 2465\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -614,8 +511,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 97257c21-2a8f-4f3a-86f5-c98ef45596a8
     type: title
     task:
@@ -624,20 +521,14 @@ tasks:
       name: Add compliance data to layout
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 1970
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 1970\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -645,8 +536,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 8f91d1ba-a172-41e4-884b-012a93ac9eb2
     type: regular
     task:
@@ -657,10 +548,10 @@ tasks:
       scriptName: ConvertTableToHTML
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     scriptarguments:
       headers:
         simple: imageid,complianceissues,compliancedistribution,hosts,imageinstances,cloudmetadata
@@ -669,14 +560,8 @@ tasks:
           root: incident
           accessor: prismacloudcomputeimagecomplianceissues
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 2110
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 2110\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -684,8 +569,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 7386e55f-2755-4b12-8182-e67dda8e729b
     type: regular
     task:
@@ -699,7 +584,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       renderedhtml:
         complex:
@@ -762,14 +647,8 @@ tasks:
                 value:
                   simple: <th width="12%">Image Instances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 2290
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 2290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -777,23 +656,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "10_6_yes": 0.41,
-      "15_18_#default#": 0.11,
-      "17_12_#default#": 0.48,
-      "17_18_yes": 0.26
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1915,
-        "width": 1820,
-        "x": -40,
-        "y": 810
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"10_6_yes\": 0.41,\n    \"15_18_#default#\": 0.11,\n    \"17_12_#default#\": 0.48,\n    \"17_18_yes\": 0.26\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1915,\n      \"width\": 1820,\n      \"x\": -40,\n      \"y\": 810\n    }\n  }\n}"
 inputs:
 - key: ComplianceIssueID
   value: {}
@@ -803,14 +666,7 @@ inputs:
 - key: TicketingSystem
   value: {}
   required: false
-  description: |-
-    Which ticketing system should be used to create an external ticket.
-    Available options:
-    - Jira
-    - ServiceNow
-
-    If none of the above selected, no external ticket will get created.
-    For Jira, please also set the "JiraProjectName" and "JiraIssueTypeName" playbook inputs.
+  description: "Which ticketing system should be used to create an external ticket.\nAvailable options:\n- Jira\n- ServiceNow\n\nIf none of the above selected, no external ticket will get created.\nFor Jira, please also set the \"JiraProjectName\" and \"JiraIssueTypeName\" playbook inputs."
   playbookInputQuery:
 - key: JiraIssueTypeName
   value: {}
@@ -830,3 +686,4 @@ fromversion: 8.0.0
 marketplaces:
 - xsoar_saas
 - marketplacev2
+- platform

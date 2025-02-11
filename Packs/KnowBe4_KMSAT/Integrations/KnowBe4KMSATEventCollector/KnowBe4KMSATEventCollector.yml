@@ -50,7 +50,7 @@ configuration:
   advanced: true
   required: false
 description: KnowBe4_KMSAT allows you to push and pull your external data to and from the KnowBe4 console.
-display: 'KnowBe4 KMSAT Event Collector'
+display: KnowBe4 KMSAT Event Collector
 name: KnowBe4 KMSAT Event Collector
 supportlevelheader: xsoar
 script:
@@ -128,3 +128,4 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+- platform

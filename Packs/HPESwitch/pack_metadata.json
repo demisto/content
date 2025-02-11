@@ -20,6 +20,7 @@
         "Hewlett Packard Enterprise"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

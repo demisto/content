@@ -39,7 +39,7 @@ configuration:
   type: 16
   required: false
   additionalinfo: Event types to fetch. Defaults to 'Audit' if no type is specified.
-  defaultvalue: 'Audit'
+  defaultvalue: Audit
   options:
   - Audit
   - Syslog Transactions
@@ -85,12 +85,12 @@ script:
     description: Returns events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
     arguments:
     - auto: PREDEFINED
-      defaultValue: "False"
+      defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       required: true
     - description: Maximum audit events to fetch. Default is 1000.
       name: limit
@@ -98,22 +98,22 @@ script:
       description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
     - name: offset
       description: Starting record index from which to begin retrieving records.
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
   - name: service-now-get-syslog-transactions
     description: Returns syslog transactions events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
     arguments:
     - auto: PREDEFINED
-      defaultValue: "False"
+      defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       required: true
     - description: Maximum syslog transactions events to fetch. Default is 1000.
       name: limit
@@ -121,12 +121,12 @@ script:
       description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
     - name: offset
       description: Starting record index from which to begin retrieving records.
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
     outputs: []
   dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
@@ -137,5 +137,6 @@ script:
 fromversion: 8.4.0
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests

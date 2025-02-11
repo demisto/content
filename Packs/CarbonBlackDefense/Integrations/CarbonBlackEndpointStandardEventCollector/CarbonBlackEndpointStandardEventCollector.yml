@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
-  defaultvalue: 'https://defense.conferdeploy.net'
+  defaultvalue: https://defense.conferdeploy.net
   name: url
   required: true
   type: 0
@@ -55,7 +55,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-description: 'Endpoint Standard (formerly called Carbon Black Defense), a Next-Generation Anti-Virus + EDR. Collect Anti-Virus & EDR alerts and Audit Log Events.'
+description: Endpoint Standard (formerly called Carbon Black Defense), a Next-Generation Anti-Virus + EDR. Collect Anti-Virus & EDR alerts and Audit Log Events.
 display: Carbon Black Endpoint Standard Event Collector
 name: CarbonBlackEndpointStandardEventCollector
 script:
@@ -75,7 +75,7 @@ script:
     - description: The maximum number of audit logs to return (maximum value - 25000).
       name: audit_logs_limit
       defaultValue: 2500
-    description: 'Fetch alerts and audit logs from Carbon Black Endpoint Standard.'
+    description: Fetch alerts and audit logs from Carbon Black Endpoint Standard.
     name: carbonblack-endpoint-standard-get-events
   dockerimage: demisto/python3:3.11.10.115186
   runonce: false
@@ -87,4 +87,5 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.10.0

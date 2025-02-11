@@ -53,7 +53,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: ""
+  script: ''
   type: python
   commands:
   - arguments:
@@ -65,15 +65,15 @@ script:
       - 'True'
       - 'False'
       required: true
-    - defaultValue: 'AUTHENTICATION'
+    - defaultValue: AUTHENTICATION
       description: The wanted log type. The default value is AUTHENTICATION. Enter one log type for each command execution.
       name: logs_type_array
       required: false
       auto: PREDEFINED
       predefined:
-        - "AUTHENTICATION"
-        - "ADMINISTRATION"
-        - "TELEPHONY"
+      - AUTHENTICATION
+      - ADMINISTRATION
+      - TELEPHONY
     - defaultValue: 1 day
       description: Date from which to get events (e.g. <number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year or 2023-13-30T03:11:29Z).
       name: after
@@ -90,6 +90,7 @@ script:
   subtype: python3
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
 tests:
 - No tests

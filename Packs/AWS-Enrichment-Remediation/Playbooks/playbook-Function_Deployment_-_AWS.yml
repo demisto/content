@@ -1,97 +1,26 @@
 id: Function Deployment - AWS
 version: -1
 name: Function Deployment - AWS
-description: |-
-  This playbook automates the deployment of an AWS Lambda function to manage resources within an Amazon EKS cluster. It ensures that all necessary configurations are created, updated, and verified.
-
-  ### Setup
-
-  - **Describe EKS Cluster**: Gather essential details of the EKS cluster.
-  - **Create IAM Role**: Set up a new IAM role for the Lambda function.
-  - **Create and Attach Policy**: Define and attach a policy to the IAM role to grant necessary permissions.
-
-  ### Authentication Mode Check
-
-  - **Verify Authentication Mode**: Ensure the current authentication mode allows API access.
-    - **If not**: Update the cluster authentication mode to permit API access.
-
-  ### Access Entry Configuration
-
-  - **Create Access Entry**: Establish a new access entry in the EKS cluster.
-  - **Associate Access Policy**: Link the access policy with the created access entry.
-  - **Update Access Entry**: Apply the latest configurations to the access entry.
-
-  ### VPC and Security Group Setup
-
-  - **Describe VPCs**: Identify the appropriate VPC for the Lambda function.
-  - **Create Security Group**: Define a security group to manage Lambda function traffic.
-  - **Set Ingress Rules**: Configure ingress rules for the security group.
-
-  ### VPC Endpoint Creation
-
-  - **Create VPC Endpoint for eks-auth**: Establish a VPC endpoint for EKS authentication.
-  - **Check for Errors**: Verify if there are any errors during the creation of the VPC endpoint.
-    - **If errors**: Handle and log them.
-  - **Verify VPC Endpoint Existence**: Ensure the VPC endpoint already exists.
-    - **If exists**: Proceed with the next steps.
-
-  ### Lambda Function Deployment
-
-  - **Download Kubernetes Library**: Fetch the necessary Kubernetes library.
-  - **Publish AWS Lambda Layer**: Publish a new layer version for the AWS Lambda function.
-  - **Create Lambda Code**: Develop the Lambda function code.
-  - **Zip Lambda Code**: Compress the Lambda function code for deployment.
-  - **Create AWS Lambda Function**: Deploy the Lambda function using the zipped code.
-
-  ### Resolution
-
-  - **Final Verification**: Ensure all operations have been successfully completed.
-  - **Completion**: Confirm the deployment process is finished, ensuring robust management of EKS authentication through AWS Lambda.
-
-  This playbook provides a comprehensive, automated approach to deploying an AWS Lambda function for managing resources within an EKS cluster, efficiently handling all configurations and potential errors.
-
-  ### Required Integration
-
-  #### AWS IAM (Identity and Access Management)
-  - [AWS IAM API Documentation](https://docs.aws.amazon.com/IAM/latest/APIReference/Welcome.html)
-  - [Cortex XSOAR AWS IAM Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSIAM/)
-
-  #### AWS EC2 (Elastic Compute Cloud)
-  - [AWS EC2 API Documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Welcome.html)
-  - [Cortex XSOAR AWS EC2 Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEC2/)
-
-  #### AWS EKS (Elastic Kubernetes Service)
-  - [AWS EKS API Documentation](https://docs.aws.amazon.com/eks/latest/APIReference/Welcome.html)
-  - [Cortex XSOAR AWS EKS Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEKS/)
-
-  #### AWS Lambda
-  - [AWS Lambda API Documentation](https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)
-  - [Cortex XSOAR AWS Lambda Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSLambda/).
-starttaskid: "0"
+description: "This playbook automates the deployment of an AWS Lambda function to manage resources within an Amazon EKS cluster. It ensures that all necessary configurations are created, updated, and verified.\n\n### Setup\n\n- **Describe EKS Cluster**: Gather essential details of the EKS cluster.\n- **Create IAM Role**: Set up a new IAM role for the Lambda function.\n- **Create and Attach Policy**: Define and attach a policy to the IAM role to grant necessary permissions.\n\n### Authentication Mode Check\n\n- **Verify Authentication Mode**: Ensure the current authentication mode allows API access.\n  - **If not**: Update the cluster authentication mode to permit API access.\n\n### Access Entry Configuration\n\n- **Create Access Entry**: Establish a new access entry in the EKS cluster.\n- **Associate Access Policy**: Link the access policy with the created access entry.\n- **Update Access Entry**: Apply the latest configurations to the access entry.\n\n### VPC and Security Group Setup\n\n- **Describe VPCs**: Identify the appropriate VPC for the Lambda function.\n- **Create Security Group**: Define a security group to manage Lambda function traffic.\n- **Set Ingress Rules**: Configure ingress rules for the security group.\n\n### VPC Endpoint Creation\n\n- **Create VPC Endpoint for eks-auth**: Establish a VPC endpoint for EKS authentication.\n- **Check for Errors**: Verify if there are any errors during the creation of the VPC endpoint.\n  - **If errors**: Handle and log them.\n- **Verify VPC Endpoint Existence**: Ensure the VPC endpoint already exists.\n  - **If exists**: Proceed with the next steps.\n\n### Lambda Function Deployment\n\n- **Download Kubernetes Library**: Fetch the necessary Kubernetes library.\n- **Publish AWS Lambda Layer**: Publish a new layer version for the AWS Lambda function.\n- **Create Lambda Code**: Develop the Lambda function code.\n- **Zip Lambda Code**: Compress the Lambda function code for deployment.\n- **Create AWS Lambda Function**: Deploy the Lambda function using the zipped code.\n\n### Resolution\n\n- **Final Verification**: Ensure all operations have been successfully completed.\n- **Completion**: Confirm the deployment process is finished, ensuring robust management of EKS authentication through AWS Lambda.\n\nThis playbook provides a comprehensive, automated approach to deploying an AWS Lambda function for managing resources within an EKS cluster, efficiently handling all configurations and potential errors.\n\n### Required Integration\n\n#### AWS IAM (Identity and Access Management)\n- [AWS IAM API Documentation](https://docs.aws.amazon.com/IAM/latest/APIReference/Welcome.html)\n- [Cortex XSOAR AWS IAM Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSIAM/)\n\n#### AWS EC2 (Elastic Compute Cloud)\n- [AWS EC2 API Documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Welcome.html)\n- [Cortex XSOAR AWS EC2 Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEC2/)\n\n#### AWS EKS (Elastic Kubernetes Service)\n- [AWS EKS API Documentation](https://docs.aws.amazon.com/eks/latest/APIReference/Welcome.html)\n- [Cortex XSOAR AWS EKS Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEKS/)\n\n#### AWS Lambda\n- [AWS Lambda API Documentation](https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)\n- [Cortex XSOAR AWS Lambda Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSLambda/)."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 54dd5378-1342-4d82-84fa-99649b7926f7
     type: start
     task:
       id: 54dd5378-1342-4d82-84fa-99649b7926f7
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 40
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 40\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -99,8 +28,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 2fa1b9d8-7711-49e3-80cd-e572b487aebf
     type: regular
     task:
@@ -111,24 +40,18 @@ tasks:
       script: '|||aws-eks-describe-cluster'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       cluster_name:
         simple: ${inputs.ClusterName}
       region:
         simple: ${inputs.region}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 170
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -136,8 +59,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 935b9483-60e9-44e2-8571-358a764a0fb3
     type: regular
     task:
@@ -148,34 +71,18 @@ tasks:
       script: '|||aws-iam-create-role'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       assumeRolePolicyDocument:
-        simple: |-
-          {
-            "Version": "2012-10-17",
-            "Statement": {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              },
-              "Action": "sts:AssumeRole"
-            }
-          }
+        simple: "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": {\n    \"Effect\": \"Allow\",\n    \"Principal\": {\n      \"Service\": \"lambda.amazonaws.com\"\n    },\n    \"Action\": \"sts:AssumeRole\"\n  }\n}"
       roleName:
         simple: ${inputs.LambdaRoleName}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 340
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 340\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -183,8 +90,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: b647b62d-4c70-47d1-8fe5-6551ccf7b334
     type: regular
     task:
@@ -195,45 +102,18 @@ tasks:
       script: '|||aws-iam-create-policy'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       policyDocument:
-        simple: |-
-          {
-              "Version": "2012-10-17",
-              "Statement": [
-                  {
-                      "Effect": "Allow",
-                      "Action": "eks:*",
-                      "Resource": "*"
-                  },
-                  {
-                      "Effect": "Allow",
-                      "Action": [
-                          "ec2:DescribeNetworkInterfaces",
-                          "ec2:CreateNetworkInterface",
-                          "ec2:DeleteNetworkInterface",
-                          "ec2:DescribeInstances",
-                          "ec2:AttachNetworkInterface"
-                      ],
-                      "Resource": "*"
-                  }
-              ]
-          }
+        simple: "{\n    \"Version\": \"2012-10-17\",\n    \"Statement\": [\n        {\n            \"Effect\": \"Allow\",\n            \"Action\": \"eks:*\",\n            \"Resource\": \"*\"\n        },\n        {\n            \"Effect\": \"Allow\",\n            \"Action\": [\n                \"ec2:DescribeNetworkInterfaces\",\n                \"ec2:CreateNetworkInterface\",\n                \"ec2:DeleteNetworkInterface\",\n                \"ec2:DescribeInstances\",\n                \"ec2:AttachNetworkInterface\"\n            ],\n            \"Resource\": \"*\"\n        }\n    ]\n}"
       policyName:
         simple: ${inputs.LambdaPolicyName}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 500
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 500\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -241,8 +121,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 2cef0fd3-6d20-4f8a-8e7d-3fa27d1638ae
     type: regular
     task:
@@ -253,10 +133,10 @@ tasks:
       script: '|||aws-iam-attach-policy'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       entityName:
         simple: ${AWS.IAM.Roles.RoleName}
@@ -265,14 +145,8 @@ tasks:
       type:
         simple: Role
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 660
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 660\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -280,8 +154,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: a59535eb-3371-4fa5-8777-14a41c7bf807
     type: regular
     task:
@@ -292,10 +166,10 @@ tasks:
       script: '|||aws-eks-create-access-entry'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       cluster_name:
         simple: ${inputs.ClusterName}
@@ -304,18 +178,12 @@ tasks:
       region:
         simple: ${inputs.region}
       retry-count:
-        simple: "1"
+        simple: '1'
       retry-interval:
-        simple: "5"
+        simple: '5'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1160
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1160\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -323,8 +191,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 5e11c0d3-f12f-43f6-884b-1b07e5b580ae
     type: regular
     task:
@@ -335,10 +203,10 @@ tasks:
       script: '|||aws-eks-associate-access-policy'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       cluster_name:
         simple: ${inputs.ClusterName}
@@ -351,14 +219,8 @@ tasks:
       type:
         simple: cluster
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1320
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1320\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -366,8 +228,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 61b4a2bb-6609-4701-8dd3-ba257660ab25
     type: regular
     task:
@@ -378,10 +240,10 @@ tasks:
       script: '|||aws-eks-update-access-entry'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       cluster_name:
         simple: ${inputs.ClusterName}
@@ -392,14 +254,8 @@ tasks:
       region:
         simple: ${inputs.region}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1480
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1480\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -407,8 +263,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 45528df7-bb7f-42c5-8bd0-761a893853fb
     type: regular
     task:
@@ -419,10 +275,10 @@ tasks:
       script: '|||aws-lambda-publish-layer-version'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       compatible-architectures:
         simple: ${inputs.LayerArchitecture}
@@ -448,14 +304,8 @@ tasks:
               ignorecase: true
           accessor: EntryID
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2900
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2900\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -463,8 +313,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: a13603f8-4bba-4f72-8d38-d02255a1e429
     type: title
     task:
@@ -473,17 +323,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3710
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3710\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -491,8 +335,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 634c042a-b835-496e-83a9-37cde721742a
     type: condition
     task:
@@ -502,15 +346,15 @@ tasks:
       description: Checks if the cluster allows authentication via API.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "12"
-      "yes":
-      - "5"
+      - '12'
+      yes:
+      - '5'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -521,14 +365,8 @@ tasks:
             value:
               simple: API
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 820
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 820\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -536,22 +374,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 7fb729bd-cda7-4087-8e76-f68a2ec88100
     type: regular
     task:
       id: 7fb729bd-cda7-4087-8e76-f68a2ec88100
       version: -1
       name: Update cluster authentication mode
-      description: 'Updates an Amazon EKS cluster configuration. Only one type of update can be allowed. Potentially harmful: once the authentication mode was updated to ''API'' it is irreversible.'
+      description: "Updates an Amazon EKS cluster configuration. Only one type of update can be allowed. Potentially harmful: once the authentication mode was updated to 'API' it is irreversible."
       script: '|||aws-eks-update-cluster-config'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       authentication_mode:
         simple: API_AND_CONFIG_MAP
@@ -560,14 +398,8 @@ tasks:
       region:
         simple: ${inputs.region}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 990
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 990\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -575,8 +407,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: fb201ae1-4187-4978-8190-6aee638abd62
     type: regular
     task:
@@ -587,22 +419,16 @@ tasks:
       scriptName: DownloadAndArchivePythonLibrary
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       library_name:
         simple: ${inputs.LibraryName}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2740
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2740\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -610,37 +436,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 2c183d15-aaf8-499f-8922-9df6eab414ca
     type: regular
     task:
       id: 2c183d15-aaf8-499f-8922-9df6eab414ca
       version: -1
       name: Create the Lambda code
-      description: |
-        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      description: "Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.\n"
       scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       data:
         simple: ${inputs.FunctionCode}
       filename:
         simple: lambda_function.py
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3190
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3190\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -648,8 +467,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 0399941e-47ee-459e-8aa7-60c150b1a1c6
     type: regular
     task:
@@ -660,10 +479,10 @@ tasks:
       scriptName: ZipFile
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     scriptarguments:
       entryID:
         complex:
@@ -682,14 +501,8 @@ tasks:
       zipName:
         simple: code
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3360
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3360\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -697,8 +510,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: fedbbd4d-58b3-4e54-84f1-29b233743f5a
     type: regular
     task:
@@ -709,10 +522,10 @@ tasks:
       script: '|||aws-ec2-create-vpc-endpoint'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     scriptarguments:
       region:
         simple: ${inputs.region}
@@ -728,14 +541,8 @@ tasks:
         simple: ${AWS.EC2.Vpcs.VpcId}
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 200,
-          "y": 2180
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 200,\n    \"y\": 2180\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -743,8 +550,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 2d82ee8b-6bcd-4d34-88c0-f8b1d9ceb10b
     type: regular
     task:
@@ -755,24 +562,18 @@ tasks:
       script: '|||aws-ec2-describe-vpcs'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       region:
         simple: ${inputs.region}
       vpcIds:
         simple: ${AWS.EKS.DescribeCluster.resourcesVpcConfig.vpcId}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1645
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1645\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -780,8 +581,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 19380d04-9017-4578-85d1-6539b235c361
     type: regular
     task:
@@ -792,10 +593,10 @@ tasks:
       script: '|||aws-ec2-create-security-group'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     scriptarguments:
       description:
         simple: This security group allow the response function to communicate with the cluster
@@ -806,14 +607,8 @@ tasks:
       vpcId:
         simple: ${AWS.EC2.Vpcs.VpcId}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1810
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1810\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -821,8 +616,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: b3871919-30b5-4e02-8fcd-fecaeaead4e8
     type: regular
     task:
@@ -833,16 +628,16 @@ tasks:
       script: '|||aws-ec2-authorize-security-group-ingress-rule'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "16"
-      - "22"
+      - '16'
+      - '22'
     scriptarguments:
       cidrIp:
         simple: ${AWS.EC2.Vpcs.CidrBlock}
       fromPort:
-        simple: "443"
+        simple: '443'
       groupId:
         simple: ${AWS.EC2.SecurityGroups.GroupId}
       ipProtocol:
@@ -850,16 +645,10 @@ tasks:
       region:
         simple: ${inputs.region}
       toPort:
-        simple: "443"
+        simple: '443'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1980
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1980\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -867,8 +656,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 7a865610-19c6-415a-89d1-ae1d9f558f10
     type: regular
     task:
@@ -879,10 +668,10 @@ tasks:
       script: '|||aws-ec2-create-vpc-endpoint'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     scriptarguments:
       region:
         simple: ${inputs.region}
@@ -898,14 +687,8 @@ tasks:
         simple: ${AWS.EC2.Vpcs.VpcId}
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 700,
-          "y": 2180
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 2180\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -913,8 +696,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 25d80d46-e3c7-4fdc-8ad4-67d04e22dfd5
     type: regular
     task:
@@ -925,10 +708,10 @@ tasks:
       script: '|||aws-lambda-create-function'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       code:
         complex:
@@ -989,14 +772,8 @@ tasks:
                 value:
                   simple: subnetIds
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3530
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3530\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1004,8 +781,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 0d583674-cc5b-4a9d-8398-e5649245ac0e
     type: title
     task:
@@ -1014,20 +791,14 @@ tasks:
       name: Create Function
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3060
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3060\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1035,8 +806,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: f00e38d5-c3f5-4d1d-8642-34550bad0aab
     type: regular
     task:
@@ -1047,26 +818,20 @@ tasks:
       scriptName: GetErrorsFromEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     scriptarguments:
       entry_id:
         simple: ${lastCompletedTaskEntries}
       extend-context:
         simple: ErrorEntries.eksAuth=
       ignore-outputs:
-        simple: "true"
+        simple: 'true'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 700,
-          "y": 2350
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 2350\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1074,8 +839,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: 55fce217-fa07-432c-8bf7-8e327e33f763
     type: condition
     task:
@@ -1085,15 +850,15 @@ tasks:
       description: Checks if a VPC endpoint for eks-auth already exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "33"
-      "yes":
-      - "13"
+      - '33'
+      yes:
+      - '13'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsString
           left:
@@ -1103,14 +868,8 @@ tasks:
           right:
             value:
               simple: conflicting
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 700,
-          "y": 2520
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 2520\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1118,8 +877,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: ee2a8892-22db-46c2-8fdd-4dd5271a8529
     type: regular
     task:
@@ -1130,26 +889,17 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       message:
-        simple: |-
-          Unable to create a VPC endpoint for eks-auth due to the following error:
-
-          ${ErrorEntries.eksAuth}
+        simple: "Unable to create a VPC endpoint for eks-auth due to the following error:\n\n${ErrorEntries.eksAuth}"
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1070,
-          "y": 2740
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 2740\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1161,8 +911,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: b4b59d4a-77f1-49cc-8852-0c8fbe92178d
     type: regular
     task:
@@ -1173,26 +923,20 @@ tasks:
       scriptName: GetErrorsFromEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     scriptarguments:
       entry_id:
         simple: ${lastCompletedTaskEntries}
       extend-context:
         simple: ErrorEntries.eks=
       ignore-outputs:
-        simple: "true"
+        simple: 'true'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 200,
-          "y": 2350
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 200,\n    \"y\": 2350\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1200,8 +944,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: 81bbd239-7d66-4dba-8916-574494b0fdb0
     type: condition
     task:
@@ -1211,15 +955,15 @@ tasks:
       description: Checks if a VPC endpoint for eks already exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "36"
-      "yes":
-      - "13"
+      - '36'
+      yes:
+      - '13'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsString
           left:
@@ -1229,14 +973,8 @@ tasks:
           right:
             value:
               simple: conflicting
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 200,
-          "y": 2520
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 200,\n    \"y\": 2520\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1244,8 +982,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     taskid: d1ccb111-1357-494a-8c5b-314bb9a13c19
     type: regular
     task:
@@ -1256,26 +994,17 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       message:
-        simple: |-
-          Unable to create a VPC endpoint for eks due to the following error:
-
-          ${ErrorEntries.eks}
+        simple: "Unable to create a VPC endpoint for eks due to the following error:\n\n${ErrorEntries.eks}"
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -180,
-          "y": 2740
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -180,\n    \"y\": 2740\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1287,22 +1016,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "11_5_yes": 0.17,
-      "32_13_yes": 0.38,
-      "35_13_yes": 0.43
-    },
-    "paper": {
-      "dimensions": {
-        "height": 3735,
-        "width": 1630,
-        "x": -180,
-        "y": 40
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"11_5_yes\": 0.17,\n    \"32_13_yes\": 0.38,\n    \"35_13_yes\": 0.43\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3735,\n      \"width\": 1630,\n      \"x\": -180,\n      \"y\": 40\n    }\n  }\n}"
 inputs:
 - key: ClusterName
   value: {}
@@ -1815,6 +1529,7 @@ outputs:
 tests:
 - No tests (auto formatted)
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform
 fromversion: 6.10.0

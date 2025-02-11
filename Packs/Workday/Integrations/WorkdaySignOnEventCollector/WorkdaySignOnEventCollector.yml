@@ -9,16 +9,16 @@ configuration:
 - name: base_url
   display: Server URL (e.g., https://services1.myworkday.com)
   required: true
-  defaultvalue: 'https://services1.myworkday.com'
+  defaultvalue: https://services1.myworkday.com
   type: 0
-  additionalinfo: 'API endpoint of Workday server. Can be obtained from the View API Clients report in the Workday application.'
+  additionalinfo: API endpoint of Workday server. Can be obtained from the View API Clients report in the Workday application.
   section: Connect
 - name: tenant_name
   display: Tenant Name
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'The name of the Workday Tenant. Can be obtained from View API Clients report in Workday application.'
+  additionalinfo: The name of the Workday Tenant. Can be obtained from View API Clients report in Workday application.
   section: Connect
 - name: credentials
   display: Username
@@ -68,12 +68,12 @@ script:
     deprecated: false
     arguments:
     - auto: PREDEFINED
-      defaultValue: "False"
+      defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       required: true
     - name: limit
       description: The maximum number of events to return.
@@ -84,20 +84,20 @@ script:
       description: 'The date and time of the earliest event. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
     - name: to_date
       description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
     - name: relative_from_date
       description: 'The query from date, for example, "5 minutes". Note: We strongly suggest to limit the value of this parameter.'
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
     outputs: []
   runonce: false
-  script: "-"
+  script: '-'
   type: python
   subtype: python3
   isfetchevents: true
@@ -108,3 +108,4 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+- platform

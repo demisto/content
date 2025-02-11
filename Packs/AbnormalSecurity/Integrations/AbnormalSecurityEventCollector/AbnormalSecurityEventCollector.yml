@@ -6,7 +6,7 @@ display: Abnormal Security Event Collector
 category: Analytics & SIEM
 description: Abnormal Security Event Collector integration for XSIAM.
 configuration:
-- display: ""
+- display: ''
   displaypassword: Token
   name: token
   type: 9
@@ -28,7 +28,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: ""
+  script: ''
   type: python
   commands:
   - description: Manual command to fetch events.
@@ -49,5 +49,6 @@ fromversion: 6.8.0
 supportlevelheader: xsoar
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests

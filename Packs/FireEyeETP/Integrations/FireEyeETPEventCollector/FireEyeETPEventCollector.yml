@@ -18,19 +18,19 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- defaultvalue: "1000"
+- defaultvalue: '1000'
   display: Maximum number of Alerts to fetch.
   name: alerts_max_fetch
   type: 0
   additionalinfo: The maximum number of Alert events to fetch from FireEye ETP.
   section: Collect
-- defaultvalue: "1000"
+- defaultvalue: '1000'
   display: Maximum number of Email Trace to fetch.
   name: email_trace_max_fetch
   type: 0
   additionalinfo: The maximum number of Email Trace events to fetch from FireEye ETP.
   section: Collect
-- defaultvalue: "1000"
+- defaultvalue: '1000'
   display: Maximum number of Activity Log fetch.
   name: activity_log_max_fetch
   type: 0
@@ -72,22 +72,23 @@ script:
       description: The start time by which to filter events. Date format will be the same as in the first_fetch parameter.
       name: since_time
     - auto: PREDEFINED
-      defaultValue: "false"
+      defaultValue: 'false'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: true
     description: Gets events from FireEye ETP. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     name: fireeye-etp-get-events
   dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
-  script: ""
+  script: ''
   subtype: python3
   type: python
 fromversion: 8.2.0
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)

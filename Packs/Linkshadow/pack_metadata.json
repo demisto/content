@@ -19,6 +19,7 @@
     "githubUser": "Devika-LS",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

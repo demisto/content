@@ -6,8 +6,7 @@ commonfields:
   id: Microsoft Defender for Cloud Apps Event Collector
   version: -1
 configuration:
-- additionalinfo: |-
-    More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-for-cloud-apps-event-collector
+- additionalinfo: More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-for-cloud-apps-event-collector
   display: Endpoint Type
   name: endpoint_type
   required: false
@@ -41,14 +40,14 @@ configuration:
   required: true
   type: 0
   section: Connect
-- defaultvalue: '05a65629-4c1b-48c1-a78b-804c4abdd4af/.default'
+- defaultvalue: 05a65629-4c1b-48c1-a78b-804c4abdd4af/.default
   display: Scope
   name: scope
   type: 0
   section: Connect
   required: true
   additionalinfo: The scope of the application (only if self-deployed).
-- defaultvalue: '3 days'
+- defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: after
   type: 0
@@ -123,5 +122,6 @@ script:
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No Tests

@@ -8,7 +8,7 @@ commonfields:
 configuration:
 - display: URL
   name: base_url
-  defaultvalue: 'https://webexapis.com'
+  defaultvalue: https://webexapis.com
   required: true
   type: 0
   section: Connect
@@ -74,8 +74,8 @@ script:
       description: The user to start authorization.
       name: user
       predefined:
-      - 'admin'
-      - 'compliance_officer'
+      - admin
+      - compliance_officer
       required: true
     description: Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!cisco-webex-oauth-complete` as an argument to finish the process.
     name: cisco-webex-oauth-start
@@ -84,8 +84,8 @@ script:
       description: The user to complete authorization.
       name: user
       predefined:
-      - 'admin'
-      - 'compliance_officer'
+      - admin
+      - compliance_officer
       required: true
     - description: The authorization code retrieved from the callback URL according to the documentation.
       name: code
@@ -97,8 +97,8 @@ script:
       description: The user to complete authorization.
       name: user
       predefined:
-      - 'admin'
-      - 'compliance_officer'
+      - admin
+      - compliance_officer
       required: true
     description: Use this command to complete the authorization process. After copying the authorization code found in the query parameter `code` of the callback URL, paste the value in the command as an argument to finish the process.
     name: cisco-webex-oauth-test
@@ -153,7 +153,9 @@ script:
   script: ''
   subtype: python3
   type: python
-"marketplaces": ["marketplacev2"]
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.12.0
 tests:
 - No tests (auto formatted)

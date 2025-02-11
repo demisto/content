@@ -1,39 +1,26 @@
 id: Gitlab - Guest user permission change
 version: -1
 name: Gitlab - Guest user permission change
-description: |+
-  This playbook investigates a "User Permissions Changed” alert by gathering user and IP information and performs remediation based on the information gathered and received from the user. To link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = Gitlab - Permission change from guest to owner
-
-  Used Sub-playbooks:
-  * Enrichment for Verdict
-  * Block IP - Generic v3
-  * Block Account - Generic v2
-
-starttaskid: "0"
+description: "This playbook investigates a \"User Permissions Changed” alert by gathering user and IP information and performs remediation based on the information gathered and received from the user. To link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = Gitlab - Permission change from guest to owner\n\nUsed Sub-playbooks:\n* Enrichment for Verdict\n* Block IP - Generic v3\n* Block Account - Generic v2\n\n"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 4f7a97ff-3507-4962-8320-d7655ec91be4
     type: start
     task:
       id: 4f7a97ff-3507-4962-8320-d7655ec91be4
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": -110
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": -110\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -41,8 +28,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: c3f84e48-6679-456c-87e2-83fd03515128
     type: title
     task:
@@ -51,20 +38,14 @@ tasks:
       name: Enrich Indicators
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 60
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": 60\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -72,8 +53,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: d9028543-dd27-4a06-8bc9-f98bc1c7dd83
     type: title
     task:
@@ -82,20 +63,14 @@ tasks:
       name: False Positive
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 970,
-          "y": 910
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 910\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -103,8 +78,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 9f6e14c7-bb15-4b2b-82c2-ee944912f88e
     type: title
     task:
@@ -113,20 +88,14 @@ tasks:
       name: True Positive
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 910
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": 910\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -134,8 +103,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 7c8182f9-cc9b-44d5-8659-7bee84d53cb6
     type: regular
     task:
@@ -149,21 +118,15 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       closeNotes:
         simple: The user confirmed he made this change.
       closeReason:
         simple: false  positive
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 970,
-          "y": 1260
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 1260\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -171,8 +134,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: 41b7779c-42c6-467d-8151-94a0333ef884
     type: title
     task:
@@ -181,17 +144,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 1440
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": 1440\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -199,8 +156,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: f02abfb2-379e-48f7-8d73-f35f01a18709
     type: condition
     task:
@@ -210,12 +167,12 @@ tasks:
       description: Continue based on verdict.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "29"
+      - '29'
       Malicious IP:
-      - "34"
+      - '34'
     separatecontext: false
     conditions:
     - label: Malicious IP
@@ -238,14 +195,8 @@ tasks:
           right:
             value:
               simple: Suspicious
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 390
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": 390\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -253,8 +204,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: b6523095-734f-4543-8af5-d1cdcce0afad
     type: collection
     task:
@@ -264,19 +215,13 @@ tasks:
       description: EmailAsk User to confirm multiple failed login attempts.
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 970,
-          "y": 560
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -288,13 +233,10 @@ tasks:
       subject:
         simple: Permission Changed
       body:
-        simple: |-
-          Hello,
-
-          We have identified a suspicious change in permission made with your username. Please confirm that you've made these changes.
+        simple: "Hello,\n\nWe have identified a suspicious change in permission made with your username. Please confirm that you've made these changes."
       methods:
       - email
-      format: ""
+      format: ''
       bcc:
       cc:
       timings:
@@ -305,8 +247,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: Did you made these changes in permissions?
         required: false
@@ -315,14 +257,14 @@ tasks:
         type: singleSelect
         options: []
         optionsarg:
-        - simple: "No"
-        - simple: "Yes"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        - simple: No
+        - simple: Yes
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: Failed login attempts
-      description: 'We have identified several failed login attempts with your user ID. Please confirm or deny that you attempted these logins.'
+      description: We have identified several failed login attempts with your user ID. Please confirm or deny that you attempted these logins.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -330,8 +272,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: 8e6acca7-bc61-41aa-8061-9200006c6c06
     type: regular
     task:
@@ -341,19 +283,13 @@ tasks:
       description: "Check for:  \n* Any other actions made by this user after this change?\n* Any other suspicious behavior in this group/project?"
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 1255
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": 1255\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -361,8 +297,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: a196af1b-fc4a-462d-8a6e-e2858d76e5f8
     type: playbook
     task:
@@ -373,10 +309,10 @@ tasks:
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     scriptarguments:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
@@ -408,21 +344,15 @@ tasks:
       query:
         simple: (initiatorsha256:${alert.filesha256} or hostip:${alert.hostip}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
       threshold:
-        simple: "5"
+        simple: '5'
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 210
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": 210\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -430,8 +360,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: 1738e224-4752-41ba-8fc2-9852fded3d55
     type: condition
     task:
@@ -441,35 +371,29 @@ tasks:
       description: User confirmed the activity.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "20"
-      "yes":
-      - "12"
+      - '20'
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
             value:
               complex:
                 root: Failed login attempts.Answers
-                accessor: "0"
+                accessor: '0'
             iscontext: true
           right:
             value:
-              simple: "Yes"
+              simple: Yes
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 970,
-          "y": 730
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 730\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -477,8 +401,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: d4aab4d8-e82b-4080-8291-9987697f8829
     type: playbook
     task:
@@ -489,21 +413,21 @@ tasks:
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     scriptarguments:
       AutoCommit:
-        simple: "No"
+        simple: No
       CustomBlockRule:
-        simple: "True"
+        simple: 'True'
       IP:
         complex:
           root: alert
           accessor: hostip
       InputEnrichment:
-        simple: "False"
+        simple: 'False'
       InternalRange:
         complex:
           root: inputs.InternalRange
@@ -514,19 +438,13 @@ tasks:
       UserVerification:
         simple: ${inputs.UserVerification}
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 670
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": 670\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -534,8 +452,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: f8097ed6-364d-4aab-8484-5d28989073fe
     type: regular
     task:
@@ -549,19 +467,13 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     scriptarguments:
       severity:
         simple: Low
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 970,
-          "y": 1080
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 1080\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -569,34 +481,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: 3ed953c6-5fd6-4d66-82a8-90622eb55d3f
     type: playbook
     task:
       id: 3ed953c6-5fd6-4d66-82a8-90622eb55d3f
       version: -1
       name: Block Account - Generic v2
-      description: |-
-        This playbook blocks malicious usernames using all integrations that you have enabled.
-
-        Supported integrations for this playbook:
-        * Active Directory
-        * PAN-OS - This requires PAN-OS 9.1 or higher.
-        * SailPoint
-        * PingOne
-        * AWS IAM
-        * Clarizen IAM
-        * Envoy IAM
-        * ExceedLMS IAM
-        * Okta
+      description: "This playbook blocks malicious usernames using all integrations that you have enabled.\n\nSupported integrations for this playbook:\n* Active Directory\n* PAN-OS - This requires PAN-OS 9.1 or higher.\n* SailPoint\n* PingOne\n* AWS IAM\n* Clarizen IAM\n* Envoy IAM\n* ExceedLMS IAM\n* Okta"
       playbookName: Block Account - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     scriptarguments:
       Tag:
         simple: Bad Account
@@ -607,19 +507,13 @@ tasks:
           root: alert
           accessor: username
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 1075
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": 1075\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -627,21 +521,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "28_29_#default#": 0.53,
-      "33_20_#default#": 0.49
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1615,
-        "width": 980,
-        "x": 370,
-        "y": -110
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"28_29_#default#\": 0.53,\n    \"33_20_#default#\": 0.49\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1615,\n      \"width\": 980,\n      \"x\": 370,\n      \"y\": -110\n    }\n  }\n}"
 inputs:
 - key: InternalRange
   value:
@@ -669,12 +549,14 @@ inputs:
   playbookInputQuery:
 - key: UserVerification
   value:
-    simple: "False"
+    simple: 'False'
   required: false
   description: "Whether to provide user verification for blocking those IPs. \nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.6.0

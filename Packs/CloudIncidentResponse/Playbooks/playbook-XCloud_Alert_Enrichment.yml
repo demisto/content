@@ -1,47 +1,27 @@
 id: XCloud Alert Enrichment
 version: -1
 name: XCloud Alert Enrichment
-description: |-
-  This playbook is responsible for data collection and enrichment.
-
-  The playbook collects or enriches the following data:
-
-  - Account enrichment
-
-
-  - Network enrichment
-
-     -Attacker IP
-
-     -Geolocation
-
-     -ASN
-starttaskid: "0"
+description: "This playbook is responsible for data collection and enrichment.\n\nThe playbook collects or enriches the following data:\n\n- Account enrichment\n\n\n- Network enrichment\n\n   -Attacker IP\n\n   -Geolocation\n\n   -ASN"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 25022665-b8ac-42ef-8efc-7ced46e7f559
     type: start
     task:
       id: 25022665-b8ac-42ef-8efc-7ced46e7f559
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "5"
+      - '1'
+      - '5'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 260
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 510,\n    \"y\": 260\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -49,8 +29,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: f29094d8-f1ca-4ce4-8639-f5fceb7bf9d4
     type: title
     task:
@@ -59,20 +39,14 @@ tasks:
       name: Network Enrichment
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 410
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 410\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -80,8 +54,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 71667809-2d9e-4daf-8a9f-1fc2e82c4d6b
     type: regular
     task:
@@ -92,10 +66,10 @@ tasks:
       scriptName: IsInCidrRanges
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       left:
         complex:
@@ -104,14 +78,8 @@ tasks:
       right:
         simple: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 540
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 540\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -119,8 +87,8 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 75349330-2905-4ec0-8277-c34477b1ce9f
     type: title
     task:
@@ -129,20 +97,14 @@ tasks:
       name: Identity Enrichment
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 410
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 410\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -150,8 +112,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 6af1abdf-0a66-4f53-8b61-e91af5085073
     type: regular
     task:
@@ -162,26 +124,20 @@ tasks:
       script: '|||ip'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     scriptarguments:
       extended_data:
-        simple: "true"
+        simple: 'true'
       ip:
         complex:
           root: Core.OriginalAlert.event
           accessor: caller_ip
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 700
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 700\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -189,8 +145,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: cfadb906-576e-47cb-8b91-8b5bce349f2e
     type: condition
     task:
@@ -200,15 +156,15 @@ tasks:
       description: A transformer for simple if-then-else logic.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "32"
-      "yes":
-      - "37"
+      - '32'
+      yes:
+      - '37'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -243,14 +199,8 @@ tasks:
             value:
               simple: GOOGLE
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 1030
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1030\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -258,28 +208,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: 431a171f-fed5-432d-82a5-9d00bcf14cdb
     type: playbook
     task:
       id: 431a171f-fed5-432d-82a5-9d00bcf14cdb
       version: -1
       name: IP Enrichment - Generic v2
-      description: |-
-        Enrich IP addresses using one or more integrations.
-
-        - Resolve IP addresses to hostnames (DNS)
-        - Provide threat information
-        - Separate internal and external IP addresses
-        - For internal IP addresses, get host information
+      description: "Enrich IP addresses using one or more integrations.\n\n- Resolve IP addresses to hostnames (DNS)\n- Provide threat information\n- Separate internal and external IP addresses\n- For internal IP addresses, get host information"
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       IP:
         complex:
@@ -294,19 +238,13 @@ tasks:
         complex:
           root: inputs.ResolveIP
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 870
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 870\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -314,8 +252,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: 898ac7ab-07c5-480d-8586-abcf647326c3
     type: regular
     task:
@@ -326,24 +264,18 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     scriptarguments:
       key:
         simple: ASNType
       value:
         simple: notCloudASN
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -160,
-          "y": 1210
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -160,\n    \"y\": 1210\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -351,32 +283,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: 2587f6d4-9f99-4a0b-8d46-3b9adc264dfc
     type: playbook
     task:
       id: 2587f6d4-9f99-4a0b-8d46-3b9adc264dfc
       version: -1
       name: Account Enrichment - Generic v2.1
-      description: |-
-        Enrich accounts using one or more integrations.
-        Supported integrations:
-        - Active Directory
-        - SailPoint IdentityNow
-        - SailPoint IdentityIQ
-        - PingOne
-        - Okta
-        - AWS IAM
-
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      description: "Enrich accounts using one or more integrations.\nSupported integrations:\n- Active Directory\n- SailPoint IdentityNow\n- SailPoint IdentityIQ\n- PingOne\n- Okta\n- AWS IAM\n\nAlso, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations."
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     scriptarguments:
       Username:
         complex:
@@ -385,19 +307,13 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 540
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 540\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -405,8 +321,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     taskid: 6d8d04bd-cc56-46bf-8fae-d39cb585e5d0
     type: title
     task:
@@ -415,17 +331,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 1390
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1390\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -433,8 +343,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: 00aac347-43a2-4b79-8677-798d7dcd5794
     type: regular
     task:
@@ -445,24 +355,18 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     scriptarguments:
       key:
         simple: ASNType
       value:
         simple: CloudASN
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 1210
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1210\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -470,22 +374,11 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1195,
-        "width": 1300,
-        "x": -160,
-        "y": 260
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1195,\n      \"width\": 1300,\n      \"x\": -160,\n      \"y\": 260\n    }\n  }\n}"
 inputs:
 - key: ResolveIP
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
   playbookInputQuery:
@@ -551,5 +444,7 @@ outputs:
   type: unknown
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.6.0

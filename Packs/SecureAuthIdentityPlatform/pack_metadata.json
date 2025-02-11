@@ -11,8 +11,16 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["Secure", "Auth", "SecureAuth", "IDP", "Identity Platform", "Identity"],
+    "keywords": [
+        "Secure",
+        "Auth",
+        "SecureAuth",
+        "IDP",
+        "Identity Platform",
+        "Identity"
+    ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

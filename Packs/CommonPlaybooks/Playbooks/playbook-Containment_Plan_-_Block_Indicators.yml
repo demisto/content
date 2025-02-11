@@ -1,42 +1,26 @@
 id: Containment Plan - Block Indicators
 version: -1
 name: Containment Plan - Block Indicators
-description: |-
-  ## Containment Plan - Block Indicators
-
-  This playbook is a sub-playbook within the containment plan playbook.
-
-  ### Indicator Blocking
-
-  The playbook block indicators by two methods:
-
-  1. It adds the malicious hashes into the XSIAM hash block list
-  2. It utilizes the sub-playbook "Block Indicators - Generic v3"
-starttaskid: "0"
+description: "## Containment Plan - Block Indicators\n\nThis playbook is a sub-playbook within the containment plan playbook.\n\n### Indicator Blocking\n\nThe playbook block indicators by two methods:\n\n1. It adds the malicious hashes into the XSIAM hash block list\n2. It utilizes the sub-playbook \"Block Indicators - Generic v3\""
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 0eab88db-3b97-46e9-8040-fc0e5ccdd72b
     type: start
     task:
       id: 0eab88db-3b97-46e9-8040-fc0e5ccdd72b
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": -190
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": -190\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -44,8 +28,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 42177fdd-e676-4494-8430-473b77c4d326
     type: regular
     task:
@@ -56,10 +40,10 @@ tasks:
       script: '|||core-blocklist-files'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     scriptarguments:
       comment:
         complex:
@@ -90,14 +74,8 @@ tasks:
           - operator: uniq
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 590
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 590\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -105,8 +83,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 6555f437-9362-4b64-8416-9a207801acc8
     type: title
     task:
@@ -115,17 +93,11 @@ tasks:
       name: Done - Block Indicators
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 1710
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 690,\n    \"y\": 1710\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -133,8 +105,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: c769a542-379a-42a7-8cb0-325e6b48e2b4
     type: condition
     task:
@@ -144,15 +116,15 @@ tasks:
       description: Whether to block the indicators based on the input values.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "25"
+      - '2'
+      yes:
+      - '25'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -162,16 +134,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": -50
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": -50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -179,8 +145,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: 58da2cac-8a9e-4f4f-88de-623361cde61f
     type: regular
     task:
@@ -194,7 +160,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     scriptarguments:
       key:
         simple: BlockedFilesHash
@@ -203,14 +169,8 @@ tasks:
           root: Core.blocklist.added_hashes
           accessor: fileHash
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 990
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 990\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -218,8 +178,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 4fb0cfd4-2555-4d5b-844c-c83c447c4a99
     type: regular
     task:
@@ -233,7 +193,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       key:
         simple: IndicatorsToBlock
@@ -241,14 +201,8 @@ tasks:
         complex:
           root: IndicatorsToBlock
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 1530
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 1530\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -256,8 +210,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: df934c6a-4169-41f4-8cbe-76de251da626
     type: condition
     task:
@@ -267,15 +221,15 @@ tasks:
       description: Checks whether the file hash exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "28"
-      "yes":
-      - "1"
+      - '28'
+      yes:
+      - '1'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -292,14 +246,8 @@ tasks:
               complex:
                 root: inputs.FileHash
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 390
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 390\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -307,8 +255,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: 56214186-2922-4165-820b-062ad475cf73
     type: condition
     task:
@@ -318,15 +266,15 @@ tasks:
       description: Whether to disable the account automatically based on the input values.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "26"
-      "yes":
-      - "24"
+      - '26'
+      yes:
+      - '24'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -336,16 +284,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 160
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 160\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -353,8 +295,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: 6401c6c9-8ff7-4f49-8676-fd99f48da60f
     type: condition
     task:
@@ -364,15 +306,15 @@ tasks:
       description: Checks whether the file hash exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "28"
-      "yes":
-      - "27"
+      - '28'
+      yes:
+      - '27'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -382,14 +324,8 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 390
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 390\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -397,8 +333,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: fca5352e-ba68-4776-8b35-903387490051
     type: regular
     task:
@@ -409,10 +345,10 @@ tasks:
       script: '|||core-blocklist-files'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     scriptarguments:
       comment:
         complex:
@@ -438,19 +374,13 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "64"
+                  simple: '64'
           transformers:
           - operator: uniq
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 590
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 590\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -458,39 +388,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: 5ba573bb-fbf4-4890-8e63-15376725d187
     type: playbook
     task:
       id: 5ba573bb-fbf4-4890-8e63-15376725d187
       version: -1
       name: Block Indicators - Generic v3
-      description: |+
-        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic v2
-        - Block Account - Generic v2
-        - Block IP - Generic v3
-        - Block File - Generic v2
-        - Block Email - Generic v2
-        - Block Domain - Generic v2
-
+      description: "This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:\n\n- Block URL - Generic v2\n- Block Account - Generic v2\n- Block IP - Generic v3\n- Block File - Generic v2\n- Block Email - Generic v2\n- Block Domain - Generic v2\n\n"
       playbookName: Block Indicators - Generic v3
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     scriptarguments:
       AutoBlockIndicators:
         complex:
           root: inputs.AutoBlockIndicators
       AutoCommit:
-        simple: "No"
+        simple: No
       CustomBlockRule:
-        simple: "True"
+        simple: 'True'
       CustomURLCategory:
         simple: Demisto Remediation - Malicious URLs
       DomainToBlock:
@@ -515,7 +436,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "3"
+                  simple: '3'
           accessor: Indicator
           transformers:
           - operator: uniq
@@ -538,7 +459,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "3"
+                  simple: '3'
           accessor: Indicator
           transformers:
           - operator: uniq
@@ -548,7 +469,7 @@ tasks:
           transformers:
           - operator: uniq
       InputEnrichment:
-        simple: "False"
+        simple: 'False'
       MD5:
         complex:
           root: inputs.FileHash
@@ -560,7 +481,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "32"
+                  simple: '32'
           transformers:
           - operator: uniq
       RuleDirection:
@@ -578,7 +499,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "64"
+                  simple: '64'
           transformers:
           - operator: uniq
       URL:
@@ -602,19 +523,13 @@ tasks:
                   simple: inputs.Username
                 iscontext: true
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 1170
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 1170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -622,8 +537,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: cb04e962-15e3-4189-8fcc-73efa9cb71fb
     type: regular
     task:
@@ -637,7 +552,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     scriptarguments:
       key:
         simple: BlockedFilesHash
@@ -646,14 +561,8 @@ tasks:
           root: Core.blocklist.added_hashes
           accessor: fileHash
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 990
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 990\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -661,8 +570,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: 0a63acdb-6497-4f96-8318-5231aefde427
     type: condition
     task:
@@ -672,29 +581,23 @@ tasks:
       description: Check if there are any indicators that are blocked.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "11"
+      - '2'
+      yes:
+      - '11'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: IndicatorsToBlock
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 1340
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 1340\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -702,8 +605,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: 5e12fc6b-2fa0-43d0-8a46-d2f213525a45
     type: condition
     task:
@@ -713,15 +616,15 @@ tasks:
       description: Checks whether the file hash exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "28"
-      "yes":
-      - "29"
+      - '28'
+      yes:
+      - '29'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -730,14 +633,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 780
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 780\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -745,8 +642,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: 5df17f17-1825-4ac0-8edf-c0e89f437551
     type: condition
     task:
@@ -756,15 +653,15 @@ tasks:
       description: Checks whether the file hash exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "28"
-      "yes":
-      - "10"
+      - '28'
+      yes:
+      - '10'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -773,14 +670,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 780
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 780\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -788,51 +679,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "24_1_yes": 0.44,
-      "24_28_#default#": 0.24,
-      "26_28_#default#": 0.29,
-      "30_11_yes": 0.52,
-      "30_2_#default#": 0.38,
-      "31_29_yes": 0.51,
-      "32_10_yes": 0.57,
-      "3_25_yes": 0.43,
-      "3_2_#default#": 0.12
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1965,
-        "width": 1080,
-        "x": -10,
-        "y": -190
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"24_1_yes\": 0.44,\n    \"24_28_#default#\": 0.24,\n    \"26_28_#default#\": 0.29,\n    \"30_11_yes\": 0.52,\n    \"30_2_#default#\": 0.38,\n    \"31_29_yes\": 0.51,\n    \"32_10_yes\": 0.57,\n    \"3_25_yes\": 0.43,\n    \"3_2_#default#\": 0.12\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1965,\n      \"width\": 1080,\n      \"x\": -10,\n      \"y\": -190\n    }\n  }\n}"
 inputs:
 - key: BlockIndicators
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to 'True' to block the indicators.
   playbookInputQuery:
 - key: UserVerification
   value:
-    simple: "False"
+    simple: 'False'
   required: false
   description: "Possible values: True/False.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
 - key: AutoBlockIndicators
   value:
-    simple: "True"
+    simple: 'True'
   required: false
-  description: |-
-    Possible values: True/False.  Default: True.
-    Should the given indicators be automatically blocked, or should the user be given the option to choose?
-
-    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to True - the user will be prompted to select which indicators to block.
+  description: "Possible values: True/False.  Default: True.\nShould the given indicators be automatically blocked, or should the user be given the option to choose?\n\nIf set to False - no prompt will appear, and all provided indicators will be blocked automatically.\nIf set to True - the user will be prompted to select which indicators to block."
   playbookInputQuery:
 - key: FileHash
   value: {}
@@ -877,3 +742,4 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
+- platform

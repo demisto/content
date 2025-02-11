@@ -17,14 +17,14 @@ configuration:
   required: true
 - display: Maximum number of file events per fetch
   name: max_file_events_per_fetch
-  defaultvalue: "50000"
+  defaultvalue: '50000'
   advanced: true
   type: 0
   required: true
   section: Collect
 - display: Maximum number of audit events per fetch
   name: max_audit_events_per_fetch
-  defaultvalue: "100000"
+  defaultvalue: '100000'
   advanced: true
   type: 0
   required: true
@@ -35,30 +35,30 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: 'Code42 Insider Risk software solutions provide the right balance of transparency, technology and training to detect and appropriately respond to data risk. Use the Code42EventCollector integration to fetch file events and audit logs.'
+description: Code42 Insider Risk software solutions provide the right balance of transparency, technology and training to detect and appropriately respond to data risk. Use the Code42EventCollector integration to fetch file events and audit logs.
 display: Code42 Event Collector
 name: Code42 Event Collector
 script:
   commands:
   - arguments:
-    - description: 'Starting time from which to get events.'
+    - description: Starting time from which to get events.
       name: start_date
       required: true
-    - description: 'Time until when to get events.'
+    - description: Time until when to get events.
       name: end_date
       required: true
-    - description: 'The maximum number of events to return.'
+    - description: The maximum number of events to return.
       name: limit
       required: true
       defaultValue: '100'
-    - description: 'The type of event to return.'
+    - description: The type of event to return.
       name: event_type
       required: true
       auto: PREDEFINED
       predefined:
-        - "audit"
-        - "file"
-    description: 'Manual command to get events, used mainly for debugging'
+      - audit
+      - file
+    description: Manual command to get events, used mainly for debugging
     name: code42-get-events
     outputs: []
   runonce: false
@@ -69,6 +69,7 @@ script:
   isfetchevents: true
 fromversion: 8.4.0
 marketplaces:
-  - marketplacev2
+- marketplacev2
+- platform
 tests:
 - No tests (auto formatted)

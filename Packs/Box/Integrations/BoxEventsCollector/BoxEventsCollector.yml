@@ -3,13 +3,13 @@ commonfields:
   id: BoxEventsCollector
   version: -1
 configuration:
-- display: "Server URL"
+- display: Server URL
   name: url
   type: 0
   required: true
-  defaultvalue: 'https://api.box.com'
-  additionalinfo: "The url of the box api"
-- display: ""
+  defaultvalue: https://api.box.com
+  additionalinfo: The url of the box api
+- display: ''
   name: credentials_json
   type: 9
   required: true
@@ -20,14 +20,11 @@ configuration:
   type: 8
   required: false
 - defaultvalue: 1 days
-  display: |-
-    First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: created_after
   type: 0
   required: false
-- display: |
-    The maximum amount of events to fetch for each page. 
-    If you're encountering timeouts, consider decrease this value. range 500.
+- display: "The maximum amount of events to fetch for each page. \nIf you're encountering timeouts, consider decrease this value. range 500.\n"
   name: page_size
   type: 0
   defaultvalue: 500
@@ -65,6 +62,7 @@ script:
   isfetchevents: true
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests
 fromversion: 6.6.0

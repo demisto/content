@@ -17,7 +17,7 @@ configuration:
   required: true
   type: 9
   section: Connect
-- additionalinfo: 'The maximum amount of events to retrieve PER EACH EVENT TYPE type. For more information about event types see the help section.'
+- additionalinfo: The maximum amount of events to retrieve PER EACH EVENT TYPE type. For more information about event types see the help section.
   defaultvalue: '50000'
   display: Max events per fetch
   name: max_fetch
@@ -29,7 +29,7 @@ configuration:
   display: Events Fetch Interval
   additionalinfo: default fetch interval (This collector has an optimization feature that enables it to bring events as soon as possible if they exist).
   name: eventFetchInterval
-  defaultvalue: "5"
+  defaultvalue: '5'
   type: 19
   required: false
 - display: Event Types To Fetch
@@ -85,4 +85,5 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
