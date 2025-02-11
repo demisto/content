@@ -1,6 +1,10 @@
 [INGEST:vendor="cisco", product="asr", target_dataset="cisco_asr_raw", no_hit=keep]
 /*
- This parsing rule supports only date time of the following formats: MMM dd hh:mm:ss.nnn / yyyy MMM dd hh:mm:ss.nnn TZ / MMM  dd yyyy hh:mm:ss.nnn TZ. For example: "2021 Jan 01 10:00:00.123 UTC".
+ This parsing rule only supports datetime values with milliseconds in the UTC timezone.
+ The supported formats are:
+ - MMM dd hh:mm:ss.nnn (eg., Jan 01 10:00:00.123)
+ - yyyy MMM dd hh:mm:ss.nnn TZ (eg., 2021 Jan 01 10:00:00.123 UTC)
+ - MMM  dd yyyy hh:mm:ss.nnn TZ (eg., Jan  01 2021 10:00:00.123 UTC).
 */
 filter _raw_log ~= "\:[^\:]+\s\d{2}:\d{2}:\d{2}[^\:]+\:"
 | alter
