@@ -15,7 +15,7 @@ def get_mitre_technique_name(mitre_id: str) -> dict[str, str]:
     """
     try:
         technique_names = {}
-        query = f'mitreid:{mitre_id} and type:(Tactic "Attack Pattern")'
+        query = f'mitreid:({mitre_id}) and type:(Tactic "Attack Pattern")'
         demisto.debug(f'Querying for {query} in TIM')
 
         success, response = execute_command(command="SearchIndicator",
