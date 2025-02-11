@@ -331,9 +331,6 @@ ignore=IF115
 [file:incidentfield-GIB_Country_Code.json]
 ignore=IF115
 
-[file:incidentfield-GIB_Upload_Time.json]
-ignore=IF115
-
 [file:incidentfield-GIB_Date_First_Compromised.json]
 ignore=IF115
 
