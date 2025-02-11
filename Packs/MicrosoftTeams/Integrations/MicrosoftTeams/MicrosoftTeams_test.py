@@ -52,6 +52,7 @@ team_members: list = [
         'givenName': 'Bruce',
         'surname': 'Willis',
         'userPrincipalName': 'bwillis@email.com',
+        'email': 'bwillis@email.com',
         'tenantId': tenant_id
     },
     {
@@ -1068,7 +1069,8 @@ def test_get_team_member():
     user_id: str = '29:1KZccCJRTxlPdHnwcKfxHAtYvPLIyHgkSLhFSnGXLGVFlnltovdZPmZAduPKQP6NrGqOcde7FXAF7uTZ_8FQOqg'
     team_member: dict = {
         'username': 'Bruce Willis',
-        'user_email': 'bwillis@email.com'
+        'user_email': 'bwillis@email.com',
+        'user_principal_name': 'bwillis@email.com',
     }
     assert get_team_member(integration_context, user_id) == team_member
     with pytest.raises(ValueError) as e:
@@ -1458,7 +1460,8 @@ def test_direct_message_handler(mocker, requests_mock):
             'type': 'Phishing',
             'rawJSON': '{"from": {"id": '
                        '"29:1KZccCJRTxlPdHnwcKfxHAtYvPLIyHgkSLhFSnGXLGVFlnltovdZPmZAduPKQP6NrGqOcde7FXAF7uTZ_8FQOqg", '
-                       '"username": "Bruce Willis", "user_email": "bwillis@email.com"}}'
+                       '"username": "Bruce Willis", "user_email": "bwillis@email.com", '
+                       '"user_principal_name": "bwillis@email.com"}}'
         }
     ]
     expected_assigned_user = 'nice-demisto-id'
