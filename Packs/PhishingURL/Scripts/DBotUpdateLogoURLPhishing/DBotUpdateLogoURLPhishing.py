@@ -53,6 +53,11 @@ def b64decode_string(string: str) -> str:
     return base64.b64decode(string.encode()).decode()
 
 
+def delete_model():
+    res = demisto.executeCommand('deleteMLModel', {'modelName': URL_PHISHING_MODEL_NAME})
+    demisto.debug(f'Deleted model. server response: {res}')
+
+
 def load_old_model_data(encoded_model: str) -> ModelData:
     '''Update the model to the new version'''
     import warnings
@@ -63,7 +68,13 @@ def load_old_model_data(encoded_model: str) -> ModelData:
     model = cast(Model, dill.loads(base64.b64decode(encoded_model.encode())))
     dill._dill._import_module = old_import
 
-    return model_to_data(model)
+    model_data = model_to_data(model)
+
+    # update model
+    delete_model()
+    save_model_data(model_data)
+    
+    return model_data
 
 
 def save_model_data(model_data: ModelData):
@@ -75,7 +86,7 @@ def save_model_data(model_data: ModelData):
     res = demisto.executeCommand(
         'createMLModel',
         {
-            'modelData': b64_encode(json.dumps(model_data)),
+            'modelData': b64encode_string(json.dumps(model_data)),
             'modelName': URL_PHISHING_MODEL_NAME,
             'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
             'modelOverride': 'true',
@@ -117,7 +128,7 @@ def load_data_from_xsoar() -> Optional[ModelData]:
     if isinstance(extra_data, dict) and 'minor' in extra_data:  # this means the old model exists as a pickled object
         demisto.debug(f'Old model found. {extra_data=}')
         return load_old_model_data(model_data)
-    return cast(ModelData, json.loads(b64_decode(model_data)))
+    return cast(ModelData, json.loads(b64decode_string(model_data)))
 
 
 def image_from_base64_to_bytes(base64_message: str):

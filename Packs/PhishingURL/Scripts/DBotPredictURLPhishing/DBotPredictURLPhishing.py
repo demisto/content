@@ -152,8 +152,7 @@ def save_model_data(model_data: ModelData):
             'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT, SUSPICIOUS_VERDICT],
             'modelOverride': 'true',
             'modelHidden': True,
-            'modelType': 'url_phishing',
-            'modelExtraInfo': {}
+            'modelType': 'url_phishing'
         }
     )
     if is_error(res):
@@ -162,9 +161,9 @@ def save_model_data(model_data: ModelData):
 
 def extract_and_save_old_model_data(model_data: str, minor_version: int) -> Optional[ModelData]:
     '''Update the model to the new version. This will be eventually deleted.'''
+    delete_model()
     if minor_version == 0:  # no changes were made to the model by the user
-        demisto.debug('Old version is unchanged, deleting')
-        delete_model()
+        demisto.debug('Old version is unchanged')
         return None
 
     import warnings
