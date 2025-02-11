@@ -1,10 +1,9 @@
+from CelonisEventCollector import Client
 import json
 
 MOCK_BASEURL = "https://example.com"
 MOCK_CLIENT_ID = "ID"
 MOCK_CLIENT_SECRET = "SECRET"
-
-from CelonisEventCollector import Client
 
 
 def create_client():
@@ -90,7 +89,7 @@ def test_fetch_events_token_expired(mocker):
     exception = Exception("Unauthorized access")
     setattr(exception, "message", "Unauthorized")
     last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "audit_token": "123"}
-    mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=[exception,raw_response_audit_logs])
+    mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=[exception, raw_response_audit_logs])
     mocker.patch('CelonisEventCollector.demisto.getLastRun', return_value=last_run_mock)
     mocker.patch('CelonisEventCollector.Client.create_access_token_for_audit')
 
@@ -121,7 +120,7 @@ def test_fetch_events_reaching_limit(mocker):
     assert len(output) == 5
     assert new_last_run.get('start_date') == '2025-02-05T14:52:10.904Z'
 
-    for i in range(0,len(output)):
+    for i in range(0, len(output)):
         assert output[i]['message']['id'] == f"id{i+1}"
 
 
@@ -148,4 +147,3 @@ def test_fetch_events_more_than_exist(mocker):
 
     for i in range(0, len(output)):
         assert output[i]['message']['id'] == f"id{i + 1}"
-

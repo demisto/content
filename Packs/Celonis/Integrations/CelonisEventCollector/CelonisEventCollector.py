@@ -23,7 +23,7 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         super().__init__(base_url=base_url, verify=verify)
-        self.token = None
+        self.token: str = ''
 
     def set_token(self, token: str):
         """
@@ -133,7 +133,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
                 new_last_run = {'start_date': start, 'audit_token': client.token}
                 return output, new_last_run
             if hasattr(e, "message") and 'Unauthorized' in e.message:  # need to regenerate the token
-                demisto.debug(f"Regenerates token for fetching audit logs.")
+                demisto.debug("Regenerates token for fetching audit logs.")
                 client.create_access_token_for_audit()
                 response = client.get_audit_logs(start, end)
             else:
@@ -142,7 +142,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         if not response.get('content'):
             break
 
-        events = sort_events_by_timestamp(response.get('content'))
+        events = sort_events_by_timestamp(response.get('content', []))
         for event in events:
             event_date = event.get('timestamp')
             event['_TIME'] = event_date
@@ -177,7 +177,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
                           }
         filtered_events.append(filtered_event)
 
-    human_readable = tableToMarkdown(name='Celonis Audit Logs Events', t=filtered_events, removeNull=True)
+    human_readable = tableToMarkdown(name='CelonisEventCollector Audit Logs Events', t=filtered_events, removeNull=True)
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
