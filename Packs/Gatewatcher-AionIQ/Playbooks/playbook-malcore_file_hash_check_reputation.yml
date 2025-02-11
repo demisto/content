@@ -1,7 +1,7 @@
-id: 4c5391da-3e42-4126-8d06-48df4bcf690a
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
-name: Gatewatcher Test Playbook
+id: malcore file hash check reputation
+version: -1
+name: malcore file hash check reputation
+fromversion: "6.5.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -149,3 +150,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+description: This playbook fetch a malcore alert from a GCenter, retrieve the associated suspicious file and checks the SHA256 reputation using VirusTotal integration.

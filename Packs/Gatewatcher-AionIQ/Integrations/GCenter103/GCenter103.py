@@ -391,9 +391,9 @@ def gcenter103_alerts_get_command(client: GwClient, args: dict[str, str]) -> Com
  
     res = req.json()
 
-    res_keys: dict[Any, Any] = {}
-    
-    res_keys = dict([("uuid", res.get('uuid', ""))])
+    res_keys: dict[Any, Any] = {
+            "uuid": res.get('uuid', "")
+            }
 
     return CommandResults(
        readable_output=tableToMarkdown("gcenter103-alerts-get", res),
@@ -427,8 +427,9 @@ def gcenter103_alerts_note_add_command(client: GwClient, args: dict[str, str]) -
       
         res = req.json()
 
-        res_keys: dict[Any, Any] = {}
-        res_keys = dict([("note", res.get('note', ""))])
+        res_keys: dict[Any, Any] = {
+                "note": res.get('note', "")
+        }
 
         return CommandResults(
            readable_output=tableToMarkdown("gcenter103-alerts-note-add", res),
@@ -463,8 +464,9 @@ def gcenter103_alerts_note_add_command(client: GwClient, args: dict[str, str]) -
             raise Exception(f"Exception: {str(e)}")
       
         res = req.json()
-        res_keys: dict[Any, Any] = {}
-        res_keys = dict([("note", res.get('note', ""))])
+        res_keys: dict[Any, Any] = {
+                "note": res.get('note', "")
+        }
 
         return CommandResults(
            readable_output=tableToMarkdown("gcenter103-alerts-note-add", res),
@@ -607,7 +609,10 @@ def gcenter103_alerts_tags_add_command(client: GwClient, args: dict[str, Any]) -
         raise Exception(f"Exception: {str(e)}")
 
     res = req.json()
-    res_keys = dict([("tags", res.get('tags', {})), ("uuid", params.get('uuid', ""))])
+    res_keys: dict[Any, Any] ={
+            "tags": res.get('tags', {}),
+            "uuid": params.get('uuid', ""),
+    }
     
     return CommandResults(
        readable_output=tableToMarkdown("gcenter103-alerts-tags-add", res.get('tags', {})),
@@ -1572,11 +1577,11 @@ def gcenter103_malcore_fingerprints_add_command(client: GwClient, args: dict[str
         "list_type": args.get("list_type")
     }
 
-    data = dict([
-        ("sha256", params.get('sha256', "")),
-        ("comment", params.get('comment', "")),
-        ("threat", params.get('threat', ""))
-    ])
+    data: dict[Any, Any] = {
+            "sha256": params.get('sha256', ""),
+            "comment": params.get('comment', ""),
+            "threat": params.get('threat', "")
+    }
      
     try:
         req = client._post(endpoint="/api/v1/malcore/hash-"+params.get('list_type', "")+"-list/", json_data=data)
@@ -1630,9 +1635,9 @@ def convert_event_severity(gw_sev: int) -> float:
 def gw_client_auth(params: dict) -> GwClient:
 
     ip: str = params.get('ip')
-    token: str = params.get('credentials', {}).get('password')
-    user: str = params.get('userpass', {}).get('identifier')
-    password: str = params.get('userpass', {}).get('password')
+    token: str = params.get('token', {}).get('password')
+    user: str = params.get('credentials', {}).get('identifier')
+    password: str = params.get('credentials', {}).get('password')
     check_cert: bool = params.get("check_cert", False)
 
     client: GwClient = GwClient(ip=ip, check_cert=check_cert)
@@ -2078,7 +2083,11 @@ def fetch_empty_selected_engines(client: GwClient,
 
     else:
 
-        gw_alerts: list[dict[Any,Any]] = handle_little_fetch_empty_selected_engines(client=client, query=query, fetch_type=fetch_type)
+        gw_alerts: list[dict[Any,Any]] = handle_little_fetch_empty_selected_engines(
+                client=client,
+                query=query,
+                fetch_type=fetch_type
+        )
         incidents_a = []
         if len(gw_alerts) > 0:
             incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents, params=params)
@@ -2160,9 +2169,9 @@ def main() -> None:
     args = demisto.args()
 
     ip = params.get("ip")
-    token = params.get('credentials', {}).get('password')
-    user = params.get('userpass', {}).get('identifier')
-    password = params.get('userpass', {}).get('password')
+    token = params.get('token', {}).get('password')
+    user = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     check_cert = params.get("check_cert", False)
     proxy = params.get("proxy", False)
 
