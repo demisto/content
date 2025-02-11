@@ -22,6 +22,6 @@
         "xpanse",
         "platform"
     ],
-    "module": [""],
+    "module": ["automation"],
     "defaultDataSource": "Jira Event Collector"
 }
