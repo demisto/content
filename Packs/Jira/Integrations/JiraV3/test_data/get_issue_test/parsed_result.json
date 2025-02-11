@@ -1084,7 +1084,7 @@
                 }
             }
         },
-        "HumanReadable": "### Issue COMPANYSA-35\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User(admin@demistodev.com) | 2023-03-01T11:34:49.730+0200 | Example User(admin@demistodev.com) | XSOAR description stam | 2024-12-30 | 21487 | Story | COMPANYSA-35 | Demisto,<br>XSOAR,<br>dummy-label,<br>dummy-label2,<br>xsoar-mirror | Low | Company Snoozing App | Example User(admin@demistodev.com) | In Progress | Testing summary XSOAR mirroring | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21487 |\n",
+        "HumanReadable": "### Issue COMPANYSA-35\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Raw Description|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User(admin@demistodev.com) | 2023-03-01T11:34:49.730+0200 | Example User(admin@demistodev.com) | XSOAR description stam | 2024-12-30 | 21487 | Story | COMPANYSA-35 | Demisto,<br>XSOAR,<br>dummy-label,<br>dummy-label2,<br>xsoar-mirror | Low | Company Snoozing App | <p>XSOAR description stam</p> | Example User(admin@demistodev.com) | In Progress | Testing summary XSOAR mirroring | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21487 |\n",
         "EntryContext": {
             "Ticket(val.Id && val.Id == obj.Id)": {
                 "LastSeen": "2023-04-20T00:11:05.442+0300",
@@ -1121,6 +1121,7 @@
                 "Assignee": "Example User(admin@demistodev.com)",
                 "Creator": "Example User(admin@demistodev.com)",
                 "Description": "XSOAR description stam",
+                "RawDescription": "<p>XSOAR description stam</p>",
                 "watches": {
                     "issueFieldDisplayName": "Watchers",
                     "rawData": {
@@ -1733,7 +1734,7 @@
                 }
             }
         },
-        "HumanReadable": "### Issue COMPANYSA-63\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|  | 2023-03-30T20:31:17.203+0300 | Example User(admin@demistodev.com) |  |  | 21525 | Sub-task | COMPANYSA-63 |  | Medium | Company Snoozing App | Example User(admin@demistodev.com) | Backlog | Mirrored subtask1 | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21525 |\n",
+        "HumanReadable": "### Issue COMPANYSA-63\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Raw Description|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|  | 2023-03-30T20:31:17.203+0300 | Example User(admin@demistodev.com) |  |  | 21525 | Sub-task | COMPANYSA-63 |  | Medium | Company Snoozing App |  | Example User(admin@demistodev.com) | Backlog | Mirrored subtask1 | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21525 |\n",
         "EntryContext": {
             "Ticket(val.Id && val.Id == obj.Id)": {
                 "LastSeen": "",
@@ -1752,6 +1753,7 @@
                 "Assignee": "",
                 "Creator": "Example User(admin@demistodev.com)",
                 "Description": "",
+                "RawDescription": "",
                 "watches": {
                     "issueFieldDisplayName": "Watchers",
                     "rawData": {
@@ -2364,7 +2366,7 @@
                 }
             }
         },
-        "HumanReadable": "### Issue COMPANYSA-70\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|  | 2023-04-10T06:55:43.409+0300 | Example User(admin@demistodev.com) |  |  | 21538 | Sub-task | COMPANYSA-70 |  | Medium | Company Snoozing App | Example User(admin@demistodev.com) | Selected for Development | Test Test | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21538 |\n",
+        "HumanReadable": "### Issue COMPANYSA-70\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Raw Description|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|  | 2023-04-10T06:55:43.409+0300 | Example User(admin@demistodev.com) |  |  | 21538 | Sub-task | COMPANYSA-70 |  | Medium | Company Snoozing App |  | Example User(admin@demistodev.com) | Selected for Development | Test Test | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21538 |\n",
         "EntryContext": {
             "Ticket(val.Id && val.Id == obj.Id)": {
                 "LastSeen": "2023-04-13T00:17:56.459+0300",
@@ -2383,6 +2385,7 @@
                 "Assignee": "",
                 "Creator": "Example User(admin@demistodev.com)",
                 "Description": "",
+                "RawDescription": "",
                 "watches": {
                     "issueFieldDisplayName": "Watchers",
                     "rawData": {
@@ -3043,7 +3046,7 @@
                 }
             }
         },
-        "HumanReadable": "### Issue TSTPRD-6\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|  | 2023-02-02T17:59:40.530+0200 | Example User(admin@demistodev.com) |  |  | 21431 | Story | TSTPRD-6 |  | Medium | TestProd | Example User(admin@demistodev.com) | To Do | Hire UX designers | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21431 |\n",
+        "HumanReadable": "### Issue TSTPRD-6\n|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Raw Description|Reporter|Status|Summary|Ticket Link|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|  | 2023-02-02T17:59:40.530+0200 | Example User(admin@demistodev.com) |  |  | 21431 | Story | TSTPRD-6 |  | Medium | TestProd |  | Example User(admin@demistodev.com) | To Do | Hire UX designers | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21431 |\n",
         "EntryContext": {
             "Ticket(val.Id && val.Id == obj.Id)": {
                 "LastSeen": "2023-04-20T05:01:10.124+0300",
@@ -3062,6 +3065,7 @@
                 "Assignee": "",
                 "Creator": "Example User(admin@demistodev.com)",
                 "Description": "",
+                "RawDescription": "",
                 "watches": {
                     "issueFieldDisplayName": "Watchers",
                     "rawData": {

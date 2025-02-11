@@ -1303,13 +1303,12 @@ class JiraIssueFieldsParser:
         # (which holds nested dictionaries that includes the content and also metadata about it), we check if the response
         # returns the fields rendered in HTML format (by accessing the renderedFields).
         rendered_issue_fields = issue_data.get('renderedFields', {}) or {}
-
+        description_raw: str = ''
         if rendered_issue_fields:
             description_raw = rendered_issue_fields.get('description', '')
             description_text: str = BeautifulSoup(description_raw, features="html.parser").get_text()
         else:
             description_text: str = demisto.get(issue_data, 'fields.description', '') or ''
-            description_raw: str = demisto.get(issue_data, 'renderedFields.description', '') or ''
         return {'Description': description_text, "RawDescription": description_raw}
 
 
