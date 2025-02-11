@@ -11168,7 +11168,7 @@ class UniversalCommand:
             command = UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
             try:
                 response = run_op_command(device, command)
-            except Exception as e:
+            except Exception:
                 demisto.debug(f'Could not find The given ID {id} in the specific device {device}')
                 continue
             for job in response.findall("./result/job"):
@@ -11185,6 +11185,9 @@ class UniversalCommand:
         # being returned, return it as a dict instead of a list.
         if len(result_data) == 1:
             return result_data[0]  # type: ignore
+
+        if not result_data and id:  # in case of an empty list and a specific ID, it means ID not found in all devices
+            raise DemistoException(f"The given ID {id} is not found in all device of the topology")
 
         return result_data
 

@@ -4,6 +4,7 @@ import pytest
 import requests_mock
 from pytest_mock import MockerFixture
 from requests_mock.mocker import Mocker as RequestsMock
+import pan.xapi
 
 import demistomock as demisto
 from unittest.mock import patch, MagicMock
@@ -8045,3 +8046,24 @@ def test_pan_os_get_master_key_details_command(mocker: MockerFixture, requests_m
     assert table_data == raw_response['response']['result']
     assert command_results.outputs == raw_response['response']['result']
     assert command_results.raw_response == raw_response
+
+
+@patch("Panorama.run_op_command")
+def test_show_jobs_id_not_found(patched_run_op_command):
+    """
+    Given:
+        - A specific job_id (23)
+
+    When:
+        - running show_jobs function
+
+    Then:
+        - Ensure DemistoException is thrown with ann informative message (since the given ID does not exist in all devices)
+    """
+    from Panorama import UniversalCommand
+
+    patched_run_op_command.side_effect = pan.xapi.PanXapiError("job 23 not found")
+    MockTopology = type('MockTopology', (), {'all': lambda *x, **y: [Panorama(hostname='123')]})
+
+    with pytest.raises(DemistoException, match=f"The given ID 23 is not found in all device of the topology"):
+        UniversalCommand.show_jobs(topology=MockTopology(), id=23)
