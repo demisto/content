@@ -147,7 +147,7 @@ def save_model_data(model_data: ModelData):
     res = demisto.executeCommand(
         'createMLModel',
         {
-            'modelData': json.dumps(model_data),
+            'modelData': b64encode_string(json.dumps(model_data)),
             'modelName': URL_PHISHING_MODEL_NAME,
             'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT, SUSPICIOUS_VERDICT],
             'modelOverride': 'true',
@@ -162,6 +162,7 @@ def save_model_data(model_data: ModelData):
 def extract_and_save_old_model_data(model_data: str, minor_version: int) -> Optional[ModelData]:
     '''Update the model to the new version. This will be eventually deleted.'''
     if minor_version == 0:  # no changes were made to the model by the user
+        demisto.debug('Old version is unchanged, deleting')
         delete_model()
         return None
 
@@ -170,7 +171,7 @@ def extract_and_save_old_model_data(model_data: str, minor_version: int) -> Opti
 
     old_import = dill._dill._import_module
     dill._dill._import_module = lambda x, safe=False: old_import(x, safe=True)
-    model = cast(Model, dill.loads(base64.b64decode(model_data.encode('utf-8'))))
+    model = cast(Model, dill.loads(base64_to_bytes(model_data)))
     dill._dill._import_module = old_import
 
     model_data = cast(ModelData, {
@@ -194,7 +195,7 @@ def get_model_data() -> Optional[ModelData]:
     if isinstance(extra_data, dict) and 'minor' in extra_data:  # this means the old model exists as a pickled object
         demisto.debug(f'Old model found. {extra_data=}')
         return extract_and_save_old_model_data(model_data, extra_data['minor'])
-    return cast(ModelData, json.loads(model_data))
+    return cast(ModelData, json.loads(b64decode_string(model_data)))
 
 
 def load_model_from_docker(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> Model:
@@ -210,13 +211,21 @@ def load_model() -> Model:
     return model
 
 
-def image_from_base64_to_bytes(base64_message: str) -> bytes:
+def b64encode_string(string: str) -> str:
+    return base64.b64encode(string.encode()).decode()
+
+
+def b64decode_string(string: str) -> str:
+    return base64_to_bytes(string).decode()
+
+
+def base64_to_bytes(base64_string: str) -> bytes:
     """
-    Transform image from base64 string into bytes
-    :param base64_message:
+    Transform a base64 string into bytes
+    :param base64_string:
     :return:
     """
-    return base64.b64decode(base64_message.encode('utf-8'))
+    return base64.b64decode(base64_string.encode())
 
 
 def extract_domainv2(url: str) -> str:
@@ -352,7 +361,7 @@ def return_entry_summary(
     if pred_json:
         image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
         if not image:
-            image = image_from_base64_to_bytes(output_rasterize.get(KEY_IMAGE_RASTERIZE))  # type: ignore[arg-type]
+            image = base64_to_bytes(output_rasterize.get(KEY_IMAGE_RASTERIZE))  # type: ignore[arg-type]
         res = fileResult(filename='Logo detection engine', data=image)
         res['Type'] = entryTypes['image']
         if pred_json[MODEL_KEY_LOGO_FOUND]:

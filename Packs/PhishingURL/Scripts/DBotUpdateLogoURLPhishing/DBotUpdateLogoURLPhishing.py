@@ -45,6 +45,14 @@ class ModelData(dict[Literal['top_domains', 'logos_dict', 'custom_logo_associate
     '''Abstract class that represents the format of the data stored in the server.'''
 
 
+def b64encode_string(string: str) -> str:
+    return base64.b64encode(string.encode()).decode()
+
+
+def b64decode_string(string: str) -> str:
+    return base64.b64decode(string.encode()).decode()
+
+
 def load_old_model_data(encoded_model: str) -> ModelData:
     '''Update the model to the new version'''
     import warnings
@@ -52,7 +60,7 @@ def load_old_model_data(encoded_model: str) -> ModelData:
 
     old_import = dill._dill._import_module
     dill._dill._import_module = lambda x, safe=False: old_import(x, safe=True)
-    model = cast(Model, dill.loads(base64.b64decode(encoded_model.encode('utf-8'))))
+    model = cast(Model, dill.loads(base64.b64decode(encoded_model.encode())))
     dill._dill._import_module = old_import
 
     return model_to_data(model)
@@ -67,7 +75,7 @@ def save_model_data(model_data: ModelData):
     res = demisto.executeCommand(
         'createMLModel',
         {
-            'modelData': json.dumps(model_data),
+            'modelData': b64_encode(json.dumps(model_data)),
             'modelName': URL_PHISHING_MODEL_NAME,
             'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
             'modelOverride': 'true',
@@ -109,7 +117,7 @@ def load_data_from_xsoar() -> Optional[ModelData]:
     if isinstance(extra_data, dict) and 'minor' in extra_data:  # this means the old model exists as a pickled object
         demisto.debug(f'Old model found. {extra_data=}')
         return load_old_model_data(model_data)
-    return cast(ModelData, json.loads(model_data))
+    return cast(ModelData, json.loads(b64_decode(model_data)))
 
 
 def image_from_base64_to_bytes(base64_message: str):
@@ -118,7 +126,7 @@ def image_from_base64_to_bytes(base64_message: str):
     :param base64_message:
     :return:
     """
-    return base64.b64decode(base64_message.encode('utf-8'))
+    return base64.b64decode(base64_message.encode())
 
 
 def get_concat_logo_single_image(logo_list: Iterable[str]):
@@ -154,7 +162,7 @@ def decode_image(base64_message: str) -> np.ndarray:
     :param base64_message: str representing the encoded image
     :return: numpy.narray representing the image
     """
-    base64_message = base64.decodebytes(base64_message.encode('utf-8'))
+    base64_message = base64.decodebytes(base64_message.encode())
     nparr = np.frombuffer(base64_message, np.uint8)
     return cv.imdecode(nparr, cv.IMREAD_GRAYSCALE)  # pylint: disable=E1101
 
@@ -174,7 +182,7 @@ def add_new_logo(model_data: ModelData, logo_name, logo_image_id, associated_dom
             logo_content = file.read()
         if logo_name in model_data['logos_dict']:
             return_error(f"The logo name {logo_name!r} is already in use. Please use another logo name.")
-        encoded_image = base64.b64encode(logo_content).decode('utf-8')
+        encoded_image = base64.b64encode(logo_content).decode()
         imm_arr = decode_image(encoded_image)
         if imm_arr is None:
             raise DemistoException("The file is not a valid image.")
