@@ -11,6 +11,7 @@ This integration was integrated and tested with version 91.0.6.575 of Netskope (
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
+Test of mirroring! 1. 2. 3. 4.
 
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.

@@ -20,6 +20,8 @@ This integration was integrated and tested with version v1 of cyberint
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
+Test of mirroring! 1. 2. 3. 4.
+
 
 ## Commands
 

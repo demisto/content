@@ -25,6 +25,9 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 
+
+Test of mirroring! 1. 2. 3. 4.
+
     (The test does not ensure sufficient permissions for all integration commands.)
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.

@@ -28,6 +28,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Get a paginated list of all the labels created for the company and its details such as id, name and business relevance. The items are sorted by the label id in ascending order.
 
+Test of mirroring! 1. 2. 3. 4.
 
 #### Base Command
 

@@ -57,6 +57,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 6. Click **Test** to validate the URLs, token, and connection.
 
+Test of mirroring! 1. 2. 3. 4.
 
 ## Known Limitations
 ---

@@ -6,6 +6,8 @@ This integration was integrated and tested with 10.08.008-on-premises-release3-b
 2. Fetch newly created TOPdesk incidents.
 3. Get information about branches, persons and operators.
 
+Test of mirroring! 1. 2. 3. 4.
+
 ## Configure TOPdesk on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

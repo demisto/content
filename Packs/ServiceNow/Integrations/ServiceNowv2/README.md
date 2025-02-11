@@ -11,6 +11,8 @@ This integration was integrated and tested with the Xanadu version of ServiceNow
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
+Test of mirroring! 1. 2. 3. 4.
+
 ## Use cases
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.

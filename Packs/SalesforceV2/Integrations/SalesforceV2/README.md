@@ -24,6 +24,8 @@ CRM Services
 | Close Mirrored Salesforce case | When selected, closing the Cortex XSOAR incident is mirrored in Salesforce. | False |
 | Incidents Fetch Interval |  | False |
 
+Test of mirroring! 1. 2. 3. 4.
+
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

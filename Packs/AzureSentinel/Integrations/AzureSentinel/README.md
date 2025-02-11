@@ -18,6 +18,8 @@ Follow these steps for a self-deployed configuration.
 6. In the *Password* parameter, enter the secret value you created.
 7. Copy your tenant ID for the integration configuration usage.
 
+Test of mirroring! 1. 2. 3. 4.
+
 ## Configure the server URL
 
 If you have a dedicated server URL, enter it in the *Server Url* parameter. 
