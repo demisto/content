@@ -15,6 +15,14 @@ urllib3.disable_warnings()
 API_VERSION = '/api/v3/'
 OAUTH = 'https://accounts.zoho.com/oauth/v2/token'
 
+OAUTH = {
+    'United States': 'https://sdpondemand.manageengine.com',
+    'Europe': 'https://sdpondemand.manageengine.eu',
+    'India': 'https://sdpondemand.manageengine.in',
+    'China': 'https://servicedeskplus.cn',
+    'Australia': 'https://servicedeskplus.net.au',
+}
+
 REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority',
                   'service_category', 'requester', 'assets', 'site', 'group', 'technician', 'category', 'subcategory',
                   'item', 'email_ids_to_notify', 'is_fcr', 'resources', 'udf_fields', 'update_reason']
