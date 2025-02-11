@@ -88,7 +88,7 @@ def test_load_data_from_xsoar(mocker: MockerFixture):
 
     mocker.patch(
         "demistomock.executeCommand",
-        return_value=[{"Type": 0, "Contents": {"modelData": '["model_data"]'}}],
+        return_value=[{"Type": 0, "Contents": {"modelData": 'WyJtb2RlbF9kYXRhIl0='}}],
     )
 
     res = load_data_from_xsoar()

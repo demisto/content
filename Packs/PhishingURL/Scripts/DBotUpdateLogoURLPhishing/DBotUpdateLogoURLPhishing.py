@@ -68,13 +68,10 @@ def load_old_model_data(encoded_model: str) -> ModelData:
     model = cast(Model, dill.loads(base64.b64decode(encoded_model.encode())))
     dill._dill._import_module = old_import
 
-    model_data = model_to_data(model)
-
-    # update model
-    delete_model()
-    save_model_data(model_data)
+    if demisto.getArg('action') != KEY_DISPLAY_LOGOS:
+        delete_model()
     
-    return model_data
+    return model_to_data(model)
 
 
 def save_model_data(model_data: ModelData):
