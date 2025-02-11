@@ -452,11 +452,14 @@ Scope: `read:jira-work`
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The JQL query string. | Required | 
-| start_at | The index (integer) of the first issue to return (0-based). | Optional | 
-| max_results | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated. | Optional | 
-| headers | Displays the headers in human readable format. | Optional | 
-| fields | A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command. | Optional | 
+| query | The JQL query string. | Required |
+| start_at | The index (integer) of the first issue to return (0-based). | Optional |
+| startAt | Deprecated. Please use start_at. | Optional |
+| max_results | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated. | Optional |
+| maxResults | Deprecated. Please use max_results. | Optional |
+| headers | Displays the headers in human readable format. | Optional |
+| fields | A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command. | Optional |
+| extraFields | Deprecated. Please use fields. | Optional |
 
 #### Context Output
 
