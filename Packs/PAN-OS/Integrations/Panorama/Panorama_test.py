@@ -8065,5 +8065,5 @@ def test_show_jobs_id_not_found(patched_run_op_command):
     patched_run_op_command.side_effect = pan.xapi.PanXapiError("job 23 not found")
     MockTopology = type('MockTopology', (), {'all': lambda *x, **y: [Panorama(hostname='123')]})
 
-    with pytest.raises(DemistoException, match=f"The given ID 23 is not found in all device of the topology"):
+    with pytest.raises(DemistoException, match="The given ID 23 is not found in all device of the topology"):
         UniversalCommand.show_jobs(topology=MockTopology(), id=23)
