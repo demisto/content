@@ -5,7 +5,7 @@ import pytest
 import requests
 import demistomock as demisto
 from CommonServerPython import IncidentStatus, tableToMarkdown, pascalToSpace, CommandResults
-from AzureSentinel import AzureSentinelClient, list_incidents_command, list_incident_relations_command, \
+from Packs.AzureSentinel.Integrations.AzureSentinel.AzureSentinele import AzureSentinelClient, list_incidents_command, list_incident_relations_command, \
     incident_add_comment_command, \
     get_update_incident_request_data, list_incident_entities_command, list_incident_comments_command, \
     list_incident_alerts_command, list_watchlists_command, \
@@ -41,7 +41,7 @@ def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
     Then
     - ValueError is raised.
     """
-    from AzureSentinel import test_module
+    from Packs.AzureSentinel.Integrations.AzureSentinel.AzureSentinele import test_module
     client = mock_client()
     api_response = requests.Response()
     api_response.status_code = 403
@@ -1416,8 +1416,8 @@ class TestHappyPath:
                 - Ensure the output are as expected.
         """
 
-        from AzureSentinel import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
-        import AzureSentinel
+        from Packs.AzureSentinel.Integrations.AzureSentinel.AzureSentinele import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+        import Packs.AzureSentinel.Integrations.AzureSentinel.AzureSentinele as AzureSentinele
         import re
 
         mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
@@ -1434,12 +1434,12 @@ class TestHappyPath:
         }
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'command', return_value='test-module')
-        mocker.patch.object(AzureSentinel, 'return_results')
+        mocker.patch.object(AzureSentinele, 'return_results')
         mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
 
         main()
 
-        assert 'ok' in AzureSentinel.return_results.call_args[0][0]
+        assert 'ok' in AzureSentinele.return_results.call_args[0][0]
         qs = get_mock.last_request.qs
         assert qs['resource'] == [Resources.management_azure]
         assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
