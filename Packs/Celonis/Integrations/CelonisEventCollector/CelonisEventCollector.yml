@@ -30,6 +30,14 @@ configuration:
   required: false
   type: 8
   section: Connect
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+  defaultvalue: "true"
 - additionalinfo: 'Defines the maximum number of audits events per fetch cycle. Default value: 600.'
   defaultvalue: "600"
   display: Maximum number of events per fetch
@@ -63,6 +71,10 @@ script:
       - description: 'The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
         name: end_date
         required: true
+    outputs:
+      - contextPath: Celonis.Audit
+        description: The list of audit logs events.
+        type: List
   isfetch: false
   runonce: false
   script: '-'

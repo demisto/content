@@ -190,7 +190,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
-        outputs_prefix='Celonis.Audit',  # todo to change in yml
+        outputs_prefix='Celonis.Audit',
     )
     return output, command_results
 
