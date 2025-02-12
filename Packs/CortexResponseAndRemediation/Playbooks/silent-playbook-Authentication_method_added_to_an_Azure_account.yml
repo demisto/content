@@ -1216,7 +1216,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description:
+      description: ""
     nexttasks:
       '#default#':
       - "34"

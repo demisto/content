@@ -1,6 +1,6 @@
 {
     "trigger_id": "bdebb4b10ded975f41ee4caaddbdd145",
-    "playbook_id": "Authentication method added to an Azure account",
+    "playbook_id": "silent-Authentication method added to an Azure account",
     "suggestion_reason": "Recommended for 'Suspicious authentication method addition to Azure account' alert",
     "description": "This trigger is responsible for handling the 'Suspicious authentication method addition to Azure account' alert",
     "trigger_name": "silent-Authentication method added to an Azure account",
