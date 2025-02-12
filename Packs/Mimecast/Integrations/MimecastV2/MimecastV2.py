@@ -125,7 +125,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
                 len_of_results += 1
                 results.append(entry)
         # If limit is reached or there are no more pages
-        if not next_page or (limit and len_of_results >= limit):
+        if not next_page or (demisto.command()!='fetch-incidents' and limit and len_of_results >= limit):
             break
         pagination = {'page_size': page_size,  # type: ignore
                       'pageToken': next_page}  # type: ignore
