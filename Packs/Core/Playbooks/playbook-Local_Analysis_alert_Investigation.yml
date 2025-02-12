@@ -1,43 +1,7 @@
 id: Local Analysis alert Investigation
 version: -1
 name: Local Analysis alert Investigation
-description: |-
-  When an unknown executable, DLL, or macro attempts to run on a Windows or Mac endpoint, the Cortex XDR agent uses local analysis to determine if it is likely to be malware. Local analysis uses a static set of pattern-matching rules that inspect multiple file features and attributes, and a statistical model that was developed with machine learning on WildFire threat intelligence.
-
-  **Investigative Actions:**
-
-  Investigate the executed process image and verify if it is malicious using:
-
-  * XDR trusted signers
-  * VT trusted signers
-  * VT detection rate
-  * NSRL DB
-
-  **Response Actions**
-
-  The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
-
-  * Auto block indicators
-  * Auto file quarantine
-  * Manual endpoint isolation
-
-  When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
-
-  This phase will execute the following containment actions:
-
-  * Manual block indicators
-  * Manual file quarantine
-  * Auto endpoint isolation
-
-  And the following eradication actions:
-
-  * Manual process termination
-  * Manual file deletion
-  * Manual reset of the user’s password
-
-  External resources:
-
-  [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
+description: "When an unknown executable, DLL, or macro attempts to run on a Windows or Mac endpoint, the Cortex XDR agent uses local analysis to determine if it is likely to be malware. Local analysis uses a static set of pattern-matching rules that inspect multiple file features and attributes, and a statistical model that was developed with machine learning on WildFire threat intelligence.\n\n**Investigative Actions:**\n\nInvestigate the executed process image and verify if it is malicious using:\n\n* XDR trusted signers\n* VT trusted signers\n* VT detection rate\n* NSRL DB\n\n**Response Actions**\n\nThe playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:\n\n* Auto block indicators\n* Auto file quarantine\n* Manual endpoint isolation\n\nWhen the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.\n\nThis phase will execute the following containment actions:\n\n* Manual block indicators\n* Manual file quarantine\n* Auto endpoint isolation\n\nAnd the following eradication actions:\n\n* Manual process termination\n* Manual file deletion\n* Manual reset of the user’s password\n\nExternal resources:\n\n[Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)"
 starttaskid: '0'
 tasks:
   '0':
@@ -55,13 +19,7 @@ tasks:
       '#none#':
       - '3'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -1800
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": -1800\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -69,9 +27,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "2":
-    id: "2"
+    continueonerrortype: ''
+  '2':
+    id: '2'
     taskid: c91fc254-410b-425e-87b2-c69a28f65349
     type: condition
     task:
@@ -86,7 +44,7 @@ tasks:
       '#default#':
       - '33'
       True Positive:
-      - "81"
+      - '81'
     separatecontext: false
     conditions:
     - label: True Positive
@@ -109,15 +67,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "false"
+              simple: 'false'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -1000
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": -1000\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -125,7 +77,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '3':
     id: '3'
     taskid: b3b9a73a-24d7-4008-8646-07fa816ad9d5
@@ -142,13 +94,7 @@ tasks:
       '#none#':
       - '61'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -1660
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": -1660\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -156,7 +102,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '6':
     id: '6'
     taskid: d6e52022-e411-45b0-8b80-a79e9e7afa71
@@ -189,13 +135,7 @@ tasks:
             value:
               simple: BLOCKED
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": -310
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": -310\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -203,7 +143,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '14':
     id: '14'
     taskid: c2495b22-ee9c-48c6-8f2f-6fc37c1bac1d
@@ -218,11 +158,11 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - "39"
+      - '39'
       Benign:
-      - "85"
+      - '85'
       Greyware:
-      - "86"
+      - '86'
     separatecontext: false
     conditions:
     - label: Benign
@@ -236,7 +176,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0"
+              simple: '0'
     - label: Greyware
       condition:
       - - operator: isEqualString
@@ -246,7 +186,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: '2'
       - - operator: isEqualString
           left:
             value:
@@ -254,15 +194,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "False"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 825
-        }
-      }
+              simple: 'False'
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 825\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -270,8 +204,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: 6b6f4826-2aa2-456a-8587-93f122f1c99e
     type: title
     task:
@@ -284,15 +218,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "75"
+      - '75'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 1640
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": 1640\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -300,7 +228,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '34':
     id: '34'
     taskid: f74d27e4-3546-40ce-8aee-0c1c2047fc61
@@ -309,28 +237,17 @@ tasks:
       id: f74d27e4-3546-40ce-8aee-0c1c2047fc61
       version: -1
       name: Manual review - was it your security vendor?
-      description: |+
-        Was it your security vendor?
-        Script from your IT?
-
-        ....
-
+      description: "Was it your security vendor?\nScript from your IT?\n\n....\n\n"
       type: condition
       iscommand: false
       brand: ''
     nexttasks:
       No:
       - '39'
-      "Yes":
-      - "67"
+      Yes:
+      - '67'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 2070
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": 2070\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -338,7 +255,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '35':
     id: '35'
     taskid: 29c59ae5-63a9-494e-86a9-d98e85aeec7c
@@ -355,13 +272,7 @@ tasks:
       '#none#':
       - '14'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 690
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 690\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -369,7 +280,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '39':
     id: '39'
     taskid: 91b3c33e-25e4-42d5-83f9-b9cbe172e16d
@@ -386,13 +297,7 @@ tasks:
       '#none#':
       - '63'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 2250
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 2250\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -400,7 +305,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '41':
     id: '41'
     taskid: 076a0a10-7b8f-4584-859c-11b39ea83664
@@ -418,13 +323,7 @@ tasks:
       - '64'
       - '65'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 2800
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 2800\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -432,7 +331,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '44':
     id: '44'
     taskid: f9946ed1-7266-408f-8bde-147e9d09581d
@@ -447,10 +346,10 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - "47"
+      - '47'
       yes:
       - '41'
-      - "76"
+      - '76'
     separatecontext: false
     conditions:
     - label: yes
@@ -462,13 +361,7 @@ tasks:
             iscontext: true
           right:
             value: {}
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 2560
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 2560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -476,7 +369,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '45':
     id: '45'
     taskid: 767a19fc-c96e-4b33-8053-889e45256edf
@@ -494,13 +387,7 @@ tasks:
       '#none#':
       - '51'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 3990
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 3990\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -508,7 +395,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '46':
     id: '46'
     taskid: d5a05362-eb31-403f-84b9-493f500d455f
@@ -540,13 +427,7 @@ tasks:
             value:
               simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 3310
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 3310\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -554,7 +435,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '47':
     id: '47'
     taskid: 858764a5-e107-4b04-894f-245053dd10a6
@@ -586,13 +467,7 @@ tasks:
             value:
               simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 3650
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 3650\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -600,7 +475,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '48':
     id: '48'
     taskid: da1d7739-25a2-416b-8c41-98d80f898913
@@ -617,13 +492,7 @@ tasks:
       '#none#':
       - '45'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1270,
-          "y": 3820
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1270,\n    \"y\": 3820\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -631,7 +500,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '50':
     id: '50'
     taskid: 41e96b8f-fa0a-436e-8ca4-a1b526352653
@@ -648,13 +517,7 @@ tasks:
       '#none#':
       - '46'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 3115
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 3115\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -662,7 +525,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '51':
     id: '51'
     taskid: 909bbeff-e2db-4c81-81ac-90cb08c5a6e1
@@ -676,13 +539,7 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 4160
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 4160\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -690,7 +547,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '54':
     id: '54'
     taskid: a5190e8c-7ec7-4605-8789-496a8195a02f
@@ -707,13 +564,7 @@ tasks:
       '#none#':
       - '58'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1410,
-          "y": 180
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 180\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -721,7 +572,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '55':
     id: '55'
     taskid: 9e5a149b-b6f9-4aea-8305-61a13d898878
@@ -755,13 +606,7 @@ tasks:
               complex:
                 root: LastDayTimeNowUnix
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1410,
-          "y": 20
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 20\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -769,7 +614,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '57':
     id: '57'
     taskid: feccfedf-58d9-41c1-8810-f3a9187230de
@@ -778,8 +623,7 @@ tasks:
       id: feccfedf-58d9-41c1-8810-f3a9187230de
       version: -1
       name: Get time for the last day
-      description: |
-        Retrieves the current date and time.
+      description: "Retrieves the current date and time.\n"
       scriptName: GetTime
       type: regular
       iscommand: false
@@ -793,13 +637,7 @@ tasks:
       daysAgo:
         simple: '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1410,
-          "y": -140
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": -140\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -807,7 +645,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '58':
     id: '58'
     taskid: ce2f012d-f8f2-4125-8af7-04c1072ac4de
@@ -840,13 +678,7 @@ tasks:
           right:
             value:
               simple: 'true'
-    view: |-
-      {
-        "position": {
-          "x": 1410,
-          "y": 320
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 320\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -854,7 +686,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '59':
     id: '59'
     taskid: fbf6583d-dc19-4d34-84cd-2655d7e6aa29
@@ -880,13 +712,7 @@ tasks:
         complex:
           root: inputs.Path
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1590
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 1590\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -894,7 +720,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '60':
     id: '60'
     taskid: 91d762cb-ae2c-42b9-817b-beba202a674c
@@ -917,13 +743,7 @@ tasks:
           root: Core.RetrievedFiles
           accessor: action_id
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1750
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 1750\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -931,9 +751,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "61":
-    id: "61"
+    continueonerrortype: ''
+  '61':
+    id: '61'
     taskid: 109f06df-2f1f-4c89-8b00-e84b143cf481
     type: playbook
     task:
@@ -944,10 +764,10 @@ tasks:
       type: playbook
       iscommand: false
       brand: ''
-      description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert''s verdict.'
+      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
     nexttasks:
       '#none#':
-      - "79"
+      - '79'
     scriptarguments:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
@@ -974,21 +794,15 @@ tasks:
         complex:
           root: inputs.Query
       threshold:
-        simple: "5"
+        simple: '5'
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -1520
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": -1520\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -996,8 +810,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "62":
-    id: "62"
+  '62':
+    id: '62'
     taskid: 00ca705e-0d89-43f9-8176-fea4dc6eaea5
     type: playbook
     task:
@@ -1044,9 +858,9 @@ tasks:
       HostContainment:
         simple: 'True'
       UserContainment:
-        simple: "True"
+        simple: 'True'
       UserVerification:
-        simple: "False"
+        simple: 'False'
       Username:
         complex:
           root: alert
@@ -1059,13 +873,7 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1410,
-          "y": 510
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 510\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1073,9 +881,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "63":
-    id: "63"
+    continueonerrortype: ''
+  '63':
+    id: '63'
     taskid: 461f2351-9e50-443b-8486-795bc963d33c
     type: playbook
     task:
@@ -1123,13 +931,7 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 2390
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 2390\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1137,9 +939,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "64":
-    id: "64"
+    continueonerrortype: ''
+  '64':
+    id: '64'
     taskid: f232d4e1-9457-469a-805a-2064f2f0c30e
     type: playbook
     task:
@@ -1239,11 +1041,11 @@ tasks:
         complex:
           root: inputs.FileRemediation
       HostContainment:
-        simple: "True"
+        simple: 'True'
       UserContainment:
-        simple: "True"
+        simple: 'True'
       UserVerification:
-        simple: "False"
+        simple: 'False'
       Username:
         complex:
           root: foundIncidents.CustomFields
@@ -1254,13 +1056,7 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1300,
-          "y": 2940
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1300,\n    \"y\": 2940\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1268,9 +1064,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "65":
-    id: "65"
+    continueonerrortype: ''
+  '65':
+    id: '65'
     taskid: d59aca07-8dd0-410e-8c3f-a971980653cf
     type: playbook
     task:
@@ -1335,13 +1131,7 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 2940
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 2940\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1349,21 +1139,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "66":
-    id: "66"
+    continueonerrortype: ''
+  '66':
+    id: '66'
     taskid: 32acfe19-fb1e-43f7-8302-9f695f5173cb
     type: playbook
     task:
       id: 32acfe19-fb1e-43f7-8302-9f695f5173cb
       version: -1
       name: Recovery Plan
-      description: |-
-        This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:
-        * Unisolate endpoint
-        * Restore quarantined file
-
-        Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+      description: "This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:\n* Unisolate endpoint\n* Restore quarantined file\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
       playbookName: Recovery Plan
       type: playbook
       iscommand: false
@@ -1389,13 +1174,7 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1270,
-          "y": 3480
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1270,\n    \"y\": 3480\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1403,9 +1182,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "67":
-    id: "67"
+    continueonerrortype: ''
+  '67':
+    id: '67'
     taskid: 58f335fb-7b1f-4de2-83e6-5c80421dbdc5
     type: playbook
     task:
@@ -1416,9 +1195,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ''
-      description: |
-        This playbook handles false positive alerts.
-        It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
+      description: "This playbook handles false positive alerts.\nIt creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.\n"
     nexttasks:
       '#none#':
       - '51'
@@ -1450,13 +1227,7 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 2390
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 2390\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1464,7 +1235,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '68':
     id: '68'
     taskid: b36fe43f-fee9-49e5-8258-396a1cfb1c0a
@@ -1472,8 +1243,7 @@ tasks:
     task:
       id: b36fe43f-fee9-49e5-8258-396a1cfb1c0a
       version: -1
-      name: |
-        Extract retrieved file
+      name: "Extract retrieved file\n"
       description: Unzip a file using fileName or entryID to specify a file. Unzipped files are loaded to the War Room and names are put in the context.
       scriptName: UnzipFile
       type: regular
@@ -1486,13 +1256,7 @@ tasks:
       lastZipFileInWarroom:
         simple: yes
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1910
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 1910\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1500,7 +1264,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '69':
     id: '69'
     taskid: cfc113e8-2775-4153-8dec-d3f91a312a58
@@ -1509,15 +1273,14 @@ tasks:
       id: cfc113e8-2775-4153-8dec-d3f91a312a58
       version: -1
       name: Wildfire Detonate and Analyze File
-      description: |
-        This playbook uploads, detonates, and analyzes files for the Wildfire sandbox.
+      description: "This playbook uploads, detonates, and analyzes files for the Wildfire sandbox.\n"
       playbookName: Wildfire Detonate and Analyze File
       type: playbook
       iscommand: false
       brand: ''
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     scriptarguments:
       File:
         complex:
@@ -1570,13 +1333,7 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2070
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 2070\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1584,7 +1341,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '70':
     id: '70'
     taskid: 39171c50-dc44-42ee-8862-eaf3ae8cf3b4
@@ -1599,7 +1356,7 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - "50"
+      - '50'
       Benign:
       - '71'
     separatecontext: false
@@ -1616,13 +1373,7 @@ tasks:
           right:
             value:
               simple: '0'
-    view: |-
-      {
-        "position": {
-          "x": 1760,
-          "y": 2940
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1760,\n    \"y\": 2940\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1630,7 +1381,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '71':
     id: '71'
     taskid: 252e5f23-9b93-4179-8c69-103b23f11bbc
@@ -1646,7 +1397,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - "46"
+      - '46'
     scriptarguments:
       file_hash:
         complex:
@@ -1657,13 +1408,7 @@ tasks:
       reason:
         simple: Cortex XDR Local Analysis found the file to be malicious.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1760,
-          "y": 3140
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1760,\n    \"y\": 3140\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1671,9 +1416,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "75":
-    id: "75"
+    continueonerrortype: ''
+  '75':
+    id: '75'
     taskid: 16d66dde-d441-4612-8e15-f3e4838624c4
     type: condition
     task:
@@ -1683,15 +1428,15 @@ tasks:
       description: Checks whether the playbook should wait for manual review.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "67"
-      "yes":
-      - "34"
+      - '67'
+      yes:
+      - '34'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -1701,15 +1446,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 1815
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": 1815\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1717,9 +1456,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "76":
-    id: "76"
+    continueonerrortype: ''
+  '76':
+    id: '76'
     taskid: 2f158f72-bc3f-4136-8861-eb07a692ce06
     type: title
     task:
@@ -1728,19 +1467,13 @@ tasks:
       name: Flip WildFire Verdict
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "70"
+      - '70'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1760,
-          "y": 2800
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1760,\n    \"y\": 2800\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1748,9 +1481,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "77":
-    id: "77"
+    continueonerrortype: ''
+  '77':
+    id: '77'
     taskid: 825db812-8d09-472e-8829-f2808842eb05
     type: regular
     task:
@@ -1761,22 +1494,16 @@ tasks:
       script: '|||internal-wildfire-get-report'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "78"
+      - '78'
     scriptarguments:
       sha256:
         complex:
           root: inputs.SHA256
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1150
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 1150\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1784,27 +1511,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "78":
-    id: "78"
+    continueonerrortype: ''
+  '78':
+    id: '78'
     taskid: 922f67bb-ea36-4ade-8dfb-89e824d86b5e
     type: condition
     task:
       id: 922f67bb-ea36-4ade-8dfb-89e824d86b5e
       version: -1
       name: Should detonate file?
-      description: "Do we have a WildFire report or should we detonate the file?"
+      description: Do we have a WildFire report or should we detonate the file?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "59"
-      "no":
-      - "39"
+      - '59'
+      no:
+      - '39'
     separatecontext: false
     conditions:
-    - label: "no"
+    - label: no
       condition:
       - - operator: isEqualString
           left:
@@ -1823,15 +1550,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1350
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 1350\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1839,9 +1560,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "79":
-    id: "79"
+    continueonerrortype: ''
+  '79':
+    id: '79'
     taskid: c07b312c-3605-4fc3-84e4-5f0de4dec751
     type: title
     task:
@@ -1850,19 +1571,13 @@ tasks:
       name: Continue by Verdict
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "80"
+      - '80'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -1350
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": -1350\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1870,24 +1585,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "80":
-    id: "80"
+    continueonerrortype: ''
+  '80':
+    id: '80'
     taskid: 8ac754b3-8eb9-4480-8804-df4cf57620fa
     type: condition
     task:
       id: 8ac754b3-8eb9-4480-8804-df4cf57620fa
       version: -1
       name: Verdict by DbotScore
-      description: "Check if DbotScore equals 3 (Malicious)"
+      description: Check if DbotScore equals 3 (Malicious)
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
+      - '2'
       True Positive:
-      - "81"
+      - '81'
     separatecontext: false
     conditions:
     - label: True Positive
@@ -1901,16 +1616,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: '3'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -1200
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": -1200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1918,8 +1627,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "81":
-    id: "81"
+  '81':
+    id: '81'
     taskid: 59958d6b-33b1-4e97-82d4-4c46bc7301ad
     type: regular
     task:
@@ -1933,19 +1642,13 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "83"
+      - '83'
     scriptarguments:
       manual_severity:
         simple: high
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": -810
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": -810\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1953,8 +1656,8 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "83":
-    id: "83"
+  '83':
+    id: '83'
     taskid: 827b7119-1b9f-4d4b-89d4-2e6b4c61f6da
     type: condition
     task:
@@ -1964,15 +1667,15 @@ tasks:
       description: Checks whether to open a ticket automatically in a ticketing system.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "84"
+      - '6'
+      yes:
+      - '84'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -1982,16 +1685,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": -650
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": -650\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1999,8 +1696,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "84":
-    id: "84"
+  '84':
+    id: '84'
     taskid: dc6ec815-5f93-49bb-89af-1ca132ce5acb
     type: playbook
     task:
@@ -2011,10 +1708,10 @@ tasks:
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       CommentToAdd:
         complex:
@@ -2071,19 +1768,13 @@ tasks:
         complex:
           root: inputs.serviceNowUrgency
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1140,
-          "y": -480
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1140,\n    \"y\": -480\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2091,8 +1782,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "85":
-    id: "85"
+  '85':
+    id: '85'
     taskid: d5e7fd85-67c3-44c5-8f35-f08f3727a564
     type: title
     task:
@@ -2101,20 +1792,14 @@ tasks:
       name: Benign
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "77"
+      - '77'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1550,
-          "y": 1010
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1550,\n    \"y\": 1010\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2122,8 +1807,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "86":
-    id: "86"
+  '86':
+    id: '86'
     taskid: 4457cf9c-89af-450f-8fe6-c211a98c3eca
     type: title
     task:
@@ -2132,20 +1817,14 @@ tasks:
       name: Greyware
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "77"
+      - '77'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1130,
-          "y": 1010
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1130,\n    \"y\": 1010\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2153,39 +1832,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "14_39_#default#": 0.23,
-      "2_33_#default#": 0.1,
-      "2_81_True Positive": 0.62,
-      "34_39_No": 0.58,
-      "34_67_Yes": 0.54,
-      "46_47_#default#": 0.35,
-      "46_66_yes": 0.49,
-      "47_48_#default#": 0.5,
-      "55_35_#default#": 0.19,
-      "58_35_#default#": 0.33,
-      "6_35_Blocked": 0.12,
-      "6_57_#default#": 0.58,
-      "70_50_#default#": 0.18,
-      "70_71_Benign": 0.63,
-      "75_67_#default#": 0.67,
-      "78_39_no": 0.14,
-      "78_59_#default#": 0.72,
-      "80_2_#default#": 0.48,
-      "80_81_True Positive": 0.5,
-      "83_84_yes": 0.38
-    },
-    "paper": {
-      "dimensions": {
-        "height": 6025,
-        "width": 2100,
-        "x": 40,
-        "y": -1800
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"14_39_#default#\": 0.23,\n    \"2_33_#default#\": 0.1,\n    \"2_81_True Positive\": 0.62,\n    \"34_39_No\": 0.58,\n    \"34_67_Yes\": 0.54,\n    \"46_47_#default#\": 0.35,\n    \"46_66_yes\": 0.49,\n    \"47_48_#default#\": 0.5,\n    \"55_35_#default#\": 0.19,\n    \"58_35_#default#\": 0.33,\n    \"6_35_Blocked\": 0.12,\n    \"6_57_#default#\": 0.58,\n    \"70_50_#default#\": 0.18,\n    \"70_71_Benign\": 0.63,\n    \"75_67_#default#\": 0.67,\n    \"78_39_no\": 0.14,\n    \"78_59_#default#\": 0.72,\n    \"80_2_#default#\": 0.48,\n    \"80_81_True Positive\": 0.5,\n    \"83_84_yes\": 0.38\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 6025,\n      \"width\": 2100,\n      \"x\": 40,\n      \"y\": -1800\n    }\n  }\n}"
 inputs:
 - key: GraywareAsMalware
   value:
@@ -2197,23 +1844,13 @@ inputs:
   value:
     simple: 'True'
   required: false
-  description: |-
-    Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.
-    Whether to execute automatically or manually the containment plan tasks:
-    * Isolate endpoint
-    * Block indicators
-    * Quarantine file
-    * Disable user
+  description: "Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.\nWhether to execute automatically or manually the containment plan tasks:\n* Isolate endpoint\n* Block indicators\n* Quarantine file\n* Disable user"
   playbookInputQuery:
 - key: AutoEradication
   value:
     simple: 'False'
   required: false
-  description: |-
-    Whether to execute automatically or manually the eradication plan tasks:
-    * Terminate process
-    * Delete file
-    * Reset the user's password
+  description: "Whether to execute automatically or manually the eradication plan tasks:\n* Terminate process\n* Delete file\n* Reset the user's password"
   playbookInputQuery:
 - key: FileRemediation
   value:
@@ -2241,7 +1878,7 @@ inputs:
   playbookInputQuery:
 - key: ShouldManualReviewFP
   value:
-    simple: "False"
+    simple: 'False'
   required: false
   description: Whether to ask for a manual review before false positive handling. Should be True or False
   playbookInputQuery:
@@ -2304,7 +1941,7 @@ inputs:
   playbookInputQuery:
 - key: ShouldOpenTicket
   value:
-    simple: "False"
+    simple: 'False'
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
   playbookInputQuery:
@@ -2457,4 +2094,5 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
 marketplaces:
-  - marketplacev2
+- marketplacev2
+- platform

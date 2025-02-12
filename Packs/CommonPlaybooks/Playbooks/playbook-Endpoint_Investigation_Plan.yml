@@ -4,31 +4,25 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Endpoint Investigation Plan
 description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the incident:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 26771da9-59e7-422f-8f4b-5c08be96bdfa
     type: start
     task:
       id: 26771da9-59e7-422f-8f4b-5c08be96bdfa
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "50"
-      - "51"
+      - '50'
+      - '51'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 880,
-          "y": -1090
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": -1090\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -36,8 +30,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 81e61b1f-bd6c-4751-856d-c11bdd35354f
     type: condition
     task:
@@ -47,15 +41,15 @@ tasks:
       description: Whether to hunt for discovery techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "7"
-      "yes":
-      - "20"
+      - '7'
+      yes:
+      - '20'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -65,14 +59,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2070
-        }
-      }
+              simple: 'True'
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2070\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -80,8 +68,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 26f1e9ec-dddf-454a-8d1c-e770f7a0a4d7
     type: condition
     task:
@@ -91,15 +79,15 @@ tasks:
       description: Whether to hunt for persistence techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "14"
+      - '4'
+      yes:
+      - '14'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -109,15 +97,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 650
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 650\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -125,8 +107,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 6631c326-a3b2-4bf9-859e-e7718e61eb1e
     type: condition
     task:
@@ -136,15 +118,15 @@ tasks:
       description: Whether to hunt for initial access techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "16"
+      - '6'
+      yes:
+      - '16'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -154,15 +136,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -290
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -170,8 +146,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 018c1cab-9901-43fa-8995-ee0325036bcb
     type: condition
     task:
@@ -181,15 +157,15 @@ tasks:
       description: Whether to hunt for privilege escalation techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "5"
-      "yes":
-      - "18"
+      - '5'
+      yes:
+      - '18'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -199,15 +175,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1120
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -215,8 +185,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: baa1e20f-4b89-4ef2-86e4-2eaf12d733c2
     type: condition
     task:
@@ -226,15 +196,15 @@ tasks:
       description: Whether to hunt for defense evasion techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "1"
-      "yes":
-      - "19"
+      - '1'
+      yes:
+      - '19'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -244,15 +214,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1590
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1590\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -260,8 +224,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 6daefce0-8773-4e2b-84c0-c298adf12464
     type: condition
     task:
@@ -271,15 +235,15 @@ tasks:
       description: Whether to hunt for execution techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "17"
+      - '2'
+      yes:
+      - '17'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -289,15 +253,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -305,8 +263,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: b0f80114-76f0-4a92-8e6c-b74f4ee31de6
     type: condition
     task:
@@ -316,15 +274,15 @@ tasks:
       description: Whether to hunt for lateral movement techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "21"
+      - '8'
+      yes:
+      - '21'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -334,15 +292,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2550
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2550\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -350,8 +302,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 87c3bced-78d4-49ce-83a9-e99b8df241e3
     type: condition
     task:
@@ -361,15 +313,15 @@ tasks:
       description: Whether to hunt for collection techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "23"
-      "yes":
-      - "22"
+      - '23'
+      yes:
+      - '22'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -379,15 +331,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3045
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3045\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -395,8 +341,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 4814aba4-bd30-4c19-895a-8d3e28e73393
     type: condition
     task:
@@ -406,15 +352,15 @@ tasks:
       description: Whether to hunt by the attacker indicators.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "53"
-      "yes":
-      - "43"
+      - '53'
+      yes:
+      - '43'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -424,7 +370,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isNotEmpty
           left:
@@ -432,13 +378,7 @@ tasks:
               complex:
                 root: inputs.attackerRemoteIP
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": -290
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1310,\n    \"y\": -290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -446,8 +386,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: c896ea76-878a-43f4-80bd-5d5be9f46fc2
     type: condition
     task:
@@ -457,15 +397,15 @@ tasks:
       description: Whether to hunt by the host fields.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "9"
-      "yes":
-      - "39"
+      - '9'
+      yes:
+      - '39'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -475,20 +415,14 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
       - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: inputs.agentID
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": -770
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1310,\n    \"y\": -770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -496,8 +430,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 7553edad-1b98-4459-834c-07f66fe82731
     type: condition
     task:
@@ -507,15 +441,15 @@ tasks:
       description: Whether to hunt by MITRE technique.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "12"
-      "yes":
-      - "46"
+      - '12'
+      yes:
+      - '46'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -525,7 +459,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isNotEmpty
           left:
@@ -533,13 +467,7 @@ tasks:
               complex:
                 root: inputs.mitreTechniqueID
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": 670
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1310,\n    \"y\": 670\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -547,8 +475,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: d2a6e731-c4f1-4e1c-8cfe-ff42b7726e8a
     type: condition
     task:
@@ -558,15 +486,15 @@ tasks:
       description: Whether to hunt by file hash.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "13"
-      "yes":
-      - "48"
+      - '13'
+      yes:
+      - '48'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -576,7 +504,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isNotEmpty
           left:
@@ -584,13 +512,7 @@ tasks:
               complex:
                 root: inputs.FileSHA256
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": 1140
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1310,\n    \"y\": 1140\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -598,8 +520,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: bd9e01ff-9927-453d-8702-b81c3fe81f0a
     type: title
     task:
@@ -608,16 +530,10 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": 1625
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1310,\n    \"y\": 1625\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -625,8 +541,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: aa13b3d0-4124-4586-87d0-a122a811588e
     type: title
     task:
@@ -635,19 +551,13 @@ tasks:
       name: Persistence
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 820
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 820\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -655,40 +565,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: c171f1d7-1909-4e3e-8e4d-66761315d8d6
     type: regular
     task:
       id: c171f1d7-1909-4e3e-8e4d-66761315d8d6
       version: -1
       name: Hunt Persistence techniques
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*1037* or mitreattcktechnique:*T1542* or mitreattcktechnique:*T1053* or mitreattcktechnique:*T1543.002* or mitreattcktechnique:*T1543.003* or mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1547.001* or mitreattcktechnique:*T1547.005* or mitreattcktechnique:*T1546.002* or mitreattcktechnique:*T1546.011* or mitreattcktechnique:*T1546.012* or mitreattcktechnique:*T1136* or mitreattcktechnique:*T1150*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 950
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 950\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -696,8 +593,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 17850962-ee9d-462e-8a68-86992f3476b1
     type: title
     task:
@@ -706,19 +603,13 @@ tasks:
       name: Initial Access
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": -120
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": -120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -726,8 +617,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 38d79a1d-432e-4b43-84fb-2df946466f06
     type: title
     task:
@@ -736,19 +627,13 @@ tasks:
       name: Execution
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 350
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 350\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -756,8 +641,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 54aede8a-286a-47f8-8578-da4cd0b042ce
     type: title
     task:
@@ -766,19 +651,13 @@ tasks:
       name: Privilege Escalation
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 1290
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 1290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -786,8 +665,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: d9287202-7433-4836-8e86-59f0acebaf1b
     type: title
     task:
@@ -796,19 +675,13 @@ tasks:
       name: Defense Evasion
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 1760
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 1760\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -816,8 +689,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: bb43e613-8041-41cc-8d6a-031d2ea4bcb6
     type: title
     task:
@@ -826,19 +699,13 @@ tasks:
       name: Discovery
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 2240
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 2240\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -846,8 +713,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: e132947f-bf00-48da-8305-fa34c72c42dc
     type: title
     task:
@@ -856,19 +723,13 @@ tasks:
       name: Lateral Movement
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 2720
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 2720\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -876,8 +737,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 7f301311-2cb6-4f0a-8d10-4e8d5f82cea1
     type: title
     task:
@@ -886,19 +747,13 @@ tasks:
       name: Collection
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3220
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3220\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -906,8 +761,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 1ff80560-73b2-4e6d-8713-fdbddb0c8958
     type: condition
     task:
@@ -917,15 +772,15 @@ tasks:
       description: Whether to hunt for command and control techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "24"
-      "yes":
-      - "25"
+      - '24'
+      yes:
+      - '25'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -935,15 +790,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3530
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3530\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -951,8 +800,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 21f9942f-6dd3-426f-8e9a-eb3ae3a2fb4b
     type: condition
     task:
@@ -962,15 +811,15 @@ tasks:
       description: Whether to hunt for impact techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "52"
-      "yes":
-      - "26"
+      - '52'
+      yes:
+      - '26'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -980,15 +829,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 4000
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 4000\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -996,8 +839,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: ff4496b4-e914-4bba-8112-6ed6b4508c79
     type: title
     task:
@@ -1006,19 +849,13 @@ tasks:
       name: Command and Control
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 3700
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 3700\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1026,8 +863,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: c89859a8-0333-4872-8dc7-9feb1fad74fb
     type: title
     task:
@@ -1036,19 +873,13 @@ tasks:
       name: Impact
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 4170
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 4170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1056,8 +887,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: 9cd16df8-9f8c-4040-81e9-345ffb028daf
     type: condition
     task:
@@ -1067,15 +898,15 @@ tasks:
       description: Whether to hunt for reconnaissance techniques.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "28"
+      - '3'
+      yes:
+      - '28'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -1085,15 +916,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -770
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1101,8 +926,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: fda5f54d-76eb-4fba-8dd4-7e74b0e9da86
     type: title
     task:
@@ -1111,19 +936,13 @@ tasks:
       name: Reconnaissance
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": -600
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": -600\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1131,40 +950,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: fe8a2a21-ea37-4a7d-8c9c-156ae13b2c3a
     type: regular
     task:
       id: fe8a2a21-ea37-4a7d-8c9c-156ae13b2c3a
       version: -1
       name: Hunt Reconnaissance techniques
-      description: |-
-        Searches Cortex XSIAM incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Cortex XSIAM incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       query:
         simple: mitreattcktechnique:*T1595* and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": -470
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": -470\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1172,40 +978,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: fcaf59e8-6da8-4276-8d68-01bbf4b32ad8
     type: regular
     task:
       id: fcaf59e8-6da8-4276-8d68-01bbf4b32ad8
       version: -1
       name: Hunt Initial Access techniques
-      description: |-
-        Searches Cortex XSIAM incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Cortex XSIAM incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*T1078* or mitreattcktechnique:*T1078.002*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 10
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 10\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1213,40 +1006,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: a9a020af-3724-46e0-8895-d9ac8b8db88a
     type: regular
     task:
       id: a9a020af-3724-46e0-8895-d9ac8b8db88a
       version: -1
       name: Hunt Execution techniques
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*T1204* or mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1059.001* or mitreattcktechnique:*T1059.002* or mitreattcktechnique:*T1059.004* or mitreattcktechnique:*T1059.005*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 480
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 480\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1254,40 +1034,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: fc87d063-74fb-4c8a-8fbf-59b6f64fbf26
     type: regular
     task:
       id: fc87d063-74fb-4c8a-8fbf-59b6f64fbf26
       version: -1
       name: Hunt Privilege Escalation techniques
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*T1055* or mitreattcktechnique:*T1546.001*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 1420
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 1420\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1295,40 +1062,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: e7403fe7-b8b6-4a35-88d8-d78b140cc703
     type: regular
     task:
       id: e7403fe7-b8b6-4a35-88d8-d78b140cc703
       version: -1
       name: Hunt Defense Evasion techniques
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*T1218.005* or mitreattcktechnique:*T1218.008* or mitreattcktechnique:*T1218.011* or mitreattcktechnique:*T1036* or mitreattcktechnique:*T1140* or mitreattcktechnique:*T1564.001* or mitreattcktechnique:*T1222* or mitreattcktechnique:*T1197*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 1900
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 1900\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1336,40 +1090,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: 9f0fdace-ea0d-4667-80b3-192681279a76
     type: regular
     task:
       id: 9f0fdace-ea0d-4667-80b3-192681279a76
       version: -1
       name: Hunt Discovery techniques
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*1087* or mitreattcktechnique:*1046* or mitreattcktechnique:*1018* or mitreattcktechnique:*1135* or mitreattcktechnique:*1016*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 2380
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 2380\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1377,40 +1118,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: e5c9f989-be36-4539-8b14-b452403671a1
     type: regular
     task:
       id: e5c9f989-be36-4539-8b14-b452403671a1
       version: -1
       name: Hunt Lateral Movement techniques
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*1021.001* or mitreattcktechnique:*1021.002* or mitreattcktechnique:*1021.003* or mitreattcktechnique:*1021.006* or mitreattcktechnique:*1021* or mitreattcktechnique:*1550.002*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 2870
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 2870\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1418,40 +1146,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     taskid: 4229a499-c399-49db-8be6-e72102760e0a
     type: regular
     task:
       id: 4229a499-c399-49db-8be6-e72102760e0a
       version: -1
       name: Hunt Collection techniques
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*1213*  or mitreattcktechnique:*1074* or mitreattcktechnique:*1074.001*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3360
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3360\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1459,40 +1174,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: c31cce38-c1cd-4b87-8ea8-ab7d1962d945
     type: regular
     task:
       id: c31cce38-c1cd-4b87-8ea8-ab7d1962d945
       version: -1
       name: Hunt Command and Control techniques
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*1132*  or mitreattcktechnique:*1102* or mitreattcktechnique:*1071*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 3830
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 3830\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1500,40 +1202,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
+  '38':
+    id: '38'
     taskid: cb04294c-829c-492d-89f7-3bd67e3031b8
     type: regular
     task:
       id: cb04294c-829c-492d-89f7-3bd67e3031b8
       version: -1
       name: Hunt Impact techniques
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "52"
+      - '52'
     scriptarguments:
       query:
         simple: (mitreattcktechnique:*1561*  or mitreattcktechnique:*1485* or mitreattcktechnique:*1486* or mitreattcktechnique:*1490* or mitreattcktechnique:*1495*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 4310
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 4310\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1541,8 +1230,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
+  '39':
+    id: '39'
     taskid: 790c95cf-af51-440a-8cc6-0d22ec470532
     type: title
     task:
@@ -1551,19 +1240,13 @@ tasks:
       name: Host activity
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": -600
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": -600\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1571,40 +1254,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
+  '41':
+    id: '41'
     taskid: 51eb1abc-7166-45d8-83c0-9829258bb17d
     type: regular
     task:
       id: 51eb1abc-7166-45d8-83c0-9829258bb17d
       version: -1
       name: Hunt by host ID
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       query:
         simple: agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": -470
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": -470\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1612,8 +1282,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
+  '43':
+    id: '43'
     taskid: d679a72b-0099-4649-8887-8458fb29b79c
     type: title
     task:
@@ -1622,19 +1292,13 @@ tasks:
       name: Attacker network activity
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "44"
+      - '44'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": -120
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": -120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1642,40 +1306,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
+  '44':
+    id: '44'
     taskid: 5f2ba1a9-54c3-4c18-8332-31e820dc3238
     type: regular
     task:
       id: 5f2ba1a9-54c3-4c18-8332-31e820dc3238
       version: -1
       name: Hunt by attacker source IP
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "53"
+      - '53'
     scriptarguments:
       query:
         simple: localip:${inputs.attackerRemoteIP} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 10
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 10\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1683,8 +1334,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
+  '46':
+    id: '46'
     taskid: 710569db-85e4-4d8d-8f63-dd9904d01d04
     type: title
     task:
@@ -1693,19 +1344,13 @@ tasks:
       name: MITRE Techniques
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "47"
+      - '47'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 840
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 840\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1713,40 +1358,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
+  '47':
+    id: '47'
     taskid: 90e12387-bcbb-4341-85e2-22f89ede1b50
     type: regular
     task:
       id: 90e12387-bcbb-4341-85e2-22f89ede1b50
       version: -1
       name: Hunt by technique ID
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       query:
         simple: mitreattcktechnique:*${inputs.mitreTechniqueID}* and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 970
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 970\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1754,8 +1386,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     taskid: d481827b-144e-4cc6-8dff-92f2293d587e
     type: title
     task:
@@ -1764,19 +1396,13 @@ tasks:
       name: Hunt File Hash
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "49"
+      - '49'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 1310
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 1310\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1784,40 +1410,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
+  '49':
+    id: '49'
     taskid: 6a9284a2-6372-48c8-83ef-5588d41fca18
     type: regular
     task:
       id: 6a9284a2-6372-48c8-83ef-5588d41fca18
       version: -1
       name: Hunt by file hash
-      description: |-
-        Searches Demisto incidents.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       query:
         simple: (initiatorsha256:${inputs.FileSHA256} or cgosha256:${inputs.FileSHA256} or filesha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256} or osparentsha256:${inputs.FileSHA256}) and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 1440
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 1440\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1825,8 +1438,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     taskid: c224069c-cebb-446b-8dc6-07d9a5a63438
     type: title
     task:
@@ -1835,19 +1448,13 @@ tasks:
       name: Hunt by MITRE Tactics
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -940
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -940\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1855,8 +1462,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "51":
-    id: "51"
+  '51':
+    id: '51'
     taskid: 1b10baff-223f-4a9b-88fc-f6e30e6d0273
     type: title
     task:
@@ -1865,19 +1472,13 @@ tasks:
       name: Hunt by Indicators
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": -940
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1310,\n    \"y\": -940\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1885,8 +1486,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "52":
-    id: "52"
+  '52':
+    id: '52'
     taskid: f5f485bf-8035-4c97-8529-bc289e584adf
     type: title
     task:
@@ -1895,16 +1496,10 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 4480
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 4480\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1912,8 +1507,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
+  '53':
+    id: '53'
     taskid: ea421052-65ec-4e66-81e9-179f1b37c4c3
     type: condition
     task:
@@ -1923,15 +1518,15 @@ tasks:
       description: Whether to hunt by the attacker indicators.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "11"
-      "yes":
-      - "54"
+      - '11'
+      yes:
+      - '54'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -1941,7 +1536,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isNotEmpty
           left:
@@ -1949,14 +1544,8 @@ tasks:
               complex:
                 root: inputs.attackerExternalHost
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": 180
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1310,\n    \"y\": 180\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1964,8 +1553,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
+  '54':
+    id: '54'
     taskid: 94139bf4-5524-4a4a-8d8e-d3860d4d1054
     type: title
     task:
@@ -1974,20 +1563,14 @@ tasks:
       name: Attacker network activity
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "55"
+      - '55'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 350
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 350\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1995,41 +1578,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
+  '55':
+    id: '55'
     taskid: 82c5b670-b168-4827-818e-917e725f93b8
     type: regular
     task:
       id: 82c5b670-b168-4827-818e-917e725f93b8
       version: -1
       name: Hunt by attacker source external host
-      description: |-
-        Searches Demisto alerts.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Searches Demisto alerts.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       query:
         simple: dnsqueryname:${inputs.attackerExternalHost} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 490
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 490\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2037,82 +1607,71 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 5635,
-        "width": 2050,
-        "x": 40,
-        "y": -1090
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 5635,\n      \"width\": 2050,\n      \"x\": 40,\n      \"y\": -1090\n    }\n  }\n}"
 inputs:
 - key: HuntReconnaissanceTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
   playbookInputQuery:
 - key: HuntInitialAccessTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Access techniques.
   playbookInputQuery:
 - key: HuntExecutionTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Execution techniques.
   playbookInputQuery:
 - key: HuntPersistenceTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Persistence techniques.
   playbookInputQuery:
 - key: HuntPrivilegeEscalationTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
   playbookInputQuery:
 - key: HuntDefenseEvasionTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
   playbookInputQuery:
 - key: HuntDiscoveryTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Discovery techniques.
   playbookInputQuery:
 - key: HuntLateralMovementTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
   playbookInputQuery:
 - key: HuntCollectionTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for MITRE Collection techniques identified alerts.
   playbookInputQuery:
 - key: HuntCnCTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
   playbookInputQuery:
 - key: HuntImpactTechniques
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to hunt for identified alerts with MITRE Impact techniques.
   playbookInputQuery:
@@ -2134,9 +1693,7 @@ inputs:
 - key: HuntByFile
   value: {}
   required: false
-  description: |-
-    Boolean. Set to True to hunt by a specific file hash.
-    Supports SHA256.
+  description: "Boolean. Set to True to hunt by a specific file hash.\nSupports SHA256."
   playbookInputQuery:
 - key: agentID
   value:
@@ -2170,4 +1727,5 @@ tests:
 marketplaces:
 - marketplacev2
 - xpanse
+- platform
 fromversion: 6.6.0

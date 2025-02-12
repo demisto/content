@@ -2,39 +2,34 @@ id: Send Investigation Summary Reports
 version: -1
 name: Send Investigation Summary Reports
 description: 'This playbook iterates over closed incidents, generates a summary report for each closed incident, and emails the reports to specified users. '
-starttaskid: "0"
-fromversion: "5.0.0"
+starttaskid: '0'
+fromversion: 5.0.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: efefff28-b722-4f90-86cf-da4636ecf7f6
     type: start
     task:
       id: efefff28-b722-4f90-86cf-da4636ecf7f6
       version: -1
-      name: ""
-      description: ""
+      name: ''
+      description: ''
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 22f91f1b-ad02-4439-85de-444c9cc9165c
     type: regular
     task:
@@ -45,10 +40,10 @@ tasks:
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       details: {}
       fromclosedate: {}
@@ -72,18 +67,12 @@ tasks:
       type: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 190
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 190\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: b28d0033-ac09-4d02-84fc-c6d363d80f51
     type: regular
     task:
@@ -97,7 +86,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       ids:
         simple: ${foundIncidents(!val.labels || val.labels.filter(function(v) { return  v.type == 'ReportSent'}).length == 0).id}
@@ -107,18 +96,12 @@ tasks:
         simple: ${inputs.ReportType}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 560
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: d7525c1a-713e-446c-89d3-f43963155023
     type: regular
     task:
@@ -129,10 +112,10 @@ tasks:
       script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       attachCIDs: {}
       attachIDs:
@@ -153,18 +136,12 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 770
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 93763170-619f-46dc-8b98-4036b015019d
     type: regular
     task:
@@ -178,7 +155,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       addLabels:
         simple: '[{"ReportSent":"true"}]'
@@ -280,41 +257,29 @@ tasks:
       vulnerabilitycategory: {}
       whereisdatahosted: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 1000
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 1000\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: a5d10443-87fb-403d-893a-05723bbc93c5
     type: title
     task:
       id: a5d10443-87fb-403d-893a-05723bbc93c5
       version: -1
       name: Complete
-      description: ""
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1180
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1180\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 58e69d68-ff03-4356-8b8f-d61f60346c81
     type: condition
     task:
@@ -325,38 +290,21 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "4"
+      - '8'
+      yes:
+      - '4'
     scriptarguments:
       value:
         simple: ${foundIncidents(!val.labels || val.labels.filter(function(v) { return  v.type == 'ReportSent'}).length == 0).id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 365
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 365\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1195,
-        "width": 830,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1195,\n      \"width\": 830,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: MailTo
   value:
