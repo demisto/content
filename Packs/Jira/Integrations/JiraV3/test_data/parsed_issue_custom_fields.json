@@ -105,7 +105,7 @@
         "timeoriginalestimate": "15 weeks, 2 days, 6 minutes",
         "customfield_10095": null,
         "customfield_10097": null,
-        "description": "<p>XSOAR description stam</p>",
+        "description": "<p>XSOAR description test</p>",
         "customfield_10013": null,
         "customfield_10014": null,
         "customfield_10015": null,
@@ -129,7 +129,7 @@
                 "author": {
                     "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                     "accountId": "dummy_account_id",
-                    "emailAddress": "admin@demistodev.com",
+                    "emailAddress": "admin@test.com",
                     "avatarUrls": {
                         "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                         "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -172,7 +172,7 @@
                     "author": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -202,7 +202,7 @@
                     "updateAuthor": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -224,7 +224,7 @@
                     "author": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -254,7 +254,7 @@
                     "updateAuthor": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -680,7 +680,7 @@
         "assignee": {
             "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
             "accountId": "dummy_account_id",
-            "emailAddress": "admin@demistodev.com",
+            "emailAddress": "admin@test.com",
             "avatarUrls": {
                 "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                 "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -776,7 +776,7 @@
         "creator": {
             "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
             "accountId": "dummy_account_id",
-            "emailAddress": "admin@demistodev.com",
+            "emailAddress": "admin@test.com",
             "avatarUrls": {
                 "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                 "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -881,7 +881,7 @@
         "reporter": {
             "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
             "accountId": "dummy_account_id",
-            "emailAddress": "admin@demistodev.com",
+            "emailAddress": "admin@test.com",
             "avatarUrls": {
                 "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                 "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -1086,7 +1086,7 @@
                     "type": "paragraph",
                     "content": [
                         {
-                            "text": "XSOAR description stam",
+                            "text": "XSOAR description test",
                             "type": "text"
                         }
                     ]
@@ -1147,7 +1147,7 @@
                 "author": {
                     "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                     "accountId": "dummy_account_id",
-                    "emailAddress": "admin@demistodev.com",
+                    "emailAddress": "admin@test.com",
                     "avatarUrls": {
                         "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                         "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -1232,7 +1232,7 @@
                     "author": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -1262,7 +1262,7 @@
                     "updateAuthor": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -1284,7 +1284,7 @@
                     "author": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -1314,7 +1314,7 @@
                     "updateAuthor": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
