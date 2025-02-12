@@ -8,7 +8,7 @@ filter _raw_log ~= "\:\s+\*?\w{3}\s+\d{2}\s+\d{2}:\d{2}:\d{2}\.\d+\s+UTC" or _ra
     tmp_time_with_year2 = to_string(arrayindex(regextract(_raw_log, "\:\s+(\w{3}\s+\d{1}\s+\d{4}\s+\d+\:\d+\:\d+\.\d+)\s?(?:UTC|\:)"),0))
 | alter
 	tmp_time_with_year = parse_timestamp("%b %d %Y %H:%M:%E3S", tmp_time_with_year, "+00:00"), // Jan 01 2021 10:00:00.123 UTC
-	tmp_time_with_year2 = parse_timestamp("%b %e %Y %H:%M:%E3S", tmp_time_with_year, "+00:00") // Feb  3 2025 22:04:01.776
+	tmp_time_with_year2 = parse_timestamp("%b %e %Y %H:%M:%E3S", tmp_time_with_year2, "+00:00") // Feb  3 2025 22:04:01.776
 | alter
     tmp_time_format2 = if(tmp_time_without_year != null and tmp_time_without_year != "", concat(tmp_year, " ", tmp_time_without_year), null)
 | alter
