@@ -273,7 +273,8 @@ class TAXIIServer:
                     content_xml = content_block.to_xml().decode('utf-8')
                     yield f'{content_xml}\n'
                 except Exception as e:
-                    handle_long_running_error(f'Failed parsing indicator to STIX: {e}')
+                    demisto.error(f"Failed parsing indicator {indicator.get('value', '')} to STIX: {e}")
+                    # handle_long_running_error(f'Failed parsing indicator {} to STIX: {e}')
 
             # yield the closing tag
 
