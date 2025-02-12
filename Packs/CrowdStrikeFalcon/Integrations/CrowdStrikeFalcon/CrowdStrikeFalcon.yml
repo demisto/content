@@ -291,9 +291,6 @@ script:
       - lift_containment_pending
     - description: The hostname of the device.
       name: hostname
-      auto: PREDEFINED
-      predefined:
-      - ''
     - description: The platform name of the device.
       name: platform_name
       auto: PREDEFINED
