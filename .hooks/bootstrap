@@ -71,7 +71,8 @@ else
     fi
     if [[ "${should_install_poetry}" == "yes" ]]; then
         echo "Installing Poetry version:${POETRY_VERSION}"
-        curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
+        python3 .hooks/install.python-poetry.py --version "${POETRY_VERSION}"
+        # curl -sSxL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
         error_code=$?
         if [ -n "${ARTIFACTS_FOLDER}" ] && [ "${error_code}" -ne 0 ]; then
             cp ${PWD}/poetry-installer-error-*.log "${ARTIFACTS_FOLDER}"
