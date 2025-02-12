@@ -1477,6 +1477,9 @@ def issue_details_get_command(
     domain = args.get("domain")
     issue_type = args.get("issue_type")
 
+    if not issue_type or not domain:
+        raise ValueError("Both 'issue_type' and 'domain' arguments are required and cannot be None.")
+
     response = client.get_company_issue_findings(domain=domain, issue_type=issue_type)
 
     entries = response.get('entries', [])
