@@ -1,53 +1,47 @@
 [
     {
         "CustomFields": {
-            "cbs_class": "URL",
+            "class": "URL",
             "cbs_coa": "Takedown",
-            "cbs_status": "Member Feedback",
-            "cbs_subject": "https://example.com/abcdefg1",
-            "cbs_timestamp": 1703047911349,
+            "subject": "https://example.com/abcdefg1",
+            "timestamp": 1703047911349,
             "cbs_type": "Exposed Email Address",
             "cbs_updated_date": "2023-12-20T04:51:51+00:00"
         },
         "externalstatus": "Member Feedback",
         "name": "New Exposed Email Address with severity High found",
         "occurred": "2023-12-20T04:51:51+00:00",
-        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New Exposed Email Address with severity High found\", \"occurred\": \"2023-12-20T04:51:51+00:00\", \"type\": \"Exposed Email Address\",\"severity\": 3, \"CustomFields\": {\"cbs_status\": \"Member Feedback\", \"cbs_subject\": \"https://example.com/abcdefg1\",\"cbs_class\": \"URL\", \"cbs_type\": \"Exposed Email Address\",\"cbs_coa\": \"Takedown\", \"cbs_timestamp\": 1703047911349, \"cbs_updated_date\": \"2023-12-20T04:51:51+00:00\"}}",
-        "severity": 3,
-        "type": "Exposed Email Address"
+        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New Exposed Email Address with severity High found\", \"occurred\": \"2023-12-20T04:51:51+00:00\", \"type\": \"Exposed Email Address\",\"severity\": 3, \"CustomFields\": {\"cbs_subject\": \"https://example.com/abcdefg1\",\"cbs_class\": \"URL\", \"cbs_type\": \"Exposed Email Address\",\"cbs_coa\": \"Takedown\", \"cbs_timestamp\": 1703047911349, \"cbs_updated_date\": \"2023-12-20T04:51:51+00:00\"}}",
+        "severity": 3
     },
     {
         "CustomFields": {
-            "cbs_class": "Link",
+            "class": "Link",
             "cbs_coa": "Member Side Action",
-            "cbs_status": "Member Feedback",
-            "cbs_subject": "23 customer credentials compromised (1ab2c3de)",
-            "cbs_timestamp": 1703047830650,
+            "subject": "23 customer credentials compromised (1ab2c3de)",
+            "timestamp": 1703047830650,
             "cbs_type": "Leaked Credential",
             "cbs_updated_date": "2023-12-20T04:50:30+00:00"
         },
         "externalstatus": "Member Feedback",
         "name": "New leaked_credential with severity High found",
         "occurred": "2023-12-20T04:50:30+00:00",
-        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New leaked_credential with severity High found\", \"occurred\": \"2023-12-20T04:50:30+00:00\", \"type\": \"Leaked Credential\", \"severity\": 3, \"CustomFields\": {\"cbs_status\": \"Member Feedback\", \"cbs_subject\": \"23 customer credentials compromised (1ab2c3de)\", \"cbs_class\": \"Link\", \"cbs_type\": \"Leaked Credential\", \"cbs_coa\": \"Member Side Action\", \"cbs_timestamp\": 1703047830650, \"cbs_updated_date\": \"2023-12-20T04:50:30+00:00\"}}",
-        "severity": 3,
-        "type": "Leaked Credential"
+        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New leaked_credential with severity High found\", \"occurred\": \"2023-12-20T04:50:30+00:00\", \"type\": \"Leaked Credential\", \"severity\": 3, \"CustomFields\": {\"cbs_subject\": \"23 customer credentials compromised (1ab2c3de)\", \"cbs_class\": \"Link\", \"cbs_type\": \"Leaked Credential\", \"cbs_coa\": \"Member Side Action\", \"cbs_timestamp\": 1703047830650, \"cbs_updated_date\": \"2023-12-20T04:50:30+00:00\"}}",
+        "severity": 3
     },
     {
         "CustomFields": {
-            "cbs_class": "URL",
+            "class": "URL",
             "cbs_coa": "Takedown",
-            "cbs_status": "Member Feedback",
-            "cbs_subject": "https://example.com/abcdefg2",
-            "cbs_timestamp": 1703042231364,
+            "subject": "https://example.com/abcdefg2",
+            "timestamp": 1703042231364,
             "cbs_type": "Exposed Email Address",
             "cbs_updated_date": "2023-12-20T03:17:10+00:00"
         },
         "externalstatus": "Member Feedback",
         "name": "New Exposed Email Address with severity High found",
         "occurred": "2023-12-20T03:17:10+00:00",
-        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New Exposed Email Address with severity High found\", \"occurred\": \"2023-12-20T03:17:10+00:00\", \"type\": \"Exposed Email Address\", \"severity\": 3, \"CustomFields\": {\"cbs_status\":\"Member Feedback\", \"cbs_subject\": \"https://example.com/abcdefg2\", \"cbs_class\": \"URL\", \"cbs_type\": \"Exposed Email Address\", \"cbs_coa\": \"Takedown\", \"cbs_timestamp\": 1703042231364, \"cbs_updated_date\": \"2023-12-20T03:17:10+00:00\"}}",
-        "severity": 3,
-        "type": "Exposed Email Address"
+        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New Exposed Email Address with severity High found\", \"occurred\": \"2023-12-20T03:17:10+00:00\", \"type\": \"Exposed Email Address\", \"severity\": 3, \"CustomFields\": {\"cbs_subject\": \"https://example.com/abcdefg2\", \"cbs_class\": \"URL\", \"cbs_type\": \"Exposed Email Address\", \"cbs_coa\": \"Takedown\", \"cbs_timestamp\": 1703042231364, \"cbs_updated_date\": \"2023-12-20T03:17:10+00:00\"}}",
+        "severity": 3
     }
 ]
