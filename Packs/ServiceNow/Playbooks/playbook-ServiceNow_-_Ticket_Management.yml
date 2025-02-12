@@ -2,25 +2,31 @@ id: ServiceNow - Ticket Management
 version: -1
 name: ServiceNow - Ticket Management
 description: '`ServiceNow - Ticket Management` allows you to open a new ticket or comment on an existing ticket.'
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: adef5ad9-870c-46e5-8425-54b29e21cd17
     type: start
     task:
       id: adef5ad9-870c-46e5-8425-54b29e21cd17
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -150,\n    \"y\": 400\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -28,8 +34,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 6891d374-18fa-4eb1-8dee-1bda2be25f6c
     type: condition
     task:
@@ -39,15 +45,15 @@ tasks:
       description: Checks if the ServiceNow v2 integration is enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '7'
-      yes:
-      - '3'
+      - "7"
+      "yes":
+      - "3"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -70,8 +76,14 @@ tasks:
             value:
               simple: ServiceNow v2
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -150,\n    \"y\": 540\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 540
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -79,8 +91,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: aa176873-8f95-45b9-857d-6db87bdcef37
     type: regular
     task:
@@ -91,10 +103,10 @@ tasks:
       script: '|||servicenow-create-ticket'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       assignment_group:
         complex:
@@ -102,37 +114,43 @@ tasks:
       category:
         complex:
           root: Please provide the following details to open a ticket.Answers
-          accessor: '1'
+          accessor: "1"
       comments:
         complex:
           root: inputs.CommentToAdd
       description:
         complex:
           root: Please provide the following details to open a ticket.Answers
-          accessor: '0'
+          accessor: "0"
       impact:
         complex:
           root: Please provide the following details to open a ticket.Answers
-          accessor: '2'
+          accessor: "2"
       severity:
         complex:
           root: Please provide the following details to open a ticket.Answers
-          accessor: '4'
+          accessor: "4"
       short_description:
         complex:
           root: Please provide the following details to open a ticket.Answers
-          accessor: '6'
+          accessor: "6"
       ticket_type:
         complex:
           root: Please provide the following details to open a ticket.Answers
-          accessor: '5'
+          accessor: "5"
       urgency:
         complex:
           root: Please provide the following details to open a ticket.Answers
-          accessor: '3'
+          accessor: "3"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1315\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1315
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -140,8 +158,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: c45fcc66-2992-470f-8810-2ac6f6fa4640
     type: condition
     task:
@@ -151,15 +169,15 @@ tasks:
       description: Checks whether to open a new ticket or add a comment to an existing ticket.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '11'
-      yes:
-      - '16'
+      - "11"
+      "yes":
+      - "16"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -176,8 +194,14 @@ tasks:
             value:
               simple: inputs.serviceNowTicketID
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -150,\n    \"y\": 760\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 760
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -185,8 +209,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 80014140-96c0-4da1-82a1-2c874cebfe90
     type: regular
     task:
@@ -197,21 +221,27 @@ tasks:
       script: '|||servicenow-update-ticket'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       comments:
         complex:
           root: what is the comment for the ticket?.Answers
-          accessor: '0'
+          accessor: "0"
       id:
         complex:
           root: inputs.serviceNowTicketID
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1080,\n    \"y\": 1490\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1080,
+          "y": 1490
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -219,8 +249,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 3e5b6314-b03b-4fb0-82da-4a5990ef9b1f
     type: title
     task:
@@ -229,11 +259,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -150,\n    \"y\": 1690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -241,8 +277,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: de59d3d7-4a62-445e-8a1c-8a2bb052435b
     type: condition
     task:
@@ -252,15 +288,15 @@ tasks:
       description: Checks if the comment was provided in the input.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '19'
+      - "9"
+      "yes":
+      - "19"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -270,8 +306,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -860,\n    \"y\": 1160\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -860,
+          "y": 1160
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -279,8 +321,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: 9f2c3b0e-0b6c-45ba-8b92-89c13644a4e4
     type: collection
     task:
@@ -290,13 +332,19 @@ tasks:
       description: Data collection task to add a comment to the ticket.
       type: collection
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1080,\n    \"y\": 1330\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1080,
+          "y": 1330
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -305,7 +353,7 @@ tasks:
       subject:
       body:
       methods: []
-      format: ''
+      format: ""
       bcc:
       cc:
       timings:
@@ -316,8 +364,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: '0'
-        label: ''
+      - id: "0"
+        label: ""
         labelarg:
           simple: Add comment to the ticket
         required: true
@@ -326,21 +374,21 @@ tasks:
         type: longText
         options: []
         optionsarg: []
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
       title: what is the comment for the ticket?
-      description: ''
-      sender: ''
+      description: ""
+      sender: ""
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: d3c1b2c3-5732-457b-8c1e-fe3c8d43c328
     type: condition
     task:
@@ -350,15 +398,15 @@ tasks:
       description: Checks if a new comment should be appended to the ticket for each alert.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '7'
-      yes:
-      - '8'
+      - "7"
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -368,10 +416,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -620,\n    \"y\": 930\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 930
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -379,8 +433,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: 948539a3-e390-420e-8598-14318f04190a
     type: condition
     task:
@@ -390,15 +444,15 @@ tasks:
       description: Checks if the required details for opening a ticket were provided.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '17'
-      yes:
-      - '18'
+      - "17"
+      "yes":
+      - "18"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -442,8 +496,14 @@ tasks:
               complex:
                 root: inputs.serviceNowShortDescription
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 270,\n    \"y\": 940\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 940
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -451,8 +511,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 552d1452-ce53-44af-81fd-20997fac7cde
     type: collection
     task:
@@ -462,13 +522,19 @@ tasks:
       description: Data collection task to provide details for opening a ticket.
       type: collection
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1120\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -477,7 +543,7 @@ tasks:
       subject:
       body:
       methods: []
-      format: ''
+      format: ""
       bcc:
       cc:
       timings:
@@ -488,8 +554,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: '0'
-        label: ''
+      - id: "0"
+        label: ""
         labelarg:
           simple: Enter ticket description
         required: true
@@ -498,12 +564,12 @@ tasks:
         type: longText
         options: []
         optionsarg: []
-        fieldassociated: ''
-        placeholder: ''
+        fieldassociated: ""
+        placeholder: ""
         tooltip: Description of the ticket.
         readonly: false
-      - id: '1'
-        label: ''
+      - id: "1"
+        label: ""
         labelarg:
           simple: Enter ticket Category
         required: false
@@ -512,12 +578,12 @@ tasks:
         type: shortText
         options: []
         optionsarg: []
-        fieldassociated: ''
-        placeholder: ''
+        fieldassociated: ""
+        placeholder: ""
         tooltip: The category of the ServiceNow Ticket.
         readonly: false
-      - id: '2'
-        label: ''
+      - id: "2"
+        label: ""
         labelarg:
           simple: Enter ticket Impact
         required: false
@@ -526,12 +592,12 @@ tasks:
         type: shortText
         options: []
         optionsarg: []
-        fieldassociated: ''
-        placeholder: ''
+        fieldassociated: ""
+        placeholder: ""
         tooltip: The impact for the new ticket. Leave empty for ServiceNow default impact.
         readonly: false
-      - id: '3'
-        label: ''
+      - id: "3"
+        label: ""
         labelarg:
           simple: Enter ticket Urgency
         required: false
@@ -540,12 +606,12 @@ tasks:
         type: shortText
         options: []
         optionsarg: []
-        fieldassociated: ''
-        placeholder: ''
+        fieldassociated: ""
+        placeholder: ""
         tooltip: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
         readonly: false
-      - id: '4'
-        label: ''
+      - id: "4"
+        label: ""
         labelarg:
           simple: 'Enter ticket Severity '
         required: false
@@ -554,12 +620,12 @@ tasks:
         type: shortText
         options: []
         optionsarg: []
-        fieldassociated: ''
-        placeholder: ''
+        fieldassociated: ""
+        placeholder: ""
         tooltip: The severity of the new ticket. Leave empty for ServiceNow default severity.
         readonly: false
-      - id: '5'
-        label: ''
+      - id: "5"
+        label: ""
         labelarg:
           simple: Enter ticket Type
         required: false
@@ -568,12 +634,12 @@ tasks:
         type: shortText
         options: []
         optionsarg: []
-        fieldassociated: ''
-        placeholder: ''
+        fieldassociated: ""
+        placeholder: ""
         tooltip: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
         readonly: false
-      - id: '6'
-        label: ''
+      - id: "6"
+        label: ""
         labelarg:
           simple: Enter ticket Short Description
         required: false
@@ -582,21 +648,21 @@ tasks:
         type: shortText
         options: []
         optionsarg: []
-        fieldassociated: ''
-        placeholder: ''
+        fieldassociated: ""
+        placeholder: ""
         tooltip: A short description of the ticket.
         readonly: false
       title: Please provide the following details to open a ticket.
-      description: ''
-      sender: ''
+      description: ""
+      sender: ""
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: c7f798b6-9753-49da-82c0-d87f18b7c6e1
     type: regular
     task:
@@ -607,10 +673,10 @@ tasks:
       script: '|||servicenow-create-ticket'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       assignment_group:
         complex:
@@ -640,8 +706,14 @@ tasks:
         complex:
           root: inputs.serviceNowUrgency
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 1120\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -649,8 +721,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: ffc7b31c-5567-4eb8-81f5-ba3b7c2dcbe6
     type: regular
     task:
@@ -661,10 +733,10 @@ tasks:
       script: '|||servicenow-update-ticket'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       comments:
         complex:
@@ -673,8 +745,14 @@ tasks:
         complex:
           root: inputs.serviceNowTicketID
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -650,\n    \"y\": 1330\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 1330
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -682,7 +760,21 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"11_7_#default#\": 0.12,\n    \"1_7_#default#\": 0.15\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1355,\n      \"width\": 1940,\n      \"x\": -1080,\n      \"y\": 400\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_7_#default#": 0.12,
+      "1_7_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1355,
+        "width": 1940,
+        "x": -1080,
+        "y": 400
+      }
+    }
+  }
 inputs:
 - key: serviceNowTicketID
   value: {}
@@ -726,7 +818,7 @@ inputs:
   playbookInputQuery:
 - key: addCommentPerEndpoint
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: 'Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
   playbookInputQuery:
@@ -751,7 +843,6 @@ outputs:
 tests:
 - No tests (auto formatted)
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2
 fromversion: 6.8.0

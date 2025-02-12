@@ -7,7 +7,8 @@ type: python
 subtype: python3
 tags:
 - general
-comment: Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Core REST API" integration must first be enabled.
+comment: |-
+  Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Core REST API" integration must first be enabled.
 enabled: true
 args:
 - name: command
@@ -16,8 +17,8 @@ args:
 - name: enabled
   auto: PREDEFINED
   predefined:
-  - 'true'
-  - 'false'
+  - "true"
+  - "false"
   description: Filters results to integrations that are enabled or disabled.  'true' or 'false'.  Will return both types by default.  False means that an integration instance is either not defined or not enabled.  True means that an integration instance is both defined and enabled.
 scripttarget: 0
 dependson:
@@ -32,4 +33,3 @@ fromversion: 5.0.0
 marketplaces:
 - xsoar
 - marketplacev2
-- platform

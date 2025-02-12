@@ -24,6 +24,5 @@ fromversion: 5.0.0
 tests:
 - No tests
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

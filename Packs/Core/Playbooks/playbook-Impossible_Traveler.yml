@@ -2,24 +2,30 @@ id: Impossible Traveler Response
 version: -1
 name: Impossible Traveler Response
 description: "This playbook handles impossible traveler alerts.\n\nAn Impossible Traveler event occurs when multiple login attempts seen for a user from multiple remote countries in a short period of time, which shouldn't be possible. This may indicate the account is compromised.\n\n**Attacker's Goals:**\n\nGain user-account credentials.\n\n**Investigative Actions:**\n\nInvestigate the IP addresses and identities involved in the detected activity using:\n\n* Impossible Traveler - Enrichment playbook\n* CalculateGeoDistance automation\n\n**Response Actions**\n\nThe playbook's first response actions are based on the data available within the alert. In that phase, the playbook will execute:\n\n* Manual block indicators if the IP address found malicious\n* Manual disable user\n* Manual clear of the user’s sessions (Okta)\n\nWhen the playbook continues, after validating the activity with the user’s manager, another phase of response actions is being executed, which includes:\n\n* Auto block indicators \n\n\n**External Resources:**\n\n[Impossible traveler alert](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Impossible-traveler-SSO)"
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 88f861eb-119b-433f-80fb-a44f7dc6eb48
     type: start
     task:
       id: 88f861eb-119b-433f-80fb-a44f7dc6eb48
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '50'
+      - "50"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": -50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": -50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -27,9 +33,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '32':
-    id: '32'
+    continueonerrortype: ""
+  "32":
+    id: "32"
     taskid: d2cc6f85-633d-4296-862a-5f925794182e
     type: title
     task:
@@ -38,13 +44,19 @@ tasks:
       name: Containment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '118'
+      - "118"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 2985\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2985
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -52,9 +64,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '50':
-    id: '50'
+    continueonerrortype: ""
+  "50":
+    id: "50"
     taskid: 6ea8cc97-01a6-4500-8db9-70dd3cc2bdb8
     type: title
     task:
@@ -63,13 +75,19 @@ tasks:
       name: Travel Information Enrichment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '111'
+      - "111"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 80\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 80
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla
@@ -79,9 +97,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '51':
-    id: '51'
+    continueonerrortype: ""
+  "51":
+    id: "51"
     taskid: 9f0e24af-30c8-444f-8e7c-6b9b0c2c1658
     type: title
     task:
@@ -90,13 +108,19 @@ tasks:
       name: 'Containment '
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '104'
+      - "104"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 555\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 555
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -104,9 +128,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '63':
-    id: '63'
+    continueonerrortype: ""
+  "63":
+    id: "63"
     taskid: 9e9924bf-582c-4c05-880a-ce2faabc672f
     type: condition
     task:
@@ -116,15 +140,15 @@ tasks:
       description: Checks whether the user traveled faster than the allowed speed in MPH.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '106'
-      yes:
-      - '84'
+      - "106"
+      "yes":
+      - "84"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: greaterThan
           left:
@@ -137,7 +161,13 @@ tasks:
             value:
               simple: inputs.MaxMilesPerHourAllowed
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 2230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 2230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -145,9 +175,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '67':
-    id: '67'
+    continueonerrortype: ""
+  "67":
+    id: "67"
     taskid: 1afa0528-0863-40fb-864e-164aef0f660b
     type: condition
     task:
@@ -157,15 +187,15 @@ tasks:
       description: Checks whether both user login events originated from IP addresses on the allow list.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '112'
-      yes:
-      - '106'
+      - "112"
+      "yes":
+      - "106"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: in
           left:
@@ -199,8 +229,14 @@ tasks:
               complex:
                 root: inputs.AllowlistCIDR
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -280,\n    \"y\": 1860\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 1860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -208,8 +244,8 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  '68':
-    id: '68'
+  "68":
+    id: "68"
     taskid: 0aae9ff5-92b0-4196-8df9-fe62836dc988
     type: condition
     task:
@@ -219,15 +255,15 @@ tasks:
       description: Checks whether the allow list IPs were configured.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '112'
-      yes:
-      - '67'
+      - "112"
+      "yes":
+      - "67"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -242,8 +278,14 @@ tasks:
               complex:
                 root: inputs.AllowlistCIDR
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1680\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1680
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -251,8 +293,8 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  '70':
-    id: '70'
+  "70":
+    id: "70"
     taskid: 26fbbf6a-8cdf-4252-846f-59667df1acc9
     type: regular
     task:
@@ -266,10 +308,16 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '102'
+      - "102"
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 3860\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 3860
+        }
+      }
     note: false
     timertriggers:
     - fieldname: remediationsla
@@ -279,9 +327,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '73':
-    id: '73'
+    continueonerrortype: ""
+  "73":
+    id: "73"
     taskid: b3f5688f-8244-481c-8edb-b109bb896850
     type: title
     task:
@@ -290,13 +338,19 @@ tasks:
       name: Process Travel Data
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '68'
+      - "68"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1540\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1540
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -304,9 +358,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '84':
-    id: '84'
+    continueonerrortype: ""
+  "84":
+    id: "84"
     taskid: b13f2219-7b15-400e-8b7f-311c944f4b00
     type: condition
     task:
@@ -316,15 +370,15 @@ tasks:
       description: Checks whether an email address was retrieved for the manger of the offending user.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '32'
-      yes:
-      - '113'
+      - "32"
+      "yes":
+      - "113"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -342,9 +396,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 2405\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2405
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -352,9 +412,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '97':
-    id: '97'
+    continueonerrortype: ""
+  "97":
+    id: "97"
     taskid: 29168b8b-4682-4c83-8442-f9b240441bce
     type: title
     task:
@@ -363,13 +423,19 @@ tasks:
       name: Investigation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '73'
+      - "73"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1400\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -377,9 +443,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '102':
-    id: '102'
+    continueonerrortype: ""
+  "102":
+    id: "102"
     taskid: 761f3691-27cd-4689-8c72-f33cdf3ceff8
     type: title
     task:
@@ -388,10 +454,16 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 4030\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 4030
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -399,9 +471,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '104':
-    id: '104'
+    continueonerrortype: ""
+  "104":
+    id: "104"
     taskid: 310b06ad-c117-4aa9-87cb-59ce2eec50a5
     type: condition
     task:
@@ -411,15 +483,15 @@ tasks:
       description: Checks if the IP address is blacklisted.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '110'
-      yes:
-      - '119'
+      - "110"
+      "yes":
+      - "119"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: greaterThan
           left:
@@ -430,7 +502,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '5'
+              simple: "5"
         - operator: greaterThanOrEqual
           left:
             value:
@@ -460,9 +532,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '3'
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 690\n  }\n}"
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -470,8 +548,8 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  '106':
-    id: '106'
+  "106":
+    id: "106"
     taskid: 5e758133-c223-4b51-82dc-23e5e7fb9870
     type: regular
     task:
@@ -485,9 +563,15 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '102'
+      - "102"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -280,\n    \"y\": 2405\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 2405
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -495,23 +579,27 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '107':
-    id: '107'
+    continueonerrortype: ""
+  "107":
+    id: "107"
     taskid: 3e64301f-3cc8-4687-86c9-9174c5ebd246
     type: playbook
     task:
       id: 3e64301f-3cc8-4687-86c9-9174c5ebd246
       version: -1
       name: Impossible Traveler - Enrichment
-      description: "This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert, and enriches them based on the following:\n* Geo location\n* Active Directory\n* IP enrichment e.g. VirusTotal, AbuseIPDB, etc."
+      description: |-
+        This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert, and enriches them based on the following:
+        * Geo location
+        * Active Directory
+        * IP enrichment e.g. VirusTotal, AbuseIPDB, etc.
       playbookName: Impossible Traveler - Enrichment
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '51'
+      - "51"
     scriptarguments:
       domain:
         complex:
@@ -525,11 +613,17 @@ tasks:
     separatecontext: false
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 3
       max: 100
       forEach: true
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 390\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 390
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -537,9 +631,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '110':
-    id: '110'
+    continueonerrortype: ""
+  "110":
+    id: "110"
     taskid: 94db504a-51c6-4c26-82cc-83e29e829184
     type: regular
     task:
@@ -550,17 +644,23 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '119'
+      - "119"
     scriptarguments:
       key:
         simple: BlockIndicators
       value:
-        simple: 'False'
+        simple: "False"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -310,\n    \"y\": 860\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -568,9 +668,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '111':
-    id: '111'
+    continueonerrortype: ""
+  "111":
+    id: "111"
     taskid: fdd29a04-07fb-4099-8319-e8610b6d6ca3
     type: regular
     task:
@@ -581,10 +681,10 @@ tasks:
       scriptName: CreateArray
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '107'
+      - "107"
     scriptarguments:
       arrayData:
         complex:
@@ -595,10 +695,16 @@ tasks:
       contextKey:
         simple: ImpossibleTravelerIPs
       ignore-outputs:
-        simple: 'false'
+        simple: "false"
     continueonerror: true
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 220\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 220
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -606,9 +712,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '112':
-    id: '112'
+    continueonerrortype: ""
+  "112":
+    id: "112"
     taskid: 6bc4d7e3-c086-43ac-82bb-09c17225c564
     type: regular
     task:
@@ -621,10 +727,10 @@ tasks:
       scriptName: impossibleTravelerGetDistance
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '63'
+      - "63"
     scriptarguments:
       dest_coords:
         complex:
@@ -633,14 +739,20 @@ tasks:
       extend-context:
         simple: GeoDistance
       ignore-outputs:
-        simple: 'false'
+        simple: "false"
       src_coords:
         complex:
           root: ImpossibleTraveler.Events
           accessor: location
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 2050\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 2050
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -648,9 +760,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '113':
-    id: '113'
+    continueonerrortype: ""
+  "113":
+    id: "113"
     taskid: fa93ec7b-8855-4faa-8d83-c072bc2108e2
     type: collection
     task:
@@ -660,12 +772,18 @@ tasks:
       description: Asks the manager to confirm the abnormal activity.
       type: collection
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '114'
+      - "114"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 2600\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -678,7 +796,7 @@ tasks:
       body:
       methods:
       - email
-      format: ''
+      format: ""
       bcc:
       cc:
       timings:
@@ -689,8 +807,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: '0'
-        label: ''
+      - id: "0"
+        label: ""
         labelarg:
           simple: Select the suspicious locations
         required: false
@@ -711,12 +829,14 @@ tasks:
                     simple: GeoEvents.dest_country
                   iscontext: true
             - operator: uniq
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
       title: Impossible Traveler Alert Validation
-      description: "The user ${alert.username} signed in from several countries in a one-hour timeframe, which is considered an impossible traveler activity.\nSelect the unapproved countries for the employee to sign in from."
+      description: |-
+        The user ${alert.username} signed in from several countries in a one-hour timeframe, which is considered an impossible traveler activity.
+        Select the unapproved countries for the employee to sign in from.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -724,9 +844,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '114':
-    id: '114'
+    continueonerrortype: ""
+  "114":
+    id: "114"
     taskid: e2d0f764-b76d-4b82-88e9-2ec0ff0fef15
     type: condition
     task:
@@ -736,12 +856,12 @@ tasks:
       description: Checks the manager response.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '32'
+      - "32"
       Approved:
-      - '70'
+      - "70"
     separatecontext: false
     conditions:
     - label: Approved
@@ -754,7 +874,13 @@ tasks:
             iscontext: true
           right:
             value: {}
-    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 2800\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -762,9 +888,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '117':
-    id: '117'
+    continueonerrortype: ""
+  "117":
+    id: "117"
     taskid: e190537d-1b4b-4055-8eff-1f60d7651da1
     type: playbook
     task:
@@ -775,10 +901,10 @@ tasks:
       playbookName: Containment Plan
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '97'
+      - "97"
     scriptarguments:
       AutoContainment:
         complex:
@@ -792,22 +918,22 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: 'True'
+                  simple: "True"
       ClearUserSessions:
-        simple: 'True'
+        simple: "True"
       FileContainment:
-        simple: 'False'
+        simple: "False"
       FileRemediation:
         simple: Quarantine
       HostAutoContainment:
-        simple: 'False'
+        simple: "False"
       IAMUserDomain:
         simple: ''
       IP:
         complex:
           root: ImpossibleTravelerIPs
       UserContainment:
-        simple: 'False'
+        simple: "False"
       Username:
         complex:
           root: alert
@@ -815,7 +941,7 @@ tasks:
           transformers:
           - operator: uniq
       AutoBlockIndicators:
-        simple: 'True'
+        simple: "True"
       EndpointID:
         complex:
           root: alert
@@ -823,16 +949,22 @@ tasks:
           transformers:
           - operator: uniq
       HostContainment:
-        simple: 'True'
+        simple: "True"
       UserVerification:
-        simple: 'False'
+        simple: "False"
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 1220\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1220
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -840,9 +972,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '118':
-    id: '118'
+    continueonerrortype: ""
+  "118":
+    id: "118"
     taskid: bd5bd031-c623-4eba-82b0-b342ebdab5dd
     type: playbook
     task:
@@ -853,24 +985,24 @@ tasks:
       playbookName: Containment Plan
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '120'
+      - "120"
     scriptarguments:
       AutoContainment:
         complex:
           root: inputs.AutoContainment
       BlockIndicators:
-        simple: 'True'
+        simple: "True"
       ClearUserSessions:
-        simple: 'true'
+        simple: "true"
       FileContainment:
-        simple: 'False'
+        simple: "False"
       FileRemediation:
         simple: Quarantine
       HostAutoContainment:
-        simple: 'False'
+        simple: "False"
       IAMUserDomain:
         simple: ''
       IP:
@@ -898,14 +1030,20 @@ tasks:
           transformers:
           - operator: uniq
       UserContainment:
-        simple: 'true'
+        simple: "true"
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 3120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 3120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -913,9 +1051,9 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '119':
-    id: '119'
+    continueonerrortype: ""
+  "119":
+    id: "119"
     taskid: 9f60839c-b73f-410c-8d26-e4d6fb3a8f98
     type: condition
     task:
@@ -925,15 +1063,15 @@ tasks:
       description: Checks whether to run containment plan before Investigation phase.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '97'
-      yes:
-      - '117'
+      - "97"
+      "yes":
+      - "117"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -943,10 +1081,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1030\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1030
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -954,8 +1098,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '120':
-    id: '120'
+  "120":
+    id: "120"
     taskid: b4b81e66-cdaf-453c-847d-2e2ec377b6fc
     type: regular
     task:
@@ -969,13 +1113,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '121'
+      - "121"
     scriptarguments:
       manual_severity:
         simple: high
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 3295\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 3295
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -983,8 +1133,8 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  '121':
-    id: '121'
+  "121":
+    id: "121"
     taskid: f7a17c64-5faa-4d72-8651-d2202a0d1ca7
     type: condition
     task:
@@ -994,15 +1144,15 @@ tasks:
       description: Checks whether to open a ticket automatically in a ticketing system.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '70'
-      yes:
-      - '122'
+      - "70"
+      "yes":
+      - "122"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualNumber
           left:
@@ -1012,10 +1162,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 3460\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 3460
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1023,22 +1179,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '122':
-    id: '122'
+  "122":
+    id: "122"
     taskid: b0ab22d5-3713-42df-8820-a04c73f3418a
     type: playbook
     task:
       id: b0ab22d5-3713-42df-8820-a04c73f3418a
       version: -1
       name: Ticket Management - Generic
-      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
+      description: "`Ticket Management - Generic` allows you to open new tickets or
+        update comments to the existing ticket in the following ticketing systems:\n-ServiceNow
+        \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk
+        - Ticket Management`\n"
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '70'
+      - "70"
     scriptarguments:
       CommentToAdd:
         complex:
@@ -1095,13 +1254,19 @@ tasks:
         complex:
           root: inputs.serviceNowUrgency
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 3670\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 3670
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1109,11 +1274,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"104_110_#default#\": 0.56,\n    \"104_119_yes\": 0.51,\n    \"114_32_#default#\": 0.26,\n    \"114_70_Approved\": 0.18,\n    \"121_122_yes\": 0.47,\n    \"121_70_#default#\": 0.27,\n    \"67_112_#default#\": 0.51,\n    \"68_112_#default#\": 0.58,\n    \"84_32_#default#\": 0.31\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4145,\n      \"width\": 1490,\n      \"x\": -310,\n      \"y\": -50\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "104_110_#default#": 0.56,
+      "104_119_yes": 0.51,
+      "114_32_#default#": 0.26,
+      "114_70_Approved": 0.18,
+      "121_122_yes": 0.47,
+      "121_70_#default#": 0.27,
+      "67_112_#default#": 0.51,
+      "68_112_#default#": 0.58,
+      "84_32_#default#": 0.31
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4145,
+        "width": 1490,
+        "x": -310,
+        "y": -50
+      }
+    }
+  }
 inputs:
 - key: MaxMilesPerHourAllowed
   value:
-    simple: '400'
+    simple: "400"
   required: false
   description: The maximum miles per hour that is considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler.
   playbookInputQuery:
@@ -1124,19 +1310,19 @@ inputs:
   playbookInputQuery:
 - key: ContactUserManager
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
   playbookInputQuery:
 - key: AutoContainment
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to execute auto containment.
   playbookInputQuery:
 - key: AbuseIPDBThreshold
   value:
-    simple: '80'
+    simple: "80"
   required: false
   description: The score needed from AbuseIPDB to consider IP address as malicious.
   playbookInputQuery:
@@ -1168,105 +1354,111 @@ inputs:
   playbookInputQuery:
 - key: ShouldOpenTicket
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowShortDescription
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: A short description of the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowImpact
   value: {}
   required: false
   description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowUrgency
   value: {}
   required: false
   description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowSeverity
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
+  description: The severity of the new ticket. Leave empty for ServiceNow default
+    severity.
+  playbookInputQuery: null
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery: null
 - key: serviceNowCategory
   value: {}
   required: false
   description: The category of the ServiceNow ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowAssignmentGroup
   value: {}
   required: false
   description: The group to which to assign the new ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskPriority
   value: {}
   required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
+  description: The urgency with which the ticket should be addressed. Allowed values
+    are "urgent", "high", "normal", or "low".
+  playbookInputQuery: null
 - key: ZendeskRequester
   value: {}
   required: false
   description: The user who requested this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskStatus
   value: {}
   required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
+  description: The state of the ticket. Allowed values are "new", "open", "pending",
+    "hold", "solved", or "closed".
+  playbookInputQuery: null
 - key: ZendeskSubject
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: The value of the subject field for this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskTags
   value: {}
   required: false
   description: The array of tags applied to this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskType
   value: {}
   required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
+  description: The type of this ticket. Allowed values are "problem", "incident",
+    "question", or "task".
+  playbookInputQuery: null
 - key: ZendeskAssigne
   value: {}
   required: false
   description: The agent currently assigned to the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskCollaborators
   value: {}
   required: false
   description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: description
   value:
     simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
   required: false
   description: The ticket description.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: addCommentPerEndpoint
   value:
-    simple: 'True'
+    simple: "True"
   required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
+  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. 
+    Possible values: True/False.'
+  playbookInputQuery: null
 - key: CommentToAdd
   value:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
   - domain
@@ -1395,7 +1587,5 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
-marketplaces:
-- marketplacev2
-- platform
+marketplaces: ["marketplacev2"]
 fromversion: 6.6.0

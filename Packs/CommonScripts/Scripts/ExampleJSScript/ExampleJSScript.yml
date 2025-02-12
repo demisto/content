@@ -6,7 +6,8 @@ script: ''
 type: javascript
 tags:
 - example
-comment: This is only an example script, to showcase how to use and write JavaScript scripts
+comment: This is only an example script, to showcase how to use and write JavaScript
+  scripts
 system: true
 args:
 - name: ArgumentExample
@@ -19,6 +20,5 @@ fromversion: 5.0.0
 tests:
 - No tests
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

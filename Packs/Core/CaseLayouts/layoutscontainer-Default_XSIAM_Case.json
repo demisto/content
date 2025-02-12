@@ -9,12 +9,12 @@
             },
             {
                 "id": "assets_and_artifacts",
-                "name": "Key Assets & Artifacts",
+                "name": "Key Assets \u0026 Artifacts",
                 "type": "assets_and_artifacts"
             },
             {
                 "id": "alerts_and_insights",
-                "name": "Alerts & Insights",
+                "name": "Alerts \u0026 Insights",
                 "type": "alerts_and_insights"
             },
             {
@@ -40,8 +40,5 @@
     "system": true,
     "version": -1,
     "fromVersion": "8.7.0",
-    "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ]
+    "marketplaces":  ["marketplacev2"]
 }

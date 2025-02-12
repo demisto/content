@@ -2,25 +2,31 @@ id: Eradication Plan - Delete File
 version: -1
 name: Eradication Plan - Delete File
 description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook executes actions of file deletion, which is a crucial step in the eradication process."
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 48cbb13a-a0c0-4a27-815a-66e38f3387ff
     type: start
     task:
       id: 48cbb13a-a0c0-4a27-815a-66e38f3387ff
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '21'
+      - "21"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 350,\n    \"y\": 80\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 80
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -28,8 +34,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 7c4ec73d-fff2-45de-8387-699ac5c64a2d
     type: regular
     task:
@@ -40,10 +46,10 @@ tasks:
       script: '|||core-run-script-delete-file'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
+      - "19"
     scriptarguments:
       endpoint_ids:
         complex:
@@ -52,8 +58,14 @@ tasks:
         complex:
           root: inputs.FilePath
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 350,\n    \"y\": 430\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 430
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -61,8 +73,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 040279ae-6f3d-42a1-8def-2c0565fd669f
     type: title
     task:
@@ -71,11 +83,17 @@ tasks:
       name: Done - File Deletion
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 350,\n    \"y\": 790\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 790
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -83,8 +101,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: e6efaf8f-a382-45a5-8286-e3e8b86eee8e
     type: regular
     task:
@@ -95,18 +113,24 @@ tasks:
       script: '|||core-get-script-execution-results'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       action_id:
         complex:
           root: Core.GetActionStatus
           accessor: action_id
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 350,\n    \"y\": 600\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -114,8 +138,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: a1a09dd3-d1de-40ae-898b-6fe92bd93c6e
     type: condition
     task:
@@ -125,15 +149,15 @@ tasks:
       description: Whether to delete the file based on the input values.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '5'
-      yes:
-      - '3'
+      - "5"
+      "yes":
+      - "3"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -157,8 +181,14 @@ tasks:
             value:
               simple: Delete
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 350,\n    \"y\": 220\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 220
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -166,7 +196,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"21_3_yes\": 0.59\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 775,\n      \"width\": 380,\n      \"x\": 350,\n      \"y\": 80\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_3_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 380,
+        "x": 350,
+        "y": 80
+      }
+    }
+  }
 inputs:
 - key: FileRemediation
   value:
@@ -194,4 +237,3 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
-- platform

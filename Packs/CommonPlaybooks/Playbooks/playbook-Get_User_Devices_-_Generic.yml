@@ -1,27 +1,48 @@
 id: Get User Devices - Generic
 version: -1
 name: Get User Devices - Generic
-description: "This playbook retrieves information on all of the associated user devices.\nIn order to get a generic output, the following information on all of the retrieved devices will be saved under the `UserDevices` context key:\n- Name\n- Serial Number\n- ID\n- Model\n- MAC Address\n- OS\n- Integration\n\nNote that not all of the supported integrations will be able to retrieve this information.\n\nIn order to get the full list of supported integrations, read the following sub-playbooks descriptions:\n- Get User Devices by Username - Generic\n- Get User Devices by Email Address - Generic"
-starttaskid: '0'
+description: |-
+  This playbook retrieves information on all of the associated user devices.
+  In order to get a generic output, the following information on all of the retrieved devices will be saved under the `UserDevices` context key:
+  - Name
+  - Serial Number
+  - ID
+  - Model
+  - MAC Address
+  - OS
+  - Integration
+
+  Note that not all of the supported integrations will be able to retrieve this information.
+
+  In order to get the full list of supported integrations, read the following sub-playbooks descriptions:
+  - Get User Devices by Username - Generic
+  - Get User Devices by Email Address - Generic
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 454cb663-ccde-4a62-8b49-30eb544b3bc0
     type: start
     task:
       id: 454cb663-ccde-4a62-8b49-30eb544b3bc0
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
-      - '2'
+      - "1"
+      - "2"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 90\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -29,8 +50,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: cf8dc377-5329-470d-844e-791d70e71811
     type: playbook
     task:
@@ -40,11 +61,11 @@ tasks:
       playbookName: Get User Devices by Username - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       CustomADAttribute:
         complex:
@@ -56,13 +77,19 @@ tasks:
         complex:
           root: inputs.Username
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 190,\n    \"y\": 250\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 250
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -70,8 +97,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 9c31b9f0-e095-4389-8f58-729f0c4ec788
     type: playbook
     task:
@@ -81,11 +108,11 @@ tasks:
       playbookName: Get User Devices by Email Address - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       CustomADAttribute:
         complex:
@@ -97,13 +124,19 @@ tasks:
         complex:
           root: inputs.UserEmail
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 250\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 250
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -111,22 +144,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 31a7a2ae-9ab4-43fd-8ad3-aed6423e566a
     type: regular
     task:
       id: 31a7a2ae-9ab4-43fd-8ad3-aed6423e566a
       version: -1
       name: Set UserDevices
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       key:
         simple: UserDevices
@@ -143,8 +183,14 @@ tasks:
               raw: {}
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 440\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -152,8 +198,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 0554518b-dd22-4f68-83d5-7bdf164d2b4d
     type: title
     task:
@@ -162,11 +208,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 640\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -174,7 +226,18 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 615,\n      \"width\": 890,\n      \"x\": 190,\n      \"y\": 90\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 890,
+        "x": 190,
+        "y": 90
+      }
+    }
+  }
 inputs:
 - key: UserEmail
   value: {}
@@ -193,7 +256,9 @@ inputs:
 - key: CustomADAttribute
   value: {}
   required: false
-  description: "A custom Active Directory attribute.\nIn case there is a custom attribute in Active Directory which stores the name of the computer assigned to the user in the user object, it would be fetched."
+  description: |-
+    A custom Active Directory attribute.
+    In case there is a custom attribute in Active Directory which stores the name of the computer assigned to the user in the user object, it would be fetched.
   playbookInputQuery:
 outputs:
 - contextPath: UserDevices
@@ -528,6 +593,5 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

@@ -2,25 +2,31 @@ id: IOC Alert
 version: -1
 name: IOC Alert
 description: "IOCs provide the ability to alert on known malicious objects on endpoints across the organization. \n\n**Analysis Actions:**\nThe playbook will use several enrichment sources to determine the IOC verdict. Additionally, will use the Analytics module to run a prevalence check for the IOC.\n\n**Response Actions:**\nThe playbook's first response action is a containment plan that is based on the playbook input. In that phase, the playbook will execute endpoint isolation\n\n**Investigative Actions:**\nWhen the playbook executes, it checks for additional abnormal activity using the Endpoint Investigation Plan playbook that can indicate the endpoint might be compromised.\n\n**Remediation Actions:**\nIn case results are found within the investigation phase, the playbook will execute remediation actions that include containment and eradication.\n\nThis phase will execute the following containment actions:\n\n* File quarantine\n* Endpoint isolation\n\nAnd the following eradication actions:\n\n* Manual process termination\n* Manual file deletion"
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 6e568fda-d217-4f3c-8a2e-b88b0d7ce2cf
     type: start
     task:
       id: 6e568fda-d217-4f3c-8a2e-b88b0d7ce2cf
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '47'
+      - "47"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": -110\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -110
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -28,8 +34,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: e0f81dd8-c1b5-4641-80c2-d06d57e246e9
     type: condition
     task:
@@ -39,15 +45,15 @@ tasks:
       description: Checks if any suspicious IOCs were found to continue with the alert investigation.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '12'
-      yes:
-      - '76'
+      - "12"
+      "yes":
+      - "76"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -116,10 +122,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 530\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -127,8 +139,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 247d2a4d-60bd-4ba6-8ced-d54cb5dfd5d0
     type: title
     task:
@@ -137,14 +149,20 @@ tasks:
       name: Handle False Positive
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '69'
+      - "69"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -230,\n    \"y\": 745\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 745
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -152,8 +170,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: 8984e9bb-8b45-430a-8397-509e2865c466
     type: title
     task:
@@ -162,14 +180,20 @@ tasks:
       name: Investigation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '68'
+      - "68"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 1210\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1210
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -177,8 +201,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '37':
-    id: '37'
+  "37":
+    id: "37"
     taskid: b1098495-80b3-4450-80fe-79f14e84a9f4
     type: title
     task:
@@ -187,11 +211,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 3380\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3380
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -199,8 +229,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '47':
-    id: '47'
+  "47":
+    id: "47"
     taskid: c4e0656d-a1b2-4166-850e-4faa6e06a6c9
     type: title
     task:
@@ -209,14 +239,20 @@ tasks:
       name: 'Analysis '
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '82'
+      - "82"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 40\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 40
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -224,8 +260,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '54':
-    id: '54'
+  "54":
+    id: "54"
     taskid: eedbc660-cd5d-4fa8-8b6b-c6ad6acba120
     type: condition
     task:
@@ -235,15 +271,15 @@ tasks:
       description: Checks if relevant information was found.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '60'
-      yes:
-      - '83'
+      - "60"
+      "yes":
+      - "83"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -251,8 +287,14 @@ tasks:
               complex:
                 root: foundIncidents
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 1540\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1540
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -260,8 +302,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '60':
-    id: '60'
+  "60":
+    id: "60"
     taskid: 6428ba34-883b-45cf-8c12-f8411f434de7
     type: title
     task:
@@ -270,14 +312,20 @@ tasks:
       name: Recovery
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '73'
+      - "73"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 2530\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -285,8 +333,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '66':
-    id: '66'
+  "66":
+    id: "66"
     taskid: d28beff8-6a1a-47ab-8fe9-f894e9a17cfc
     type: playbook
     task:
@@ -297,10 +345,10 @@ tasks:
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
@@ -323,15 +371,21 @@ tasks:
       query:
         simple: sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
       threshold:
-        simple: '5'
+        simple: "5"
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -339,8 +393,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '67':
-    id: '67'
+  "67":
+    id: "67"
     taskid: 42c60c2c-36bc-43db-8a99-2120db91b67c
     type: playbook
     task:
@@ -351,10 +405,10 @@ tasks:
       playbookName: Containment Plan
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '25'
+      - "25"
     scriptarguments:
       AutoContainment:
         complex:
@@ -364,34 +418,40 @@ tasks:
             args:
               applyIfEmpty:
                 value:
-                  simple: 'false'
+                  simple: "false"
               defaultValue:
                 value:
-                  simple: 'false'
+                  simple: "false"
       BlockIndicators:
-        simple: 'False'
+        simple: "False"
       ClearUserSessions:
-        simple: 'False'
+        simple: "False"
       EndpointID:
         complex:
           root: alert
           accessor: agentid
       FileContainment:
-        simple: 'False'
+        simple: "False"
       FileRemediation:
         simple: Quarantine
       HostContainment:
-        simple: 'True'
+        simple: "True"
       UserContainment:
-        simple: 'False'
+        simple: "False"
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 1040\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -399,8 +459,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '68':
-    id: '68'
+  "68":
+    id: "68"
     taskid: 323c4f4e-36a1-4cc9-8c31-d54582ed410e
     type: playbook
     task:
@@ -411,45 +471,51 @@ tasks:
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '54'
+      - "54"
     scriptarguments:
       HuntCnCTechniques:
-        simple: 'True'
+        simple: "True"
       HuntCollectionTechniques:
-        simple: 'True'
+        simple: "True"
       HuntDefenseEvasionTechniques:
-        simple: 'True'
+        simple: "True"
       HuntDiscoveryTechniques:
-        simple: 'True'
+        simple: "True"
       HuntExecutionTechniques:
-        simple: 'True'
+        simple: "True"
       HuntImpactTechniques:
-        simple: 'True'
+        simple: "True"
       HuntInitialAccessTechniques:
-        simple: 'True'
+        simple: "True"
       HuntLateralMovementTechniques:
-        simple: 'True'
+        simple: "True"
       HuntPersistenceTechniques:
-        simple: 'True'
+        simple: "True"
       HuntPrivilegeEscalationTechniques:
-        simple: 'True'
+        simple: "True"
       HuntReconnaissanceTechniques:
-        simple: 'True'
+        simple: "True"
       agentID:
         complex:
           root: alert
           accessor: agentid
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 1365\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1365
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -457,22 +523,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '69':
-    id: '69'
+  "69":
+    id: "69"
     taskid: 5b77fe0b-f78b-4604-868e-a574e916afd1
     type: playbook
     task:
       id: 5b77fe0b-f78b-4604-868e-a574e916afd1
       version: -1
       name: Handle False Positive Alerts
-      description: "This playbook handles false positive alerts.\nIt creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.\n"
+      description: |
+        This playbook handles false positive alerts.
+        It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
       playbookName: Handle False Positive Alerts
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '37'
+      - "37"
     scriptarguments:
       FileSHA256:
         complex:
@@ -488,7 +556,7 @@ tasks:
               flags: {}
               groups:
                 value:
-                  simple: '0'
+                  simple: "0"
               keys: {}
               regex:
                 value:
@@ -512,13 +580,19 @@ tasks:
           root: alert
           accessor: username
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": -230,\n    \"y\": 880\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 880
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -526,8 +600,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '72':
-    id: '72'
+  "72":
+    id: "72"
     taskid: b7c41b05-77b0-435c-885e-015688350d6c
     type: regular
     task:
@@ -541,13 +615,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '37'
+      - "37"
     scriptarguments:
       closeReason:
         simple: Resolved - Threat Handled
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 3200\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 3200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -555,8 +635,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '73':
-    id: '73'
+  "73":
+    id: "73"
     taskid: af811990-e3b5-4329-804d-b3c43a770f55
     type: condition
     task:
@@ -566,15 +646,15 @@ tasks:
       description: Checks if it should release the affected endpoint from isolation.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '74'
-      yes:
-      - '75'
+      - "74"
+      "yes":
+      - "75"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -584,10 +664,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 2665\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2665
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -595,8 +681,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '74':
-    id: '74'
+  "74":
+    id: "74"
     taskid: 3529adf2-dc0d-40b4-8dae-2cf84c2d7641
     type: condition
     task:
@@ -606,15 +692,15 @@ tasks:
       description: Whether to close the alert automatically or manually.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '37'
-      yes:
-      - '72'
+      - "37"
+      "yes":
+      - "72"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -624,10 +710,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 3020\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3020
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -635,34 +727,45 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '75':
-    id: '75'
+  "75":
+    id: "75"
     taskid: d36e9607-9c96-4688-8d3f-65bb37739224
     type: playbook
     task:
       id: d36e9607-9c96-4688-8d3f-65bb37739224
       version: -1
       name: Recovery Plan
-      description: "This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:\n* Unisolate endpoint\n* Restore quarantined file\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      description: |-
+        This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:
+        * Unisolate endpoint
+        * Restore quarantined file
+
+        Note: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details.
       playbookName: Recovery Plan
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '74'
+      - "74"
     scriptarguments:
       endpointID:
         complex:
           root: alert
           accessor: agentid
       releaseFile:
-        simple: 'false'
+        simple: "false"
       unIsolateEndpoint:
-        simple: 'true'
+        simple: "true"
     separatecontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 2840\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 2840
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -670,8 +773,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '76':
-    id: '76'
+  "76":
+    id: "76"
     taskid: b80d75a1-dc20-4414-88cf-3884b5831def
     type: title
     task:
@@ -680,14 +783,20 @@ tasks:
       name: Pre-Investigation Containment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '77'
+      - "77"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 745\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 745
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -695,8 +804,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '77':
-    id: '77'
+  "77":
+    id: "77"
     taskid: c2cbe10d-8222-4923-89bf-affca982e631
     type: condition
     task:
@@ -706,15 +815,15 @@ tasks:
       description: Checks whether to isolate the host after the investigation phase.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '25'
-      yes:
-      - '67'
+      - "25"
+      "yes":
+      - "67"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -726,10 +835,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
+              simple: "true"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 870\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 870
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -737,8 +852,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '79':
-    id: '79'
+  "79":
+    id: "79"
     taskid: a6324b2e-b539-433e-839c-7bdd2bb90f68
     type: title
     task:
@@ -747,15 +862,21 @@ tasks:
       name: Remediation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '80'
-      - '81'
+      - "80"
+      - "81"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 2220\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 2220
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -763,8 +884,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '80':
-    id: '80'
+  "80":
+    id: "80"
     taskid: 9ea917dd-abb0-425f-81b1-0496a82a1d86
     type: playbook
     task:
@@ -775,10 +896,10 @@ tasks:
       playbookName: Containment Plan
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '60'
+      - "60"
     scriptarguments:
       AutoContainment:
         complex:
@@ -789,17 +910,17 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: 'false'
+                  simple: "false"
       BlockIndicators:
-        simple: 'False'
+        simple: "False"
       ClearUserSessions:
-        simple: 'True'
+        simple: "True"
       EndpointID:
         complex:
           root: alert
           accessor: agentid
       FileContainment:
-        simple: 'True'
+        simple: "True"
       FileHash:
         complex:
           root: foundIncidents.CustomFields
@@ -831,17 +952,23 @@ tasks:
         complex:
           root: inputs.FileRemediation
       HostContainment:
-        simple: 'True'
+        simple: "True"
       UserContainment:
-        simple: 'True'
+        simple: "True"
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 1080,\n    \"y\": 2360\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 2360
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -849,8 +976,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '81':
-    id: '81'
+  "81":
+    id: "81"
     taskid: 527b0732-8b4e-45eb-8c22-a61057190ef3
     type: playbook
     task:
@@ -861,10 +988,10 @@ tasks:
       playbookName: Eradication Plan
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '60'
+      - "60"
     scriptarguments:
       AutoEradicate:
         complex:
@@ -881,13 +1008,19 @@ tasks:
         complex:
           root: inputs.FileRemediation
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 2360\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 2360
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -895,8 +1028,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '82':
-    id: '82'
+  "82":
+    id: "82"
     taskid: 03afb60a-4f65-4e42-82ff-3134d5b84042
     type: regular
     task:
@@ -910,15 +1043,21 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '66'
+      - "66"
     scriptarguments:
       text:
         complex:
           root: alert
           accessor: details
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 170\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 170
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -926,8 +1065,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '83':
-    id: '83'
+  "83":
+    id: "83"
     taskid: 37a6525e-26a7-4c1f-8531-17fe493b2642
     type: regular
     task:
@@ -941,13 +1080,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '84'
+      - "84"
     scriptarguments:
       manual_severity:
         simple: high
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 1710\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -955,8 +1100,8 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  '84':
-    id: '84'
+  "84":
+    id: "84"
     taskid: 3774b478-5564-4675-8074-739dd558664c
     type: condition
     task:
@@ -966,15 +1111,15 @@ tasks:
       description: Checks whether to open a ticket automatically in a ticketing system.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '79'
-      yes:
-      - '85'
+      - "79"
+      "yes":
+      - "85"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -984,10 +1129,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 1880\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1880
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -995,8 +1146,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '85':
-    id: '85'
+  "85":
+    id: "85"
     taskid: f77aa4eb-f400-4a50-829f-4ce59cad479f
     type: playbook
     task:
@@ -1007,10 +1158,10 @@ tasks:
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '79'
+      - "79"
     scriptarguments:
       CommentToAdd:
         complex:
@@ -1067,13 +1218,19 @@ tasks:
         complex:
           root: inputs.serviceNowUrgency
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 1160,\n    \"y\": 2050\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2050
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1081,23 +1238,42 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"10_12_#default#\": 0.52,\n    \"54_83_yes\": 0.41,\n    \"73_74_#default#\": 0.44,\n    \"73_75_yes\": 0.41,\n    \"74_37_#default#\": 0.54,\n    \"74_72_yes\": 0.48,\n    \"77_25_#default#\": 0.47\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3555,\n      \"width\": 1770,\n      \"x\": -230,\n      \"y\": -110\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_12_#default#": 0.52,
+      "54_83_yes": 0.41,
+      "73_74_#default#": 0.44,
+      "73_75_yes": 0.41,
+      "74_37_#default#": 0.54,
+      "74_72_yes": 0.48,
+      "77_25_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3555,
+        "width": 1770,
+        "x": -230,
+        "y": -110
+      }
+    }
+  }
 inputs:
 - key: BlockIndicatorsAutomatically
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to block suspicious/malicious indicators automatically. Specify True/False.
   playbookInputQuery:
 - key: ShouldCloseAutomatically
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: Whether to close the alert automatically if it's established verdict is False Positive. Specify True/False.
   playbookInputQuery:
 - key: PreHostContainment
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to isolate the host before the investigation phase in case an IOC was found to be suspicious. Specify True/False.
   playbookInputQuery:
@@ -1114,7 +1290,14 @@ inputs:
 - key: AutoContainment
   value: {}
   required: false
-  description: "Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.\nWhether to execute automatically or manually the containment plan tasks:\n* Isolate endpoint\n* Block indicators\n* Quarantine file\n* Disable user\nSpecify True/False."
+  description: |-
+    Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.
+    Whether to execute automatically or manually the containment plan tasks:
+    * Isolate endpoint
+    * Block indicators
+    * Quarantine file
+    * Disable user
+    Specify True/False.
   playbookInputQuery:
 - key: FileRemediation
   value:
@@ -1124,111 +1307,122 @@ inputs:
   playbookInputQuery:
 - key: AutoEradication
   value:
-    simple: 'False'
+    simple: "False"
   required: false
-  description: "Whether to execute automatically or manually the eradication plan tasks:\n* Terminate process\n* Delete file\n* Reset the user's password\nSpecify True/False."
+  description: |-
+    Whether to execute automatically or manually the eradication plan tasks:
+    * Terminate process
+    * Delete file
+    * Reset the user's password
+    Specify True/False.
   playbookInputQuery:
 - key: ShouldOpenTicket
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowShortDescription
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: A short description of the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowImpact
   value: {}
   required: false
   description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowUrgency
   value: {}
   required: false
   description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowSeverity
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
+  description: The severity of the new ticket. Leave empty for ServiceNow default
+    severity.
+  playbookInputQuery: null
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery: null
 - key: serviceNowCategory
   value: {}
   required: false
   description: The category of the ServiceNow ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowAssignmentGroup
   value: {}
   required: false
   description: The group to which to assign the new ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskPriority
   value: {}
   required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
+  description: The urgency with which the ticket should be addressed. Allowed values
+    are "urgent", "high", "normal", or "low".
+  playbookInputQuery: null
 - key: ZendeskRequester
   value: {}
   required: false
   description: The user who requested this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskStatus
   value: {}
   required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
+  description: The state of the ticket. Allowed values are "new", "open", "pending",
+    "hold", "solved", or "closed".
+  playbookInputQuery: null
 - key: ZendeskSubject
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: The value of the subject field for this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskTags
   value: {}
   required: false
   description: The array of tags applied to this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskType
   value: {}
   required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
+  description: The type of this ticket. Allowed values are "problem", "incident",
+    "question", or "task".
+  playbookInputQuery: null
 - key: ZendeskAssigne
   value: {}
   required: false
   description: The agent currently assigned to the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskCollaborators
   value: {}
   required: false
   description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: description
   value:
     simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
   required: false
   description: The ticket description.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: addCommentPerEndpoint
   value:
-    simple: 'True'
+    simple: "True"
   required: false
-  description: 'Whether to append a new comment to the  ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
+  description: 'Whether to append a new comment to the  ticket for each endpoint in the incident.
+    Possible values: True/False.'
+  playbookInputQuery: null
 - key: CommentToAdd
   value:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
   - ShouldCloseAutomatically
@@ -1273,7 +1467,5 @@ outputSections:
 outputs: []
 tests:
 - Test Playbook - IOC Alert
-marketplaces:
-- marketplacev2
-- platform
+marketplaces: ["marketplacev2"]
 fromversion: 6.6.0

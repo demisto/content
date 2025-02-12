@@ -1,28 +1,36 @@
 id: Handle False Positive Alerts
 version: -1
 name: Handle False Positive Alerts
-marketplaces:
-- marketplacev2
-- platform
-description: "This playbook handles false positive alerts.\nIt creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.\n"
-starttaskid: '0'
+"marketplaces": [
+    "marketplacev2"
+]
+description: |
+  This playbook handles false positive alerts.
+  It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: cf2feb0d-c5f6-45ae-8dbc-e4a7cd7ccdae
     type: start
     task:
       id: cf2feb0d-c5f6-45ae-8dbc-e4a7cd7ccdae
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1330,\n    \"y\": 640\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1330,
+          "y": 640
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -30,8 +38,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: be9db9ac-960d-4191-8d6a-d11b21bb1b91
     type: regular
     task:
@@ -42,21 +50,47 @@ tasks:
       script: '|||core-add-exclusion'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       comment:
         simple: Added by Cortex XSIAM.
       filterObject:
-        simple: "    {\"filter\": {\n        \"AND\": [\n          {\n            \"SEARCH_FIELD\": \"action_local_ip\",\n            \"SEARCH_TYPE\": \"CONTAINS\",\n            \"SEARCH_VALUE\": \"${inputs.sourceIP}\"\n          },\n          {\n            \"SEARCH_FIELD\": \"alert_name\",\n            \"SEARCH_TYPE\": \"CONTAINS\",\n            \"SEARCH_VALUE\": \"${inputs.alertName}\"\n          },\n          {\n            \"SEARCH_FIELD\": \"alert_source\",\n            \"SEARCH_TYPE\": \"CONTAINS\",\n            \"SEARCH_VALUE\": \"FW\"\n          }\n        ]\n      }\n}"
+        simple: |2-
+              {"filter": {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "action_local_ip",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.sourceIP}"
+                    },
+                    {
+                      "SEARCH_FIELD": "alert_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.alertName}"
+                    },
+                    {
+                      "SEARCH_FIELD": "alert_source",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "FW"
+                    }
+                  ]
+                }
+          }
       name:
         complex:
           root: alert
           accessor: name
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -2510,\n    \"y\": 1400\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -2510,
+          "y": 1400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -64,8 +98,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 03a27030-e908-4a4d-8765-33813272434c
     type: condition
     task:
@@ -75,14 +109,20 @@ tasks:
       description: Should the playbook add the file to the allowed list automatically?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      Yes:
-      - '14'
+      "Yes":
+      - "14"
       '#default#':
-      - '4'
+      - "4"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -870,\n    \"y\": 1080\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 1080
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -91,7 +131,7 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -101,10 +141,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 49b07556-1ae6-477c-8833-dfed9369e9c7
     type: regular
     task:
@@ -117,9 +157,15 @@ tasks:
       brand: Cortex XDR - IR
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -870,\n    \"y\": 1465\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 1465
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -127,27 +173,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 95c483a3-09d5-4c66-8fad-fac5d3faa190
     type: condition
     task:
       id: 95c483a3-09d5-4c66-8fad-fac5d3faa190
       version: -1
       name: Check the alert source
-      description: Check the alert source - XDR Analytics or XDR Agent alerts.
+      description: "Check the alert source - XDR Analytics or XDR Agent alerts."
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '7'
+      - "7"
       Analytics:
-      - '12'
+      - "12"
       XDR Agent:
-      - '2'
+      - "2"
       IOC Alert:
-      - '20'
+      - "20"
     separatecontext: false
     conditions:
     - label: Analytics
@@ -205,7 +251,13 @@ tasks:
             value:
               simple: IOC
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": -1330,\n    \"y\": 910\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1330,
+          "y": 910
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -213,8 +265,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: fb1c3fc8-9407-4586-8190-2593c65d77fe
     type: title
     task:
@@ -227,9 +279,15 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1330,\n    \"y\": 1650\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1330,
+          "y": 1650
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -237,8 +295,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: e6664a3d-c123-4599-8777-7d7a7b6bf75f
     type: title
     task:
@@ -247,13 +305,19 @@ tasks:
       name: 'Add Exception or Exclusion '
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1330,\n    \"y\": 790\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1330,
+          "y": 790
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -261,26 +325,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: fcaf7697-272b-44a2-818a-f162cd853de0
     type: condition
     task:
       id: fcaf7697-272b-44a2-818a-f162cd853de0
       version: -1
       name: Should close alert automatically?
-      description: Should close alert automatically?
+      description: "Should close alert automatically?"
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '11'
-      yes:
-      - '10'
+      - "11"
+      "yes":
+      - "10"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -292,8 +356,14 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
-    view: "{\n  \"position\": {\n    \"x\": -1330,\n    \"y\": 1790\n  }\n}"
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": -1330,
+          "y": 1790
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -301,8 +371,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: fc5dca23-a528-4f14-81bc-e4603a63a335
     type: regular
     task:
@@ -316,14 +386,20 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       closeNotes:
         simple: Closed by XSIAM as False Positive.
       closeReason:
         simple: Resolved - False Positive
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1560,\n    \"y\": 1960\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1560,
+          "y": 1960
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -331,8 +407,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: d672a63d-6655-4cbf-803b-9ea8a548b351
     type: title
     task:
@@ -341,10 +417,16 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1330,\n    \"y\": 2140\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1330,
+          "y": 2140
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -352,25 +434,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 96a66899-9dab-4e68-8ab2-debbc2318d3b
     type: condition
     task:
       id: 96a66899-9dab-4e68-8ab2-debbc2318d3b
       version: -1
       name: Check alert origin
-      description: Check the alert's origin - FW, AWS, etc.
+      description: "Check the alert's origin - FW, AWS, etc."
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '17'
+      - "17"
       AWS IAM:
-      - '15'
+      - "15"
       FW:
-      - '13'
+      - "13"
     separatecontext: false
     conditions:
     - label: FW
@@ -401,7 +483,13 @@ tasks:
           right:
             value:
               simple: aws
-    view: "{\n  \"position\": {\n    \"x\": -2070,\n    \"y\": 1080\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -2070,
+          "y": 1080
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -409,8 +497,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 9b761c81-0c80-4852-87db-9613a3225648
     type: title
     task:
@@ -419,13 +507,19 @@ tasks:
       name: NGFW Alerts
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -2510,\n    \"y\": 1270\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -2510,
+          "y": 1270
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -433,8 +527,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: dd742739-f827-441e-8270-761550d10287
     type: regular
     task:
@@ -445,10 +539,10 @@ tasks:
       script: '|||core-allowlist-files'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       comment:
         simple: Added by Cortex XSIAM.
@@ -456,7 +550,13 @@ tasks:
         complex:
           root: inputs.FileSHA256
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1100,\n    \"y\": 1270\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1100,
+          "y": 1270
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -464,8 +564,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: d489f8e9-9873-410e-818a-551690ea114d
     type: title
     task:
@@ -474,13 +574,19 @@ tasks:
       name: AWS IAM Alerts
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -2070,\n    \"y\": 1270\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -2070,
+          "y": 1270
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -488,8 +594,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: a0d0846a-c59b-4cd7-85f0-136513252d42
     type: regular
     task:
@@ -500,21 +606,47 @@ tasks:
       script: '|||core-add-exclusion'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       comment:
         simple: Added by Cortex XSIAM.
       filterObject:
-        simple: "{\"filter\": {\n        \"AND\": [\n          {\n            \"SEARCH_FIELD\": \"agent_ip_addresses\",\n            \"SEARCH_TYPE\": \"CONTAINS\",\n            \"SEARCH_VALUE\": \"${inputs.sourceIP}\"\n          },\n          {\n            \"SEARCH_FIELD\": \"actor_effective_username\",\n            \"SEARCH_TYPE\": \"CONTAINS\",\n            \"SEARCH_VALUE\": \"${inputs.username}\"\n          },\n          {\n            \"SEARCH_FIELD\": \"alert_name\",\n            \"SEARCH_TYPE\": \"CONTAINS\",\n            \"SEARCH_VALUE\": \"${inputs.alertName}\"\n          }\n        ]\n      }\n}"
+        simple: |-
+          {"filter": {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "agent_ip_addresses",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.sourceIP}"
+                    },
+                    {
+                      "SEARCH_FIELD": "actor_effective_username",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.username}"
+                    },
+                    {
+                      "SEARCH_FIELD": "alert_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.alertName}"
+                    }
+                  ]
+                }
+          }
       name:
         complex:
           root: alert
           accessor: name
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -2070,\n    \"y\": 1400\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -2070,
+          "y": 1400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -522,8 +654,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 709a8173-a716-41ae-8ba5-f410b1097caa
     type: title
     task:
@@ -532,13 +664,19 @@ tasks:
       name: SHA256
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '18'
+      - "18"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1620,\n    \"y\": 1270\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1620,
+          "y": 1270
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -546,8 +684,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: f16eee8e-e537-458e-8a5f-9e3afa34b0af
     type: regular
     task:
@@ -558,21 +696,42 @@ tasks:
       script: '|||core-add-exclusion'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       comment:
         simple: Added by Cortex XSIAM.
       filterObject:
-        simple: "{\"filter\": {\n        \"AND\": [\n          {\n            \"SEARCH_FIELD\": \"actor_process_image_sha256\",\n            \"SEARCH_TYPE\": \"CONTAINS\",\n            \"SEARCH_VALUE\": \"${inputs.FileSHA256}\"\n          },\n          {\n            \"SEARCH_FIELD\": \"alert_name\",\n            \"SEARCH_TYPE\": \"CONTAINS\",\n            \"SEARCH_VALUE\": \"${inputs.alertName}\"\n          }\n        ]\n      }\n    }"
+        simple: |-
+          {"filter": {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "actor_process_image_sha256",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.FileSHA256}"
+                    },
+                    {
+                      "SEARCH_FIELD": "alert_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.alertName}"
+                    }
+                  ]
+                }
+              }
       name:
         complex:
           root: alert
           accessor: name
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1620,\n    \"y\": 1400\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1620,
+          "y": 1400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -580,8 +739,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: 9430502f-4161-4a76-8bb1-fb60491828e8
     type: regular
     task:
@@ -592,10 +751,10 @@ tasks:
       script: '|||core-iocs-disable'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       indicator:
         complex:
@@ -603,7 +762,13 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 1270\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1270
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -611,26 +776,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: 9fb1c47e-05b9-4e27-8981-fe3e98064f7d
     type: condition
     task:
       id: 9fb1c47e-05b9-4e27-8981-fe3e98064f7d
       version: -1
       name: Whether to disable indicator IOC rule automatically?
-      description: A condition to check whether to disable IOC automatically in Cortex Server.
+      description: "A condition to check whether to disable IOC automatically in Cortex Server."
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '21'
-      Yes:
-      - '19'
+      - "21"
+      "Yes":
+      - "19"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -640,9 +805,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": -410,\n    \"y\": 1080\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1080
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -650,8 +821,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: 550959b8-9daa-460c-8a6f-53b7c884767b
     type: regular
     task:
@@ -664,9 +835,15 @@ tasks:
       brand: Cortex XDR - IR
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -410,\n    \"y\": 1465\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1465
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -674,7 +851,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"5_7_#default#\": 0.26,\n    \"9_10_yes\": 0.42,\n    \"9_11_#default#\": 0.48\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1565,\n      \"width\": 2890,\n      \"x\": -2510,\n      \"y\": 640\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_7_#default#": 0.26,
+      "9_10_yes": 0.42,
+      "9_11_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1565,
+        "width": 2890,
+        "x": -2510,
+        "y": 640
+      }
+    }
+  }
 inputs:
 - key: ShouldCloseAutomatically
   value: {}

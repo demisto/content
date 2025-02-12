@@ -1,35 +1,50 @@
-id: Get prevalence for IOCs
+id: 'Get prevalence for IOCs'
 version: -1
-name: Get prevalence for IOCs
+name: 'Get prevalence for IOCs'
 marketplaces:
 - marketplacev2
 - xpanse
-- platform
-description: "The playbook queries the analytics module to receive the prevalence of an IOC.\n\nSupported IOC:\n- Process by SHA256\n- Process by file name\n- IP\n- Domain\n- CMD\n- Registry (require key and value)\n\n"
-starttaskid: '0'
+description: |+
+  The playbook queries the analytics module to receive the prevalence of an IOC.
+
+  Supported IOC:
+  - Process by SHA256
+  - Process by file name
+  - IP
+  - Domain
+  - CMD
+  - Registry (require key and value)
+
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: d24981a6-e630-426a-8d47-97da09aa8fd8
     type: start
     task:
       id: d24981a6-e630-426a-8d47-97da09aa8fd8
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      - '6'
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 130\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -37,8 +52,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 72bdab6d-8f44-4e6d-8074-2b929f75cc83
     type: title
     task:
@@ -47,14 +62,20 @@ tasks:
       name: IP
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 275\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -62,8 +83,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 7e51572a-d879-45d9-87a0-96e2c6cdc6de
     type: title
     task:
@@ -72,14 +93,20 @@ tasks:
       name: Hash
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1460,\n    \"y\": 275\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -87,8 +114,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: ab430fa0-7f67-48bb-80c7-3aaf91a685f2
     type: title
     task:
@@ -97,14 +124,20 @@ tasks:
       name: Domain
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '12'
+      - "12"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 120,\n    \"y\": 275\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -112,8 +145,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: becb735c-ae39-492f-8029-fa445fbe89ca
     type: title
     task:
@@ -122,14 +155,20 @@ tasks:
       name: Command Line
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '18'
+      - "18"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -480,\n    \"y\": 275\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -137,8 +176,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 372a4887-887e-44c7-8d8d-0ab2bc4dabfb
     type: title
     task:
@@ -147,14 +186,20 @@ tasks:
       name: Registry
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1080,\n    \"y\": 275\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1080,
+          "y": 275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -162,8 +207,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 61dfc474-c507-47f7-8489-fea7f0e89a26
     type: title
     task:
@@ -172,14 +217,20 @@ tasks:
       name: Process Name
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '14'
+      - "14"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 810,\n    \"y\": 275\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -187,8 +238,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 8d6f6781-0e11-4ba6-83d4-7a9edf5ca62f
     type: condition
     task:
@@ -198,15 +249,15 @@ tasks:
       description: Checks whether a IP exist
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '8'
+      - "9"
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -216,8 +267,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 420\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -225,8 +282,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: c08cbacc-395f-49ff-86d9-722d5fc03785
     type: regular
     task:
@@ -237,17 +294,23 @@ tasks:
       script: '|||core-get-IP-analytics-prevalence'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       ip_address:
         complex:
           root: inputs.IP
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2300,\n    \"y\": 610\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -255,8 +318,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: 1229d65a-a5e5-4a24-82ff-26f05589888f
     type: title
     task:
@@ -265,11 +328,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 780\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -277,8 +346,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: df3021a5-526b-4e96-8e9c-ffe1d652882f
     type: condition
     task:
@@ -288,15 +357,15 @@ tasks:
       description: Checks whether hash exist
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '11'
+      - "9"
+      "yes":
+      - "11"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -306,8 +375,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1450,\n    \"y\": 410\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -315,8 +390,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: 94258428-8091-4d0e-8a1c-3834eeeea151
     type: regular
     task:
@@ -327,17 +402,23 @@ tasks:
       script: '|||core-get-hash-analytics-prevalence'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       sha256:
         complex:
           root: inputs.Hash
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1750,\n    \"y\": 610\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1750,
+          "y": 610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -345,8 +426,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 094aa4d1-d89b-47e2-8a11-4aa551fcf73f
     type: condition
     task:
@@ -356,15 +437,15 @@ tasks:
       description: Checks whether a domain exist
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '13'
+      - "9"
+      "yes":
+      - "13"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -374,8 +455,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 120,\n    \"y\": 420\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -383,8 +470,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 497c0f5c-f9e1-49cc-80ab-e49ea84dde61
     type: regular
     task:
@@ -395,17 +482,23 @@ tasks:
       script: '|||core-get-domain-analytics-prevalence'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       domain_name:
         complex:
           root: inputs.Domain
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 590\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 590
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -413,8 +506,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: 6f2eb04f-09d1-4bcc-8a97-27d761646cbf
     type: condition
     task:
@@ -424,15 +517,15 @@ tasks:
       description: Checks whether a process name exist
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '15'
+      - "9"
+      "yes":
+      - "15"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -442,8 +535,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 810,\n    \"y\": 420\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -451,8 +550,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: b70cff36-a4c9-4793-82a2-aa38b860e1f6
     type: regular
     task:
@@ -463,17 +562,23 @@ tasks:
       script: '|||core-get-process-analytics-prevalence'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       process_name:
         complex:
           root: inputs.Process
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1080,\n    \"y\": 590\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 590
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -481,8 +586,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: 3f0071a0-d9c8-4cf5-8b52-df71fce0d72e
     type: condition
     task:
@@ -492,15 +597,15 @@ tasks:
       description: Checks whether a registry values exist
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '17'
+      - "9"
+      "yes":
+      - "17"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -516,8 +621,14 @@ tasks:
               complex:
                 root: inputs.RegistryValue
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1080,\n    \"y\": 420\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1080,
+          "y": 420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -525,8 +636,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 950a0f87-5153-4ca7-8cb3-f93cf87dfda9
     type: regular
     task:
@@ -537,10 +648,10 @@ tasks:
       script: '|||core-get-registry-analytics-prevalence'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       key_name:
         complex:
@@ -549,8 +660,14 @@ tasks:
         complex:
           root: inputs.RegistryValue
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1310,\n    \"y\": 590\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1310,
+          "y": 590
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -558,8 +675,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: e65afe0e-42d6-4114-81fa-d7347b5fabf9
     type: condition
     task:
@@ -569,15 +686,15 @@ tasks:
       description: Checks whether a command-line exist
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '19'
+      - "9"
+      "yes":
+      - "19"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -587,8 +704,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -480,\n    \"y\": 420\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -596,8 +719,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: 6778b8ba-6111-4875-8947-e7be45ee53a8
     type: regular
     task:
@@ -608,17 +731,23 @@ tasks:
       script: '|||core-get-cmd-analytics-prevalence'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       process_command_line:
         complex:
           root: inputs.Commandline
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -710,\n    \"y\": 590\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 590
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -626,42 +755,61 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"10_9_#default#\": 0.13,\n    \"12_9_#default#\": 0.28,\n    \"14_9_#default#\": 0.26,\n    \"16_9_#default#\": 0.1,\n    \"18_19_yes\": 0.71,\n    \"18_9_#default#\": 0.15,\n    \"7_9_#default#\": 0.1\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 715,\n      \"width\": 3990,\n      \"x\": -1310,\n      \"y\": 130\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_9_#default#": 0.13,
+      "12_9_#default#": 0.28,
+      "14_9_#default#": 0.26,
+      "16_9_#default#": 0.1,
+      "18_19_yes": 0.71,
+      "18_9_#default#": 0.15,
+      "7_9_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 715,
+        "width": 3990,
+        "x": -1310,
+        "y": 130
+      }
+    }
+  }
 inputs:
 - key: IP
   value: {}
   required: false
-  description: ''
+  description: ""
   playbookInputQuery:
 - key: Hash
   value: {}
   required: false
-  description: ''
+  description: ""
   playbookInputQuery:
 - key: Commandline
   value: {}
   required: false
-  description: ''
+  description: ""
   playbookInputQuery:
 - key: Process
   value: {}
   required: false
-  description: ''
+  description: ""
   playbookInputQuery:
 - key: RegistryKey
   value: {}
   required: false
-  description: ''
+  description: ""
   playbookInputQuery:
 - key: RegistryValue
   value: {}
   required: false
-  description: ''
+  description: ""
   playbookInputQuery:
 - key: Domain
   value: {}
   required: false
-  description: ''
+  description: ""
   playbookInputQuery:
 outputs:
 - contextPath: Core.AnalyticsPrevalence.Ip
@@ -787,3 +935,6 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
+
+
+

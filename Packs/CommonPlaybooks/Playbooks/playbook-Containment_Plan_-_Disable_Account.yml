@@ -1,26 +1,36 @@
 id: Containment Plan - Disable Account
 version: -1
 name: Containment Plan - Disable Account
-description: "## Containment Plan - Disable Account\n\nThis playbook is a sub-playbook within the containment plan playbook.\nThe playbook disables users by utilizing the sub-playbook \"Block Account - Generic v2\""
-starttaskid: '0'
+description: |-
+  ## Containment Plan - Disable Account
+
+  This playbook is a sub-playbook within the containment plan playbook.
+  The playbook disables users by utilizing the sub-playbook "Block Account - Generic v2"
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 9fb1ed1d-c22c-48bb-8a3c-4d58bbca6347
     type: start
     task:
       id: 9fb1ed1d-c22c-48bb-8a3c-4d58bbca6347
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '12'
+      - "12"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -140\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -28,8 +38,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 4d874c50-7a1f-489c-8397-3fc3304eeea6
     type: title
     task:
@@ -38,11 +48,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 750\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -50,8 +66,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 73bc4723-d270-4e04-8a74-c13b5b1369f1
     type: regular
     task:
@@ -65,7 +81,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       key:
         simple: UsersBlockList
@@ -74,8 +90,14 @@ tasks:
           root: Blocklist
           accessor: Final
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 575\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 575
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -83,8 +105,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 073f607c-a924-43c1-8852-d480e1454fdc
     type: condition
     task:
@@ -94,15 +116,15 @@ tasks:
       description: Whether to disable the account based on the input values.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '2'
-      yes:
-      - '13'
+      - "2"
+      "yes":
+      - "13"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -112,7 +134,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
       - - operator: isNotEmpty
           left:
@@ -120,8 +142,14 @@ tasks:
               complex:
                 root: inputs.Username
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 0\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -129,22 +157,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 32ec3207-df33-4d5f-8551-2a49ca677b62
     type: regular
     task:
       id: 32ec3207-df33-4d5f-8551-2a49ca677b62
       version: -1
       name: Set users to disable
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '18'
+      - "18"
     scriptarguments:
       key:
         simple: UsersToDisable
@@ -154,8 +189,14 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 210\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -163,8 +204,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: b35ee9bb-51f1-4f64-8df5-b490d1592b2c
     type: playbook
     task:
@@ -174,11 +215,11 @@ tasks:
       playbookName: Block Account - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       Tag:
         simple: XSIAM alert - ${alert.id}
@@ -189,13 +230,19 @@ tasks:
         complex:
           root: UsersToDisable
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 390\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -203,11 +250,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"12_2_#default#\": 0.16\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 955,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": -140\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 955,
+        "width": 380,
+        "x": 450,
+        "y": -140
+      }
+    }
+  }
 inputs:
 - key: UserContainment
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: Set to 'True' to disable the user account.
   playbookInputQuery:
@@ -215,13 +275,15 @@ inputs:
   value: {}
   required: false
   description: The username to disable.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: UserVerification
   value:
-    simple: 'True'
+    simple: "True"
   required: false
-  description: "Possible values:True/False. Default:True.\nSpecify if User Verification is required to disable users."
-  playbookInputQuery:
+  description: |-
+    Possible values:True/False. Default:True.
+    Specify if User Verification is required to disable users.
+  playbookInputQuery: null
 outputs:
 - contextPath: Blocklist.Final
   description: Blocked accounts
@@ -232,4 +294,3 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
-- platform

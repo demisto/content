@@ -2,7 +2,7 @@ args:
 - description: The query for the Indicators that you want to export. (e.g. type:IP and reputation:Bad and expirationStatus:active). You can and should generate the query from the Indicators search screen.
   name: query
   required: true
-- defaultValue: '7'
+- defaultValue: "7"
   description: Indicator last seen days  (default is 7).  Needs to be a number.
   name: seenDays
 - description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,indicator_type,value,source,score,relatedIncCount,setBy,sourceBrands,modified).'
@@ -13,7 +13,7 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ''
+    fromServerVersion: ""
 dependson:
   must:
   - core-api-post
@@ -32,6 +32,5 @@ fromversion: 6.5.0
 marketplaces:
 - xsoar
 - marketplacev2
-- platform
 tests:
 - No tests (auto formatted)

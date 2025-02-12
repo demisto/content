@@ -1,31 +1,40 @@
 id: File Reputation
 version: -1
 name: File Reputation
-marketplaces:
-- marketplacev2
-- platform
-description: "This playbook checks the file reputation and sets the verdict as a new context key.\n\nThe verdict is composed by 3 main components:\n\n* VirusTotal detection rate\n* Digital certificate signers\n* NSRL DB\n\nNote: a user can provide a list of trusted signers of his own using the playbook inputs\n "
-starttaskid: '0'
+"marketplaces": [
+    "marketplacev2"
+]
+description: "This playbook checks the file reputation and sets the verdict as a new\
+  \ context key.\n\nThe verdict is composed by 3 main components:\n\n* VirusTotal\
+  \ detection rate\n* Digital certificate signers\n* NSRL DB\n\nNote: a user can provide\
+  \ a list of trusted signers of his own using the playbook inputs\n "
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 0036bf78-bb71-4cc0-8147-c1dcb446f610
     type: start
     task:
       id: 0036bf78-bb71-4cc0-8147-c1dcb446f610
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '7'
-      - '4'
-      - '18'
-      - '25'
+      - "7"
+      - "4"
+      - "18"
+      - "25"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -700,\n    \"y\": -600\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": -600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -33,8 +42,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 9a0d46f3-35a0-4022-833b-6e33cda9114b
     type: title
     task:
@@ -43,10 +52,16 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -700,\n    \"y\": 530\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -54,8 +69,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: d188fc98-26aa-4ad3-8c92-d603b765f6ec
     type: title
     task:
@@ -64,13 +79,19 @@ tasks:
       name: VirusTotal Reputation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -700,\n    \"y\": -440\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": -440
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -78,8 +99,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 20ddd027-f0d2-4ee8-864e-c90c9f8697bb
     type: regular
     task:
@@ -90,16 +111,22 @@ tasks:
       script: '|||file'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     scriptarguments:
       file:
         complex:
           root: inputs.FileSHA256
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -700,\n    \"y\": -300\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": -300
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -107,8 +134,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 728d695a-84e4-41a4-8de6-2e8b792c24ee
     type: title
     task:
@@ -117,13 +144,19 @@ tasks:
       name: NSRL
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": -440\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -440
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -131,23 +164,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 58df7ac3-e6e9-4da5-88ec-3a6b8268872b
     type: condition
     task:
       id: 58df7ac3-e6e9-4da5-88ec-3a6b8268872b
       version: -1
       name: Check file detections
-      description: Check file detections.
+      description: "Check file detections."
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '17'
+      - "17"
       Benign:
-      - '14'
+      - "14"
     separatecontext: false
     conditions:
     - label: Benign
@@ -164,7 +197,13 @@ tasks:
               complex:
                 root: inputs.DetectionThreshold
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": -250,\n    \"y\": 90\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -172,8 +211,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: 657cdfbc-0d99-4fc1-8130-541ac61a46de
     type: regular
     task:
@@ -184,13 +223,13 @@ tasks:
       scriptName: http
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       ignore-outputs:
-        simple: 'false'
+        simple: "false"
       method:
         simple: GET
       saveAsFile:
@@ -198,7 +237,13 @@ tasks:
       url:
         simple: https://hashlookup.circl.lu/lookup/sha256/${inputs.FileSHA256}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": -300\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -300
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -206,27 +251,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: 83169b11-c3c4-452c-8a9b-e8cbb65740ce
     type: regular
     task:
       id: 83169b11-c3c4-452c-8a9b-e8cbb65740ce
       version: -1
       name: Parse HTTP response body
-      description: "Parse a given JSON string \"value\" to a representative object. Example: '{\"a\": \"value\"}' => {\"a\": \"value\"}."
+      description: 'Parse a given JSON string "value" to a representative object.
+        Example: ''{"a": "value"}'' => {"a": "value"}.'
       scriptName: ParseJSON
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '12'
+      - "12"
     scriptarguments:
       extend-context:
         simple: NSRLCheckResults=
       ignore-outputs:
-        simple: 'true'
+        simple: "true"
       value:
         complex:
           root: HttpRequest.Response
@@ -234,7 +280,13 @@ tasks:
           transformers:
           - operator: Stringify
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": -120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -242,23 +294,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 0daec705-f44f-4630-872a-ecfa3227ddab
     type: condition
     task:
       id: 0daec705-f44f-4630-872a-ecfa3227ddab
       version: -1
       name: Check NSRL search results
-      description: Check NSRL search results.
+      description: "Check NSRL search results."
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '21'
+      - "21"
       Found Results:
-      - '13'
+      - "13"
     separatecontext: false
     conditions:
     - label: Found Results
@@ -274,7 +326,13 @@ tasks:
             value:
               simple: Non existing SHA-256
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 90\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -282,8 +340,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: afa05da2-350f-4d09-85f1-7d9ddb31477c
     type: regular
     task:
@@ -294,17 +352,23 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       key:
         simple: NSRLFileVerdict
       value:
         simple: IsNSRL
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -312,8 +376,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: 52efc87e-ca13-4c85-855d-83a4f04374b9
     type: regular
     task:
@@ -324,17 +388,23 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       key:
         simple: VTFileVerdict
       value:
         simple: Benign
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -342,23 +412,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: df8ccfaa-c452-4c35-837c-4e80a383b1d1
     type: condition
     task:
       id: df8ccfaa-c452-4c35-837c-4e80a383b1d1
       version: -1
       name: Check file signature
-      description: Check file signature.
+      description: "Check file signature."
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '22'
+      - "22"
       Trusted Signers:
-      - '16'
+      - "16"
     separatecontext: false
     conditions:
     - label: Trusted Signers
@@ -387,7 +457,13 @@ tasks:
             value:
               simple: goodware
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": -1170,\n    \"y\": 90\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1170,
+          "y": 90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -395,8 +471,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: bc1bdba5-711c-417d-8e1b-beb3c358ea82
     type: regular
     task:
@@ -407,17 +483,23 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       key:
         simple: VTFileSigners
       value:
         simple: Trusted
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -960,\n    \"y\": 350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -425,8 +507,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 7088e81b-b654-427a-83be-8f89bf00a1e2
     type: regular
     task:
@@ -437,17 +519,23 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       key:
         simple: VTFileVerdict
       value:
         simple: Malicious
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -460,\n    \"y\": 350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -455,8 +543,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: d51edea1-e13a-4342-83a1-804f7e2df09e
     type: title
     task:
@@ -465,13 +553,19 @@ tasks:
       name: Cortex XDR
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '19'
+      - "19"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -2070,\n    \"y\": -440\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -2070,
+          "y": -440
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -479,23 +573,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: 96728cac-a5cf-41e5-8cde-43882c9dd70f
     type: condition
     task:
       id: 96728cac-a5cf-41e5-8cde-43882c9dd70f
       version: -1
       name: Check file signature
-      description: Check file signature.
+      description: "Check file signature."
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '23'
+      - "23"
       Trusted Signers:
-      - '20'
+      - "20"
     separatecontext: false
     conditions:
     - label: Trusted Signers
@@ -532,7 +626,13 @@ tasks:
                 root: inputs.TrustedPublishers
             iscontext: true
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": -2070,\n    \"y\": 90\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -2070,
+          "y": 90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -540,8 +640,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: 7d95a4cb-4bf2-4ab5-8c7f-f3c97d5ea43f
     type: regular
     task:
@@ -552,17 +652,23 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       key:
         simple: XDRFileSigners
       value:
         simple: Trusted
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1860,\n    \"y\": 350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1860,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -570,8 +676,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: bb096e6a-72b8-43f3-81a3-14633d6a58d3
     type: regular
     task:
@@ -582,17 +688,23 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       key:
         simple: NSRLFileVerdict
       value:
         simple: IsNotNSRL
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -600,8 +712,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: 02ee8e00-beda-4648-8360-5cfd3d0317db
     type: regular
     task:
@@ -612,17 +724,23 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       key:
         simple: VTFileSigners
       value:
         simple: UnTrusted
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1380,\n    \"y\": 350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -1380,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -630,8 +748,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     taskid: 9bc117b9-97ee-4aa4-81b5-e2ca1e5c9549
     type: regular
     task:
@@ -642,17 +760,23 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       key:
         simple: XDRFileSigners
       value:
         simple: UnTrusted
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -2280,\n    \"y\": 350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -2280,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -660,8 +784,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: 5205d32a-2c3a-42ca-8586-04680de9bc5b
     type: condition
     task:
@@ -671,16 +795,16 @@ tasks:
       description: Checks whether there are results from VirusTotal.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '3'
-      yes:
-      - '15'
-      - '8'
+      - "3"
+      "yes":
+      - "15"
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -688,7 +812,13 @@ tasks:
               complex:
                 root: VirusTotal
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": -700,\n    \"y\": -120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": -120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -696,8 +826,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: 825810e7-b8fb-4347-894b-51dae87fcb7f
     type: title
     task:
@@ -706,15 +836,21 @@ tasks:
       name: WildFire
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
-      - '28'
+      - "27"
+      - "28"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -2950,\n    \"y\": -440\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2950,
+          "y": -440
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -722,8 +858,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 7bcc68bb-ba26-4690-8535-395ec5fbb28f
     type: regular
     task:
@@ -734,18 +870,24 @@ tasks:
       script: '|||wildfire-report'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       sha256:
         complex:
           root: inputs.FileSHA256
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -2730,\n    \"y\": 90\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2730,
+          "y": 90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -753,8 +895,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '28':
-    id: '28'
+  "28":
+    id: "28"
     taskid: e91fa96b-14ce-40a2-8ba6-2607ee95ea47
     type: regular
     task:
@@ -765,17 +907,23 @@ tasks:
       script: '|||wildfire-get-verdict'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       hash:
         complex:
           root: inputs.FileSHA256
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -3170,\n    \"y\": 90\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3170,
+          "y": 90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -784,17 +932,39 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
 system: true
-view: "{\n  \"linkLabelsPosition\": {\n    \"12_13_Found Results\": 0.64,\n    \"12_21_#default#\": 0.84,\n    \"15_16_Trusted Signers\": 0.64,\n    \"15_22_#default#\": 0.8,\n    \"19_20_Trusted Signers\": 0.66,\n    \"19_23_#default#\": 0.81,\n    \"8_14_Benign\": 0.78,\n    \"8_17_#default#\": 0.8\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1195,\n      \"width\": 4430,\n      \"x\": -3170,\n      \"y\": -600\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_13_Found Results": 0.64,
+      "12_21_#default#": 0.84,
+      "15_16_Trusted Signers": 0.64,
+      "15_22_#default#": 0.8,
+      "19_20_Trusted Signers": 0.66,
+      "19_23_#default#": 0.81,
+      "8_14_Benign": 0.78,
+      "8_17_#default#": 0.8
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1195,
+        "width": 4430,
+        "x": -3170,
+        "y": -600
+      }
+    }
+  }
 inputs:
 - key: DetectionThreshold
   value:
-    simple: '5'
+    simple: "5"
   required: false
   description: The minimum number of positive engines needed to mark file as malicious.
   playbookInputQuery:
 - key: TrustedPublishers
   value:
-    simple: "Microsoft Root Authority,Microsoft Timestamping Service,\nMicrosoft Code Signing PCA, Microsoft Corporation"
+    simple: |-
+      Microsoft Root Authority,Microsoft Timestamping Service,
+      Microsoft Code Signing PCA, Microsoft Corporation
   required: false
   description: A list of trusted publishers
   playbookInputQuery:

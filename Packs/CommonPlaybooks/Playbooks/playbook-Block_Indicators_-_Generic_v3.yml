@@ -3,25 +3,39 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block Indicators - Generic v3
-description: "This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:\n\n- Block URL - Generic v2\n- Block Account - Generic v2\n- Block IP - Generic v3\n- Block File - Generic v2\n- Block Email - Generic v2\n- Block Domain - Generic v2."
-starttaskid: '0'
+description: |-
+  This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+  - Block URL - Generic v2
+  - Block Account - Generic v2
+  - Block IP - Generic v3
+  - Block File - Generic v2
+  - Block Email - Generic v2
+  - Block Domain - Generic v2.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: be855f8e-b0d6-4b33-8898-954bf9ba99cc
     type: start
     task:
       id: be855f8e-b0d6-4b33-8898-954bf9ba99cc
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": -870\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": -870
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -29,9 +43,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '2':
-    id: '2'
+    continueonerrortype: ""
+  "2":
+    id: "2"
     taskid: c155d55d-f7f3-4af2-8739-3cb6143e0e81
     type: title
     task:
@@ -40,13 +54,19 @@ tasks:
       name: Tag Indicators
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '26'
+      - "26"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 515\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 515
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -54,9 +74,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '7':
-    id: '7'
+    continueonerrortype: ""
+  "7":
+    id: "7"
     taskid: 15d43128-6c48-4deb-8ed0-044d0454fa7b
     type: title
     task:
@@ -65,18 +85,24 @@ tasks:
       name: Block indicators
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '10'
-      - '13'
-      - '17'
-      - '18'
-      - '25'
-      - '24'
+      - "10"
+      - "13"
+      - "17"
+      - "18"
+      - "25"
+      - "24"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -84,9 +110,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '10':
-    id: '10'
+    continueonerrortype: ""
+  "10":
+    id: "10"
     taskid: 97b85f3e-e339-490d-8f4c-7a188cfc0f25
     type: playbook
     task:
@@ -97,10 +123,10 @@ tasks:
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       Hash:
         complex:
@@ -127,7 +153,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: 'True'
+                  simple: "True"
               rhsB: {}
               then:
                 value:
@@ -142,10 +168,16 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -153,9 +185,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '13':
-    id: '13'
+    continueonerrortype: ""
+  "13":
+    id: "13"
     taskid: 53c7faa6-ec4b-46c0-8322-71972e65dad0
     type: playbook
     task:
@@ -166,10 +198,10 @@ tasks:
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       AkamaiNetworkListID:
         complex:
@@ -211,7 +243,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: 'True'
+                  simple: "True"
               rhsB: {}
               then:
                 value:
@@ -247,10 +279,16 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -258,9 +296,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '14':
-    id: '14'
+    continueonerrortype: ""
+  "14":
+    id: "14"
     taskid: 22f0eb38-c4d3-4e67-889b-6abbff216ab8
     type: title
     task:
@@ -269,10 +307,16 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 1005\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1005
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -280,9 +324,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '15':
-    id: '15'
+    continueonerrortype: ""
+  "15":
+    id: "15"
     taskid: 8e6165ed-cc2e-4820-8ae4-c73fd82a3088
     type: regular
     task:
@@ -296,7 +340,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '14'
+      - "14"
     scriptarguments:
       field:
         simple: tags
@@ -316,7 +360,13 @@ tasks:
                 value:
                   simple: No indicators to block
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 820\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 820
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -324,23 +374,35 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '17':
-    id: '17'
+    continueonerrortype: ""
+  "17":
+    id: "17"
     taskid: f12b6207-b78c-4cde-8f3d-2cbd8c3e0d56
     type: playbook
     task:
       id: f12b6207-b78c-4cde-8f3d-2cbd8c3e0d56
       version: -1
       name: Block Account - Generic v2
-      description: "This playbook blocks malicious usernames using all integrations that you have enabled.\n\nSupported integrations for this playbook:\n* Active Directory\n* PAN-OS - This requires PAN-OS 9.1 or higher.\n* SailPoint\n* PingOne\n* AWS IAM\n* Clarizen IAM\n* Envoy IAM\n* ExceedLMS IAM\n* Okta"
+      description: |-
+        This playbook blocks malicious usernames using all integrations that you have enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+        * SailPoint
+        * PingOne
+        * AWS IAM
+        * Clarizen IAM
+        * Envoy IAM
+        * ExceedLMS IAM
+        * Okta
       playbookName: Block Account - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       Tag:
         simple: Bad Account
@@ -372,7 +434,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: 'True'
+                  simple: "True"
               rhsB: {}
               then:
                 value:
@@ -380,13 +442,19 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -394,8 +462,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: ac24ec10-63b4-46ed-8c10-ae50147ac064
     type: playbook
     task:
@@ -405,11 +473,11 @@ tasks:
       playbookName: Block URL - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       AutoCommit:
         complex:
@@ -451,7 +519,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: 'True'
+                  simple: "True"
               rhsB: {}
               then:
                 value:
@@ -470,13 +538,19 @@ tasks:
         complex:
           root: inputs.type
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -484,8 +558,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: 0d20c35f-5bdf-4b27-8b63-f5334f9342f5
     type: collection
     task:
@@ -495,13 +569,19 @@ tasks:
       description: Select which indicators to block.
       type: collection
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '21'
+      - "21"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": -330\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -330
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -510,7 +590,7 @@ tasks:
       subject:
       body:
       methods: []
-      format: ''
+      format: ""
       bcc:
       cc:
       timings:
@@ -521,8 +601,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: '0'
-        label: ''
+      - id: "0"
+        label: ""
         labelarg:
           simple: Select IPs to block
         required: false
@@ -535,12 +615,12 @@ tasks:
             root: inputs.IP
             transformers:
             - operator: uniq
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '1'
-        label: ''
+      - id: "1"
+        label: ""
         labelarg:
           simple: Select URLs to block
         required: false
@@ -553,12 +633,12 @@ tasks:
             root: inputs.URL
             transformers:
             - operator: uniq
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '2'
-        label: ''
+      - id: "2"
+        label: ""
         labelarg:
           simple: Select files to block
         required: false
@@ -583,12 +663,12 @@ tasks:
                     simple: inputs.FilesToBlock
                   iscontext: true
             - operator: uniq
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '3'
-        label: ''
+      - id: "3"
+        label: ""
         labelarg:
           simple: Select users to block
         required: false
@@ -599,12 +679,12 @@ tasks:
         optionsarg:
         - complex:
             root: inputs.Username
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '4'
-        label: ''
+      - id: "4"
+        label: ""
         labelarg:
           simple: Select emails to block
         required: false
@@ -617,12 +697,12 @@ tasks:
             root: inputs.EmailToBlock
             transformers:
             - operator: uniq
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '5'
-        label: ''
+      - id: "5"
+        label: ""
         labelarg:
           simple: Select domains to block
         required: false
@@ -635,21 +715,21 @@ tasks:
             root: inputs.DomainToBlock
             transformers:
             - operator: uniq
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
       title: Which indicators would you like to block?
       description: Select which indicators to block.
-      sender: ''
+      sender: ""
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: 8a156613-e43b-4bf2-857c-159220291b3b
     type: condition
     task:
@@ -659,15 +739,15 @@ tasks:
       description: Checks whether the AutoBlockIndicators input is set to 'True'
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '19'
-      yes:
-      - '22'
+      - "19"
+      "yes":
+      - "22"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -677,10 +757,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
+              simple: "true"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": -500\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": -500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -688,8 +774,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: ca92498f-ebc4-4e68-81e9-44e1c6907d9d
     type: regular
     task:
@@ -700,17 +786,17 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '23'
+      - "23"
     scriptarguments:
       key:
         simple: IndicatorsToBlock
       value:
         complex:
           root: Which indicators would you like to block?.Answers
-          accessor: '0'
+          accessor: "0"
           transformers:
           - operator: append
             args:
@@ -751,8 +837,14 @@ tasks:
                   simple: No indicators to block
     reputationcalc: 2
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": -170\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -170
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -760,8 +852,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: 6cabb94a-1422-4d97-89ee-5b35b328c70b
     type: regular
     task:
@@ -772,10 +864,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '23'
+      - "23"
     scriptarguments:
       key:
         simple: IndicatorsToBlock
@@ -834,8 +926,14 @@ tasks:
                   simple: No indicators to block
     reputationcalc: 2
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": -170\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": -170
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -843,8 +941,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     taskid: 92a68f14-96ed-4e6f-880f-dde5980b1fc2
     type: condition
     task:
@@ -854,15 +952,15 @@ tasks:
       description: Checks whether there are indicators to block.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '14'
-      yes:
-      - '7'
+      - "14"
+      "yes":
+      - "7"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEqualString
           left:
@@ -872,8 +970,14 @@ tasks:
           right:
             value:
               simple: No indicators to block
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 30\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 30
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -881,8 +985,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: 8be5d5f6-b142-415a-8669-90965b645964
     type: playbook
     task:
@@ -892,11 +996,11 @@ tasks:
       playbookName: Block Domain - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       Domain:
         complex:
@@ -923,7 +1027,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: 'True'
+                  simple: "True"
               rhsB: {}
               then:
                 value:
@@ -933,13 +1037,19 @@ tasks:
         complex:
           root: inputs.DomainBlackListID
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 1770,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -947,8 +1057,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: eb042e15-af15-4142-8fa9-f05d0d283499
     type: playbook
     task:
@@ -958,11 +1068,11 @@ tasks:
       playbookName: Block Email - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       EmailToBlock:
         complex:
@@ -989,20 +1099,26 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: 'True'
+                  simple: "True"
               rhsB: {}
               then:
                 value:
                   simple: inputs.EmailToBlock
                 iscontext: true
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1010,8 +1126,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '26':
-    id: '26'
+  "26":
+    id: "26"
     taskid: ee795eae-1fc0-4458-864b-91b2f224db89
     type: condition
     task:
@@ -1021,15 +1137,15 @@ tasks:
       description: Checks whether a tag for blocked indicators was specified.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '14'
-      yes:
-      - '15'
+      - "14"
+      "yes":
+      - "15"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1037,8 +1153,14 @@ tasks:
               complex:
                 root: inputs.Tag
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 650\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 650
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1046,26 +1168,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 4b64da5f-53b9-4fdd-8e65-5a133c6700d6
     type: condition
     task:
       id: 4b64da5f-53b9-4fdd-8e65-5a133c6700d6
-      description: Looks for available indicators to process
+      description: "Looks for available indicators to process"
       version: -1
       name: Are there indicators to block?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '28'
-      yes:
-      - '20'
+      - "28"
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1115,8 +1237,14 @@ tasks:
               complex:
                 root: inputs.EmailToBlock
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": -700\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": -700
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1124,8 +1252,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '28':
-    id: '28'
+  "28":
+    id: "28"
     taskid: f0a6c388-3821-4ad0-8720-6660caa31997
     type: title
     task:
@@ -1134,11 +1262,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1590,\n    \"y\": -500\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": -500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1147,7 +1281,20 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
 system: true
-view: "{\n  \"linkLabelsPosition\": {\n    \"27_20_yes\": 0.4\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1940,\n      \"width\": 2530,\n      \"x\": 50,\n      \"y\": -870\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "27_20_yes": 0.4
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1940,
+        "width": 2530,
+        "x": 50,
+        "y": -870
+      }
+    }
+  }
 inputs:
 - key: IP
   value:
@@ -1170,7 +1317,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
       accessor: Indicator
       transformers:
       - operator: uniq
@@ -1198,7 +1345,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
       accessor: Indicator
       transformers:
       - operator: uniq
@@ -1226,7 +1373,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
       accessor: Indicator
       transformers:
       - operator: uniq
@@ -1245,7 +1392,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '32'
+              simple: "32"
       - - operator: greaterThanOrEqual
           left:
             value:
@@ -1253,7 +1400,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
       - - operator: isEqualString
           left:
             value:
@@ -1288,7 +1435,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '64'
+              simple: "64"
       - - operator: greaterThanOrEqual
           left:
             value:
@@ -1296,7 +1443,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
       - - operator: isEqualString
           left:
             value:
@@ -1339,7 +1486,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
       accessor: Indicator
       transformers:
       - operator: uniq
@@ -1366,7 +1513,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
       accessor: Indicator
       transformers:
       - operator: uniq
@@ -1393,7 +1540,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
       accessor: Indicator
       transformers:
       - operator: uniq
@@ -1402,13 +1549,13 @@ inputs:
   playbookInputQuery:
 - key: AutoBlockIndicators
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: "Should the given indicators be automatically blocked, or should the user be prompted to select whether to block them?\n\nPossible values: True/False. \nDefault value: True.\n\nIf set to True - No prompt will appear. All of the provided indicators will be blocked automatically.\n\nIf set to False - The user will be prompted to select which indicators to block."
   playbookInputQuery:
 - key: CustomBlockRule
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: "This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.\nSpecify \"True\" to create new Custom Block Rules (2 FW rules inside the PAN-OS device). \nFor \"False\" - no rules will be created."
   playbookInputQuery:
@@ -1419,14 +1566,16 @@ inputs:
   playbookInputQuery:
 - key: AutoCommit
   value:
-    simple: No
+    simple: "No"
   required: false
   description: "This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. \nYes - Commit automatically.\nNo - Commit manually."
   playbookInputQuery:
 - key: StaticAddressGroup
   value: {}
   required: false
-  description: "This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.\nSpecify the Static Address Group name for IPs list handling."
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
+    Specify the Static Address Group name for IPs list handling.
   playbookInputQuery:
 - key: CustomURLCategory
   value:
@@ -1452,7 +1601,9 @@ inputs:
 - key: DomainBlackListID
   value: {}
   required: false
-  description: "The Domain List ID to add the Domain to.\nproduct: Proofpoint Threat Response"
+  description: |-
+    The Domain List ID to add the Domain to.
+    product: Proofpoint Threat Response
   playbookInputQuery:
 - key: Tag
   value:
@@ -1463,11 +1614,13 @@ inputs:
 - key: DAG
   value: {}
   required: false
-  description: "This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.\nSpecify the Dynamic Address Group tag name for IPs list handling."
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
+    Specify the Dynamic Address Group tag name for IPs list handling.
   playbookInputQuery:
 - key: UserVerification
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: "Possible values: True/False.  Default: True.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
@@ -1512,21 +1665,32 @@ inputs:
   playbookInputQuery:
 - key: InputEnrichment
   value:
-    simple: 'False'
+    simple: "False"
   required: false
-  description: "The rule name/description that will be presented on the created rule in certain integrations (if there is a need).\nThe supported integrations: PAN-OS, CheckPoint.\n\nDefault input- \"XSOAR - Block IP playbook - ${incident.id}\""
+  description: |-
+    The rule name/description that will be presented on the created rule in certain integrations (if there is a need).
+    The supported integrations: PAN-OS, CheckPoint.
+
+    Default input- "XSOAR - Block IP playbook - ${incident.id}"
   playbookInputQuery:
 - key: RuleName
   value:
     simple: XSOAR - Block Indicators playbook - ${incident.id}
   required: false
-  description: "The rule name/description that will be presented on the created rule in certain integrations (if there is a need).\nThe supported integrations: PAN-OS, CheckPoint.\n\nDefault input- \"XSOAR - Block IP playbook - ${incident.id}\""
+  description: |-
+    The rule name/description that will be presented on the created rule in certain integrations (if there is a need).
+    The supported integrations: PAN-OS, CheckPoint.
+
+    Default input- "XSOAR - Block IP playbook - ${incident.id}"
   playbookInputQuery:
 - key: RuleDirection
   value:
     simple: outbound
   required: false
-  description: "Determine if a newly created rule should be with the network direction of outbound or inbound blocked traffic.\nPossible values: inbound or outbound\nDefault: outbound"
+  description: |-
+    Determine if a newly created rule should be with the network direction of outbound or inbound blocked traffic.
+    Possible values: inbound or outbound
+    Default: outbound
   playbookInputQuery:
 - key: EDLServerIP
   value: {}
@@ -1600,4 +1764,3 @@ fromversion: 6.5.0
 marketplaces:
 - xsoar
 - marketplacev2
-- platform

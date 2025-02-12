@@ -1,25 +1,35 @@
 id: File Enrichment - Generic v2
 version: -1
 name: File Enrichment - Generic v2
-description: "Enrich a file using one or more integrations.\n\n- Provide threat information\n- Determine file reputation using the !file command"
-starttaskid: '0'
+description: |-
+  Enrich a file using one or more integrations.
+
+  - Provide threat information
+  - Determine file reputation using the !file command
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 90f7ce25-c27c-4ca9-8fe6-2168349b0702
     type: start
     task:
       id: 90f7ce25-c27c-4ca9-8fe6-2168349b0702
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
-      '#none#':
-      - '31'
+      "#none#":
+      - "31"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": -150\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -27,9 +37,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '7':
-    id: '7'
+    continueonerrortype: ""
+  "7":
+    id: "7"
     taskid: be10b4ea-fb5e-478c-8614-ae684debb82f
     type: title
     task:
@@ -38,10 +48,16 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 900\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 900
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -49,9 +65,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '25':
-    id: '25'
+    continueonerrortype: ""
+  "25":
+    id: "25"
     taskid: 049989d4-fe3f-4a96-8f17-ad155ed74362
     type: condition
     task:
@@ -61,12 +77,12 @@ tasks:
       description: Verify whether there is a SHA256 hash to enrich.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#default#':
-      - '7'
+      "#default#":
+      - "7"
       yes:
-      - '27'
+      - "27"
     scriptarguments:
       value:
         simple: ${File.SHA256}
@@ -82,7 +98,13 @@ tasks:
             iscontext: true
           right:
             value: {}
-    view: "{\n  \"position\": {\n    \"x\": 720,\n    \"y\": 300\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 300
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -90,9 +112,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '27':
-    id: '27'
+    continueonerrortype: ""
+  "27":
+    id: "27"
     taskid: 27539369-ccb3-441c-89d9-001a4fc03093
     type: condition
     task:
@@ -102,12 +124,12 @@ tasks:
       description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#default#':
-      - '7'
+      "#default#":
+      - "7"
       yes:
-      - '28'
+      - "28"
     separatecontext: false
     conditions:
     - label: yes
@@ -138,7 +160,13 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 720,\n    \"y\": 510\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 510
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -146,9 +174,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '28':
-    id: '28'
+    continueonerrortype: ""
+  "28":
+    id: "28"
     taskid: 6721f439-f2ce-4dec-8bff-5eedf90921c9
     type: regular
     task:
@@ -159,10 +187,10 @@ tasks:
       script: '|||cylance-protect-get-threat'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '7'
+      "#none#":
+      - "7"
     scriptarguments:
       sha256:
         complex:
@@ -171,7 +199,13 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 720,\n    \"y\": 720\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -179,9 +213,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '30':
-    id: '30'
+    continueonerrortype: ""
+  "30":
+    id: "30"
     taskid: f5488926-c247-4181-8824-1c81eac47049
     type: playbook
     task:
@@ -191,11 +225,11 @@ tasks:
       description: Get file information using the Virus Total API integration.
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       playbookName: File Enrichment - Virus Total (API v3)
     nexttasks:
-      '#none#':
-      - '7'
+      "#none#":
+      - "7"
     scriptarguments:
       FileHash:
         complex:
@@ -216,10 +250,16 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": -200,\n    \"y\": 300\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 300
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -227,9 +267,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '31':
-    id: '31'
+    continueonerrortype: ""
+  "31":
+    id: "31"
     taskid: de42fb75-e635-43b3-8696-a867fe55e70b
     type: condition
     task:
@@ -239,14 +279,14 @@ tasks:
       description: Ensure that there are file hashes to enrich.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#default#':
-      - '7'
+      "#default#":
+      - "7"
       yes:
-      - '36'
-      - '32'
-      - '35'
+      - "36"
+      - "32"
+      - "35"
     scriptarguments:
       value:
         simple: ${File.SHA256}
@@ -274,7 +314,13 @@ tasks:
               complex:
                 root: inputs.MD5
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": -20\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -20
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -282,23 +328,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '32':
-    continueonerrortype: ''
-    id: '32'
+    continueonerrortype: ""
+  "32":
+    continueonerrortype: ""
+    id: "32"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '33'
-      - '7'
+      - "33"
+      - "7"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: aa3b5462-64fd-4033-8812-9d952347a79d
       iscommand: false
       name: Check Reputation Using All Available Integrations
@@ -308,8 +354,14 @@ tasks:
     taskid: aa3b5462-64fd-4033-8812-9d952347a79d
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 150\n  }\n}"
-  '33':
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 150
+        }
+      }
+  "33":
     conditions:
     - condition:
       - - ignorecase: true
@@ -321,24 +373,24 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: 'True'
-      label: yes
-    continueonerrortype: ''
-    id: '33'
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "33"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '7'
-      yes:
-      - '34'
+      - "7"
+      "yes":
+      - "34"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 331e3147-e6bc-4db8-8fe9-5a1d56cd4e3a
       iscommand: false
       name: Should use !file command?
@@ -348,16 +400,22 @@ tasks:
     taskid: 331e3147-e6bc-4db8-8fe9-5a1d56cd4e3a
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 300\n  }\n}"
-  '34':
-    continueonerrortype: ''
-    id: '34'
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 300
+        }
+      }
+  "34":
+    continueonerrortype: ""
+    id: "34"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     note: false
     quietmode: 0
     scriptarguments:
@@ -381,7 +439,7 @@ tasks:
     separatecontext: false
     skipunavailable: true
     task:
-      brand: ''
+      brand: ""
       description: Checks the file reputation of the specified hash.
       id: 0e956788-b597-4a77-8ffd-01b39d718d17
       iscommand: true
@@ -392,22 +450,28 @@ tasks:
     taskid: 0e956788-b597-4a77-8ffd-01b39d718d17
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 510\n  }\n}"
-  '35':
-    continueonerrortype: ''
-    id: '35'
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 510
+        }
+      }
+  "35":
+    continueonerrortype: ""
+    id: "35"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '30'
+      - "30"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 4d022016-e7a4-454b-85d5-fad65548649c
       iscommand: false
       name: Virus Total enrichment
@@ -417,22 +481,28 @@ tasks:
     taskid: 4d022016-e7a4-454b-85d5-fad65548649c
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": -200,\n    \"y\": 150\n  }\n}"
-  '36':
-    continueonerrortype: ''
-    id: '36'
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 150
+        }
+      }
+  "36":
+    continueonerrortype: ""
+    id: "36"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '25'
+      - "25"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 601042e3-6757-4e60-8293-6c026caba2d1
       iscommand: false
       name: Cylance Protect enrichment
@@ -442,8 +512,32 @@ tasks:
     taskid: 601042e3-6757-4e60-8293-6c026caba2d1
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 720,\n    \"y\": 150\n  }\n}"
-view: "{\n  \"linkLabelsPosition\": {\n    \"25_27_yes\": 0.59,\n    \"25_7_#default#\": 0.25,\n    \"27_28_yes\": 0.57,\n    \"27_7_#default#\": 0.36,\n    \"31_7_#default#\": 0.13,\n    \"33_7_#default#\": 0.25\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1115,\n      \"width\": 1300,\n      \"x\": -200,\n      \"y\": -150\n    }\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 150
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_27_yes": 0.59,
+      "25_7_#default#": 0.25,
+      "27_28_yes": 0.57,
+      "27_7_#default#": 0.36,
+      "31_7_#default#": 0.13,
+      "33_7_#default#": 0.25
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 1300,
+        "x": -200,
+        "y": -150
+      }
+    }
+  }
 inputs:
 - key: MD5
   value:
@@ -475,12 +569,15 @@ inputs:
   required: false
   description: The file SHA1 hash to enrich.
   playbookInputQuery:
-- description: "Define if you would like to use the !file command.\nNote: This input should be used whenever there is no auto-extract enabled in the investigation flow.\nPossible values: True / False."
+- description: |-
+    Define if you would like to use the !file command.
+    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
+    Possible values: True / False.
   key: UseReputationCommand
   playbookInputQuery:
   required: true
   value:
-    simple: 'False'
+    simple: "False"
 outputs:
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
@@ -774,6 +871,5 @@ contentitemexportablefields:
   contentitemfields: {}
 system: true
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

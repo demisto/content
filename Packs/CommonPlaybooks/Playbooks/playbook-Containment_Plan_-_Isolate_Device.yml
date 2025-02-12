@@ -1,26 +1,36 @@
 id: Containment Plan - Isolate Device
 version: -1
 name: Containment Plan - Isolate Device
-description: "## Containment Plan - Isolate Device\n\nThis playbook is a sub-playbook within the containment plan playbook.\nThe playbook isolates devices using core commands."
-starttaskid: '0'
+description: |-
+  ## Containment Plan - Isolate Device
+
+  This playbook is a sub-playbook within the containment plan playbook.
+  The playbook isolates devices using core commands.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 972c3692-925c-4f6f-8d88-9f4c2598429d
     type: start
     task:
       id: 972c3692-925c-4f6f-8d88-9f4c2598429d
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '23'
+      - "23"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": -1020\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -1020
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -28,8 +38,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 9813918f-0c56-4d9f-8128-4012f120247e
     type: regular
     task:
@@ -40,17 +50,23 @@ tasks:
       script: '|||core-isolate-endpoint'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       endpoint_id:
         complex:
           root: EndpointsIDToIsolate
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 80\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 80
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -58,8 +74,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: f1fa1236-07c7-4291-8230-fa48fb2e2d4a
     type: regular
     task:
@@ -73,7 +89,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
       key:
         simple: IsolatedEndpointsID
@@ -84,8 +100,14 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 265\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 265
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -93,8 +115,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: 6c786033-9c64-4365-83af-dec8a718764c
     type: title
     task:
@@ -103,11 +125,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 490\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 490
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -115,8 +143,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: a0690559-7fbb-4a1e-8eb1-051f88912afd
     type: regular
     task:
@@ -127,10 +155,10 @@ tasks:
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '17'
+      - "17"
     scriptarguments:
       endpoint_id_list:
         complex:
@@ -141,10 +169,16 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: 'null'
+                  simple: "null"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": -495\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -495
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -152,22 +186,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: 967d72b1-110e-4966-884c-8e5f75feb07e
     type: regular
     task:
       id: 967d72b1-110e-4966-884c-8e5f75feb07e
       version: -1
       name: Set endpoints ID to isolate
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       key:
         simple: EndpointsIDToIsolate
@@ -178,8 +219,14 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": -120\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -187,8 +234,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 1b35e319-899a-4a2b-80e4-591c3b92a9ae
     type: condition
     task:
@@ -198,15 +245,15 @@ tasks:
       description: Whether to isolate the endpoint based on the input values.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '25'
-      Yes:
-      - '16'
+      - "25"
+      "Yes":
+      - "16"
     separatecontext: false
     conditions:
-    - label: Yes
+    - label: "Yes"
       condition:
       - - operator: isEqualString
           left:
@@ -216,7 +263,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
       - - operator: containsString
           left:
@@ -251,8 +298,14 @@ tasks:
             value:
               simple: DISCONNECTED
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": -320\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -320
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -260,8 +313,8 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: 677be289-10e0-46ea-8380-a44f18e8a047
     type: regular
     task:
@@ -275,7 +328,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
       key:
         simple: IsolatedEndpointsID
@@ -292,8 +345,14 @@ tasks:
                   simple: No Values
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 80\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 80
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -301,8 +360,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     taskid: 65bfa257-2884-4787-8dd5-64589ea2ad55
     type: condition
     task:
@@ -312,15 +371,15 @@ tasks:
       description: Checks if the endpoint ID or name defined.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '10'
-      yes:
-      - '24'
+      - "10"
+      "yes":
+      - "24"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -334,8 +393,14 @@ tasks:
               complex:
                 root: inputs.EndpointHostName
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": -875\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -875
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -343,8 +408,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: 6e3d0a66-444e-4d5d-803a-82f81ef2afdf
     type: regular
     task:
@@ -355,10 +420,10 @@ tasks:
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       hostname:
         complex:
@@ -369,10 +434,16 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: 'null'
+                  simple: "null"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": -675\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -675
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -380,8 +451,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: 28a11db5-8870-402e-8fee-8d815b2fc6a9
     type: condition
     task:
@@ -391,15 +462,15 @@ tasks:
       description: Checks if the endpoint is already isolated.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '10'
-      yes:
-      - '22'
+      - "10"
+      "yes":
+      - "22"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -412,8 +483,14 @@ tasks:
             value:
               simple: AGENT_ISOLATED
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": -120\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": -120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -421,11 +498,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"17_16_Yes\": 0.55,\n    \"23_10_#default#\": 0.11,\n    \"25_22_yes\": 0.48\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1575,\n      \"width\": 840,\n      \"x\": 30,\n      \"y\": -1020\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_16_Yes": 0.55,
+      "23_10_#default#": 0.11,
+      "25_22_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1575,
+        "width": 840,
+        "x": 30,
+        "y": -1020
+      }
+    }
+  }
 inputs:
 - key: HostContainment
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: Whether to execute endpoint isolation.
   playbookInputQuery:
@@ -447,4 +539,3 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
-- platform

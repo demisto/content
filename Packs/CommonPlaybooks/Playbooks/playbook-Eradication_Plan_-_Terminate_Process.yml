@@ -2,25 +2,31 @@ id: Eradication Plan - Terminate Process
 version: -1
 name: Eradication Plan - Terminate Process
 description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook handles the termination of the processes as a crucial step in the eradication action.\nThe playbook executes actions of process termination, which is a crucial step in the eradication process.\nThe process termination can be performed based on either the process ID or the process name."
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 0c2bd2d8-2747-473f-873c-fdf0258c1425
     type: start
     task:
       id: 0c2bd2d8-2747-473f-873c-fdf0258c1425
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 190,\n    \"y\": -180\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -180
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -28,8 +34,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 387a0de2-f9a3-412a-8531-299ba47ac010
     type: condition
     task:
@@ -39,14 +45,14 @@ tasks:
       description: Whether to terminate the process automatically, manually, or not at all.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '5'
+      - "5"
       Name:
-      - '22'
+      - "22"
       PID:
-      - '21'
+      - "21"
     separatecontext: false
     conditions:
     - label: PID
@@ -109,8 +115,14 @@ tasks:
               complex:
                 root: inputs.FilePath
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 190,\n    \"y\": -40\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -40
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -118,8 +130,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: b6c458a7-8533-4692-87af-498de4ea894f
     type: title
     task:
@@ -128,11 +140,17 @@ tasks:
       name: Done - Process Termination
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 190,\n    \"y\": 1240\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1240
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -140,8 +158,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: d1bf1eb3-8962-4fe0-8f37-dd1d6e67fc1d
     type: regular
     task:
@@ -152,18 +170,24 @@ tasks:
       script: '|||core-get-script-execution-results'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
       action_id:
         complex:
           root: Core.GetActionStatus
           accessor: action_id
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": 500\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -171,8 +195,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: f3850073-38b9-4991-8e2e-ac78bd2372e6
     type: regular
     task:
@@ -183,10 +207,10 @@ tasks:
       script: '|||core-run-script-kill-process'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       endpoint_ids:
         complex:
@@ -207,8 +231,14 @@ tasks:
               unpack_matches: {}
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": 320\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 320
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -216,8 +246,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: 5bb3ab00-26df-4e11-89b2-a213d1eba8aa
     type: condition
     task:
@@ -227,15 +257,15 @@ tasks:
       description: Checks if the process was terminated.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '20'
-      yes:
-      - '11'
+      - "20"
+      "yes":
+      - "11"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: notEndWith
           left:
@@ -248,8 +278,14 @@ tasks:
             value:
               simple: 'killed: 0.'
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": 670\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 670
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -257,8 +293,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: 960374b2-8b4a-4577-8bf1-ac02f9ceccf4
     type: regular
     task:
@@ -269,15 +305,15 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '12'
+      - "12"
     scriptarguments:
       extend-context:
         simple: TerminatedProcessFromEndpoints=
       ignore-outputs:
-        simple: 'true'
+        simple: "true"
       key:
         complex:
           root: inputs.EndpointID
@@ -292,7 +328,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'True'
+                  simple: "True"
               ignorecase: true
           accessor: standard_output
           transformers:
@@ -307,8 +343,14 @@ tasks:
                   simple: .*name (.*) found.*
               unpack_matches: {}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": 860\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -316,8 +358,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 42d427fd-6d4a-4b70-8b1a-35c76fdd8d45
     type: regular
     task:
@@ -331,7 +373,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       extend-context:
         simple: TerminatedProcessOnEndpoints=
@@ -341,8 +383,14 @@ tasks:
         complex:
           root: TerminatedProcessFromEndpoints
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": 1040\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -350,8 +398,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 961146c8-6afd-4e75-8de9-d6a3171cf051
     type: regular
     task:
@@ -362,10 +410,10 @@ tasks:
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       commands:
         simple: taskkill /F /PID ${ProcessID}
@@ -373,8 +421,14 @@ tasks:
         complex:
           root: inputs.EndpointID
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 320\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 320
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -382,8 +436,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: 98faa8b1-1539-4e59-8274-c8434226eff7
     type: regular
     task:
@@ -394,18 +448,24 @@ tasks:
       script: '|||core-get-script-execution-results'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     scriptarguments:
       action_id:
         complex:
           root: Core.ScriptRun
           accessor: action_id
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 500\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -413,8 +473,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: 1a42b9b2-db4a-4905-8dd5-4b47d18449fc
     type: condition
     task:
@@ -424,15 +484,15 @@ tasks:
       description: Checks if the termination of the process was successful.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '19'
-      yes:
-      - '17'
+      - "19"
+      "yes":
+      - "17"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: endWith
           left:
@@ -445,8 +505,14 @@ tasks:
             value:
               simple: has been terminated.
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 670\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 670
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -454,8 +520,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 800bc596-f674-43ff-84cf-91da9573954b
     type: regular
     task:
@@ -466,15 +532,15 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '18'
+      - "18"
     scriptarguments:
       extend-context:
         simple: TerminatedProcessFromEndpoints=
       ignore-outputs:
-        simple: 'true'
+        simple: "true"
       key:
         complex:
           root: inputs.EndpointID
@@ -489,7 +555,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'True'
+                  simple: "True"
               ignorecase: true
           accessor: standard_output
           transformers:
@@ -504,8 +570,14 @@ tasks:
                   simple: .*name (.*) found.*
               unpack_matches: {}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 860\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -513,8 +585,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: 0056cbe7-0eda-4bea-832f-9438e1f45936
     type: regular
     task:
@@ -528,7 +600,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       extend-context:
         simple: TerminatedProcessOnEndpoints=
@@ -538,8 +610,14 @@ tasks:
         complex:
           root: TerminatedProcessFromEndpoints
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1040\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -547,8 +625,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: c7749af3-73ff-4422-87dd-e8caeb84c069
     type: regular
     task:
@@ -559,16 +637,22 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       message:
         simple: The process termination has failed.
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 860\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -576,8 +660,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: 4e7794f3-70a6-4941-8e9e-65ef20777dca
     type: regular
     task:
@@ -588,16 +672,22 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       message:
         simple: The process termination has failed.
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -490,\n    \"y\": 860\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -605,8 +695,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: e5475bb4-564f-4364-892b-12b130016b7a
     type: regular
     task:
@@ -617,10 +707,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       key:
         simple: ProcessID
@@ -646,8 +736,14 @@ tasks:
                   simple: inputs.ProcessID
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 150\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -655,8 +751,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: 77d2329d-39ac-4e97-8490-b759589f91ad
     type: regular
     task:
@@ -667,10 +763,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       key:
         simple: FilePath
@@ -696,8 +792,14 @@ tasks:
                   simple: inputs.FilePath
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": 150\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -705,7 +807,21 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"16_17_yes\": 0.41,\n    \"1_5_#default#\": 0.14\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1485,\n      \"width\": 1750,\n      \"x\": -490,\n      \"y\": -180\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_17_yes": 0.41,
+      "1_5_#default#": 0.14
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1485,
+        "width": 1750,
+        "x": -490,
+        "y": -180
+      }
+    }
+  }
 inputs:
 - key: ProcessTermination
   value:
@@ -737,4 +853,3 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
-- platform

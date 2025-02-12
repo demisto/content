@@ -1,26 +1,51 @@
 id: Get User Devices by Username - Generic
 version: -1
 name: Get User Devices by Username - Generic
-description: "This playbook retrieves information on all of the associated user devices, based on the user's username.\nIn order to get a generic output, the following information on all of the retrieved devices will be saved under the `UserDevices` context key:\n- Name\n- Serial Number\n- ID\n- Model\n- MAC Address\n- OS\n- Integration\n\nNote that not all of the supported integrations will be able to retrieve this information.\n\nSupported integrations:\n- jamf v2\n- Microsoft Defender for Endpoint\n- Cortex XDR IR\n- ServiceNow v2\n- Google Workspace (Gsuite)\n- Active Directory Query v2."
-starttaskid: '0'
+description: |-
+  This playbook retrieves information on all of the associated user devices, based on the user's username.
+  In order to get a generic output, the following information on all of the retrieved devices will be saved under the `UserDevices` context key:
+  - Name
+  - Serial Number
+  - ID
+  - Model
+  - MAC Address
+  - OS
+  - Integration
+
+  Note that not all of the supported integrations will be able to retrieve this information.
+
+  Supported integrations:
+  - jamf v2
+  - Microsoft Defender for Endpoint
+  - Cortex XDR IR
+  - ServiceNow v2
+  - Google Workspace (Gsuite)
+  - Active Directory Query v2.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 7f91d06d-7f39-42b3-8fc9-c053b9711389
     type: start
     task:
       id: 7f91d06d-7f39-42b3-8fc9-c053b9711389
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 120\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -28,8 +53,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 92420939-e8b5-4eca-8e8a-ca4a185b06fb
     type: condition
     task:
@@ -39,20 +64,20 @@ tasks:
       description: Checks if the username input is not empty.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '12'
-      yes:
-      - '7'
-      - '17'
-      - '13'
-      - '21'
-      - '2'
-      - '30'
+      - "12"
+      "yes":
+      - "7"
+      - "17"
+      - "13"
+      - "21"
+      - "2"
+      - "30"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -62,8 +87,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 290\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 290
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -71,8 +102,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 98d3f19b-42e7-4129-8271-9b3b12ae0ebb
     type: title
     task:
@@ -81,14 +112,20 @@ tasks:
       name: Google Workspace (Gsuite)
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -640,\n    \"y\": 530\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -96,8 +133,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: b2d45d85-574f-4005-8bd4-94faafb71264
     type: regular
     task:
@@ -108,10 +145,10 @@ tasks:
       script: '|||gsuite-mobiledevice-list'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '46'
+      - "46"
     scriptarguments:
       customer_id:
         complex:
@@ -119,8 +156,14 @@ tasks:
       query:
         simple: name:${inputs.Username}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -640,\n    \"y\": 1080\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 1080
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -128,8 +171,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 642325ab-a47b-466b-8ceb-5f6b870645dc
     type: condition
     task:
@@ -139,15 +182,15 @@ tasks:
       description: Checks if the customer ID input is not empty.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '11'
-      yes:
-      - '5'
+      - "11"
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -157,8 +200,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -640,\n    \"y\": 690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -166,8 +215,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 7f8b6c8c-f41b-4dcb-8b8b-7aca28f4a929
     type: condition
     task:
@@ -178,20 +227,26 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      no:
-      - '11'
-      yes:
-      - '3'
+      "no":
+      - "11"
+      "yes":
+      - "3"
     scriptarguments:
       brandname:
         simple: GSuiteAdmin
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -640,\n    \"y\": 890\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 890
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -199,8 +254,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 4ef40554-cf34-49cb-899f-08d60acdb09c
     type: title
     task:
@@ -209,14 +264,20 @@ tasks:
       name: Done - Jamf
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1980,\n    \"y\": 1830\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 1830
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -224,8 +285,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 9f903855-b87e-49e4-89b6-4b8e936f155f
     type: title
     task:
@@ -234,14 +295,20 @@ tasks:
       name: Jamf
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1980,\n    \"y\": 530\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -249,8 +316,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 43cebc52-17a9-417a-8b2f-9b4f9aba01b9
     type: regular
     task:
@@ -264,14 +331,20 @@ tasks:
       brand: jamf v2
     nexttasks:
       '#none#':
-      - '37'
+      - "37"
     scriptarguments:
       match:
         complex:
           root: inputs.Username
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 890\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 890
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -279,8 +352,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: e7ef5ffc-3774-47a7-8703-65b270b9c86d
     type: condition
     task:
@@ -291,21 +364,27 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      no:
-      - '6'
-      yes:
-      - '8'
-      - '10'
+      "no":
+      - "6"
+      "yes":
+      - "8"
+      - "10"
     scriptarguments:
       brandname:
         simple: jamf v2
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1980,\n    \"y\": 690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -313,8 +392,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: 7810b5de-6dcc-4003-8d47-66daf1804f68
     type: regular
     task:
@@ -325,17 +404,23 @@ tasks:
       script: '|||jamf-get-mobile-device-by-match'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '38'
+      - "38"
     scriptarguments:
       match:
         complex:
           root: inputs.Username
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2650,\n    \"y\": 890\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 890
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -343,8 +428,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: bb7d7602-53db-41d3-892d-1f67433977cd
     type: title
     task:
@@ -353,14 +438,20 @@ tasks:
       name: Done - GSuite
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -640,\n    \"y\": 1820\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 1820
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -368,8 +459,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 9d63ac27-9180-446e-8368-6618eddb2c5f
     type: title
     task:
@@ -378,11 +469,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2500,\n    \"y\": 530\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2500,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -390,8 +487,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 169c5e7e-5e78-4951-8ccf-b4124b0390ed
     type: title
     task:
@@ -400,15 +497,21 @@ tasks:
       name: Cortex XDR / Core
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '14'
-      - '54'
+      - "14"
+      - "54"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 530\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -416,8 +519,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: 31e75795-67a1-413d-8c95-e82a2d24c709
     type: condition
     task:
@@ -428,20 +531,26 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      no:
-      - '16'
-      yes:
-      - '15'
+      "no":
+      - "16"
+      "yes":
+      - "15"
     scriptarguments:
       brandname:
         simple: Cortex XDR - IR
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -449,8 +558,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: 65bab14c-a758-4bfc-83a4-6147f0a3cf3a
     type: regular
     task:
@@ -464,14 +573,20 @@ tasks:
       brand: Cortex XDR - IR
     nexttasks:
       '#none#':
-      - '52'
+      - "52"
     scriptarguments:
       username:
         complex:
           root: inputs.Username
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 890\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 890
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -479,8 +594,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: fe65ba2d-93e9-4c59-8496-3006d7164738
     type: title
     task:
@@ -489,14 +604,20 @@ tasks:
       name: Done - Cortex XDR
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 1610\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -504,8 +625,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 6bc58f17-e345-4a64-87c9-ddda3d6a20f4
     type: title
     task:
@@ -514,14 +635,20 @@ tasks:
       name: Microsoft Defender for Endpoint
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '18'
+      - "18"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1450,\n    \"y\": 530\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -529,8 +656,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: 03a8ebf7-df74-4c8e-8230-cfc2c463d7d6
     type: condition
     task:
@@ -541,20 +668,26 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      no:
-      - '20'
-      yes:
-      - '19'
+      "no":
+      - "20"
+      "yes":
+      - "19"
     scriptarguments:
       brandname:
         simple: Microsoft Defender Advanced Threat Protection
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1450,\n    \"y\": 690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -562,8 +695,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: 51b7ad17-cc11-41e4-861a-49d64130c5b3
     type: regular
     task:
@@ -577,14 +710,20 @@ tasks:
       brand: Microsoft Defender Advanced Threat Protection
     nexttasks:
       '#none#':
-      - '50'
+      - "50"
     scriptarguments:
       username:
         complex:
           root: inputs.Username
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1450,\n    \"y\": 890\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 890
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -592,8 +731,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: 96d6a3fa-d31e-4a75-8ae9-4fff83d6d792
     type: title
     task:
@@ -602,14 +741,20 @@ tasks:
       name: Done - MS Defender
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1460,\n    \"y\": 1610\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 1610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -617,8 +762,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: 94a1a4b2-10d0-4f39-8f22-ca766e57a227
     type: title
     task:
@@ -627,14 +772,20 @@ tasks:
       name: ServiceNow CMDB
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 530\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -642,8 +793,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: 279c5cef-b588-4af1-8454-a121c3615b6f
     type: condition
     task:
@@ -654,20 +805,26 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      no:
-      - '26'
-      yes:
-      - '23'
+      "no":
+      - "26"
+      "yes":
+      - "23"
     scriptarguments:
       brandname:
         simple: ServiceNow v2
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -675,8 +832,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     taskid: f3b72eb2-8f8d-4ab0-8830-ae6d86cb4a6d
     type: regular
     task:
@@ -690,14 +847,20 @@ tasks:
       brand: ServiceNow v2
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     scriptarguments:
       user_name:
         complex:
           root: inputs.Username
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 880\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 880
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -705,8 +868,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: 35f1249e-457e-4e2a-8357-d9fa3044431b
     type: condition
     task:
@@ -716,15 +879,15 @@ tasks:
       description: Checks if a username was found.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '26'
-      yes:
-      - '25'
+      - "26"
+      "yes":
+      - "25"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -733,8 +896,14 @@ tasks:
                 root: ServiceNow.User
                 accessor: ID
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 1050\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1050
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -742,8 +911,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: 385e4bce-8feb-4a3d-8110-526a7d560ab7
     type: regular
     task:
@@ -757,13 +926,19 @@ tasks:
       brand: ServiceNow v2
     nexttasks:
       '#none#':
-      - '44'
+      - "44"
     scriptarguments:
       query:
         simple: assigned_by=${ServiceNow.User.ID}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 1240\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1240
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -771,8 +946,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '26':
-    id: '26'
+  "26":
+    id: "26"
     taskid: 973a28e2-18df-4f15-8093-2955093cad2c
     type: title
     task:
@@ -781,14 +956,20 @@ tasks:
       name: Done - SNOW
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 1820\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1820
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -796,8 +977,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 76c960de-4232-407e-88d3-3a2b4d1e54e1
     type: condition
     task:
@@ -807,15 +988,15 @@ tasks:
       description: Checks if any user device was found.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '29'
-      yes:
-      - '28'
+      - "29"
+      "yes":
+      - "28"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -861,8 +1042,14 @@ tasks:
               complex:
                 root: ADComputer
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 2020\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 2020
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -870,22 +1057,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '28':
-    id: '28'
+  "28":
+    id: "28"
     taskid: c7f91ab4-017e-4c32-8e3e-23220e1c84fc
     type: regular
     task:
       id: c7f91ab4-017e-4c32-8e3e-23220e1c84fc
       version: -1
       name: Set UserDevices
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '29'
+      - "29"
     scriptarguments:
       key:
         simple: UserDevices
@@ -936,8 +1130,14 @@ tasks:
                 iscontext: true
               raw: {}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 2220\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 2220
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -945,8 +1145,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '29':
-    id: '29'
+  "29":
+    id: "29"
     taskid: b3a51b55-5793-4767-8b11-66fe0b941298
     type: title
     task:
@@ -955,11 +1155,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 2400\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 2400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -967,8 +1173,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '30':
-    id: '30'
+  "30":
+    id: "30"
     taskid: 9c39a8e6-c7c4-49ba-8c35-a263f08206a6
     type: title
     task:
@@ -977,14 +1183,20 @@ tasks:
       name: Active Directory
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '31'
+      - "31"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1160,\n    \"y\": 530\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -992,8 +1204,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '31':
-    id: '31'
+  "31":
+    id: "31"
     taskid: 0ad9d77f-b679-45ee-894e-7830b1502627
     type: condition
     task:
@@ -1003,15 +1215,15 @@ tasks:
       description: Checks if a custom AD attribute was provided in the playbook input.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '34'
-      yes:
-      - '32'
+      - "34"
+      "yes":
+      - "32"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1019,8 +1231,14 @@ tasks:
               complex:
                 root: inputs.CustomADAttribute
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1160,\n    \"y\": 690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1028,8 +1246,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '32':
-    id: '32'
+  "32":
+    id: "32"
     taskid: d292e8d7-86db-428f-8513-e5035a1a6947
     type: condition
     task:
@@ -1040,20 +1258,26 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      no:
-      - '34'
-      yes:
-      - '33'
+      "no":
+      - "34"
+      "yes":
+      - "33"
     scriptarguments:
       brandname:
         simple: Active Directory Query v2
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1160,\n    \"y\": 890\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 890
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1061,8 +1285,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '33':
-    id: '33'
+  "33":
+    id: "33"
     taskid: 5970a949-ae5e-44dc-8057-f44414377bb1
     type: regular
     task:
@@ -1073,10 +1297,10 @@ tasks:
       script: '|||ad-get-user'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '49'
+      - "49"
     scriptarguments:
       attributes:
         complex:
@@ -1085,8 +1309,14 @@ tasks:
         complex:
           root: inputs.Username
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1160,\n    \"y\": 1080\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 1080
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1094,8 +1324,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '34':
-    id: '34'
+  "34":
+    id: "34"
     taskid: 29853db3-1746-4cc0-8174-545ff4db7b45
     type: title
     task:
@@ -1104,14 +1334,20 @@ tasks:
       name: Done - AD
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1160,\n    \"y\": 1820\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 1820
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1119,22 +1355,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '35':
-    id: '35'
+  "35":
+    id: "35"
     taskid: 0ab095b0-5fe3-465f-8b47-81cba6b3b83d
     type: regular
     task:
       id: 0ab095b0-5fe3-465f-8b47-81cba6b3b83d
       version: -1
       name: Save the custom attribute value
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '48'
+      - "48"
     scriptarguments:
       key:
         simple: ADComputerName
@@ -1150,8 +1393,14 @@ tasks:
                   simple: inputs.CustomADAttribute
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1160,\n    \"y\": 1460\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 1460
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1159,8 +1408,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '37':
-    id: '37'
+  "37":
+    id: "37"
     taskid: 54307288-b5f0-4a11-83ed-3744b5fe18ee
     type: condition
     task:
@@ -1170,15 +1419,15 @@ tasks:
       description: Checks if any result was found.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '6'
-      yes:
-      - '39'
+      - "6"
+      "yes":
+      - "39"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1187,8 +1436,14 @@ tasks:
                 root: JAMF.Computer
                 accessor: id
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 1075\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1075
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1196,8 +1451,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '38':
-    id: '38'
+  "38":
+    id: "38"
     taskid: aeec665b-9c0d-4fe6-8150-d1a37cf235ba
     type: condition
     task:
@@ -1207,15 +1462,15 @@ tasks:
       description: Checks if any result was found.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '6'
-      yes:
-      - '40'
+      - "6"
+      "yes":
+      - "40"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1224,8 +1479,14 @@ tasks:
                 root: JAMF.MobileDevice
                 accessor: id
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2650,\n    \"y\": 1075\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 1075
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1233,8 +1494,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '39':
-    id: '39'
+  "39":
+    id: "39"
     taskid: 4088218f-acad-42fa-82e0-e05649ecac4a
     type: regular
     task:
@@ -1245,18 +1506,24 @@ tasks:
       script: '|||jamf-get-computer-by-id'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '41'
+      - "41"
     scriptarguments:
       id:
         complex:
           root: JAMF.Computer
           accessor: id
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 1275\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1264,8 +1531,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '40':
-    id: '40'
+  "40":
+    id: "40"
     taskid: b380fc9d-1597-4148-88d0-ba38680246cc
     type: regular
     task:
@@ -1276,18 +1543,24 @@ tasks:
       script: '|||jamf-get-mobile-device-by-id'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       id:
         complex:
           root: JAMF.MobileDevice
           accessor: id
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2650,\n    \"y\": 1275\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 1275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1295,30 +1568,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '41':
-    id: '41'
+  "41":
+    id: "41"
     taskid: 235add7f-9018-41f9-89f9-6820218625f1
     type: regular
     task:
       id: 235add7f-9018-41f9-89f9-6820218625f1
       version: -1
       name: set JamfComputers
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '43'
+      - "43"
     scriptarguments:
       key:
         simple: JamfComputers
       value:
-        simple: "${JAMF.Computer={Name: val['name'], SerialNumber: val['serial_number'], ID: val['id'], Model: val['platform'], MACAddress: val['mac_address'], OS: '', Integration: 'jamf v2'}}"
+        simple: '${JAMF.Computer={Name: val[''name''], SerialNumber: val[''serial_number''], ID: val[''id''], Model: val[''platform''], MACAddress: val[''mac_address''], OS: '''', Integration: ''jamf v2''}}'
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 1460\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1460
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1326,30 +1612,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '42':
-    id: '42'
+  "42":
+    id: "42"
     taskid: 485be541-d9d5-4d75-8b3e-c135a36eccbf
     type: regular
     task:
       id: 485be541-d9d5-4d75-8b3e-c135a36eccbf
       version: -1
       name: set JamfMobileDevices
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     scriptarguments:
       key:
         simple: JamfMobileDevices
       value:
-        simple: "${JAMF.MobileDevice={Name: val['name'], SerialNumber: val['serial_number'], ID: val['id'], Model: val['model'], MACAddress: val['wifi_mac_address'], OS: '', Integration: 'jamf v2'}}"
+        simple: '${JAMF.MobileDevice={Name: val[''name''], SerialNumber: val[''serial_number''], ID: val[''id''], Model: val[''model''], MACAddress: val[''wifi_mac_address''], OS: '''', Integration: ''jamf v2''}}'
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2650,\n    \"y\": 1460\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 1460
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1357,25 +1656,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '43':
-    id: '43'
+  "43":
+    id: "43"
     taskid: 304fe0fd-2226-4556-84d8-7fd4d20d9e6c
     type: regular
     task:
       id: 304fe0fd-2226-4556-84d8-7fd4d20d9e6c
       version: -1
       name: Remove null results
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     scriptarguments:
       append:
-        simple: 'false'
+        simple: "false"
       key:
         simple: JamfComputers
       value:
@@ -1389,8 +1695,14 @@ tasks:
                 iscontext: true
               ignorecase: true
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 1630\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1630
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1398,8 +1710,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '44':
-    id: '44'
+  "44":
+    id: "44"
     taskid: 10f93f62-40f7-467d-89d6-1ef8c5954712
     type: condition
     task:
@@ -1409,15 +1721,15 @@ tasks:
       description: Checks if there is any result.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '26'
-      yes:
-      - '45'
+      - "26"
+      "yes":
+      - "45"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1426,8 +1738,14 @@ tasks:
                 root: ServiceNow.Computer
                 accessor: ID
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 1420\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1435,30 +1753,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '45':
-    id: '45'
+  "45":
+    id: "45"
     taskid: 7f978671-30dd-40df-8483-7a6e0eade9a6
     type: regular
     task:
       id: 7f978671-30dd-40df-8483-7a6e0eade9a6
       version: -1
       name: Set SnowComputers
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '26'
+      - "26"
     scriptarguments:
       key:
         simple: SnowComputers
       value:
-        simple: "${ServiceNow.Computer={Name: val['Name'], SerialNumber: '', ID: val['ID'], Model: '', MACAddress: '', OS: val['OperatingSystem'], Integration: 'ServiceNow v2'}}"
+        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID: val[''ID''], Model: '''', MACAddress: '''', OS: val[''OperatingSystem''], Integration: ''ServiceNow v2''}}'
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 1610\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1466,26 +1797,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '46':
-    id: '46'
+  "46":
+    id: "46"
     taskid: edc77b8c-9115-4658-879a-fc7d39e1c36e
     type: condition
     task:
       id: edc77b8c-9115-4658-879a-fc7d39e1c36e
       version: -1
       name: Any results?
-      description: ''
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '11'
-      yes:
-      - '47'
+      - "11"
+      "yes":
+      - "47"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1494,8 +1825,14 @@ tasks:
                 root: GSuite.MobileDevices.MobileListObjects
                 accessor: deviceId
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -640,\n    \"y\": 1280\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 1280
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1503,30 +1840,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '47':
-    id: '47'
+  "47":
+    id: "47"
     taskid: 84d39418-6b26-48d3-8785-3c06575be545
     type: regular
     task:
       id: 84d39418-6b26-48d3-8785-3c06575be545
       version: -1
       name: Set GoogleDevices
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       key:
         simple: GoogleDevices
       value:
-        simple: "${GSuite.MobileDevices.MobileListObjects={Name: val['name'], SerialNumber: val['serialNumber'], ID: val['deviceId'], Model: val['model'], MACAddress: val['wifiMacAddress'], OS: val['os'], Integration: 'GSuiteAdmin'}}"
+        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber: val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], MACAddress: val[''wifiMacAddress''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -640,\n    \"y\": 1480\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 1480
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1534,8 +1884,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '48':
-    id: '48'
+  "48":
+    id: "48"
     taskid: e6b260f6-b77b-4281-89e4-caa634c1c01c
     type: regular
     task:
@@ -1546,10 +1896,10 @@ tasks:
       scriptName: SetMultipleValues
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     scriptarguments:
       keys:
         simple: Name,SerialNumber,ID,Model,MACAddress,OS,Integration
@@ -1558,8 +1908,14 @@ tasks:
       values:
         simple: ${ADComputerName},,,,,,Active Directory Query v2
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1160,\n    \"y\": 1650\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 1650
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1567,26 +1923,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '49':
-    id: '49'
+  "49":
+    id: "49"
     taskid: b256ed98-732f-4165-88a1-86d94773c72d
     type: condition
     task:
       id: b256ed98-732f-4165-88a1-86d94773c72d
       version: -1
       name: Any results?
-      description: ''
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '34'
-      yes:
-      - '35'
+      - "34"
+      "yes":
+      - "35"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1602,8 +1958,14 @@ tasks:
                         simple: inputs.CustomADAttribute
                       iscontext: true
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1160,\n    \"y\": 1265\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 1265
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1611,26 +1973,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '50':
-    id: '50'
+  "50":
+    id: "50"
     taskid: ff18c78e-c128-42de-8cc2-5929bd1ec9ad
     type: condition
     task:
       id: ff18c78e-c128-42de-8cc2-5929bd1ec9ad
       version: -1
       name: Any results?
-      description: ''
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '20'
-      yes:
-      - '51'
+      - "20"
+      "yes":
+      - "51"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1639,8 +2001,14 @@ tasks:
                 root: MicrosoftATP.UserMachine.Machines
                 accessor: ID
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1450,\n    \"y\": 1075\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 1075
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1648,30 +2016,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '51':
-    id: '51'
+  "51":
+    id: "51"
     taskid: 1e76e6a4-41e7-4a77-85aa-59e5a41f8e2d
     type: regular
     task:
       id: 1e76e6a4-41e7-4a77-85aa-59e5a41f8e2d
       version: -1
       name: Set MSDefenderDevices
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     scriptarguments:
       key:
         simple: MSDefenderDevices
       value:
-        simple: "${MicrosoftATP.UserMachine.Machines={Name: val['ComputerDNSName'], SerialNumber: '', ID: val['AADDeviceID'], Model: '', MACAddress: '', OS: val['OSPlatform'], Integration: 'Microsoft Defender Advanced Threat Protection'}}"
+        simple: '${MicrosoftATP.UserMachine.Machines={Name: val[''ComputerDNSName''], SerialNumber: '''', ID: val[''AADDeviceID''], Model: '''', MACAddress: '''', OS: val[''OSPlatform''], Integration: ''Microsoft Defender Advanced Threat Protection''}}'
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1460,\n    \"y\": 1260\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 1260
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1679,26 +2060,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '52':
-    id: '52'
+  "52":
+    id: "52"
     taskid: 360e2e81-7171-42c4-8063-6d45e7dbc441
     type: condition
     task:
       id: 360e2e81-7171-42c4-8063-6d45e7dbc441
       version: -1
       name: Any results?
-      description: ''
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '16'
-      yes:
-      - '53'
+      - "16"
+      "yes":
+      - "53"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1707,8 +2088,14 @@ tasks:
                 root: PaloAltoNetworksXDR.Endpoint
                 accessor: endpoint_id
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 1080\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1080
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1716,30 +2103,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '53':
-    id: '53'
+  "53":
+    id: "53"
     taskid: 69282860-ecd4-45b7-8ba3-7ff339cfe7e1
     type: regular
     task:
       id: 69282860-ecd4-45b7-8ba3-7ff339cfe7e1
       version: -1
       name: Set XDREndpoints
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     scriptarguments:
       key:
         simple: XDREndpoints
       value:
-        simple: "${PaloAltoNetworksXDR.Endpoint={Name: val['endpoint_name'], SerialNumber: '', ID: val['endpoint_id'], Model: val['endpoint_type'], MACAddress: val['mac_address'], OS: val['os_type'], Integration: 'Cortex XDR - IR'}}"
+        simple: '${PaloAltoNetworksXDR.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: val[''mac_address''], OS: val[''os_type''], Integration: ''Cortex XDR - IR''}}'
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 1265\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1265
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1747,8 +2147,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '54':
-    id: '54'
+  "54":
+    id: "54"
     taskid: 0eea89b2-b09a-4dae-8356-31b186e1613a
     type: condition
     task:
@@ -1759,20 +2159,26 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      no:
-      - '55'
-      yes:
-      - '56'
+      "no":
+      - "55"
+      "yes":
+      - "56"
     scriptarguments:
       brandname:
         simple: Cortex Core - IR
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1780,8 +2186,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '55':
-    id: '55'
+  "55":
+    id: "55"
     taskid: 1b426d46-5211-4355-8bd5-dde940087cd5
     type: title
     task:
@@ -1790,14 +2196,20 @@ tasks:
       name: Done - Cortex Core
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 1610\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1805,8 +2217,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '56':
-    id: '56'
+  "56":
+    id: "56"
     taskid: f9afe925-5210-4714-805f-e076e97c9973
     type: regular
     task:
@@ -1817,17 +2229,23 @@ tasks:
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '57'
+      - "57"
     scriptarguments:
       username:
         complex:
           root: inputs.Username
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 890\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 890
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1835,34 +2253,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '57':
-    id: '57'
+  "57":
+    id: "57"
     taskid: 6d47d858-a121-415e-82d4-dd033b20222a
     type: condition
     task:
       id: 6d47d858-a121-415e-82d4-dd033b20222a
       version: -1
       name: Any results?
-      description: ''
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '55'
-      yes:
-      - '58'
+      - "55"
+      "yes":
+      - "58"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Core.Endpoint.endpoint_id
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 1080\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1080
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1870,30 +2294,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '58':
-    id: '58'
+  "58":
+    id: "58"
     taskid: baa6ebfb-b39f-4b7a-80cf-89ac44b6969e
     type: regular
     task:
       id: baa6ebfb-b39f-4b7a-80cf-89ac44b6969e
       version: -1
       name: Set XDREndpoints
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '55'
+      - "55"
     scriptarguments:
       key:
         simple: XDREndpoints
       value:
-        simple: "${Core.Endpoint={Name: val['endpoint_name'], SerialNumber: '', ID: val['endpoint_id'], Model: val['endpoint_type'], MACAddress: val['mac_address'], OS: val['os_type'], Integration: 'Cortex Core - IR'}}"
+        simple: '${Core.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: val[''mac_address''], OS: val[''os_type''], Integration: ''Cortex Core - IR''}}'
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 1265\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1265
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1901,7 +2338,47 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"14_15_yes\": 0.42,\n    \"14_16_no\": 0.11,\n    \"18_19_yes\": 0.47,\n    \"18_20_no\": 0.16,\n    \"1_12_#default#\": 0.89,\n    \"1_13_yes\": 0.49,\n    \"1_21_yes\": 0.81,\n    \"1_2_yes\": 0.88,\n    \"1_30_yes\": 0.89,\n    \"1_7_yes\": 0.87,\n    \"22_23_yes\": 0.4,\n    \"22_26_no\": 0.13,\n    \"24_26_#default#\": 0.2,\n    \"31_34_#default#\": 0.1,\n    \"32_34_no\": 0.15,\n    \"37_6_#default#\": 0.12,\n    \"38_6_#default#\": 0.2,\n    \"46_11_#default#\": 0.13,\n    \"46_47_yes\": 0.4,\n    \"4_11_#default#\": 0.15,\n    \"50_20_#default#\": 0.19,\n    \"50_51_yes\": 0.42,\n    \"52_16_#default#\": 0.69,\n    \"52_53_yes\": 0.37,\n    \"54_55_no\": 0.11,\n    \"57_55_#default#\": 0.69,\n    \"5_11_no\": 0.42,\n    \"9_6_no\": 0.18\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2345,\n      \"width\": 4190,\n      \"x\": -1160,\n      \"y\": 120\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_15_yes": 0.42,
+      "14_16_no": 0.11,
+      "18_19_yes": 0.47,
+      "18_20_no": 0.16,
+      "1_12_#default#": 0.89,
+      "1_13_yes": 0.49,
+      "1_21_yes": 0.81,
+      "1_2_yes": 0.88,
+      "1_30_yes": 0.89,
+      "1_7_yes": 0.87,
+      "22_23_yes": 0.4,
+      "22_26_no": 0.13,
+      "24_26_#default#": 0.2,
+      "31_34_#default#": 0.1,
+      "32_34_no": 0.15,
+      "37_6_#default#": 0.12,
+      "38_6_#default#": 0.2,
+      "46_11_#default#": 0.13,
+      "46_47_yes": 0.4,
+      "4_11_#default#": 0.15,
+      "50_20_#default#": 0.19,
+      "50_51_yes": 0.42,
+      "52_16_#default#": 0.69,
+      "52_53_yes": 0.37,
+      "54_55_no": 0.11,
+      "57_55_#default#": 0.69,
+      "5_11_no": 0.42,
+      "9_6_no": 0.18
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2345,
+        "width": 4190,
+        "x": -1160,
+        "y": 120
+      }
+    }
+  }
 inputs:
 - key: Username
   value: {}
@@ -1916,7 +2393,9 @@ inputs:
 - key: CustomADAttribute
   value: {}
   required: false
-  description: "A custom Active Directory attribute.\nIn case there is a custom attribute in Active Directory which stores the name of the computer assigned to the user in the user object, it would be fetched."
+  description: |-
+    A custom Active Directory attribute.
+    In case there is a custom attribute in Active Directory which stores the name of the computer assigned to the user in the user object, it would be fetched.
   playbookInputQuery:
 outputs:
 - contextPath: GSuite.MobileDevices
@@ -2237,6 +2716,5 @@ fromversion: 6.8.0
 marketplaces:
 - xsoar
 - marketplacev2
-- platform
 contentitemexportablefields:
   contentitemfields: {}

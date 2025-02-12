@@ -4,31 +4,37 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Possible External RDP Brute-Force - Set Verdict
 description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 446f9247-e57a-430f-8aeb-02d0e5f53cae
     type: start
     task:
       id: 446f9247-e57a-430f-8aeb-02d0e5f53cae
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '3'
-      - '4'
-      - '1'
-      - '2'
-      - '10'
-      - '12'
-      - '13'
+      - "3"
+      - "4"
+      - "1"
+      - "2"
+      - "10"
+      - "12"
+      - "13"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -36,8 +42,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 56055fa9-a5d2-4c5a-8f16-fa9f84262480
     type: condition
     task:
@@ -47,15 +53,15 @@ tasks:
       description: Check if a related campaign exists.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '8'
+      - "9"
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -65,8 +71,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 190\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 190
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -74,8 +86,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: f92cdec9-e639-463f-8b27-90e97920209e
     type: condition
     task:
@@ -85,15 +97,15 @@ tasks:
       description: Check if hunting results exist.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '7'
+      - "9"
+      "yes":
+      - "7"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -103,10 +115,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
+              simple: "true"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 190\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -114,8 +132,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: d82ac18e-cec4-486a-8fca-9e877d3a1e37
     type: condition
     task:
@@ -125,15 +143,15 @@ tasks:
       description: Check if XDR related alerts exist.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '6'
+      - "9"
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -143,8 +161,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 190\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 190
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -152,8 +176,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: d3816b97-2a2f-4539-83ee-af6592faad20
     type: condition
     task:
@@ -163,15 +187,15 @@ tasks:
       description: Check if the connection was made from an unusual country.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '5'
+      - "9"
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -181,10 +205,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'false'
+              simple: "false"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1300,\n    \"y\": 190\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 190
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -192,8 +222,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 5408731d-6b13-46de-8490-f196f1890360
     type: regular
     task:
@@ -204,20 +234,26 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Suspicious_Elements
       value:
         simple: Unusual Country
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1300,\n    \"y\": 350\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -229,8 +265,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: bc3eca1f-c99b-4630-884d-9e573739a061
     type: regular
     task:
@@ -241,20 +277,26 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Suspicious_Elements
       value:
         simple: Related Alerts
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 350\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -267,8 +309,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 0e017a52-2083-4c77-8f32-542c271a1761
     type: regular
     task:
@@ -279,20 +321,26 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Suspicious_Elements
       value:
         simple: Hunting Results
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 350\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -304,8 +352,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 0cfadcf4-e302-4714-8cdf-c22fe1640354
     type: regular
     task:
@@ -316,20 +364,26 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Suspicious_Elements
       value:
         simple: Related Campaign
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 350\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -342,8 +396,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: d18b4c9c-408b-4155-8a49-c07e400508b3
     type: title
     task:
@@ -352,11 +406,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 520\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -364,8 +424,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: 8e87df54-e1ee-4dcb-8911-0da0077e8b65
     type: condition
     task:
@@ -375,15 +435,15 @@ tasks:
       description: Check if the IP reputation is suspicious or higher.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '11'
+      - "9"
+      "yes":
+      - "11"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: greaterThanOrEqual
           left:
@@ -393,9 +453,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -390,\n    \"y\": 190\n  }\n}"
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 190
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -403,8 +469,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: 2820bf44-fc60-4781-84ef-fe725a1b3628
     type: regular
     task:
@@ -415,20 +481,26 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Suspicious_Elements
       value:
         simple: IP Reputation
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -390,\n    \"y\": 350\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -436,8 +508,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 16c9bbda-5247-47c2-81d5-2909757ab287
     type: condition
     task:
@@ -447,15 +519,15 @@ tasks:
       description: Checks if a risky user is involved in the incident.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '14'
+      - "9"
+      "yes":
+      - "14"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -463,8 +535,14 @@ tasks:
               complex:
                 root: inputs.RiskyUser
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -800,\n    \"y\": 190\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 190
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -472,8 +550,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 03fb3ebe-d5d6-4695-81d2-5ceab496655b
     type: condition
     task:
@@ -483,15 +561,15 @@ tasks:
       description: Checks if a risky user is involved in the incident.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '15'
+      - "9"
+      "yes":
+      - "15"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -499,8 +577,14 @@ tasks:
               complex:
                 root: inputs.RiskyHost
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1210,\n    \"y\": 190\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1210,
+          "y": 190
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -508,8 +592,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: f480c89c-1647-44ec-8e9e-d1af77bcb52e
     type: regular
     task:
@@ -520,20 +604,26 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Suspicious_Elements
       value:
         simple: Risky User
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -800,\n    \"y\": 350\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -541,8 +631,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: 93f3be3f-29e0-499f-8cc3-ac8fb5e8fa06
     type: regular
     task:
@@ -553,20 +643,26 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Suspicious_Elements
       value:
         simple: Risky Host
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -1210,\n    \"y\": 350\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1210,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -574,7 +670,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"10_9_#default#\": 0.28,\n    \"3_9_#default#\": 0.19,\n    \"4_9_#default#\": 0.2\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 535,\n      \"width\": 2890,\n      \"x\": -1210,\n      \"y\": 50\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_9_#default#": 0.28,
+      "3_9_#default#": 0.19,
+      "4_9_#default#": 0.2
+    },
+    "paper": {
+      "dimensions": {
+        "height": 535,
+        "width": 2890,
+        "x": -1210,
+        "y": 50
+      }
+    }
+  }
 inputs:
 - key: RelatedAlerts
   value: {}
@@ -661,8 +772,6 @@ outputs:
   type: unknown
 tests:
 - No tests (auto formatted)
-marketplaces:
-- marketplacev2
-- platform
+marketplaces: ["marketplacev2"]
 fromversion: 6.8.0
 system: true

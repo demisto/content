@@ -2,25 +2,31 @@ id: Large Upload Alert
 version: -1
 name: Large Upload Alert
 description: "The playbook investigates Cortex XDR alerts involving large upload alerts. \nThe playbook consists of the following procedures:\n- Searches for similar previous alerts that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 6c7dbcfb-6937-4b34-8f9c-819cbae9ae36
     type: start
     task:
       id: 6c7dbcfb-6937-4b34-8f9c-819cbae9ae36
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -130\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -28,8 +34,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 8697d08d-678e-464f-835b-1f6ffd24f71a
     type: title
     task:
@@ -38,14 +44,20 @@ tasks:
       name: Check Previous Similar Alerts
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 0\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -53,8 +65,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 72d68f27-3f59-4b81-8e76-0672b557a892
     type: regular
     task:
@@ -65,10 +77,10 @@ tasks:
       scriptName: DBotFindSimilarIncidents
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       fieldExactMatch:
         simple: alert.name,alert.rawName
@@ -77,7 +89,7 @@ tasks:
       fromDate:
         simple: 2 months ago
       minimunIncidentSimilarity:
-        simple: '0.8'
+        simple: "0.8"
       query:
         simple: status:closed -closeReason:New -closeReason:Under Investigation -closeReason:Resolved - True Positive
       similarCategoricalField:
@@ -85,8 +97,14 @@ tasks:
       similarTextField:
         simple: alert.initiatedby,alert.remoteport,alert.initiatorcmd,alert.osparentcmd,alert.remoteip,alert.remotehost,alert.cgocmd,alert.cgosha256,alert.osparentsha256,alert.username,alert.initiatorsha256,alert.cgoname,alert.osparentname
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 130\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -94,8 +112,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: c5a5bd0f-7d6e-4e90-8a9c-ee8cc950dcd8
     type: condition
     task:
@@ -105,15 +123,15 @@ tasks:
       description: Determine if previous false positive alerts have been detected with similar characteristics.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '6'
-      yes:
-      - '4'
+      - "6"
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -122,10 +140,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
+              simple: "true"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 290\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 290
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -133,8 +157,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 1ec586df-20a7-443a-8739-b444dcd6c8da
     type: condition
     task:
@@ -144,15 +168,15 @@ tasks:
       description: Determines whether an alert requires further investigation if similar previous false positive alerts were found.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '56'
-      yes:
-      - '5'
+      - "56"
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -161,10 +185,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 460\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 460
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -172,26 +202,35 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 90f51021-99b9-4ef9-8b52-ebdbc60bf287
     type: condition
     task:
       id: 90f51021-99b9-4ef9-8b52-ebdbc60bf287
       version: -1
       name: Alert Investigation Should Continue?
-      description: "The playbook detected similar alerts that were closed as false positives previously.\n\nReview the alert details and similar closed false positive alerts to determine whether this Cortex XDR alert should be further investigated."
+      description: |-
+        The playbook detected similar alerts that were closed as false positives previously.
+
+        Review the alert details and similar closed false positive alerts to determine whether this Cortex XDR alert should be further investigated.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '56'
-      Yes:
-      - '6'
+      - "56"
+      "Yes":
+      - "6"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1450,\n    \"y\": 630\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 630
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -199,8 +238,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 50c117ad-c5ac-462a-8561-d68218a6b8d5
     type: title
     task:
@@ -209,14 +248,20 @@ tasks:
       name: Enrichment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 800\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -224,8 +269,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: fe568ede-c2ed-49c3-8960-93d68932bc81
     type: title
     task:
@@ -234,11 +279,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 5110\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 5110
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -246,8 +297,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: e865ea1c-7558-4b04-8c30-778d7107c2f0
     type: condition
     task:
@@ -257,12 +308,12 @@ tasks:
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '59'
+      - "59"
       More Than Threshold:
-      - '36'
+      - "36"
     separatecontext: false
     conditions:
     - label: More Than Threshold
@@ -279,7 +330,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: '1'
+                        simple: "1"
                     keys: {}
                     regex:
                       value:
@@ -301,7 +352,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: '1'
+                        simple: "1"
                     keys: {}
                     regex:
                       value:
@@ -323,7 +374,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: '0'
+                        simple: "0"
                     keys: {}
                     regex:
                       value:
@@ -333,8 +384,14 @@ tasks:
             value:
               simple: inputs.Transferred_Data _Threshold
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 930\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -342,8 +399,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: e4410a4b-63d7-40b7-8a24-81d34e2853bb
     type: playbook
     task:
@@ -354,10 +411,10 @@ tasks:
       playbookName: Entity Enrichment - Generic v3
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
       Domain:
         complex:
@@ -422,7 +479,7 @@ tasks:
       InternalRange:
         simple: ${inputs.InternalIPRanges}
       ResolveIP:
-        simple: 'False'
+        simple: "False"
       SHA256:
         complex:
           root: Core.OriginalAlert._all_events
@@ -442,7 +499,7 @@ tasks:
                 iscontext: true
           - operator: uniq
       URLSSLVerification:
-        simple: 'False'
+        simple: "False"
       Username:
         complex:
           root: Core.OriginalAlert._all_events.causality_actor_primary_normalized_user
@@ -450,13 +507,19 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1270\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -464,8 +527,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: 3512a97c-3538-462f-8715-81922998871e
     type: title
     task:
@@ -474,19 +537,25 @@ tasks:
       name: Analysis
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '11'
-      - '12'
-      - '13'
-      - '14'
-      - '17'
-      - '19'
+      - "11"
+      - "12"
+      - "13"
+      - "14"
+      - "17"
+      - "19"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1430\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1430
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -494,22 +563,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: 4512ad3f-a604-4ee3-8f9a-f0fc78614dbc
     type: regular
     task:
       id: 4512ad3f-a604-4ee3-8f9a-f0fc78614dbc
       version: -1
       name: Set Additional Alerts to Context
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     scriptarguments:
       key:
         simple: Analysis.AdditionalAlerts
@@ -538,8 +614,14 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -550,\n    \"y\": 1570\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 1570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -547,27 +629,34 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 6beec2c4-76c1-4f04-8002-d9757de02ba3
     type: regular
     task:
       id: 6beec2c4-76c1-4f04-8002-d9757de02ba3
       version: -1
       name: Check Whether The Source Host Is an FTP Server
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     scriptarguments:
       key:
         simple: Analysis.FTP_Server
       stringify:
-        simple: 'true'
+        simple: "true"
       value:
         complex:
           root: ActiveDirectory.Computers
@@ -585,8 +674,14 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -150,\n    \"y\": 1570\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -594,27 +689,34 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 42b98818-3436-40d0-8767-84ee2fe2cb49
     type: regular
     task:
       id: 42b98818-3436-40d0-8767-84ee2fe2cb49
       version: -1
       name: Check Whether The Source Host Is an SMTP Server
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     scriptarguments:
       key:
         simple: Analysis.SMTP_Server
       stringify:
-        simple: 'true'
+        simple: "true"
       value:
         complex:
           root: ActiveDirectory.Computers
@@ -632,8 +734,14 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 250,\n    \"y\": 1570\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -641,8 +749,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: feeaab53-6b95-4c8e-8db4-13ca6f651c0e
     type: condition
     task:
@@ -652,15 +760,15 @@ tasks:
       description: Checks whether an unusual FW App ID was used.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '20'
-      yes:
-      - '15'
+      - "20"
+      "yes":
+      - "15"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: notIn
           left:
@@ -688,8 +796,14 @@ tasks:
                         simple: ','
             iscontext: true
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 1570\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -697,8 +811,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: 0fed42d5-2f74-41fd-8a07-f55027ea530d
     type: regular
     task:
@@ -709,18 +823,24 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     scriptarguments:
       key:
         simple: Analysis.Unusual_FW_App_ID
       value:
-        simple: 'True'
+        simple: "True"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 1730\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1730
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -728,8 +848,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: b12e6e1d-217c-4762-8e78-4799db5db267
     type: regular
     task:
@@ -740,18 +860,24 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     scriptarguments:
       key:
         simple: Analysis.Unusual_Process
       value:
-        simple: 'True'
+        simple: "True"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1080,\n    \"y\": 1730\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1730
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -759,8 +885,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 085d6d0b-264f-4102-8d3f-3d22c8b73b56
     type: condition
     task:
@@ -770,15 +896,15 @@ tasks:
       description: Checks whether an unusual process was used.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '20'
-      yes:
-      - '16'
+      - "20"
+      "yes":
+      - "16"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: notIn
           left:
@@ -818,8 +944,14 @@ tasks:
                         simple: ','
             iscontext: true
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1080,\n    \"y\": 1570\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -827,8 +959,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: 217db6e1-9ac4-430e-895a-df13d0530160
     type: regular
     task:
@@ -839,18 +971,24 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     scriptarguments:
       key:
         simple: Analysis.Unsigned_Process
       value:
-        simple: 'True'
+        simple: "True"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1490,\n    \"y\": 1730\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 1730
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -858,8 +996,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: 39200c88-ab42-4156-862f-2fcf82f19f10
     type: condition
     task:
@@ -869,15 +1007,15 @@ tasks:
       description: Checks whether the initiator process is unsigned.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '20'
-      yes:
-      - '18'
+      - "20"
+      "yes":
+      - "18"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEqualString
           left:
@@ -904,8 +1042,14 @@ tasks:
             value:
               simple: SIGNATURE_SIGNED
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1490,\n    \"y\": 1570\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 1570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -913,8 +1057,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: 6b43ad44-ea77-4ba0-8f65-a0492deee1b0
     type: title
     task:
@@ -923,14 +1067,20 @@ tasks:
       name: Containment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '21'
+      - "21"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1900\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1900
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -938,8 +1088,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: f3be381d-d9b0-43cb-8b39-88c0b23a9361
     type: condition
     task:
@@ -949,15 +1099,15 @@ tasks:
       description: Checks whether there are any malicious indicators to block.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '24'
-      yes:
-      - '22'
+      - "24"
+      "yes":
+      - "22"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: greaterThanOrEqual
           left:
@@ -978,7 +1128,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
         - operator: greaterThanOrEqual
           left:
             value:
@@ -1001,15 +1151,23 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: "Hash\nAs"
+                        simple: |-
+                          Hash
+                          As
                     ignorecase: true
                 accessor: Score
             iscontext: true
           right:
             value:
-              simple: '3'
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2030\n  }\n}"
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2030
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1017,8 +1175,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: fd553753-a938-48a1-85e5-229e4fead72e
     type: condition
     task:
@@ -1028,15 +1186,15 @@ tasks:
       description: Checks whether early containment is enabled for this playbook before executing containment.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '24'
-      yes:
-      - '23'
+      - "24"
+      "yes":
+      - "23"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -1045,10 +1203,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 190,\n    \"y\": 2200\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 2200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1056,29 +1220,37 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     taskid: 9a381545-3837-49c6-8462-0703a4b3a1fc
     type: playbook
     task:
       id: 9a381545-3837-49c6-8462-0703a4b3a1fc
       version: -1
       name: Block Indicators - Generic v3
-      description: "This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:\n\n- Block URL - Generic v2\n- Block Account - Generic v2\n- Block IP - Generic v3\n- Block File - Generic v2\n- Block Email - Generic v2\n- Block Domain - Generic v2."
+      description: |-
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2.
       playbookName: Block Indicators - Generic v3
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     scriptarguments:
       AutoBlockIndicators:
         simple: ${inputs.AutoBlockIndicators}
       AutoCommit:
-        simple: No
+        simple: "No"
       CustomBlockRule:
-        simple: 'True'
+        simple: "True"
       CustomURLCategory:
         simple: XSOAR Remediation - Malicious URLs
       DomainToBlock:
@@ -1100,7 +1272,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: uniq
@@ -1123,12 +1295,12 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: uniq
       InputEnrichment:
-        simple: 'False'
+        simple: "False"
       InternalRange:
         simple: ${inputs.InternalIPRanges}
       MD5:
@@ -1142,7 +1314,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '32'
+                  simple: "32"
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -1150,7 +1322,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           - - operator: isEqualString
               left:
                 value:
@@ -1185,7 +1357,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '64'
+                  simple: "64"
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -1193,7 +1365,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           - - operator: isEqualString
               left:
                 value:
@@ -1218,13 +1390,19 @@ tasks:
       UserVerification:
         simple: ${inputs.BlockIndicators_UserVerification}
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 190,\n    \"y\": 2380\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 2380
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1232,8 +1410,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: dff2d00e-ead5-42af-8925-e9ab4bb392c5
     type: title
     task:
@@ -1242,17 +1420,23 @@ tasks:
       name: Investigation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '25'
-      - '27'
-      - '28'
-      - '31'
+      - "25"
+      - "27"
+      - "28"
+      - "31"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2550\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2550
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1260,22 +1444,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: f96c9d24-ae8d-4888-8f43-1827d644292b
     type: playbook
     task:
       id: f96c9d24-ae8d-4888-8f43-1827d644292b
       version: -1
       name: TIM - Indicator Relationships Analysis
-      description: "This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:\n- Indicators of compromise (IOCs) related to the investigation.\n- Attack patterns related to the investigation.\n- Campaigns related to the investigation.\n- IOCs associated with the identified campaigns.\n- Reports containing details on the identified campaigns."
+      description: |-
+        This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:
+        - Indicators of compromise (IOCs) related to the investigation.
+        - Attack patterns related to the investigation.
+        - Campaigns related to the investigation.
+        - IOCs associated with the identified campaigns.
+        - Reports containing details on the identified campaigns.
       playbookName: TIM - Indicator Relationships Analysis
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     scriptarguments:
       Indicator:
         complex:
@@ -1284,15 +1474,21 @@ tasks:
           transformers:
           - operator: uniq
       LimitResults:
-        simple: '200'
+        simple: "200"
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": -170,\n    \"y\": 2690\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 2690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1300,31 +1496,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '26':
-    id: '26'
+  "26":
+    id: "26"
     taskid: dfaff694-5e45-4cfe-84b4-c80c885026ec
     type: playbook
     task:
       id: dfaff694-5e45-4cfe-84b4-c80c885026ec
       version: -1
       name: User Investigation - Generic
-      description: "This playbook performs an investigation on a specific user, using queries and logs from SIEM, Identity management systems, XDR, and firewalls.\n\nSupported Integrations:\n-Okta\n-Splunk\n-QRadar\n-Azure Log Analytics\n-PAN-OS\n-XDR / Core By Palo Alto Networks."
+      description: |-
+        This playbook performs an investigation on a specific user, using queries and logs from SIEM, Identity management systems, XDR, and firewalls.
+
+        Supported Integrations:
+        -Okta
+        -Splunk
+        -QRadar
+        -Azure Log Analytics
+        -PAN-OS
+        -XDR / Core By Palo Alto Networks.
       playbookName: User Investigation - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     scriptarguments:
       AzureSearchTime:
         simple: ago(1d)
       OktaSearch:
-        simple: 'True'
+        simple: "True"
       QRadarSearchTime:
         simple: Last 1 days
       SIEMFailedLogonSearch:
-        simple: 'True'
+        simple: "True"
       SplunkEarliestTime:
         simple: -1d
       SplunkIndex:
@@ -1332,7 +1537,7 @@ tasks:
       SplunkLatestTime:
         simple: now
       ThreatLogSearch:
-        simple: 'True'
+        simple: "True"
       Username:
         complex:
           root: Core.OriginalAlert._all_events.actor_primary_normalized_user
@@ -1340,17 +1545,23 @@ tasks:
           transformers:
           - operator: uniq
       XDRAlertSearch:
-        simple: 'True'
+        simple: "True"
       XDRUsernameField:
         simple: actor_effective_username
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": 2860\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 2860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1358,8 +1569,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 5bf706da-8373-49a6-8d3a-718752ab995e
     type: condition
     task:
@@ -1369,15 +1580,15 @@ tasks:
       description: Checks whether an initiator username is available for investigation.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '34'
-      yes:
-      - '26'
+      - "34"
+      "yes":
+      - "26"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1387,8 +1598,14 @@ tasks:
           right:
             value: {}
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": 2690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 2690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1396,8 +1613,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '28':
-    id: '28'
+  "28":
+    id: "28"
     taskid: ed863d05-e3ef-409f-89d9-70fac8f65414
     type: playbook
     task:
@@ -1408,10 +1625,10 @@ tasks:
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     scriptarguments:
       FileSHA256:
         complex:
@@ -1432,35 +1649,35 @@ tasks:
                 iscontext: true
           - operator: uniq
       HuntAttacker:
-        simple: 'True'
+        simple: "True"
       HuntByFile:
-        simple: 'True'
+        simple: "True"
       HuntByHost:
-        simple: 'True'
+        simple: "True"
       HuntByTechnique:
-        simple: 'False'
+        simple: "False"
       HuntCnCTechniques:
-        simple: 'True'
+        simple: "True"
       HuntCollectionTechniques:
-        simple: 'True'
+        simple: "True"
       HuntDefenseEvasionTechniques:
-        simple: 'True'
+        simple: "True"
       HuntDiscoveryTechniques:
-        simple: 'True'
+        simple: "True"
       HuntExecutionTechniques:
-        simple: 'True'
+        simple: "True"
       HuntImpactTechniques:
-        simple: 'True'
+        simple: "True"
       HuntInitialAccessTechniques:
-        simple: 'True'
+        simple: "True"
       HuntLateralMovementTechniques:
-        simple: 'True'
+        simple: "True"
       HuntPersistenceTechniques:
-        simple: 'True'
+        simple: "True"
       HuntPrivilegeEscalationTechniques:
-        simple: 'True'
+        simple: "True"
       HuntReconnaissanceTechniques:
-        simple: 'True'
+        simple: "True"
       agentID:
         complex:
           root: Core.OriginalAlert._all_events
@@ -1487,7 +1704,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '2'
+                  simple: "2"
           accessor: Indicator
           transformers:
           - operator: uniq
@@ -1511,18 +1728,24 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 2690\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 2690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1530,8 +1753,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '29':
-    id: '29'
+  "29":
+    id: "29"
     taskid: c9c91b29-bca6-4a8e-8019-6293aa15fe02
     type: playbook
     task:
@@ -1542,10 +1765,10 @@ tasks:
       playbookName: Command-Line Analysis
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '32'
+      - "32"
     scriptarguments:
       Commandline:
         complex:
@@ -1560,15 +1783,21 @@ tasks:
                 iscontext: true
           - operator: uniq
       StringSimilarityThreshold:
-        simple: '0.5'
+        simple: "0.5"
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 1450,\n    \"y\": 2870\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 2870
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1576,39 +1805,56 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '30':
-    id: '30'
+  "30":
+    id: "30"
     taskid: 8e08bf08-c948-4753-8a76-ac6d34aa874f
     type: playbook
     task:
       id: 8e08bf08-c948-4753-8a76-ac6d34aa874f
       version: -1
       name: Search and Compare Process Executions - Generic
-      description: "This playbook is a generic playbook that receives a process name and a command-line argument. It searches for the given process executions and compares the command-line argument from the results to the command-line argument received from the playbook input. The playbook supports searching process executions using the following integrations:\n\n- Cortex XDR XQL Engine\n- Cortex XDR IR(Search executions inside XDR alerts)\n- Microsoft Defender For Endpoint\n\nNote: Under the \"Processes\" input, the playbook should receive an array that contains the following keys:\n- value: *process name*\n- commands: *command-line arguments*"
+      description: |-
+        This playbook is a generic playbook that receives a process name and a command-line argument. It searches for the given process executions and compares the command-line argument from the results to the command-line argument received from the playbook input. The playbook supports searching process executions using the following integrations:
+
+        - Cortex XDR XQL Engine
+        - Cortex XDR IR(Search executions inside XDR alerts)
+        - Microsoft Defender For Endpoint
+
+        Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
+        - value: *process name*
+        - commands: *command-line arguments*
       playbookName: Search and Compare Process Executions - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '32'
+      - "32"
     scriptarguments:
       HuntingTimeFrame:
         simple: 7 days
       Processes:
-        simple: "- value: ${Core.OriginalAlert._all_events.causality_actor_process_image_name},${Core.OriginalAlert._all_events.os_actor_process_image_name},${Core.OriginalAlert._all_events.actor_process_image_name}\n- commands: ${Core.OriginalAlert._all_events.os_actor_process_command_line},${Core.OriginalAlert._all_events.actor_process_command_line}"
+        simple: |-
+          - value: ${Core.OriginalAlert._all_events.causality_actor_process_image_name},${Core.OriginalAlert._all_events.os_actor_process_image_name},${Core.OriginalAlert._all_events.actor_process_image_name}
+          - commands: ${Core.OriginalAlert._all_events.os_actor_process_command_line},${Core.OriginalAlert._all_events.actor_process_command_line}
       SearchXDRAlerts:
-        simple: 'True'
+        simple: "True"
       StringSimilarityThreshold:
-        simple: '0.5'
+        simple: "0.5"
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 1050,\n    \"y\": 2870\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 2870
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1616,8 +1862,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '31':
-    id: '31'
+  "31":
+    id: "31"
     taskid: 3b4bb95e-181d-4d4f-8f8d-d5ee3410b7cf
     type: condition
     task:
@@ -1627,16 +1873,16 @@ tasks:
       description: Checks whether an initiator command-line is available for investigation.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '34'
-      yes:
-      - '30'
-      - '29'
+      - "34"
+      "yes":
+      - "30"
+      - "29"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1655,8 +1901,14 @@ tasks:
           right:
             value: {}
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1050,\n    \"y\": 2690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 2690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1664,8 +1916,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '32':
-    id: '32'
+  "32":
+    id: "32"
     taskid: e4b8a16c-1eb6-4f0e-8b8a-7b6ec5b8fceb
     type: condition
     task:
@@ -1675,15 +1927,15 @@ tasks:
       description: Checks whether the command-line investigation produced any results.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '34'
-      yes:
-      - '33'
+      - "34"
+      "yes":
+      - "33"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1700,7 +1952,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
         - operator: isEqualString
           left:
@@ -1709,7 +1961,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
         - operator: isEqualString
           left:
@@ -1718,7 +1970,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
         - operator: isEqualString
           left:
@@ -1727,7 +1979,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
         - operator: isEqualString
           left:
@@ -1736,10 +1988,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1260,\n    \"y\": 3050\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 3050
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1747,8 +2005,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '33':
-    id: '33'
+  "33":
+    id: "33"
     taskid: 75661c64-aca9-4fec-870a-be6a05dda95c
     type: regular
     task:
@@ -1759,18 +2017,24 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     scriptarguments:
       key:
         simple: Investigation.CMDReputation
       value:
         simple: Malicious
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1260,\n    \"y\": 3210\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 3210
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1778,8 +2042,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '34':
-    id: '34'
+  "34":
+    id: "34"
     taskid: c1251dbd-a14b-473c-836e-0c81f5667b56
     type: title
     task:
@@ -1788,14 +2052,20 @@ tasks:
       name: Set Verdict
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '35'
+      - "35"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3380\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3380
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1803,8 +2073,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '35':
-    id: '35'
+  "35":
+    id: "35"
     taskid: 4e31d21d-f0e5-40d2-8333-750fd0973c3c
     type: condition
     task:
@@ -1814,14 +2084,14 @@ tasks:
       description: Estimate the verdict for the large upload Cortex XDR alerts.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       ' Malicious':
-      - '40'
+      - "40"
       '#default#':
-      - '38'
+      - "38"
       Benign:
-      - '37'
+      - "37"
     separatecontext: false
     conditions:
     - label: ' Malicious'
@@ -1878,12 +2148,12 @@ tasks:
                   args:
                     descending:
                       value:
-                        simple: 'false'
+                        simple: "false"
                 - operator: LastArrayElement
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
         - operator: greaterThanOrEqual
           left:
             value:
@@ -1947,12 +2217,12 @@ tasks:
                   args:
                     descending:
                       value:
-                        simple: 'false'
+                        simple: "false"
                 - operator: LastArrayElement
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
         - operator: isNotEmpty
           left:
             value:
@@ -2030,7 +2300,7 @@ tasks:
                         simple: alert.hostname
                       iscontext: true
                     ignorecase: true
-                accessor: risk_level
+                accessor: 'risk_level'
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -2045,7 +2315,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
         - operator: greaterThanOrEqual
           left:
             value:
@@ -2053,7 +2323,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
         - operator: greaterThanOrEqual
           left:
             value:
@@ -2061,7 +2331,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '3'
+              simple: "3"
         - operator: isNotEmpty
           left:
             value:
@@ -2111,7 +2381,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
         - operator: isEqualString
           left:
@@ -2134,7 +2404,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
         - operator: isEqualString
           left:
@@ -2157,7 +2427,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
         - operator: IsInCidrRanges
           left:
@@ -2172,7 +2442,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: '22'
+                        simple: "22"
                   - operator: isEqualNumber
                     left:
                       value:
@@ -2180,7 +2450,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: '22'
+                        simple: "22"
                 - - operator: isEqualString
                     left:
                       value:
@@ -2335,12 +2605,12 @@ tasks:
                   args:
                     descending:
                       value:
-                        simple: 'true'
+                        simple: "true"
                 - operator: LastArrayElement
             iscontext: true
           right:
             value:
-              simple: '1'
+              simple: "1"
         - operator: isEmpty
           left:
             value:
@@ -2416,12 +2686,12 @@ tasks:
                   args:
                     descending:
                       value:
-                        simple: 'true'
+                        simple: "true"
                 - operator: LastArrayElement
             iscontext: true
           right:
             value:
-              simple: '1'
+              simple: "1"
         - operator: isEmpty
           left:
             value:
@@ -2471,8 +2741,14 @@ tasks:
             value:
               simple: Analysis.Unsigned_Process
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3520\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3520
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2480,8 +2756,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '36':
-    id: '36'
+  "36":
+    id: "36"
     taskid: 6a389912-bd5d-45d5-85d1-c99eaffe7dc7
     type: regular
     task:
@@ -2492,10 +2768,10 @@ tasks:
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       alert_ids:
         complex:
@@ -2503,10 +2779,16 @@ tasks:
           transformers:
           - operator: uniq
       filter_alert_fields:
-        simple: 'false'
+        simple: "false"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1110\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1110
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2514,8 +2796,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '37':
-    id: '37'
+  "37":
+    id: "37"
     taskid: 02078163-8f58-4c46-8062-0e1f6fdceb62
     type: title
     task:
@@ -2524,14 +2806,20 @@ tasks:
       name: Benign
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '57'
+      - "57"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 3710\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2539,8 +2827,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '38':
-    id: '38'
+  "38":
+    id: "38"
     taskid: 2847922d-ea7e-4f39-81dd-828d8beaace1
     type: title
     task:
@@ -2549,14 +2837,20 @@ tasks:
       name: Suspicious
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '39'
+      - "39"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3710\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2564,8 +2858,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '39':
-    id: '39'
+  "39":
+    id: "39"
     taskid: 54b0d9f0-f693-45b4-87ba-11ff89012f78
     type: condition
     task:
@@ -2575,15 +2869,21 @@ tasks:
       description: "Upon review, the playbook did not identify any obvious malicious indicators associated with the alert. However, there are some noteworthy observations that require manual investigation. \n\n**Review the following alert details and determine whether remediation is necessary:**\n1. Verify if previous false positive alerts with similar characteristics have been detected.\n2. Review the additional alerts within the alert, if any exist.\n3. Examine the additional alerts retrieved by the sub-playbooks associated with the initiator account, similar command line, or initiator host.\n4. Check the FW application ID to ensure it is a known and authorized application within the organization (if the activity and application are valid, add the ID to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n5. Check the initiator process to ensure it is a known and authorized process within the organization (if the activity and process are valid, add the process name to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n6. Analyze the command line analysis results and any additional alerts with similar initiator command lines retrieved from the 'Cortex XDR - Search and Compare Process Executions - XDR Alerts' sub-playbook.\n7. Determine whether the user is aware of the upload activity and what caused the massive upload that triggered the alert.\n8. Verify whether the uploaded files contain sensitive information."
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '57'
+      - "57"
       Remediation:
-      - '46'
+      - "46"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3840\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3840
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2591,8 +2891,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '40':
-    id: '40'
+  "40":
+    id: "40"
     taskid: 8c8143f1-a8ab-4af1-88ce-eff1b5432196
     type: title
     task:
@@ -2601,14 +2901,20 @@ tasks:
       name: Malicious
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '41'
+      - "41"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 3710\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 3710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2616,8 +2922,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '41':
-    id: '41'
+  "41":
+    id: "41"
     taskid: 34bb8400-7a94-4c18-85a9-23150907eb22
     type: regular
     task:
@@ -2631,13 +2937,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       verdict:
         simple: Malicious
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 3840\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 3840
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2645,8 +2957,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '42':
-    id: '42'
+  "42":
+    id: "42"
     taskid: 607d68dc-d4b9-472a-828a-a0b13f86e62c
     type: title
     task:
@@ -2655,14 +2967,20 @@ tasks:
       name: Investigation - Related Indicators Hunt
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '43'
+      - "43"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 4000\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 4000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2670,8 +2988,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '43':
-    id: '43'
+  "43":
+    id: "43"
     taskid: d0e78f0e-d8d3-4d15-8af2-115c4658b381
     type: condition
     task:
@@ -2681,15 +2999,15 @@ tasks:
       description: Checks whether there are any indicators to hunt for.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '46'
-      yes:
-      - '45'
+      - "46"
+      "yes":
+      - "45"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -2711,8 +3029,14 @@ tasks:
             value:
               simple: RelatedURLs
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 4130\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 4130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2720,8 +3044,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '45':
-    id: '45'
+  "45":
+    id: "45"
     taskid: 279b4c05-7734-46aa-807a-7fab9fa62905
     type: playbook
     task:
@@ -2732,10 +3056,10 @@ tasks:
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '46'
+      - "46"
     scriptarguments:
       IPAddress:
         complex:
@@ -2757,7 +3081,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: append
@@ -2816,7 +3140,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '32'
+                  simple: "32"
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -2824,7 +3148,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: append
@@ -2865,7 +3189,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '40'
+                  simple: "40"
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -2873,7 +3197,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: uniq
@@ -2906,7 +3230,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '64'
+                  simple: "64"
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -2914,7 +3238,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: append
@@ -2948,7 +3272,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: append
@@ -2965,13 +3289,19 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": -220,\n    \"y\": 4300\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 4300
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2979,8 +3309,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '46':
-    id: '46'
+  "46":
+    id: "46"
     taskid: 8245e301-48ee-4974-8bcc-ce88eaedb0d8
     type: title
     task:
@@ -2989,15 +3319,21 @@ tasks:
       name: Remediation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '47'
-      - '48'
+      - "47"
+      - "48"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 4470\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 4470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -3005,29 +3341,37 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '47':
-    id: '47'
+  "47":
+    id: "47"
     taskid: c49d14ac-14bc-43f0-8be7-852dbbd4f42b
     type: playbook
     task:
       id: c49d14ac-14bc-43f0-8be7-852dbbd4f42b
       version: -1
       name: Block Indicators - Generic v3
-      description: "This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:\n\n- Block URL - Generic v2\n- Block Account - Generic v2\n- Block IP - Generic v3\n- Block File - Generic v2\n- Block Email - Generic v2\n- Block Domain - Generic v2."
+      description: |-
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2.
       playbookName: Block Indicators - Generic v3
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '58'
+      - "58"
     scriptarguments:
       AutoBlockIndicators:
         simple: ${inputs.AutoBlockIndicators}
       AutoCommit:
-        simple: No
+        simple: "No"
       CustomBlockRule:
-        simple: 'True'
+        simple: "True"
       CustomURLCategory:
         simple: XSOAR Remediation - Malicious URLs
       DomainToBlock:
@@ -3049,7 +3393,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           - - operator: notIn
               left:
                 value:
@@ -3087,7 +3431,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           - - operator: notIn
               left:
                 value:
@@ -3136,7 +3480,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: append
@@ -3147,7 +3491,7 @@ tasks:
                 iscontext: true
           - operator: uniq
       InputEnrichment:
-        simple: 'False'
+        simple: "False"
       InternalRange:
         simple: ${inputs.InternalIPRanges}
       MD5:
@@ -3161,7 +3505,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '32'
+                  simple: "32"
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -3169,7 +3513,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           - - operator: isEqualString
               left:
                 value:
@@ -3212,7 +3556,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '64'
+                  simple: "64"
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -3220,7 +3564,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           - - operator: isEqualString
               left:
                 value:
@@ -3271,20 +3615,26 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: uniq
       UserVerification:
         simple: ${inputs.BlockIndicators_UserVerification}
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": -220,\n    \"y\": 4610\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 4610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -3292,8 +3642,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '48':
-    id: '48'
+  "48":
+    id: "48"
     taskid: 370de85c-8fbc-4c5b-8fff-84a66629234c
     type: condition
     task:
@@ -3303,15 +3653,15 @@ tasks:
       description: Determine whether the endpoint should be isolated automatically.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '58'
-      yes:
-      - '55'
+      - "58"
+      "yes":
+      - "55"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -3320,15 +3670,21 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
       - - operator: isNotEmpty
           left:
             value:
               simple: Core.OriginalAlert._all_events.agent_id
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 4610\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 4610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -3336,8 +3692,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '55':
-    id: '55'
+  "55":
+    id: "55"
     taskid: fe091087-beca-4117-8e4c-871838eb6e59
     type: regular
     task:
@@ -3348,16 +3704,22 @@ tasks:
       script: '|||core-isolate-endpoint'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '58'
+      - "58"
     scriptarguments:
       endpoint_id:
         simple: ${Core.OriginalAlert._all_events.agent_id}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 4770\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 4770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -3365,8 +3727,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '56':
-    id: '56'
+  "56":
+    id: "56"
     taskid: bd684ecc-ebd8-4d11-8a82-cbd4a7a2de29
     type: regular
     task:
@@ -3380,13 +3742,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       status:
         simple: Resolved - Duplicate Alert
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 810\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 810
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -3394,8 +3762,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '57':
-    id: '57'
+  "57":
+    id: "57"
     taskid: caab875b-9fe2-46df-87c8-7e9947a49d01
     type: regular
     task:
@@ -3409,13 +3777,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       status:
         simple: Resolved - False Positive
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 4015\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 4015
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -3423,8 +3797,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '58':
-    id: '58'
+  "58":
+    id: "58"
     taskid: 030d70eb-cb22-4f1f-8f68-7e18df5a5931
     type: regular
     task:
@@ -3438,13 +3812,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       status:
         simple: Resolved - True Positive
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 4940\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 4940
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -3452,8 +3832,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '59':
-    id: '59'
+  "59":
+    id: "59"
     taskid: cf6b0725-4237-470a-88db-c526cf0a61de
     type: regular
     task:
@@ -3467,13 +3847,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       status:
         simple: Resolved - Other
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1490,\n    \"y\": 1110\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 1110
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -3481,7 +3867,35 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"14_20_#default#\": 0.5,\n    \"17_20_#default#\": 0.16,\n    \"19_20_#default#\": 0.11,\n    \"22_23_yes\": 0.46,\n    \"27_34_#default#\": 0.28,\n    \"31_34_#default#\": 0.21,\n    \"32_34_#default#\": 0.25,\n    \"39_46_Remediation\": 0.18,\n    \"39_57_#default#\": 0.31,\n    \"3_6_#default#\": 0.34,\n    \"48_58_#default#\": 0.58,\n    \"4_56_#default#\": 0.41,\n    \"5_56_#default#\": 0.43,\n    \"5_6_Yes\": 0.13,\n    \"8_36_More Than Threshold\": 0.52,\n    \"8_59_#default#\": 0.77\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 5305,\n      \"width\": 2640,\n      \"x\": -550,\n      \"y\": -130\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_20_#default#": 0.5,
+      "17_20_#default#": 0.16,
+      "19_20_#default#": 0.11,
+      "22_23_yes": 0.46,
+      "27_34_#default#": 0.28,
+      "31_34_#default#": 0.21,
+      "32_34_#default#": 0.25,
+      "39_46_Remediation": 0.18,
+      "39_57_#default#": 0.31,
+      "3_6_#default#": 0.34,
+      "48_58_#default#": 0.58,
+      "4_56_#default#": 0.41,
+      "5_56_#default#": 0.43,
+      "5_6_Yes": 0.13,
+      "8_36_More Than Threshold": 0.52,
+      "8_59_#default#": 0.77
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5305,
+        "width": 2640,
+        "x": -550,
+        "y": -130
+      }
+    }
+  }
 inputs:
 - key: InternalIPRanges
   value:
@@ -3491,39 +3905,54 @@ inputs:
   playbookInputQuery:
 - key: FurtherInvestigation
   value:
-    simple: 'False'
+    simple: "False"
   required: true
-  description: "Determines whether an alert should be further investigated if similar previous false positive alerts were found.\nPossible values:True/False. Default: False."
+  description: |-
+    Determines whether an alert should be further investigated if similar previous false positive alerts were found.
+    Possible values:True/False. Default: False.
   playbookInputQuery:
 - key: AutoBlockIndicators
   value:
-    simple: 'True'
+    simple: "True"
   required: true
-  description: "Determine whether the given indicators be automatically blocked, or if the user should be given the option to choose.\nPossible values:True/False. Default: True.\nIf set to False - no prompt will appear, and all provided indicators will be blocked automatically.\nIf set to True - the user will be prompted to select which indicators to block."
+  description: |-
+    Determine whether the given indicators be automatically blocked, or if the user should be given the option to choose.
+    Possible values:True/False. Default: True.
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
   playbookInputQuery:
 - key: BlockIndicators_UserVerification
   value:
-    simple: 'False'
+    simple: "False"
   required: true
-  description: "Determine whether the blocking of any indicator requires the verification of the user.\nPossible values:True/False. Default: False."
+  description: |-
+    Determine whether the blocking of any indicator requires the verification of the user.
+    Possible values:True/False. Default: False.
   playbookInputQuery:
 - key: EarlyContainment
   value:
-    simple: 'True'
+    simple: "True"
   required: true
-  description: "Whether early containment should be allowed when the IP address is known to be malicious.\nPossible values:True/False. Default: True."
+  description: |-
+    Whether early containment should be allowed when the IP address is known to be malicious.
+    Possible values:True/False. Default: True.
   playbookInputQuery:
 - key: AutoIsolateEndpoint
   value:
-    simple: 'False'
+    simple: "False"
   required: true
-  description: "Whether to isolate the initiating endpoint automatically if the investigation verdict is malicious.\nPossible values:True/False. Default: False."
+  description: |-
+    Whether to isolate the initiating endpoint automatically if the investigation verdict is malicious.
+    Possible values:True/False. Default: False.
   playbookInputQuery:
 - key: Transferred_Data _Threshold
   value:
-    simple: '150'
+    simple: "150"
   required: true
-  description: "Specify the uploaded data threshold volume (in MB) from which large upload alerts should be investigated.\nBy setting a threshold, you will be able to determine which large upload alerts require investigation.\nDefault value: 150 (MB)."
+  description: |-
+    Specify the uploaded data threshold volume (in MB) from which large upload alerts should be investigated.
+    By setting a threshold, you will be able to determine which large upload alerts require investigation.
+    Default value: 150 (MB).
   playbookInputQuery:
 - key: FWApps_Processes_Whitlist
   value:
@@ -3541,6 +3970,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
-marketplaces:
-- marketplacev2
-- platform
+marketplaces: ["marketplacev2"]

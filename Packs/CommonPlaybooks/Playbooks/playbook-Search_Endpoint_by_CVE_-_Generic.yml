@@ -2,31 +2,37 @@ id: Search Endpoint by CVE - Generic
 version: -1
 name: Search Endpoint by CVE - Generic
 description: Hunt for assets with a given CVE using available tools
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 3cc9f67a-3dcb-4793-8ac2-fbbeac13430c
     type: start
     task:
       id: 3cc9f67a-3dcb-4793-8ac2-fbbeac13430c
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 60\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 60
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: fe3f943e-ee9d-4e14-8d38-acd5029ebbb9
     type: condition
     task:
@@ -36,15 +42,15 @@ tasks:
       description: Checks if there is a CVE in the playbook input
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '2'
+      - "9"
+      "yes":
+      - "2"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -52,14 +58,20 @@ tasks:
               complex:
                 root: inputs.CVE_ID
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 240\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 240
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 5c6efc1c-e322-4f05-875b-e1e9410adf25
     type: title
     task:
@@ -68,22 +80,28 @@ tasks:
       name: Search CVE
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '3'
-      - '7'
-      - '13'
+      - "3"
+      - "7"
+      - "13"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 410\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 776c24cb-8546-4e9c-81f7-cfd2dc6c4727
     type: title
     task:
@@ -92,20 +110,26 @@ tasks:
       name: Rapid7 Nexpose
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 560\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 560
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 70b1a735-db7c-4d65-8b8f-ac8f1eaa212f
     type: condition
     task:
@@ -115,15 +139,15 @@ tasks:
       description: 'Checks if Rapid7 Nexpose is enabled '
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '5'
+      - "9"
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -146,15 +170,21 @@ tasks:
             value:
               simple: Rapid7 Nexpose
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 700\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 700
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 14333e5c-cb15-4a68-8445-2b05472229e1
     type: regular
     task:
@@ -167,10 +197,10 @@ tasks:
       script: '|||nexpose-search-assets'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       vulnerabilityTitleContains:
         complex:
@@ -182,7 +212,13 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 910\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 910
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -196,8 +232,8 @@ tasks:
           - operator: ConvertToSingleElementArray
     skipunavailable: false
     quietmode: 0
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 3314e9aa-4546-49ca-809a-e441b344f5f2
     type: condition
     task:
@@ -207,15 +243,15 @@ tasks:
       description: 'Checks if KennaV2 is enabled '
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '8'
+      - "9"
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -238,15 +274,21 @@ tasks:
             value:
               simple: Kennav2
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 710\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 4dcb3885-0d0e-4dd8-8a6d-744a3c57b9b8
     type: title
     task:
@@ -255,20 +297,26 @@ tasks:
       name: Kennav2
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 570\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 8a816485-5157-4566-8336-291b4f7fa4d0
     type: regular
     task:
@@ -281,10 +329,10 @@ tasks:
       script: '|||kenna-search-vulnerabilities'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       id:
         complex:
@@ -295,14 +343,20 @@ tasks:
       to_context: {}
       top-priority: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 910\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 910
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: ae99de5a-7c26-4cf6-87fc-d004af1cb212
     type: title
     task:
@@ -311,17 +365,23 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 1690\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: cffb6924-0a75-4ed9-89d3-33944c6d31b2
     type: condition
     task:
@@ -331,15 +391,15 @@ tasks:
       description: If found Assets with the given CVE
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '12'
+      - "9"
+      "yes":
+      - "12"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -348,14 +408,20 @@ tasks:
                 root: Kenna
                 accessor: Vulnerabilities
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 1105\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 1105
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 5dc657f4-1a09-4466-87e0-c4e6aa568d3c
     type: regular
     task:
@@ -366,10 +432,10 @@ tasks:
       script: '|||kenna-search-assets'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '18'
+      - "18"
     scriptarguments:
       hostname: {}
       id:
@@ -381,7 +447,13 @@ tasks:
       tags: {}
       to_context: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 1330\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 1330
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -393,8 +465,8 @@ tasks:
           accessor: Assets
     skipunavailable: false
     quietmode: 0
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 536cbf27-e426-49ec-8746-d74a6912cf81
     type: title
     task:
@@ -403,20 +475,26 @@ tasks:
       name: RiskSense
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '14'
+      - "14"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 570\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: 44395589-60e0-4dd1-893b-15b0aad442c3
     type: condition
     task:
@@ -426,15 +504,15 @@ tasks:
       description: 'Checks if RiskSense is enabled '
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '15'
+      - "9"
+      "yes":
+      - "15"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -457,15 +535,21 @@ tasks:
             value:
               simple: RiskSense
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 710\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: 126fda72-2bab-4baf-8d62-6995d6b9a270
     type: playbook
     task:
@@ -475,11 +559,11 @@ tasks:
       playbookName: CVE Exposure - RiskSense
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '17'
+      - "17"
     scriptarguments:
       CVES:
         complex:
@@ -489,34 +573,41 @@ tasks:
     separatecontext: false
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 790,\n    \"y\": 910\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 910
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 38fa22d3-111a-4edb-8e4b-407af0cc699b
     type: regular
     task:
       id: 38fa22d3-111a-4edb-8e4b-407af0cc699b
       version: -1
       name: Set results to Endpoint context
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       append:
-        simple: 'false'
+        simple: "false"
       key:
         simple: Endpoint
       stringify: {}
@@ -531,31 +622,38 @@ tasks:
                 iscontext: true
           accessor: Host
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 790,\n    \"y\": 1105\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1105
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: 97583f7a-e6b3-4662-86be-7e267e2539ac
     type: regular
     task:
       id: 97583f7a-e6b3-4662-86be-7e267e2539ac
       version: -1
       name: Set results to Endpoint context
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Endpoint
       stringify: {}
@@ -564,13 +662,38 @@ tasks:
           root: Kenna
           accessor: Assets
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1410,\n    \"y\": 1510\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 1510
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {\n    \"11_12_yes\": 0.68,\n    \"11_9_#default#\": 0.1,\n    \"14_9_#default#\": 0.1,\n    \"1_2_yes\": 0.16,\n    \"1_9_#default#\": 0.1,\n    \"4_9_#default#\": 0.1,\n    \"6_9_#default#\": 0.1\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1695,\n      \"width\": 1810,\n      \"x\": -20,\n      \"y\": 60\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_yes": 0.68,
+      "11_9_#default#": 0.1,
+      "14_9_#default#": 0.1,
+      "1_2_yes": 0.16,
+      "1_9_#default#": 0.1,
+      "4_9_#default#": 0.1,
+      "6_9_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1695,
+        "width": 1810,
+        "x": -20,
+        "y": 60
+      }
+    }
+  }
 inputs:
 - key: CVE_ID
   value: {}
@@ -591,6 +714,5 @@ tests:
 - No tests
 fromversion: 5.5.0
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

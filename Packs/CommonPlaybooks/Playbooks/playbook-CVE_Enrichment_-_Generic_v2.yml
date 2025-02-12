@@ -2,7 +2,11 @@ id: CVE Enrichment - Generic v2
 version: -1
 fromversion: 5.0.0
 name: CVE Enrichment - Generic v2
-description: "This playbook performs CVE Enrichment using the following integrations:\n- VulnDB\n- CVE Search\n- IBM X-Force Exchange"
+description: |-
+  This playbook performs CVE Enrichment using the following integrations:
+  - VulnDB
+  - CVE Search
+  - IBM X-Force Exchange
 starttaskid: '0'
 tasks:
   '0':
@@ -20,32 +24,39 @@ tasks:
       '#none#':
       - '1'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 200\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 4cfa2898-da16-4d61-839a-cc66e5492541
     type: condition
     task:
       id: 4cfa2898-da16-4d61-839a-cc66e5492541
       version: -1
       name: Is there a CVE to enrich?
-      description: Verify that the playbook input includes at least one CVE ID to enrich.
+      description: Verify that the playbook input includes at least one CVE ID to
+        enrich.
       type: condition
       iscommand: false
       brand: ''
     nexttasks:
       '#default#':
       - '2'
-      yes:
+      'yes':
       - '11'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -53,7 +64,13 @@ tasks:
               complex:
                 root: inputs.cve_id
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -70,7 +87,13 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1130\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -89,11 +112,11 @@ tasks:
     nexttasks:
       '#default#':
       - '2'
-      yes:
+      'yes':
       - '7'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -132,8 +155,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1530,\n    \"y\": 790\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 790
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -141,8 +170,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 8f3572d2-dbfc-4c4b-82af-94d06b99e727
     type: condition
     task:
@@ -156,11 +185,11 @@ tasks:
     nexttasks:
       '#default#':
       - '2'
-      yes:
+      'yes':
       - '6'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -188,14 +217,20 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 790\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 790
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: c08adb3a-b8c3-4a9b-8290-2f6dcda45d88
     type: regular
     task:
@@ -216,7 +251,13 @@ tasks:
           root: inputs.cve_id
     continueonerror: true
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1160,\n    \"y\": 960\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 960
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -232,7 +273,7 @@ tasks:
       script: '|||cve-search'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
       - '2'
@@ -242,8 +283,14 @@ tasks:
           root: inputs.cve_id
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1720,\n    \"y\": 960\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 960
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -251,8 +298,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: 81a2e52a-0a2a-4791-8a55-e4249923b7b3
     type: title
     task:
@@ -269,14 +316,20 @@ tasks:
       - '14'
       - '26'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 510\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 510
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: bee9dcb2-a07f-4362-8e17-df1458d42051
     type: regular
     task:
@@ -297,7 +350,13 @@ tasks:
           root: inputs.cve_id
       max_size: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 590,\n    \"y\": 960\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 960
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -317,7 +376,13 @@ tasks:
       '#none#':
       - '27'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 400,\n    \"y\": 650\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 650
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -337,7 +402,13 @@ tasks:
       '#none#':
       - '5'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 650\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 650
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -357,7 +428,13 @@ tasks:
       '#none#':
       - '4'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1530,\n    \"y\": 650\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 650
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -376,11 +453,11 @@ tasks:
     nexttasks:
       '#default#':
       - '2'
-      yes:
+      'yes':
       - '12'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -408,11 +485,35 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 400,\n    \"y\": 790\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 790
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"1_11_yes\": 0.52,\n    \"1_2_#default#\": 0.25,\n    \"27_2_#default#\": 0.39,\n    \"4_2_#default#\": 0.1,\n    \"4_7_yes\": 0.46,\n    \"5_2_#default#\": 0.15\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 995,\n      \"width\": 1937.5,\n      \"x\": 162.5,\n      \"y\": 200\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_11_yes": 0.52,
+      "1_2_#default#": 0.25,
+      "27_2_#default#": 0.39,
+      "4_2_#default#": 0.1,
+      "4_7_yes": 0.46,
+      "5_2_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 995,
+        "width": 1937.5,
+        "x": 162.5,
+        "y": 200
+      }
+    }
+  }
 inputs:
 - key: cve_id
   value:
@@ -466,6 +567,5 @@ sourceplaybookid: cve_enrichment_-_generic
 tests:
 - No test
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

@@ -1,25 +1,35 @@
 id: Impossible Traveler - Enrichment
 version: -1
 name: Impossible Traveler - Enrichment
-description: "This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert, and enriches them based on the following:\n* Geo location\n* Active Directory\n* IP enrichment e.g. VirusTotal, AbuseIPDB, etc."
-starttaskid: '0'
+description: |-
+  This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert, and enriches them based on the following:
+  * Geo location
+  * Active Directory
+  * IP enrichment e.g. VirusTotal, AbuseIPDB, etc.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 7ccb9fd5-4d10-49ab-89c8-a920b9547981
     type: start
     task:
       id: 7ccb9fd5-4d10-49ab-89c8-a920b9547981
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '28'
+      - "28"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -865\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -865
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -27,9 +37,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '1':
-    id: '1'
+    continueonerrortype: ""
+  "1":
+    id: "1"
     taskid: 26e7340f-7890-4435-8c78-04ad7fcbafca
     type: condition
     task:
@@ -39,15 +49,15 @@ tasks:
       description: Checks whether there is a username for the offending user in context, and whether Active Directory v2 is enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '27'
-      yes:
-      - '29'
+      - "27"
+      "yes":
+      - "29"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -56,7 +66,13 @@ tasks:
             iscontext: true
           right:
             value: {}
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 110\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 110
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -64,9 +80,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '9':
-    id: '9'
+    continueonerrortype: ""
+  "9":
+    id: "9"
     taskid: f38df01f-6b55-466a-8bce-2e98b9b287d0
     type: title
     task:
@@ -75,10 +91,16 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 940\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 940
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -86,9 +108,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '13':
-    id: '13'
+    continueonerrortype: ""
+  "13":
+    id: "13"
     taskid: 8f0bc025-3ee1-42b3-8f04-524a31b916df
     type: regular
     task:
@@ -99,17 +121,23 @@ tasks:
       scriptName: http
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '14'
+      - "14"
     scriptarguments:
       method:
         simple: GET
       url:
         simple: http://www.geoplugin.net/json.gp?ip=${inputs.sourceip}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -570\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -117,32 +145,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '14':
-    id: '14'
+    continueonerrortype: ""
+  "14":
+    id: "14"
     taskid: eb064458-d034-4248-89a9-3fac30ef7520
     type: regular
     task:
       id: eb064458-d034-4248-89a9-3fac30ef7520
       version: -1
       name: Parse HTTP response JSON
-      description: "Parse a given JSON string \"value\" to a representative object. For example: '{\"a\": \"value\"}' => {\"a\": \"value\"}."
+      description: 'Parse a given JSON string "value" to a representative object. For example: ''{"a": "value"}'' => {"a": "value"}.'
       scriptName: ParseJSON
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
-      - '16'
-      - '19'
-      - '24'
-      - '26'
+      - "15"
+      - "16"
+      - "19"
+      - "24"
+      - "26"
     scriptarguments:
       extend-context:
         simple: Coordinates=
       ignore-outputs:
-        simple: 'true'
+        simple: "true"
       value:
         complex:
           root: HttpRequest.Response
@@ -150,7 +178,13 @@ tasks:
           transformers:
           - operator: Stringify
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -410\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -158,9 +192,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '15':
-    id: '15'
+    continueonerrortype: ""
+  "15":
+    id: "15"
     taskid: f03e3aee-72d7-456e-8c29-48df8ffadc9b
     type: regular
     task:
@@ -171,13 +205,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Events.location
       value:
@@ -197,7 +231,13 @@ tasks:
                 value:
                   simple: ', '
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": -230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -205,9 +245,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '16':
-    id: '16'
+    continueonerrortype: ""
+  "16":
+    id: "16"
     taskid: 31b0887a-17b7-4446-8ae3-9286cb07a564
     type: regular
     task:
@@ -218,13 +258,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Events.event_timestamp
       value:
@@ -232,7 +272,13 @@ tasks:
           root: alert
           accessor: created
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": -230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": -230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -240,30 +286,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '18':
-    id: '18'
+    continueonerrortype: ""
+  "18":
+    id: "18"
     taskid: 8ae6b224-d274-49e6-8665-43b78bdd5b6d
     type: regular
     task:
       id: 8ae6b224-d274-49e6-8665-43b78bdd5b6d
       version: -1
       name: Delete HTTP Response Context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       all:
-        simple: no
+        simple: "no"
       key:
         simple: HttpRequest.Response
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 850,\n    \"y\": 770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -271,9 +330,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '19':
-    id: '19'
+    continueonerrortype: ""
+  "19":
+    id: "19"
     taskid: 817a6f83-aad4-46a2-8035-4e4778523de7
     type: regular
     task:
@@ -284,13 +343,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Events.ip
       value:
@@ -309,7 +368,13 @@ tasks:
               ignorecase: true
           accessor: geoplugin_request
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -317,30 +382,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '21':
-    id: '21'
+    continueonerrortype: ""
+  "21":
+    id: "21"
     taskid: 1d06af95-318b-4397-8dbb-72b52f36f0a2
     type: regular
     task:
       id: 1d06af95-318b-4397-8dbb-72b52f36f0a2
       version: -1
       name: Delete Coordinates Context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       all:
-        simple: no
+        simple: "no"
       key:
         simple: Coordinates
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -348,9 +426,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '22':
-    id: '22'
+    continueonerrortype: ""
+  "22":
+    id: "22"
     taskid: 4d690d07-5c35-42e4-8da1-3dfc737316f5
     type: regular
     task:
@@ -361,13 +439,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ImpossibleTraveler.Events
       value:
@@ -386,7 +464,13 @@ tasks:
           transformers:
           - operator: StringToArray
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -60\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -394,30 +478,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '23':
-    id: '23'
+    continueonerrortype: ""
+  "23":
+    id: "23"
     taskid: 7157a915-00e4-419b-8d9e-1e3b46bc706a
     type: regular
     task:
       id: 7157a915-00e4-419b-8d9e-1e3b46bc706a
       version: -1
       name: Delete Events Context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       all:
-        simple: no
+        simple: "no"
       key:
         simple: Events
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -425,9 +522,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '24':
-    id: '24'
+    continueonerrortype: ""
+  "24":
+    id: "24"
     taskid: 97760e8c-ee4d-4656-8d19-65928cb54fcd
     type: regular
     task:
@@ -438,13 +535,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Events.Country
       value:
@@ -463,7 +560,13 @@ tasks:
               ignorecase: true
           accessor: geoplugin_countryCode
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": -230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": -230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -471,9 +574,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '26':
-    id: '26'
+    continueonerrortype: ""
+  "26":
+    id: "26"
     taskid: 0411b244-1c46-466e-87f7-3f5770571e2f
     type: regular
     task:
@@ -484,13 +587,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Events.identity_display_name
       value:
@@ -500,7 +603,13 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1230,\n    \"y\": -230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": -230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -508,9 +617,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '27':
-    id: '27'
+    continueonerrortype: ""
+  "27":
+    id: "27"
     taskid: ea2cf994-dcd6-4756-811f-6ac158487081
     type: title
     task:
@@ -519,15 +628,21 @@ tasks:
       name: Clear Processed Context
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '21'
-      - '23'
-      - '18'
+      - "21"
+      - "23"
+      - "18"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 630\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -535,9 +650,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '28':
-    id: '28'
+    continueonerrortype: ""
+  "28":
+    id: "28"
     taskid: ace7b867-75f1-48b0-8a9b-464fdb91d6d2
     type: regular
     task:
@@ -548,17 +663,23 @@ tasks:
       script: '|||ip'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       ip:
         complex:
           root: inputs.sourceip
     separatecontext: false
     continueonerror: true
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -730\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -730
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -566,23 +687,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ''
-  '29':
-    id: '29'
+    continueonerrortype: ""
+  "29":
+    id: "29"
     taskid: 2eb086b8-6cf1-44f4-830f-a1ff14796a85
     type: playbook
     task:
       id: 2eb086b8-6cf1-44f4-830f-a1ff14796a85
       version: -1
       name: Account Enrichment - Generic v2.1
-      description: "Enrich accounts using one or more integrations.\nSupported integrations:\n- Active Directory\n- SailPoint IdentityNow\n- SailPoint IdentityIQ\n- PingOne\n- Okta\n- AWS IAM\n\nAlso, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations."
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     scriptarguments:
       Domain:
         complex:
@@ -593,13 +724,19 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 290\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 290
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -608,7 +745,20 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
 system: true
-view: "{\n  \"linkLabelsPosition\": {\n    \"1_27_#default#\": 0.49\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1870,\n      \"width\": 1950,\n      \"x\": -340,\n      \"y\": -865\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_27_#default#": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1870,
+        "width": 1950,
+        "x": -340,
+        "y": -865
+      }
+    }
+  }
 inputs:
 - key: sourceip
   value: {}
@@ -663,7 +813,5 @@ outputs:
   type: unknown
 tests:
 - Test Playbook - Impossible Traveler - Enrichment
-marketplaces:
-- marketplacev2
-- platform
+marketplaces: ["marketplacev2"]
 fromversion: 6.6.0

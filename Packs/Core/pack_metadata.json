@@ -23,7 +23,7 @@
     "keywords": [],
     "marketplaces": [
         "marketplacev2",
-        "xpanse",
-        "platform"
-    ]
+        "xpanse"
+    ],
+    "supportedModules": ["XSIAM", "XSPANSE"]
 }

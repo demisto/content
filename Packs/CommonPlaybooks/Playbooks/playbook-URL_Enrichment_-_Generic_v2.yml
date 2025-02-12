@@ -2,35 +2,48 @@ id: URL Enrichment - Generic v2
 version: -1
 fromversion: 5.0.0
 name: URL Enrichment - Generic v2
-description: "Enrich URLs using one or more integrations.\n\nURL enrichment includes:\n* SSL verification for URLs.\n* Threat information.\n* Providing of URL screenshots.\n* URL Reputation using !url."
-starttaskid: '0'
+description: |-
+  Enrich URLs using one or more integrations.
+
+  URL enrichment includes:
+  * SSL verification for URLs.
+  * Threat information.
+  * Providing of URL screenshots.
+  * URL Reputation using !url.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: e1a236ab-b35b-4b70-84a7-3ca08b9bbe95
     type: start
     task:
       id: e1a236ab-b35b-4b70-84a7-3ca08b9bbe95
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 41\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 41
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: 2e1b93fe-512d-4fba-80dd-2912bf3382f5
     type: condition
     task:
@@ -40,20 +53,20 @@ tasks:
       description: Checks whether there is at least one URL to enrich.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '37'
-      yes:
-      - '29'
-      - '31'
-      - '38'
+      - "37"
+      "yes":
+      - "29"
+      - "31"
+      - "38"
     scriptarguments:
       value:
         simple: inputs.URL
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -62,17 +75,23 @@ tasks:
             iscontext: true
           right:
             value: {}
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 175\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 175
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: 7956570c-4a34-462b-84aa-0f8c6d01cf43
     type: title
     task:
@@ -81,20 +100,26 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 1095\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1095
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: 426d5e5a-76ec-4310-8157-e3ce1795f88f
     type: condition
     task:
@@ -105,12 +130,12 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '24'
-      yes:
-      - '26'
+      - "24"
+      "yes":
+      - "26"
     scriptarguments:
       value:
         complex:
@@ -133,17 +158,23 @@ tasks:
                 value:
                   simple: active
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 710\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '26':
-    id: '26'
+  "26":
+    id: "26"
     taskid: 13c4e2ea-abb5-49b0-8139-79ba102250c7
     type: regular
     task:
@@ -159,7 +190,7 @@ tasks:
       brand: Rasterize
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     scriptarguments:
       url:
         complex:
@@ -168,17 +199,23 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 920\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 920
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 71af55e1-a11a-42f9-84f6-ce3ce93e17ce
     type: condition
     task:
@@ -188,15 +225,15 @@ tasks:
       description: Checks if the playbook's Rasterize input is set to "True", which determines whether screenshots of the URLs are created.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '24'
-      yes:
-      - '25'
+      - "24"
+      "yes":
+      - "25"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -206,19 +243,25 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 500\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '29':
-    id: '29'
+  "29":
+    id: "29"
     taskid: 7fc4755c-5a08-4f90-8bab-12c892b21df4
     type: title
     task:
@@ -227,23 +270,29 @@ tasks:
       name: URL Screenshots
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 360\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 360
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '31':
-    id: '31'
+  "31":
+    id: "31"
     taskid: 11224752-fee9-4a8f-82c0-5af370081779
     type: title
     task:
@@ -252,23 +301,29 @@ tasks:
       name: URL Verification
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '33'
+      - "33"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 489.5,\n    \"y\": 360\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 489.5,
+          "y": 360
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '32':
-    id: '32'
+  "32":
+    id: "32"
     taskid: ab4dd806-764c-4b25-8e34-98b9a0fc87f7
     type: regular
     task:
@@ -279,10 +334,10 @@ tasks:
       scriptName: URLSSLVerification
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     scriptarguments:
       url:
         complex:
@@ -291,17 +346,23 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 710\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '33':
-    id: '33'
+  "33":
+    id: "33"
     taskid: 0a60d379-a6c4-449e-87e2-4939b8d0ad13
     type: condition
     task:
@@ -311,15 +372,15 @@ tasks:
       description: Checks if the playbook's VerifyURL input is set to "True", to determine whether to perform SSL verification on the URLs.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '24'
-      yes:
-      - '32'
+      - "24"
+      "yes":
+      - "32"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -329,19 +390,25 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 500\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '37':
-    id: '37'
+  "37":
+    id: "37"
     taskid: 395ad908-d5b6-4449-8665-b085546d0d42
     type: title
     task:
@@ -350,36 +417,42 @@ tasks:
       name: No URLs
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -510,\n    \"y\": 360\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 360
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '38':
-    continueonerrortype: ''
-    id: '38'
+  "38":
+    continueonerrortype: ""
+    id: "38"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '40'
+      - "40"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 704516ae-95d9-4ef5-8772-1958046fcac7
       iscommand: false
       name: URL Reputation
@@ -389,16 +462,22 @@ tasks:
     taskid: 704516ae-95d9-4ef5-8772-1958046fcac7
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 1010,\n    \"y\": 360\n  }\n}"
-  '39':
-    continueonerrortype: ''
-    id: '39'
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 360
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     note: false
     quietmode: 0
     scriptarguments:
@@ -410,7 +489,7 @@ tasks:
     separatecontext: false
     skipunavailable: true
     task:
-      brand: ''
+      brand: ""
       description: Checks the reputation of a URL.
       id: 66cd353d-652e-4786-8d2e-af0fbd9c63e7
       iscommand: true
@@ -421,8 +500,14 @@ tasks:
     taskid: 66cd353d-652e-4786-8d2e-af0fbd9c63e7
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 1010,\n    \"y\": 710\n  }\n}"
-  '40':
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 710
+        }
+      }
+  "40":
     conditions:
     - condition:
       - - ignorecase: true
@@ -434,24 +519,24 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: 'True'
-      label: yes
-    continueonerrortype: ''
-    id: '40'
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "40"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '24'
-      yes:
-      - '39'
+      - "24"
+      "yes":
+      - "39"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: e0db6ab1-2c0e-4859-84eb-e764c3fd01e5
       iscommand: false
       name: Should use !url command?
@@ -461,8 +546,32 @@ tasks:
     taskid: e0db6ab1-2c0e-4859-84eb-e764c3fd01e5
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 1010,\n    \"y\": 500\n  }\n}"
-view: "{\n  \"linkLabelsPosition\": {\n    \"25_24_#default#\": 0.53,\n    \"25_26_yes\": 0.47,\n    \"27_25_yes\": 0.5,\n    \"33_24_#default#\": 0.13,\n    \"33_32_yes\": 0.67,\n    \"40_24_#default#\": 0.31\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1119,\n      \"width\": 1900,\n      \"x\": -510,\n      \"y\": 41\n    }\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 500
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_24_#default#": 0.53,
+      "25_26_yes": 0.47,
+      "27_25_yes": 0.5,
+      "33_24_#default#": 0.13,
+      "33_32_yes": 0.67,
+      "40_24_#default#": 0.31
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1119,
+        "width": 1900,
+        "x": -510,
+        "y": 41
+      }
+    }
+  }
 inputs:
 - key: URL
   value:
@@ -476,22 +585,32 @@ inputs:
   playbookInputQuery:
 - key: Rasterize
   value:
-    simple: 'True'
+    simple: "True"
   required: false
-  description: "Define if you would like the system take safe screenshots of input URLs.\nPossible values: True / False.\nThe default value is true."
+  description: |-
+    Define if you would like the system take safe screenshots of input URLs.
+    Possible values: True / False.
+    The default value is true.
   playbookInputQuery:
 - key: VerifyURL
   value:
-    simple: 'False'
+    simple: "False"
   required: false
-  description: "Define if you would like the system perform SSL certificate verification on the URLs.\nPossible values: True / False.\nThe default value is false."
+  description: |-
+    Define if you would like the system perform SSL certificate verification on the URLs.
+    Possible values: True / False.
+    The default value is false.
   playbookInputQuery:
-- description: "Define if you would like to use the !url command.\nNote: This input should be used whenever there is no auto-extract enabled in the investigation flow.\nPossible values: True / False.\nThe default value is false."
+- description: |-
+    Define if you would like to use the !url command.
+    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
+    Possible values: True / False.
+    The default value is false.
   key: UseReputationCommand
   playbookInputQuery:
   required: true
   value:
-    simple: 'False'
+    simple: "False"
 outputs:
 - contextPath: URL
   description: The URL object.
@@ -549,6 +668,5 @@ tests:
 - URL Enrichment - Generic v2 - Test
 system: true
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

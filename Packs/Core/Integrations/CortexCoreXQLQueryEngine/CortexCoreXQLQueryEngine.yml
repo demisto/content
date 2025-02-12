@@ -36,7 +36,10 @@ script:
       required: true
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: Interval in seconds between each poll.
@@ -51,10 +54,13 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
-    description: "Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.\nWhen more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,\nunless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context."
+      - "true"
+      - "false"
+      defaultValue: "false"
+    description: |-
+      Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
     polling: true
     name: xdr-xql-generic-query
     outputs:
@@ -65,13 +71,17 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -183,9 +193,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     - description: The XQL query.
       name: query
       hidden: true
@@ -198,7 +208,10 @@ script:
     - description: The name of the query.
       name: query_name
       hidden: true
-    description: "Retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.\nWhen more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,\nunless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context."
+    description: |-
+      Retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
     polling: true
     name: xdr-xql-get-query-results
     outputs:
@@ -209,13 +222,17 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -317,10 +334,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -330,9 +357,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Query file events by the SHA256 file.
     polling: true
     name: xdr-xql-file-event-query
@@ -344,13 +371,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileEvent.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.FileEvent.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -398,10 +429,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -411,9 +452,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Query process events by the SHA256 process.
     polling: true
     name: xdr-xql-process-event-query
@@ -425,13 +466,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -506,10 +551,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -519,9 +574,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Query DLL module events by the SHA256 DLL.
     polling: true
     name: xdr-xql-dll-module-query
@@ -533,13 +588,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DllModule.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.DllModule.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -617,10 +676,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -630,9 +699,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Query network connections between a source IP, destination IP and port.
     polling: true
     name: xdr-xql-network-connection-query
@@ -644,13 +713,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -725,10 +798,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -738,9 +821,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Query windows registry by registry key name.
     polling: true
     name: xdr-xql-registry-query
@@ -752,13 +835,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.Registry.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.Registry.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -818,10 +905,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -831,9 +928,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Query event logs by event ID.
     polling: true
     name: xdr-xql-event-log-query
@@ -845,13 +942,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.EventLog.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.EventLog.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -913,10 +1014,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -926,9 +1037,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Query by DNS query or domain name.
     polling: true
     name: xdr-xql-dns-query
@@ -940,13 +1051,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DNS.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.DNS.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -1035,10 +1150,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -1048,9 +1173,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Search for the process that wrote the given file, by its SHA256 or file path.
     polling: true
     name: xdr-xql-file-dropper-query
@@ -1062,13 +1187,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileDropper.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.FileDropper.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -1158,10 +1287,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -1171,9 +1310,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Search for network connection created by a given process instance ID.
     polling: true
     name: xdr-xql-process-instance-network-activity-query
@@ -1185,13 +1324,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -1284,10 +1427,20 @@ script:
       name: extra_fields
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: time_frame
-    - description: "Integer representing the maximum number of results to return. For example:\nIf limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.\nIf limit = 100 and the query produced 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
+    - description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       name: limit
       defaultValue: 100
-    - description: "List of strings used for running APIs on local and Managed Security tenants. Valid values:\n\nFor single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).\n\nFor multi-tenant investigations (Managed Security parent who investigate children and\\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."
+    - description: |-
+        List of strings used for running APIs on local and Managed Security tenants. Valid values:
+
+        For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
+
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
     - description: The name of the query.
@@ -1297,9 +1450,9 @@ script:
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Search for network connection created by a given process causality ID.
     polling: true
     name: xdr-xql-process-causality-network-activity-query
@@ -1311,13 +1464,17 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.status
-      description: "String representing the status of the API call; SUCCESS, FAIL, or PENDING.\nFor multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available."
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_cost
-      description: "Floating number representing the number of query units collected for this API. For example, {\"local_tenant_id\": 0.01}.\nFor multi-tenant queries, the field displays a value per child tenant. For example, {\"tenant_id_1\": 0.01, \"tenant_id_2\": 2.3}."
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.remaining_quota
       description: Floating number representing the number of query units available for you to use.
@@ -1404,7 +1561,6 @@ script:
   type: python
 marketplaces:
 - marketplacev2
-- platform
 tests:
 - XQL Query Engine - Test
 fromversion: 8.7.0
