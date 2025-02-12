@@ -2923,9 +2923,10 @@
             "fromversion": "5.5.0",
             "timeout": 300,
             "instance_names": [
-                "non_https_cert",
-                "instance_execute"
-            ]
+                "non_https_cert_xsoar6",
+                "instance_execute_xsoar6"
+            ],
+            "marketplaces":"xsoar_on_prem"
         },
         {
             "integrations": [
@@ -2936,10 +2937,39 @@
             "fromversion": "5.5.0",
             "timeout": 300,
             "instance_names": [
-                "https_cert",
-                "local_https"
-            ]
+                "non_https_cert_xsoar8",
+                "instance_execute_xsoar8"
+            ],
+            "marketplaces":"xsoar_saas"
         },
+        {
+            "integrations": [
+                "TAXII Server",
+                "TAXIIFeed"
+            ],
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 300,
+            "instance_names": [
+                "https_cert_xsoar6",
+                "local_https_xsoar6"
+            ],
+            "marketplaces":"xsoar_on_prem"
+        },
+        {
+            "integrations": [
+                "TAXII Server",
+                "TAXIIFeed"
+            ],
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 300,
+            "instance_names": [
+                "https_cert_xsoar8",
+                "local_https_xsoar8"
+            ],
+            "marketplaces":"xsoar_saas"
+        }, 
         {
             "integrations": "TAXII 2 Feed",
             "playbookID": "TAXII 2 Feed Test",
