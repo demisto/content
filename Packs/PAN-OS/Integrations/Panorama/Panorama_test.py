@@ -4,8 +4,7 @@ import pytest
 import requests_mock
 from pytest_mock import MockerFixture
 from requests_mock.mocker import Mocker as RequestsMock
-import pan.xapi
-
+import panos.errors
 import demistomock as demisto
 from unittest.mock import patch, MagicMock
 from panos.device import Vsys
@@ -14,6 +13,7 @@ from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
+
 from test_data import fetch_incidents_input
 from test_data import mock_rules
 from freezegun import freeze_time
@@ -8062,8 +8062,8 @@ def test_show_jobs_id_not_found(patched_run_op_command):
     """
     from Panorama import UniversalCommand
 
-    patched_run_op_command.side_effect = pan.xapi.PanXapiError("job 23 not found")
+    patched_run_op_command.side_effect = panos.errors.PanDeviceXapiError("job 23 not found")
     MockTopology = type('MockTopology', (), {'all': lambda *x, **y: [Panorama(hostname='123')]})
 
-    with pytest.raises(DemistoException, match="The given ID 23 is not found in all devices of the topology"):
+    with pytest.raises(DemistoException, match="The given ID 23 is not found in all devices of the topology."):
         UniversalCommand.show_jobs(topology=MockTopology(), id=23)
