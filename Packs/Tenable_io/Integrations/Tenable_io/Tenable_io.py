@@ -1924,7 +1924,7 @@ def parse_vulnerabilities(vulns):
     return vulns
 
 
-def main():  # pragma: no cover
+def main():    # pragma: no cover
     """main function, parses params and runs command functions
     """
     args = demisto.args()
@@ -1976,9 +1976,8 @@ def main():  # pragma: no cover
         elif command == 'tenable-io-export-vulnerabilities':
             vulnerabilities: list = []
             results = export_vulnerabilities_command(args)
-            if isinstance(results, CommandResults):
-                if results.raw_response:
-                    vulnerabilities = results.raw_response  # type: ignore
+            if isinstance(results, CommandResults) and results.raw_response:
+                vulnerabilities = results.raw_response  # type: ignore
             return_results(results)
             if argToBoolean(args.get('should_push_events', 'false')) and is_xsiam():
                 send_data_to_xsiam(vulnerabilities, product=f'{PRODUCT}_vulnerabilities', vendor=VENDOR)
@@ -2000,7 +1999,6 @@ def main():  # pragma: no cover
 
             if argToBoolean(args.get('should_push_events', 'false')) and is_xsiam():
                 send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-        # Fetch Commands
         elif command == 'fetch-events':
 
             last_run = demisto.getLastRun()
