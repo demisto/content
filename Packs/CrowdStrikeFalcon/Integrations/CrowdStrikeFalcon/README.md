@@ -9,32 +9,35 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Client ID |  | False |
 | Secret |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| Max incidents per fetch |  | False |
-| Endpoint Detections fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| Endpoint Incidents fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| IDP Detections fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| Mobile Detections fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| IOM fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| IOA fetch query | In the format: cloud_provider=aws&amp;aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-|Detections from On-Demand Scans fetch query| Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql.| False|
-| Fetch incidents |  | False |
-| Incident type |  | False |
-| Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex XSOAR\). | False |
 | Trust any certificate (not secure) |  | False |
-| Use legacy API | Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.' | False |
+| Use legacy API | Supported in Cortex XSOAR only. Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.' | False |
 | Use system proxy settings |  | False |
-| Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
-| Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
-| Fetch types | Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection. You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version. 2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
-| Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
-| Incidents Fetch Interval |  | False |
-| Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
+| Endpoint Detections fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Endpoint Incidents fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| IDP Detections fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Mobile Detections fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| OFP Detections fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| IOM fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| IOA fetch query | Supported in Cortex XSOAR only. In the query parameter format: `cloud_provider=aws&amp;aws_account_id=1234`. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13). | False |
+| Detections from On-Demand Scans fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).| False|
+| Close Mirrored XSOAR Incident | Supported in Cortex XSOAR only. When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
+| Close Mirrored CrowdStrike Falcon Incident or Detection | Supported in Cortex XSOAR only. When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
+| Fetch types | Supported in Cortex XSOAR only. Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection. You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version. 2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
+| Reopen Statuses | Supported in Cortex XSOAR only. CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
+| Advanced: Time in minutes to look back when fetching incidents and detections | Supported in Cortex XSOAR only. Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
+| Max incidents per fetch | Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15. | False |
+| Fetch incidents | Supported in Cortex XSOAR only. | False |
+| Mirroring Direction | Supported in Cortex XSOAR only. Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex XSOAR\). | False |
+| Close Mirrored XSOAR Incident | Supported in Cortex XSOAR only. When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
+| Close Mirrored CrowdStrike Falcon Incident or Detection | Supported in Cortex XSOAR only. When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
+| Reopen Statuses | Supported in Cortex XSOAR only. CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
+| Incidents Fetch Interval | Supported in Cortex XSOAR only. | False |
 
 
 ### Required API client scope
 
-In order to use the CrowdStrike Falcon integration, your API client must be provisioned with the following scope and permissions:
+In order to use the CrowdStrike Falcon integration, the API client must have the following scope and permissions:
 
 - Real Time Response - Read and Write
 - Alerts - Read and Write
@@ -54,7 +57,8 @@ In order to use the CrowdStrike Falcon integration, your API client must be prov
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
 
-## Incident Mirroring
+
+## Incident Mirroring (Cortex XSOAR Only)
 
 You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
@@ -85,53 +89,58 @@ Newly fetched Cortex XSOAR incidents will be mirrored in the chosen direction. H
    the lookback to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
    If the integration was already set with lookback > 0, and the lookback is not being increased at any point of time, then those incident duplications would not occur.
 
+## Fetch Incidents (Cortex XSOAR Only)
 
-## Fetch Incidents
+CrowdStrike Falcon incidents or detections can be fetched as incidents in Cortex XSOAR.
+Users can specify a fetch query per CrowdStrike Falcon fetch type when configuring the integration instance to control which records are fetched.
 
-### IOM Incidents
+### Indicator of Misconfiguration (IOM) Fetch Query
 
-The [FQL](https://falconpy.io/Usage/Falcon-Query-Language.html) filter expression is used to configure the IOM fetch query.
-Available filter:
+The IOM Fetch query relies on an [FQL](https://falconpy.io/Usage/Falcon-Query-Language.html) filter expression.
 
-- use_current_scan_ids (use this to get records for latest scans)
-- account_name
-- account_id
-- agent_id
-- attack_types
-- azure_subscription_id
-- cloud_provider
-- cloud_service_keyword
-- custom_policy_id
-- is_managed
-- policy_id
-- policy_type
-- resource_id
-- region
-- status
-- severity
-- severity_string
+Available filters:
 
-Example: `cloud_provider: 'aws'+account_id: 'my_id'`
+- `use_current_scan_ids` (use this to get records for latest scans)
+- `account_name`
+- `account_id`
+- `agent_id`
+- `attack_types`
+- `azure_subscription_id`
+- `cloud_provider`
+- `cloud_service_keyword`
+- `custom_policy_id`
+- `is_managed`
+- `policy_id`
+- `policy_type`
+- `resource_id`
+- `region`
+- `status`
+- `severity`
+- `severity_string`
 
-### IOA Incidents
+For example: `cloud_provider: 'aws'+account_id: 'my_id'`
 
-The IOA fetch query uses the following format:
-`param1=val1&param2=val2`
-Multiple values for the same parameter is not supported.
+### Indicator of Attack (IOA) Fetch Query
+
+The IOA fetch query uses a query parameter format: `param1=val1&param2=val2`
+
+Using multiple values for the same parameter is not supported.
+
 Available parameters:
 
-- cloud_provider (required in every query)
-- account_id
-- aws_account_id
-- azure_subscription_id
-- azure_tenant_id
-- severity
-- region
-- service
-- state
+- `cloud_provider` (required by every query)
+- `account_id`
+- `aws_account_id`
+- `azure_subscription_id`
+- `azure_tenant_id`
+- `severity`
+- `region`
+- `service`
+- `state`
 
-Example: `cloud_provider=aws&region=eu-west-2`
-More information about the parameters can be found [here](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
+For example: `cloud_provider=aws&region=eu-west-2`
+
+For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
 
 ## Commands
 
@@ -193,53 +202,55 @@ Searches for a device that matches the query.
 
 #### Context Example
 
-```
-    {
-        "CrowdStrike.Device(val.ID === obj.ID)": [
+```json
+{
+   "CrowdStrike": {
+        "Device": [
             {
-                "ExternalIP": "94.188.164.68", 
-                "MacAddress": "8c-85-90-3d-ed-3e", 
-                "Hostname": "154.132.82-test-co.in-addr.arpa", 
-                "LocalIP": "192.168.1.76", 
-                "LastSeen": "2019-03-28T02:36:41Z", 
-                "OS": "Mojave (10.14)", 
-                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                "ExternalIP": "94.188.164.68",
+                "MacAddress": "8c-85-90-3d-ed-3e",
+                "Hostname": "154.132.82-test-co.in-addr.arpa",
+                "LocalIP": "192.168.1.76",
+                "LastSeen": "2019-03-28T02:36:41Z",
+                "OS": "Mojave (10.14)",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "FirstSeen": "2017-12-28T22:38:11Z",
                 "Status": "contained"
-            }, 
+            },
             {
-                "ExternalIP": "94.188.164.68", 
-                "MacAddress": "f0-18-98-74-8c-31", 
-                "Hostname": "154.132.82-test-co.in-addr.arpa", 
-                "LocalIP": "172.22.14.237", 
-                "LastSeen": "2019-03-17T10:03:17Z", 
-                "OS": "Mojave (10.14)", 
-                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                "ExternalIP": "94.188.164.68",
+                "MacAddress": "f0-18-98-74-8c-31",
+                "Hostname": "154.132.82-test-co.in-addr.arpa",
+                "LocalIP": "172.22.14.237",
+                "LastSeen": "2019-03-17T10:03:17Z",
+                "OS": "Mojave (10.14)",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "FirstSeen": "2017-12-10T11:01:20Z",
                 "Status": "contained"
             }
-        ],
-      "Endpoint(val.ID === obj.ID)": [
-            {
-              "Hostname": "154.132.82-test-co.in-addr.arpa",
-              "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-              "IPAddress": "192.168.1.76", 
-              "OS": "Mojave (10.14)",
-              "Status": "Online",
-              "￿Vendor": "CrowdStrike Falcon",
-              "￿MACAddress": "1-1-1-1"
-            },
-            {
-              "Hostname": "154.132.82-test-co.in-addr.arpa", 
-              "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-              "IPAddress": "172.22.14.237", 
-              "OS": "Mojave (10.14)", 
-              "Status": "Online",
-              "￿Vendor": "CrowdStrike Falcon",
-              "￿MACAddress": "1-1-1-1"
-            }
         ]
-    }
+    },
+    "Endpoint": [
+        {
+            "Hostname": "154.132.82-test-co.in-addr.arpa",
+            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "IPAddress": "192.168.1.76",
+            "OS": "Mojave (10.14)",
+            "Status": "Online",
+            "Vendor": "CrowdStrike Falcon",
+            "MACAddress": "1-1-1-1"
+        },
+        {
+            "Hostname": "154.132.82-test-co.in-addr.arpa",
+            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "IPAddress": "172.22.14.237",
+            "OS": "Mojave (10.14)",
+            "Status": "Online",
+            "Vendor": "CrowdStrike Falcon",
+            "MACAddress": "1-1-1-1"
+        }
+    ]
+}
 ```
 
 #### Human Readable Output
@@ -289,7 +300,7 @@ Searches for and fetches the behavior that matches the query. Deprecated - No re
 
 #### Context Example
 
-```
+```json
     {
         "CrowdStrike.Behavior": [
             {
@@ -378,10 +389,11 @@ Search for details of specific detections, either using a filter query, or by pr
 
 #### Context Example
 
-```
-    {
-        "CrowdStrike.Detection(val.ID === obj.ID)": [
-            {
+```json
+{
+    "CrowdStrike": {
+        "Detection": [
+            { 
                 "Status": "false_positive", 
                 "ProcessStartTime": "2019-03-21T20:32:55.654489974Z", 
                 "Behavior": [
@@ -463,6 +475,7 @@ Search for details of specific detections, either using a filter query, or by pr
             }
         ]
     }
+}
 ```
 
 #### Human Readable Output
@@ -498,6 +511,7 @@ Resolves and updates a detection using the provided arguments. At least one opti
 #### Context Output
 
 There is no context output for this command.
+
 ### cs-falcon-contain-host
 
 ***
@@ -516,6 +530,7 @@ Contains containment for a specified host. When contained, a host can only commu
 #### Context Output
 
 There is no context output for this command.
+
 ### cs-falcon-lift-host-containment
 
 ***
@@ -534,6 +549,7 @@ Lifts containment on the host, which returns its network communications to norma
 #### Context Output
 
 There is no context output for this command.
+
 ### cs-falcon-run-command
 
 ***
@@ -578,7 +594,7 @@ Sends commands to hosts.
 
 #### Context Example
 
-```
+```json
 {
     'CrowdStrike': {
         'Command': [{
@@ -662,6 +678,7 @@ The file was uploaded successfully.
 #### Context Output
 
 There is no context output for this command.
+
 ### cs-falcon-delete-file
 
 ***
@@ -729,22 +746,22 @@ Returns files based on the provided IDs. These files are used for the RTR 'put' 
 
 #### Context Example
 
-```
+```json
 {
-    'CrowdStrike.File(val.ID === obj.ID)': [
-        {
-            'CreatedBy': 'spongobob@demisto.com',
-            'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-            'Description': 'Demisto',
-            'ID': 'le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
-            'ModifiedBy': 'spongobob@demisto.com',
-            'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-            'Name': 'Demisto',
-            'Permission': 'private',
-            'SHA256': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
-            'Type': 'script'
+   "CrowdStrike": {
+      "File": {
+            "CreatedBy": "spongobob@demisto.com",
+            "CreatedTime": "2019-10-17T13:41:48.487520845Z",
+            "Description": "Demisto",
+            "ID": "le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedBy": "spongobob@demisto.com",
+            "ModifiedTime": "2019-10-17T13:41:48.487521161Z",
+            "Name": "Demisto",
+            "Permission": "private",
+            "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "Type": "script"
         }
-    ]
+   }
 }
 ```
 
@@ -790,22 +807,24 @@ Returns a list of put-file IDs that are available for the user in the 'put' comm
 
 #### Context Example
 
-```
+```json
 {
-    'CrowdStrike.File(val.ID === obj.ID)': [
-        {
-            'CreatedBy': 'spongobob@demisto.com',
-            'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-            'Description': 'Demisto',
-            'ID': 'le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
-            'ModifiedBy': 'spongobob@demisto.com',
-            'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-            'Name': 'Demisto',
-            'Permission': 'private',
-            'SHA256': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
-            'Type': 'script'
-        }
-    ]
+   "CrowdStrike": {
+      "File": [
+         {
+            "CreatedBy": "spongobob@demisto.com",
+            "CreatedTime": "2019-10-17T13:41:48.487520845Z",
+            "Description": "Demisto",
+            "ID": "le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedBy": "spongobob@demisto.com",
+            "ModifiedTime": "2019-10-17T13:41:48.487521161Z",
+            "Name": "Demisto",
+            "Permission": "private",
+            "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "Type": "script"
+         }
+      ]
+   }
 }
 ```
 
@@ -856,24 +875,26 @@ Returns custom scripts based on the provided ID. Used for the RTR 'runscript' co
 
 #### Context Example
 
-```
+```json
 {
-    'CrowdStrike.Script(val.ID === obj.ID)': [
-       {
-           'CreatedBy': 'spongobob@demisto.com',
-           'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-           'Description': 'Demisto',
-           'ID': 'le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
-           'ModifiedBy': 'spongobob@demisto.com',
-           'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-           'Name': 'Demisto',
-           'Permission': 'private',
-           'SHA256': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
-           'RunAttemptCount': 0,
-           'RunSuccessCount': 0,
-           'WriteAccess': True
-       }
-    ]
+    "CrowdStrike": {
+        "Script": [
+            {
+                "CreatedBy": "spongobob@demisto.com",
+                "CreatedTime": "2019-10-17T13:41:48.487520845Z",
+                "Description": "Demisto",
+                "ID": "le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "spongobob@demisto.com",
+                "ModifiedTime": "2019-10-17T13:41:48.487521161Z",
+                "Name": "Demisto",
+                "Permission": "private",
+                "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "RunAttemptCount": 0,
+                "RunSuccessCount": 0,
+                "WriteAccess": true
+            }
+        ]
+    }
 }
 ```
 
@@ -945,24 +966,26 @@ Returns a list of custom script IDs that are available for the user in the 'runs
 
 #### Context Example
 
-```
+```json
 {
-    'CrowdStrike.Script(val.ID === obj.ID)': [
-        {
-            'CreatedBy': 'spongobob@demisto.com',
-            'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-            'Description': 'Demisto',
-            'ID': 'le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
-            'ModifiedBy': 'spongobob@demisto.com',
-            'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-            'Name': 'Demisto',
-            'Permission': 'private',
-            'SHA256': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
-            'RunAttemptCount': 0,
-            'RunSuccessCount': 0,
-            'WriteAccess': True
-        }
-    ]
+    "CrowdStrike": {
+        "Script": [
+            {
+                "CreatedBy": "spongobob@demisto.com",
+                "CreatedTime": "2019-10-17T13:41:48.487520845Z",
+                "Description": "Demisto",
+                "ID": "le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "spongobob@demisto.com",
+                "ModifiedTime": "2019-10-17T13:41:48.487521161Z",
+                "Name": "Demisto",
+                "Permission": "private",
+                "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "RunAttemptCount": 0,
+                "RunSuccessCount": 0,
+                "WriteAccess": true
+            }
+        ]
+    }
 }
 ```
 
@@ -1008,20 +1031,23 @@ Runs a script on the agent host.
 
 #### Command Example
 
-`cs-falcon-run-script host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 raw="Write-Output 'Hello, World!"`
+`cs-falcon-run-script host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 raw="Write-Output 'Hello, World!'"`
 
 #### Context Example
 
-```
+```json
 {
-    'CrowdStrike': {
-        'Command': [{
-            'HostID': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
-                'Stdout': 'Hello, World!',
-                'Stderr': '',
-                'BaseCommand': 'runscript',
-                'Command': "runscript -Raw=Write-Output 'Hello, World!"
-        }]
+    "CrowdStrike": {
+        "Command": [
+            {
+                "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "Stdout": "Hello, World!",
+                "Stderr": "",
+                "BaseCommand": "runscript",
+                "Command": "runscript -Raw=Write-Output 'Hello, World!'"
+            }
+        ]
+    }
 }
 ```
 
@@ -1074,20 +1100,22 @@ The running status you requested in the get command can be checked with cs-falco
 
 #### Context Example
 
-```
+```json
 {
-  "CrowdStrike.Command(val.TaskID === obj.TaskID)": [
-    {
-      "BaseCommand": "get",
-      "Complete": True,
-      "FilePath": "c:\\Windows\\notepad.exe",
-      "GetRequestID": "84ee4d50-f499-482e-bac6-b0e296149bbf",
-      "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-      "Stderr": "",
-      "Stdout": "C:\\Windows\\notepad.exe",
-      "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b"
+    "CrowdStrike": {
+        "Command": [
+            {
+                "BaseCommand": "get",
+                "Complete": true,
+                "FilePath": "c:\\Windows\\notepad.exe",
+                "GetRequestID": "84ee4d50-f499-482e-bac6-b0e296149bbf",
+                "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "Stderr": "",
+                "Stdout": "C:\\Windows\\notepad.exe",
+                "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b"
+            }
+        ]
     }
-  ]
 }
 ```
 
@@ -1141,27 +1169,25 @@ Retrieves the status of the specified batch 'get' command.
 
 #### Context Example
 
-```
+```json
 {
-  "CrowdStrike.File(val.ID === obj.ID || val.TaskID === obj.TaskID)": [
-    {
-      "CreatedAt": "2020-05-01T16:09:00Z",
-      "DeletedAt": None,
-      "ID": 185596,
-      "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
-      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-      "Size": 0,
-      "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b",
-      "UpdatedAt": "2020-05-01T16:09:00Z"
-    }
-  ],
-  "File(val.MD5 \u0026\u0026 val.MD5 == obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 == obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 == obj.SHA256 || val.SHA512 \u0026\u0026 val.SHA512 == obj.SHA512 || val.CRC32 \u0026\u0026 val.CRC32 == obj.CRC32 || val.CTPH \u0026\u0026 val.CTPH == obj.CTPH || val.SSDeep \u0026\u0026 val.SSDeep == obj.SSDeep)": [
-    {
+   "CrowdStrike": {
+      "File": {
+         "CreatedAt": "2020-05-01T16:09:00Z",
+         "DeletedAt": null,
+         "ID": 185596,
+         "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+         "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+         "Size": 0,
+         "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b",
+         "UpdatedAt": "2020-05-01T16:09:00Z"
+      }
+   },
+   "File": {
       "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
       "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "Size": 0
-    }
-  ]
+   }
 }
 ```
 
@@ -1210,19 +1236,21 @@ Gets the status of a command executed on a host.
 
 #### Context Example
 
-```
+```json
 {
-  "CrowdStrike.Command(val.TaskID === obj.TaskID)": [
-    {
-      "BaseCommand": "ls",
-      "Complete": true,
-      "NextSequenceID": null,
-      "SequenceID": null,
-      "Stderr": "",
-      "Stdout": "Directory listing for C:\\ -\n\nName                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC+9)     Created (UTC+9)          \n----                                     ----         ------------    ---------       ---------------------     ---------------          \n$Recycle.Bin                             \u003cDirectory\u003e  --              --              2020/01/10 16:05:59       2019/03/19 13:52:43      \nConfig.Msi                               \u003cDirectory\u003e  --              --              2020/05/01 23:12:50       2020/01/10 16:52:09      \nDocuments and Settings                   \u003cDirectory\u003e  --              --              2019/09/12 15:03:21       2019/09/12 15:03:21      \nPerfLogs                                 \u003cDirectory\u003e  --              --              2019/03/19 13:52:43       2019/03/19 13:52:43      \nProgram Files                            \u003cDirectory\u003e  --              --              2020/01/10 17:11:47       2019/03/19 13:52:43      \nProgram Files (x86)                      \u003cDirectory\u003e  --              --              2020/05/01 23:12:53       2019/03/19 13:52:44      \nProgramData                              \u003cDirectory\u003e  --              --              2020/01/10 17:16:51       2019/03/19 13:52:44      \nRecovery                                 \u003cDirectory\u003e  --              --              2019/09/11 20:13:59       2019/09/11 20:13:59      \nSystem Volume Information                \u003cDirectory\u003e  --              --              2019/09/12 15:08:21       2019/09/11 20:08:43      \nUsers                                    \u003cDirectory\u003e  --              --              2019/09/22 22:26:11       2019/03/19 13:37:22      \nWindows                                  \u003cDirectory\u003e  --              --              2020/05/01 23:09:08       2019/03/19 13:37:22      \npagefile.sys                             .sys         2334928896      2226.762        2020/05/02 2:10:05        2019/09/11 20:08:44      \nswapfile.sys                             .sys         268435456       256             2020/05/01 23:09:13       2019/09/11 20:08:44      \n",
-      "TaskID": "ae323961-5aa8-442e-8461-8d05c4541d7d"
+  "CrowdStrike": {
+    "Command": [
+        {
+            "BaseCommand": "ls",
+            "Complete": true,
+            "NextSequenceID": null,
+            "SequenceID": null,
+            "Stderr": "",
+            "Stdout": "Directory listing for C:\\ -\n\nName                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC+9)     Created (UTC+9)          \n----                                     ----         ------------    ---------       ---------------------     ---------------          \n$Recycle.Bin                             \u003cDirectory\u003e  --              --              2020/01/10 16:05:59       2019/03/19 13:52:43      \nConfig.Msi                               \u003cDirectory\u003e  --              --              2020/05/01 23:12:50       2020/01/10 16:52:09      \nDocuments and Settings                   \u003cDirectory\u003e  --              --              2019/09/12 15:03:21       2019/09/12 15:03:21      \nPerfLogs                                 \u003cDirectory\u003e  --              --              2019/03/19 13:52:43       2019/03/19 13:52:43      \nProgram Files                            \u003cDirectory\u003e  --              --              2020/01/10 17:11:47       2019/03/19 13:52:43      \nProgram Files (x86)                      \u003cDirectory\u003e  --              --              2020/05/01 23:12:53       2019/03/19 13:52:44      \nProgramData                              \u003cDirectory\u003e  --              --              2020/01/10 17:16:51       2019/03/19 13:52:44      \nRecovery                                 \u003cDirectory\u003e  --              --              2019/09/11 20:13:59       2019/09/11 20:13:59      \nSystem Volume Information                \u003cDirectory\u003e  --              --              2019/09/12 15:08:21       2019/09/11 20:08:43      \nUsers                                    \u003cDirectory\u003e  --              --              2019/09/22 22:26:11       2019/03/19 13:37:22      \nWindows                                  \u003cDirectory\u003e  --              --              2020/05/01 23:09:08       2019/03/19 13:37:22      \npagefile.sys                             .sys         2334928896      2226.762        2020/05/02 2:10:05        2019/09/11 20:08:44      \nswapfile.sys                             .sys         268435456       256             2020/05/01 23:09:13       2019/09/11 20:08:44      \n",
+            "TaskID": "ae323961-5aa8-442e-8461-8d05c4541d7d"
+            }
+        ]
     }
-  ]
 }
 ```
 
@@ -1303,35 +1331,31 @@ Gets a list of files for the specified RTR session on a host.
 
 #### Context Example
 
-```
+```json
 {
-  "CrowdStrike.Command(val.TaskID === obj.TaskID)": [
-    {
-      "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-      "SessionID": "fdd6408f-6688-441b-8659-41bcad25441c",
-      "TaskID": "1269ad9e-c11f-4e38-8aba-1a0275304f9c"
+  "CrowdStrike": {
+    "Command": {
+        "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "SessionID": "fdd6408f-6688-441b-8659-41bcad25441c",
+        "TaskID": "1269ad9e-c11f-4e38-8aba-1a0275304f9c"
+    },
+    "File": {
+        "CreatedAt": "2020-05-01T17:57:42Z",
+        "DeletedAt": null,
+        "ID": 186811,
+        "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "Size": 0,
+        "Stderr": null,
+        "Stdout": null,
+        "UpdatedAt": "2020-05-01T17:57:42Z"
     }
-  ],
-  "CrowdStrike.File(val.ID === obj.ID)": [
-    {
-      "CreatedAt": "2020-05-01T17:57:42Z",
-      "DeletedAt": None,
-      "ID": 186811,
-      "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
-      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-      "Size": 0,
-      "Stderr": None,
-      "Stdout": None,
-      "UpdatedAt": "2020-05-01T17:57:42Z"
-    }
-  ],
-  "File(val.MD5 \u0026\u0026 val.MD5 == obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 == obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 == obj.SHA256 || val.SHA512 \u0026\u0026 val.SHA512 == obj.SHA512 || val.CRC32 \u0026\u0026 val.CRC32 == obj.CRC32 || val.CTPH \u0026\u0026 val.CTPH == obj.CTPH || val.SSDeep \u0026\u0026 val.SSDeep == obj.SSDeep)": [
-    {
+  },
+  "File": {
       "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
       "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "Size": 0
     }
-  ]
 }
 ```
 
@@ -1370,6 +1394,7 @@ CrowdStrike Session Refreshed: fdd6408f-6688-441b-8659-41bcad25441c
 #### Context Output
 
 There is no context output for this command.
+
 ### cs-falcon-search-custom-iocs
 
 ***
@@ -1433,7 +1458,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
                     "mac"
                 ],
                 "Severity": "informational",
-                "Source": "Cortex XSOAR",
+                "Source": "Cortex",
                 "Type": "ipv4",
                 "Value": "1.1.8.9"
             },
@@ -1450,7 +1475,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
                     "mac"
                 ],
                 "Severity": "informational",
-                "Source": "Cortex XSOAR",
+                "Source": "Cortex",
                 "Type": "ipv4",
                 "Value": "4.1.8.9"
             }
@@ -1465,8 +1490,8 @@ Returns a list of your uploaded IOCs that match the search criteria.
 
 >|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex |  |
 
 ### cs-falcon-get-custom-ioc
 
@@ -1524,7 +1549,7 @@ Gets the full definition of one or more indicators that you are watching.
                 "linux"
             ],
             "Severity": "informational",
-            "Source": "cortex xsoar",
+            "Source": "Cortex",
             "Tags": [
                 "test",
                 "test1"
@@ -1542,7 +1567,7 @@ Gets the full definition of one or more indicators that you are watching.
 
 >|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z | linux |  |  | Cortex | test,<br/>test1 |
 
 
 ### cs-falcon-upload-custom-ioc
@@ -3352,7 +3377,7 @@ Uploads a batch of indicators.
 
 #### Command Example
 
-```!cs-falcon-batch-upload-custom-ioc multiple_indicators_json=`[{"description": "test", "expiration": "2022-02-17T13:47:57Z", "type": "ipv4", "severity": "Informational", "value": "1.1.8.9", "action": "no_action", "platforms": ["mac"], "source": "Cortex XSOAR", "applied_globally": true}]` ```
+```!cs-falcon-batch-upload-custom-ioc multiple_indicators_json=`[{"description": "test", "expiration": "2022-02-17T13:47:57Z", "type": "ipv4", "severity": "Informational", "value": "1.1.8.9", "action": "no_action", "platforms": ["mac"], "source": "Cortex", "applied_globally": true}]` ```
 
 #### Context Example
 
@@ -3372,7 +3397,7 @@ Uploads a batch of indicators.
                 "mac"
             ],
             "Severity": "informational",
-            "Source": "Cortex XSOAR",
+            "Source": "Cortex",
             "Type": "ipv4",
             "Value": "1.1.8.9"
         }
@@ -3386,7 +3411,7 @@ Uploads a batch of indicators.
 
 >|Action|CreatedBy|CreatedTime|Description|Expiration|ID|ModifiedBy|ModifiedTime|Platforms|Severity|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| no_action | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex XSOAR | ipv4 | 1.1.8.9 |
+>| no_action | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex | ipv4 | 1.1.8.9 |
 
 ### cs-falcon-rtr-kill-process
 
@@ -3861,7 +3886,7 @@ Gets the detections for a specific incident.
 ### get-mapping-fields
 
 ***
-Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes. Note that this command is supported on Cortex XSOAR only.
 
 #### Base Command
 
@@ -3870,10 +3895,11 @@ Returns the list of fields to map in outgoing mirroring. This command is only us
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
-Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only.
+Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -3889,10 +3915,11 @@ Gets remote data from a remote incident or detection. This method does not updat
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***
-Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -3907,10 +3934,11 @@ Gets the list of incidents and detections that were modified since the last upda
 #### Context Output
 
 There is no context output for this command.
+
 ### update-remote-system
 
 ***
-Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
+Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -4179,7 +4207,7 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | Optional | 
 | value | The value by which the exclusions should be filtered. | Optional | 
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value. | Optional | 
 | limit | The maximum number of records to return. [1-500]. Applies only if the ids argument is not supplied. | Optional | 
@@ -6381,6 +6409,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
     ]
 }
 ```
+
 #### Human Readable Output
 
 | CVE ID | CVE Severity | CVE Base Score | CVE Published Date | CVE Impact Score | CVE Exploitability Score | CVE Vector | 
@@ -6495,21 +6524,34 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
 
+
 ## Troubleshooting
-* When encountering connectivity or authorization errors within Cortex XSOAR 8, it is necessary to include the IP address corresponding to the relevant region in the CrowdStrike Falcon allow list.
-* When encountering a 429 error code returned from Crowdstrike Falcon within Cortex XSOAR 8, the solution is to use an engine as explained in this [link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Engines).
-* In the different query parameters such as Endpoint Detections fetch query, Endpoint Incidents fetch query, etc. if you want to query for multiple values in the same field (for example, retrieving severity_name equal to Medium, High, and Critical) you need to use the following format: field:['value1','value2','value3'].
-* When encountering the error "400 - Reason: Bad Request: Invalid element in the request", ensure that your command arguments are correct. For example, if you're using the ID of a detection pre-Raptor (legacy API) in an integration configured to run with Raptor, this error will appear.
-* When encountering missing incidents on the ***fetch-incidents*** command, make sure that the 'Fetch Type' integration parameter includes the type of the missing incidents.
-Optional types are:
-  - Endpoint Incident
-  - Endpoint Detection
-  - IDP Detection
-  - Indicator of Misconfiguration
-  - Indicator of Attack
-  - Mobile Detection
-  - On-Demand Scans Detection
-  - OFP Detection
-Notes: 
- 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
- 2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+
+- In the different fetch query configuration parameters such as "Endpoint Detections fetch query" and "Endpoint Incidents fetch query", to query for multiple values in the same field use the following format: `field:['value1','value2','value3']`. 
+  - For example, filtering by "severity_name" equal to "Medium", "High", or "Critical" can be achieved by specifying `severity_name:['Medium','High','Critical']`
+
+- When encountering the error "400 - Reason: Bad Request: Invalid element in the request", ensure the integration instance is configured correctly and verify the command arguments. 
+  - For example, the error appears when using the ID of a detection prior to the Raptor release (legacy API) in an integration configured to run with Raptor. In such case, the "Use legacy API" checkbox in the instance configuration parameters may need to be checked.
+
+- When experiencing connectivity or authorization errors in Cortex XSOAR 8 or Cortex XSIAM, ensure that the IP addresses associated with the relevant CrowdStrike Falcon region are added to the allow list for the Cortex tenant. For detailed instructions, refer to the **Egress** section or search for **Egress** in the product documentation:
+  - [Enable access to Cortex XSOAR 8](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Enable-access-to-Palo-Alto-Networks-resources)
+  - [Enable Access to Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Resources-Required-to-Enable-Access)
+
+- When encountering HTTP 429 errors from CrowdStrike Falcon, install custom engine on the the Cortex tenant and use it in the configuration of the integration instance:
+  - [Cortex XSOAR 8 Engines](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Engines)
+  - [Cortex XSIAM Engines](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Engines)
+
+- When encountering missing incidents in Cortex XSOAR, make sure that the 'Fetch Type' integration parameter includes the type of the missing incidents.
+  - Optional types are:
+    - Endpoint Incident
+    - Endpoint Detection
+    - IDP Detection
+    - Indicator of Misconfiguration
+    - Indicator of Attack
+    - Mobile Detection
+    - On-Demand Scans Detection
+    - OFP Detection
+
+  - Notes: 
+    - The "On-Demand Scans Detection" option is not available in the legacy version.
+    - Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: "Endpoint Detection" and "OFP Detection".
