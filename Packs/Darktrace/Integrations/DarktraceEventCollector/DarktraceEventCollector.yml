@@ -11,7 +11,7 @@ configuration:
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: REST API Endpoint of Darktrace server.
+  additionalinfo: 'REST API Endpoint of Darktrace server.'
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -78,14 +78,13 @@ script:
     description: Gets events from Darktrace.
     name: darktrace-get-events
   runonce: false
-  script: '-'
+  script: "-"
   type: python
   subtype: python3
   isfetchevents: true
   dockerimage: demisto/python3:3.11.10.116439
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

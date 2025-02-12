@@ -19,7 +19,6 @@
         "Azure App Service"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

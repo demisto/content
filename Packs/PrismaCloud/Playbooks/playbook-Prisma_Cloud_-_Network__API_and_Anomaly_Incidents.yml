@@ -1,26 +1,34 @@
 id: Prisma Cloud - Network API and Anomaly Incidents
 version: -1
 name: Prisma Cloud - Network API and Anomaly Incidents
-description: "This playbook handles incidents of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and\nincidents of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise."
-starttaskid: '0'
+description: |-
+  This playbook handles incidents of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
+  incidents of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 4f11a4c9-0954-4f33-8c2f-3f0c56f2a5a2
     type: start
     task:
       id: 4f11a4c9-0954-4f33-8c2f-3f0c56f2a5a2
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -430\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -430
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -28,8 +36,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: ae031fc1-70ad-4363-82a6-93475f9024fb
     type: title
     task:
@@ -38,15 +46,21 @@ tasks:
       name: Enrichment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '34'
-      - '33'
+      - "34"
+      - "33"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -300\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -300
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -54,8 +68,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 97f6bc4a-c84f-46c9-89c0-9687b97bbfda
     type: regular
     task:
@@ -66,16 +80,22 @@ tasks:
       script: '|||ip'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       ip:
         simple: ${alert.remoteip}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 40\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 40
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -105,8 +125,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: aaa5c8f1-f0cf-4946-8e4e-b275ae8947ae
     type: title
     task:
@@ -115,14 +135,20 @@ tasks:
       name: Early Containment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 390\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -130,8 +156,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 23f631fe-952d-4904-8bdf-d69285021fa3
     type: condition
     task:
@@ -140,16 +166,16 @@ tasks:
       name: Does IP is malicious?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '9'
-      yes:
-      - '5'
+      - "9"
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -172,9 +198,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '3'
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 520\n  }\n}"
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -182,8 +214,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 684ae017-441c-43da-8110-4aa00320909e
     type: condition
     task:
@@ -192,16 +224,16 @@ tasks:
       name: Early Containment enabled?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '8'
-      yes:
-      - '6'
+      - "8"
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -210,10 +242,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
+              simple: "true"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 690\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 690
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -221,8 +259,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 3c1d50e7-8350-4585-86d1-6d000a4db3a8
     type: title
     task:
@@ -231,14 +269,20 @@ tasks:
       name: Early Containment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '25'
+      - "25"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 870\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 870
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -246,8 +290,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: f534ab24-4d30-4974-8a22-629c0618a5dd
     type: title
     task:
@@ -256,14 +300,20 @@ tasks:
       name: Containment Complete
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 1360\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1360
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -271,8 +321,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: 18d1a970-aee6-4ace-8a48-b07c6e6e1a99
     type: title
     task:
@@ -281,16 +331,22 @@ tasks:
       name: Investigation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '12'
-      - '13'
-      - '28'
+      - "12"
+      - "13"
+      - "28"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1500\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -298,45 +354,52 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: a14d40f5-2bcc-43f4-8577-750c43d57846
     type: playbook
     task:
       id: a14d40f5-2bcc-43f4-8577-750c43d57846
       version: -1
       name: Cloud User Investigation - Generic
-      description: "This playbook performs an investigation on a specific user in cloud environments, using queries and logs from Azure Log Analytics, AWS CloudTrail, G Suite Auditor, and GCP Logging.\n"
+      description: |
+        This playbook performs an investigation on a specific user in cloud environments, using queries and logs from Azure Log Analytics, AWS CloudTrail, G Suite Auditor, and GCP Logging.
       playbookName: Cloud User Investigation - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '44'
+      - "44"
     scriptarguments:
       AwsTimeSearchFrom:
-        simple: '1'
+        simple: "1"
       AzureSearchTime:
         simple: ago(1d)
       GcpTimeSearchFrom:
-        simple: '1'
+        simple: "1"
       MfaAttemptThreshold:
-        simple: '10'
+        simple: "10"
       Username:
         simple: ${alert.usernames}
       cloudProvider:
         simple: ${alert.cloudprovider.[0]}
       failedLogonThreshold:
-        simple: '20'
+        simple: "20"
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 1770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -344,22 +407,36 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: 6c232656-52c6-4b24-8918-30776fa31077
     type: playbook
     task:
       id: 6c232656-52c6-4b24-8918-30776fa31077
       version: -1
       name: Cloud Enrichment - Generic
-      description: "\n## Generic Cloud Enrichment Playbook\n\nThe **Cloud Enrichment - Generic Playbook** is designed to unify all the relevant playbooks concerning the enrichment of information in the cloud. It provides a standardized approach to enriching information in cloud environments.\n\n### Supported Blocks\n\n1. **Cloud IAM Enrichment - Generic**\n   - Enriches information related to Identity and Access Management (IAM) in the cloud.\n\n2. **Cloud Compute Enrichment - Generic**\n   - Enriches information related to cloud compute resources.\n\nThe playbook supports a single CSP enrichment at a time."
+      description: |2-
+
+        ## Generic Cloud Enrichment Playbook
+
+        The **Cloud Enrichment - Generic Playbook** is designed to unify all the relevant playbooks concerning the enrichment of information in the cloud. It provides a standardized approach to enriching information in cloud environments.
+
+        ### Supported Blocks
+
+        1. **Cloud IAM Enrichment - Generic**
+           - Enriches information related to Identity and Access Management (IAM) in the cloud.
+
+        2. **Cloud Compute Enrichment - Generic**
+           - Enriches information related to cloud compute resources.
+
+        The playbook supports a single CSP enrichment at a time.
       playbookName: Cloud Enrichment - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       cloudProvider:
         simple: ${alert.cloudprovider.[0]}
@@ -372,13 +449,19 @@ tasks:
       username:
         simple: ${alert.usernames}
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 40\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -386,8 +469,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: a699ec17-49ce-415f-8606-1966eb79ce46
     type: title
     task:
@@ -396,14 +479,20 @@ tasks:
       name: User Investigation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 1640\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1640
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -411,8 +500,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: dcaae03d-4ff1-4da5-8cdb-f82bf89d1df7
     type: title
     task:
@@ -421,14 +510,20 @@ tasks:
       name: Vulnerability Enrichment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '43'
+      - "43"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 1640\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1640
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -436,8 +531,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: 74c75a3e-d86c-4cf5-86b4-952537f330a5
     type: title
     task:
@@ -446,14 +541,20 @@ tasks:
       name: Verdict
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '38'
+      - "38"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2270\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2270
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -461,8 +562,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: bd3672c0-2ab6-4835-8cca-3fdc2b1d2af7
     type: condition
     task:
@@ -471,16 +572,16 @@ tasks:
       name: Does response needed?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '27'
-      yes:
-      - '17'
+      - "27"
+      "yes":
+      - "17"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -491,8 +592,14 @@ tasks:
             value:
               simple: malicious
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2570\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2570
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -500,8 +607,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 900a4aff-dd98-4611-8b66-b6a56945a6fd
     type: title
     task:
@@ -510,14 +617,20 @@ tasks:
       name: Remediation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '21'
+      - "21"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 2780\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 2780
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -525,22 +638,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: fd02b167-e582-4040-8a9f-302fe467f7be
     type: playbook
     task:
       id: fd02b167-e582-4040-8a9f-302fe467f7be
       version: -1
       name: Cloud Response - Generic
-      description: "This playbook provides response playbooks for:\n- AWS\n- Azure\n- GCP\n\nThe response actions available are:\n- Terminate/Shut down/Power off an instance\n- Delete/Disable a user\n- Delete/Revoke/Disable credentials\n- Block indicators"
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
       playbookName: Cloud Response - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '46'
+      - "46"
     scriptarguments:
       cloudProvider:
         simple: ${alert.cloudprovider.[0]}
@@ -555,7 +678,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           - - operator: isEqualString
               left:
                 value:
@@ -577,13 +700,19 @@ tasks:
       username:
         simple: ${alert.usernames}
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 3090\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 3090
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -591,8 +720,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: 6c693e4e-ede1-46b2-8edf-2e90906e2664
     type: condition
     task:
@@ -601,16 +730,16 @@ tasks:
       name: Perform Cloud Response?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '27'
-      yes:
-      - '20'
+      - "27"
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -619,10 +748,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
+              simple: "true"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 2920\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 2920
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -630,8 +765,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: bb6704b2-b3d8-4473-8e26-32cdeed54c20
     type: condition
     task:
@@ -640,16 +775,16 @@ tasks:
       name: Pause the playbook to perform policy recommendations?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '24'
-      yes:
-      - '23'
+      - "24"
+      "yes":
+      - "23"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -658,10 +793,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
+              simple: "true"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3770\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -669,8 +810,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     taskid: 8fe0d4e7-caa6-4776-8a20-0337be0dd38a
     type: regular
     task:
@@ -679,14 +820,20 @@ tasks:
       name: Pause the playbook to perform policy recommendations
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 690,\n    \"y\": 3940\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 3940
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -694,8 +841,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: c7d45bdf-b5e9-47ea-82f7-cb356e1c1f7f
     type: title
     task:
@@ -704,11 +851,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 4120\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -716,8 +869,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: 9640af49-911a-45a8-8624-da033d349dd2
     type: playbook
     task:
@@ -728,15 +881,15 @@ tasks:
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '39'
+      - "39"
     scriptarguments:
       AutoCommit:
-        simple: No
+        simple: "No"
       CustomBlockRule:
-        simple: 'True'
+        simple: "True"
       Folder:
         simple: Shared
       IP:
@@ -759,7 +912,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           - - operator: in
               left:
                 value:
@@ -770,7 +923,7 @@ tasks:
                   simple: alert.remoteip
                 iscontext: true
       InputEnrichment:
-        simple: 'False'
+        simple: "False"
       InternalRange:
         complex:
           root: lists
@@ -796,15 +949,21 @@ tasks:
       RuleName:
         simple: XSIAM - Block IP playbook - ${alert.id}
       UserVerification:
-        simple: 'True'
+        simple: "True"
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1000\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 1000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -812,8 +971,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '26':
-    id: '26'
+  "26":
+    id: "26"
     taskid: db3a06dc-6674-445a-8fa5-2d5a8e4da825
     type: playbook
     task:
@@ -824,10 +983,10 @@ tasks:
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     scriptarguments:
       ZendeskAssigne:
         simple: ${inputs.ZendeskAssigne}
@@ -846,7 +1005,7 @@ tasks:
       ZendeskType:
         simple: ${inputs.ZendeskType}
       addCommentPerEndpoint:
-        simple: 'True'
+        simple: "True"
       description:
         simple: ${inputs.ZenDeskDescription}
       serviceNowAssignmentGroup:
@@ -864,13 +1023,19 @@ tasks:
       serviceNowUrgency:
         simple: ${inputs.serviceNowUrgency}
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 690,\n    \"y\": 3600\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 3600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -878,8 +1043,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: cc2d6c1e-9c5b-4322-8df2-33fecac16230
     type: condition
     task:
@@ -888,16 +1053,16 @@ tasks:
       name: Create a ticket?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '22'
-      yes:
-      - '26'
+      - "22"
+      "yes":
+      - "26"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -906,10 +1071,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3430\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3430
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -917,8 +1088,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '28':
-    id: '28'
+  "28":
+    id: "28"
     taskid: 1410b003-f2f9-4bdd-804a-865520e77086
     type: title
     task:
@@ -927,14 +1098,20 @@ tasks:
       name: Risky User
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '29'
+      - "29"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1640\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1640
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -942,8 +1119,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '29':
-    id: '29'
+  "29":
+    id: "29"
     taskid: a57b5f12-570d-463f-8e3e-6e20a7dcbb18
     type: regular
     task:
@@ -954,16 +1131,22 @@ tasks:
       script: '|||core-list-risky-users'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       user_id:
         simple: ${alert.usernames}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1770\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -975,8 +1158,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '33':
-    id: '33'
+  "33":
+    id: "33"
     taskid: d0cf5850-da44-4de5-8a7e-d8fde47fd66c
     type: regular
     task:
@@ -987,22 +1170,28 @@ tasks:
       script: '|||prisma-cloud-alert-get-details'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '35'
-      - '40'
-      - '11'
+      - "35"
+      - "40"
+      - "11"
     scriptarguments:
       alert_id:
         simple: ${alert.external_id}
       detailed:
-        simple: 'true'
+        simple: "true"
       using:
         simple: ${alert.sourceInstance}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": -130\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1047,8 +1236,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '34':
-    id: '34'
+  "34":
+    id: "34"
     taskid: aab9ed40-9025-4883-88f0-c2ab4c7234e6
     type: condition
     task:
@@ -1057,16 +1246,16 @@ tasks:
       name: Does Alert Contains IP?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '3'
-      yes:
-      - '2'
+      - "3"
+      "yes":
+      - "2"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1075,8 +1264,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -50,\n    \"y\": -130\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": -130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1084,8 +1279,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '35':
-    id: '35'
+  "35":
+    id: "35"
     taskid: 7265dfe6-a8a7-4b86-8066-c118ba872dbe
     type: condition
     task:
@@ -1094,16 +1289,16 @@ tasks:
       name: Host RRN has received from Prisma?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '3'
-      yes:
-      - '36'
+      - "3"
+      "yes":
+      - "36"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1112,8 +1307,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 40\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 40
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1121,8 +1322,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '36':
-    id: '36'
+  "36":
+    id: "36"
     taskid: 84ddcd55-108f-4bcb-8608-6287ad05bffb
     type: regular
     task:
@@ -1133,20 +1334,26 @@ tasks:
       script: '|||prisma-cloud-host-finding-list'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       all_results:
-        simple: 'true'
+        simple: "true"
       rrn:
         simple: ${PrismaCloud.Alert.resource.rrn}
       using:
         simple: ${alert.sourceInstance}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 220\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 220
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1154,8 +1361,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '38':
-    id: '38'
+  "38":
+    id: "38"
     taskid: 17a38aca-0335-45d3-8b9e-02c7104517d4
     type: regular
     task:
@@ -1169,7 +1376,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     scriptarguments:
       verdict:
         complex:
@@ -1180,14 +1387,37 @@ tasks:
             args:
               conditions:
                 value:
-                  simple: "[\n  {\n    \"condition\": \"#{alert.ipreputation} == '2'\",\n    \"return\": \"Suspicious\"\n  },\n  {\n    \"condition\": \"#{alert.useranomalycount} > '0'\",\n    \"return\": \"Suspicious\"\n  },\n  {\n    \"condition\": \"#{alert.ipreputation} == '3'\",\n    \"return\": \"Malicious\"\n  },\n  {\n    \"default\": 'Undetermined'\n  }\n]"
+                  simple: |-
+                    [
+                      {
+                        "condition": "#{alert.ipreputation} == '2'",
+                        "return": "Suspicious"
+                      },
+                      {
+                        "condition": "#{alert.useranomalycount} > '0'",
+                        "return": "Suspicious"
+                      },
+                      {
+                        "condition": "#{alert.ipreputation} == '3'",
+                        "return": "Malicious"
+                      },
+                      {
+                        "default": 'Undetermined'
+                      }
+                    ]
               flags:
                 value:
                   simple: alert.ipreputation
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2410\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1195,8 +1425,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '39':
-    id: '39'
+  "39":
+    id: "39"
     taskid: 893a8d8d-ae3a-4d65-8399-128b550d4655
     type: regular
     task:
@@ -1210,13 +1440,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       ipblockedstatus:
         simple: Executed
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1160\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 1160
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1224,8 +1460,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '40':
-    id: '40'
+  "40":
+    id: "40"
     taskid: 8bab5ef9-fbad-4e40-8750-f235d3e0a15d
     type: condition
     task:
@@ -1234,24 +1470,30 @@ tasks:
       name: Is Part of Alert Rule?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '3'
-      yes:
-      - '41'
+      - "3"
+      "yes":
+      - "41"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: PrismaCloud.Alert.alertRules
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1320,\n    \"y\": 40\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 40
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1259,8 +1501,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '41':
-    id: '41'
+  "41":
+    id: "41"
     taskid: 436263bc-db35-424b-8cf0-051512df12a2
     type: regular
     task:
@@ -1271,18 +1513,24 @@ tasks:
       scriptName: JsonToTable
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       extend-context:
         simple: prismaalertrules=
       value:
         simple: ${PrismaCloud.Alert.alertRules}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1320,\n    \"y\": 220\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 220
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1294,8 +1542,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '42':
-    id: '42'
+  "42":
+    id: "42"
     taskid: 3f873b48-5e22-4196-817f-bd02b7a11266
     type: regular
     task:
@@ -1306,16 +1554,22 @@ tasks:
       script: '|||cve'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       cve:
         simple: ${CVE.ID}
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 1930\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1930
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1339,8 +1593,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '43':
-    id: '43'
+  "43":
+    id: "43"
     taskid: 47f296ff-d425-4a5d-8fec-5ec90f8dc250
     type: condition
     task:
@@ -1349,16 +1603,16 @@ tasks:
       name: Has related CVE?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '15'
-      yes:
-      - '42'
+      - "15"
+      "yes":
+      - "42"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1367,8 +1621,14 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 1770\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1376,8 +1636,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '44':
-    id: '44'
+  "44":
+    id: "44"
     taskid: 2aec9d38-f06a-4694-869f-60f8daa27e8e
     type: condition
     task:
@@ -1386,16 +1646,16 @@ tasks:
       name: Has Results?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '15'
-      yes:
-      - '45'
+      - "15"
+      "yes":
+      - "45"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1416,10 +1676,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
+              simple: "true"
           ignorecase: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 1930\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1930
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1427,8 +1693,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '45':
-    id: '45'
+  "45":
+    id: "45"
     taskid: 7837fc50-fa9d-489a-89af-977c5c4100b2
     type: regular
     task:
@@ -1442,7 +1708,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       useranomalycount:
         complex:
@@ -1462,8 +1728,14 @@ tasks:
                   simple: GcpAnomalousNetworkTraffic
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 2100\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 2100
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1471,8 +1743,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '46':
-    id: '46'
+  "46":
+    id: "46"
     taskid: 59de8147-06f1-4f75-8c2d-ba383f66db0a
     type: regular
     task:
@@ -1486,15 +1758,21 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     scriptarguments:
       ipblockedstatus:
         simple: Executed
       userblockstatus:
         simple: Executed
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 3250\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 3250
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1502,29 +1780,44 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"35_3_#default#\": 0.1,\n    \"40_3_#default#\": 0.22,\n    \"4_6_yes\": 0.3\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4615,\n      \"width\": 1960,\n      \"x\": -260,\n      \"y\": -430\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "35_3_#default#": 0.1,
+      "40_3_#default#": 0.22,
+      "4_6_yes": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4615,
+        "width": 1960,
+        "x": -260,
+        "y": -430
+      }
+    }
+  }
 inputs:
 - key: CreateTicket
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to create a ticket in ZenDesk or ServiceNow. Insert True or False
   playbookInputQuery:
 - key: StopForRecommendations
   value:
-    simple: 'True'
+    simple: "True"
   required: false
-  description: ''
+  description: ""
   playbookInputQuery:
 - key: EarlyContainment
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: Whether to perform early containment.
   playbookInputQuery:
 - key: CloudResponse
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to perform cloud response.
   playbookInputQuery:
@@ -1613,7 +1906,8 @@ inputSections:
   - CreateTicket
   - StopForRecommendations
   name: Alert Management
-  description: "Alert management settings and data,\n"
+  description: |
+    Alert management settings and data,
 - inputs:
   - EarlyContainment
   - CloudResponse
@@ -1648,7 +1942,5 @@ outputSections:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces:
-- marketplacev2
-- platform
+marketplaces: ["marketplacev2"]
 fromversion: 6.10.0

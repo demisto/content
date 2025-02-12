@@ -18,7 +18,6 @@
         "web security service"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

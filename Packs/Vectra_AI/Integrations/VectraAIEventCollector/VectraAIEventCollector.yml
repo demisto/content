@@ -37,8 +37,8 @@ configuration:
   display: Use system proxy settings
   type: 8
   required: false
-description: Collects Vectra Detections and Audits into XSIAM Events.
-display: Vectra AI Event Collector
+description: 'Collects Vectra Detections and Audits into XSIAM Events.'
+display: 'Vectra AI Event Collector'
 name: VectraAIEventCollector
 supportlevelheader: xsoar
 script:
@@ -60,7 +60,6 @@ script:
   dockerimage: demisto/python3:3.11.10.115186
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

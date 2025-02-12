@@ -11,21 +11,21 @@ configuration:
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.
+  additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
   section: Connect
 - name: token_url
   display: Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT-NAME/token)
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.
+  additionalinfo: 'Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.'
   section: Connect
 - name: credentials
   display: Client ID
   required: true
   defaultvalue:
   type: 9
-  additionalinfo: Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday.
+  additionalinfo: 'Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday.'
   displaypassword: Client Secret
   section: Connect
   hiddenusername: false
@@ -33,7 +33,7 @@ configuration:
   required: true
   defaultvalue:
   type: 9
-  additionalinfo: Non-expiry Workday API refresh token.
+  additionalinfo: 'Non-expiry Workday API refresh token.'
   displaypassword: Refresh Token
   hiddenusername: true
   section: Connect
@@ -83,27 +83,27 @@ script:
       description: The maximum number of loggings to return.
       defaultValue: 1000
       predefined:
-      - ''
+      - ""
     - name: offset
       description: The zero-based index of the first object in a response collection.
       defaultValue: 0
       predefined:
-      - ''
+      - ""
     - name: from_date
       description: 'The date and time of the earliest log entry. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: true
-      defaultValue: ''
+      defaultValue: ""
       predefined:
-      - ''
+      - ""
     - name: to_date
       description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: true
-      defaultValue: ''
+      defaultValue: ""
       predefined:
-      - ''
+      - ""
     outputs: []
   runonce: false
-  script: '-'
+  script: "-"
   type: python
   subtype: python3
   isfetchevents: true
@@ -113,4 +113,3 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
-- platform

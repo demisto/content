@@ -19,8 +19,7 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "dependencies": {
         "CommonScripts": {

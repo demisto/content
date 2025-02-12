@@ -16,7 +16,7 @@ configuration:
   section: Collect
   required: false
 - additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
-  defaultvalue: '1000'
+  defaultvalue: "1000"
   display: Max events per fetch
   section: Collect
   name: max_fetch
@@ -30,19 +30,19 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.
-display: Infoblox BloxOne Threat Defense Event Collector
+description: "BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats."
+display: "Infoblox BloxOne Threat Defense Event Collector"
 name: Infoblox BloxOne Threat Defense Event Collector
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      defaultValue: 'False'
+      defaultValue: "False"
       description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
-      - 'True'
-      - 'False'
+      - "True"
+      - "False"
       required: true
     - description: Timestamp indicating when to start fetching events.
       name: from
@@ -62,17 +62,16 @@ script:
     - description: The event data.
       type: Unknown
       contextPath: TestGetEvents
-    description: Gets events. This command is for debugging purposes.
+    description: "Gets events. This command is for debugging purposes."
     name: bloxone-td-event-collector-get-events
   runonce: false
   isfetchevents: true
-  script: '-'
+  script: "-"
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.11.10.115186
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
-- platform
 tests:
 - No tests (auto formatted)

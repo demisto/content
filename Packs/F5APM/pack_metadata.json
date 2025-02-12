@@ -21,7 +21,6 @@
         "Access Policy Manager"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

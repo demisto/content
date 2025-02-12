@@ -27,7 +27,7 @@ configuration:
   additionalinfo: The API only returns up to 500 events at a time without limiting capabilities, so it is best to enter this parameter in multiples of 500.
   name: max_fetch
   type: 0
-  defaultvalue: '10000'
+  defaultvalue: "10000"
   section: Collect
 description: Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 display: Druva Event Collector
@@ -58,7 +58,6 @@ script:
   type: python
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)

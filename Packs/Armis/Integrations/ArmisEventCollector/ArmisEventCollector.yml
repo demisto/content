@@ -51,7 +51,7 @@ configuration:
   display: Events Fetch Interval
   additionalinfo: Alerts and activity events.
   name: eventFetchInterval
-  defaultvalue: '1'
+  defaultvalue: "1"
   type: 19
   required: false
 - section: Collect
@@ -59,7 +59,7 @@ configuration:
   display: Minutes to delay
   additionalinfo: Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). The default value is 10 minutes. A higher value can be configured in the event that some events are still not available within those ten minutes.
   name: fetch_delay
-  defaultvalue: '10'
+  defaultvalue: "10"
   type: 0
   required: false
 - section: Collect
@@ -67,7 +67,7 @@ configuration:
   display: Device Fetch Interval
   additionalinfo: Time between fetch of devices (for example 12 hours, 60 minutes, etc.).
   name: deviceFetchInterval
-  defaultvalue: 4 hours
+  defaultvalue: "4 hours"
   type: 0
   required: false
 description: Collects alerts, devices and activities from Armis resources.
@@ -89,13 +89,13 @@ script:
       name: from_date
       required: false
     - auto: PREDEFINED
-      defaultValue: Alerts
+      defaultValue: 'Alerts'
       description: The type of event to fetch.
       name: event_type
       predefined:
-      - Alerts
-      - Activities
-      - Devices
+      - 'Alerts'
+      - 'Activities'
+      - 'Devices'
       required: false
     - description: Run your own AQL query to fetch events.
       name: aql
@@ -110,7 +110,6 @@ script:
   dockerimage: demisto/python3:3.11.10.116949
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

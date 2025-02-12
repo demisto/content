@@ -564,8 +564,7 @@
         ]
     },
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "group": "incident",
     "id": "Prisma Cloud V2",

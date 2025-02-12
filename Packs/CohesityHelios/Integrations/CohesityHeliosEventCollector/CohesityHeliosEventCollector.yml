@@ -45,8 +45,7 @@ name: Cohesity Helios Event Collector
 supportlevelheader: xsoar
 marketplaces:
 - marketplacev2
-- platform
-fromversion: 8.2.0
+fromversion: '8.2.0'
 script:
   commands:
   - arguments:
@@ -75,7 +74,7 @@ script:
       description: Specifies the end time of the alerts to be returned.
       isArray: false
       required: true
-      defaultValue: Now
+      defaultValue: 'Now'
     deprecated: false
     description: Gets events from Cohesity Helios.
     execution: false

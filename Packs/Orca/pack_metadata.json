@@ -16,8 +16,7 @@
     "githubUser": "edenorca",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "defaultDataSource": "Orca Event Collector"
 }

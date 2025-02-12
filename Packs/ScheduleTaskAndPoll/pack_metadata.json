@@ -7,9 +7,7 @@
     "url": "",
     "email": "",
     "created": "2021-11-12T15:19:27Z",
-    "categories": [
-        "Utilities"
-    ],
+    "categories": ["Utilities"],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -18,7 +16,6 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

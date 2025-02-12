@@ -11,15 +11,8 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [
-        "Dell",
-        "EMC",
-        "Unity",
-        "Dell EMC",
-        "Dell EMC Unity"
-    ],
+    "keywords": ["Dell", "EMC", "Unity", "Dell EMC", "Dell EMC Unity"],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

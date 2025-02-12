@@ -843,10 +843,7 @@
     "name": "Prisma Cloud - Network API and Anomaly Incident Layout",
     "system": false,
     "version": -1,
-    "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
+    "marketplaces": ["marketplacev2"],
     "fromVersion": "6.10.0",
     "description": ""
 }

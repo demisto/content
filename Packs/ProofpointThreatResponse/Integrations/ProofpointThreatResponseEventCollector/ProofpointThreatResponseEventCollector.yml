@@ -11,7 +11,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: ''
+- display: ""
   displaypassword: API Key for the authentication.
   name: credentials
   type: 9
@@ -31,7 +31,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-- defaultvalue: 6 hours
+- defaultvalue: '6 hours'
   additionalinfo: The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value.
   display: Fetch delta - The delta time in each batch. e.g., 1 hour, 3 minutes.
   name: fetch_delta
@@ -136,7 +136,6 @@ script:
   dockerimage: demisto/python3:3.11.10.115186
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

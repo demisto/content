@@ -15,8 +15,7 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse",
-        "platform"
+        "xpanse"
     ],
     "dependencies": {
         "AWS-IAM": {

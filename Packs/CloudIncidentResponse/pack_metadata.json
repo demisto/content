@@ -25,7 +25,6 @@
     ],
     "marketplaces": [
         "marketplacev2",
-        "xsoar",
-        "platform"
+        "xsoar"
     ]
 }

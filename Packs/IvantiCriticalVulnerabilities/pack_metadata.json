@@ -31,6 +31,8 @@
         "21887",
         "21888",
         "21893"
+
+
     ],
     "dependencies": {
         "MajorBreachesInvestigationandResponse": {
@@ -40,7 +42,6 @@
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

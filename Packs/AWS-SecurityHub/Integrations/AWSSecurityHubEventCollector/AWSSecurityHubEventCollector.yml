@@ -77,7 +77,7 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   type: 0
   section: Connect
   advanced: true
@@ -132,7 +132,6 @@ script:
   type: python
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

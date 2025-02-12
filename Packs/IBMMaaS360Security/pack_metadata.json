@@ -11,15 +11,8 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [
-        "IBM",
-        "IBM MaaS360",
-        "MaaS360",
-        "MaaS",
-        "Security"
-    ],
+    "keywords": [ "IBM", "IBM MaaS360", "MaaS360", "MaaS", "Security" ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

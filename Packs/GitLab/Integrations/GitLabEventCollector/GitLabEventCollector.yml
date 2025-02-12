@@ -35,7 +35,8 @@ configuration:
   type: 0
   section: Collect
 - display: The maximum number of events per fetch for each event type
-  additionalinfo: Each fetch will bring the `limit` number of events for each type (audits, groups and projects) and each group/project ID. For example, if `limit` is set to 500 and groups/projects IDs are given as well, then the fetch will bring 500 audit events and 500 group/project events for each group/project ID.
+  additionalinfo: Each fetch will bring the `limit` number of events for each type (audits, groups and projects) and each group/project ID.
+                  For example, if `limit` is set to 500 and groups/projects IDs are given as well, then the fetch will bring 500 audit events and 500 group/project events for each group/project ID.
   name: limit
   type: 0
   defaultvalue: 500
@@ -57,7 +58,7 @@ description: ''
 display: GitLab Event Collector
 name: GitLab Event Collector
 script:
-  script: ''
+  script: ""
   type: python
   commands:
   - arguments:
@@ -76,7 +77,6 @@ script:
   subtype: python3
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 6.8.0
 tests:
 - No tests

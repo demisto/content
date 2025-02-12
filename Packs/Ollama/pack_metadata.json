@@ -15,8 +15,7 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "githubUser": [
         "rfortress-pan"

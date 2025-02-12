@@ -11,13 +11,8 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [
-        "DB",
-        "Database",
-        "DBF"
-    ],
+    "keywords": ["DB", "Database", "DBF"],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

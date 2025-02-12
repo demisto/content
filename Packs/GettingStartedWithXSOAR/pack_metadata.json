@@ -3,7 +3,7 @@
     "description": "This wizard is designed to provide a step-by-step walkthough on getting started with XSOAR",
     "support": "community",
     "videos": [
-        "https://www.youtube.com/watch?v=03TmGeAzvOQ"
+    "https://www.youtube.com/watch?v=03TmGeAzvOQ"
     ],
     "currentVersion": "1.0.0",
     "author": "Joe Cosgrove",
@@ -12,20 +12,11 @@
     "categories": [
         "Utilities"
     ],
-    "tags": [
-        "Getting Started",
-        "Simulation",
-        "New",
-        "Trending",
-        "Plug & Enrich"
-    ],
-    "useCases": [
-        "Case Management"
-    ],
+    "tags": ["Getting Started", "Simulation", "New", "Trending","Plug & Enrich"],
+    "useCases": ["Case Management"],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "devEmail": [
         "joecosgrove@paloaltonetworks.com"

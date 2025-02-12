@@ -37,8 +37,7 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "devEmail": [],
     "githubUser": []

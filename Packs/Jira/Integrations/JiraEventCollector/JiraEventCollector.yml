@@ -32,12 +32,12 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Jira logs event collector integration for Cortex XSIAM.
+description: 'Jira logs event collector integration for Cortex XSIAM.'
 display: Jira Event Collector
 name: Jira Event Collector
 script:
   commands:
-  - description: Returns a list of audit records
+  - description: 'Returns a list of audit records'
     name: jira-get-events
     arguments:
     - description: The maximum number of incidents per fetch. Default is 1000.
@@ -54,7 +54,6 @@ script:
   dockerimage: demisto/py3-tools:1.0.0.114656
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

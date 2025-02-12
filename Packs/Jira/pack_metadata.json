@@ -19,9 +19,7 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse",
-        "platform"
+        "xpanse"
     ],
-    "module": ["automation"],
     "defaultDataSource": "Jira Event Collector"
 }

@@ -7,16 +7,13 @@
     "url": "",
     "email": "",
     "created": "2024-12-30T14:41:06Z",
-    "categories": [
-        "Identity and Access Management"
-    ],
+    "categories": ["Identity and Access Management"],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "githubUser": [
         "nprenga"

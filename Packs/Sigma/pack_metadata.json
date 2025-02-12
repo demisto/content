@@ -16,8 +16,7 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "dependencies": {
         "FeedMitreAttackv2": {
@@ -52,5 +51,6 @@
             "mandatory": false,
             "display_name": "Elasticsearch"
         }
+        
     }
 }

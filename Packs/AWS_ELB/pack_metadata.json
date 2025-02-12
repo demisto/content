@@ -11,11 +11,8 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [
-        "ELB"
-    ],
+    "keywords": ["ELB"],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

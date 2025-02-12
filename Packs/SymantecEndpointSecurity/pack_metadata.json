@@ -15,7 +15,6 @@
         "ses"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

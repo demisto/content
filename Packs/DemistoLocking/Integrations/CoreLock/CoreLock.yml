@@ -11,14 +11,14 @@ description: Locking mechanism that prevents concurrent execution of different t
 configuration:
 - display: Default timeout (seconds) for wait on locks to be released
   name: timeout
-  defaultvalue: '600'
+  defaultvalue: "600"
   type: 0
   required: true
   section: Connect
   advanced: true
 - display: Sync integration cache
   name: sync
-  defaultvalue: 'false'
+  defaultvalue: "false"
   type: 8
   additionalinfo: Whether to sync the integration cache with the database (Available from Cortex XSOAR 6.2.0).
   section: Connect
@@ -62,7 +62,7 @@ script:
       description: Additional information to provide for the lock instance
     - name: timeout
       description: Timeout (seconds) for wait on lock to be freed
-      defaultValue: '600'
+      defaultValue: "600"
     description: Gets a specific lock. If the lock doesn't exist, it creates one. If the lock is already in use, the command waits until the lock is released or until timeout is reached. If timeout is reached and the lock hasn't been released, the command fails to get the lock.
   - name: core-lock-release
     arguments:
@@ -81,7 +81,6 @@ script:
     description: Release all locks
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 5.0.0
 tests:
 - No tests

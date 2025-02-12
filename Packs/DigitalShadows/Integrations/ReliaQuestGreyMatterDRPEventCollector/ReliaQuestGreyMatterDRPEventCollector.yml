@@ -43,18 +43,18 @@ script:
   commands:
   - arguments:
     - name: start_time
-      description: From which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (<number> <time unit>, e.g., 12 hours, 7 days). If not provided, will retrieve the oldest events available in case event_num_after argument is not provided.
+      description: 'From which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (<number> <time unit>, e.g., 12 hours, 7 days). If not provided, will retrieve the oldest events available in case event_num_after argument is not provided.'
       required: false
-      defaultValue: 3 days ago
+      defaultValue: '3 days ago'
     - name: end_time
-      description: Until which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (<number> <time unit>, e.g., 12 hours, 7 days).
+      description: 'Until which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (<number> <time unit>, e.g., 12 hours, 7 days).'
       required: false
     - name: limit
-      description: The maximum number of events to retrieve.
+      description: 'The maximum number of events to retrieve.'
       required: false
       defaultValue: '200'
     - name: event_num_after
-      description: Fetch events that were created after a specific event-number.
+      description: 'Fetch events that were created after a specific event-number.'
       required: false
     description: Manual command to fetch reila-quest events and display them.
     name: relia-quest-get-events
@@ -72,6 +72,5 @@ fromversion: 8.0.0
 supportlevelheader: xsoar
 marketplaces:
 - marketplacev2
-- platform
 tests:
 - No tests (auto formatted)

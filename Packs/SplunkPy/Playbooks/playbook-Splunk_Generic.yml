@@ -2,21 +2,27 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This is a generic playbook to be executed for the Splunk Notable Generic incident type. The playbook performs all the common parts of the investigation, including notifying the SOC, enriching the data for indicators and users, calculating the severity, assigning the incident, notifying the SIEM admin for false positives and more.
+description: This is a generic playbook to be executed for the Splunk Notable Generic
+  incident type. The playbook performs all the common parts of the investigation,
+  including notifying the SOC, enriching the data for indicators and users, calculating
+  the severity, assigning the incident, notifying the SIEM admin for false positives
+  and more.
 id: Splunk Generic
 inputs:
-- description: Determines whether to enrich all indicators in the incident. Default is True.
+- description: Determines whether to enrich all indicators in the incident. Default
+    is True.
   key: Enrich
   playbookInputQuery:
   required: false
   value:
-    simple: 'true'
-- description: Set to true to assign only the user that is currently on shift. Default is False. Requires Cortex XSOAR v5.5 or later.
+    simple: "true"
+- description: Set to true to assign only the user that is currently on shift. Default
+    is False. Requires Cortex XSOAR v5.5 or later.
   key: OnCall
   playbookInputQuery:
   required: false
   value:
-    simple: 'false'
+    simple: "false"
 - description: The SOC team's email address.
   key: SocEmailAddress
   playbookInputQuery:
@@ -33,12 +39,14 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Determines whether to use the Calculate Severity playbook to calculate the incident severity. Default is True. If the playbook isn't used, the severity is determined by the Splunk severity value.
+- description: Determines whether to use the Calculate Severity playbook to calculate
+    the incident severity. Default is True. If the playbook isn't used, the severity
+    is determined by the Splunk severity value.
   key: UseCalculateSeverity
   playbookInputQuery:
   required: false
   value:
-    simple: 'true'
+    simple: "true"
 - description: The subject of the email to send to the SIEM admin.
   key: SiemAdminMailSubject
   playbookInputQuery:
@@ -47,30 +55,36 @@ inputs:
     simple: 'Adjustment/Exclusion for notable '
 name: Splunk Generic
 outputs: []
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 08854949-08a5-4873-8f01-b3935c78675f
       iscommand: false
-      name: ''
+      name: ""
       version: -1
       description: ''
     taskid: 08854949-08a5-4873-8f01-b3935c78675f
     timertriggers: []
     type: start
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": -440\n  }\n}"
-  '1':
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -440
+        }
+      }
+  "1":
     conditions:
     - condition:
       - - ignorecase: true
@@ -82,21 +96,21 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: 'True'
-      label: yes
-    id: '1'
+              simple: "True"
+      label: "yes"
+    id: "1"
     ignoreworker: false
     nexttasks:
       '#default#':
-      - '2'
-      yes:
-      - '3'
+      - "2"
+      "yes":
+      - "3"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Checks whether the Enrich playbook input is set to True.
       id: a04c8331-e7c5-4107-8605-b6ee82d4639d
       iscommand: false
@@ -106,19 +120,25 @@ tasks:
     taskid: a04c8331-e7c5-4107-8605-b6ee82d4639d
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": -305\n  }\n}"
-  '2':
-    id: '2'
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -305
+        }
+      }
+  "2":
+    id: "2"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '28'
+      - "28"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Assigns a random analyst to this incident.
       id: c74d18c6-9939-4701-828f-149cddba2b8d
       iscommand: false
@@ -130,19 +150,25 @@ tasks:
     - action: start
       fieldname: remediationsla
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 690\n  }\n}"
-  '3':
-    id: '3'
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 690
+        }
+      }
+  "3":
+    id: "3"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: aca20665-33d5-4e20-866b-0b8f73cd90fc
       iscommand: false
       name: Enrich Data
@@ -152,36 +178,42 @@ tasks:
     taskid: aca20665-33d5-4e20-866b-0b8f73cd90fc
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 562.5,\n    \"y\": -120\n  }\n}"
-  '7':
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": -120
+        }
+      }
+  "7":
     form:
       description: Provide notes regarding the investigation.
       expired: false
       questions:
       - defaultrows: []
-        fieldassociated: ''
+        fieldassociated: ""
         gridcolumns: []
-        id: '0'
-        label: ''
+        id: "0"
+        label: ""
         labelarg:
           simple: Investigation Notes
         options: []
         optionsarg: []
-        placeholder: ''
+        placeholder: ""
         readonly: false
         required: false
-        tooltip: ''
+        tooltip: ""
         type: longText
-      sender: ''
+      sender: ""
       title: Investigation Notes
       totalanswers: 0
-    id: '7'
+    id: "7"
     ignoreworker: false
     message:
       bcc:
       body:
       cc:
-      format: ''
+      format: ""
       methods: []
       subject:
       timings:
@@ -191,13 +223,13 @@ tasks:
       to:
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Manually review and investigate this incident.
       id: e3efbacf-f8e3-4291-8ab7-459037ce9a64
       iscommand: false
@@ -207,19 +239,27 @@ tasks:
     taskid: e3efbacf-f8e3-4291-8ab7-459037ce9a64
     timertriggers: []
     type: collection
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 1195\n  }\n}"
-  '8':
-    id: '8'
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1195
+        }
+      }
+  "8":
+    id: "8"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '12'
+      - "12"
     note: false
     quietmode: 0
     reputationcalc: 1
     scriptarguments:
       closeNotes:
-        simple: "Closed By: ${Investigation Notes.Answers.name}\n${Investigation Notes.Answers.0}"
+        simple: |-
+          Closed By: ${Investigation Notes.Answers.name}
+          ${Investigation Notes.Answers.0}
     separatecontext: false
     skipunavailable: false
     task:
@@ -234,13 +274,19 @@ tasks:
     taskid: 4b1a5788-3cef-4857-8023-dcd01dfa8793
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 3390\n  }\n}"
-  '9':
-    id: '9'
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 3390
+        }
+      }
+  "9":
+    id: "9"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     note: false
     quietmode: 0
     reputationcalc: 2
@@ -252,7 +298,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
+      description: Extracts all indicators from the incident and enriches the indicators
+        by using the reputation command defined for each indicator type.
       id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
       iscommand: true
       name: Extract indicators from incident
@@ -262,19 +309,25 @@ tasks:
     taskid: 354e53b0-0132-44d6-895e-0f6e0a248cd9
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 562.5,\n    \"y\": 10\n  }\n}"
-  '10':
-    id: '10'
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 10
+        }
+      }
+  "10":
+    id: "10"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: e6df7983-dd60-487d-8fce-70f7f5766175
       iscommand: false
       name: Entity Enrichment - Generic v2
@@ -285,16 +338,22 @@ tasks:
     taskid: e6df7983-dd60-487d-8fce-70f7f5766175
     timertriggers: []
     type: playbook
-    view: "{\n  \"position\": {\n    \"x\": 562.5,\n    \"y\": 170\n  }\n}"
-  '12':
-    id: '12'
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 170
+        }
+      }
+  "12":
+    id: "12"
     ignoreworker: false
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: de6f9320-320d-4bd6-820f-b612a7a0c2c7
       iscommand: false
       name: Done
@@ -304,13 +363,19 @@ tasks:
     taskid: de6f9320-320d-4bd6-820f-b612a7a0c2c7
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 3540\n  }\n}"
-  '13':
-    id: '13'
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 3540
+        }
+      }
+  "13":
+    id: "13"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     note: false
     quietmode: 0
     scriptarguments:
@@ -335,7 +400,8 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: "Link to the incident\n"
+                  simple: |
+                    Link to the incident
               suffix: {}
             operator: concat
       subject:
@@ -354,7 +420,7 @@ tasks:
     separatecontext: false
     skipunavailable: true
     task:
-      brand: ''
+      brand: ""
       description: Sends an email using EWS.
       id: fd2276ce-b8ca-43f2-8d91-1ad091484e27
       iscommand: true
@@ -365,21 +431,27 @@ tasks:
     taskid: fd2276ce-b8ca-43f2-8d91-1ad091484e27
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -220,\n    \"y\": 3210\n  }\n}"
-  '14':
-    id: '14'
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 3210
+        }
+      }
+  "14":
+    id: "14"
     ignoreworker: false
     nexttasks:
       False Positive:
-      - '29'
+      - "29"
       True Positive:
-      - '15'
+      - "15"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: ''
       id: 1b3aae31-8d82-401d-87cf-d0148d0b278b
       iscommand: false
@@ -389,13 +461,19 @@ tasks:
     taskid: 1b3aae31-8d82-401d-87cf-d0148d0b278b
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 1540\n  }\n}"
-  '15':
-    id: '15'
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1540
+        }
+      }
+  "15":
+    id: "15"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '17'
+      - "17"
     note: false
     quietmode: 0
     scriptarguments:
@@ -406,8 +484,10 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: "A script to generate the investigation summary report automatically\ncan be used in the post-processing flow as well."
+      brand: ""
+      description: |-
+        A script to generate the investigation summary report automatically
+        can be used in the post-processing flow as well.
       id: ff1b9850-ef10-4d42-80e3-39b72d8d01f8
       iscommand: false
       name: Generate Investigation Summary Report
@@ -417,8 +497,14 @@ tasks:
     taskid: ff1b9850-ef10-4d42-80e3-39b72d8d01f8
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 2720\n  }\n}"
-  '16':
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 2720
+        }
+      }
+  "16":
     conditions:
     - condition:
       - - left:
@@ -428,21 +514,21 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: 'true'
-      label: yes
-    id: '16'
+              simple: "true"
+      label: "yes"
+    id: "16"
     ignoreworker: false
     nexttasks:
       '#default#':
-      - '2'
-      yes:
-      - '32'
+      - "2"
+      "yes":
+      - "32"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: ''
       id: b419c44d-1762-4553-8493-f9d7606af7bc
       iscommand: false
@@ -452,8 +538,14 @@ tasks:
     taskid: b419c44d-1762-4553-8493-f9d7606af7bc
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 562.5,\n    \"y\": 350\n  }\n}"
-  '17':
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 350
+        }
+      }
+  "17":
     conditions:
     - condition:
       - - left:
@@ -461,20 +553,20 @@ tasks:
             value:
               simple: inputs.SocEmailAddress
           operator: isNotEmpty
-      label: yes
-    id: '17'
+      label: "yes"
+    id: "17"
     ignoreworker: false
     nexttasks:
       '#default#':
-      - '8'
-      yes:
-      - '31'
+      - "8"
+      "yes":
+      - "31"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: ''
       id: 670d8449-b528-465d-8b3f-6e22cda63229
       iscommand: false
@@ -484,8 +576,14 @@ tasks:
     taskid: 670d8449-b528-465d-8b3f-6e22cda63229
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 2870\n  }\n}"
-  '18':
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 2870
+        }
+      }
+  "18":
     conditions:
     - condition:
       - - left:
@@ -493,20 +591,20 @@ tasks:
             value:
               simple: inputs.SiemAdminEmailAddress
           operator: isNotEmpty
-      label: yes
-    id: '18'
+      label: "yes"
+    id: "18"
     ignoreworker: false
     nexttasks:
       '#default#':
-      - '15'
-      yes:
-      - '30'
+      - "15"
+      "yes":
+      - "30"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: ''
       id: 355b3075-9035-4285-82b0-c4d63679b10c
       iscommand: false
@@ -516,13 +614,19 @@ tasks:
     taskid: 355b3075-9035-4285-82b0-c4d63679b10c
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 2050\n  }\n}"
-  '19':
-    id: '19'
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2050
+        }
+      }
+  "19":
+    id: "19"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     note: false
     quietmode: 0
     scriptarguments:
@@ -534,7 +638,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Assigns a random analyst to this incident.
       id: 0c7b3033-c209-4a87-8ef5-63fbd907f68d
       iscommand: false
@@ -545,19 +649,25 @@ tasks:
     taskid: 0c7b3033-c209-4a87-8ef5-63fbd907f68d
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 1015\n  }\n}"
-  '20':
-    id: '20'
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1015
+        }
+      }
+  "20":
+    id: "20"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '14'
+      - "14"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 381f98db-b60a-4514-89d8-959cd9189cb3
       iscommand: false
       name: Post Incident Activity
@@ -567,54 +677,60 @@ tasks:
     taskid: 381f98db-b60a-4514-89d8-959cd9189cb3
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 1380\n  }\n}"
-  '22':
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1380
+        }
+      }
+  "22":
     form:
       description: Provide what should be adjusted in the rule
       expired: false
       questions:
       - defaultrows: []
-        fieldassociated: ''
+        fieldassociated: ""
         gridcolumns: []
-        id: '0'
-        label: ''
+        id: "0"
+        label: ""
         labelarg:
           simple: Which rules need to be adjusted?
         options: []
         optionsarg:
-        - simple: Yes
-        - simple: No
-        placeholder: ''
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
         readonly: false
         required: false
-        tooltip: ''
+        tooltip: ""
         type: shortText
       - defaultrows: []
-        fieldassociated: ''
+        fieldassociated: ""
         gridcolumns: []
-        id: '1'
-        label: ''
+        id: "1"
+        label: ""
         labelarg:
           simple: Which indicators need to be excluded?
         options: []
         optionsarg:
-        - simple: Yes
-        - simple: No
-        placeholder: ''
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
         readonly: false
         required: false
-        tooltip: ''
+        tooltip: ""
         type: shortText
-      sender: ''
+      sender: ""
       title: Data for rule adjustment by the SIEM admin
       totalanswers: 0
-    id: '22'
+    id: "22"
     ignoreworker: false
     message:
       bcc:
       body:
       cc:
-      format: ''
+      format: ""
       methods: []
       subject:
       timings:
@@ -624,14 +740,15 @@ tasks:
       to:
     nexttasks:
       '#none#':
-      - '18'
+      - "18"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Provide data to adjust the rule in order to avoid similar false positives in the future.
+      brand: ""
+      description: Provide data to adjust the rule in order to avoid similar false
+        positives in the future.
       id: 4dfa75fe-917f-4eed-894a-3f2dfda362fc
       iscommand: false
       name: Provide data for rule adjustment
@@ -640,9 +757,15 @@ tasks:
     taskid: 4dfa75fe-917f-4eed-894a-3f2dfda362fc
     timertriggers: []
     type: collection
-    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 1890\n  }\n}"
-  '23':
-    id: '23'
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1890
+        }
+      }
+  "23":
+    id: "23"
     taskid: ed40e798-d16a-4f53-80ce-efd3b06cb023
     type: regular
     task:
@@ -653,10 +776,10 @@ tasks:
       script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       attachCIDs: {}
       attachIDs: {}
@@ -720,24 +843,30 @@ tasks:
       to:
         simple: ${inputs.SiemAdminEmailAddress}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -220,\n    \"y\": 2540\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 2540
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  '28':
-    id: '28'
+  "28":
+    id: "28"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '19'
+      - "19"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 226309cb-824c-486f-8b8a-f977f03bba67
       iscommand: false
       name: Investigation
@@ -747,13 +876,19 @@ tasks:
     taskid: 226309cb-824c-486f-8b8a-f977f03bba67
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 860\n  }\n}"
-  '29':
-    id: '29'
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 860
+        }
+      }
+  "29":
+    id: "29"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     note: false
     quietmode: 0
     scriptarguments:
@@ -773,20 +908,26 @@ tasks:
     taskid: d8d79caa-94a4-4f02-8bda-d306a1357b34
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 1740\n  }\n}"
-  '30':
-    id: '30'
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1740
+        }
+      }
+  "30":
+    id: "30"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '23'
-      - '15'
+      - "23"
+      - "15"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 88147dfd-8093-46f6-8a63-5ef810b03328
       iscommand: false
       name: SIEM Admin
@@ -796,20 +937,26 @@ tasks:
     taskid: 88147dfd-8093-46f6-8a63-5ef810b03328
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 2400\n  }\n}"
-  '31':
-    id: '31'
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2400
+        }
+      }
+  "31":
+    id: "31"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '13'
-      - '8'
+      - "13"
+      - "8"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: e02854a2-f41b-444b-8953-067035e160ca
       iscommand: false
       name: SOC Summary
@@ -819,19 +966,25 @@ tasks:
     taskid: e02854a2-f41b-444b-8953-067035e160ca
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 3070\n  }\n}"
-  '32':
-    id: '32'
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 3070
+        }
+      }
+  "32":
+    id: "32"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
       iscommand: false
       name: Calculate Severity - Standard
@@ -842,13 +995,32 @@ tasks:
     taskid: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
     timertriggers: []
     type: playbook
-    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 520\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 520
+        }
+      }
 version: -1
-view: "{\n  \"linkLabelsPosition\": {\n    \"14_15_True Positive\": 0.62,\n    \"18_15_#default#\": 0.3\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4045,\n      \"width\": 1360,\n      \"x\": -220,\n      \"y\": -440\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_15_True Positive": 0.62,
+      "18_15_#default#": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4045,
+        "width": 1360,
+        "x": -220,
+        "y": -440
+      }
+    }
+  }
 tests:
 - no test
 marketplaces:
 - xsoar
 - marketplacev2
-- platform
 fromversion: 6.0.0

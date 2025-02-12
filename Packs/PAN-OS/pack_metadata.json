@@ -37,7 +37,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse",
-        "platform"
+        "xpanse"
     ]
 }

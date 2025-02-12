@@ -16,8 +16,7 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "devEmail": [
         "CTI.Engineering.Integration@accenture.com"

@@ -28,8 +28,7 @@
         "Activity Logs"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
     "dependencies": {
         "AzureFirewall": {

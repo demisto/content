@@ -10,7 +10,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+    ],
     "useCases": [
         "Threat Intelligence Management"
     ],
@@ -18,10 +19,10 @@
         "threatvault",
         "threat intelligence"
     ],
-    "dependencies": {},
+    "dependencies": {
+    },
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }

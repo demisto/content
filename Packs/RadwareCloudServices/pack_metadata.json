@@ -11,15 +11,8 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [
-        "Radware",
-        "WAF",
-        "DDoS",
-        "WAAP",
-        "AppWall"
-    ],
+    "keywords": ["Radware", "WAF", "DDoS", "WAAP", "AppWall"],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ]
 }
