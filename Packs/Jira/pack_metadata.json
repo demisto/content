@@ -21,4 +21,5 @@
         "marketplacev2",
         "xpanse"
     ],
+    "defaultDataSource": "Jira Event Collector",
     "supportedModules": ["automation", "b"],
