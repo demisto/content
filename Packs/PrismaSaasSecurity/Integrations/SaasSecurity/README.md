@@ -18,7 +18,7 @@ Use the SaaS Security integration to protect against cloud‑based threats by:
     | Incidents Fetch Interval | Frequency \(in hours and minutes\) by which Cortex XSOAR fetches incidents from SaaS Security when **Fetch Incidents** is selected. | False |
     | Incident type | Incident type is set by this field if a classifier does not exist. If a  classifier is selected, it takes precedence. | False |
     | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror Incoming only \(from SaaS Security to Cortex XSOAR\), **Outgoing** only \(from Cortex XSOAR to SaaS Security\), or both **Incoming And Outgoing**. | False |
-    | Number of incidents per fetch | Minimum is 10. Maximum is 1000. | True |
+    | Number of incidents per fetch | The limit value can range from 10 to 200 and must be in multiples of 10. | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 7 days) |  | False |
     | Fetch only incidents with matching state | Fetches only incidents with matching **All**, **Closed**, or **Open** state. If nothing is selected, **All** states will be used. | False |
     | Fetch only incidents with matching severity | If nothing is selected, **All** severities will be used. | False |
@@ -93,7 +93,7 @@ Retrieves incidents from the SaaS Security platform.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of incidents to pull. Maximum is 200, minimum is 10. Default is 50. Default is 50. | Optional | 
+| limit | Important: The limit value can range from 10 to 200 and must be in multiples of 10. Default is 50. | Optional | 
 | from | The start time of the query, filtered by the date the incident was updated,\ \ For example, `2021-08-23T09:26:25.872Z`. | Optional | 
 | to | The end time of the query, filtered by the date the incident was updated. For example, `2021-08-23T09:26:25.872Z`. | Optional | 
 | app_ids | Comma-separated list of application IDs. Run the 'saas-security-get-apps' command to return the Application ID, Name, and Type for all applications. | Optional | 
