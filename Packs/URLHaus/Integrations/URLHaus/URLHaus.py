@@ -575,7 +575,7 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
         hash_type = 'md5'
     elif len(hash) == 64:
         hash_type = 'sha256'
-    elif params.get('should_error'):
+    elif params.get('should_error', True):
         return_error('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
     else:
         return_warning('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types', True)
