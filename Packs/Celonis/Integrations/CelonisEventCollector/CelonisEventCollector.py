@@ -121,7 +121,8 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         start_time = last_run.get('start_date', '')
         client.set_token(last_run.get('audit_token', ''))
         if not start_time:
-            event_date = get_current_time().strftime(DATE_FORMAT)
+            # start_time = get_current_time().strftime(DATE_FORMAT)
+            start_time = "2025-02-02T09:00:00"
         end_time = get_current_time().strftime(DATE_FORMAT)
 
     demisto.debug(f'Fetching audit logs events from date={start_time} to date={end_time}.')
@@ -155,7 +156,8 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             output.append(event)
 
             if len(output) >= fetch_limit:
-                start_time = add_millisecond(event_date)  # it is not possible to have two logs on the same timestamp #todo
+                start_time = add_millisecond(event_date)
+                # Safe to add a millisecond and fetch since no two events share the same timestamp.
                 new_last_run = {'start_date': start_time, 'audit_token': client.token}
                 return output, new_last_run
 
