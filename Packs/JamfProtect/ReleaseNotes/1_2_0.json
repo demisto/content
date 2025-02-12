@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The Fetch all computers was removed from the **fetch events** command. Instead, computers can now be fetched using the **Fetch assets and vulnerabilities**."                            
+}
