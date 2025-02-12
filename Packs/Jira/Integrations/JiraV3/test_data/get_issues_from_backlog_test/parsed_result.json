@@ -100,7 +100,7 @@
                     "creator": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -277,7 +277,7 @@
                                 "author": {
                                     "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
                                     "accountId": "dummy_account_id",
-                                    "emailAddress": "admin@demistodev.com",
+                                    "emailAddress": "admin@test.com",
                                     "avatarUrls": {
                                         "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                                         "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -293,7 +293,7 @@
                                 "updateAuthor": {
                                     "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
                                     "accountId": "dummy_account_id",
-                                    "emailAddress": "admin@demistodev.com",
+                                    "emailAddress": "admin@test.com",
                                     "avatarUrls": {
                                         "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                                         "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -361,7 +361,7 @@
                     "assignee": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -403,7 +403,7 @@
                     "creator": {
                         "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/user?accountId=dummy_account_id",
                         "accountId": "dummy_account_id",
-                        "emailAddress": "admin@demistodev.com",
+                        "emailAddress": "admin@test.com",
                         "avatarUrls": {
                             "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
                             "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
@@ -577,7 +577,7 @@
             }
         ]
     },
-    "HumanReadable": "### Backlog Issues\n|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User() | 2023-01-30T16:42:47.476+0200 | Example User(admin@demistodev.com) | Complete this issue | 2023-09-09 | 21424 | Epic | COMPANYSA-30 | collab,<br>good_job | Highest | Company Snoozing App | Example User() | Backlog | Issue for demo | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/issue/21424 |\n| Example User(admin@demistodev.com) | 2023-01-29T20:25:53.735+0200 | Example User(admin@demistodev.com) |  | 2025-08-08 | 21421 | Task | COMPANYSA-27 |  | Highest | Company Snoozing App | Example User() | Backlog | Dummy Issue | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/issue/21421 |\n",
+    "HumanReadable": "### Backlog Issues\n|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| Example User() | 2023-01-30T16:42:47.476+0200 | Example User(admin@test.com) | Complete this issue | 2023-09-09 | 21424 | Epic | COMPANYSA-30 | collab,<br>good_job | Highest | Company Snoozing App | Example User() | Backlog | Issue for demo | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/issue/21424 |\n| Example User(admin@test.com) | 2023-01-29T20:25:53.735+0200 | Example User(admin@test.com) |  | 2025-08-08 | 21421 | Task | COMPANYSA-27 |  | Highest | Company Snoozing App | Example User() | Backlog | Dummy Issue | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/issue/21421 |\n",
     "EntryContext": {
         "Jira.BoardBacklog(val.boardId && val.boardId == obj.boardId)": {
             "boardId": "14",
@@ -602,7 +602,7 @@
                         "good_job"
                     ],
                     "Assignee": "Example User()",
-                    "Creator": "Example User(admin@demistodev.com)",
+                    "Creator": "Example User(admin@test.com)",
                     "Description": "Complete this issue",
                     "RawDescription": ""
                 },
@@ -620,8 +620,8 @@
                     "DueDate": "2025-08-08",
                     "Created": "2023-01-29T20:25:53.735+0200",
                     "Labels": [],
-                    "Assignee": "Example User(admin@demistodev.com)",
-                    "Creator": "Example User(admin@demistodev.com)",
+                    "Assignee": "Example User(admin@test.com)",
+                    "Creator": "Example User(admin@test.com)",
                     "Description": "",
                     "RawDescription": ""
                 }
