@@ -33,12 +33,12 @@ class Client:
                 '"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
         if not insecure and not ssl:
             self._client = MongoClient(  # type: ignore[var-annotated]
-                urls, username=username, password=password, ssl=ssl, socketTimeoutMS=timeout
+                urls, username=username, password=password, ssl=ssl, socketTimeoutMS=timeout, authMechanism='SCRAM-SHA-256'
             )
         else:
             self._client = MongoClient(
                 urls, username=username, password=password, ssl=ssl, tlsAllowInvalidCertificates=insecure,
-                socketTimeoutMS=timeout
+                socketTimeoutMS=timeout, authMechanism='SCRAM-SHA-256'
             )
         self.db: Database = self._client.get_database(database)
 
