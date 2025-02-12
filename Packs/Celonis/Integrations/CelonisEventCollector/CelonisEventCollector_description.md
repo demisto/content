@@ -1,8 +1,6 @@
 ## Celonis Help
 
-API keys, passed in an HTTP header like this: Authorization: Bearer API_KEY.
-
-### How to create an OAuth client and generate client ID and Client Secret:
+#### How to create an OAuth client and generate client ID and Client Secret:
 https://developer.celonis.com/celonis-apis/audit-log-api/#creating-an-application-and-granting-it-api-permissions
 https://docs.celonis.com/en/using-oauth-2-0.html
 

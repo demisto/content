@@ -14,6 +14,8 @@ This integration was integrated and tested with version 4.0 of Celonis.
 | Use system proxy settings |                                                                                                                                    | False |
 | Maximum number of events per fetch | Defines the maximum number of audits events per fetch cycle. Default value: 600.                                                   | True |
 
+API keys, passed in an HTTP header like this: Authorization: Bearer API_KEY.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.

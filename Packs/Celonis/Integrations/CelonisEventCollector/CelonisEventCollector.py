@@ -13,7 +13,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 PAGE_SIZE = 200
 PAGE_NUMBER = 0
 DEFAULT_FETCH_LIMIT = 600
-BEARER_PREFIX = 'Bearer '
 
 """ CLIENT CLASS """
 
@@ -60,8 +59,10 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/log/api/external/audit?pageNumber={PAGE_NUMBER}&pageSize={PAGE_SIZE}&from={start_date}&to={end_date}",
             headers={
-                'Authorization': f'{BEARER_PREFIX}{self.token}',
-            }
+                'Authorization': f'Bearer {self.token}',
+            },
+            resp_type='response',
+            retries=3
         )
         return results
 
@@ -104,60 +105,66 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
     """
-    client.create_access_token_for_audit()
+    current_time = get_current_time()
+    start_date = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
+    end_date = current_time.strftime(DATE_FORMAT)
+    fetch_events(client, 1, {'start_date': start_date, 'end_date': end_date})
     return "ok"
 
 
 def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
     if get_events_args:  # handle get_event command
-        start = get_events_args.get('start_date', '')
-        end = get_events_args.get('end_date', '')
+        start_time = get_events_args.get('start_date', '')
+        end_time = get_events_args.get('end_date', '')
     else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
-        start = last_run.get('start_date', '')
+        start_time = last_run.get('start_date', '')
         client.set_token(last_run.get('audit_token', ''))
-        if not start:
+        if not start_time:
             event_date = get_current_time().strftime(DATE_FORMAT)
-        end = get_current_time().strftime(DATE_FORMAT)
+        end_time = get_current_time().strftime(DATE_FORMAT)
 
-    demisto.debug(f'Fetching audit logs events from date={start} to date={end}.')
+    demisto.debug(f'Fetching audit logs events from date={start_time} to date={end_time}.')
 
     output: list = []
     while True:
         try:
-            response = client.get_audit_logs(start, end)
+            response = client.get_audit_logs(start_time, end_time)
         except Exception as e:
-            if hasattr(e, "message") and '429' in e.message:
+            if e.res.status_code == 429:
                 demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit}"
                               f" Audit logs. Wait for the next fetch cycle.")
-                new_last_run = {'start_date': start, 'audit_token': client.token}
+                new_last_run = {'start_date': start_time, 'audit_token': client.token}
                 return output, new_last_run
-            if hasattr(e, "message") and 'Unauthorized' in e.message:  # need to regenerate the token
+            if e.res.status_code == 401:
                 demisto.debug("Regenerates token for fetching audit logs.")
                 client.create_access_token_for_audit()
-                response = client.get_audit_logs(start, end)
+                response = client.get_audit_logs(start_time, end_time)
             else:
                 raise e
 
-        if not response.get('content'):
+        content = response.json().get('content', [])
+
+        if not content:
             break
 
-        events = sort_events_by_timestamp(response.get('content', []))
+        events = sort_events_by_timestamp(content)
         for event in events:
             event_date = event.get('timestamp')
             event['_TIME'] = event_date
             output.append(event)
 
             if len(output) >= fetch_limit:
-                start = add_millisecond(event_date)
-                new_last_run = {'start_date': start, 'audit_token': client.token}
+                start_time = add_millisecond(event_date)  # it is not possible to have two logs on the same timestamp #todo
+                new_last_run = {'start_date': start_time, 'audit_token': client.token}
                 return output, new_last_run
 
-        start = add_millisecond(event_date)
-        demisto.debug("Waiting 10 seconds before calling the next request.")
-        time.sleep(10)
+        start_time = add_millisecond(event_date)
+        rate_limit_reset = int(response.headers.get('x-ratelimit-reset'))
+        demisto.debug(f"Waiting {rate_limit_reset} seconds before calling the next request.")
+        time.sleep(rate_limit_reset)
 
-    new_last_run = {'start_date': start, 'audit_token': client.token}
+    new_last_run = {'start_date': start_time, 'audit_token': client.token}
     return output, new_last_run
 
 
@@ -177,11 +184,11 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
                           }
         filtered_events.append(filtered_event)
 
-    human_readable = tableToMarkdown(name='CelonisEventCollector Audit Logs Events', t=filtered_events, removeNull=True)
+    human_readable = tableToMarkdown(name='Audit Logs Events', t=filtered_events, removeNull=True)
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
-        outputs_prefix='CelonisEventCollector',
+        outputs_prefix='Celonis.Audit',  # todo to change in yml
     )
     return output, command_results
 
