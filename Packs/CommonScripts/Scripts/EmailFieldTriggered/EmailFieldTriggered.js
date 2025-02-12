@@ -1,7 +1,7 @@
 var users = executeCommand('getUsers', {});
 var email;
 for (var i = 0; i < users[0].Contents.length; i++) {
-    if (incidents[0].owner === users[0].Contents[i].name) {
+    if (incidents[0].owner === users[0].Contents[i].username) {
         email = users[0].Contents[i].email;
         break;
     }
