@@ -12,15 +12,15 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 MAX_ENTRIES = 100
 TIMEOUT = '30'
-BASE_URL = "https://api.security.microsoft.com"
 
 ''' CLIENT CLASS '''
 
 
 class Client:
     @logger
-    def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
-                 enc_key: str = None, client_credentials: bool = False, certificate_thumbprint: Optional[str] = None,
+    def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS['com'],
+                 tenant_id: str = None, enc_key: str = None, client_credentials: bool = False,
+                 certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
                  managed_identities_client_id: Optional[str] = None,
                  endpoint: str = 'com',
@@ -37,7 +37,7 @@ class Client:
             verify=verify,
             proxy=proxy,
             ok_codes=(200, 201, 202, 204),
-            scope=f'offline_access {MICROSOFT_365_DEFENDER_SCOPES.get(endpoint)}/.default',
+            scope=f'offline_access {MICROSOFT_DEFENDER_XDR_365_SCOPES.get(endpoint)}/.default',
             self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
@@ -46,8 +46,8 @@ class Client:
             grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
 
             # used for device code flow
-            resource=MICROSOFT_365_DEFENDER_API_ENDPOINTS.get(endpoint) if not client_credentials else None,
-            token_retrieval_url=f'{MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
+            resource=MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS.get(endpoint) if not client_credentials else None,
+            token_retrieval_url=f'{MICROSOFT_DEFENDER_XDR_265_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
                                 f'/organizations/oauth2/v2.0/token' if not client_credentials else None,
             # used for client credentials flow
             tenant_id=tenant_id,
@@ -606,7 +606,7 @@ def main() -> None:
     app_id = params.get('creds_client_id', {}).get('password', '') or params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
     endpoint_type = params.get('endpoint_type', 'Worldwide')
-    endpoint = MICROSOFT_365_DEFENDER_TYPE.get(endpoint_type, 'com')
+    endpoint = MICROSOFT_DEFENDER_XDR_365_TYPE.get(endpoint_type, 'com')
     base_url = microsoft_defender_get_base_url(base_url, endpoint_type)
 
     tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')

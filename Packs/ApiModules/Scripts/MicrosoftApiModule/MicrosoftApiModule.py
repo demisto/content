@@ -132,7 +132,6 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_API = {
     "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
 }
 
-
 MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
     "Worldwide": "com",
     "US GCC": "gcc",
@@ -145,7 +144,8 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
     'gcc-high': 'https://login.microsoftonline.us',
 }
 
-MICROSOFT_365_DEFENDER_TYPE = {
+# https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-list
+MICROSOFT_DEFENDER_XDR_365_TYPE = {
     "Worldwide": "com",
     "US Geo Proximity": "geo-us",
     "EU Geo Proximity": "geo-eu",
@@ -160,7 +160,7 @@ MICROSOFT_365_DEFENDER_TYPE = {
 
 # https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-list
 # https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide
-MICROSOFT_365_DEFENDER_API_ENDPOINTS = {
+MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS = {
     "com": "https://api.security.microsoft.com",
     "geo-us": "https://us.api.security.microsoft.com",
     "geo-eu": "https://eu.api.security.microsoft.com",
@@ -174,7 +174,7 @@ MICROSOFT_365_DEFENDER_API_ENDPOINTS = {
 }
 
 # https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide
-MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS = {
+MICROSOFT_DEFENDER_XDR_265_TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.windows.net',
     'geo-us': 'https://login.windows.net',
     'geo-eu': 'https://login.windows.net',
@@ -187,7 +187,8 @@ MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS = {
     "dod": "https://login.microsoftonline.us",
 }
 
-MICROSOFT_365_DEFENDER_SCOPES = {
+# https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide#feature-parity-with-commercial
+MICROSOFT_DEFENDER_XDR_365_SCOPES = {
     'com': "https://security.microsoft.com/mtp",
     'geo-us': 'https://security.microsoft.com',
     'geo-eu': 'https://security.microsoft.com',
@@ -698,8 +699,8 @@ def microsoft_defender_get_base_url(base_url: str, endpoint_type: str) -> str:
             raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
         url = base_url
     else:
-        endpoint = MICROSOFT_365_DEFENDER_TYPE.get(endpoint_type, 'com')
-        url = MICROSOFT_365_DEFENDER_API_ENDPOINTS.get(endpoint, 'https://api.security.microsoft.com')
+        endpoint = MICROSOFT_DEFENDER_XDR_365_TYPE.get(endpoint_type, 'com')
+        url = MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS.get(endpoint, MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS['com'])
     return url
 
 
