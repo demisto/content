@@ -18,7 +18,7 @@ Use the SaaS Security integration to protect against cloud‑based threats by:
     | Incidents Fetch Interval | Frequency \(in hours and minutes\) by which Cortex XSOAR fetches incidents from SaaS Security when **Fetch Incidents** is selected. | False |
     | Incident type | Incident type is set by this field if a classifier does not exist. If a  classifier is selected, it takes precedence. | False |
     | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror Incoming only \(from SaaS Security to Cortex XSOAR\), **Outgoing** only \(from Cortex XSOAR to SaaS Security\), or both **Incoming And Outgoing**. | False |
-    | Number of incidents per fetch | The limit value can range from 10 to 200 and must be in multiples of 10. | True |
+    | Number of incidents per fetch | Important: The limit value can range from 10 to 200 and must be in multiples of 10. | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 7 days) |  | False |
     | Fetch only incidents with matching state | Fetches only incidents with matching **All**, **Closed**, or **Open** state. If nothing is selected, **All** states will be used. | False |
     | Fetch only incidents with matching severity | If nothing is selected, **All** severities will be used. | False |
