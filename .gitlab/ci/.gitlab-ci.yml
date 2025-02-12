@@ -1,5 +1,5 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: 'CIAC-11100-playbook-run-in-build'
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
