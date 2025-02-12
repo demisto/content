@@ -12,6 +12,7 @@ alter rt = to_string(rt)
 | alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
 | alter ipv6dest = if(dst != null and ipv4dest  = null, dst, null)
 | alter duration = to_integer(duration)
+//tst
 // Fields Modeling
 | alter XDM.Network.event_timestamp = time,
 		XDM.Network.original_event_id = loguid,
