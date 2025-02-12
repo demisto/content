@@ -17,6 +17,7 @@ This integration was integrated and tested with version 1 of AttackSurfaceManage
 | Use system proxy settings |  | False |
 | Mirror incoming incidents |  | False |
 
+Test of mirroring! 1. 2. 3. 4.
 
 ## Commands
 

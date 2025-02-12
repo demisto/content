@@ -13,6 +13,7 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 
 ## Configure SplunkPy in Cortex
 
+Test of mirroring! 1. 2. 3. 4.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

@@ -24,6 +24,8 @@ This integration was integrated and tested with version 22.1.05 of BmcITSM
 | Incident type |  | False |
 | Fetch incidents |  | False |
 
+Test of mirroring! 1. 2. 3. 4.
+
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

@@ -26,6 +26,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Close Mirrored Prisma Cloud Alert |  When selected, closing and re-opening the Cortex XSOAR incident is mirrored in Prisma Cloud. | False |
 
 
+Test of mirroring! 1. 2. 3. 4.
 
 ### Incident Mirroring
  

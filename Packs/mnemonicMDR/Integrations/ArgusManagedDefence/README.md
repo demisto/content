@@ -22,6 +22,7 @@ This integration was integrated and tested with version 5.1.1 argus-toolbelt ([P
 | Trust any certificate (not secure) | Skip HTTPS certification verification. | False |
 | Use system proxy settings | Use system proxy settings. | False |
 
+Test of mirroring! 1. 2. 3. 4.
 
 ### Mirroring
 This integration supports in- and outbound mirroring of incidents. 

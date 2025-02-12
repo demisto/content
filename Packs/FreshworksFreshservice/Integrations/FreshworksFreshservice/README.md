@@ -28,6 +28,8 @@ This integration was integrated and tested with version 2 of FreshworksFreshserv
     | Fetch tickets tasks | Fetch tasks for each ticket type and consider them in the mirroring \(required an additional API request per each ticket\). | False |
     | Incident type |  | False |
 
+Test of mirroring! 1. 2. 3. 4.
+
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands

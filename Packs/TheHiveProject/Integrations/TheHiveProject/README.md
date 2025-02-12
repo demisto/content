@@ -17,6 +17,7 @@ This integration was integrated and tested with version 4.1.4 of TheHive Project
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
+Test of mirroring! 1. 2. 3. 4.
 
 ## Commands
 

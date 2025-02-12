@@ -17,7 +17,7 @@ This integration was integrated and tested with version `1.0.0` of CTM360_CyberB
 | Use system proxy settings |  | False |
 | Incident type |  | False |
 
-
+Test of mirroring! 1. 2. 3. 4.
 
 ## Commands
 

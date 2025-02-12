@@ -30,6 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Create a new GLPI user
 
+Test of mirroring! 1. 2. 3. 4.
 
 #### Base Command
 

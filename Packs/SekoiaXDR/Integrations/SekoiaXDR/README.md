@@ -32,6 +32,7 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
 | Close notes. | Change the closing notes that will be added to the tickets closed automatically by the automation. | True |
 | Timezone ( TZ format ) | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
 
+Test of mirroring! 1. 2. 3. 4.
 
 ## Commands
 

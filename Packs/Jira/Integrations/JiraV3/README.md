@@ -41,6 +41,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 5. Check [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
 
+Test of mirroring! 1. 2. 3. 4.
 
 Configure only one of the following fields:
 

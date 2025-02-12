@@ -2,6 +2,7 @@ Streamline alerts and related forensic information from Varonis SaaS
 
 ## Configure Varonis SaaS in Cortex
 
+Test of mirroring! 1. 2. 3. 4.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

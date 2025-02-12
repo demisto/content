@@ -91,6 +91,8 @@ To setup the mirroring follow these instructions:
 
 Newly fetched incidents will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
 
+Test of mirroring! 1. 2. 3. 4.
+
 **Important Notes**
 
 - When *mirroring in* incidents from RSA NetWitness to Cortex XSOAR, if the *Close Mirrored XSOAR Incident* integration parameter is enabled, the `status` field in RSA NetWitness determines whether the incident was closed.

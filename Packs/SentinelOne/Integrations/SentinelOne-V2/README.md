@@ -30,6 +30,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from SentinelOne to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to SentinelOne\), or Incoming and Outgoing \(from/to Cortex XSOAR and SentinelOne\). | False |
 | Close Mirrored XSOAR Incident | When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR. | False |
 
+Test of mirroring! 1. 2. 3. 4.
 
 ## Commands
 

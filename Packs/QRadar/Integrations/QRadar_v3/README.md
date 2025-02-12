@@ -30,6 +30,8 @@ This is the default integration for this content pack when configured by the Dat
 | Timeout for http-requests | The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds. | False |
 | Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. (seconds) | False |
 
+Test of mirroring! 1. 2. 3. 4.
+
 ## Required Permissions
 | Component | Permission |
 | --- | --- |

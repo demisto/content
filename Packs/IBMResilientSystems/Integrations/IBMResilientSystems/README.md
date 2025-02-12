@@ -28,6 +28,7 @@ Case management that enables visibility across your tools for continual IR impro
 | Tag from IBM Qradar SOAR | Add this tag to an entry to mirror it from IBM Qradar SOAR. | False |
 | Tag to IBM QRadar SOAR | Add this tag to an entry to mirror it to IBM Qradar SOAR. | False |
 
+Test of mirroring! 1. 2. 3. 4.
 
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
