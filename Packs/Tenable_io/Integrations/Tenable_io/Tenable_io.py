@@ -1787,15 +1787,17 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     for audit_log in audit_logs:
         audit_log['_time'] = audit_log.get('received') or audit_log.get('indexed')
 
-    dt_now = datetime.utcnow()
-    dt_start_date = datetime.strptime(start_date, DATE_FORMAT)  # convert back the start_date to datetime for comparing with now
-    demisto.debug(f"Tenable_io - {dt_now=}, {dt_start_date=}, {len(audit_logs)}, {last_index_fetched=}")
-    index_audit_logs = set_index_audit_logs(dt_now, dt_start_date, audit_logs, last_index_fetched)
+    # creating date now as a string and as a datetime object for comparing
+    date_now_as_str = datetime.utcnow().date().strftime(DATE_FORMAT)
+    date_now_as_dt = datetime.strptime(date_now_as_str, DATE_FORMAT)
+
+    start_date_as_dt = datetime.strptime(start_date, DATE_FORMAT)  # convert back the start_date to datetime object for comparing
+    demisto.debug(f"Tenable_io - {date_now_as_str=}, {start_date=}, {len(audit_logs)}, {last_index_fetched=}")
+    index_audit_logs = set_index_audit_logs(date_now_as_dt, start_date_as_dt, audit_logs, last_index_fetched)
     demisto.debug(f"Tenable_io - {index_audit_logs=}")
 
-    next_run: str = dt_now.strftime(DATE_FORMAT)
     last_run.update({'index_audit_logs': index_audit_logs,
-                     'last_fetch_time': next_run})
+                     'last_fetch_time': date_now_as_str})
     demisto.info(f'Done fetching {len(audit_logs)} audit logs, Setting {last_run=}.')
     return audit_logs, last_run
 
