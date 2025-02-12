@@ -23,4 +23,5 @@
         "platform"
     ],
     "defaultDataSource": "Jira Event Collector",
-    "supportedModules": ["automation", "b"]``
+    "supportedModules": ["automation", "b"]
+}
