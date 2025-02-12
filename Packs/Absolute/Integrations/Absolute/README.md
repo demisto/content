@@ -1010,7 +1010,7 @@ A few examples of creating a query (i.e., passing a filter argument):
 - Using the or operator:
    - Get a list of all devices with less than 1 GB (1073741824 bytes) of available physical ram or less than 1 GB (1073741824 bytes) of available virtual raml: availablePhysicalMemroyBytes lt 1073741824 or availableVirtualMemoryBytes lt 1073741824
 
-For more examples and explanations, see the [Absolute docs](https://www.absolute.com/media/2221/abt-api-working-with-absolute.pdf) (from page 10).
+For more examples and explanations, see the [Absolute docs](https://api.absolute.com/api-doc/doc.html) (from page 10).
 
 
 ## Breaking changes from the previous version of this integration - Absolute
