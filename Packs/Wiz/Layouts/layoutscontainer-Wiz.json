@@ -18,15 +18,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "type",
-                                "height": 22,
-                                "id": "incident-type-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "severity",
                                 "height": 22,
                                 "id": "incident-severity-field",
