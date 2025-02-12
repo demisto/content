@@ -724,7 +724,7 @@ def main():
             'use_ssl': not demisto_params.get('insecure', False),
             'threshold': int(demisto_params.get('threshold', 1)),
             'create_relationships': demisto_params.get('create_relationships', True),
-            'max_num_of_relationships': min(1000, int(demisto_params.get('max_num_of_relationships', 10)))
+            'max_num_of_relationships': min(1000, int(demisto_params.get('max_num_of_relationships', 10))),
         }
 
         reliability = demisto_params.get('integrationReliability', DBotScoreReliability.C)
