@@ -489,9 +489,7 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
             indicators, _ = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
                                                      create_relationships, limit, remove_ports)
 
-            hr = tableToMarkdown(f'Indicators ({len(indicators)}):', indicators, headers=['value', 'type', 'rawJSON'])
-            if not indicators:
-                hr = 'No indicators found.'
+            hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
 
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
