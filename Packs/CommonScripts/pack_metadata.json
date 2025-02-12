@@ -56,7 +56,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "supportedModules": ["XSIAM", "XSPANSE"]
 }

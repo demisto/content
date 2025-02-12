@@ -24,7 +24,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "defaultDataSource": "ServiceNow v2",
     "supportedModules": ["XSIAM", "XSPANSE"]
