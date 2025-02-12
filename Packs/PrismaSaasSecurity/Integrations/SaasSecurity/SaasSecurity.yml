@@ -50,12 +50,12 @@ configuration:
   type: 15
   required: false
   section: Collect
-- display: Number of incidents per fetch
+- display: Number of incidents per fetch.
   name: max_fetch
   defaultvalue: "20"
   type: 0
   required: true
-  additionalinfo: Minimum is 10. Maximum is 1000.
+  additionalinfo: "Important: The limit value can range from 10 to 200 and must be in multiples of 10."
   section: Collect
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
@@ -137,7 +137,7 @@ script:
     description: Retrieves incidents from the SaaS Security platform.
     arguments:
     - name: limit
-      description: The number of incidents to pull. Maximum is 200, minimum is 10. Default is 50.
+      description: "The number of incidents to pull. Important: The limit value can range from 10 to 200 and must be in multiples of 10. Default is 50."
       defaultValue: "50"
     - name: from
       description: The start time of the query, filtered by the date the incident was updated,\ \ For example, `2021-08-23T09:26:25.872Z`.
