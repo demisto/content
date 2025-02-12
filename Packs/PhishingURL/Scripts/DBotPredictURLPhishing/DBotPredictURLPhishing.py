@@ -698,7 +698,7 @@ def main():
         force_model = args.get('forceModel') == 'True'
         email_body = args.get('emailBody', "")
         email_html = args.get('emailHTML', "")
-        max_urls = arg_to_number(args.get('maxNumberOfURL')) or 5
+        max_urls = arg_to_number(args.get('maxNumberOfURL', 5))
         urls_argument = args.get('urls', '')
         rasterize_timeout = arg_to_number(args.get('rasterize_timeout', TIMEOUT_RASTERIZE)) or 0
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
