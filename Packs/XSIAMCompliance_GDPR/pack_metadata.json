@@ -21,5 +21,6 @@
     ],
     "marketplaces": [
         "marketplacev2"
-    ]
+    ],
+    "supportedModules": ["XSIAM", "XSPANSE"]
 }

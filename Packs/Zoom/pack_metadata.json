@@ -17,5 +17,6 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSource": "ZoomEventCollector"
+    "defaultDataSource": "ZoomEventCollector",
+    "supportedModules": ["XSIAM", "XSPANSE"]
 }

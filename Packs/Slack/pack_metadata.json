@@ -41,5 +41,6 @@
         "marketplacev2",
         "xpanse"
     ],
-    "defaultDataSource": "Slack Event Collector"
+    "defaultDataSource": "Slack Event Collector",
+    "supportedModules": ["XSIAM", "XSPANSE"]
 }
