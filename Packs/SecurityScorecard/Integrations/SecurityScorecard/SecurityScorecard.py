@@ -118,6 +118,12 @@ class SecurityScorecardClient(BaseClient):
             params=request_params
         )
 
+    def get_company_issue_findings(self, domain: str, issue_type: str) -> Dict[str, Any]:
+
+        return self.http_request_wrapper(
+            method='GET',
+            url_suffix=f'companies/{domain}/issues/{issue_type}')
+
     def get_company_historical_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
 
         request_params: Dict[str, Any] = assign_params(
@@ -1454,6 +1460,108 @@ def alert_rules_list_command(client: SecurityScorecardClient, args: Dict[str, An
     return results
 
 
+def issue_details_get_command(
+    client: SecurityScorecardClient,
+    args: Dict[str, Any]
+) -> CommandResults:
+    """Retrieve issue details for a specific issue type and domain.
+
+    Args:
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``args`` (``Dict[str, Any]``): The domain and issue type
+
+    Returns:
+        ``CommandResults``: The results of the command.
+    """
+
+    domain = args.get("domain")
+    issue_type = args.get("issue_type")
+
+    response = client.get_company_issue_findings(domain=domain, issue_type=issue_type)
+
+    entries = response.get('entries', [])
+
+    events = []
+    for entry in entries:
+
+        # some issue types have domains, IPs and/or ports, but not all of them do
+        if "domain" in entry:
+            domain = entry.get("domain")
+        elif "target" in entry:
+            domain = entry.get("target")
+        else:
+            domain = ""
+
+        if "ip" in entry:
+            ip = entry.get("ip")
+        elif "src_ip" in entry:
+            ip = entry.get("src_ip")
+        elif "ip_address" in entry:
+            ip = entry.get("ip_address")
+        elif "connection_attributes" in entry:
+            ip = entry.get("connection_attributes").get("dst_ip")
+        else:
+            ip = ""
+
+        if "protocol" in entry:
+            protocol = entry.get("protocol")
+        elif "scheme" in entry:
+            protocol = entry.get("scheme")
+        elif "connection_attributes" in entry:
+            protocol = entry.get("connection_attributes").get("protocol")
+        else:
+            protocol = ""
+
+        if "port" in entry:
+            port = entry.get("port")
+        elif "connection_attributes" in entry:
+            port = entry.get("connection_attributes").get("dst_port")
+        else:
+            port = ""
+
+        event = {
+            "parent_domain": entry.get("parent_domain"),
+            "count": entry.get("count"),
+            "status": entry.get("group_status"),
+            "first_seen_time": entry.get("first_seen_time"),
+            "last_seen_time": entry.get("last_seen_time"),
+            # the following details may or may not be populated
+            "port": port,
+            "domain_name": domain,
+            "ip_address": ip,
+            "protocol": protocol,
+            "observations": entry.get("observations"),
+            "issue_type": issue_type
+        }
+
+        events.append(event)
+
+    if not events:
+        return CommandResults(
+            readable_output=f"No findings were found for domain {domain} and issue type {issue_type}.",
+            outputs_prefix="SecurityScorecard.IssueDetails",
+            outputs_key_field="issue_id",
+            outputs=[]
+        )
+
+    markdown = tableToMarkdown(
+        f"Domain {domain} Findings for {issue_type}",
+        events,
+        headers=['parent_domain', 'issue_type', 'count', 'status', 'first_seen_time',
+                 'last_seen_time', 'port', 'domain_name', 'ip_address', 'protocol', 'observations']
+    )
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.IssueDetails",
+        outputs=entries,
+        raw_response=response,
+        outputs_key_field='issue_id'
+    )
+
+    return results
+
+
 """ MAIN FUNCTION """
 
 
@@ -1535,6 +1643,8 @@ def main() -> None:
             return_results(issue_metadata_get_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-alert-rules-list':
             return_results(alert_rules_list_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-issue-details-get':
+            return_results(issue_details_get_command(client=client, args=args))
 
     # Log exceptions and return errors
     except Exception as e:

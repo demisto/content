@@ -414,4 +414,24 @@ This command does not require any arguments.
 | SecurityScorecard.AlertRules.Rule.name | String | Alert Rule name. | 
 | SecurityScorecard.AlertRules.Rule.target | String | Target of the Rule. | 
 | SecurityScorecard.AlertRules.Rule.updated_at | Date | Timestamp when the alert rule was last updated. | 
-| SecurityScorecard.AlertRules.Rule.paused_at | String | Timestamp when the alert rule was paused. | 
+| SecurityScorecard.AlertRules.Rule.paused_at | String | Timestamp when the alert rule was paused. |
+
+### securityscorecard-issue-details-get
+
+***
+Retrieve issue details for a specific issue type and domain.
+
+##### Base Command
+
+`securityscorecard-issue-details-get`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain to get the issue details for. | Required |
+| issue_type | The issue type to get the details for. | Required |
+
+#### Context Output
+
+There is no context output for this command.

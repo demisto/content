@@ -15,7 +15,8 @@ from SecurityScorecard import \
     issue_metadata_get_command, \
     company_events_get_command, \
     company_event_findings_get_command, \
-    alert_rules_list_command
+    alert_rules_list_command, \
+    issue_details_get_command
 
 from unittest.mock import MagicMock
 
@@ -914,3 +915,79 @@ def test_alert_rules_list_command(mocker):
     assert alert_rules == alert_rules_mock.get("entries")
     assert response_cmd_res.outputs_prefix == "SecurityScorecard.AlertRules.Rule"
     assert response_cmd_res.outputs_key_field == "id"
+
+
+def test_issue_details_get_command_success(mocker):
+    """
+    Given:
+        - A domain and issue type
+    When:
+        - Retrieving issue details for the specified domain and issue type
+    Then:
+        - Ensure the issue details are returned correctly
+    """
+    mock_response = {
+        "entries": [
+            {
+                "domain": "example.com",
+                "issue_id": "1",
+                "issue_type": "spf_record_missing",
+                "count": "2",
+                "status": "active",
+                "first_seen_time": "2023-01-01T00:00:00Z",
+                "last_seen_time": "2023-01-02T00:00:00Z",
+                "description": "SPF record is missing",
+                "recommendation": "Add SPF record"
+            }
+        ]
+    }
+
+    mocker.patch.object(client, "get_company_issue_findings", return_value=mock_response)
+
+    args = {"domain": "example.com", "issue_type": "spf_record_missing"}
+    result = issue_details_get_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == mock_response["entries"]
+    assert result.outputs_prefix == "SecurityScorecard.IssueDetails"
+    assert result.outputs_key_field == "issue_id"
+    assert result.readable_output.startswith("### Domain example.com Findings for spf_record_missing")
+
+
+def test_issue_details_get_command_no_results(mocker):
+    """
+    Given:
+        - A domain and issue type
+    When:
+        - No issue details are found for the specified domain and issue type
+    Then:
+        - Ensure an empty result is returned
+    """
+    mock_response = {"entries": []}
+
+    mocker.patch.object(client, "get_company_issue_findings", return_value=mock_response)
+
+    args = {"domain": "example.com", "issue_type": "spf_record_missing"}
+    result = issue_details_get_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+    assert result.outputs_prefix == "SecurityScorecard.IssueDetails"
+    assert result.outputs_key_field == "issue_id"
+    assert "No findings were found" in result.readable_output
+
+
+def test_issue_details_get_command_invalid_domain(mocker):
+    """
+    Given:
+        - An invalid domain and issue type
+    When:
+        - Retrieving issue details for the specified domain and issue type
+    Then:
+        - Ensure an error is raised
+    """
+    mocker.patch.object(client, "get_company_issue_findings", side_effect=DemistoException("Invalid domain"))
+
+    args = {"domain": "invalid.com", "issue_type": "spf_record_missing"}
+    with pytest.raises(DemistoException, match="Invalid domain"):
+        issue_details_get_command(client, args)

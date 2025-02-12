@@ -494,6 +494,19 @@ script:
     - contextPath: SecurityScorecard.AlertRules.Rule.paused_at
       description: Timestamp when the alert rule was paused.
       type: Date
+  - name: securityscorecard-issue-details-get
+    description: Retrieve issue details for a specific issue type and domain.
+    arguments:
+    - name: domain
+      description: The domain to get the issue details for.
+      required: true
+    - name: issue_type
+      description: The issue type to get the details for.
+      required: true
+    outputs:
+    - contextPath: SecurityScorecard.IssueDetails
+      description: Issue details for the specified domain and issue type.
+      type: unknown
   runonce: false
 sectionorder:
 - Connect
