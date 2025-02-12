@@ -22,12 +22,13 @@ description: |-
     - Investigate reasons behind any identified risks, including recent detections.
 
   **Containment**:
-  - Check if the feature sum is equal to 2 (Possible features: new asn/new external IP). If yes, continue to revoke user's active sessions to ensure immediate containment.
-  If not, continue to check the findings of the investigation.
-  - Provide a manual task for an analyst to review the findings and decide the next steps.
+  - The playbook checks If hard remediation is needed, if yes, it will check if the integration "Microsoft Graph User" is enabled, the playbook will revoke the sessions of the user and provide a manual task for an analyst to review the findings and decide the next steps.
   - Possible actions:
     - Disable the user.
     - Take no action.
+
+  If the integration is not enabled, the playbook will recommend performing the same action but manually.
+  - The playbook will check if soft remediation is needed, If yes, continue to revoke user's active sessions to ensure immediate containment.
 
   **Requirements**:
   For the best results, it's recommended to ensure these integrations are configured and working:
@@ -179,8 +180,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 2810
+          "x": 1790,
+          "y": 2780
         }
       }
     note: false
@@ -216,8 +217,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 3030
+          "x": 1170,
+          "y": 2950
         }
       }
     note: false
@@ -244,8 +245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 3200
+          "x": 860,
+          "y": 3120
         }
       }
     note: false
@@ -305,6 +306,8 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
+      risk_level:
+        simple: high
       updated_after:
         simple: 30 day
     separatecontext: false
@@ -388,8 +391,6 @@ tasks:
         simple: "true"
       query:
         simple: (name:"Azure high-volume data transfer" or name:"An Azure AD login was performed with Device code flow" or name:"Abnormal sign-in followed by suspicious activity in Azure AD" or name:"An Azure identity performed multiple actions that were denied")  and caller_ip:${alert.hostip.[0]} and username:${Core.OriginalAlert.event.identity_normalized.username}
-      todate:
-        simple: now
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -527,7 +528,6 @@ tasks:
       - "15"
       - "14"
       - "27"
-      - "21"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -596,7 +596,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -631,14 +631,6 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
-          right:
-            value:
-              complex:
-                root: Core.OriginalAlert.event.identity_orig.user
-                accessor: userPrincipalName
-                transformers:
-                - operator: uniq
-            iscontext: true
           ignorecase: true
         - operator: isEqualString
           left:
@@ -647,7 +639,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: LOW
+              simple: HIGH
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -908,8 +900,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 2460
+          "x": 1570,
+          "y": 2440
         }
       }
     note: false
@@ -1033,14 +1025,36 @@ tasks:
         - operator: isNotEmpty
           left:
             value:
-              simple: MaliciousIP
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                    ignorecase: true
+                accessor: |
+                  Indicator
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 2110
+          "x": 370,
+          "y": 2100
         }
       }
     note: false
@@ -1095,8 +1109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 2620
+          "x": 1570,
+          "y": 2610
         }
       }
     note: false
@@ -1194,8 +1208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 770,
-          "y": 2500
+          "x": 830,
+          "y": 2450
         }
       }
     note: false
@@ -1231,6 +1245,8 @@ tasks:
             value:
               simple: UserRiskyAzureDetections
             iscontext: true
+          right:
+            value: {}
         - operator: isTrue
           left:
             value:
@@ -1240,6 +1256,11 @@ tasks:
           left:
             value:
               simple: AzureSecurityAlerts
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: MaliciousIP
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1318,8 +1339,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 3030
+          "x": 370,
+          "y": 2950
         }
       }
     note: false
@@ -1386,8 +1407,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 2500
+          "x": 590,
+          "y": 2780
         }
       }
     note: false
@@ -1423,8 +1444,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 2300
+          "x": 590,
+          "y": 2280
         }
       }
     note: false
@@ -1464,8 +1485,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 2300
+          "x": 1570,
+          "y": 2280
         }
       }
     note: false
@@ -1495,8 +1516,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1570,
-          "y": 2300
+          "x": 1170,
+          "y": 2280
         }
       }
     note: false
@@ -1514,17 +1535,17 @@ view: |-
       "34_43_#default#": 0.21,
       "34_46_yes": 0.45,
       "35_8_Disable user": 0.54,
-      "35_9_No Action": 0.51,
+      "35_9_No Action": 0.29,
       "41_34_#default#": 0.3,
       "41_44_yes": 0.31,
       "44_47_yes": 0.5,
       "44_48_no": 0.32,
-      "46_40_yes": 0.22,
+      "46_40_yes": 0.57,
       "46_45_no": 0.53
     },
     "paper": {
       "dimensions": {
-        "height": 2585,
+        "height": 2505,
         "width": 2400,
         "x": -150,
         "y": 680
