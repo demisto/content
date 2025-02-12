@@ -121,8 +121,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         start_time = last_run.get('start_date', '')
         client.set_token(last_run.get('audit_token', ''))
         if not start_time:
-            # start_time = get_current_time().strftime(DATE_FORMAT)
-            start_time = "2025-02-02T09:00:00"
+            start_time = get_current_time().strftime(DATE_FORMAT)
         end_time = get_current_time().strftime(DATE_FORMAT)
 
     demisto.debug(f'Fetching audit logs events from date={start_time} to date={end_time}.')
