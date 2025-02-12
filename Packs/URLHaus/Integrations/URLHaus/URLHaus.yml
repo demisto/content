@@ -58,6 +58,12 @@ configuration:
   name: retry
   type: 0
   required: false
+- name: should_error
+  additionalinfo: Does the file command should error when using unsupported hash.
+  display: Return Error
+  type: 8
+  required: false
+  defaultvalue: 'true'
 description: URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
 display: URLhaus
 name: URLhaus
