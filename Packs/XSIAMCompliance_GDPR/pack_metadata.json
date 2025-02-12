@@ -20,8 +20,6 @@
         "compliance"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": ["XSIAM", "XSPANSE"]
+        "marketplacev2"
+    ]
 }
