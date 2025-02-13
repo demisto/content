@@ -955,30 +955,6 @@ def parse_device_list_response(response: list, keep_os_in_list=True, application
     return parsed_response
 
 
-def parse_new_values_for_get_device_outputs(outputs, response):
-    outputs["Id"] = response.get('deviceUid')
-    outputs["LastConnectedUtc"] = response.get('lastConnectedDateTimeUtc')
-    outputs["Serial"] = response.get('serialNumber')
-    outputs["PublicIp"] = response.get('publicIp')
-    outputs["LocalIp"] = response.get('localIp')
-    outputs["Username"] = response.get('username')
-    outputs["encryptionStatus"] = response.get('espInfo', {}).get('encryptionStatus')
-
-    os_data = response.get('operatingSystem', {})
-    outputs_os_data = {"architecture": os_data.get('architecture'),
-                       "currentBuild": os_data.get('currentBuild'),
-                       "installDate": os_data.get('installDateTimeUtc'),
-                       "lastBootTime": os_data.get('lastBootDateTimeUtc'),
-                       "name": os_data.get('name'),
-                       "productKey": os_data.get('productKey'),
-                       "serialNumber": os_data.get('serialNumber'),
-                       "version": os_data.get('version')}
-
-    outputs["Os"] = outputs_os_data
-
-    return outputs
-
-
 def parse_geo_location_outputs(response):
     parsed_response = []
     for device in response:
