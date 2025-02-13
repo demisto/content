@@ -394,8 +394,10 @@ def get_team_member(integration_context: dict, team_member_id: str) -> dict:
         team_members: list = team.get('team_members', [])
         for member in team_members:
             if member.get('id') == team_member_id:
+                demisto.debug(f'get_team_member details: {member=}')
                 team_member['username'] = member.get('name', '')
-                team_member['user_email'] = member.get('userPrincipalName', '')
+                team_member['user_email'] = member.get('email', '')
+                team_member['user_principal_name'] = member.get('userPrincipalName', '')
                 return team_member
 
     raise ValueError('Team member was not found')
@@ -408,9 +410,9 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     :param integration_context: Cached object to search for team member in
     :return: Team member ID
     """
-    demisto.debug(f"requested team member: {requested_team_member}")
+    demisto.debug(f"Requested team member: {requested_team_member}")
     teams: list = json.loads(integration_context.get('teams', '[]'))
-    demisto.debug(f"we've got {len(teams)} teams saved in integration context")
+    demisto.debug(f"We've got {len(teams)} teams saved in integration context")
     for team in teams:
         team_members: list = team.get('team_members', [])
         for team_member in team_members:
@@ -418,7 +420,6 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
                 'userPrincipalName', '').lower(), team_member.get('name', '').lower()]
             if requested_team_member.lower() in [value.lower() for value in member_properties]:
                 return team_member.get("id")
-
     raise ValueError(f'Team member {requested_team_member} was not found')
 
 
@@ -1520,9 +1521,12 @@ def add_bot_to_chat(chat_id: str):
 
     # bot is already part of the chat
     if is_bot_in_chat(chat_id):
+        demisto.debug(f"Bot is already part of the chat - chat ID: {chat_id}")
         return
     res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
                        params={"$filter": f"externalId eq '{BOT_ID}'"})
+    demisto.debug(f"res is: {res}")
+    demisto.debug(f"res type is: {type(res)}")
     app_data = res.get('value')[0]      # type: ignore
     bot_internal_id = app_data.get('id')
 
@@ -1930,6 +1934,25 @@ def get_team_members(service_url: str, team_id: str) -> list:
     return response
 
 
+def update_integration_context_with_all_team_members(integration_context):
+    """
+    Retrieves all members from all teams and updates members in integration context.
+    """
+    service_url: str = integration_context.get('service_url', '')
+    teams: list = json.loads(integration_context.get('teams', '[]'))
+    for team in teams:
+        team_id = team.get('team_id', '')
+        team_name = team.get('team_name', '')
+        demisto.debug(f'Request members for {team_id=} {team_name=}')
+        url = f'{service_url}/v3/conversations/{team_id}/members'
+        team_members: list = cast(list[Any], http_request('GET', url, api='bot'))
+        demisto.debug(f'Updating {team_name=} with {team_members=}')
+        team['team_members'] = team_members
+    demisto.debug(f'Setting integration_context with {teams=}')
+    integration_context['teams'] = json.dumps(teams)
+    set_integration_context(integration_context)
+
+
 def get_channel_members(team_id: str, channel_id: str) -> list[dict[str, Any]]:
     """
     Retrieves channel members given a channel
@@ -2086,7 +2109,7 @@ def send_message():
     message: str = demisto.args().get('message', '')
     external_form_url_header: str | None = demisto.args().get(
         'external_form_url_header') or demisto.params().get('external_form_url_header')
-    demisto.debug(f"in send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
+    demisto.debug(f"In send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
     except ValueError:
@@ -2140,7 +2163,12 @@ def send_message():
     if channel_name:
         channel_id = get_channel_id_for_send_notification(channel_name, message_type)
     elif team_member:
-        team_member_id: str = get_team_member_id(team_member, integration_context)
+        try:
+            team_member_id: str = get_team_member_id(team_member, integration_context)
+        except Exception:
+            demisto.debug(f"Did not find '{team_member=}' will update integration context with all team members.")
+            update_integration_context_with_all_team_members(integration_context)
+            team_member_id = get_team_member_id(team_member, integration_context)
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
 
     recipient: str = channel_id or personal_conversation_id
@@ -2425,11 +2453,19 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     team_member: dict = get_team_member(integration_context, user_id)
     if team_member:
         # enrich our data with the sender info
+        demisto.debug(f'direct_message_handler for: {team_member=}')
         request_body['from'].update(team_member)
 
     username: str = team_member.get('username', '')
     user_email: str = team_member.get('user_email', '')
-    demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
+    user_upn = team_member.get('user_principal_name', '')
+    demisto_user = demisto.findUser(email=user_email)
+    if not demisto_user:
+        demisto_user = demisto.findUser(username=username)
+    if not demisto_user:
+        demisto_user = demisto.findUser(email=user_upn)
+    if not demisto_user:
+        demisto.debug('direct_message_handler Failed to find user by email, username and UPN')
 
     formatted_message = ''
 
@@ -2784,6 +2820,25 @@ def long_running_loop():
             time.sleep(5)
 
 
+def get_token_permissions(access_token: str) -> list[str]:
+    """
+    Decodes the provided access token and retrieves a list of API permissions associated with the token.
+
+    :param access_token: the access token to decode.
+    :return: A list of the token's API permission roles.
+    """
+    decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+
+    if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        roles = decoded_token.get('roles', [])
+
+    else:  # Authorization code flow
+        roles = decoded_token.get('scp', '')
+        roles = roles.split()
+
+    return roles
+
+
 def token_permissions_list_command():
     """
     Gets the Graph access token stored in the integration context and displays the token's API permissions in the war room.
@@ -2800,18 +2855,11 @@ def token_permissions_list_command():
 
     # Decode the token and extract the roles:
     if access_token:
-        decoded_token = jwt.decode(access_token, options={"verify_signature": False})
-
-        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
-            roles = decoded_token.get('roles', [])
-
-        else:  # Authorization code flow
-            roles = decoded_token.get('scp', '')
-            roles = roles.split()
+        roles = get_token_permissions(access_token)
 
         if roles:
-            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})',
-                                 sorted(roles), headers=['Permission'])
+            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})\n'
+                                 f'Authorization type is: {AUTH_TYPE}', sorted(roles), headers=['Permission'])
         else:
             hr = 'No permissions obtained for the used graph access token.'
 
