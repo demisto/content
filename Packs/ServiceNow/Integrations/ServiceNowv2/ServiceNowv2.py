@@ -585,7 +585,7 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict = {},use_oauth_token: bool = False,use_jwt_token: bool = False, version: str | None = None, look_back: int = 0,
+                 incident_name: str, oauth_params: dict = {}, use_oauth_token: bool = False, use_jwt_token: bool = False, version: str | None = None, look_back: int = 0,
                  use_display_value: bool = False, display_date_format: str = ''):
         """
 
@@ -3233,25 +3233,25 @@ def main():
     username = ''
     password = ''
     oauth_params = {
-            'credentials': {
-                'identifier': username,
-                'password': password
-            },
-            'client_id': client_id,
-            'client_secret': client_secret,
-            'url': params.get('url'),
-            'headers': {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            'verify': verify,
-            'proxy': params.get('proxy')}
+        'credentials': {
+            'identifier': username,
+            'password': password
+        },
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'url': params.get('url'),
+        'headers': {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        'verify': verify,
+        'proxy': params.get('proxy')}
 
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
-        oauth_params['use_oauth']= use_oauth
+        oauth_params['use_oauth'] = use_oauth
     elif use_jwt_oauth:
-        oauth_params['jwt_key_id']= params.get('jwt_credentials', {}).get('identifier')
-        oauth_params['jwt_private_key']=  params.get('jwt_credentials', {}).get('password')
+        oauth_params['jwt_key_id'] = params.get('jwt_credentials', {}).get('identifier')
+        oauth_params['jwt_private_key'] = params.get('jwt_credentials', {}).get('password')
         oauth_params['jwt_sub'] = params.get('jwt_sub', '')
     else:  # use basic authentication
         username = params.get('credentials', {}).get('identifier')
@@ -3326,7 +3326,7 @@ def main():
     try:
         client = Client(server_url=server_url, sc_server_url=sc_server_url, cr_server_url=cr_server_url,
                         username=username, password=password, verify=verify, fetch_time=fetch_time,
-                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,use_oauth_token=use_oauth, use_jwt_token=use_jwt_oauth,
+                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit, use_oauth_token=use_oauth, use_jwt_token=use_jwt_oauth,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
                         incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back,
                         use_display_value=use_display_value, display_date_format=display_date_format)

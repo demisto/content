@@ -9,11 +9,10 @@ OAUTH_URL = '/oauth_token.do'
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 
-
 class ServiceNowClient(BaseClient):
 
-    def __init__(self, credentials: dict, use_oauth: bool = False, use_jwt:bool = False, client_id: str = '', client_secret: str = '',
-                 url: str = '',jwt_key_id: str = '', jwt_key: str= '', jwt_sub: str= '', verify: bool = False, proxy: bool = False, headers: dict = None):
+    def __init__(self, credentials: dict, use_oauth: bool = False, use_jwt: bool = False, client_id: str = '', client_secret: str = '',
+                 url: str = '', jwt_key_id: str = '', jwt_key: str = '', jwt_sub: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
@@ -127,15 +126,15 @@ class ServiceNowClient(BaseClient):
             return_error(f'Login failed. Please check the instance configuration and the given username and password.\n'
                          f'{e.args[0]}')
 
-    def generate_servicenow_oauth_token(self, oauth_data: dict ={}) -> str:
+    def generate_servicenow_oauth_token(self, oauth_data: dict = {}) -> str:
         ok_codes = (200, 201, 401)
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}  
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         data = {**oauth_data} if oauth_data else {}
         data.update({
             "client_id": self.client_id,
             "client_secret": self.client_secret
         })
-        
+
         try:
             res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
                                         data=data, ok_codes=ok_codes)
@@ -143,7 +142,7 @@ class ServiceNowClient(BaseClient):
                 res = res.json()
             except ValueError as exception:
                 raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
-                                        exception)
+                                       exception)
             if 'error' in res:
                 raise DemistoException(
                     f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
@@ -157,10 +156,11 @@ class ServiceNowClient(BaseClient):
                     'refresh_token': res.get('refresh_token', None),
                     'expiry_time': expiry_time
                 }
-                set_integration_context(new_token)  
+                set_integration_context(new_token)
             return access_token
         except Exception as e:
-            raise DemistoException(f'Error occurred while creating an access token {e.args[0]}. Please check the instance configuration.')
+            raise DemistoException(
+                f'Error occurred while creating an access token {e.args[0]}. Please check the instance configuration.')
 
     def get_access_token(self):
         """
@@ -170,7 +170,7 @@ class ServiceNowClient(BaseClient):
         previous_token = get_integration_context() or {}
         data = {}
         # Check if there is an existing valid access token
-        if  ['expiry_time', 'access_token'] in previous_token and previous_token['expiry_time'] > date_to_timestamp(datetime.now()):
+        if ['expiry_time', 'access_token'] in previous_token and previous_token['expiry_time'] > date_to_timestamp(datetime.now()):
             return previous_token.get('access_token')
         else:
             # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
@@ -179,10 +179,9 @@ class ServiceNowClient(BaseClient):
                 data['grant_type'] = 'refresh_token'
             else:
                 raise Exception('Could not create an access token. User might be not logged in. Try running the'
-                                ' oauth-login command first.')            
+                                ' oauth-login command first.')
             access_token = self.generate_servicenow_oauth_token()
             return access_token
-            
 
     def get_jwt_token(self):
         """
@@ -198,16 +197,16 @@ class ServiceNowClient(BaseClient):
         integration_context = get_integration_context()
         previous_token = integration_context.get('jwt', {})
         current_time = datetime.now(timezone.utc)
-        if  'access_token' in previous_token and previous_token['expiry_time'] > date_to_timestamp(current_time):
+        if 'access_token' in previous_token and previous_token['expiry_time'] > date_to_timestamp(current_time):
             return previous_token.get('access_token')
-        demisto.debug(f'Access Token expiry time had passed. Creating new access token')
-        
+        demisto.debug('Access Token expiry time had passed. Creating new access token')
+
         header = {
             "alg": "RS256",  # Signing algorithm
             "typ": "JWT",  # Token type
-            "kid": self.jwt_key_id,  # From ServiceNow 
+            "kid": self.jwt_key_id,  # From ServiceNow
         }
-        
+
         payload = {
             "sub": self.jwt_sub,  # Subject (e.g., user ID)
             "aud": self.client_id,  # self.client_id
@@ -216,10 +215,10 @@ class ServiceNowClient(BaseClient):
             "exp": current_time + timedelta(minutes=TOKEN_EXPIRATION_TIME),  # Expiry time 1 hour
             "jti": str(uuid.uuid4())
         }
-        
-        jwt_token= jwt.encode(payload,replace_spaces_in_credential(self.jwt_key), algorithm="RS256", headers=header)
+
+        jwt_token = jwt.encode(payload, replace_spaces_in_credential(self.jwt_key), algorithm="RS256", headers=header)
         demisto.debug(f'####{jwt_token=}###')
-        
-        oauth_data={'assertion': jwt_token,'grant_type' : 'urn:ietf:params:oauth:grant-type:jwt-bearer'}
+
+        oauth_data = {'assertion': jwt_token, 'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'}
         access_token = self.generate_servicenow_oauth_token(oauth_data)
         return access_token
