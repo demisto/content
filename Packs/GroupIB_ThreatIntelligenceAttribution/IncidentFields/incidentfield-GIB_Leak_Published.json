@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Data Breach"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibleakpublished",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibleakpublished",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Leak Published",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Data Breach"
+    ],
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
