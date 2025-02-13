@@ -1320,7 +1320,7 @@ def add_note_to_asset_command(client: Client, args: dict[str, Any]) -> CommandRe
     return command_results
 
 
-def ip_command():
+def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     command_results = CommandResults(
         outputs_prefix='',
         outputs_key_field=None,
@@ -1331,7 +1331,7 @@ def ip_command():
     return command_results
 
 
-def domain_command():
+def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     command_results = CommandResults(
         outputs_prefix='',
         outputs_key_field=None,
