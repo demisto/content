@@ -1,11 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import random
 import string
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 MAX_LENGTH = 10000
 
+# Change 2
 
 def set_length(length):
     if length <= 0:
