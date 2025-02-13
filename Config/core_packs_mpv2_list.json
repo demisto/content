@@ -23,7 +23,8 @@
     "VirusTotal",
     "Whois",
     "rasterize",
-    "CortexResponseAndRemediation"
+    "CortexResponseAndRemediation",
+    "CortexVulnerabilityManagement"
   ],
   "update_core_packs_list": [
     "AutoFocus",
@@ -49,6 +50,7 @@
     "VirusTotal",
     "Whois",
     "rasterize",
-    "CortexResponseAndRemediation"
+    "CortexResponseAndRemediation",
+    "CortexVulnerabilityManagement"
   ]
 }
