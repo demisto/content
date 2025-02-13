@@ -24,6 +24,14 @@ In order to use the Cortex XSOAR application, use the default application ID.
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Self Deployed Application - Device Code Flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).
 
+### Using National Cloud
+Using a national cloud endpoint is supported by setting the *Endpoint Type* parameter to one of the following options:
+* US Government GCC Endpoint: `https://api-gcc.security.microsoft.us`
+* US Government GCC-High Endpoint: `https://api-gov.security.microsoft.us`
+* US Government Department of Defence (DoD) Endpoint: `https://api-gov.security.microsoft.us`
+When using **US Government GCC-High Endpoint** with **Device Code** Flow, tenant ID is a required parameter in the instance configuration.
+
+
 #### Required Permissions
 The required API permissions are for the ***Microsoft Threat Protection*** app.
  * offline_access - Delegate
@@ -51,24 +59,45 @@ Follow these steps for a self-deployed configuration:
 2. Search for Microsoft Defender XDR.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Application ID or Client ID | The API key to use to connect. | False |
-    | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
-    | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-    | Token or Tenant ID (for Client Credentials mode) |  | False |
-    | Password |  | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
-    | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Application ID or Client ID | The API key to use to connect. | False |
+| Endpoint Type | The endpoint type. When selecting the Custom option, the Server URL parameter must be filled. | False |
+| Server URL | Custom Server URL. Required when Endpoint Type is Custom. | False |
+| Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
+| Token or Tenant ID (for Client Credentials mode) |  | False |
+| Password |  | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
+| Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+
+
+Endpoint Type Options:
+
+| Endpoint Type | Description                                                                             |
+|--------|-----------------------------------------------------------------------------------------|
+| Worldwide | The publicly accessible Microsoft 365 Defender.                                         |
+| US Geo Proximity | Microsoft 365 Defender Geo proximity endpoint for the US customers.                     |
+| EU Geo Proximity | Microsoft 365 Defender Geo proximity endpoint for the EU customers.                     |
+| UK Geo Proximity | Microsoft 365 Defender Geo proximity endpoint  for the UK customers.                    |
+| AU Geo Proximity | Microsoft 365 Defender Geo proximity endpoint  for the AU customers.                    |
+| SWA Geo Proximity | Microsoft 365 Defender Geo proximity endpoint  for the SWA customers.                   |
+| INA Geo Proximity    | Microsoft 365 Defender Geo proximity endpoint  for the INA customers.                   |
+| US GCC | Microsoft 365 Defender endpoint for the USA Government Cloud Community (GCC).           |
+| US GCC-High | Microsoft 365 Defender endpoint for the USA Government Cloud Community High (GCC-High). |
+| DoD | Microsoft 365 Defender endpoint for the USA Department of Defense (DoD).                |
+| Custom | Custom endpoint configuration for Microsoft 365 Defender.                               |
+
+
 
 4. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 
