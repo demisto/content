@@ -1,4 +1,4 @@
-Okta Advanced Server Access integration for Cortex XSIAM.
+Okta Advanced Server Access integration for Cortex XSIAM allows you to fetch logs of a wide range of configuration, enrollment, authentication, and authorization events that occur within the product and on your servers.
 
 ## Configure Okta ASA in Cortex
 

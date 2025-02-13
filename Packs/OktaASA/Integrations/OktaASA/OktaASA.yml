@@ -42,7 +42,7 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: Okta Advanced Server Access integration for Cortex XSIAM.
+description: Okta Advanced Server Access integration for Cortex XSIAM allows you to fetch logs of a wide range of configuration, enrollment, authentication, and authorization events that occur within the product and on your servers.
 display: Okta ASA
 name: OktaASA
 script:
