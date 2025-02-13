@@ -589,8 +589,8 @@ def remove_device_freeze_request_command(args, client) -> CommandResults:
     """Removes device freeze request
     """
     device_ids = argToList(args.get('device_ids'))
-    remove_scheduled = args.get('remove_scheduled')
-    remove_offline = args.get('remove_offline')
+    remove_scheduled = argToBoolean(args.get('remove_scheduled', False))
+    remove_offline = argToBoolean(args.get('remove_offline', False))
 
     payload = {"deviceUids": device_ids, "removeScheduled": remove_scheduled,
                "removeOffline": remove_offline}

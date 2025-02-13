@@ -266,6 +266,23 @@ def test_get_device_freeze_request_command(mocker, absolute_client_v3):
     assert command_results.outputs[0] == FREEZE_REQ_EXPECTED_OUTPUT[0]
 
 
+def test_remove_device_freeze_request_command(mocker, absolute_client_v3):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - remove_device_freeze_request_command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Absolute import remove_device_freeze_request_command
+    mocker.patch.object(absolute_client_v3, 'api_request_absolute')
+    command_results = remove_device_freeze_request_command(args={'device_ids': '1'}, client=absolute_client_v3)
+    assert command_results.readable_output == "Successfully removed freeze request for devices ids: 1."
+
+
 def test_list_device_freeze_message_command(mocker, absolute_client_v3):
     """
     Given:
