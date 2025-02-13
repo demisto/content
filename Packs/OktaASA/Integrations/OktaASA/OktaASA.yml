@@ -25,7 +25,7 @@ configuration:
   type: 0
   section: Connect
   required: true
-- defaultvalue: 10000
+- defaultvalue: 5000
   section: Collect
   display: The maximum number of audit events per fetch.
   name: max_audit_events_per_fetch
