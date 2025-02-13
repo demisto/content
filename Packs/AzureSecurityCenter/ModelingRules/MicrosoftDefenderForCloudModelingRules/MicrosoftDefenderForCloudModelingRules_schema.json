@@ -68,10 +68,6 @@
             "type": "string",
             "is_array": false
         },
-        "http_method": {
-            "type": "string",
-            "is_array": false
-        },
         "AlertSeverity": {
             "type": "string",
             "is_array": false
@@ -81,6 +77,10 @@
             "is_array": false
         },
         "Techniques": {
+            "type": "string",
+            "is_array": false
+        },
+        "DestinationDeviceAddress": {
             "type": "string",
             "is_array": false
         },
