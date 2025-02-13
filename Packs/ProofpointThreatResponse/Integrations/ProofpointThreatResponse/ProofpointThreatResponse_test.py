@@ -531,3 +531,93 @@ def test_search_indicator_command(mocker, requests_mock, list_id_to_search, filt
     search_indicator_command()
     indicators = results.call_args[0][0]['indicators']
     assert indicators == expected_result
+
+
+def test_search_quarantine_command_mismatch_time(mocker, requests_mock):
+    """
+    Given:
+    - Message ID, Recipient and Delivery Time (Email recived time)
+
+    When:
+    - Running search-quarantine command
+
+    Then:
+    - test fails on time mismatch
+    """
+    base_url = 'https://server_url/'
+    with open('./test_data/incident_str_messageDeliveryTime.json') as f:
+        incident = json.loads(f.read())
+    requests_mock.get(f'{base_url}api/incidents', json=incident)
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch('ProofpointThreatResponse.get_incidents_batch_by_time_request', return_value=incident)
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'message_id': "<ABCD1234@cpus>",
+        "recipient": "sabrina.test@test.com",
+        "time": "2021-04-30T11:17:39Z"
+    })
+    res = search_quarantine()
+
+    assert res.readable_output == ("<ABCD1234@cpus> Message ID found in TRAP alerts, but timestamp between email delivery time "
+                                   "and time given as argument doesn't match")
+
+
+def test_search_quarantine_command_with_incident_far_from_alert_time_fail(mocker, requests_mock):
+    """
+    Given:
+    - Message ID, Recipient and Delivery Time (Email recived time)
+
+    When:
+    - Running search-quarantine command
+
+    Then:
+    - test fails on time mismatch
+    """
+    base_url = 'https://server_url/'
+    with open('./test_data/incident_email_manually_quarantined.json') as f:
+        incident = json.loads(f.read())
+    requests_mock.get(f'{base_url}api/incidents', json=incident)
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch('ProofpointThreatResponse.get_incidents_batch_by_time_request', return_value=incident)
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'message_id': "<ABCD1234@cpus>",
+        "recipient": "sabrina.test@test.com",
+        "time": "2021-04-30T11:17:39Z"
+    })
+    res = search_quarantine()
+
+    assert res.readable_output == ('<ABCD1234@cpus> Message ID matches to 1 emails quarantined, but time between alert received '
+                                   'and the quarantine starting exceeded the quarantine_limit provided')
+
+
+def test_search_quarantine_command_with_incident_far_from_alert_time_succeed(mocker, requests_mock):
+    """
+    Given:
+    - Message ID, Recipient and Delivery Time (Email recived time)
+
+    When:
+    - Running search-quarantine command
+
+    Then:
+    - test succeed
+    """
+    base_url = 'https://server_url/'
+    with open('./test_data/incident_email_manually_quarantined.json') as f:
+        incident = json.loads(f.read())
+    requests_mock.get(f'{base_url}api/incidents', json=incident)
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch('ProofpointThreatResponse.get_incidents_batch_by_time_request', return_value=incident)
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'message_id': "<ABCD1234@cpus>",
+        "recipient": "sabrina.test@test.com",
+        "time": "2021-04-30T11:17:39Z",
+        "quarantine_limit": "2665996"
+
+    })
+    res = search_quarantine()
+
+    assert res.readable_output == ("### Quarantine Result\n|alert|incident|quarantine|\n|---|---|---|\n| id: 9225<br>time: "
+                                   "2021-03-30T11:44:24Z | id: 3065<br>time: 2021-03-30T11:44:24Z | messageId: <ABCD1234@cpu"
+                                   "s><br>recipient: sabrina.test@test.com<br>startTime: 2021-04-30T08:17:39Z |\n")
