@@ -478,6 +478,7 @@ def split_data_to_chunks_mod(data, target_chunk_size):
     target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
+    large_entry_cnt = 0
     if isinstance(data, str):
         data = data.split("\n")
     for data_part in data:
@@ -488,11 +489,15 @@ def split_data_to_chunks_mod(data, target_chunk_size):
 
         data_part_size = sys.getsizeof(data_part)
         if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
+            large_entry_cnt += 1
             demisto.error(
-                f"entry size {data_part_size} is larger than the maximum allowed entry size {MAX_ALLOWED_ENTRY_SIZE}, skipping this entry")
+                f"######### entry size {data_part_size} is larger than the maximum allowed entry size {MAX_ALLOWED_ENTRY_SIZE}, skipping this entry."
+            )
+            demisto.error(f"{target_chunk_size=}, {data=}")
             continue
         chunk.append(data_part)
         chunk_size += sys.getsizeof(data_part)
+    demisto.debug(f'######### {large_entry_cnt=}')
     if chunk_size != 0:
         demisto.debug(f"sending the remaining chunk with size: {chunk_size}")
         yield chunk
