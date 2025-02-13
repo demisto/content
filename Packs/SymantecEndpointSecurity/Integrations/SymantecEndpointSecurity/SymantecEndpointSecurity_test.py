@@ -13,6 +13,7 @@ from SymantecEndpointSecurity import (
     test_module as _test_module,
     get_events_command,
     sleep_if_necessary,
+    handle_chunked_encoding_error,
 )
 
 
@@ -320,9 +321,11 @@ def test_get_events_command_with_raises(
     [
         pytest.param(10, 20, 1, id="The sleep function should be called once"),
         pytest.param(10, 70, 0, id="The sleep function should not be called"),
-    ]
+    ],
 )
-def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
+def test_sleep_if_necessary(
+    mocker: MockerFixture, start_run: int, end_run: int, call_count: int
+):
     """
     Given:
         - Mocked time passed duration
@@ -334,3 +337,59 @@ def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int,
     mock_sleep = mocker.patch("SymantecEndpointSecurity.time.sleep")
     sleep_if_necessary(end_run - start_run)
     assert mock_sleep.call_count == call_count
+
+
+@pytest.mark.parametrize(
+    "integration_context, expected_mock",
+    [
+        (
+            {
+                "chunked_encoding_error_counter": "2",
+                "next_fetch": {"next": "test_hash"},
+            },
+            {
+                "integration_context": {
+                    "chunked_encoding_error_counter": "3",
+                    "next_fetch": {"next": "test_hash"},
+                },
+                "demisto_debug": (
+                    "The API call returned `Response ended prematurely` still not raises error,"
+                    " `ChunkedEncodingError` counter is 3"
+                )
+            },
+        ),
+        (
+            {},
+            {
+                "integration_context": {
+                    "chunked_encoding_error_counter": "1",
+                },
+                "demisto_debug": (
+                    "The API call returned `Response ended prematurely` still not raises error,"
+                    " `ChunkedEncodingError` counter is 1"
+                )
+            },
+        )
+    ],
+)
+def test_handle_chunked_encoding_error(
+    mocker: MockerFixture, integration_context: dict, expected_mock: dict
+):
+    mock_set_integration_context = mocker.patch(
+        "SymantecEndpointSecurity.set_integration_context"
+    )
+    mock_demisto_debug = mocker.patch.object(demisto, "debug")
+
+    handle_chunked_encoding_error(integration_context, Exception("Test"))
+    assert mock_demisto_debug.call_args[0][0] == expected_mock["demisto_debug"]
+    assert mock_set_integration_context.call_args[0][0] == expected_mock["integration_context"]
+
+
+def test_handle_chunked_encoding_error_raises():
+    expected_exception = (
+        "The API call returned `Response ended prematurely`,"
+        " reached the maximum allowed errors 15"
+    )
+    integration_context = {"chunked_encoding_error_counter": "15"}
+    with pytest.raises(DemistoException, match=expected_exception):
+        handle_chunked_encoding_error(integration_context, Exception("Test"))
