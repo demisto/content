@@ -529,7 +529,7 @@ def test_query_es_alerts_empty(mocker, mock_gw_client):
 
     q = {"query": {"match_all": {}}}
     hits = query_es_alerts(mock_gw_client, q)
-    assert hits == {}
+    assert hits == [{}]
 
 
 def test_query_es_metadata(mocker, mock_gw_client):
@@ -605,7 +605,7 @@ def test_handle_little_fetch_empty_selected_engines_not_alerts(mocker, mock_gw_c
     from GCenter103 import handle_little_fetch_empty_selected_engines
     query = {"query": {"bool": {"must": []}}}
     res = handle_little_fetch_empty_selected_engines(mock_gw_client, "Metadata", query)
-    assert res == {}  # no alerts if fetch_type == "Metadata"
+    assert res == []  # no alerts if fetch_type == "Metadata"
 
 
 def test_main_test_module(mocker):
@@ -898,3 +898,19 @@ def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_
     if returned_metadata:
         assert any("Meta: " in inc["name"] for inc in results)
     # If we get no alerts or metadata, results is empty
+
+
+def test_gcenter103_alerts_get(mocker):
+    """
+    When:
+        gcenter103-alerts-get is called with an alert UUID.
+    Returns:
+        The alert found.
+    """
+    from GCenter103 import(
+        gcenter103_alerts_get_command
+    )
+    raw_alerts_get_response = util_load_json('test_data/raw_alerts_get_response.json')
+    client = mock_gw_client(mocker)
+    res = gcenter103_alerts_get_command(client=client, args={'uuid': "1be3530b-2e94-4a89-b57f-6fb9f39e1b54"})
+    assert res.get('dest_ip') == "27.0.0.118"
