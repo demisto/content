@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
 from collections.abc import Callable, Iterable
-
-
 import mimetypes
 
 # disable insecure warnings
@@ -18,6 +16,9 @@ SIR_INCIDENT = 'sn_si_incident'
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
+TOKEN_RENEWAL_TIME_LIMIT = 60  # In seconds. The minimum time before the token expires to renew it.
 
 DATE_FORMAT_OPTIONS = {
     'MM-dd-yyyy': '%m-%d-%Y %H:%M:%S',
@@ -584,7 +585,7 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict | None = None, version: str | None = None, look_back: int = 0,
+                 incident_name: str, oauth_params: dict = {}, use_oauth_token: bool = False, use_jwt_token: bool = False, version: str | None = None, look_back: int = 0,
                  use_display_value: bool = False, display_date_format: str = ''):
         """
 
@@ -596,6 +597,8 @@ class Client(BaseClient):
             password: SNOW password
             oauth_params: (optional) the parameters for the ServiceNowClient that should be used to create an
                           access token when using OAuth2 authentication.
+            jwt_params: (optional) the parameters for the ServiceNowClient that should be used to create an
+                        token when using JWT authentication.
             verify: whether to verify the request
             fetch_time: first time fetch for fetch_incidents
             sysparm_query: system query
@@ -606,7 +609,6 @@ class Client(BaseClient):
             incident_name: the ServiceNow ticket field to be set as the incident name
             look_back: defines how much backwards (minutes) should we go back to try to fetch incidents.
         """
-        oauth_params = oauth_params if oauth_params else {}
         self._base_url = server_url
         self._sc_server_url = sc_server_url
         self._cr_server_url = cr_server_url
@@ -615,7 +617,8 @@ class Client(BaseClient):
         self._username = username
         self._password = password
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-        self.use_oauth = bool(oauth_params)
+        self.use_oauth = use_oauth_token
+        self.use_jwt = use_jwt_token
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -640,6 +643,18 @@ class Client(BaseClient):
                                                                   verify=oauth_params.get('verify', False),
                                                                   proxy=oauth_params.get('proxy', False),
                                                                   headers=oauth_params.get('headers', ''))
+        elif self.use_jwt:
+            self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
+                                                                  use_jwt=self.use_jwt,
+                                                                  client_id=oauth_params.get('client_id', ''),
+                                                                  client_secret=oauth_params.get('client_secret', ''),
+                                                                  url=oauth_params.get('url', ''),
+                                                                  verify=oauth_params.get('verify', False),
+                                                                  proxy=oauth_params.get('proxy', False),
+                                                                  headers=oauth_params.get('headers', ''),
+                                                                  jwt_key_id=oauth_params.get('jwt_key_id', ''),
+                                                                  jwt_key=oauth_params.get('jwt_private_key', ''),
+                                                                  jwt_sub=oauth_params.get('jwt_sub', ''))
         else:
             self._auth = (self._username, self._password)
 
@@ -719,8 +734,8 @@ class Client(BaseClient):
                     file_path = demisto.getFilePath(file_entry)['path']
                     with open(file_path, 'rb') as f:
                         file_info = (file_name, f, self.get_content_type(file_name))
-                        if self.use_oauth:
-                            access_token = self.snow_client.get_access_token()
+                        if self.use_oauth or self.use_jwt:
+                            access_token = self.snow_client.get_access_token() if self.use_oauth else self.snow_client.get_jwt_token()
                             headers.update({
                                 'Authorization': f'Bearer {access_token}'
                             })
@@ -733,8 +748,8 @@ class Client(BaseClient):
                 except Exception as err:
                     raise Exception('Failed to upload file - ' + str(err))
             else:
-                if self.use_oauth:
-                    access_token = self.snow_client.get_access_token()
+                if self.use_oauth or self.use_jwt:
+                    access_token = self.snow_client.get_access_token() if self.use_oauth else self.snow_client.get_jwt_token()
                     headers.update({
                         'Authorization': f'Bearer {access_token}'
                     })
@@ -876,11 +891,12 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            if self.use_oauth:
-                access_token = self.snow_client.get_access_token()
+            if self.use_oauth or self.use_jwt:
+                access_token = self.snow_client.get_access_token() if self.use_oauth else self.snow_client.get_jwt_token()
                 headers.update({'Authorization': f'Bearer {access_token}'})
                 file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
             else:
+                demisto.debug('here 5')
                 file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
                                         proxies=self._proxies)
 
@@ -2460,6 +2476,9 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     if client.use_oauth:
         raise Exception('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login '
                         'command followed by the !servicenow-oauth-test command to test the instance.')
+    elif client.use_jwt:
+        jwt_token = client.snow_client.get_jwt_token()
+        return 'ok', {'jwt_token': jwt_token}, {}, True
 
     if client._version == 'v2' and client.get_attachments:
         raise DemistoException('Retrieving incident attachments is not supported when using the V2 API.')
@@ -2497,7 +2516,6 @@ def login_command(client: Client, args: dict[str, Any]) -> tuple[str, dict[Any, 
         raise Exception('!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization.\n Please '
                         'select the `Use OAuth Login` checkbox in the instance configuration before running this '
                         'command.')
-
     username = args.get('username', '')
     password = args.get('password', '')
     try:
@@ -3205,40 +3223,40 @@ def main():
     """
     command = demisto.command()
     LOG(f'Executing command {command}')
-
     params = demisto.params()
     args = demisto.args()
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
-    oauth_params = {}
+    use_jwt_oauth = params.get('use_jwt_outh', False)
+    client_id = params.get('credentials', {}).get('identifier')
+    client_secret = params.get('credentials', {}).get('password')
+    username = ''
+    password = ''
+    oauth_params = {
+        'credentials': {
+            'identifier': username,
+            'password': password
+        },
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'url': params.get('url'),
+        'headers': {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        'verify': verify,
+        'proxy': params.get('proxy')}
 
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
-        username = ''
-        password = ''
-        client_id = params.get('credentials', {}).get('identifier')
-        client_secret = params.get('credentials', {}).get('password')
-        oauth_params = {
-            'credentials': {
-                'identifier': username,
-                'password': password
-            },
-            'client_id': client_id,
-            'client_secret': client_secret,
-            'url': params.get('url'),
-            'headers': {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            'verify': verify,
-            'proxy': params.get('proxy'),
-            'use_oauth': use_oauth
-        }
+        oauth_params['use_oauth'] = use_oauth
+    elif use_jwt_oauth:
+        oauth_params['jwt_key_id'] = params.get('jwt_credentials', {}).get('identifier')
+        oauth_params['jwt_private_key'] = params.get('jwt_credentials', {}).get('password')
+        oauth_params['jwt_sub'] = params.get('jwt_sub', '')
     else:  # use basic authentication
         username = params.get('credentials', {}).get('identifier')
         password = params.get('credentials', {}).get('password')
-
     version = params.get('api_version')
-
     force_default_url = argToBoolean(args.get('force_default_url', 'false'))
     if version and not force_default_url:
         api = f'/api/now/{version}/'
@@ -3308,7 +3326,7 @@ def main():
     try:
         client = Client(server_url=server_url, sc_server_url=sc_server_url, cr_server_url=cr_server_url,
                         username=username, password=password, verify=verify, fetch_time=fetch_time,
-                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
+                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit, use_oauth_token=use_oauth, use_jwt_token=use_jwt_oauth,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
                         incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back,
                         use_display_value=use_display_value, display_date_format=display_date_format)
