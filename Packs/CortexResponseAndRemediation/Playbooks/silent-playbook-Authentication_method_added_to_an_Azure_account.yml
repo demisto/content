@@ -209,7 +209,7 @@ tasks:
       - "10"
     scriptarguments:
       closeNotes:
-        simple: ' Handled by the playbook "Authentication method added to an Azure account"'
+        simple: Handled by the playbook "Authentication method added to an Azure account"
       closeReason:
         simple: Resolved - True Positive
     separatecontext: false
@@ -263,7 +263,7 @@ tasks:
     task:
       id: c870efe1-6e26-4239-8283-bd8907b6edd3
       version: -1
-      name: Investigtion
+      name: Investigation
       type: title
       iscommand: false
       brand: ""
@@ -391,6 +391,8 @@ tasks:
         simple: "true"
       query:
         simple: (name:"Azure high-volume data transfer" or name:"An Azure AD login was performed with Device code flow" or name:"Abnormal sign-in followed by suspicious activity in Azure AD" or name:"An Azure identity performed multiple actions that were denied")  and caller_ip:${alert.hostip.[0]} and username:${Core.OriginalAlert.event.identity_normalized.username}
+      todate:
+        simple: now
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -631,6 +633,8 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
         - operator: isEqualString
           left:
@@ -1080,7 +1084,7 @@ tasks:
       Disable user:
       - "8"
       No Action:
-      - "9"
+      - "43"
     separatecontext: false
     conditions:
     - label: No Action
@@ -1320,7 +1324,7 @@ tasks:
     task:
       id: b0f18feb-2458-4994-8ca3-ef5172a642c3
       version: -1
-      name: Close alert as False Positive
+      name: Close alert as Other
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -1333,7 +1337,7 @@ tasks:
       closeNotes:
         simple: Handled by the playbook "Authentication method added to an Azure account"
       closeReason:
-        simple: Resolved - False Positive
+        simple: Resolved - Other
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1534,8 +1538,8 @@ view: |-
       "22_21_#default#": 0.11,
       "34_43_#default#": 0.21,
       "34_46_yes": 0.45,
+      "35_43_No Action": 0.1,
       "35_8_Disable user": 0.54,
-      "35_9_No Action": 0.29,
       "41_34_#default#": 0.3,
       "41_44_yes": 0.31,
       "44_47_yes": 0.5,
