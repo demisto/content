@@ -85,7 +85,7 @@ def test_test_module_command(mocker):
     res = test_module(client=client, args={})
     assert res == "ok"
     assert search_events_command_mocker.call_count == 1
-    search_events_command_mocker.assert_called_with(limit=1, offset=None)
+    search_events_command_mocker.assert_called_with(limit=50)
 
 
 def test_test_module_arguments(mocker):
@@ -97,18 +97,18 @@ def test_test_module_arguments(mocker):
     - Pressing test button
 
     Then:
-    - The fetch_events_command method is called with the correct arguments.
+    - The get_events_command method is called with the correct arguments.
     """
     import OktaASA
     from OktaASA import test_module
 
     client = get_mock_client()
-    fetch_events_command_mocker = mocker.patch.object(OktaASA, "fetch_events_command")
+    get_events_command_mocker = mocker.patch.object(OktaASA, "get_events_command")
     result = test_module(client=client, args={})
     assert result == "ok"
-    assert fetch_events_command_mocker.call_count == 1
-    fetch_events_command_mocker.assert_called_with(
-        client=client, last_run={}, max_audit_events_per_fetch=1, is_fetch_events=True, team_name="team"
+    assert get_events_command_mocker.call_count == 1
+    get_events_command_mocker.assert_called_with(
+        client=client, args={}
     )
 
 
