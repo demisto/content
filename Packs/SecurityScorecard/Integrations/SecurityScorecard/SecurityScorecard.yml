@@ -504,9 +504,42 @@ script:
       description: The issue type to get the details for.
       required: true
     outputs:
-    - contextPath: SecurityScorecard.IssueDetails
-      description: Issue details for the specified domain and issue type.
-      type: unknown
+    - contextPath: SecurityScorecard.IssueDetails.issue_id
+      description: Unique UUID for this measurement.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.parent_domain
+      description: Parent domain aka vendor.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.issue_type
+      description: issue_type of the findings.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.count
+      description: The number of findings.
+      type: Number
+    - contextPath: SecurityScorecard.IssueDetails.group_status
+      description: If findings are active or not.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.first_seen_time
+      description: Epoch of observation in nanoseconds.
+      type: Date
+    - contextPath: SecurityScorecard.IssueDetails.last_seen_time
+      description: Epoch of observation in nanoseconds.
+      type: Date
+    - contextPath: SecurityScorecard.IssueDetails.port
+      description: Port number of the observation if applicable.
+      type: Number
+    - contextPath: SecurityScorecard.IssueDetails.domain
+      description: Domain of the observation if applicable.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.ip
+      description: IP address of the observation if applicable.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.protocol
+      description: Protocol of the observation if applicable.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.observations
+      description: Observation data in raw JSON format.
+      type: String
   runonce: false
 sectionorder:
 - Connect

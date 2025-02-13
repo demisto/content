@@ -434,4 +434,17 @@ Retrieve issue details for a specific issue type and domain.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SecurityScorecard.IssueDetails.issue_id | String | Unique UUID for this measurement. | 
+| SecurityScorecard.IssueDetails.parent_domain | String | Parent domain aka vendor. | 
+| SecurityScorecard.IssueDetails.issue_type | String | issue_type of the findings. | 
+| SecurityScorecard.IssueDetails.count | Number | The number of findings. | 
+| SecurityScorecard.IssueDetails.group_status | String | If findings are active or not. |
+| SecurityScorecard.IssueDetails.first_seen_time | Date | Epoch of observation in nanoseconds. |
+| SecurityScorecard.IssueDetails.last_seen_time | Date | Epoch of observation in nanoseconds. |
+| SecurityScorecard.IssueDetails.port | Number | Port number of the observation if applicable. |
+| SecurityScorecard.IssueDetails.domain | String | Domain of the observation if applicable. |
+| SecurityScorecard.IssueDetails.ip | String | IP address of the observation if applicable. |
+| SecurityScorecard.IssueDetails.protocol | String | Protocol of the observation if applicable. |
+| SecurityScorecard.IssueDetails.observations | String | Observation data in raw JSON format. |

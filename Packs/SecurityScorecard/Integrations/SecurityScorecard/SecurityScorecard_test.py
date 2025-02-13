@@ -951,7 +951,7 @@ def test_issue_details_get_command_success(mocker):
     assert result.outputs == mock_response["entries"]
     assert result.outputs_prefix == "SecurityScorecard.IssueDetails"
     assert result.outputs_key_field == "issue_id"
-    assert result.readable_output.startswith("### Domain example.com Findings for spf_record_missing")
+    assert result.readable_output.startswith("### Domain example.com -- Findings for spf_record_missing")
 
 
 def test_issue_details_get_command_no_results(mocker):

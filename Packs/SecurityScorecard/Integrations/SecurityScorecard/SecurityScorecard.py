@@ -1466,6 +1466,8 @@ def issue_details_get_command(
 ) -> CommandResults:
     """Retrieve issue details for a specific issue type and domain.
 
+    See https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-issues-active-cve-exploitation-attempted
+
     Args:
         ``client`` (``SecurityScorecardClient``): SecurityScorecard client
         ``args`` (``Dict[str, Any]``): The domain and issue type
@@ -1484,7 +1486,7 @@ def issue_details_get_command(
 
     entries = response.get('entries', [])
 
-    events = []
+    findings = []
     for entry in entries:
 
         # some issue types have domains, IPs and/or ports, but not all of them do
@@ -1522,12 +1524,13 @@ def issue_details_get_command(
         else:
             port = ""
 
-        event = {
+        finding = {
+            "id": entry.get("issue_id"),
             "parent_domain": entry.get("parent_domain"),
             "count": entry.get("count"),
             "status": entry.get("group_status"),
-            "first_seen_time": entry.get("first_seen_time"),
-            "last_seen_time": entry.get("last_seen_time"),
+            "first_seen": entry.get("first_seen_time"),
+            "last_seen": entry.get("last_seen_time"),
             # the following details may or may not be populated
             "port": port,
             "domain_name": domain,
@@ -1537,9 +1540,9 @@ def issue_details_get_command(
             "issue_type": issue_type
         }
 
-        events.append(event)
+        findings.append(finding)
 
-    if not events:
+    if not findings:
         return CommandResults(
             readable_output=f"No findings were found for domain {domain} and issue type {issue_type}.",
             outputs_prefix="SecurityScorecard.IssueDetails",
@@ -1548,10 +1551,10 @@ def issue_details_get_command(
         )
 
     markdown = tableToMarkdown(
-        f"Domain {domain} Findings for {issue_type}",
-        events,
-        headers=['parent_domain', 'issue_type', 'count', 'status', 'first_seen_time',
-                 'last_seen_time', 'port', 'domain_name', 'ip_address', 'protocol', 'observations']
+        f"Domain {domain} -- Findings for {issue_type}",
+        findings,
+        headers=['id', 'parent_domain', 'issue_type', 'count', 'status', 'first_seen',
+                 'last_seen', 'port', 'domain_name', 'ip_address', 'protocol', 'observations']
     )
 
     results = CommandResults(
@@ -1559,7 +1562,7 @@ def issue_details_get_command(
         outputs_prefix="SecurityScorecard.IssueDetails",
         outputs=entries,
         raw_response=response,
-        outputs_key_field='issue_id'
+        outputs_key_field="issue_id"
     )
 
     return results
