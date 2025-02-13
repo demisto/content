@@ -13,18 +13,11 @@ configuration:
   type: 0
   section: Connect
 - displaypassword: API Key ID
+  display: API Key Secret
   additionalinfo: The API Key ID to use for connection.
-  name: api_key_id
+  name: credentials
   required: true
   section: Connect
-  hiddenusername: true
-  type: 9
-- displaypassword: API Key Secret
-  additionalinfo: The API Key Secret to use for connection.
-  name: api_key_secret
-  required: true
-  section: Connect
-  hiddenusername: true
   type: 9
 - display: Team Name
   additionalinfo: A named group of users who can authenticate with Okta.

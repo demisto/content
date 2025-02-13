@@ -82,7 +82,7 @@ def test_test_module_command(mocker):
         OktaASAClient, "search_events", return_value=(None, None, None)
     )
     client = get_mock_client()
-    res = test_module(client=client, team_name="team")
+    res = test_module(client=client, args={})
     assert res == "ok"
     assert search_events_command_mocker.call_count == 1
     search_events_command_mocker.assert_called_with(limit=1, offset=None)
@@ -104,7 +104,7 @@ def test_test_module_arguments(mocker):
 
     client = get_mock_client()
     fetch_events_command_mocker = mocker.patch.object(OktaASA, "fetch_events_command")
-    result = test_module(client=client, team_name="team")
+    result = test_module(client=client, args={})
     assert result == "ok"
     assert fetch_events_command_mocker.call_count == 1
     fetch_events_command_mocker.assert_called_with(

@@ -286,8 +286,9 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key_id = params.get('api_key_id', {}).get('password')
-    api_key_secret = params.get('api_key_secret', {}).get('password')
+
+    api_key_id = params.get('credentials', {}).get('identifier')
+    api_key_secret = params.get('credentials', {}).get('password')
     team_name = params.get('team_name', "").lower()
     base_url = urljoin(params.get('url'), f'/v1/teams/{team_name}')
     verify_certificate = not params.get('insecure', False)
@@ -305,7 +306,7 @@ def main() -> None:  # pragma: no cover
             proxy=proxy)
 
         if command == 'test-module':
-            result = test_module(client, team_name)
+            result = test_module(client, args)
             return_results(result)
 
         elif command == 'okta-asa-get-events':
