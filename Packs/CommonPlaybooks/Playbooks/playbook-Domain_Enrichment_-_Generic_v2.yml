@@ -2,45 +2,35 @@ id: Domain Enrichment - Generic v2
 version: -1
 fromversion: 5.0.0
 name: Domain Enrichment - Generic v2
-description: |-
-  Enrich domains using one or more integrations.
-  Domain enrichment includes:
-  * Threat information
-  * Domain reputation using !domain command
-starttaskid: "0"
+description: "Enrich domains using one or more integrations.\nDomain enrichment includes:\n* Threat information\n* Domain reputation using !domain command"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 3f6b8522-c653-4608-800d-f7da232392fb
     type: start
     task:
       id: 3f6b8522-c653-4608-800d-f7da232392fb
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 400
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     isautoswitchedtoquietmode: false
     isoversize: false
     quietmode: 0
     skipunavailable: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 86e8324e-34fa-4726-8cc0-2f61e6de5395
     type: condition
     task:
@@ -50,16 +40,16 @@ tasks:
       description: Checks whether the playbook's input contains at least one domain name to enrich.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "24"
-      "yes":
-      - "33"
-      - "32"
+      - '24'
+      yes:
+      - '33'
+      - '32'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -68,14 +58,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 530
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 530\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -83,8 +67,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
     type: title
     task:
@@ -93,17 +77,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 1235
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 1235\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -111,8 +89,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: 7b77b6ff-906f-46cc-8e96-fd9d02778d63
     type: regular
     task:
@@ -123,10 +101,10 @@ tasks:
       script: '|||umbrella-domain-categorization'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       domain:
         complex:
@@ -135,14 +113,8 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -200,
-          "y": 1060
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -200,\n    \"y\": 1060\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -150,8 +122,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: ec9764d9-3eea-44d8-8da7-538766ac0670
     type: condition
     task:
@@ -161,15 +133,15 @@ tasks:
       description: Checks if there is an active instance of the Cisco Umbrella Investigate integration enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "24"
-      "yes":
-      - "29"
+      - '24'
+      yes:
+      - '29'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -199,14 +171,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -200,
-          "y": 855
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -200,\n    \"y\": 855\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -214,8 +180,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: 230be3d0-b15b-446e-8e9e-5eaf8aa47c2b
     type: title
     task:
@@ -224,20 +190,14 @@ tasks:
       name: Domain Reputation
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 320,
-          "y": 720
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 320,\n    \"y\": 720\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -245,8 +205,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: 1dd7328d-b062-4a7c-8b80-55acc42bb92b
     type: title
     task:
@@ -255,20 +215,14 @@ tasks:
       name: Cisco Umbrella enrichment
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -200,
-          "y": 720
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -200,\n    \"y\": 720\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -276,8 +230,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: 5b429a1c-ec97-4f6a-877b-0e5dbff30e9f
     type: condition
     task:
@@ -287,15 +241,15 @@ tasks:
       description: Check whether to run domain reputation command.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "24"
-      "yes":
-      - "35"
+      - '24'
+      yes:
+      - '35'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -305,16 +259,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 320,
-          "y": 855
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 320,\n    \"y\": 855\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -322,8 +270,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: 6feef606-9d2b-4ce9-8aa7-024b49568b13
     type: regular
     task:
@@ -334,23 +282,17 @@ tasks:
       script: '|||domain'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       domain:
         complex:
           root: inputs.Domain
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 320,
-          "y": 1060
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 320,\n    \"y\": 1060\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -358,24 +300,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "16_24_#default#": 0.13,
-      "30_24_#default#": 0.43,
-      "30_29_yes": 0.5,
-      "34_24_#default#": 0.41,
-      "34_35_yes": 0.47
-    },
-    "paper": {
-      "dimensions": {
-        "height": 900,
-        "width": 900,
-        "x": -200,
-        "y": 400
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"16_24_#default#\": 0.13,\n    \"30_24_#default#\": 0.43,\n    \"30_29_yes\": 0.5,\n    \"34_24_#default#\": 0.41,\n    \"34_35_yes\": 0.47\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 900,\n      \"width\": 900,\n      \"x\": -200,\n      \"y\": 400\n    }\n  }\n}"
 inputs:
 - key: Domain
   value:
@@ -387,15 +312,12 @@ inputs:
   required: false
   description: The domain name to enrich.
   playbookInputQuery:
-- description: |-
-    Define if you would like to use the !url command.
-    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
-    Possible values: True / False.
+- description: "Define if you would like to use the !url command.\nNote: This input should be used whenever there is no auto-extract enabled in the investigation flow.\nPossible values: True / False."
   key: UseReputationCommand
   playbookInputQuery:
   required: true
   value:
-    simple: "False"
+    simple: 'False'
 outputs:
 - contextPath: Domain
   description: The domain objects.
@@ -489,3 +411,4 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
+- platform

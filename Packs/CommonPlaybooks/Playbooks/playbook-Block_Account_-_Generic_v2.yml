@@ -3,52 +3,26 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block Account - Generic v2
-description: |-
-  This playbook blocks malicious usernames using all integrations that you have enabled.
-
-  Supported integrations for this playbook:
-  * Active Directory
-  * PAN-OS - This requires PAN-OS 9.1 or higher.
-  * SailPoint
-  * PingOne
-  * AWS IAM
-  * Clarizen IAM
-  * Envoy IAM
-  * ExceedLMS IAM
-  * Okta
-  * Microsoft Graph User (Azure Active Directory Users)
-  * Google Workspace Admin
-  * Slack IAM
-  * ServiceNow IAM
-  * Prisma Cloud IAM
-  * Zoom IAM
-  * Atlassian IAM
-  * GitHub IAM.
-starttaskid: "0"
+description: "This playbook blocks malicious usernames using all integrations that you have enabled.\n\nSupported integrations for this playbook:\n* Active Directory\n* PAN-OS - This requires PAN-OS 9.1 or higher.\n* SailPoint\n* PingOne\n* AWS IAM\n* Clarizen IAM\n* Envoy IAM\n* ExceedLMS IAM\n* Okta\n* Microsoft Graph User (Azure Active Directory Users)\n* Google Workspace Admin\n* Slack IAM\n* ServiceNow IAM\n* Prisma Cloud IAM\n* Zoom IAM\n* Atlassian IAM\n* GitHub IAM."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: cc38d57c-1f3a-4616-8fc3-b3d5b2beefb3
     type: start
     task:
       id: cc38d57c-1f3a-4616-8fc3-b3d5b2beefb3
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1700,
-          "y": -1450
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1700,\n    \"y\": -1450\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -56,8 +30,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 78bcaa68-2a3d-4805-8e25-1bee31249d8f
     type: title
     task:
@@ -66,17 +40,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1070,
-          "y": 1470
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1070,\n    \"y\": 1470\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -84,8 +52,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: df7e57df-4f26-4b41-8552-0d4068792d13
     type: title
     task:
@@ -94,37 +62,31 @@ tasks:
       name: Block accounts
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "17"
-      - "18"
-      - "19"
-      - "20"
-      - "21"
-      - "22"
-      - "23"
-      - "25"
-      - "24"
-      - "54"
-      - "56"
-      - "58"
-      - "60"
-      - "66"
-      - "68"
-      - "71"
-      - "64"
-      - "73"
+      - '17'
+      - '18'
+      - '19'
+      - '20'
+      - '21'
+      - '22'
+      - '23'
+      - '25'
+      - '24'
+      - '54'
+      - '56'
+      - '58'
+      - '60'
+      - '66'
+      - '68'
+      - '71'
+      - '64'
+      - '73'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1960,
-          "y": 410
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1960,\n    \"y\": 410\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -132,8 +94,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 84a222c3-d83f-4d9c-8f75-605f9c1cd233
     type: condition
     task:
@@ -143,29 +105,23 @@ tasks:
       description: Verify that the playbook input includes at least one username to block.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "39"
-      "yes":
-      - "38"
+      - '39'
+      yes:
+      - '38'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: inputs.Username
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1700,
-          "y": -1260
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1700,\n    \"y\": -1260\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -173,8 +129,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: d50b5c24-46e7-4b68-8082-632feb18733d
     type: regular
     task:
@@ -185,10 +141,10 @@ tasks:
       script: '|||pan-os-register-user-tag'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       Users:
         complex:
@@ -198,14 +154,8 @@ tasks:
         complex:
           root: inputs.Tag
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2330,
-          "y": 1090
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 2330,\n    \"y\": 1090\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -213,8 +163,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 134ffe20-63fc-486a-8a79-685e3d206ae8
     type: condition
     task:
@@ -224,29 +174,23 @@ tasks:
       description: Verify that the playbook input includes at least one tag to apply to the user.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "15"
+      - '2'
+      yes:
+      - '15'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: inputs.Tag
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2330,
-          "y": 920
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 2330,\n    \"y\": 920\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -254,8 +198,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: dd28a21a-8e77-4e94-8ebd-6b4dd2a40907
     type: title
     task:
@@ -264,20 +208,14 @@ tasks:
       name: OKTA
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1960,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1960,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -285,8 +223,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 253e9206-6499-4698-81bc-4f6b405723e9
     type: title
     task:
@@ -295,20 +233,14 @@ tasks:
       name: SailPoint
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -316,8 +248,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 4665f43b-c357-46ab-8658-1f5307d73e34
     type: title
     task:
@@ -326,20 +258,14 @@ tasks:
       name: AWS IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -220,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -220,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -347,8 +273,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 9f3e4789-ef65-4d8b-8142-b931aca2d1b8
     type: title
     task:
@@ -357,20 +283,14 @@ tasks:
       name: PingOne
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 210,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -378,8 +298,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 5af0265d-f69a-47ef-8fdd-8be726ab8812
     type: title
     task:
@@ -388,20 +308,14 @@ tasks:
       name: Clarizen IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -640,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -640,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -409,8 +323,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 8170d464-f524-484a-8578-d2d5c6b44c24
     type: title
     task:
@@ -419,20 +333,14 @@ tasks:
       name: Envoy IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1070,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1070,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -440,8 +348,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 9426248c-bc57-4e2a-898c-333c705fe7c9
     type: title
     task:
@@ -450,20 +358,14 @@ tasks:
       name: ExceedLMS IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1500,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1500,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -471,8 +373,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: e3d46f19-bf96-4280-887d-c746b0e95976
     type: title
     task:
@@ -481,20 +383,14 @@ tasks:
       name: PAN-OS
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2330,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 2330,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -502,8 +398,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: 00761e97-8a6e-48f4-85fb-d894509a2c17
     type: title
     task:
@@ -512,20 +408,14 @@ tasks:
       name: Microsoft Active Directory
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -533,8 +423,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: ca29fc92-0b56-4eca-8fb4-285bf732a419
     type: condition
     task:
@@ -545,26 +435,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: Okta IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1960,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1960,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -572,8 +456,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: 692fc977-5dff-49fa-8ef9-4c0c53979786
     type: condition
     task:
@@ -584,26 +468,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "75"
+      - '2'
+      yes:
+      - '75'
     scriptarguments:
       brandname:
         simple: SailPointIdentityIQ
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -611,8 +489,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: c00031c8-63dc-447a-8064-458b8b89c0b9
     type: condition
     task:
@@ -623,26 +501,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: AWS - IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -220,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -220,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -650,8 +522,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: 1dfdb5b5-b388-49f8-8778-b631675b5228
     type: condition
     task:
@@ -662,26 +534,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "34"
+      - '2'
+      yes:
+      - '34'
     scriptarguments:
       brandname:
         simple: PingOne
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 210,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -689,8 +555,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: 1e40e759-f2e0-46f7-8c4c-e6c305ada2fe
     type: condition
     task:
@@ -701,26 +567,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: ClarizenIAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -640,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -640,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -728,8 +588,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: e69ec334-a883-4519-8b53-2d12a380819d
     type: condition
     task:
@@ -740,26 +600,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: Envoy IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1070,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1070,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -767,8 +621,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: d7750a59-552e-4fbe-8d72-6a0dbf2c50b2
     type: condition
     task:
@@ -779,26 +633,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: ExceedLMS IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1500,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1500,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -806,8 +654,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: 85bde384-178d-44b1-8c73-5899e51cf664
     type: regular
     task:
@@ -818,22 +666,16 @@ tasks:
       script: '|||iam-disable-user'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       user-profile:
         simple: ${Blocklist.Final}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1280,
-          "y": 940
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1280,\n    \"y\": 940\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -841,8 +683,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: 08d5ce28-f0dd-4a81-889a-383591a50ad5
     type: regular
     task:
@@ -853,24 +695,18 @@ tasks:
       script: '|||pingone-deactivate-user'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       username:
         complex:
           root: Blocklist
           accessor: Final
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 210,
-          "y": 920
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 920\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -878,8 +714,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: 50b2030e-e402-47f1-86df-5b5f4e8e7077
     type: regular
     task:
@@ -890,24 +726,18 @@ tasks:
       script: '|||identityiq-disable-account'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       id:
         complex:
           root: IdentityIQ.Account
           accessor: id
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 1090
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 1090\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -915,8 +745,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     taskid: 90a2adf8-4f57-4b53-896d-44bddd4d064c
     type: condition
     task:
@@ -927,26 +757,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "16"
+      - '2'
+      yes:
+      - '16'
     scriptarguments:
       brandname:
         simple: Panorama
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2330,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 2330,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -954,8 +778,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: e31ad79c-5806-41f0-839b-f896c860d3cc
     type: condition
     task:
@@ -966,26 +790,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "76"
+      - '2'
+      yes:
+      - '76'
     scriptarguments:
       brandname:
         simple: Active Directory Query v2
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -993,8 +811,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
+  '38':
+    id: '38'
     taskid: c34085c0-1974-4153-8f36-fb22e4ba0c4e
     type: condition
     task:
@@ -1004,15 +822,15 @@ tasks:
       description: Check if manual verification is required before block
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "47"
-      "yes":
-      - "40"
+      - '47'
+      yes:
+      - '40'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -1021,16 +839,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1700,
-          "y": -1050
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1700,\n    \"y\": -1050\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1038,8 +850,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
+  '39':
+    id: '39'
     taskid: eda8a397-b0f5-4cb8-85a6-804bbbf59244
     type: title
     task:
@@ -1048,20 +860,14 @@ tasks:
       name: No User to be blocked
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -5370,
-          "y": 1105
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -5370,\n    \"y\": 1105\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1069,32 +875,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
+  '40':
+    id: '40'
     taskid: 90c4e379-c164-495b-8bd0-74e807433506
     type: regular
     task:
       id: 90c4e379-c164-495b-8bd0-74e807433506
       version: -1
       name: Set Naming Convention to a key
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "42"
+      - '42'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: checks.common
       value:
@@ -1114,14 +913,8 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2230,
-          "y": -880
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2230,\n    \"y\": -880\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1129,30 +922,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
+  '41':
+    id: '41'
     taskid: 603550b4-89d3-4df1-84d9-1eb2951e0871
     type: regular
     task:
       id: 603550b4-89d3-4df1-84d9-1eb2951e0871
       version: -1
       name: Identify Potential Sensitive Users
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "45"
-      - "43"
+      - '45'
+      - '43'
     scriptarguments:
       key:
         simple: Blocklist.Sensitive
@@ -1171,14 +957,8 @@ tasks:
                 iscontext: true
               ignorecase: true
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2230,
-          "y": -560
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2230,\n    \"y\": -560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1186,29 +966,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
+  '42':
+    id: '42'
     taskid: 93dc1c23-81e4-40fd-8f62-9f4290882421
     type: regular
     task:
       id: 93dc1c23-81e4-40fd-8f62-9f4290882421
       version: -1
       name: Set User to a potential block list
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
     scriptarguments:
       key:
         simple: Blocklist.Potential
@@ -1222,14 +995,8 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2230,
-          "y": -720
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2230,\n    \"y\": -720\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1237,8 +1004,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
+  '43':
+    id: '43'
     taskid: 39b3cf6c-5757-447b-8188-9ead6e21a445
     type: condition
     task:
@@ -1248,29 +1015,23 @@ tasks:
       description: Check if there are any sensitive users to block
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "45"
-      "yes":
-      - "44"
+      - '45'
+      yes:
+      - '44'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
             value:
               simple: Blocklist.Sensitive
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2670,
-          "y": -390
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2670,\n    \"y\": -390\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1278,32 +1039,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
+  '44':
+    id: '44'
     taskid: 6ab46eeb-8460-44ab-8b96-0c6a35e38581
     type: collection
     task:
       id: 6ab46eeb-8460-44ab-8b96-0c6a35e38581
       version: -1
       name: Ask the user for verification [Sensitive Users]
-      description: |-
-        Please note that in this form there are serval accounts that are listed as "Sensitive Accounts":
-        ${User.Sensetive}
+      description: "Please note that in this form there are serval accounts that are listed as \"Sensitive Accounts\":\n${User.Sensetive}"
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "52"
+      - '52'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2670,
-          "y": -190
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2670,\n    \"y\": -190\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1314,14 +1067,7 @@ tasks:
       subject:
         simple: Block Sensitive Account - User Verification Form
       body:
-        simple: |
-          <p>Dear XSOAR user,</p>
-          <p>This notification informs you that the following list of sensitive accounts will be blocked on your XSOAR's integrated IDP/IAM devices.</p>
-          <p><br />(<strong>Note</strong>: the Accounts will be set to disabled on those XSOAR integrated devices).</p>
-          <p>Also, <strong>please note</strong> that the following accounts are listed as <strong> "Sensitive Accounts" based on a naming convention </strong> mentioned in the playbook:</p>
-          <p>${Blocklist.Sensitive}</p>
-          <p>&nbsp;</p>
-          <p>For more information, click the link below.</p>
+        simple: "<p>Dear XSOAR user,</p>\n<p>This notification informs you that the following list of sensitive accounts will be blocked on your XSOAR's integrated IDP/IAM devices.</p>\n<p><br />(<strong>Note</strong>: the Accounts will be set to disabled on those XSOAR integrated devices).</p>\n<p>Also, <strong>please note</strong> that the following accounts are listed as <strong> \"Sensitive Accounts\" based on a naming convention </strong> mentioned in the playbook:</p>\n<p>${Blocklist.Sensitive}</p>\n<p>&nbsp;</p>\n<p>For more information, click the link below.</p>\n"
       methods:
       - email
       format: html
@@ -1335,8 +1081,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: 'Sensitive Users:'
         required: false
@@ -1346,45 +1092,37 @@ tasks:
         options: []
         optionsarg:
         - simple: ${Blocklist.Sensitive}
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: 'Which sensitive users you would like to Block?  Choose from the following lists :'
-      description: ""
-      sender: ""
+      description: ''
+      sender: ''
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
+  '45':
+    id: '45'
     taskid: 4d484404-eefc-4cf6-8f56-abdae89d61e6
     type: collection
     task:
       id: 4d484404-eefc-4cf6-8f56-abdae89d61e6
       version: -1
       name: Ask the user for verification [without Sensitive Users]
-      description: |-
-        Please note that in this form there are serval accounts that are listed as "Sensitive Accounts":
-        ${User.Sensetive}
+      description: "Please note that in this form there are serval accounts that are listed as \"Sensitive Accounts\":\n${User.Sensetive}"
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "52"
+      - '52'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2230,
-          "y": -190
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2230,\n    \"y\": -190\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1395,12 +1133,7 @@ tasks:
       subject:
         simple: Block Account - User Verification Form
       body:
-        simple: |
-          <p>Dear XSOAR user,</p>
-          <p>This notification informs you that the following list of accounts will be blocked on your XSOAR's integrated IDP/IAM devices.</p>
-          <p><br />(<strong>Note</strong>: the Accounts will be set to disabled on those XSOAR integrated devices).</p>
-          <p>&nbsp;</p>
-          <p>For more information, click the link below.</p>
+        simple: "<p>Dear XSOAR user,</p>\n<p>This notification informs you that the following list of accounts will be blocked on your XSOAR's integrated IDP/IAM devices.</p>\n<p><br />(<strong>Note</strong>: the Accounts will be set to disabled on those XSOAR integrated devices).</p>\n<p>&nbsp;</p>\n<p>For more information, click the link below.</p>\n"
       methods:
       - email
       format: html
@@ -1414,8 +1147,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: 'Users to be blocked:'
         required: false
@@ -1427,45 +1160,38 @@ tasks:
         - complex:
             root: Blocklist
             accessor: Potential
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: 'Which Users you would like to Block?  Choose from the following lists :'
-      description: ""
-      sender: ""
+      description: ''
+      sender: ''
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
+  '46':
+    id: '46'
     taskid: 9e174bd8-73a8-46ef-8a56-138a1cac0b61
     type: regular
     task:
       id: 9e174bd8-73a8-46ef-8a56-138a1cac0b61
       version: -1
       name: Set the final accounts list to be blocked
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: Blocklist.Final
       value:
@@ -1480,14 +1206,8 @@ tasks:
                   simple: Which sensitive users you would like to Block?  Choose from the following lists :.Answers.0
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2230,
-          "y": 170
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2230,\n    \"y\": 170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1495,46 +1215,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
+  '47':
+    id: '47'
     taskid: f97632fd-1653-4fda-8222-e8dbe5c36646
     type: regular
     task:
       id: f97632fd-1653-4fda-8222-e8dbe5c36646
       version: -1
       name: Set the final accounts list to be blocked
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: Blocklist.Final
       value:
         complex:
           root: inputs.Username
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1700,
-          "y": 170
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1700,\n    \"y\": 170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1542,8 +1249,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     taskid: f9188978-a51d-4e86-8420-1749db9f1d3b
     type: regular
     task:
@@ -1557,20 +1264,14 @@ tasks:
       brand: Active Directory Query v2
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       username:
         complex:
           root: UserAD
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 1290
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1050,\n    \"y\": 1290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1578,8 +1279,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "52":
-    id: "52"
+  '52':
+    id: '52'
     taskid: 64ddf917-048c-444b-8fea-b9529a3ad0b3
     type: condition
     task:
@@ -1589,15 +1290,15 @@ tasks:
       description: Check if the analyst selected any users to block
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "39"
-      "yes":
-      - "46"
+      - '39'
+      yes:
+      - '46'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1611,14 +1312,8 @@ tasks:
             value:
               simple: Which sensitive users you would like to Block?  Choose from the following lists :.Answers.0
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2230,
-          "y": -10
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2230,\n    \"y\": -10\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1626,8 +1321,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
+  '53':
+    id: '53'
     taskid: 8791822e-5e1e-4b28-82d9-a822aa17108d
     type: condition
     task:
@@ -1638,26 +1333,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: Slack IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2410,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2410,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1665,8 +1354,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
+  '54':
+    id: '54'
     taskid: e2aaa6e8-de1f-4399-8e89-2321fe4fa030
     type: title
     task:
@@ -1675,20 +1364,14 @@ tasks:
       name: Slack IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "53"
+      - '53'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2410,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2410,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1696,8 +1379,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
+  '55':
+    id: '55'
     taskid: e8b7f7a8-2b9c-44ef-8eff-ceb494799432
     type: condition
     task:
@@ -1708,26 +1391,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: ServiceNow IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2840,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2840,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1735,8 +1412,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
+  '56':
+    id: '56'
     taskid: 6a694bcc-610d-46c4-8d22-dec644076b78
     type: title
     task:
@@ -1745,20 +1422,14 @@ tasks:
       name: ServiceNow IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "55"
+      - '55'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2840,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -2840,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1766,8 +1437,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
+  '57':
+    id: '57'
     taskid: 6345f42c-51a8-401f-8099-ecea5a0403c4
     type: condition
     task:
@@ -1778,26 +1449,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: Salesforce IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3260,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -3260,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1805,8 +1470,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "58":
-    id: "58"
+  '58':
+    id: '58'
     taskid: dba2b9c1-cb47-41a9-8386-1de15a47de2d
     type: title
     task:
@@ -1815,20 +1480,14 @@ tasks:
       name: Salesforce IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "57"
+      - '57'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3260,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -3260,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1836,8 +1495,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "59":
-    id: "59"
+  '59':
+    id: '59'
     taskid: c6cb894b-65a5-4e85-87f4-debe4d8cdbfe
     type: condition
     task:
@@ -1848,26 +1507,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: PrismaCloud IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3690,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -3690,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1875,8 +1528,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "60":
-    id: "60"
+  '60':
+    id: '60'
     taskid: de7c1b4f-0ecc-4782-8346-50b679dac66b
     type: title
     task:
@@ -1885,20 +1538,14 @@ tasks:
       name: PrismaCloud IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "59"
+      - '59'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3690,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -3690,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1906,8 +1553,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
+  '63':
+    id: '63'
     taskid: 1a19cd62-eafa-4b66-80aa-b397a439f52c
     type: condition
     task:
@@ -1918,26 +1565,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "78"
+      - '2'
+      yes:
+      - '78'
     scriptarguments:
       brandname:
         simple: Microsoft Graph User
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1480,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1480,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1945,8 +1586,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
+  '64':
+    id: '64'
     taskid: 31d15f37-d89d-4d09-8009-2a60c76d0b5e
     type: title
     task:
@@ -1955,20 +1596,14 @@ tasks:
       name: Microsoft Graph User
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "63"
+      - '63'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1480,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1480,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1976,8 +1611,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "65":
-    id: "65"
+  '65':
+    id: '65'
     taskid: 31592372-486c-4648-8376-8889941df6c8
     type: condition
     task:
@@ -1988,26 +1623,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: Zoom_IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4120,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -4120,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2015,8 +1644,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
+  '66':
+    id: '66'
     taskid: b98574a0-93fc-423b-87e1-bf888db3881a
     type: title
     task:
@@ -2025,20 +1654,14 @@ tasks:
       name: Zoom IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "65"
+      - '65'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4120,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -4120,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2046,8 +1669,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "67":
-    id: "67"
+  '67':
+    id: '67'
     taskid: deb7235b-0e73-4aa7-8e3e-2b07ad73daf9
     type: condition
     task:
@@ -2058,26 +1681,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: Atlassian IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4550,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -4550,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2085,8 +1702,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
+  '68':
+    id: '68'
     taskid: 5e5c6e1e-8c3a-42b8-85bd-3646e9b01531
     type: title
     task:
@@ -2095,20 +1712,14 @@ tasks:
       name: Atlassian IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "67"
+      - '67'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4550,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -4550,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2116,38 +1727,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
+  '69':
+    id: '69'
     taskid: 909d3b40-e606-4225-8d09-a83ebdd33b79
     type: regular
     task:
       id: 909d3b40-e606-4225-8d09-a83ebdd33b79
       version: -1
       name: Microsoft Graph User - Disable Account
-      description: |-
-        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
-        but does not terminate an existing session. Supported only in a self deployed app flow with the
-        Permission: Directory.AccessAsUser.All(Delegated)
+      description: "Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,\nbut does not terminate an existing session. Supported only in a self deployed app flow with the\nPermission: Directory.AccessAsUser.All(Delegated)"
       script: '|||msgraph-user-account-disable'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       user:
         complex:
           root: UserMSGraph
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1480,
-          "y": 1290
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1480,\n    \"y\": 1290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2155,8 +1757,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "70":
-    id: "70"
+  '70':
+    id: '70'
     taskid: 909312b6-5f6e-451c-83dd-a00e31c49197
     type: condition
     task:
@@ -2167,26 +1769,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "33"
+      - '2'
+      yes:
+      - '33'
     scriptarguments:
       brandname:
         simple: GitHub IAM
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4970,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -4970,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2194,8 +1790,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "71":
-    id: "71"
+  '71':
+    id: '71'
     taskid: 4f6321ef-dfb9-41fd-8a72-61bea5cff007
     type: title
     task:
@@ -2204,20 +1800,14 @@ tasks:
       name: GitHub IAM
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "70"
+      - '70'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4970,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -4970,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2225,8 +1815,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "72":
-    id: "72"
+  '72':
+    id: '72'
     taskid: a274143d-2455-4679-8064-41a6cc01e1be
     type: condition
     task:
@@ -2237,26 +1827,20 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "74"
+      - '2'
+      yes:
+      - '74'
     scriptarguments:
       brandname:
         simple: GSuiteAdmin
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1900,
-          "y": 715
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1900,\n    \"y\": 715\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2264,8 +1848,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "73":
-    id: "73"
+  '73':
+    id: '73'
     taskid: fa1e6574-7969-4b44-8593-b2244060cebe
     type: title
     task:
@@ -2274,20 +1858,14 @@ tasks:
       name: Google Workspace Admin
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "72"
+      - '72'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1900,
-          "y": 555
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1900,\n    \"y\": 555\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2295,8 +1873,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "74":
-    id: "74"
+  '74':
+    id: '74'
     taskid: 128ca043-fa17-4ebf-82e1-ce3b4812de86
     type: regular
     task:
@@ -2307,26 +1885,20 @@ tasks:
       script: '|||gsuite-user-update'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       suspended:
-        simple: "true"
+        simple: 'true'
       user_key:
         complex:
           root: Blocklist
           accessor: Final
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1900,
-          "y": 920
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1900,\n    \"y\": 920\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2334,8 +1906,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "75":
-    id: "75"
+  '75':
+    id: '75'
     taskid: 4ebe9bf0-210f-4752-83d0-bb2e2a03262a
     type: regular
     task:
@@ -2346,24 +1918,18 @@ tasks:
       script: '|||identityiq-get-accounts'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     scriptarguments:
       display_name:
         complex:
           root: Blocklist
           accessor: Final
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 920
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 920\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2371,8 +1937,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "76":
-    id: "76"
+  '76':
+    id: '76'
     taskid: da02de44-c739-4db1-85bc-3c053f8aa183
     type: regular
     task:
@@ -2383,28 +1949,22 @@ tasks:
       script: '|||ad-get-user'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "77"
+      - '77'
     scriptarguments:
       extend-context:
         simple: UserAD=attributes.sAMAccountName
       ignore-outputs:
-        simple: "true"
+        simple: 'true'
       username:
         complex:
           root: Blocklist
           accessor: Final
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 920
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1050,\n    \"y\": 920\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2412,8 +1972,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "77":
-    id: "77"
+  '77':
+    id: '77'
     taskid: 419df6f0-2416-4a48-8124-eb64ce5da93a
     type: condition
     task:
@@ -2423,15 +1983,15 @@ tasks:
       description: Verify that the user exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "48"
+      - '2'
+      yes:
+      - '48'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -2440,14 +2000,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 1090
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1050,\n    \"y\": 1090\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2455,42 +2009,34 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "78":
-    id: "78"
+  '78':
+    id: '78'
     taskid: e56d753f-ac0c-417d-83b3-1eec253d740b
     type: regular
     task:
       id: e56d753f-ac0c-417d-83b3-1eec253d740b
       version: -1
       name: Microsoft Graph User - Get User
-      description: |-
-        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0.
-        Permissions: - User.Read (Delegated) - User.Read.All (Application).
+      description: "Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0.\nPermissions: - User.Read (Delegated) - User.Read.All (Application)."
       script: '|||msgraph-user-get'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "79"
+      - '79'
     scriptarguments:
       extend-context:
         simple: UserMSGraph=id
       ignore-outputs:
-        simple: "true"
+        simple: 'true'
       user:
         complex:
           root: Blocklist
           accessor: Final
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1480,
-          "y": 920
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1480,\n    \"y\": 920\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2498,8 +2044,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "79":
-    id: "79"
+  '79':
+    id: '79'
     taskid: 6a4ebfcb-e506-4333-81b5-8889065e2fbe
     type: condition
     task:
@@ -2509,15 +2055,15 @@ tasks:
       description: Verify that the user exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "69"
+      - '2'
+      yes:
+      - '69'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -2526,14 +2072,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1480,
-          "y": 1090
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1480,\n    \"y\": 1090\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2541,57 +2081,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "16_15_yes": 0.62,
-      "16_2_#default#": 0.1,
-      "26_2_#default#": 0.11,
-      "26_33_yes": 0.14,
-      "27_2_#default#": 0.1,
-      "28_2_#default#": 0.15,
-      "28_33_yes": 0.1,
-      "29_2_#default#": 0.11,
-      "29_34_yes": 0.36,
-      "30_2_#default#": 0.26,
-      "30_33_yes": 0.11,
-      "31_2_#default#": 0.27,
-      "31_33_yes": 0.12,
-      "32_2_#default#": 0.18,
-      "32_33_yes": 0.24,
-      "36_2_#default#": 0.1,
-      "37_2_#default#": 0.12,
-      "43_44_yes": 0.49,
-      "52_39_#default#": 0.2,
-      "53_2_#default#": 0.1,
-      "53_33_yes": 0.14,
-      "55_2_#default#": 0.1,
-      "55_33_yes": 0.21,
-      "57_2_#default#": 0.1,
-      "57_33_yes": 0.18,
-      "59_2_#default#": 0.1,
-      "59_33_yes": 0.14,
-      "63_2_#default#": 0.1,
-      "65_2_#default#": 0.1,
-      "65_33_yes": 0.1,
-      "67_2_#default#": 0.1,
-      "67_33_yes": 0.1,
-      "70_2_#default#": 0.1,
-      "70_33_yes": 0.1,
-      "72_2_#default#": 0.1,
-      "72_74_yes": 0.44,
-      "8_38_yes": 0.65,
-      "8_39_#default#": 0.13
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2985,
-        "width": 8080,
-        "x": -5370,
-        "y": -1450
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"16_15_yes\": 0.62,\n    \"16_2_#default#\": 0.1,\n    \"26_2_#default#\": 0.11,\n    \"26_33_yes\": 0.14,\n    \"27_2_#default#\": 0.1,\n    \"28_2_#default#\": 0.15,\n    \"28_33_yes\": 0.1,\n    \"29_2_#default#\": 0.11,\n    \"29_34_yes\": 0.36,\n    \"30_2_#default#\": 0.26,\n    \"30_33_yes\": 0.11,\n    \"31_2_#default#\": 0.27,\n    \"31_33_yes\": 0.12,\n    \"32_2_#default#\": 0.18,\n    \"32_33_yes\": 0.24,\n    \"36_2_#default#\": 0.1,\n    \"37_2_#default#\": 0.12,\n    \"43_44_yes\": 0.49,\n    \"52_39_#default#\": 0.2,\n    \"53_2_#default#\": 0.1,\n    \"53_33_yes\": 0.14,\n    \"55_2_#default#\": 0.1,\n    \"55_33_yes\": 0.21,\n    \"57_2_#default#\": 0.1,\n    \"57_33_yes\": 0.18,\n    \"59_2_#default#\": 0.1,\n    \"59_33_yes\": 0.14,\n    \"63_2_#default#\": 0.1,\n    \"65_2_#default#\": 0.1,\n    \"65_33_yes\": 0.1,\n    \"67_2_#default#\": 0.1,\n    \"67_33_yes\": 0.1,\n    \"70_2_#default#\": 0.1,\n    \"70_33_yes\": 0.1,\n    \"72_2_#default#\": 0.1,\n    \"72_74_yes\": 0.44,\n    \"8_38_yes\": 0.65,\n    \"8_39_#default#\": 0.13\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2985,\n      \"width\": 8080,\n      \"x\": -5370,\n      \"y\": -1450\n    }\n  }\n}"
 inputs:
 - key: Username
   value: {}
@@ -2611,11 +2101,9 @@ inputs:
   playbookInputQuery:
 - key: UserVerification
   value:
-    simple: "True"
+    simple: 'True'
   required: false
-  description: |-
-    Possible values:True/False. Default:True.
-    Specify if User Verification is Requrired
+  description: "Possible values:True/False. Default:True.\nSpecify if User Verification is Requrired"
   playbookInputQuery:
 outputs:
 - contextPath: Blocklist.Final
@@ -2627,3 +2115,4 @@ fromversion: 6.5.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform

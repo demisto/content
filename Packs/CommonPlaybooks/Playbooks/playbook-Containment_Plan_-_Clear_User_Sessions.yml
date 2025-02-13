@@ -1,36 +1,26 @@
 id: Containment Plan - Clear User Sessions
 version: -1
 name: Containment Plan - Clear User Sessions
-description: |-
-  ## Containment Plan - Clear User Sessions
-
-  This playbook is a sub-playbook within the containment plan playbook.
-  The playbook uses the 'Okta v2' and 'MSGraph User' integrations to clear user sessions.
-starttaskid: "0"
+description: "## Containment Plan - Clear User Sessions\n\nThis playbook is a sub-playbook within the containment plan playbook.\nThe playbook uses the 'Okta v2' and 'MSGraph User' integrations to clear user sessions."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: f2a578bb-7b26-4477-8391-2e40e77fb9d5
     type: start
     task:
       id: f2a578bb-7b26-4477-8391-2e40e77fb9d5
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 770,
-          "y": -150
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 770,\n    \"y\": -150\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -38,39 +28,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 965b6bb7-8584-4ee9-86be-705ca7951fba
     type: regular
     task:
       id: 965b6bb7-8584-4ee9-86be-705ca7951fba
       version: -1
       name: Okta clear user sessions
-      description: |-
-        Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
-        For more information and examples:
-        https://developer.okta.com/docs/reference/api/users/#user-sessions
+      description: "Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.\nFor more information and examples:\nhttps://developer.okta.com/docs/reference/api/users/#user-sessions"
       script: '|||okta-clear-user-sessions'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       userId:
         complex:
           root: Account
           accessor: ID
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": 985
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 530,\n    \"y\": 985\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -78,8 +59,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 581b7da6-4c88-41a6-8175-a2116add396c
     type: title
     task:
@@ -88,17 +69,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 770,
-          "y": 1320
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 770,\n    \"y\": 1320\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -106,8 +81,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: ea29c7c0-e180-4c2e-8593-3948400c532e
     type: regular
     task:
@@ -118,22 +93,16 @@ tasks:
       script: '|||okta-get-user'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       username:
         simple: ${OktaUsersSessionToClear}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": 590
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 530,\n    \"y\": 590\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -141,8 +110,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: bda090c7-6749-46e5-8453-31f56d8b778c
     type: regular
     task:
@@ -156,7 +125,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       key:
         simple: UsersSessionCleared
@@ -165,14 +134,8 @@ tasks:
           root: Account
           accessor: Username
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": 1145
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 530,\n    \"y\": 1145\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -180,8 +143,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: cceb9ed8-97d2-4b2a-8688-c02b46be05a6
     type: regular
     task:
@@ -192,10 +155,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       key:
         simple: OktaUsersSessionToClear
@@ -224,14 +187,8 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": 410
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 530,\n    \"y\": 410\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -239,8 +196,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 4025c083-2630-4171-889e-5f05b1fc51eb
     type: condition
     task:
@@ -251,24 +208,18 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "11"
+      - '2'
+      yes:
+      - '11'
     scriptarguments:
       brandname:
         simple: Okta v2
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": 210
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 530,\n    \"y\": 210\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -276,8 +227,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: f1d3409f-55f4-4804-8a48-354971cae04e
     type: condition
     task:
@@ -287,16 +238,16 @@ tasks:
       description: Whether to clear the user sessions based on the input values.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "15"
-      - "18"
+      - '2'
+      yes:
+      - '15'
+      - '18'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -306,7 +257,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
       - - operator: isNotEmpty
           left:
@@ -314,14 +265,8 @@ tasks:
               complex:
                 root: inputs.Username
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 770,
-          "y": 0
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 770,\n    \"y\": 0\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -329,8 +274,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 64c30075-eba8-4222-8251-cf075b841898
     type: condition
     task:
@@ -341,24 +286,18 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "27"
+      - '2'
+      yes:
+      - '27'
     scriptarguments:
       brandname:
         simple: Microsoft Graph User
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1010,
-          "y": 210
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1010,\n    \"y\": 210\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -366,36 +305,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: f0ed1f31-5552-423b-8d43-44a4e3b69879
     type: regular
     task:
       id: f0ed1f31-5552-423b-8d43-44a4e3b69879
       version: -1
       name: Get MsGraph user ID
-      description: |-
-        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-        Permissions: - User.Read (Delegated) - User.Read.All (Application).
+      description: "Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).\nPermissions: - User.Read (Delegated) - User.Read.All (Application)."
       script: '|||msgraph-user-get'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     scriptarguments:
       user:
         simple: ${MsGraphUsersSessionToClear}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1010,
-          "y": 590
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1010,\n    \"y\": 590\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -403,36 +334,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: c82fc95c-577d-407a-8e4c-127b17c05843
     type: regular
     task:
       id: c82fc95c-577d-407a-8e4c-127b17c05843
       version: -1
       name: MSGraph clear user sessions
-      description: |-
-        Revoke a user session - Invalidates all the refresh tokens issued to applications for a user.
-        Permission: Directory.AccessAsUser.All(Delegated).
+      description: "Revoke a user session - Invalidates all the refresh tokens issued to applications for a user.\nPermission: Directory.AccessAsUser.All(Delegated)."
       script: '|||msgraph-user-session-revoke'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       user:
         simple: ${MSGraphUser.ID}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1010,
-          "y": 985
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1010,\n    \"y\": 985\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -440,8 +363,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: aaafcc54-e334-42a5-8a5c-f4dea1d0c158
     type: regular
     task:
@@ -455,21 +378,15 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       key:
         simple: UsersSessionCleared
       value:
         simple: ${MSGraphUser.UserPrincipalName}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1010,
-          "y": 1145
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1010,\n    \"y\": 1145\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -477,8 +394,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 4655db74-8104-4510-88b0-d9a081911b34
     type: condition
     task:
@@ -488,15 +405,15 @@ tasks:
       description: Verify that the user exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "21"
+      - '2'
+      yes:
+      - '21'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -505,14 +422,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1010,
-          "y": 785
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1010,\n    \"y\": 785\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -520,8 +431,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: c1ba5bf5-e37f-41ee-8392-7709acc40e8f
     type: condition
     task:
@@ -531,15 +442,15 @@ tasks:
       description: Verify that the user exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "1"
+      - '2'
+      yes:
+      - '1'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -560,14 +471,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": 785
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 530,\n    \"y\": 785\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -575,8 +480,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: 2fd929ed-f77b-49d3-8ec5-9ac7e37a2a47
     type: regular
     task:
@@ -587,10 +492,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     scriptarguments:
       key:
         simple: MsGraphUsersSessionToClear
@@ -619,14 +524,8 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1010,
-          "y": 410
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1010,\n    \"y\": 410\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -635,30 +534,11 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
 system: true
-view: |-
-  {
-    "linkLabelsPosition": {
-      "15_2_#default#": 0.15,
-      "17_15_yes": 0.48,
-      "17_2_#default#": 0.11,
-      "18_2_#default#": 0.16,
-      "23_2_#default#": 0.25,
-      "25_1_yes": 0.45,
-      "25_2_#default#": 0.33
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1535,
-        "width": 860,
-        "x": 530,
-        "y": -150
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"15_2_#default#\": 0.15,\n    \"17_15_yes\": 0.48,\n    \"17_2_#default#\": 0.11,\n    \"18_2_#default#\": 0.16,\n    \"23_2_#default#\": 0.25,\n    \"25_1_yes\": 0.45,\n    \"25_2_#default#\": 0.33\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1535,\n      \"width\": 860,\n      \"x\": 530,\n      \"y\": -150\n    }\n  }\n}"
 inputs:
 - key: ClearUserSessions
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to 'True' to clear the user active sessions.
   playbookInputQuery:
@@ -689,3 +569,4 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
+- platform

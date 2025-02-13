@@ -1,41 +1,26 @@
 id: Ransomware Enrich and Contain
 version: -1
 name: Ransomware Enrich and Contain
-description: |-
-  This playbook is responsible for ransomware alert data enrichment and response.
-  The playbook executes the following:
-
-  1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible.
-
-  2.Retrieves the WildFire sandbox report and extract the indicators within it.
-      * The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation.
-
-  3.Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints.
-starttaskid: "0"
+description: "This playbook is responsible for ransomware alert data enrichment and response.\nThe playbook executes the following:\n\n1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible.\n\n2.Retrieves the WildFire sandbox report and extract the indicators within it.\n    * The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation.\n\n3.Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: b971d934-f80f-4986-8217-dabc32a749d1
     type: start
     task:
       id: b971d934-f80f-4986-8217-dabc32a749d1
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": -890
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": -890\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -43,8 +28,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: b9facc01-0c99-441d-8ed2-0d519586b8f8
     type: title
     task:
@@ -53,20 +38,14 @@ tasks:
       name: Check Remote Attacker
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": -755
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": -755\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -74,8 +53,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: af3e825a-a69f-4e5f-8ffd-c96a1c525074
     type: condition
     task:
@@ -85,15 +64,15 @@ tasks:
       description: Whether the attack has been made by a remote host.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "26"
-      "yes":
-      - "34"
+      - '26'
+      yes:
+      - '34'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -102,14 +81,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": -630
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": -630\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -117,8 +90,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 9fb633f9-7d1a-4793-8a8c-116e8a609a49
     type: condition
     task:
@@ -128,15 +101,15 @@ tasks:
       description: Whether to isolate the remote host.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "26"
-      "yes":
-      - "37"
+      - '26'
+      yes:
+      - '37'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -146,16 +119,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": -310
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": -310\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -163,8 +130,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 25f7c2e8-f0e2-4ac5-81e8-78eb6cacc629
     type: regular
     task:
@@ -175,24 +142,18 @@ tasks:
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       fromdate:
         simple: 2 hours ago
       query:
         simple: initiatorsha256:${inputs.FileSHA256} OR remoteip:${alert.remoteip}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 2190
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 2190\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -200,8 +161,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: d48b844a-9b30-4016-8474-e22a04cc8b79
     type: condition
     task:
@@ -211,15 +172,15 @@ tasks:
       description: Checks if relevant alerts were found for the IoCs search.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "24"
-      "yes":
-      - "22"
+      - '24'
+      yes:
+      - '22'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -229,14 +190,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 2340
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 2340\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -244,8 +199,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 5a69845e-e43b-470b-88a5-3d883554565f
     type: regular
     task:
@@ -259,7 +214,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     scriptarguments:
       text:
         complex:
@@ -298,14 +253,8 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 1575
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 1575\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -313,8 +262,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: e2f8c1e7-f9ec-4433-8a73-7ca0aa676328
     type: condition
     task:
@@ -324,15 +273,15 @@ tasks:
       description: Whether to contain the identified endpoints.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "24"
-      "yes":
-      - "23"
+      - '24'
+      yes:
+      - '23'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -342,16 +291,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 2510
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 2510\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -359,79 +302,64 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: dc0afbc5-f8d4-4ea4-8a24-bfafcf52a7c1
     type: playbook
     task:
       id: dc0afbc5-f8d4-4ea4-8a24-bfafcf52a7c1
       version: -1
       name: Containment Plan
-      description: |-
-        This playbook handles all the containment actions available with Cortex XSIAM.
-        The playbook allows you to contain the alert with one of the following tasks:
-        * Isolate endpoint
-        * Disable account
-        * Quarantine file
-        * Block indicators
-        * Clear user session (currently, the playbook supports only Okta)
-
-        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
+      description: "This playbook handles all the containment actions available with Cortex XSIAM.\nThe playbook allows you to contain the alert with one of the following tasks:\n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nThe playbook inputs allows you to manipulate the execution flow. Review the inputs description."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       AutoContainment:
-        simple: "True"
+        simple: 'True'
       BlockIndicators:
-        simple: "False"
+        simple: 'False'
       ClearUserSessions:
-        simple: "False"
+        simple: 'False'
       EndpointID:
         complex:
           root: foundIncidents.CustomFields
           accessor: agentid
       FileContainment:
-        simple: "False"
+        simple: 'False'
       FileRemediation:
         simple: Quarantine
       HostContainment:
-        simple: "True"
+        simple: 'True'
       IAMUserDomain:
         simple: ''
       UserContainment:
-        simple: "False"
+        simple: 'False'
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
       scriptArguments:
         BlockIndicators:
-          simple: "True"
+          simple: 'True'
         ContainmentType:
           simple: Auto
         EndpointContainment:
-          simple: "True"
+          simple: 'True'
         FileContainment:
-          simple: "False"
+          simple: 'False'
         ScheduledTaskConatinment:
-          simple: "False"
+          simple: 'False'
         UserContainment:
-          simple: "False"
-      exitCondition: ""
+          simple: 'False'
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 2680
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 2680\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -439,8 +367,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 1cf031e6-9fd9-4894-8b3b-f4934aa23f65
     type: title
     task:
@@ -449,17 +377,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 2840
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 2840\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -467,8 +389,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: 99af3005-a3a7-4d0b-8aba-06e587a9d1ad
     type: title
     task:
@@ -477,20 +399,14 @@ tasks:
       name: Detonation
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 375
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 375\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -498,8 +414,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: ade305d6-da72-4303-8d53-e61c6461da53
     type: regular
     task:
@@ -510,10 +426,10 @@ tasks:
       script: '|||core-retrieve-files'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
     scriptarguments:
       endpoint_ids:
         complex:
@@ -524,14 +440,8 @@ tasks:
           root: alert
           accessor: initiatorpath
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 850
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 850\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -539,8 +449,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: a6949390-5ec2-4703-8f15-f52cbff129ff
     type: condition
     task:
@@ -550,15 +460,15 @@ tasks:
       description: Whether to detonate the fetched ransomware file.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "21"
-      "yes":
-      - "44"
+      - '21'
+      yes:
+      - '44'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -568,16 +478,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 1200
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 1200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -585,8 +489,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: 15f199c3-7100-484e-82b5-21fd628f7087
     type: regular
     task:
@@ -597,13 +501,13 @@ tasks:
       script: '|||wildfire-report'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     scriptarguments:
       extended_data:
-        simple: "true"
+        simple: 'true'
       format:
         simple: pdf
       sha256:
@@ -611,17 +515,11 @@ tasks:
           root: alert
           accessor: initiatorsha256
       verbose:
-        simple: "true"
+        simple: 'true'
     reputationcalc: 2
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 510
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 510\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -629,8 +527,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: 4a16fea7-a2c4-4a6a-8fd8-58c02e95bd16
     type: condition
     task:
@@ -640,15 +538,15 @@ tasks:
       description: Checks if a report was found for the ransomware SHA256.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "27"
-      "yes":
-      - "21"
+      - '27'
+      yes:
+      - '21'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -659,14 +557,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 670
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 670\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -674,8 +566,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: c074ea2f-9389-402e-826a-ed1bd9ba7d0f
     type: regular
     task:
@@ -686,24 +578,18 @@ tasks:
       script: '|||core-retrieve-file-details'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     scriptarguments:
       action_id:
         complex:
           root: Core.RetrievedFiles
           accessor: action_id
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 1020
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 1020\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -711,8 +597,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: b354207a-e502-48a3-8b4d-81cb2606d5a8
     type: regular
     task:
@@ -723,23 +609,17 @@ tasks:
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       ip_list:
         complex:
           root: alert
           accessor: remoteip
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": -480
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": -480\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -747,8 +627,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: 28922639-6ad8-4bf1-8aba-df6392955d35
     type: condition
     task:
@@ -759,25 +639,19 @@ tasks:
       scriptName: isError
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "26"
-      "yes":
-      - "36"
+      no:
+      - '26'
+      yes:
+      - '36'
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 30
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 30\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -785,8 +659,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     taskid: 1a61ccc8-5920-43d6-80da-7325d4551d4d
     type: regular
     task:
@@ -796,18 +670,12 @@ tasks:
       description: A manual containment is needed for the remote attacker.
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -930,
-          "y": 200
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -930,\n    \"y\": 200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -815,8 +683,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: 8bbbd1a9-e3d0-449d-8ced-8c06e58a815a
     type: regular
     task:
@@ -827,10 +695,10 @@ tasks:
       script: '|||core-isolate-endpoint'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     scriptarguments:
       endpoint_id:
         complex:
@@ -838,14 +706,8 @@ tasks:
           accessor: endpoint_id
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": -130
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": -130\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -853,8 +715,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
+  '38':
+    id: '38'
     taskid: 63a86244-5bbc-4a15-862a-e7f4dd806bc6
     type: title
     task:
@@ -863,20 +725,14 @@ tasks:
       name: Determine Scope
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 2060
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 2060\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -884,8 +740,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
+  '39':
+    id: '39'
     taskid: 5261efef-ab21-4c55-88e4-2ac0952e9682
     type: title
     task:
@@ -898,19 +754,13 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "40"
-      - "41"
-      - "42"
-      - "43"
+      - '40'
+      - '41'
+      - '42'
+      - '43'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -520,
-          "y": 1740
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -520,\n    \"y\": 1740\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -918,8 +768,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
+  '40':
+    id: '40'
     taskid: 7999a5a6-6455-47a2-8cb8-a9df66b17e2c
     type: regular
     task:
@@ -930,10 +780,10 @@ tasks:
       script: '|||ip'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     scriptarguments:
       ip:
         complex:
@@ -942,14 +792,8 @@ tasks:
     reputationcalc: 1
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1170,
-          "y": 1880
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1170,\n    \"y\": 1880\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -957,8 +801,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
+  '41':
+    id: '41'
     taskid: 5425931a-6e34-446d-82ec-667e922d45f9
     type: regular
     task:
@@ -969,10 +813,10 @@ tasks:
       script: '|||domain'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     scriptarguments:
       domain:
         complex:
@@ -981,14 +825,8 @@ tasks:
     reputationcalc: 1
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -740,
-          "y": 1880
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -740,\n    \"y\": 1880\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -996,8 +834,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
+  '42':
+    id: '42'
     taskid: 5db585b3-0fa9-4242-8c5f-f8c65d6f2426
     type: regular
     task:
@@ -1008,10 +846,10 @@ tasks:
       script: '|||url'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     scriptarguments:
       url:
         complex:
@@ -1020,14 +858,8 @@ tasks:
     reputationcalc: 1
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -300,
-          "y": 1880
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -300,\n    \"y\": 1880\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1035,8 +867,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
+  '43':
+    id: '43'
     taskid: e1976d83-f010-4d58-8cfd-42cf6bb2c124
     type: regular
     task:
@@ -1047,10 +879,10 @@ tasks:
       script: '|||file'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     scriptarguments:
       file:
         complex:
@@ -1059,14 +891,8 @@ tasks:
     reputationcalc: 1
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 130,
-          "y": 1880
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 130,\n    \"y\": 1880\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1074,28 +900,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
+  '44':
+    id: '44'
     taskid: 2ba16adb-1683-409a-81be-59ed83cb7bbc
     type: playbook
     task:
       id: 2ba16adb-1683-409a-81be-59ed83cb7bbc
       version: -1
       name: WildFire - Detonate file v2
-      description: |-
-        Detonate one or more files using the Wildfire v2 integration. This playbook
-        returns relevant reports to the War Room and file reputations to the context data.
-        The detonation supports the following file types -
-        APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
-
-        Note: Base64 encoded files are currently not supported.
+      description: "Detonate one or more files using the Wildfire v2 integration. This playbook\nreturns relevant reports to the War Room and file reputations to the context data.\nThe detonation supports the following file types -\nAPK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.\n\nNote: Base64 encoded files are currently not supported."
       playbookName: WildFire - Detonate file v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     scriptarguments:
       File:
         complex:
@@ -1103,23 +923,17 @@ tasks:
           transformers:
           - operator: uniq
       Interval:
-        simple: "1"
+        simple: '1'
       Timeout:
-        simple: "8"
+        simple: '8'
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": -770,
-          "y": 1400
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -770,\n    \"y\": 1400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1127,36 +941,17 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "19_22_yes": 0.45,
-      "22_23_yes": 0.41,
-      "28_21_#default#": 0.5,
-      "28_29_yes": 0.55,
-      "31_21_yes": 0.37,
-      "35_26_no": 0.45,
-      "8_26_#default#": 0.31
-    },
-    "paper": {
-      "dimensions": {
-        "height": 3795,
-        "width": 1680,
-        "x": -1170,
-        "y": -890
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"19_22_yes\": 0.45,\n    \"22_23_yes\": 0.41,\n    \"28_21_#default#\": 0.5,\n    \"28_29_yes\": 0.55,\n    \"31_21_yes\": 0.37,\n    \"35_26_no\": 0.45,\n    \"8_26_#default#\": 0.31\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3795,\n      \"width\": 1680,\n      \"x\": -1170,\n      \"y\": -890\n    }\n  }\n}"
 inputs:
 - key: isolateRemoteAttacker
   value:
-    simple: "true"
+    simple: 'true'
   required: false
   description: Whether to isolate the remote attacker host.
   playbookInputQuery:
 - key: isolateSimilarEndpoints
   value:
-    simple: "false"
+    simple: 'false'
   required: false
   description: Whether to isolate endpoints which has been detected with the alert IoCs.
   playbookInputQuery:
@@ -1170,14 +965,14 @@ inputs:
   playbookInputQuery:
 - key: detonateRansomFile
   value:
-    simple: "True"
+    simple: 'True'
   required: false
-  description: |-
-    Whether to detonate the ransomware file in sandbox, Set to True to enable file detonation and False to disable it.
-    By default is set to True
+  description: "Whether to detonate the ransomware file in sandbox, Set to True to enable file detonation and False to disable it.\nBy default is set to True"
   playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.6.0

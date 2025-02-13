@@ -3,44 +3,38 @@ version: -1
 fromversion: 5.0.0
 name: Entity Enrichment - Generic v2
 description: Enrich entities using one or more integrations
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
     type: start
     task:
       id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "16"
-      - "18"
-      - "19"
-      - "22"
-      - "23"
+      - '16'
+      - '18'
+      - '19'
+      - '22'
+      - '23'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 70
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 280,\n    \"y\": 70\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 38007764-1687-47b1-8490-0f3cded9dc95
     type: title
     task:
@@ -49,47 +43,34 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 871
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 280,\n    \"y\": 871\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 79119615-b605-486c-8592-d84ab35523d3
     type: playbook
     task:
       id: 79119615-b605-486c-8592-d84ab35523d3
       version: -1
       name: IP Enrichment - Generic v2
-      description: |-
-        Enrich IP addresses using one or more integrations.
-
-        - Resolve IP addresses to hostnames (DNS)
-        - Provide threat information
-        - IP address Reputation using !ip command
-        - Separate internal and external IP addresses
-        - For internal IP addresses, get host information
+      description: "Enrich IP addresses using one or more integrations.\n\n- Resolve IP addresses to hostnames (DNS)\n- Provide threat information\n- IP address Reputation using !ip command\n- Separate internal and external IP addresses\n- For internal IP addresses, get host information"
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       IP:
         complex:
@@ -110,44 +91,34 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 225
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 225\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 6b49c26d-0f94-4a7d-82f3-cb91ec5d4530
     type: playbook
     task:
       id: 6b49c26d-0f94-4a7d-82f3-cb91ec5d4530
       version: -1
       name: File Enrichment - Generic v2
-      description: |-
-        Enrich a file using one or more integrations.
-
-        - Provide threat information
-        - File Reputation using !file command
+      description: "Enrich a file using one or more integrations.\n\n- Provide threat information\n- File Reputation using !file command"
       playbookName: File Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       MD5:
         complex:
@@ -170,102 +141,79 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 225
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 225\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 92056557-239f-490a-8376-a4a0f52e6d66
     type: playbook
     task:
       id: 92056557-239f-490a-8376-a4a0f52e6d66
       version: -1
       name: URL Enrichment - Generic v2
-      description: |-
-        Enrich URLs using one or more integrations.
-
-        URL enrichment includes:
-        * SSL verification for URLs
-        * Threat information
-        * Providing of URL screenshots
-        * URL Reputation using !url
+      description: "Enrich URLs using one or more integrations.\n\nURL enrichment includes:\n* SSL verification for URLs\n* Threat information\n* Providing of URL screenshots\n* URL Reputation using !url"
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
-      - "25"
+      - '15'
+      - '25'
     scriptarguments:
       Rasterize:
-        simple: "True"
+        simple: 'True'
       URL:
         complex:
           root: inputs.URL
           transformers:
           - operator: uniq
       VerifyURL:
-        simple: "False"
+        simple: 'False'
       UseReputationCommand:
         complex:
           root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 386
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 386\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 7578f493-8243-47c0-86aa-ec1e24c752aa
     type: playbook
     task:
       id: 7578f493-8243-47c0-86aa-ec1e24c752aa
       version: -1
       name: Domain Enrichment - Generic v2
-      description: |-
-        Enrich domains using one or more integrations.
-        Domain enrichment includes:
-        * Threat information
-        * Domain reputation using !domain command
+      description: "Enrich domains using one or more integrations.\nDomain enrichment includes:\n* Threat information\n* Domain reputation using !domain command"
       playbookName: Domain Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       Domain:
         complex:
@@ -278,45 +226,35 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 700
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 700\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 3ee11f48-e5f2-472f-8911-2c0b20993cca
     type: playbook
     task:
       id: 3ee11f48-e5f2-472f-8911-2c0b20993cca
       version: -1
       name: Email Address Enrichment - Generic v2.1
-      description: |-
-        Enrich email addresses.
-        - Get information from Active Directory for internal addresses
-        - Get the domain-squatting reputation for external addresses
-        - Email address reputation using !email command
+      description: "Enrich email addresses.\n- Get information from Active Directory for internal addresses\n- Get the domain-squatting reputation for external addresses\n- Email address reputation using !email command"
       playbookName: Email Address Enrichment - Generic v2.1
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
-      - "24"
+      - '15'
+      - '24'
     scriptarguments:
       Domain:
         complex:
@@ -339,52 +277,34 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 386
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 386\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 3f3e5655-01ed-4fd4-8509-fd6a78f80835
     type: playbook
     task:
       id: 3f3e5655-01ed-4fd4-8509-fd6a78f80835
       version: -1
       name: Account Enrichment - Generic v2.1
-      description: |-
-        Enrich accounts using one or more integrations.
-        Supported integrations:
-        - Active Directory
-        - Microsoft Graph User
-        - SailPoint IdentityNow
-        - SailPoint IdentityIQ
-        - PingOne
-        - Okta
-        - AWS IAM
-        - Cortex XDR (account enrichment and reputation)
-
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      description: "Enrich accounts using one or more integrations.\nSupported integrations:\n- Active Directory\n- Microsoft Graph User\n- SailPoint IdentityNow\n- SailPoint IdentityIQ\n- PingOne\n- Okta\n- AWS IAM\n- Cortex XDR (account enrichment and reputation)\n\nAlso, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations."
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       Username:
         complex:
@@ -394,50 +314,34 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 545
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 545\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: a8e9a8ae-1a6f-4425-8de8-3bc133b809dc
     type: playbook
     task:
       id: a8e9a8ae-1a6f-4425-8de8-3bc133b809dc
       version: -1
       name: Endpoint Enrichment - Generic v2.1
-      description: |-
-        Enrich an endpoint by hostname using one or more integrations.
-        Supported integrations:
-        - Active Directory Query v2
-        - McAfee ePO v2
-        - VMware Carbon Black EDR v2
-        - Cylance Protect v2
-        - CrowdStrike Falcon
-        - ExtraHop Reveal(x)
-        - Cortex XDR / Core (endpoint enrichment, reputation and risk)
-        - Endpoint reputation using !endpoint command.
+      description: "Enrich an endpoint by hostname using one or more integrations.\nSupported integrations:\n- Active Directory Query v2\n- McAfee ePO v2\n- VMware Carbon Black EDR v2\n- Cylance Protect v2\n- CrowdStrike Falcon\n- ExtraHop Reveal(x)\n- Cortex XDR / Core (endpoint enrichment, reputation and risk)\n- Endpoint reputation using !endpoint command."
       playbookName: Endpoint Enrichment - Generic v2.1
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       Hostname:
         complex:
@@ -450,36 +354,19 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 545
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 545\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 866,
-        "width": 800,
-        "x": 70,
-        "y": 70
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 866,\n      \"width\": 800,\n      \"x\": 70,\n      \"y\": 70\n    }\n  }\n}"
 inputs:
 - key: IP
   value:
@@ -597,7 +484,7 @@ inputs:
   playbookInputQuery:
 - key: ResolveIP
   value:
-    simple: "False"
+    simple: 'False'
   required: false
   description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. You can set this to either True or False.
   playbookInputQuery:
@@ -608,13 +495,9 @@ inputs:
   playbookInputQuery:
 - key: UseReputationCommand
   value:
-    simple: "False"
+    simple: 'False'
   required: true
-  description: |-
-    Define whether you wish to use the reputation command during the enrichment process.
-    Note: This input should be used whenever auto-extract is not enabled in the investigation flow.
-    The default value is false
-    Possible values: True / False.
+  description: "Define whether you wish to use the reputation command during the enrichment process.\nNote: This input should be used whenever auto-extract is not enabled in the investigation flow.\nThe default value is false\nPossible values: True / False."
   playbookInputQuery:
 outputs:
 - contextPath: IP
@@ -1347,11 +1230,7 @@ outputs:
   description: Boolean representing sensor-reported isolation status.
   type: boolean
 - contextPath: CarbonBlackEDR.Sensor.event_log_flush_time
-  description: |-
-    If event_log_flush_time is set, the server will instruct the sensor to immediately
-    send all data before this date, ignoring all other throttling mechanisms.
-    To force a host current, set this value to a value far in the future.
-    When the sensor has finished sending its queued data, this value will be null.
+  description: "If event_log_flush_time is set, the server will instruct the sensor to immediately\nsend all data before this date, ignoring all other throttling mechanisms.\nTo force a host current, set this value to a value far in the future.\nWhen the sensor has finished sending its queued data, this value will be null."
   type: string
 - contextPath: CarbonBlackEDR.Sensor.computer_dns_name
   description: The DNS name of the endpoint on which the sensor is installed.
@@ -1632,5 +1511,6 @@ outputs:
 tests:
 - no test - each enrichment sub-playbook has or will have its own test
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform

@@ -1,0 +1,14 @@
+{
+    "core_packs_list": [
+        "Base",
+        "CommonPlaybooks",
+        "CommonScripts",
+        "Core"
+    ],
+    "update_core_packs_list": [
+        "Base",
+        "CommonPlaybooks",
+        "CommonScripts",
+        "Core"
+    ]
+  }

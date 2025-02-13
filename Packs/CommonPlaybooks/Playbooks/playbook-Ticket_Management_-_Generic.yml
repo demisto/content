@@ -2,31 +2,25 @@ id: Ticket Management - Generic
 version: -1
 name: Ticket Management - Generic
 description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`"
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 8e482cde-8abb-4c9d-86a5-15c8ce3f7aa7
     type: start
     task:
       id: 8e482cde-8abb-4c9d-86a5-15c8ce3f7aa7
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -280
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": -280\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -34,22 +28,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: f9e4560c-d621-4bf8-8849-f00beaa70d70
     type: playbook
     task:
       id: f9e4560c-d621-4bf8-8849-f00beaa70d70
       version: -1
       name: ServiceNow - Ticket Management
-      description: '`ServiceNow - Ticket Management` allows you to open new tickets or update comments to the existing ticket using the playbook''s tasks. '
+      description: "`ServiceNow - Ticket Management` allows you to open new tickets or update comments to the existing ticket using the playbook's tasks. "
       playbookName: ServiceNow - Ticket Management
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       Action:
         complex:
@@ -89,19 +83,13 @@ tasks:
         complex:
           root: inputs.serviceNowUrgency
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 350
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 350\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -109,22 +97,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: bc8a5228-c2b8-46af-8e21-d7687a8edffe
     type: playbook
     task:
       id: bc8a5228-c2b8-46af-8e21-d7687a8edffe
       version: -1
       name: Zendesk - Ticket Management
-      description: '`Zendesk - Ticket Management` allows you to open new tickets or update comments to the existing ticket using the playbook''s tasks. '
+      description: "`Zendesk - Ticket Management` allows you to open new tickets or update comments to the existing ticket using the playbook's tasks. "
       playbookName: Zendesk - Ticket Management
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       Action:
         complex:
@@ -167,19 +155,13 @@ tasks:
         complex:
           root: inputs.description
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 660,
-          "y": 350
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 350\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -187,8 +169,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 66b87a8c-c5a1-489c-8cef-ea4c198faa4e
     type: title
     task:
@@ -197,17 +179,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 870,
-          "y": 950
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 950\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -215,24 +191,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 159abeff-fe4e-42fc-8be0-67f4ba0f245b
     type: regular
     task:
       id: 159abeff-fe4e-42fc-8be0-67f4ba0f245b
       version: -1
       name: Set Zendesk Ticket ID
-      description: |-
-        Sets the `ZendeskTicketID` key to the incident's context.
-        If the output `Zendesk.Ticket.id` from sub-playbook `Zendesk - Ticket Management` is defined, set the ticket ID to the `ZendeskTicketID` key in the incident context else set the value of the `ZendeskTicketID` key as empty on the incident's context.
+      description: "Sets the `ZendeskTicketID` key to the incident's context.\nIf the output `Zendesk.Ticket.id` from sub-playbook `Zendesk - Ticket Management` is defined, set the ticket ID to the `ZendeskTicketID` key in the incident context else set the value of the `ZendeskTicketID` key as empty on the incident's context."
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       key:
         simple: ZendeskTicketID
@@ -264,14 +238,8 @@ tasks:
               rhsB: {}
               then: {}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 660,
-          "y": 530
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 530\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -279,24 +247,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: a27c8fa0-c258-41db-84e9-8b93a26c1623
     type: regular
     task:
       id: a27c8fa0-c258-41db-84e9-8b93a26c1623
       version: -1
       name: Set ServiceNow Ticket ID
-      description: |-
-        Sets the `ServiceNowTicketID` key to the incident's context.
-        If the output `ServiceNow.Ticket.ID` from sub-playbook `ServiceNow - Ticket Management` is defined, set the ticket ID to the `ServiceNowTicketID` key in the incident context else set the value of the `ServiceNowTicketID` key as empty on the incident's context.
+      description: "Sets the `ServiceNowTicketID` key to the incident's context.\nIf the output `ServiceNow.Ticket.ID` from sub-playbook `ServiceNow - Ticket Management` is defined, set the ticket ID to the `ServiceNowTicketID` key in the incident context else set the value of the `ServiceNowTicketID` key as empty on the incident's context."
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       key:
         simple: ServiceNowTicketID
@@ -328,14 +294,8 @@ tasks:
               rhsB: {}
               then: {}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 530
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 530\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -343,24 +303,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 4d9c9b8f-0747-4eb0-8474-99316ead7621
     type: regular
     task:
       id: 4d9c9b8f-0747-4eb0-8474-99316ead7621
       version: -1
       name: 'Set Endpoint hostname from alerts '
-      description: |-
-        Sets the `Endpoint` key to the incident's context.
-        If the alert.hostname  is defined on the alert context , set the hostname to the `Endpoint` key in the incident context else set the value `There is no hostname in the alert` to the incident's context.
+      description: "Sets the `Endpoint` key to the incident's context.\nIf the alert.hostname  is defined on the alert context , set the hostname to the `Endpoint` key in the incident context else set the value `There is no hostname in the alert` to the incident's context."
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       key:
         simple: Endpoint
@@ -394,14 +352,8 @@ tasks:
                 value:
                   simple: There is no hostname in the alert
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 760
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 760\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -409,8 +361,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: c8d353d1-1319-420f-8831-8d04cb40effd
     type: regular
     task:
@@ -421,24 +373,18 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       key:
         simple: Action
       value:
         simple: NewTicket
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 40
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 40\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -446,8 +392,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 2e759af3-962e-48ad-8493-c4052d84f866
     type: regular
     task:
@@ -458,24 +404,18 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       key:
         simple: Action
       value:
         simple: AddComment
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 210,
-          "y": 40
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 40\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -483,8 +423,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 0be81a91-6f8f-488c-8cdc-9df4684fe290
     type: title
     task:
@@ -493,21 +433,15 @@ tasks:
       name: Ticket Management
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "2"
-      - "3"
+      - '2'
+      - '3'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 210
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": 210\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -515,8 +449,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 043ae1ef-de8c-490b-8526-cb5fdd8f521b
     type: condition
     task:
@@ -526,14 +460,14 @@ tasks:
       description: Whether to open a new ticket or comment on an existing ticket.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
+      - '4'
       Add comment:
-      - "17"
+      - '17'
       New Ticket:
-      - "16"
+      - '16'
     separatecontext: false
     conditions:
     - label: New Ticket
@@ -581,14 +515,8 @@ tasks:
             value:
               simple: parentIncidentContext.Endpoint
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -140
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": -140\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -596,18 +524,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1295,
-        "width": 1040,
-        "x": 210,
-        "y": -280
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1295,\n      \"width\": 1040,\n      \"x\": 210,\n      \"y\": -280\n    }\n  }\n}"
 inputs:
 - key: serviceNowShortDescription
   value: {}
@@ -691,7 +608,7 @@ inputs:
   playbookInputQuery:
 - key: addCommentPerEndpoint
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
   playbookInputQuery:
@@ -709,4 +626,5 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0

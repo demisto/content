@@ -2,7 +2,7 @@ args:
 - description: The query for the Incidents that you want to export. (e.g. status:closed -category:job). You can and should generate the query from the Incidents search screen.
   name: query
   required: true
-- defaultValue: "7"
+- defaultValue: '7'
   description: Number of days you want to fetch back for (default is 7).  Needs to be a number.
   name: fetchdays
 - description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,name,type,severity,status,owner,roles,playbookId,occurred,created,modified,closed).'
@@ -13,7 +13,7 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
+    fromServerVersion: ''
 dependson:
   must:
   - core-api-post
@@ -32,5 +32,6 @@ fromversion: 6.5.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)

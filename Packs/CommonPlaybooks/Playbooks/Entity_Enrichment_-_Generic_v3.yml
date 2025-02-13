@@ -2,45 +2,39 @@ id: Entity Enrichment - Generic v3
 version: -1
 name: Entity Enrichment - Generic v3
 description: Enrich entities using one or more integrations.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
     type: start
     task:
       id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "16"
-      - "18"
-      - "19"
-      - "22"
-      - "23"
-      - "26"
+      - '16'
+      - '18'
+      - '19'
+      - '22'
+      - '23'
+      - '26'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 70
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 280,\n    \"y\": 70\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 38007764-1687-47b1-8490-0f3cded9dc95
     type: title
     task:
@@ -49,51 +43,37 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 871
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 280,\n    \"y\": 871\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: afe0c443-753d-4633-89e1-0d77dc533447
     type: playbook
     task:
       id: afe0c443-753d-4633-89e1-0d77dc533447
       version: -1
       name: IP Enrichment - Generic v2
-      description: |-
-        Enrich IP using one or more integrations.
-
-        IP enrichment includes:
-        * Resolve IP to Hostname (DNS)
-        * Threat information
-        * Separate internal and external addresses
-        * IP reputation
-        * For internal addresses, get host information
+      description: "Enrich IP using one or more integrations.\n\nIP enrichment includes:\n* Resolve IP to Hostname (DNS)\n* Threat information\n* Separate internal and external addresses\n* IP reputation\n* For internal addresses, get host information"
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       ExecutedFromParent:
-        simple: "True"
+        simple: 'True'
       IP:
         complex:
           root: inputs.IP
@@ -110,32 +90,26 @@ tasks:
       UseReputationCommand:
         simple: ${inputs.UseReputationCommand}
       extended_data:
-        simple: "False"
+        simple: 'False'
       threat_model_association:
-        simple: "False"
+        simple: 'False'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 225
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 225\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 8189698a-475c-433b-8fbf-20275b3b2084
     type: playbook
     task:
@@ -145,11 +119,11 @@ tasks:
       playbookName: File Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       MD5:
         complex:
@@ -171,26 +145,20 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 225
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 225\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: a80df9df-c0d4-4d25-88d1-39a974a9c2cb
     type: playbook
     task:
@@ -200,22 +168,15 @@ tasks:
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
-      description: |-
-        Enrich URLs using one or more integrations.
-
-        URL enrichment includes:
-        * SSL verification for URLs
-        * Threat information
-        * Providing of URL screenshots
-        * URL Reputation using !url
+      brand: ''
+      description: "Enrich URLs using one or more integrations.\n\nURL enrichment includes:\n* SSL verification for URLs\n* Threat information\n* Providing of URL screenshots\n* URL Reputation using !url"
     nexttasks:
       '#none#':
-      - "15"
-      - "25"
+      - '15'
+      - '25'
     scriptarguments:
       Rasterize:
-        simple: "True"
+        simple: 'True'
       URL:
         complex:
           root: inputs.URL
@@ -229,43 +190,34 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 386
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 386\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 6245f7fc-b1cc-4120-81da-d3320f809b03
     type: playbook
     task:
       id: 6245f7fc-b1cc-4120-81da-d3320f809b03
       version: -1
       name: Domain Enrichment - Generic v2
-      description: |-
-        Enrich domains using one or more integrations.
-        Domain enrichment includes:
-        * Threat information
+      description: "Enrich domains using one or more integrations.\nDomain enrichment includes:\n* Threat information"
       playbookName: Domain Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       Domain:
         complex:
@@ -277,26 +229,20 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 700
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 700\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
     type: playbook
     task:
@@ -306,12 +252,12 @@ tasks:
       playbookName: Email Address Enrichment - Generic v2.1
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "15"
-      - "24"
+      - '15'
+      - '24'
     scriptarguments:
       Domain:
         complex:
@@ -333,26 +279,20 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 386
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 386\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 3543872e-d47e-47a3-8456-39ff9ccfcabd
     type: playbook
     task:
@@ -362,24 +302,12 @@ tasks:
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
-      brand: ""
-      description: |-
-        Enrich accounts using one or more integrations.
-        Supported integrations:
-        - Active Directory
-        - Microsoft Graph User
-        - SailPoint IdentityNow
-        - SailPoint IdentityIQ
-        - PingOne
-        - Okta
-        - AWS IAM
-        - Cortex XDR (account enrichment and reputation)
-
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      brand: ''
+      description: "Enrich accounts using one or more integrations.\nSupported integrations:\n- Active Directory\n- Microsoft Graph User\n- SailPoint IdentityNow\n- SailPoint IdentityIQ\n- PingOne\n- Okta\n- AWS IAM\n- Cortex XDR (account enrichment and reputation)\n\nAlso, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations."
     nexttasks:
       '#none#':
-      - "26"
-      - "15"
+      - '26'
+      - '15'
     scriptarguments:
       Username:
         complex:
@@ -394,26 +322,20 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 545
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 545\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: 473ab066-87e5-408d-8317-70e38ead40ca
     type: playbook
     task:
@@ -423,11 +345,11 @@ tasks:
       playbookName: Endpoint Enrichment - Generic v2.1
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       Hostname:
         complex:
@@ -437,44 +359,34 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 545
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 545\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: a9201fe9-18e4-47dc-8b45-c2c5111eea6a
     type: playbook
     task:
       id: a9201fe9-18e4-47dc-8b45-c2c5111eea6a
       version: -1
       name: CVE Enrichment - Generic v2
-      description: |-
-        This playbook performs CVE Enrichment using the following integrations:
-        - VulnDB
-        - CVE Search
-        - IBM X-Force Exchange
+      description: "This playbook performs CVE Enrichment using the following integrations:\n- VulnDB\n- CVE Search\n- IBM X-Force Exchange"
       playbookName: CVE Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       cve_id:
         complex:
@@ -482,36 +394,19 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 700
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 700\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
+    continueonerrortype: ''
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 866,
-        "width": 800,
-        "x": 70,
-        "y": 70
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 866,\n      \"width\": 800,\n      \"x\": 70,\n      \"y\": 70\n    }\n  }\n}"
 inputs:
 - key: IP
   value:
@@ -629,7 +524,7 @@ inputs:
   playbookInputQuery:
 - key: ResolveIP
   value:
-    simple: "False"
+    simple: 'False'
   required: false
   description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. True - Resolves the IP addresses to hostnames. False - Does not resolve the IP addresses to hostnames.
   playbookInputQuery:
@@ -648,24 +543,20 @@ inputs:
   playbookInputQuery:
 - key: URLSSLVerification
   value:
-    simple: "False"
+    simple: 'False'
   required: false
-  description: |-
-    Whether to verify SSL certificates for URLs.
-    Can be True or False.
+  description: "Whether to verify SSL certificates for URLs.\nCan be True or False."
   playbookInputQuery:
 - key: UseReputationCommand
   value:
-    simple: "False"
+    simple: 'False'
   required: false
   description: Whether to execute the reputation command on the indicator.
   playbookInputQuery:
 - key: AccountDomain
   value: {}
   required: false
-  description: |-
-    Optional - This input is needed for the IAM-get-user command (used in the Account Enrichment - IAM playbook). Please provide the domain name that the user is related to.
-    Example: @xsoar.com
+  description: "Optional - This input is needed for the IAM-get-user command (used in the Account Enrichment - IAM playbook). Please provide the domain name that the user is related to.\nExample: @xsoar.com"
   playbookInputQuery:
 outputs:
 - contextPath: IP
@@ -922,6 +813,7 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 contentitemexportablefields:
   contentitemfields: {}
 system: true
