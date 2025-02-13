@@ -76,7 +76,7 @@ jobs:
       id: check-pytest-junit-exists
       uses: andstor/file-existence-action@v2
       with:
-        files: ".report_pytest.xml"
+        files: "report_pytest.xml"
 
     - name: Create pack-wise pytest report
       run: poetry run python .github/github_workflow_scripts/parse_junit_per_pack.py
@@ -86,7 +86,7 @@ jobs:
         github.event.pull_request.head.repo.fork == false
 
     - name: Upload junit & pack-wise pytest report
-      uses: actions/upload-artifact@v4
+      uses: PaloAltoNetworks/upload-secure-artifact@v1.0.5
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
@@ -95,7 +95,7 @@ jobs:
         name: pytest
         path: |
           packwise_pytest_time.csv
-          .report_pytest.xml
+          report_pytest.xml
         if-no-files-found: error
 
     - name: Pytest coverage comment
@@ -108,7 +108,7 @@ jobs:
       continue-on-error: true  # may fail on output > 65k chars
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
-        junitxml-path: .report_pytest.xml
+        junitxml-path: report_pytest.xml
     
     - uses: actions/cache/save@v3
       if: always()
