@@ -1,4 +1,5 @@
 [MODEL: dataset=msft_azure_raw, model=Endpoint]
+FAILED MODELING RULE
 filter category in (
         "AdvancedHunting-DeviceEvents", "AdvancedHunting-DeviceRegistryEvents", 
         "AdvancedHunting-DeviceProcessEvents", "AdvancedHunting-DeviceImageLoadEvents")
