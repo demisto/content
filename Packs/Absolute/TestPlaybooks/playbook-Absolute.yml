@@ -1,4 +1,6 @@
 id: Absolute_TestPlaybook
+version: -1
+fromversion: 6.0.0
 name: Absolute_TestPlaybook
 starttaskid: "0"
 tasks:
@@ -12,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -81,10 +84,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      all_results:
-        simple: "false"
       device_id:
         simple: ${Absolute.Device.Id}
+      all_results:
+        simple: "false"
       limit:
         simple: "1"
     separatecontext: false
@@ -276,9 +279,6 @@ tasks:
     nexttasks:
       '#none#':
       - "18"
-    scriptarguments:
-      limit:
-        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -295,6 +295,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      limit:
+        simple: "1"
   "12":
     id: "12"
     taskid: 21fbc4b1-51fb-4904-8b0a-65f749180542
@@ -560,6 +563,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -672,4 +676,4 @@ view: |-
   }
 inputs: []
 outputs: []
-dirtyInputs: true
+description: ''
