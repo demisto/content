@@ -92,6 +92,10 @@
             "type": "string",
             "is_array": false
         },
+        "SourceDeviceAddress": {
+            "type": "string",
+            "is_array": false
+        },
         "VendorOriginalId": {
             "type": "string",
             "is_array": false
