@@ -112,7 +112,7 @@ def test_test_module_arguments(mocker):
     )
 
 
-def test_is_token_refresh_required_hard_is_false_and_integration_context_is_empty(
+def test_generate_token_if_required_hard_is_false_and_integration_context_is_empty(
     mocker,
 ):
     """
@@ -120,10 +120,10 @@ def test_is_token_refresh_required_hard_is_false_and_integration_context_is_empt
     - OktaASAClient, empty integration context.
 
     When:
-    - Call the is_token_refresh_required method
+    - Call the generate_token_if_required method
 
     Then:
-    - the is_token_refresh_required method functionality works as expected
+    - the generate_token_if_required method functionality works as expected
       and the get_token_request method is called.
     """
     from OktaASA import OktaASAClient
@@ -142,14 +142,14 @@ def test_is_token_refresh_required_hard_is_false_and_integration_context_is_empt
             "team_name": "x",
         },
     )
-    client.is_token_refresh_required()
+    client.generate_token_if_required()
     assert get_token_request_mocker.call_count == 1
     assert getIntegrationContext_mocker.call_count == 1
     assert setIntegrationContext_mocker.call_count == 1
 
 
 @freeze_time("2025-02-02 17:22:13 UTC")
-def test_is_token_refresh_required_hard_is_false_and_integration_context_is_not_empty_need_to_replace(
+def test_generate_token_if_required_hard_is_false_and_integration_context_is_not_empty_need_to_replace(
     mocker,
 ):
     """
@@ -157,10 +157,10 @@ def test_is_token_refresh_required_hard_is_false_and_integration_context_is_not_
     - OktaASAClient, with integration context.
 
     When:
-    - Call the is_token_refresh_required method
+    - Call the generate_token_if_required method
 
     Then:
-    - the is_token_refresh_required method functionality works as expected
+    - the generate_token_if_required method functionality works as expected
       and the get_token_request method is called since the token is expired.
     """
     from OktaASA import OktaASAClient
@@ -185,14 +185,14 @@ def test_is_token_refresh_required_hard_is_false_and_integration_context_is_not_
             "team_name": "x",
         },
     )
-    client.is_token_refresh_required()
+    client.generate_token_if_required()
     assert get_token_request_mocker.call_count == 1
     assert getIntegrationContext_mocker.call_count == 1
     assert setIntegrationContext_mocker.call_count == 1
 
 
 @freeze_time("2025-02-02 15:22:13 UTC")
-def test_is_token_refresh_required_hard_is_false_and_integration_context_is_not_empty_dont_need_to_replace(
+def test_generate_token_if_required_hard_is_false_and_integration_context_is_not_empty_dont_need_to_replace(
     mocker,
 ):
     """
@@ -200,10 +200,10 @@ def test_is_token_refresh_required_hard_is_false_and_integration_context_is_not_
     - OktaASAClient, with integration context.
 
     When:
-    - Call the is_token_refresh_required method
+    - Call the generate_token_if_required method
 
     Then:
-    - the is_token_refresh_required method functionality works as expected
+    - the generate_token_if_required method functionality works as expected
       and the get_token_request method is not called since the token is not expired.
     """
 
@@ -229,14 +229,14 @@ def test_is_token_refresh_required_hard_is_false_and_integration_context_is_not_
             "team_name": "x",
         },
     )
-    client.is_token_refresh_required()
+    client.generate_token_if_required()
     assert get_token_request_mocker.call_count == 0
     assert getIntegrationContext_mocker.call_count == 1
     assert setIntegrationContext_mocker.call_count == 1
 
 
 @freeze_time("2025-02-02 15:22:13 UTC")
-def test_is_token_refresh_required_hard_is_true_and_integration_context_is_not_empty_dont_need_to_replace(
+def test_generate_token_if_required_hard_is_true_and_integration_context_is_not_empty_dont_need_to_replace(
     mocker,
 ):
     """
@@ -244,10 +244,10 @@ def test_is_token_refresh_required_hard_is_true_and_integration_context_is_not_e
     - OktaASAClient, with integration context.
 
     When:
-    - Call the is_token_refresh_required method
+    - Call the generate_token_if_required method
 
     Then:
-    - the is_token_refresh_required method functionality works as expected
+    - the generate_token_if_required method functionality works as expected
       and the get_token_request method is called since the argument is hard=true.
     """
     from OktaASA import OktaASAClient
@@ -272,7 +272,7 @@ def test_is_token_refresh_required_hard_is_true_and_integration_context_is_not_e
             "team_name": "x",
         },
     )
-    client.is_token_refresh_required(hard=True)
+    client.generate_token_if_required(hard=True)
     assert get_token_request_mocker.call_count == 1
     assert getIntegrationContext_mocker.call_count == 1
     assert setIntegrationContext_mocker.call_count == 1
@@ -300,9 +300,9 @@ def test_execute_audit_events_request_token_expired_401_exception(
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient,
@@ -319,8 +319,8 @@ def test_execute_audit_events_request_token_expired_401_exception(
         offset=None, count=None, descending=None, prev=None
     )
     assert get_audit_events_request_mocker.call_count == 2
-    assert is_token_refresh_required_mocker.call_count == 2
-    assert is_token_refresh_required_mocker.call_args_list[1].kwargs.get("hard") is True
+    assert generate_token_if_required_mocker.call_count == 2
+    assert generate_token_if_required_mocker.call_args_list[1].kwargs.get("hard") is True
 
 
 def test_execute_audit_events_request_exception(
@@ -345,9 +345,9 @@ def test_execute_audit_events_request_exception(
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient,
@@ -363,7 +363,7 @@ def test_execute_audit_events_request_exception(
             offset=None, count=None, descending=None, prev=None
         )
     assert get_audit_events_request_mocker.call_count == 1
-    assert is_token_refresh_required_mocker.call_count == 1
+    assert generate_token_if_required_mocker.call_count == 1
 
 
 def test_search_events_limit_lower_then_1000_with_no_offset(mocker):
@@ -380,16 +380,16 @@ def test_search_events_limit_lower_then_1000_with_no_offset(mocker):
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     response = util_load_json("test_data/response_10_items_descending_true.json")
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient, "get_audit_events_request", return_value=response.get("list")
     )
     results, id, _ = client.search_events(limit=10, offset=None)
-    assert is_token_refresh_required_mocker.call_count == 1
+    assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 10
     assert len(results) == 10
@@ -410,16 +410,16 @@ def test_search_events_limit_lower_then_1000_with_offset(mocker):
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     response = util_load_json("test_data/response_10_items_descending_default.json")
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient, "get_audit_events_request", return_value=response.get("list")
     )
     results, id, _ = client.search_events(limit=10, offset="0")
-    assert is_token_refresh_required_mocker.call_count == 1
+    assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 10
     assert len(results) == 10
@@ -441,9 +441,9 @@ def test_search_events_limit_higher_then_1000_without_offset(mocker):
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient,
@@ -467,7 +467,7 @@ def test_search_events_limit_higher_then_1000_without_offset(mocker):
         ],
     )
     results, id, _ = client.search_events(limit=2999, offset=None)
-    assert is_token_refresh_required_mocker.call_count == 3
+    assert generate_token_if_required_mocker.call_count == 3
     assert get_audit_events_request_mocker.call_count == 3
     assert (
         get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
@@ -505,9 +505,9 @@ def test_search_events_limit_higher_then_1000_with_offset(mocker):
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient,
@@ -531,7 +531,7 @@ def test_search_events_limit_higher_then_1000_with_offset(mocker):
         ],
     )
     results, id, _ = client.search_events(limit=2999, offset="5000")
-    assert is_token_refresh_required_mocker.call_count == 3
+    assert generate_token_if_required_mocker.call_count == 3
     assert get_audit_events_request_mocker.call_count == 3
     assert (
         get_audit_events_request_mocker.call_args_list[0].args[0].get("offset")
@@ -570,9 +570,9 @@ def test_search_events_limit_1000_without_offset(mocker):
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient,
@@ -584,7 +584,7 @@ def test_search_events_limit_1000_without_offset(mocker):
         ],
     )
     results, id, _ = client.search_events(limit=1000, offset=None)
-    assert is_token_refresh_required_mocker.call_count == 1
+    assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
     assert (
         get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
@@ -611,9 +611,9 @@ def test_search_events_limit_1001_second_page_is_empty(mocker):
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient,
@@ -626,7 +626,7 @@ def test_search_events_limit_1001_second_page_is_empty(mocker):
         ],
     )
     results, id, _ = client.search_events(limit=1001, offset=None)
-    assert is_token_refresh_required_mocker.call_count == 2
+    assert generate_token_if_required_mocker.call_count == 2
     assert get_audit_events_request_mocker.call_count == 2
     assert (
         get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
@@ -652,15 +652,15 @@ def test_search_events_first_page_is_empty_without_offset(mocker):
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient, "get_audit_events_request", side_effect=[[]]
     )
     results, id, timestamp = client.search_events(limit=1000, offset=None)
-    assert is_token_refresh_required_mocker.call_count == 1
+    assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
     assert (
         get_audit_events_request_mocker.call_args_list[0].args[0].get("offset") is None
@@ -687,15 +687,15 @@ def test_search_events_first_page_is_empty_with_offset(mocker):
     from OktaASA import OktaASAClient
 
     client = get_mock_client()
-    is_token_refresh_required_mocker = mocker.patch.object(
+    generate_token_if_required_mocker = mocker.patch.object(
         OktaASAClient,
-        "is_token_refresh_required",
+        "generate_token_if_required",
     )
     get_audit_events_request_mocker = mocker.patch.object(
         OktaASAClient, "get_audit_events_request", side_effect=[[]]
     )
     results, id, timestamp = client.search_events(limit=1000, offset="offset")
-    assert is_token_refresh_required_mocker.call_count == 1
+    assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
     assert (
         get_audit_events_request_mocker.call_args_list[0].args[0].get("offset")

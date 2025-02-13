@@ -12,8 +12,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'Okta'
 PRODUCT = 'ASA'
 INTEGRATION_NAME = "Okta ASA"
-# Note: True life time of token is actually 60 mins - we take minutes of 58 minutes.
-TOKEN_LIFE_TIME_SECONDS = 3480
 
 ''' CLIENT CLASS '''
 
@@ -83,19 +81,19 @@ class OktaASAClient(BaseClient):
         """
 
         params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
-        self.is_token_refresh_required()
+        self.generate_token_if_required()
         try:
             events_response = self.get_audit_events_request(params)
         except DemistoException as e:
             if e.res is not None and e.res.status_code == 401 and "Authentication token expired" in e.res.text:
-                self.is_token_refresh_required(hard=True)
+                self.generate_token_if_required(hard=True)
                 demisto.debug(f"{INTEGRATION_NAME}: Hard refresh token")
                 events_response = self.get_audit_events_request(params)
             else:
                 raise e
         return events_response
 
-    def is_token_refresh_required(self, hard=False) -> None:
+    def generate_token_if_required(self, hard: bool = False) -> None:
         """Checks if token refresh required and return the token.
 
             Args:
@@ -140,27 +138,24 @@ class OktaASAClient(BaseClient):
         """
         results: List[Dict] = []
         descending = False
-        returned_offset = offset
         returned_timestamp = None
         # We are limited to 1000 results per request, count > 1000 does not work.
         count = min(limit, 1000) if limit else 1000
         while limit and len(results) < limit:
-            descending = bool(not returned_offset)
+            descending = bool(not offset)
             events = self.execute_audit_events_request(
-                offset=returned_offset, count=count, descending=descending, prev=None
+                offset=offset, count=count, descending=descending, prev=None
             )
             if not events:
                 break
             event_offset = events[0] if descending else events[len(events) - 1]
-            returned_offset = event_offset.get("id")
+            offset = event_offset.get("id")
+            returned_timestamp = event_offset.get("timestamp")
             results.extend(events)
             count = min(limit - len(results), 1000)
-        if results:
-            list_last_index = len(results) - 1
-            demisto.debug(f"{INTEGRATION_NAME}: will return {len(results)} events")
-            returned_timestamp = results[list_last_index].get("timestamp")
+        demisto.debug(f"{INTEGRATION_NAME}: will return {len(results)} events")
 
-        return results, returned_offset, returned_timestamp
+        return results, offset, returned_timestamp
 
 
 '''HELPER FUNCTIONS'''
@@ -177,12 +172,12 @@ def is_token_expired(expires_date: str) -> bool:
     """
     current_utc_time = datetime.now(pytz.utc)
     expires_datetime_date = dateparser.parse(expires_date, settings={'TIMEZONE': 'UTC'}) or current_utc_time
+    # Note: True life time of token is actually 60 mins - we take minutes of 57 minutes.
     expires_datetime_date = expires_datetime_date - timedelta(hours=0, minutes=3)
-    expires_datetime: datetime = arg_to_datetime(expires_date) or current_utc_time
-    return current_utc_time > expires_datetime
+    return current_utc_time > expires_datetime_date
 
 
-def add_time_to_events(events: List[Dict] | None):
+def add_time_to_events(events: List[Dict]):
     """
     Adds the _time key to the events.
     Args:
@@ -190,16 +185,15 @@ def add_time_to_events(events: List[Dict] | None):
     Returns:
         list: The events with the _time key.
     """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get('timestamp'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+    for event in events:
+        create_time = arg_to_datetime(arg=event.get('timestamp'))
+        event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client: OktaASAClient, team_name: str) -> str:
+def test_module(client: OktaASAClient, args: dict) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -208,18 +202,15 @@ def test_module(client: OktaASAClient, team_name: str) -> str:
 
     Args:
         client (OktaASAClient): OktaASAClient client to use.
-        team_name (str): the name of the team.
+        args (dict): A dictionary containing the command arguments.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        fetch_events_command(
+        get_events_command(
             client=client,
-            last_run={},
-            max_audit_events_per_fetch=1,
-            is_fetch_events=True,
-            team_name=team_name
+            args=args
         )
 
     except Exception as e:
@@ -244,10 +235,9 @@ def get_events_command(client: OktaASAClient, args: dict) -> tuple[List[Dict], C
             CommandResults: command results containing Audits Events.
     """
 
-    max_audit_events_per_fetch = arg_to_number(args.get('limit')) or 50
+    limit = arg_to_number(args.get('limit')) or 50
     events, _, _ = client.search_events(
-        limit=max_audit_events_per_fetch,
-        offset=None,
+        limit=limit
     )
     hr = tableToMarkdown(name='Audits Events', t=events)
     return events, CommandResults(readable_output=hr)
