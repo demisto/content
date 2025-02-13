@@ -14,7 +14,7 @@ from freezegun import freeze_time
 @pytest.fixture
 def fixture_from_file():
     def _fixture_from_file(fname):
-        with (Path(__file__).parent / 'test' / 'fixtures' / fname).open() as file:
+        with (Path(__file__).parent / 'test_data' / 'fixtures' / fname).open() as file:
             return file.read()
     return _fixture_from_file
 

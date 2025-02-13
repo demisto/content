@@ -184,7 +184,7 @@ def validate_timezone_helper(TIMEZONE):
         return_error(f'Error: Timezone format "{TIMEZONE}" invalid')
     else:
         tz = pytz.timezone(TIMEZONE)
-    return tz
+    return tz  # pylint: disable=E0606
 
 
 def convert_raw_into_nodes_helper(results):
