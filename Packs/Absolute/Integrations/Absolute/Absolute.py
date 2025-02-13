@@ -260,7 +260,7 @@ class ClientV3(BaseClient):
             response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size),
                                                 ok_codes=tuple(ok_codes))
             data += response.get('data')
-        
+
         return data
 
     def api_request_absolute(self, method: str, url_suffix: str, body: dict = {}, success_status_code=(),
