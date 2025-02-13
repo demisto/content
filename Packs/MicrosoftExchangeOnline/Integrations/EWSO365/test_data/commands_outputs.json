@@ -5,8 +5,7 @@
         "mailbox": "aaaaa@demistodev.onmicrosoft.com",
         "mailboxId": "/o=ExchangeLabs/ou=Exchange Administrative Group",
         "displayName": "aaaa",
-        "isExternal": "false",
-        "externalEmailAddress": null
+        "isExternal": "false"
       }
     ]
   },
