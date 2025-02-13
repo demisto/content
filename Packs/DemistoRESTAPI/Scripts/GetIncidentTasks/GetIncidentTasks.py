@@ -93,9 +93,18 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
     tag = args.get('tag')
     states = get_states(argToList(args.get('states')))
     inc_id = args['inc_id']
-    res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
-    if not res or isError(res[0]):
-        raise Exception(res)
+
+    try:
+        res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
+        if not res or isError(res[0]):
+            raise Exception(res)
+
+    except Exception as e:
+        demisto.debug(f'Failed to execute "core-api-get" Error: {str(e)}. Trying again')
+
+        res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
+        if not res or isError(res[0]):
+            raise Exception(res)
 
     tasks: dict = dict_safe_get(res[0], ['Contents', 'response', 'invPlaybook', 'tasks'], {})
     if not tasks:

@@ -1,19 +1,19 @@
 commonfields:
-  id: GetIncidentTasks
+  id: GetIncidentTasks-retry
   version: -1
-name: GetIncidentTasks
+name: GetAlertTasks-retry
 script: ''
 type: python
 subtype: python3
 tags:
 - Utility
-comment: Get all tasks for a specific incident by the given state, name and/or tag.
+comment: Get all tasks for a specific alert by the given state, name and/or tag.
 enabled: true
 args:
 - name: inc_id
   required: true
   default: true
-  description: Incident ID to get tasks from.
+  description: Alert ID to get tasks from.
 - name: states
   isArray: true
   description: 'Comma-separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, LoopError, Skipped, Blocked. (Leave empty to get all tasks).'
