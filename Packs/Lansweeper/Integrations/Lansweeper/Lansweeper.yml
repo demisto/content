@@ -30,6 +30,7 @@ script:
     - contextPath: Lansweeper.Site.name
       description: Site name.
       type: String
+    arguments: []
   - arguments:
     - description: |-
         Specify the site ID to retrieve the assets.
@@ -242,9 +243,9 @@ script:
     - contextPath: Lansweeper.Mac.siteName
       description: The name of the site to which the asset belongs.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

@@ -1,10 +1,10 @@
+import urllib3
+from typing import Any, Callable
+import traceback
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import traceback
-from typing import Any, Callable
+demisto.debug('pack name = Lansweeper, pack version = 1.0.10')
 
-import urllib3
-from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -382,7 +382,7 @@ def lansweeper_ip_hunt_command(client: Client, args: Dict[str, str]) -> CommandR
         response = client.asset_list(query)
         records = response.get("data", {}).get("site", {}).get("assetResources", {}).get("items", [])
         for record in records:
-            record['assetId'] = record.pop('_id')
+            record['assetId'] = site.get('_id')
             record['siteId'] = site.get('id')
             record['siteName'] = site.get('name')
             total_records.append(remove_empty_elements(record))
@@ -434,7 +434,7 @@ def lansweeper_mac_hunt_command(client: Client, args: Dict[str, str]) -> Command
         response = client.asset_list(query)
         records = response.get("data", {}).get("site", {}).get("assetResources", {}).get("items", [])
         for record in records:
-            record['assetId'] = record.pop('_id')
+            record['assetId'] = site.get('_id')
             record['siteId'] = site.get('id')
             record['siteName'] = site.get('name')
             total_records.append(remove_empty_elements(record))
