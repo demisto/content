@@ -237,6 +237,7 @@ def main() -> None:  # pragma: no cover
     """
     params = demisto.params()
     args = demisto.args()
+    use_proxy = argToBoolean(params.get('proxy', False))
     try:
         public_api_token = params.get('public_creds', {}).get('password', '')
         private_api_token = params.get('private_creds', {}).get('password', '')
@@ -260,8 +261,25 @@ def main() -> None:  # pragma: no cover
                                                  args=args,
                                                  first_fetch_time_timestamp=first_fetch_time_timestamp)
             return_results(results)
+            xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+            xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
+            params = demisto.params()
+            url = params.get('url')
+            calling_context = demisto.callingContext.get('context', {})
+            instance_name = calling_context.get('IntegrationInstance', '')
+            collector_name = calling_context.get('IntegrationBrand', '')
+            demisto.info(
+                f"{url=}, {instance_name=}, {collector_name=}, {xsiam_domain=}, {xsiam_api_token=}, {use_proxy=}"
+            )
+            for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+                if k in os.environ:
+                    proxy_env_var = os.getenv(k)
+                    demisto.info(f"{proxy_env_var=}")
+                    if proxy_env_var:
+                        proxy_env_var_2 = os.environ[k]
+                        demisto.info(f"{proxy_env_var_2=}")
             if argToBoolean(args.get("should_push_events")):
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, add_proxy_to_request=use_proxy)  # type: ignore
         elif demisto.command() == 'fetch-events':
             last_run = demisto.getLastRun()
             events, new_last_run = fetch_events(client=client,
@@ -270,8 +288,12 @@ def main() -> None:  # pragma: no cover
                                                 end_time=int(datetime.now().timestamp()),
                                                 last_run=last_run)
             if events:
+                for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+                    if k in os.environ:
+                        proxy_env_var = os.getenv(k)
+                        demisto.info(f"{proxy_env_var=}")
                 add_time_field(events)
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, add_proxy_to_request=use_proxy)  # type: ignore
                 if new_last_run:
                     demisto.setLastRun(new_last_run)
 
