@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: ensure_validate_all_run_on_validation_config_change_v2
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: ensure_validate_all_run_on_validation_config_change_v2
     project: "${CI_PROJECT_NAMESPACE}/infra"
