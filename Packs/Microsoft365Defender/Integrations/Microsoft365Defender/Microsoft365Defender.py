@@ -12,7 +12,42 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 MAX_ENTRIES = 100
 TIMEOUT = '30'
+TIMEOUT_INT = 30
 BASE_URL = "https://api.security.microsoft.com"
+
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
+OUTGOING_MIRRORED_FIELDS = {
+    'status': 'Specifies the current status of the incident.',
+    'assignedTo': 'Owner of the incident.',
+    'classification': 'Specification of the incident.',
+    'determination': 'Specifies the determination of the incident.',
+    'tags': 'List of Incident tags.',
+    'comment': 'Comment to be added to the incident.'
+}
+
+CLASSIFICATION_DETERMINATION_MAPPING = {
+    'TruePositive': ['MultiStagedAttack', 'MaliciousUserActivity', 'Malware', 'Phishing', 'CompromisedAccount',
+                     'UnwantedSoftware', 'Other'],
+    'InformationalExpectedActivity': ['SecurityTesting', 'LineOfBusinessApplication', 'ConfirmedActivity', 'Other'],
+    'FalsePositive': ['NotMalicious', 'NoEnoughDataToValidate', 'Other'],
+    'Unknown': ['NotAvailable']}
+
+MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
+    'Unknown': 'Other',
+    'TruePositive': 'Resolved',
+    'FalsePositive': 'False Positive',
+    'InformationalExpectedActivity': 'Resolved',
+}
+
+MICROSOFT_INCIDENT_ID_KEY = 'incidentId'
+MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR = "Mirrored from Cortex XSOAR"
+COMMENT_TO_MICROSOFT_DEFAULT_TAG = 'CommentToMicrosoft365Defender'
 
 ''' CLIENT CLASS '''
 
@@ -60,7 +95,7 @@ class Client:
     @logger
     def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
                        assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
-                       skip: Optional[int] = None, odata: Optional[dict] = None) -> dict:
+                       skip: Optional[int] = None, odata: Optional[dict] = None, last_update_time: Optional[str] = None) -> dict:
         """
         GET request from the client using OData operators:
             - $top: how many incidents to receive, maximum value is 100
@@ -75,6 +110,7 @@ class Client:
             from_date (datetime): get incident with creation date more recent than from_date
             skip (int): how many entries to skip
             odata (dict): alternative method for listing incidents, accepts dictionary of URI parameters
+            last_update_time (str): get incident with last update time more recent than last_update_time.
 
         Returns (Dict): request results as dict:
                     { '@odata.context',
@@ -102,6 +138,11 @@ class Client:
                 filter_query += ' and ' if filter_query else ''
                 filter_query += f"createdTime gt {from_date}"
 
+            # mirroring get-modified-remote-data
+            if last_update_time:
+                filter_query += ' and ' if filter_query else ''
+                filter_query += f"lastUpdateTime gt {last_update_time}"
+
             if filter_query:
                 params['$filter'] = filter_query  # type: ignore
 
@@ -112,16 +153,21 @@ class Client:
                                            params=params)
 
     @logger
-    def update_incident(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
-                        classification: Optional[str],
-                        determination: Optional[str], tags: Optional[List[str]], timeout: int, comment: str) -> dict:
+    def update_incident(self, incident_id: int, status: Optional[str] = None, assigned_to: Optional[str] = None,
+                        classification: Optional[str] = None,
+                        determination: Optional[str] = None,
+                        tags: Optional[List[str]] = None,
+                        timeout: int = None,
+                        comment: Optional[str] = None) -> dict:
         """
         PATCH request to update single incident.
         Args:
             incident_id (int): incident's id
-            status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+            status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved, InProgress or
+            Redirected)
             assigned_to (str): Owner of the incident.
-            classification (str): Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
+            classification (str): Specification of the alert. Possible values are: InformationalExpectedActivity, FalsePositive,
+             TruePositive.
             determination (str):  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
                                  Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
             tags (list): Custom tags associated with an incident. Separated by commas without spaces (CSV)
@@ -261,6 +307,15 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
     first_activity_list = [alert.get('firstActivity') for alert in alerts_list]
     last_activity_list = [alert.get('lastActivity') for alert in alerts_list]
 
+    mailboxes_set = set()
+    mailboxes = []
+    for alert in alerts_list:
+        for entity in alert.get('entities', []):
+            if entity.get('entityType') == 'Mailbox' and entity.get('mailboxAddress', '') not in mailboxes_set:
+                mailboxes.append({'Mailbox': entity.get('mailboxAddress', ''),
+                                  'Display Name': entity.get('mailboxDisplayName', '')})
+                mailboxes_set.add(entity.get('mailboxAddress', ''))
+
     return {
         'Categories': [alert.get('category', '') for alert in alerts_list],
         'Impacted entities': list({(entity.get('domainName', ''))
@@ -277,8 +332,9 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
                      'risk level': device.get('riskScore', ''),
                      'tags': ','.join(device.get('tags', []))
                      } for alert in alerts_list
-                    for device in alert.get('devices', [])]
-    }
+                    for device in alert.get('devices', [])],
+        'Mailboxes': mailboxes,
+        'comments': raw_incident.get('comments', [])}
 
 
 def convert_incident_to_readable(raw_incident: dict) -> dict:
@@ -304,6 +360,7 @@ def convert_incident_to_readable(raw_incident: dict) -> dict:
         # investigation state - relevant only for alerts.
         'Categories': ', '.join(set(incident_meta_data.get('Categories', []))),
         'Impacted entities': ', '.join(incident_meta_data.get('Impacted entities', [])),
+        'Impacted mailboxes': ', '.join(mailbox.get('Mailbox') for mailbox in incident_meta_data.get('Mailboxes', [])),
         'Active alerts': incident_meta_data.get('Active alerts', []),
         'Service sources': ', '.join(incident_meta_data.get('Service sources', [])),
         'Detection sources': ', '.join(incident_meta_data.get('Detection sources', [])),
@@ -367,6 +424,48 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: dict) ->
                           outputs=raw_incidents, readable_output=human_readable)
 
 
+def get_determination_value(classification: Optional[str], determination: Optional[str]) -> Optional[str]:
+    """
+    Determines the appropriate determination value based on the provided classification and determination inputs.
+
+    Args:
+        classification (Optional[str]): The classification of the incident. Must be a valid key in
+            the CLASSIFICATION_DETERMINATION_MAPPING dictionary.
+        determination (Optional[str]): The determination value associated with the classification. Must be
+            a valid value in the corresponding list of determination values for the given classification.
+
+    Returns:
+        Optional[str]:
+            - If both classification and determination are `None`, returns `None`.
+            - If classification is valid but determination is not provided:
+                - Returns "NotAvailable" if the classification is "Unknown".
+                - Returns "Other" for all other classifications.
+            - If both classification and determination are valid, returns the provided determination.
+
+    Raises:
+        DemistoException:
+            - If classification is not provided or not valid (not in CLASSIFICATION_DETERMINATION_MAPPING).
+            - If determination is provided but is not valid for the given classification.
+
+    """
+    if classification is None and determination is None:
+        return None
+
+    if not classification or classification not in CLASSIFICATION_DETERMINATION_MAPPING:
+        raise DemistoException("get_determination_value - Please provide a valid classification")
+
+    if not determination:
+        return 'NotAvailable' if classification == 'Unknown' else 'Other'
+
+    if determination not in CLASSIFICATION_DETERMINATION_MAPPING[classification]:
+        raise DemistoException(
+            f"get_determination_value - Invalid determination. "
+            f"Please provide one of the following: {CLASSIFICATION_DETERMINATION_MAPPING[classification]}"
+        )
+
+    return determination
+
+
 @logger
 def microsoft_365_defender_incident_update_command(client: Client, args: dict) -> CommandResults:
     """
@@ -375,7 +474,8 @@ def microsoft_365_defender_incident_update_command(client: Client, args: dict) -
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
               - id (int) - incident's id (required)
-              - status (str) - Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+              - status (str) - Specifies the current status of the alert. Possible values are: (Active, Resolved, InProgress or
+              Redirected)
               - assigned_to (str) - Owner of the incident.
               - classification (str) - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
               - determination (str) -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
@@ -390,7 +490,7 @@ def microsoft_365_defender_incident_update_command(client: Client, args: dict) -
     status = args.get('status')
     assigned_to = args.get('assigned_to')
     classification = args.get('classification')
-    determination = args.get('determination')
+    determination = get_determination_value(classification, args.get('determination'))
     incident_id = arg_to_number(args.get('id'))
     timeout = arg_to_number(args.get('timeout', TIMEOUT))
     comment = args.get('comment')
@@ -437,7 +537,9 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 
 
 @logger
-def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[dict]:
+def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int,
+                    timeout: int = None) -> List[
+        dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -452,6 +554,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
 
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
+        mirroring_fields(dict): The required fields to add to an incident to enable mirroring.
         first_fetch_time(str): From when to fetch if first time, e.g. `3 days`.
         fetch_limit(int): The number of incidents in each fetch.
         timeout(int): The time limit in seconds for this function to run.
@@ -459,6 +562,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
     Returns:
         incidents, new last_run
     """
+
     start_time = time.time()
     test_context_for_token(client)
 
@@ -467,7 +571,9 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
     last_run = last_run_dict.get('last_run')
     if not last_run:  # this is the first run
         first_fetch_date_time = dateparser.parse(first_fetch_time)
-        assert first_fetch_date_time is not None, f'could not parse {first_fetch_time}'
+        if not first_fetch_date_time:
+            raise DemistoException(f"Microsoft Defender 365 Fetch incidents - "
+                                   f"Could not parse the first_fetch_time: {first_fetch_time=}")
         last_run = first_fetch_date_time.strftime(DATE_FORMAT)
 
     # creates incidents queue
@@ -497,11 +603,12 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             raw_incidents = response.get('value')
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
+                incident.update(mirroring_fields)
 
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
                 "occurred": incident.get('createdTime'),
-                "rawJSON": json.dumps(incident)
+                "rawJSON": json.dumps(incident),
             } for incident in raw_incidents]
 
             # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
@@ -580,6 +687,356 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: dict) 
                           readable_output=human_readable_table)
 
 
+''' MIRRORING COMMANDS '''
+
+
+def fetch_modified_incident_ids(client: Client, last_update_time: str) -> List[str]:
+    """
+    Fetches the incident ids that had been created after last_run and filters their ids.
+    Args:
+        client(Client): Microsoft 365 Defender's client to preform the API calls.
+        last_update_time(str): last update time of the mirroring to fetch incidents that were modified after this time.
+    Returns: List of incident ids.
+    """
+
+    demisto.debug("Microsoft Defender 365 - Starting fetch_modified_incident_ids")
+    incidents = []
+
+    # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
+    # incident we skip (offset) the number of incidents we already fetched.
+    offset = 0
+
+    # This loop fetches all the incidents that had been created after last_run, due to API limitations the fetching
+    # occurs in batches. If timeout was given, exceeding the time will result an error.
+
+    while True:
+        # HTTP request
+        demisto.debug(f"Microsoft Defender 365 - fetch_modified_incident_ids - fetching incidents with offset {offset}")
+        response = client.incidents_list(timeout=TIMEOUT_INT, last_update_time=last_update_time,
+                                         skip=offset)
+        raw_incidents = response.get('value')
+        demisto.debug(
+            f"Microsoft Defender 365 - fetch_modified_incident_ids - fetched {len(raw_incidents)}")
+        for incident in raw_incidents:
+            incidents.append(str(incident.get(MICROSOFT_INCIDENT_ID_KEY)))
+        # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
+        if len(raw_incidents) < int(MAX_ENTRIES):
+            break
+        offset += int(MAX_ENTRIES)
+    demisto.debug(f"Microsoft Defender 365 - fetch_modified_incident_ids - returning incident ids {incidents}")
+    return incidents
+
+
+def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dict], close_incident: bool) -> List[dict]:
+    """
+    Get the entries for closing or reopening incidents.
+    Args:
+        modified_incidents (List[dict]): The modified incidents.
+        close_incident (bool): Whether resolved incidents from Microsoft should be closed in XSOAR in the mirroring in process.
+    Returns:
+        List[dict]: The entries for closing or reopening incidents.
+    """
+    demisto.debug("Microsoft Defender 365 - Starting get_modified_incidents_close_or_repopen_entries")
+    entries = []
+    if close_incident:
+        for incident in modified_incidents:
+            if incident.get('status') == 'Resolved':
+                demisto.debug(
+                    f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} is resolved in Microsoft, "
+                    f"adding close entry to XSOAR."
+                )
+                entry = {
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(
+                            incident.get('classification', 'Unknown'), 'Other'),
+                    },
+                    'ContentsFormat': EntryFormat.JSON,
+
+                }
+            else:
+                demisto.debug(
+                    f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} "
+                    f"is not Resolved in Microsoft, adding reopen entry to XSOAR."
+                )
+                entry = {
+                    'dbotIncidentReopen': True
+                }
+            entries.append(entry)
+    return entries
+
+
+def get_modified_remote_data_command(client: Client, args: dict) -> GetModifiedRemoteDataResponse:
+    """
+    Get the modified remote data.
+    Args:
+        client(Client): Microsoft 365 Defender's client to preform the API calls.
+        args(Dict): Demisto arguments.
+
+    Returns:
+        GetModifiedRemoteDataResponse: The modified remote data.
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+    parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
+    if not parsed_date:
+        demisto.error(f"Microsoft Defender 365 get_modified_remote_data_command - Could not parse {remote_args.last_update=}")
+        return GetModifiedRemoteDataResponse(modified_incident_ids=[])
+
+    last_update = parsed_date.strftime(DATE_FORMAT)
+    demisto.debug(f"Microsoft Defender 365 - Last update: {last_update}")
+    modified_incident_ids = fetch_modified_incident_ids(client, last_update)
+    return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
+
+
+def fetch_modified_incident(client: Client, incident_id: int) -> dict:
+    """
+    Fetches the modified incident from Microsoft 365 Defender.
+    Args:
+        client(Client): Microsoft 365 Defender's client to preform the API calls.
+        incident_id(int): The incident ID.
+    Returns:
+        dict: The modified incident.
+    """
+    demisto.debug(f"Microsoft Defender 365 - Starting fetch_modified_incident {incident_id=}")
+    incident = client.get_incident(incident_id=incident_id, timeout=TIMEOUT_INT)
+    demisto.debug(f"Microsoft Defender 365 - Fetched incident {incident_id=}")
+    if incident.get('@odata.context'):
+        del incident['@odata.context']
+    incident.update(_get_meta_data_for_incident(incident))
+    demisto.debug(f"Microsoft Defender 365 - Updated incident {incident_id=} with metadata.")
+    return incident
+
+
+def get_entries_for_comments(comments: List[dict[str, str]], last_update: datetime, comment_tag: str) -> List[
+        dict]:
+    """
+    Get the entries for the comments of the incident.
+    Args:
+        comments (List[dict]): The comments of the incident from Microsoft 365 Defender.
+        last_update (datetime): The last run time of the mirroring - should bring in comments that were added afterward to
+         avoid entries duplicates.
+        comment_tag (str): The tag to add for the comments entries when mirroring in.
+
+    Returns:
+        List[dict]: The entries for the comments.
+    """
+    entries = []
+    for comment in comments:
+        # check if the comment is a mirrored out entry to ms fto avoid duplicates
+        if MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR not in comment.get('comment', ''):
+            comment_time = dateparser.parse(comment.get('createdTime', ''))
+            if not comment_time:
+                demisto.error(f"Microsoft Defender 365 Could not parse {comment.get('createdTime')} for {comment=}")
+                continue
+            if comment_time > last_update:
+                entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': f"Created By: {comment.get('createdBy', '')}\n"
+                                f"Created On: {comment.get('createdTime', '')}\n"
+                                f"{comment.get('comment', '')}",
+                    'ContentsFormat': EntryFormat.HTML,
+                    'Tags': [comment_tag],
+                    'Note': True,
+                    'EntryContext': {
+                        'comments': comment
+                    },
+                })
+    return entries
+
+
+def get_incident_entries(mirrored_object: dict, last_update: datetime, comment_tag: str, close_incident: bool = False) -> List[
+        dict]:
+    """
+    Creates the entries for the mirrored in incident.
+    Args:
+        mirrored_object (dict): The incident object from Microsoft 365 Defender.
+        last_update (datetime): The last run time of the mirroring - should bring in comments that were added afterward to avoid
+         entries duplicates.
+        comment_tag (str): The tag to add for the comments entries when mirroring in.
+        new_incident (bool): Whether the incident is new a- was just fetched therefore should bring in all the comments.
+        close_incident (bool): Whether resolved incidents from Microsoft should be closed in XSOAR in the mirroring in process.
+
+    Returns:
+        List[dict]: The entries for the incident.
+    """
+    entries = get_modified_incidents_close_or_repopen_entries([mirrored_object], close_incident=close_incident)
+    entries.extend(get_entries_for_comments(mirrored_object.get('comments', []), last_update, comment_tag))
+    return entries
+
+
+def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
+    """
+    Get the remote incident data from Microsoft 365 Defender to mirror in XSOAR and create the entries for the incident.
+    Args:
+        client(Client): Microsoft 365 Defender's client to preform the API calls.
+        args(Dict): Demisto arguments.
+    Returns:
+        GetRemoteDataResponse: The remote data.
+
+    """
+    remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = arg_to_number(remote_args.remote_incident_id)
+    if remote_incident_id is None:
+        raise DemistoException("get_remote_data_command - remote_incident_id is None")
+    comment_tag = demisto.params().get('comment_tag_from_microsoft365defender', 'CommentFromMicrosoft365Defender')
+    last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
+    if not last_update:
+        demisto.error(f"Microsoft Defender 365 get_remote_data_command - Could not parse {remote_args.last_update=}")
+        return GetRemoteDataResponse({MICROSOFT_INCIDENT_ID_KEY: remote_incident_id}, entries=[])
+    close_incident = argToBoolean(demisto.params().get('close_incident', False))
+
+    mirrored_object: Dict = {}
+    demisto.debug(
+        f'Microsoft Defender 365 - Performing get-remote-data command with incident id: {remote_incident_id} and '
+        f'last_update: {remote_args.last_update}')
+    try:
+        mirrored_object = fetch_modified_incident(client, remote_incident_id)
+        entries = get_incident_entries(mirrored_object, last_update, comment_tag, close_incident=close_incident)
+        return GetRemoteDataResponse(mirrored_object, entries)
+    except Exception as e:
+        demisto.debug(f"Error in Microsoft incoming mirror for incident: {remote_incident_id}\n"
+                      f"Error message: {str(e)} \n {traceback.format_exc()}")
+
+        if not mirrored_object:
+            mirrored_object = {MICROSOFT_INCIDENT_ID_KEY: remote_incident_id}
+        mirrored_object['in_mirror_error'] = str(e)
+        return GetRemoteDataResponse(mirrored_object, entries=[])
+
+
+def get_mapping_fields_command():
+    """
+    Get the mapping fields for the incident type.
+    Returns:
+        GetMappingFieldsResponse: The mapping fields.
+    """
+    incident_type_scheme = SchemeTypeMapping(type_name='Microsoft 365 Defender Incident')
+    demisto.debug("Microsoft Defender 365 - collecting incident mapping for Microsoft 365 Defender Incident type.")
+    for name, description in OUTGOING_MIRRORED_FIELDS.items():
+        incident_type_scheme.add_field(name=name, description=description)
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(incident_type_scheme)
+    return mapping_response
+
+
+def handle_incident_close_out_or_reactivation(delta: dict, incident_status: IncidentStatus):
+    """
+    Handle the incident close out. If the close out is enabled, the incident will be resolved and the classification and
+    determination will be updated according to the close reason.
+
+    Args:
+        delta (dict): The delta of the incident to update.
+        incident_status (IncidentStatus): The incident status in XSOAR.
+
+    """
+    demisto.debug("Microsoft Defender 365 - Starting handle_incident_close_out_or_reactivation")
+    # Only close or reopen microsoft incidents based on xsoar if close_out is enabled.
+    if not argToBoolean(demisto.params().get('close_out', False)):
+        demisto.debug("Microsoft Defender 365 - Close out is not enabled")
+        return
+    demisto.debug("Microsoft Defender 365 - Close out is enabled")
+    if incident_status == IncidentStatus.DONE:
+        if any(delta.get(key) for key in ['closeReason', 'closeNotes', 'closingUserId']):
+            delta['status'] = 'Resolved'
+            demisto.debug("Microsoft Defender 365 - Updating incident status to Resolved")
+            # this functionality awaits https://jira-dc.paloaltonetworks.com/browse/CRTX-151123?filter=-2
+            # once resolved the microsoft365classification field needs to be returned to the close form in order to get
+            # the classification and determination fields in delta.
+            if delta.get('closeReason') == 'FalsePositive' and delta.get('classification') != 'FalsePositive':
+                delta.update({'classification': 'FalsePositive', 'determination': 'Other'})
+                demisto.debug("Microsoft Defender 365 - Updating classification and determination to FalsePositive and Other")
+            elif delta.get('closeReason') == 'Other' or delta.get('closeReason') == 'Duplicate':
+                delta.update({'classification': 'Unknown', 'determination': 'NotAvailable'})
+                demisto.debug("Microsoft Defender 365 - Updating classification and determination to Unknown and NotAvailable")
+    else:
+        if any(delta.get(key) == '' for key in ['closeReason', 'closeNotes', 'closingUserId']):
+            delta['status'] = 'Active'
+            demisto.debug("Microsoft Defender 365 - Updating incident status to Active")
+
+
+def mirror_out_entries(client: Client, entries: list[Dict], comment_tag: str, remote_incident_id: int):
+    """
+    Mirror out the entries to Microsoft 365 Defender.
+    Args:
+        client(Client): Microsoft 365 Defender's client to preform the API calls.
+        entries (list[Dict]): The entries added to the incident.
+        comment_tag (str): The comment tag to identify the entries that should be mirrored out as comments.
+        remote_incident_id (int): The remote incident ID.
+
+
+    """
+    demisto.debug("Microsoft Defender 365 - Starting mirror_out_entries")
+    for entry in entries:
+        demisto.debug(f'handling entry {entry.get("id")}, type: {entry.get("type")}, tags: {entry.get("tags", [])}')
+        tags = entry.get('tags', [])
+        user = entry.get('user', 'dbot') or 'dbot'
+        if comment_tag in tags:
+            if str(entry.get('format')) == 'html':
+                contents = str(entry.get('contents', ''))
+                text = (f"({user}): <br/><br/>[code]{contents} <br/><br/>[/code]"
+                        f" {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}")
+            else:
+                text = f"({user}): {str(entry.get('contents', ''))}\n\n {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}"
+
+            client.update_incident(incident_id=remote_incident_id,
+                                   timeout=TIMEOUT_INT,
+                                   comment=text)
+            demisto.debug(f"Microsoft Defender 365 - mirror out entries updated incident {remote_incident_id=}")
+
+        else:
+            demisto.debug(f"Microsoft Defender 365 - Skipping entry {entry.get('id')} as it does not contain the comment tag")
+
+
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+    """
+    Update the remote system in Microsoft 365 Defender - Mirror out the entries and update the incident.
+    Args:
+        client(Client): Microsoft 365 Defender's client to preform the API calls.
+        args(Dict): Demisto arguments.
+    Returns:
+        str: The remote incident ID.
+    """
+    update_remote_system_args = UpdateRemoteSystemArgs(args)
+    remote_incident_id = update_remote_system_args.remote_incident_id
+    delta = update_remote_system_args.delta
+
+    demisto.debug(
+        f"Microsoft Defender 365 -  update_remote_system_command {remote_incident_id=} \n {delta=} \n  "
+        f"{update_remote_system_args.incident_changed=} \n {update_remote_system_args.inc_status=}")
+
+    try:
+        if update_remote_system_args.incident_changed and delta:
+            handle_incident_close_out_or_reactivation(delta, update_remote_system_args.inc_status)
+
+            client.update_incident(incident_id=remote_incident_id,
+                                   status=delta.get('status'),
+                                   assigned_to=delta.get('assignedTo'),
+                                   classification=delta.get('classification'),
+                                   determination=delta.get('determination'),
+                                   tags=argToList(delta.get('tags')),
+                                   timeout=TIMEOUT_INT,
+                                   comment=delta.get('comment'))
+
+            demisto.debug(f"Microsoft Defender 365 - Updated incident {remote_incident_id=}")
+        else:
+            demisto.debug(
+                f'Microsoft Defender 365 -  Skipping updating remote incident fields [{remote_incident_id}] as it is not new '
+                f'nor changed')
+
+        if update_remote_system_args.entries:
+            comment_tag = demisto.params().get('comment_tag', COMMENT_TO_MICROSOFT_DEFAULT_TAG)
+            demisto.debug(
+                "Microsoft Defender 365 - new entries were found in the xsoar incident.")
+            mirror_out_entries(client, update_remote_system_args.entries, comment_tag, remote_incident_id)
+
+        return remote_incident_id
+
+    except Exception as e:
+        demisto.error(f"Microsoft Defender 365 - Error in outgoing mirror for incident {remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+        return remote_incident_id
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -614,10 +1071,19 @@ def main() -> None:
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
     fetch_timeout = arg_to_number(params.get('fetch_timeout', TIMEOUT))
+
+    mirroring_fields = {
+        'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction', 'None')),
+        'mirror_instance': demisto.integrationInstance(),
+        'mirror_tags': [params.get('comment_tag', COMMENT_TO_MICROSOFT_DEFAULT_TAG)],
+    }
+
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()
     args = demisto.args()
+
+    demisto.debug(f'{params=}, \n {args=}, \n{mirroring_fields}')
 
     try:
         if not managed_identities_client_id and not app_id:
@@ -670,8 +1136,25 @@ def main() -> None:
         elif command == 'fetch-incidents':
             fetch_limit = arg_to_number(fetch_limit)
             fetch_timeout = arg_to_number(fetch_timeout) if fetch_timeout else None
-            incidents = fetch_incidents(client, first_fetch_time, fetch_limit, fetch_timeout)
+            incidents = fetch_incidents(client, mirroring_fields, first_fetch_time, fetch_limit, fetch_timeout)
             demisto.incidents(incidents)
+
+        elif command == 'get-remote-data':
+            test_context_for_token(client)
+            return_results(get_remote_data_command(client, args))
+
+        elif command == 'get-modified-remote-data':
+            test_context_for_token(client)
+            modified_incidents = get_modified_remote_data_command(client, args)
+            return_results(modified_incidents)
+
+        elif command == 'update-remote-system':
+            test_context_for_token(client)
+            return_results(update_remote_system_command(client, args))
+
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+
         else:
             raise NotImplementedError
     # Log exceptions and return errors
