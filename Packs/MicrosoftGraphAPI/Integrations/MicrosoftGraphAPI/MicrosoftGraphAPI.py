@@ -53,12 +53,13 @@ class MsGraphClient:
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore[arg-type]
 
     def generic_request(
-            self,
-            resource: str,
-            http_method: str = 'GET',
-            api_version: str = 'v1.0',
-            odata: str | None = None,
-            request_body: dict | None = None,
+        self,
+        resource: str,
+        http_method: str = 'GET',
+        api_version: str = 'v1.0',
+        odata: str | None = None,
+        request_body: dict | None = None,
+        headers: dict | None = None
     ):
         url_suffix = urljoin(api_version, resource)
         if odata:
@@ -68,6 +69,7 @@ class MsGraphClient:
             url_suffix=url_suffix,
             json_data=request_body,
             resp_type='resp',
+            headers=headers
         )
         return res.json() if res.content else None
 
@@ -107,6 +109,8 @@ def generic_command(client: MsGraphClient, args: dict[str, Any]) -> CommandResul
             request_body = json.loads(request_body)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'Invalid request body - {str(e)}')
+    headers = args.get('headers')
+
     http_method = args.get('http_method', 'GET')
 
     response = client.generic_request(
@@ -115,6 +119,7 @@ def generic_command(client: MsGraphClient, args: dict[str, Any]) -> CommandResul
         api_version=args.get('api_version', 'v1.0'),
         odata=args.get('odata', ''),
         request_body=request_body,
+        headers=dict(subString.split(":") for subString in headers.split(',')) if headers else None
     )
 
     if not response:
