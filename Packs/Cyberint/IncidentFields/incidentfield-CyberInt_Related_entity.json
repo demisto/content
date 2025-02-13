@@ -1,7 +1,7 @@
 {
     "id": "incident_cyberintrelatedentity",
     "version": -1,
-    "name": "CyberInt Related Entity",
+    "name": "Cyberint Related Entity",
     "ownerOnly": false,
     "cliName": "cyberintrelatedentity",
     "type": "multiSelect",
