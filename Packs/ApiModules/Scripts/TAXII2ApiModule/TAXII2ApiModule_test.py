@@ -1877,12 +1877,12 @@ def test_create_sdo_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_i
 
 test_create_manifest_entry_pram = [(SDO_XSOAR_INDICATOR_1, "Attack Pattern",
                                     {'id': 'attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e',
-                                     'date_added': '2023-04-19T13:05:01.000000Z',
-                                     'version': '2023-04-19T13:05:01.000000Z'}),
+                                     'date_added': '2023-04-19T10:05:01.000000Z',
+                                     'version': '2023-04-19T10:05:01.000000Z'}),
                                    (SDO_XSOAR_INDICATOR_2, "Malware",
                                     {'id': 'malware--bddcf01f-9fd0-5107-a013-4b174285babc',
-                                     'date_added': '2023-04-20T17:20:10.000000Z',
-                                     'version': '2023-04-19T13:05:01.000000Z'})]
+                                     'date_added': '2023-04-20T14:20:10.000000Z',
+                                     'version': '2023-04-19T10:05:01.000000Z'})]
 
 
 @pytest.mark.parametrize('xsoar_indicator, xsoar_type, expected_manifest_entry', test_create_manifest_entry_pram)
@@ -1911,8 +1911,8 @@ TEST_CREATE_STIX_OBJECT_PARAM = [
             "id": "attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e",
             "type": "attack-pattern",
             "spec_version": "2.1",
-            "created": "2023-04-19T13:05:01.000000Z",
-            "modified": "2023-04-19T13:05:01.000000Z",
+            "created": "2023-04-19T10:05:01.000000Z",
+            "modified": "2023-04-19T10:05:01.000000Z",
             "name": "T111",
             "description": "",
         },
@@ -1924,8 +1924,8 @@ TEST_CREATE_STIX_OBJECT_PARAM = [
             "id": "malware--bddcf01f-9fd0-5107-a013-4b174285babc",
             "type": "malware",
             "spec_version": "2.1",
-            "created": "2023-04-20T17:20:10.000000Z",
-            "modified": "2023-04-19T13:05:01.000000Z",
+            "created": "2023-04-20T14:20:10.000000Z",
+            "modified": "2023-04-19T10:05:01.000000Z",
             "name": "bad malware",
             "description": "",
             "is_family": False,
