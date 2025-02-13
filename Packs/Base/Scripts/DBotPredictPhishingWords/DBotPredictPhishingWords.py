@@ -13,6 +13,19 @@ TORCH_TYPE = 'torch'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 
 
+class TEMP_RES:
+    data = {}
+
+
+def log_io(func, loc):
+    def new_func(*x, **y):
+        TEMP_RES.data[f'{loc}-{func.__name__}'] = {'input': (x, y)}
+        res = func(*x, **y)
+        TEMP_RES.data[f'{loc}-{func.__name__}']['output'] = res
+        return res
+    return new_func
+
+
 def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
@@ -130,13 +143,13 @@ def predict_batch_incidents_light_output(email_subject, email_body, phishing_mod
     batch_predictions = []
     for input_text in preprocessed_text_list:
         incident_res = {'Label': -1, 'Probability': -1, 'Error': ''}
-        filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
+        filtered_text, filtered_text_number_of_words = log_io(phishing_model.filter_model_words, 'batch')(input_text)
         if filtered_text_number_of_words == 0:
             incident_res['Error'] = "The model does not contain any of the input text words"
         elif filtered_text_number_of_words < min_text_length:
             incident_res['Error'] = "The model contains fewer than %d words" % min_text_length
         else:
-            pred = phishing_model.predict(input_text)
+            pred = log_io(phishing_model.predict, 'batch')(input_text)
             incident_res['Label'] = pred[0]
             prob = pred[1]
             if isinstance(prob, np.floating):
@@ -156,13 +169,14 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
                                         word_threshold):
     text = f"{email_subject} \n{email_body}"
     input_text, words_to_token_maps = preprocess_text(text, model_type, is_return_error)
-    filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
+
+    filtered_text, filtered_text_number_of_words = log_io(phishing_model.filter_model_words, 'single')(input_text)
     if filtered_text_number_of_words == 0:
         handle_error("The model does not contain any of the input text words", is_return_error)
     if filtered_text_number_of_words < min_text_length:
         handle_error("The model contains fewer than %d words" % min_text_length, is_return_error)
 
-    explain_result = phishing_model.explain_model_words(
+    explain_result = log_io(phishing_model.explain_model_words, 'single')(
         input_text,
         0,
         word_threshold,
@@ -171,8 +185,7 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
     explain_result['Probability'] = float(explain_result["Probability"])
     predicted_prob = explain_result["Probability"]
     if predicted_prob < label_threshold:
-        handle_error("Label probability is {:.2f} and it's below the input confidence threshold".format(
-            predicted_prob), is_return_error)
+        handle_error(f"Label probability is {predicted_prob:.2f} and it's below the input confidence threshold", is_return_error)
 
     positive_tokens = OrderedSet(explain_result['PositiveWords'])
     negative_tokens = OrderedSet(explain_result['NegativeWords'])
@@ -196,8 +209,8 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
     explain_result_hr = {}
     explain_result_hr['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr['Label'] = predicted_label
-    explain_result_hr['Probability'] = "%.2f" % predicted_prob
-    explain_result_hr['Confidence'] = "%.2f" % predicted_prob
+    explain_result_hr['Probability'] = f"{predicted_prob:.2f}"
+    explain_result_hr['Confidence'] = f"{predicted_prob:.2f}"
     explain_result_hr['PositiveWords'] = ", ".join([w.lower() for w in positive_words])
     explain_result_hr['NegativeWords'] = ", ".join([w.lower() for w in negative_words])
     incident_context = demisto.incidents()[0]
