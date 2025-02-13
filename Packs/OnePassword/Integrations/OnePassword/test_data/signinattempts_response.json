@@ -1,0 +1,58 @@
+{
+    "cursor": "qwerty4567",
+    "has_more": false,
+    "items": [
+        {
+            "uuid": "1234",
+            "session_uuid": "session-il-1234",
+            "timestamp": "2024-12-02T11:54:19.716235495Z",
+            "country": "IL",
+            "category": "success",
+            "type": "credentials_ok",
+            "client": {
+                "app_name": "1Password for Web",
+                "app_version": "1883",
+                "platform_name": "Chrome",
+                "os_name": "MacOSX",
+                "os_version": "15.1.1"
+            },
+            "location": {
+                "country": "IL",
+                "region": "Gush Dan",
+                "city": "Tel Aviv"
+            },
+            "target_user": {
+                "name": "John Doe",
+                "email": "userA@example.com",
+                "type": "user"
+            },
+            "account_uuid": "account-aaa"
+        },
+        {
+            "uuid": "5678",
+            "session_uuid": "session-uk-5678",
+            "timestamp": "2024-12-02T11:59:40.510481428Z",
+            "country": "UK",
+            "category": "success",
+            "type": "credentials_ok",
+            "client": {
+                "app_name": "1Password for Web",
+                "app_version": "121",
+                "platform_name": "Edge",
+                "os_name": "Windows 11",
+                "os_version": "24H2"
+            },
+            "location": {
+                "country": "UK",
+                "region": "Scotland",
+                "city": "Glasgow"
+            },
+            "target_user": {
+                "name": "Foo Bar",
+                "email": "userB@example.com",
+                "type": "user"
+            },
+            "account_uuid": "account-bbb"
+        }
+    ]
+}
