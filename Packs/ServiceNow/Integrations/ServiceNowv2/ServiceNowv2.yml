@@ -17,7 +17,7 @@ configuration:
   type: 9
   required: false
   section: Connect
-  displaypassword: password/client_secret
+  displaypassword: password/Client Secret
 - display: ServiceNow API Version (e.g. 'v1')
   name: api_version
   type: 0

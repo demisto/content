@@ -3246,13 +3246,20 @@ def main():
         },
         'verify': verify,
         'proxy': params.get('proxy')}
-
+    if use_oauth and use_jwt_oauth:
+        raise DemistoException(' Please choose one authentication method only- using JWT or Oauth')
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         oauth_params['use_oauth'] = use_oauth
     elif use_jwt_oauth:
-        oauth_params['jwt_key_id'] = params.get('jwt_credentials', {}).get('identifier')
-        oauth_params['jwt_private_key'] = params.get('jwt_credentials', {}).get('password')
-        oauth_params['jwt_sub'] = params.get('jwt_sub', '')
+        jwt_key_id = params.get('jwt_credentials', {}).get('identifier')
+        private_key = params.get('jwt_credentials', {}).get('password')
+        sub = params.get('jwt_sub', '')
+        if not(jwt_key_id and private_key and sub and client_id and client_secret):
+            raise DemistoException('The following paramters must be configured for JWT Oauth:'\
+                                   'Client ID, Client Secret, Private key, kid (Key Id), Sub')
+        oauth_params['jwt_key_id'] = jwt_key_id
+        oauth_params['jwt_private_key'] = private_key
+        oauth_params['jwt_sub'] = sub
     else:  # use basic authentication
         username = params.get('credentials', {}).get('identifier')
         password = params.get('credentials', {}).get('password')
