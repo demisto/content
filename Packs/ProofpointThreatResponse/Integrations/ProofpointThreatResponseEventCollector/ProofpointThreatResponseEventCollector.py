@@ -283,7 +283,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
         if not last_fetched_id.get(state):
             last_fetched_id[state] = '0'
         
-        if not datetime.strptime(current_ts, TIME_FORMAT).replace(tzinfo=timezone.utc)-datetime.strptime(last_fetch[state], TIME_FORMAT).replace(tzinfo=timezone.utc) < timedelta(days=3):
+        if datetime.strptime(current_ts, TIME_FORMAT).replace(tzinfo=timezone.utc)-datetime.strptime(last_fetch[state], TIME_FORMAT).replace(tzinfo=timezone.utc) > timedelta(days=3):
             last_fetch[state] = (datetime.strptime(current_ts, TIME_FORMAT).replace(tzinfo=timezone.utc) - timedelta(days=3)).strftime(TIME_FORMAT)
             demisto.debug(f'last_fetch of state {state} is older than 3 days, setting last_fetch to current time - 3 days')
 
