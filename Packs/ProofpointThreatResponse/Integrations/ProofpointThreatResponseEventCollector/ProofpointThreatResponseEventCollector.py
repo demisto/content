@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 
 # Disable insecure warnings
 import urllib3
@@ -33,6 +33,7 @@ class Client(BaseClient):
             url_suffix='api/incidents',
             params=query_params,
         )
+        demisto.debug(f"######## got from api {raw_response}")
         return raw_response
 
 
@@ -90,6 +91,7 @@ def list_incidents_command(client, args):
 
     incidents_list = raw_response[:limit]
     events = get_events_from_incidents(incidents_list)
+    demisto.debug(f"########## got {len(events)} from incidents")
     human_readable = create_incidents_human_readable('List Incidents Results:', events)
 
     return events, human_readable, raw_response
@@ -250,9 +252,9 @@ def get_incidents_batch_by_time_request(client, params):
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
         
-        if not new_incidents:
-            demisto.debug("Got no incidents, breaking while loop")
-            break
+        # if not new_incidents:
+        #     demisto.debug("Got no incidents, breaking while loop")
+        #     break
         
         demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} events")
         
@@ -277,12 +279,17 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
     """
     last_fetch = last_run.get('last_fetch', {})
     last_fetched_id = last_run.get('last_fetched_incident_id', {})
+    current_ts = datetime.now(timezone.utc).strftime(TIME_FORMAT)
 
     for state in incidents_states:
         if not last_fetch.get(state):
             last_fetch[state] = first_fetch
         if not last_fetched_id.get(state):
             last_fetched_id[state] = '0'
+        
+        if not datetime.strptime(current_ts, TIME_FORMAT).replace(tzinfo=timezone.utc)-datetime.strptime(last_fetch[state], TIME_FORMAT).replace(tzinfo=timezone.utc) < timedelta(days=3):
+            last_fetch[state] = (datetime.strptime(current_ts, TIME_FORMAT).replace(tzinfo=timezone.utc) - timedelta(days=3)).strftime(TIME_FORMAT)
+            demisto.debug(f'last_fetch of state {state} is older than 3 days, setting last_fetch to current time - 3 days')
 
     incidents = []
     for state in incidents_states:
