@@ -1521,16 +1521,14 @@ def add_bot_to_chat(chat_id: str):
         return
     res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
                        params={"$filter": f"externalId eq '{BOT_ID}'"})
-    # TODO: Add error handling, element 0 won't exist if the bot isn't in the catalogue
-    # the bot may be added directly to a team without it being in the catalogue and if that
-    # was the process used, this will not return valid information
-    app_data = res.get('value')[0]      # type: ignore
-    bot_internal_id = app_data.get('id')
-
-    request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
-    http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
-
-    demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+    if isinstance(res, dict):
+        app_data = res.get('value')[0]      # type: ignore
+        bot_internal_id = app_data.get('id')
+        request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
+        http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
+        demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+    else:
+        demisto.debug("Bot not in catalog")
 
 
 def chat_create_command():
@@ -1953,6 +1951,7 @@ def update_message(service_url: str, conversation_id: str, message_id: str, text
     :param conversation_id: Conversation ID of message to update
     :param message_id: ID of message to update, also referred to as Activity ID in the bot API
     :param text: Text to update in the message
+    :param format_as_card: Whether to format the text as an adaptive card
     :return: dict
     """
     if format_as_card:
@@ -1972,7 +1971,7 @@ def update_message(service_url: str, conversation_id: str, message_id: str, text
         }
     url: str = f'{service_url}/v3/conversations/{conversation_id}/activities/{message_id}'
     res: dict = http_request('PUT', url, json_=conversation, api='bot')
-    # todo: add support for editing replies made by graph api
+
     return res
 
 
