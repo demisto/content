@@ -1140,7 +1140,7 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Containment_Plan-Test_use_case_test
+- No tests (auto formatted)
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
