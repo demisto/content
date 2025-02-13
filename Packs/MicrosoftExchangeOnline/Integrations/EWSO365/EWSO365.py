@@ -281,7 +281,7 @@ def exchangelib_cleanup():  # pragma: no cover
                 del protocol.__dict__["thread_pool"]
             else:
                 demisto.info(
-                    f"Thread pool not found (ignoring terminate) in protcol dict: {dir(protocol.__dict__)}"
+                    f"Thread pool not found (ignoring terminate) in protocol dict: {dir(protocol.__dict__)}"
                 )
         except Exception as ex:
             demisto.error(f"Error with thread_pool.terminate, ignoring: {ex}")
@@ -338,7 +338,6 @@ def get_client_from_params(params: dict) -> EWSClient:
     is_public_folder = argToBoolean(params.get('is_public_folder', False))
     request_timeout = int(params.get('request_timeout', 120))
     mark_as_read = params.get('mark_as_read', False)
-    legacy_name = argToBoolean(params.get('legacy_name', False))
     incident_filter = IncidentFilter(params.get('incidentFilter', IncidentFilter.RECEIVED_FILTER))
     self_deployed = argToBoolean(params.get('self_deployed', False))
     insecure = argToBoolean(params.get('insecure', False))
@@ -357,7 +356,6 @@ def get_client_from_params(params: dict) -> EWSClient:
         is_public_folder=is_public_folder,
         request_timeout=request_timeout,
         mark_as_read=mark_as_read,
-        legacy_name=legacy_name,
         incident_filter=incident_filter,
         azure_cloud=azure_cloud,
         tenant_id=tenant_id,
@@ -1588,7 +1586,7 @@ def handle_template_params(template_params):  # pragma: no cover
                 elif params[p].get('key'):
                     actual_params[p] = demisto.dt(demisto.context(), params[p]['key'])
         except ValueError as e:
-            return_error('Unable to parse template_params: %s' % (str(e)))
+            return_error(f'Unable to parse template_params: {str(e)}')
 
     return actual_params
 
@@ -1621,8 +1619,10 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
     )
 
 
-def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=[],
-                   additional_headers=None, from_address=None, reply_to=None, importance=None):  # pragma: no cover
+def create_message(
+    to, handle_inline_image: bool = True, subject='', body='', bcc=None, cc=None, html_body=None,
+    attachments=[], additional_headers=None, from_address=None, reply_to=None, importance=None,
+):  # pragma: no cover
     """Creates the Message object that will be sent.
 
     Args:
@@ -1636,10 +1636,11 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         additional_headers (Dict): Custom headers to be added to the message.
         from_address (str): The email address from which to reply.
         reply_to (list): Email addresses that need to be used to reply to the message.
-
+        handle_inline_image (bool): Whether to handle inline images in the HTML body.
     Returns:
         Message. Message object ready to be sent.
     """
+    demisto.debug(f"create_message: Received {len(attachments)} attachments, {handle_inline_image=}")
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
@@ -1650,21 +1651,23 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
                 message.attach(new_attachment)
 
     else:
-        html_body, html_attachments = handle_html(html_body)
-        attachments += html_attachments
-
+        html_attachments: list = []
+        if handle_inline_image:
+            html_body, html_attachments = handle_html(html_body)
+            attachments += html_attachments
+            demisto.debug(f"create_message: Processed HTML body with {len(attachments)} attachments")
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
                                         reply_to, importance)
 
         for attachment in attachments:
             if not isinstance(attachment, FileAttachment):
                 if not attachment.get('cid'):
-                    new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
+                    attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
                 else:
-                    new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                                    is_inline=True, content_id=attachment.get('cid'))
+                    attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+                                                is_inline=True, content_id=attachment.get('cid'))
 
-            message.attach(new_attachment)
+            message.attach(attachment)
 
     return message
 
@@ -1706,12 +1709,13 @@ def send_email(client: EWSClient, to=None, subject='', body="", bcc=None, cc=Non
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
                additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None,
-               renderBody=False):  # pragma: no cover
+               renderBody=False, handle_inline_image=True):  # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
     reply_to = argToList(replyTo)
     render_body = argToBoolean(renderBody)
+    handle_inline_image = argToBoolean(handle_inline_image)
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1745,8 +1749,20 @@ def send_email(client: EWSClient, to=None, subject='', body="", bcc=None, cc=Non
             if htmlBody:
                 htmlBody = htmlBody.format(**template_params)
 
-        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
-                                 reply_to, importance)
+        message = create_message(
+            to,
+            handle_inline_image,
+            subject,
+            body,
+            bcc,
+            cc,
+            htmlBody,
+            attachments,
+            additionalHeader,
+            from_address,
+            reply_to,
+            importance
+        )
 
     client.send_email(message)
 

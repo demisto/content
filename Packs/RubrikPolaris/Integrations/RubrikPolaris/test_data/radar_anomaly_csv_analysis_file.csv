@@ -1,0 +1,2 @@
+path,file_name,directory,change,is_suspicious,bytes_changed,size,mtime,object_type
+/,/,/,NO_CHANGE,false,0,123456789,1643723900,WindowsVolumeGroup

@@ -314,7 +314,7 @@ class TestFetchEventsCommand:
         assert alerts_call.request_history[1].qs['enddateusecs'][0] == str(alerts_expected_end_time)
         assert len(events) == 8
         assert last_run['audit_cache']['next_start_timestamp'] == self.mock_fixed_time_unix
-        assert last_run['audit_cache']['ids_for_dedup'] == ['94f359b611f0272505c36002ed4dbcaff9496d0f16460287f1ed05af0f7257a1']
+        assert last_run['audit_cache']['ids_for_dedup'] == ['4b2c6b16b2d288ed617ec28f5aca574bd8fb5670c696b726f483057ccc8aff16']
         assert last_run['audit_cache']['latest_event_fetched_timestamp'] == 170691857331523
         assert last_run['alert_cache']['next_start_timestamp'] == self.mock_fixed_time_unix
         assert last_run['alert_cache']['ids_for_dedup'] == ['66770']

@@ -344,6 +344,16 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 ''' HELPER FUNCTIONS '''
 
 
+def disable_for_xsiam():
+    """Validates if command is not running on an unsupported Cortex platform.
+
+    Raises:
+        DemistoException: If command is being run on XSIAM.
+    """
+    if is_xsiam():
+        raise DemistoException("This command is not supported on this Cortex platform.")
+
+
 def truncate_long_time_str(detections: List[Dict], time_key: str) -> List[Dict]:
     """
     Truncates the time string in each detection to a maximum of 26 characters, to prevent an error when parsing the time.
@@ -2027,8 +2037,7 @@ def search_device(filter_operator='AND'):
                                                                    arg_filter=arg_filter)
             else:
                 # All args should be a list. this is a fallback
-                url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
-                                                                                  inp_arg=k, arg_val=arg)
+                url_filter = f"{url_filter}{op}{k}:'{arg}'"
     raw_res = http_request('GET', '/devices/queries/devices/v1',
                            params={'filter': url_filter, 'limit': limit, 'offset': offset, 'sort': sort})
     device_ids = raw_res.get('resources')
@@ -2943,7 +2952,7 @@ def fetch_incidents():
     current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
     fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
-    look_back = int(params.get('look_back') or 1)
+    look_back = int(params.get('look_back') or 2)
     fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
@@ -4651,6 +4660,7 @@ def run_script_command():
         demisto.error(str(e))
         raise ValueError('Timeout argument should be an integer, for example: 30')
 
+    full_command = ''  # initialized variable here to avoid pylint errors
     if script_name and raw:
         raise ValueError('Only one of the arguments script_name or raw should be provided, not both.')
     elif not script_name and not raw:
@@ -7084,6 +7094,7 @@ def main():
             result = module_test()
             return_results(result)
         elif command == 'fetch-incidents':
+            disable_for_xsiam()
             demisto.incidents(fetch_incidents())
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
@@ -7123,11 +7134,11 @@ def main():
         elif command == 'cs-falcon-run-get-command':
             demisto.results(run_get_command())
         elif command == 'cs-falcon-status-get-command':
-            demisto.results(status_get_command(demisto.args()))
+            demisto.results(status_get_command(args))
         elif command == 'cs-falcon-status-command':
             demisto.results(status_command())
         elif command == 'cs-falcon-get-extracted-file':
-            demisto.results(get_extracted_file_command(demisto.args()))
+            demisto.results(get_extracted_file_command(args))
         elif command == 'cs-falcon-list-host-files':
             demisto.results(list_host_files_command())
         elif command == 'cs-falcon-refresh-session':
@@ -7241,12 +7252,16 @@ def main():
             return_results(get_detection_for_incident_command(args.get('incident_id')))
         # Mirroring commands
         elif command == 'get-remote-data':
+            disable_for_xsiam()
             return_results(get_remote_data_command(args))
-        elif demisto.command() == 'get-modified-remote-data':
+        elif command == 'get-modified-remote-data':
+            disable_for_xsiam()
             return_results(get_modified_remote_data_command(args))
         elif command == 'update-remote-system':
+            disable_for_xsiam()
             return_results(update_remote_system_command(args))
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
+            disable_for_xsiam()
             return_results(get_mapping_fields_command())
         elif command == 'cs-falcon-spotlight-search-vulnerability':
             return_results(cs_falcon_spotlight_search_vulnerability_command(args))
@@ -7311,7 +7326,7 @@ def main():
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
     except Exception as e:
-        return_error(str(e))
+        return_error(f'Failed to execute {command!r} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
