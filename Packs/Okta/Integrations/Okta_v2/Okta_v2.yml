@@ -1331,8 +1331,8 @@ script:
       name: updateType
       auto: PREDEFINED
       predefined:
-        - "APPEND"
-        - "OVERRIDE"
+      - "APPEND"
+      - "OVERRIDE"
       defaultValue: 'OVERRIDE'
     description: Update an Okta Zone.
     name: okta-update-zone
@@ -1514,7 +1514,7 @@ script:
   - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
     name: okta-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2005673
   runonce: false
   script: ""
   subtype: python3

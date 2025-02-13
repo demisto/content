@@ -216,7 +216,7 @@ create_group_response = {
                 "name": "large",
                 "href": "https://op3static.oktacdn.com/assets/img/logos/groups/odyssey/okta-large.png",
                 "type": "image/png"
-            }],
+        }],
         "users": {"href": "https://test.com/api/v1/groups/00g3q8tjdyoOw6fJE1d7/users"},
         "apps": {"href": "https://test.com/api/v1/groups/00g3q8tjdyoOw6fJE1d7/apps"}
     }
