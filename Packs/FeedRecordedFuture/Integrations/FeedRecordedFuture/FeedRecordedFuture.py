@@ -439,6 +439,9 @@ def fetch_and_create_indicators(client, risk_rule: str | None = None):
     """
     for indicators in fetch_indicators_command(client, client.indicator_type, risk_rule):
         demisto.debug('RF: Creating indicators')
+        demisto.debug(f'***RF: indicators list len: {len(indicators)}')
+        for curr_ind in indicators:
+            demisto.debug(f"***RF: Current indicator: {curr_ind}")
         demisto.createIndicators(indicators)
 
 
@@ -613,6 +616,7 @@ def main():  # pragma: no cover
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}] \n Traceback: {traceback.format_exc()}'
+        demisto.debug(f'***RF: error message: {err_msg}')
         return_error(err_msg)
 
 
