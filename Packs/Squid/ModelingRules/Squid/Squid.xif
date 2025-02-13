@@ -1,6 +1,6 @@
 [MODEL: dataset=squid_squid_raw]
 alter
-        URL = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s([\S]+)\s"),0),
+        URL_test = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s([\S]+)\s"),0),
         User = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s[\S]*\s([\S]+)\s"),0),
         Protocol = arrayindex(regextract(_raw_log ,"\s*([^\s^_]+)_[^\/]*\/\d*\s"),0),
         http_method = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s([\S]+)\s"),0)
@@ -14,8 +14,8 @@ alter
         xdm.network.http.response_code = arrayindex(regextract(_raw_log ,"\s*[^\/^\s]*\/(\d+)\s"),0),
         xdm.source.sent_bytes = to_integer(arrayindex(regextract(_raw_log ,"\/\d*\s(\d+)\s"),0)),
         xdm.network.http.method = if(http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
-        xdm.network.http.url = replex (URL, ":\d+", ""),
-        xdm.target.port = to_number(arrayindex(regextract(URL ,":(\d+)"),0)),
+        xdm.network.http.url = replex (URL_test, ":\d+", ""),
+        xdm.target.port = to_number(arrayindex(regextract(URL_test ,":(\d+)"),0)),
         xdm.source.user.username = if(User != "-", User, null),
         xdm.event.operation_sub_type = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s[\S]*\s[\S]*\s([^\/]+)/"),0),
         xdm.intermediate.ipv4 = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s[\S]*\s[\S]*\s[^\/]*/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
