@@ -219,11 +219,8 @@ def _get_last_fetch_datetime(last_run):
     last_fetch = last_run
     last_fetch_datetime: datetime = datetime.now()
     if last_fetch:
-        if isinstance(last_fetch, str):
-            last_fetch_datetime = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%SZ")
-            demisto.debug(f"Alerts were fetched last on: {last_fetch_datetime}")
-        else:
-            raise ValueError(f'Last fetch value error :- {type(last_fetch)} and last run data :- {last_run}')
+        last_fetch_datetime = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%SZ")
+        demisto.debug(f"Alerts were fetched last on: {last_fetch_datetime}")
     else:
         # If no last run is found
         first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
@@ -533,7 +530,7 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
     if oldest_incidents:
         new_last_run = incidents_queue[-1]["occurred"]  # newest incident creation time
         last_fetch_datetime = datetime.strptime(new_last_run, "%Y-%m-%dT%H:%M:%SZ")
-        # Increment by one second
+        # Increment by one second to make sure we don't pull same Doppel Alert twice
         next_fetch_datetime = last_fetch_datetime + timedelta(seconds=1)
         next_fetch = next_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:

@@ -183,7 +183,7 @@ script:
       name: alert_id
     - description: The id of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
       name: comment
-    - description: A new comment to add to the alert.
+    - description: A new comment to be added to the alert.
       name: entity
     - auto: PREDEFINED
       description: Status of which queue the alert is in.
