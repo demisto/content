@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The *fields* argument has been removed from the **core-delete-incidents** command. The function now exclusively returns the relevant fields: 'totalDeleted', 'notUpdated', and 'total'."
+}
