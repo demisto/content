@@ -2144,12 +2144,13 @@ Update an Okta Zone.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| zoneID | Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7. | Required | 
-| zoneName | Updates the zone name. | Optional | 
-| gatewayIPs | Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
-| proxyIPs | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
+| **Argument Name** | **Description**                                                                                                                                         | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| zoneID | Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.                                                                                                          | Required | 
+| zoneName | Updates the zone name.                                                                                                                                  | Optional | 
+| gatewayIPs | Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).                                                                   | Optional | 
+| proxyIPs | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).                                                                      | Optional | 
+| updateType | Indicate the action of adding an IP to an existing zone or overriding the existing IPs. Possible values are: "APPEND", "OVERRIDE". Default is "OVERRIDE". | Optional | 
 
 #### Context Output
 

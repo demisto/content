@@ -1240,19 +1240,41 @@ def list_zones_command(client, args):
     )
 
 
-def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs):
+def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs, updateType="OVERRIDE"):
     # If user provided a new zone name - set it
     if zoneName:
         zoneObject["name"] = zoneName
 
-    # Set IPs in CIDR mode. Single IPs will be added as /32.
+    gateways = []
+    proxies = []
+    existing_gateways: list = zoneObject.get('gateways')
+    existing_proxies: list = zoneObject.get('proxies')
+
     if gatewayIPs:
-        CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in gatewayIPs]
-        zoneObject["gateways"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+        for ip in gatewayIPs:
+            if '-' in ip:  # Check for IP range notation
+                gateways.append({"type": "RANGE", "value": ip})
+            else:  # If not a range, treat it as a single IP
+                cidr_value = f"{ip}/32" if '/' not in ip else f'{ip}'
+                gateways.append({"type": "CIDR", "value": cidr_value})
+
+        if existing_gateways is not None and updateType == "APPEND":
+            zoneObject["gateways"] = existing_gateways + gateways
+        else:
+            zoneObject["gateways"] = gateways
 
     if proxyIPs:
-        CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in proxyIPs]
-        zoneObject["proxies"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+        for ip in proxyIPs:
+            if '-' in ip:  # Check for IP range notation
+                proxies.append({"type": "RANGE", "value": ip})
+            else:  # If not a range, treat it as a single IP
+                cidr_value = f"{ip}/32" if '/' not in ip else f'{ip}'
+                proxies.append({"type": "CIDR", "value": cidr_value})
+
+        if existing_proxies is not None and updateType == "APPEND":
+            zoneObject["proxies"] = existing_proxies + proxies
+        else:
+            zoneObject["proxies"] = proxies
 
     return zoneObject
 
@@ -1297,12 +1319,13 @@ def update_zone_command(client, args):
             'Nothing to update'
         )
     zoneID = args.get('zoneID', '')
+    updateType = args.get('updateType')
     zoneObject = client.get_zone(zoneID)
     if zoneID == zoneObject.get('id'):
         zoneName = args.get('zoneName', '')
         gatewayIPs = argToList(args.get('gatewayIPs', ''))
         proxyIPs = argToList(args.get('proxyIPs', ''))
-        zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs)
+        zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs, updateType)
 
         raw_response = client.update_zone(zoneObject)
         if not raw_response:

@@ -2,11 +2,10 @@ from unittest.mock import MagicMock, patch
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
     get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command, \
-    create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param, set_password_command
+    create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param, set_password_command, apply_zone_updates
 import pytest
 import json
 import requests_mock
-
 
 client = Client(base_url="demisto.com", api_token="XXX")
 
@@ -1157,3 +1156,35 @@ def test_revoke_session(mock_http_request):
         url_suffix=expected_uri,
         params=expected_params
     )
+
+
+def test_apply_zone_update_override():
+    """
+    Given: empty ZoneObeject
+    When: apply_zone_updates is called with "OVERRIDE" update type and specific gatewayIPs and proxyIPs,
+    Then: the zoneObject should be updated with the provided data.
+    """
+    zoneObject = {}
+    updated_zone = apply_zone_updates(zoneObject, "TestZone", ["192.168.1.1", "10.0.0.0-10.0.0.10"],
+                                      ["10.0.0.1", "192.168.1.0-192.168.1.5"], "OVERRIDE")
+    assert updated_zone == {
+        "name": "TestZone",
+        "gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}, {"type": "RANGE", "value": "10.0.0.0-10.0.0.10"}],
+        "proxies": [{"type": "CIDR", "value": "10.0.0.1/32"}, {"type": "RANGE", "value": "192.168.1.0-192.168.1.5"}]
+    }
+
+
+def test_apply_zone_update_append_with_range():
+    """
+    Given: zoneObject already with some gateways,
+    When: apply_zone_updates is called with "APPEND" update type and IP ranges,
+    Then: the new gateways with IP ranges should be appended to the existing ones in the zoneObject.
+    """
+    zoneObject = {"gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}]}
+    updated_zone = apply_zone_updates(zoneObject, "NewZone", ["192.168.1.2-192.168.1.10"], ["10.0.0.1", "10.0.0.2-10.0.0.5"],
+                                      "APPEND")
+    assert updated_zone == {
+        "name": "NewZone",
+        "gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}, {"type": "RANGE", "value": "192.168.1.2-192.168.1.10"}],
+        "proxies": [{"type": "CIDR", "value": "10.0.0.1/32"}, {"type": "RANGE", "value": "10.0.0.2-10.0.0.5"}]
+    }
