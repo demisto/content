@@ -696,3 +696,4 @@ inputs: []
 outputs: []
 fromversion: 6.2.0
 description: This playbook uses the Atlassian Confluence Cloud integration and tests all the commands of the integration.
+
