@@ -49,9 +49,7 @@ select = [
     "ST110", "ST111",
     "TR100",
 ]
-
 warning = ["PB130", "PB131", "RN116"]
-
 
 
 [path_based_validations]
