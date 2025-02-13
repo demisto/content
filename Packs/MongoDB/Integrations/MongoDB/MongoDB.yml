@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: MongoDB
+  id: MongoDB 12-2-25
   version: -1
 configuration:
 - display: Username
@@ -26,8 +26,8 @@ configuration:
   type: 8
   required: false
 description: Use the MongoDB integration to search and query entries in your MongoDB.
-display: MongoDB
-name: MongoDB
+display: MongoDB 12-2-25
+name: MongoDB 12-2-25
 script:
   commands:
   - arguments:
