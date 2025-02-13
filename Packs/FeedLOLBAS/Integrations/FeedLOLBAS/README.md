@@ -55,6 +55,7 @@ Retrieves a limited number of indicators.
 | LOLBAS.Indicators.Name | String | The name of the indicator. | 
 | LOLBAS.Indicators.Paths.path | String | The path of the indicator. | 
 | LOLBAS.Indicators.Type | String | The type of the indicator. | 
+| LOLBAS.Indicators.URL | String | The URL to the indicator. | 
 
 #### Command example
 ```!lolbas-get-indicators limit=2```
@@ -88,7 +89,8 @@ Retrieves a limited number of indicators.
                         "path": "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.11.2521.0_x64__8wekyb3d8bbwe\\AppInstaller.exe"
                     }
                 ],
-                "Type": "Tool"
+                "Type": "Tool",
+                "URL": "https://lolbas-project.github.io/lolbas/Binaries/AppInstaller/"
             },
             {
                 "Commands": [
@@ -122,7 +124,8 @@ Retrieves a limited number of indicators.
                         "path": "c:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe"
                     }
                 ],
-                "Type": "Tool"
+                "Type": "Tool",
+                "URL": "https://lolbas-project.github.io/lolbas/Binaries/Aspnet_Compiler/"
             }
         ]
     }
