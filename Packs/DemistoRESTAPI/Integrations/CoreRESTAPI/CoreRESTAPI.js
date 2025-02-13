@@ -209,7 +209,7 @@ var deleteIncidents = function(ids_to_delete) {
     var body = {
         ids: ids_to_delete,
         all: false,
-        filter: {}
+        filter: {"size": 1}
     };
 
     var res = sendRequest('POST', '/incident/batchDelete', JSON.stringify(body));
