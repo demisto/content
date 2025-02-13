@@ -235,11 +235,32 @@ class ClientV3(BaseClient):
                 break
 
         if current_page <= page_to_return and not next_page:
-            demisto.debug('Abs: Returning empty data, as next_page is empty, and '
+            demisto.debug('ABS: Returning empty data, as next_page is empty, and '
                           f'current_page ({current_page}) <= page_to_return ({page_to_return})')
             # no more results in the API
             return {}
 
+        return data
+
+    def get_all_results(self, url_suffix: str, page_size: int, query_string: str, ok_codes: tuple) -> dict:
+        """Return all the results from the API
+
+        Args:
+            url_suffix (str): The url suffix to fetch from.
+            page_size (int): The pga size to return.
+            query_string (str): The query to filter results by.
+            ok_codes (tuple): An HTTP status code of success.
+        """
+        next_page = ''
+        response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size),
+                                            ok_codes=tuple(ok_codes))
+        data = response.get('data')
+
+        while next_page := response.get('metadata', {}).get('pagination', {}).get('nextPage', ''):
+            response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size),
+                                                ok_codes=tuple(ok_codes))
+            data += response.get('data')
+        
         return data
 
     def api_request_absolute(self, method: str, url_suffix: str, body: dict = {}, success_status_code=(),
@@ -269,15 +290,7 @@ class ClientV3(BaseClient):
             if specific_page:
                 data = self.get_specific_page_data(url_suffix, page, page_size, query_string, ok_codes=tuple(success_status_code))
             else:
-                next_page = ''
-                response = self.send_request_to_api('GET', url_suffix, query_string + self.add_pagination(next_page, page_size),
-                                                    ok_codes=tuple(success_status_code))
-                data = response.get('data')
-                while next_page := response.get('metadata', {}).get('pagination', {}).get('nextPage', ''):
-                    response = self.send_request_to_api('GET', url_suffix,
-                                                        query_string + self.add_pagination(next_page, page_size),
-                                                        ok_codes=tuple(success_status_code))
-                    data += response.get('data')
+                data = self.get_all_results(url_suffix, page_size, query_string, ok_codes=tuple(success_status_code))
             return data
 
         elif method == 'DELETE':
