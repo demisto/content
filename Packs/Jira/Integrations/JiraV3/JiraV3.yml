@@ -317,6 +317,9 @@ script:
     - contextPath: Ticket.Description
       description: The ticket's description.
       type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
+      type: String
     - contextPath: Ticket.Labels
       description: The ticket's labels.
       type: Array
@@ -486,6 +489,9 @@ script:
     - contextPath: Ticket.Description
       description: The ticket's project description.
       type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
+      type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
       type: Array
@@ -542,6 +548,9 @@ script:
       type: String
     - contextPath: Ticket.Description
       description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
       type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
@@ -757,6 +766,12 @@ script:
       type: String
     - contextPath: InfoFile.Info
       description: Basic information about the file.
+      type: String
+    - contextPath: Ticket.Description
+      description: The ticket's description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
       type: String
   - arguments:
     - description: The maximum number of results to return. Default is 50 and maximum is 5000.

@@ -1520,9 +1520,12 @@ def add_bot_to_chat(chat_id: str):
 
     # bot is already part of the chat
     if is_bot_in_chat(chat_id):
+        demisto.debug(f"Bot is already part of the chat - chat ID: {chat_id}")
         return
     res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
                        params={"$filter": f"externalId eq '{BOT_ID}'"})
+    demisto.debug(f"res is: {res}")
+    demisto.debug(f"res type is: {type(res)}")
     app_data = res.get('value')[0]      # type: ignore
     bot_internal_id = app_data.get('id')
 
@@ -2784,6 +2787,25 @@ def long_running_loop():
             time.sleep(5)
 
 
+def get_token_permissions(access_token: str) -> list[str]:
+    """
+    Decodes the provided access token and retrieves a list of API permissions associated with the token.
+
+    :param access_token: the access token to decode.
+    :return: A list of the token's API permission roles.
+    """
+    decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+
+    if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        roles = decoded_token.get('roles', [])
+
+    else:  # Authorization code flow
+        roles = decoded_token.get('scp', '')
+        roles = roles.split()
+
+    return roles
+
+
 def token_permissions_list_command():
     """
     Gets the Graph access token stored in the integration context and displays the token's API permissions in the war room.
@@ -2800,18 +2822,11 @@ def token_permissions_list_command():
 
     # Decode the token and extract the roles:
     if access_token:
-        decoded_token = jwt.decode(access_token, options={"verify_signature": False})
-
-        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
-            roles = decoded_token.get('roles', [])
-
-        else:  # Authorization code flow
-            roles = decoded_token.get('scp', '')
-            roles = roles.split()
+        roles = get_token_permissions(access_token)
 
         if roles:
-            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})',
-                                 sorted(roles), headers=['Permission'])
+            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})\n'
+                                 f'Authorization type is: {AUTH_TYPE}', sorted(roles), headers=['Permission'])
         else:
             hr = 'No permissions obtained for the used graph access token.'
 

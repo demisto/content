@@ -338,7 +338,6 @@ def get_client_from_params(params: dict) -> EWSClient:
     is_public_folder = argToBoolean(params.get('is_public_folder', False))
     request_timeout = int(params.get('request_timeout', 120))
     mark_as_read = params.get('mark_as_read', False)
-    legacy_name = argToBoolean(params.get('legacy_name', False))
     incident_filter = IncidentFilter(params.get('incidentFilter', IncidentFilter.RECEIVED_FILTER))
     self_deployed = argToBoolean(params.get('self_deployed', False))
     insecure = argToBoolean(params.get('insecure', False))
@@ -357,7 +356,6 @@ def get_client_from_params(params: dict) -> EWSClient:
         is_public_folder=is_public_folder,
         request_timeout=request_timeout,
         mark_as_read=mark_as_read,
-        legacy_name=legacy_name,
         incident_filter=incident_filter,
         azure_cloud=azure_cloud,
         tenant_id=tenant_id,

@@ -232,7 +232,7 @@ script:
       - No
       description: Whether or not to get additional data about the device.
       auto: PREDEFINED
-    - description: The query by which to filter the device.
+    - description: The query by which to filter the device. The query format should be `filter_parameter_name:'filter_value'`.
       name: filter
     - description: The maximum records to return [1-5000].
       name: limit
@@ -252,9 +252,6 @@ script:
       - lift_containment_pending
     - description: The hostname of the device.
       name: hostname
-      auto: PREDEFINED
-      predefined:
-      - ''
     - description: The platform name of the device.
       name: platform_name
       auto: PREDEFINED
