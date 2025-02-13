@@ -112,6 +112,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
     len_of_results = 0
     results = []
+    current_command = demisto.command()
     while True:
         if response.get('fail'):
             raise Exception(json.dumps(response.get('fail')[0].get('errors')))
@@ -121,11 +122,11 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
             response_data = response.get('data')
         for entry in response_data:
             # If returning this log will not exceed the specified limit
-            if not limit or len_of_results < limit:
+            if not limit or len_of_results < limit or current_command == 'fetch-incidents':
                 len_of_results += 1
                 results.append(entry)
         # If limit is reached or there are no more pages
-        if not next_page or (demisto.command()!='fetch-incidents' and limit and len_of_results >= limit):
+        if not next_page or (current_command != 'fetch-incidents' and limit and len_of_results >= limit):
             break
         pagination = {'page_size': page_size,  # type: ignore
                       'pageToken': next_page}  # type: ignore
