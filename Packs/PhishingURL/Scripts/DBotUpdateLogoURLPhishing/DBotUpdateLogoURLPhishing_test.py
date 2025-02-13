@@ -16,6 +16,11 @@ def load_image_encoded(path):
 
 
 def test_add_new_logo(mocker: MockerFixture):
+    """
+    Given: A new logo is to be added.
+    When: Running the "DBotUpdateLogoURLPhishing" with "action=AddLogo".
+    Then: Make sure the logo is added.
+    """
     from DBotUpdateLogoURLPhishing import add_new_logo
 
     mocker.patch("demistomock.getFilePath", return_value={"path": "test_data/logo.png"})
@@ -33,6 +38,11 @@ def test_add_new_logo(mocker: MockerFixture):
 
 
 def test_remove_logo(mocker: MockerFixture):
+    """
+    Given: A logo is to be removed.
+    When: Running the "DBotUpdateLogoURLPhishing" with "action=RemoveLogo".
+    Then: Make sure the logo is removed.
+    """
     from DBotUpdateLogoURLPhishing import add_new_logo, remove_logo
 
     mocker.patch("demistomock.getFilePath", return_value={"path": "test_data/logo.png"})
@@ -47,6 +57,11 @@ def test_remove_logo(mocker: MockerFixture):
 
 
 def test_update_domain_for_custom_logo():
+    """
+    Given: The domains associated with a logo are to be modified.
+    When: Running the "DBotUpdateLogoURLPhishing" with "action=ModifiedDomainForLogos".
+    Then: Make sure the logo's domains are modified.
+    """
     from DBotUpdateLogoURLPhishing import update_domain_for_custom_logo
 
     logo_name = "PANW"
@@ -67,6 +82,11 @@ def test_update_domain_for_custom_logo():
 
 
 def test_display_all_logos(mocker: MockerFixture):
+    """
+    Given: The logos are to be displayed.
+    When: Running the "DBotUpdateLogoURLPhishing" with "action=DisplayAllLogos".
+    Then: Make sure the logo's are displayed correctly.
+    """
     from DBotUpdateLogoURLPhishing import display_all_logos
 
     mocked_file_result = mocker.patch("DBotUpdateLogoURLPhishing.fileResult")
@@ -84,6 +104,11 @@ def test_display_all_logos(mocker: MockerFixture):
 
 
 def test_load_data_from_xsoar(mocker: MockerFixture):
+    """
+    Given: Model data exists in the XSOAR platform.
+    When: Running the "load_data_from_xsoar" function.
+    Then: Make sure the data is retrieved correctly.
+    """
     from DBotUpdateLogoURLPhishing import load_data_from_xsoar
 
     mocker.patch(
@@ -97,6 +122,11 @@ def test_load_data_from_xsoar(mocker: MockerFixture):
 
 
 def test_load_data_from_xsoar_no_data(mocker: MockerFixture):
+    """
+    Given: No model data exists in the XSOAR platform.
+    When: Running the "load_data_from_xsoar" function.
+    Then: Make sure "None" is returned.
+    """
     from DBotUpdateLogoURLPhishing import load_data_from_xsoar
 
     mocker.patch("demistomock.executeCommand", return_value=[{"Type": 4, "Contents": None}])
@@ -107,6 +137,11 @@ def test_load_data_from_xsoar_no_data(mocker: MockerFixture):
 
 
 def test_load_data_from_xsoar_old_data(mocker: MockerFixture):
+    """
+    Given: The legacy model is still in the XSOAR platform.
+    When: Running the "load_data_from_xsoar" function.
+    Then: Make sure the data is handled correctly.
+    """
     from DBotUpdateLogoURLPhishing import load_data_from_xsoar
 
     mocker.patch("demistomock.executeCommand", return_value=[

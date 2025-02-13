@@ -1,1 +1,1 @@
-{"breakingChanges":true,"breakingChangesNotes":"If the ***DBotUpdateLogoURLPhishing*** script is in use, make sure to update the ***Phishing URL*** pack, before this pack, to avoid losing the script."}
+{"breakingChanges":true,"breakingChangesNotes":"Make sure to update the ***Phishing URL*** pack, before this pack, to avoid losing the  **DBotUpdateLogoURLPhishing** script."}
