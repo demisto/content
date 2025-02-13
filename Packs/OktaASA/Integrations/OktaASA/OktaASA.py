@@ -246,14 +246,12 @@ def get_events_command(client: OktaASAClient, args: dict) -> tuple[List[Dict], C
 def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
                          team_name: str,
                          max_audit_events_per_fetch: Optional[int],
-                         is_fetch_events: bool = False,
                          ) -> tuple[dict[str, str], List[Dict]]:
     """
     Args:
         client (OktaASAClient): OktaASAClient client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
         max_audit_events_per_fetch (int): number of events per fetch.
-        is_fetch_events (bool): Whether the option to fetch events is selected.
         team_name (str): The name of the team.
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
@@ -291,7 +289,6 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     max_audit_events_per_fetch = arg_to_number(params.get('max_audit_events_per_fetch', "10000"))
     proxy = params.get('proxy', False)
-    is_fetch_events = argToBoolean(params.get('isFetchEvents', False))
 
     demisto.debug(f'{INTEGRATION_NAME}: Command being called is {command}')
     try:
@@ -320,22 +317,20 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
-            if is_fetch_events:
-                next_run, events = fetch_events_command(
-                    client=client,
-                    last_run=last_run,
-                    max_audit_events_per_fetch=max_audit_events_per_fetch,
-                    team_name=team_name,
-                    is_fetch_events=is_fetch_events,
-                )
+            next_run, events = fetch_events_command(
+                client=client,
+                last_run=last_run,
+                max_audit_events_per_fetch=max_audit_events_per_fetch,
+                team_name=team_name
+            )
 
-                add_time_to_events(events)
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
-                demisto.setLastRun(next_run)
+            add_time_to_events(events)
+            send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
+            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
