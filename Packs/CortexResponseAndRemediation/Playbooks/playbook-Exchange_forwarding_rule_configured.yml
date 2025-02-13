@@ -1,25 +1,7 @@
 id: Exchange forwarding rule configured
 version: -1
 name: Exchange forwarding rule configured
-description: "This playbook addresses the following alerts:\n\n- External Exchange
-  inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n-
-  Suspicious Exchange email-hiding inbox rule.\n\nPlaybook Stages:\n \nTriage: \n\n-
-  The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly
-  Containment:\n\n- The playbook checks if the IP or domain of the forwarding email
-  address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing
-  the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious
-  behaviors, including whether an Exchange admin created the rule outside of working
-  hours, from unusual geolocation, or if the user who created the rule has a high-risk
-  score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n-
-  If at least two suspicious pieces of evidence are found, the playbook executes soft
-  response actions, including signing the user out and deleting the forwarding email
-  address from the user account mailbox. The user will be notified of these actions
-  via email.\n- If more than two pieces of suspicious evidence are found, the playbook
-  will initiate hard response actions. These include disabling the user and removing
-  the forwarding email address from their mailbox. The user will be notified of these
-  actions via email.\n\nRequirements: \n\nFor any response action, you need the following
-  integrations:\n- EWS Extension Online Powershell v3 integration.\n- Azure Active
-  Directory Users."
+description: "This playbook addresses the following alerts:\n\n- External Exchange inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n- Suspicious Exchange email-hiding inbox rule.\n- Possible BEC Exchange email-hiding inbox rule.\n- Exchange email-hiding transport rule based on message keywords.\n- Suspicious Exchange email-hiding transport rule.\n- Exchange transport forwarding rule configured.\n- Suspicious Exchange transport forwarding rule configured.\n\nPlaybook Stages:\n \nTriage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious behaviors, including whether an Exchange admin created the rule outside of working hours, from unusual geolocation, or if the user who created the rule has a high-risk score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n- Soft Response Actions: If at least two suspicious pieces of evidence are identified, the playbook will execute soft response actions. These actions include signing the user out and disabling the forwarding rule configured in the user's account mailbox.\n- Hard Response Actions: If more than two suspicious pieces of evidence are identified, the playbook escalates to hard response actions. These actions include disabling the user account upon analyst decision and removing the forwarding rule from the user's account mailbox.\n\nRequirements: \n\nFor any response action, you need the following integrations:\n- EWS Extension Online Powershell v3 integration.\n- Azure Active Directory Users."
 tags:
 - TA0009 - Collection
 - TA0010 - Exfiltration
@@ -515,80 +497,12 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2470
+          "y": 2170
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 2c156ff3-3b1c-4301-8454-1f3a7c4c3fb4
-    type: collection
-    task:
-      id: 2c156ff3-3b1c-4301-8454-1f3a7c4c3fb4
-      version: -1
-      name: Decide whether to delete the forwarding rule
-      type: collection
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "42"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 1630
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Should the forwarding rule be deleted?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: "Yes"
-        - simple: "No"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: Decide whether to delete the forwarding rule
-      description: 'During the remediation phase, when the forwarding rule is deleted from the mailbox, it triggers the correlated alert: "Forwarding rule was removed from your mailbox." This alert is part of the EWS O365 integration.'
-      sender: ""
-      expired: false
-      totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -600,15 +514,15 @@ tasks:
     task:
       id: 08bbda77-f3ca-482f-83bb-6590a059f649
       version: -1
-      name: Remove the Exchange forwarding rule
-      description: Remove an Inbox rule.
-      script: '|||ews-remove-rule'
+      name: Disable the Exchange forwarding inbox rule
+      description: Disable an existing inbox rule in a given mailbox.
+      script: '|||ews-rule-disable'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "14"
     scriptarguments:
       identity:
         simple: ${Core.OriginalAlert.raw_abioc.event.exchange_rule_name}
@@ -619,8 +533,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1960
+          "x": 860,
+          "y": 2000
         }
       }
     note: false
@@ -648,7 +562,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2630
+          "y": 2330
         }
       }
     note: false
@@ -693,8 +607,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 2300
+          "x": 670,
+          "y": 1490
         }
       }
     note: false
@@ -930,8 +844,8 @@ tasks:
       '#default#':
       - "14"
       "Yes":
-      - "43"
       - "20"
+      - "43"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -985,8 +899,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1285
+          "x": 670,
+          "y": 1270
         }
       }
     note: false
@@ -1116,8 +1030,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1285
+          "x": 230,
+          "y": 1270
         }
       }
     note: false
@@ -1147,7 +1061,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 40,
           "y": 1470
         }
       }
@@ -1222,8 +1136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1810
+          "x": 40,
+          "y": 1830
         }
       }
     note: false
@@ -1267,8 +1181,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1630
+          "x": 40,
+          "y": 1660
         }
       }
     note: false
@@ -1299,7 +1213,7 @@ tasks:
       {
         "position": {
           "x": -450,
-          "y": 2330
+          "y": 2015
         }
       }
     note: false
@@ -1330,8 +1244,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 1140
+          "x": 230,
+          "y": 1130
         }
       }
     note: false
@@ -1361,104 +1275,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1140
+          "x": 670,
+          "y": 1130
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: 3b4840c0-990a-42d1-835b-a3bc6e18f5ad
-    type: condition
-    task:
-      id: 3b4840c0-990a-42d1-835b-a3bc6e18f5ad
-      version: -1
-      name: Check user notification requirement
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#default#':
-      - "14"
-      "yes":
-      - "39"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.SendNotification
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: 49505509-b341-41dd-83e9-c80018d07814
-    type: regular
-    task:
-      id: 49505509-b341-41dd-83e9-c80018d07814
-      version: -1
-      name: Send the user a notification via email
-      description: Sends an email.
-      script: EWSO365|||send-mail
-      type: regular
-      iscommand: true
-      brand: EWSO365
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      body:
-        simple: |-
-          Hello,
-          As part of our ongoing security measures, we detected unusual activity associated with your mailbox. A forwarding address and associated rule were automatically removed from your account to protect your data and ensure the security of our systems.
-
-           If you did not set up these rules, we recommend reviewing your recent activity and updating your account password immediately. If you require assistance or further information, please contact our security team.
-
-          Thank you for your understanding and cooperation.
-      subject:
-        simple: Forwarding rule was removed from your mailbox
-      to:
-        simple: ${Core.OriginalAlert.raw_abioc.event.identity_name}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 2300
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1521,7 +1345,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1250,
+          "x": 1230,
           "y": 660
         }
       }
@@ -1602,53 +1426,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 1285
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: 8be5c3a5-d1a7-474f-8f07-a80dee77676f
-    type: condition
-    task:
-      id: 8be5c3a5-d1a7-474f-8f07-a80dee77676f
-      version: -1
-      name: Check analyst decision
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#default#':
-      - "14"
-      "yes":
-      - "17"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Decide whether to delete the forwarding rule.Answers.0
-            iscontext: true
-          right:
-            value:
-              simple: "Yes"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 1790
+          "x": -170,
+          "y": 1275
         }
       }
     note: false
@@ -1660,10 +1439,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 96c197e7-77d5-44fe-8cf8-59d67868acb7
+    taskid: 70e37f74-2f2f-41bf-88fc-463eaba78af7
     type: condition
     task:
-      id: 96c197e7-77d5-44fe-8cf8-59d67868acb7
+      id: 70e37f74-2f2f-41bf-88fc-463eaba78af7
       version: -1
       name: Check EWS Extension Online Powershell availability
       type: condition
@@ -1674,7 +1453,7 @@ tasks:
       '#default#':
       - "14"
       "yes":
-      - "15"
+      - "44"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1706,6 +1485,187 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: f89e9955-3dd9-4670-8a5e-08f041d3414b
+    type: condition
+    task:
+      id: f89e9955-3dd9-4670-8a5e-08f041d3414b
+      version: -1
+      name: Check Alert type
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      Inbox Rule:
+      - "46"
+      Transport Rule:
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: Inbox Rule
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: External Exchange inbox forwarding rule configured
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious Exchange inbox forwarding rule configured
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: Possible BEC Exchange email-hiding inbox rule
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious Exchange email-hiding inbox rule
+          ignorecase: true
+    - label: Transport Rule
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: Exchange email-hiding transport rule based on message keywords
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious Exchange email-hiding transport rule
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: Exchange transport forwarding rule configured
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: alert.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious Exchange transport forwarding rule configured
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: cce63e53-a02d-4d25-89ec-3684f0de635e
+    type: regular
+    task:
+      id: cce63e53-a02d-4d25-89ec-3684f0de635e
+      version: -1
+      name: Disable the Exchange forwarding transport rule
+      description: Disable a mail flow rule (transport rule) in the organization.
+      script: '|||ews-mail-flow-rule-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      identity:
+        simple: ${Core.OriginalAlert.event.exchange_transport_rule_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 040c3bcd-4166-4768-847f-e4d09303d1f5
+    type: condition
+    task:
+      id: 040c3bcd-4166-4768-847f-e4d09303d1f5
+      version: -1
+      name: Check if inbox rule name is not empty
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
       - - operator: isNotEmpty
           left:
             value:
@@ -1715,8 +1675,49 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1470
+          "x": 860,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: a5bf70e3-c221-4511-8166-f205c7ee13b6
+    type: condition
+    task:
+      id: a5bf70e3-c221-4511-8166-f205c7ee13b6
+      version: -1
+      name: Check if transport rule name is not empty
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.exchange_transport_rule_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 1830
         }
       }
     note: false
@@ -1729,44 +1730,38 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "25_14_#default#": 0.1,
-      "25_20_Yes": 0.81,
-      "25_43_Yes": 0.45,
+      "25_14_#default#": 0.17,
+      "25_20_Yes": 0.52,
+      "25_43_Yes": 0.51,
       "28_3_yes": 0.43,
       "28_6_#default#": 0.25,
-      "30_14_#default#": 0.15,
+      "30_14_#default#": 0.1,
       "30_32_yes": 0.43,
-      "34_14_#default#": 0.31,
+      "34_14_#default#": 0.32,
       "34_33_yes": 0.55,
-      "38_14_#default#": 0.35,
       "41_14_#default#": 0.16,
       "41_32_yes": 0.4,
-      "42_14_#default#": 0.16,
-      "42_17_yes": 0.39,
-      "43_14_#default#": 0.11,
-      "43_15_yes": 0.47,
+      "43_14_#default#": 0.24,
+      "43_44_yes": 0.47,
+      "44_46_Inbox Rule": 0.45,
+      "44_47_Transport Rule": 0.53,
+      "46_14_#default#": 0.45,
+      "47_14_#default#": 0.22,
       "4_5_yes": 0.38,
       "4_6_#default#": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 3005,
-        "width": 2080,
+        "height": 2705,
+        "width": 2110,
         "x": -450,
         "y": -310
       }
     }
   }
-inputs:
-- key: SendNotification
-  value:
-    simple: "true"
-  required: false
-  description: If set to "true," the playbook will send an email notification to the user informing them that the forwarding address was deleted. If "false," no notification will be sent.
-  playbookInputQuery:
+inputs: []
 inputSections:
-- inputs:
-  - SendNotification
+- inputs: []
   name: General (Inputs group)
   description: Generic group for inputs.
 outputSections:

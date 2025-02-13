@@ -41,8 +41,15 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-  hidden: false
+  hidden: true
   required: false
+- display: The application ID from the Azure portal
+  name: credentials_app_id
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Password
+  hiddenpassword: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
@@ -56,12 +63,30 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  hidden: true
+- display: App Secret
+  name: credentials_app_secret
+  required: false
+  type: 9
+  displaypassword: App Secret
+  hiddenusername: true
+  section: Connect
+  advanced: true
 - display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   advanced: true
   required: false
+  hidden: true
+- display: Tenant ID
+  name: credentials_tenant_id
+  required: false
+  type: 9
+  displaypassword: Password
+  hiddenpassword: true
+  section: Connect
+  advanced: true
 - display: Connection URI
   name: connection_uri
   type: 0
@@ -1189,7 +1214,7 @@ script:
       - 'false'
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.112382
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
   runonce: true
   script: ''
   type: powershell

@@ -410,10 +410,10 @@ def limit_tag_output_to_id_and_name(attribute_dict, is_event_level):
         is_event_tag = tag.get('inherited', 0)  # field doesn't exist when this is an attribute level, default is '0'
         tag_id = tag.get('id')
         if is_event_level:
-            tag_set_ids.add(tag_id)
+            tag_set_ids.add(str(tag_id))
         else:  # attribute level
             if not is_event_tag:
-                tag_set_ids.add(tag_id)
+                tag_set_ids.add(str(tag_id))
         output.append({'ID': tag_id, 'Name': tag.get('name')})
     return output, tag_set_ids
 
@@ -922,7 +922,7 @@ def search_events_with_scored_tag(object_data_dict, found_tag, event_name):
     related_events = []
     object_tags_list = object_data_dict.get('Tag', [])
     for tag in object_tags_list:
-        if tag.get('ID') == found_tag:
+        if (tag_id := tag.get('ID')) and str(tag_id) == found_tag:
             event_id = get_event_id(object_data_dict)
             tag_name = tag.get('Name')
             related_events.append({'Event_ID': event_id, 'Event_Name': event_name,

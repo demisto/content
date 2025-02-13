@@ -1,7 +1,6 @@
 """Qintel QSentry Integration for Cortex XSOAR - Unit Tests file"""
 
 import json
-import io
 
 MOCK_URL = 'https://this-is-only-a-test.local'
 MOCK_CLIENT_ID = 'client-id'
@@ -9,7 +8,7 @@ MOCK_CLIENT_SECRET = 'client-secret'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
