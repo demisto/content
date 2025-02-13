@@ -15,7 +15,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "dependencies": {
         "GCP-IAM": {

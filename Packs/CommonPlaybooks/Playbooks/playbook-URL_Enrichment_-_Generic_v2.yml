@@ -668,5 +668,6 @@ tests:
 - URL Enrichment - Generic v2 - Test
 system: true
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform

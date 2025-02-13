@@ -11,8 +11,13 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["Remote Support", "Remote" , "Bomgar"],
+    "keywords": [
+        "Remote Support",
+        "Remote",
+        "Bomgar"
+    ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

@@ -14,13 +14,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "FabienMht",
         "CesarGW",
         "ThibaultReboul",
-	"clement-lyonnet"
+        "clement-lyonnet"
     ],
     "defaultDataSource": "GCenter 103"
 }

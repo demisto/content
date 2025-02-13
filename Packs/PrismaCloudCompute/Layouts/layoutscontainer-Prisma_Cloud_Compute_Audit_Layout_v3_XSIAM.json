@@ -937,5 +937,8 @@
     "version": -1,
     "fromVersion": "6.10.0",
     "description": "",
-    "marketplaces": ["marketplacev2"]
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ]
 }

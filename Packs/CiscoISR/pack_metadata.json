@@ -20,6 +20,7 @@
         "integrated service router"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

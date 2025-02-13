@@ -7,12 +7,19 @@
     "url": "",
     "email": "",
     "created": "2020-12-18T18:06:49Z",
-    "categories": ["Utilities"],
-    "tags": ["Use Case"],
-    "useCases": ["Identity and Access Management"],
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+        "Use Case"
+    ],
+    "useCases": [
+        "Identity and Access Management"
+    ],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

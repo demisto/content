@@ -25,7 +25,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "name": "Vectra AI",
     "support": "partner",

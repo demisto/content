@@ -14,7 +14,8 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [],
     "created": "2022-11-27T09:39:30Z"
