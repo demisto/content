@@ -734,21 +734,13 @@ class Client(BaseClient):
                     file_path = demisto.getFilePath(file_entry)['path']
                     with open(file_path, 'rb') as f:
                         file_info = (file_name, f, self.get_content_type(file_name))
-                        if self.use_oauth:
-                            access_token = self.snow_client.get_access_token()
+                        if self.use_oauth or self.use_jwt:
+                            access_token = self.snow_client.get_access_token() if self.use_oauth else self.snow_client.get_jwt_token()
                             headers.update({
                                 'Authorization': f'Bearer {access_token}'
                             })
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': file_info}, verify=self._verify, proxies=self._proxies)
-                        elif self.use_jwt:
-                            jwt_token = self.snow_client.get_jwt_token()
-                            headers.update({'assertion': jwt_token,
-                                            'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-                                            })
-                            res = requests.request(method, url, headers=headers, data=body, params=params,
-                                                   files={'file': file_info}, verify=self._verify, proxies=self._proxies)
-
                         else:
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': file_info}, auth=self._auth,
@@ -756,18 +748,11 @@ class Client(BaseClient):
                 except Exception as err:
                     raise Exception('Failed to upload file - ' + str(err))
             else:
-                if self.use_oauth:
-                    access_token = self.snow_client.get_access_token()
+                if self.use_oauth or self.use_jwt:
+                    access_token = self.snow_client.get_access_token() if self.use_oauth else self.snow_client.get_jwt_token()
                     headers.update({
                         'Authorization': f'Bearer {access_token}'
                     })
-                    res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
-                                           params=params, verify=self._verify, proxies=self._proxies)
-                elif self.use_jwt:
-                    jwt_token = self.snow_client.get_jwt_token()
-                    headers.update({'assertion': jwt_token,
-                                    'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-                                    })
                     res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
                                            params=params, verify=self._verify, proxies=self._proxies)
                 else:
@@ -906,15 +891,9 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            if self.use_oauth:
-                access_token = self.snow_client.get_access_token()
+            if self.use_oauth or self.use_jwt:
+                access_token = self.snow_client.get_access_token() if self.use_oauth else self.snow_client.get_jwt_token()
                 headers.update({'Authorization': f'Bearer {access_token}'})
-                file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
-            elif self.use_jwt:
-                jwt_token = self.snow_client.get_jwt_token()
-                headers.update({'assertion': jwt_token,
-                                'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-                                })
                 file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
             else:
                 demisto.debug('here 5')
