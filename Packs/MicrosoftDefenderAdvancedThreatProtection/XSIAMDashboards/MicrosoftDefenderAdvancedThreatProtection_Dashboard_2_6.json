@@ -563,6 +563,5 @@
             }
         }
     ],
-    "fromVersion": "6.10.0",
-    "toVersion": "8.9.0"
+    "fromVersion": "9.0.0"
 }

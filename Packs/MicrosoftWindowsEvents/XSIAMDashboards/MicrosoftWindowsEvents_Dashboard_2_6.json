@@ -168,7 +168,7 @@
                                 "type": "Custom XQL",
                                 "width": 50,
                                 "height": 475.5,
-                                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.alert.name=\"An account failed to log on\"\n|filter xdm.source.user.username !=\"-\"\n|bin _time span = 10M\n|comp count(xdm.alert.name) as EventCount by _time\n| view graph type = line header = \"Failed Logins in 10 Minutes\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
+                                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.alert.name=\"An account failed to log on\"\n|filter xdm.source.identity.username !=\"-\"\n|bin _time span = 10M\n|comp count(xdm.alert.name) as EventCount by _time\n| view graph type = line header = \"Failed Logins in 10 Minutes\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -352,7 +352,7 @@
             "creation_time": 1677410396873,
             "description": "This widget displays failure logins in a 10 minute period",
             "data": {
-                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type contains \"Microsoft-Windows-\"\n|filter xdm.alert.name=\"An account failed to log on\"\n|filter xdm.source.user.username !=\"-\"\n|bin _time span = 10M\n|comp count(xdm.alert.name) as EventCount by _time\n| view graph type = line header = \"Failed Logins in 10 Minutes\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
+                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type contains \"Microsoft-Windows-\"\n|filter xdm.alert.name=\"An account failed to log on\"\n|filter xdm.source.identity.username !=\"-\"\n|bin _time span = 10M\n|comp count(xdm.alert.name) as EventCount by _time\n| view graph type = line header = \"Failed Logins in 10 Minutes\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
                 "time_frame": {
                     "relativeTime": 604800000
                 },
@@ -484,6 +484,5 @@
             }
         }
     ],
-    "fromVersion": "6.10.0",
-    "toVersion": "8.9.0"
+    "fromVersion": "9.0.0"
 }
