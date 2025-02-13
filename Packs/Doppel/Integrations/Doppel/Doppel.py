@@ -185,73 +185,50 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     demisto.debug(f'Received alert data for {doppel_alert_id}')
     audit_logs = updated_doppel_alert.get('audit_logs')
     demisto.debug(f'The alert contains {len(audit_logs)} audit logs')
-    
-    most_recent_audit_log = max(audit_logs, key=lambda audit_log: audit_log.get('timestamp'))
-    demisto.debug(f'Most recent audit log is {most_recent_audit_log}')
-    recent_audit_log_datetime_str = most_recent_audit_log.get('timestamp')
-    recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-    demisto.debug(f'The event was modified recently on {recent_audit_log_datetime}')
-    if recent_audit_log_datetime > last_update:
-        updated_doppel_alert['id'] = doppel_alert_id
-        entries: list = [{
-            "Type": EntryType.NOTE,
-            "Contents": most_recent_audit_log,
-            "ContentsFormat": EntryFormat.JSON,
-            "Note": True,
-        }]
-        demisto.debug(f'Successfully returning the updated alert and entries: {updated_doppel_alert, entries}')
-        return updated_doppel_alert, entries
-        
+    if audit_logs:
+        most_recent_audit_log = max(audit_logs, key=lambda audit_log: audit_log['timestamp'])
+        demisto.debug(f'Most recent audit log is {most_recent_audit_log}')
+        recent_audit_log_datetime_str = most_recent_audit_log['timestamp']
+        recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
+        demisto.debug(f'The event was modified recently on {recent_audit_log_datetime}')
+        if recent_audit_log_datetime > last_update:
+            updated_doppel_alert['id'] = doppel_alert_id
+            entries: list = [{
+                "Type": EntryType.NOTE,
+                "Contents": most_recent_audit_log,
+                "ContentsFormat": EntryFormat.JSON,
+            }]
+            demisto.debug(f'Successfully returning the updated alert and entries: {updated_doppel_alert, entries}')
+            return updated_doppel_alert, entries
+
     return None, []
 
 def _get_mirroring_fields():
     """
     Get tickets mirroring.
     """
-    mirror_direction: str = demisto.params().get('mirror_direction', 'None')
+    mirror_direction: str = demisto.params().get('mirror_direction', None)
     return {
         "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
         "mirror_instance": demisto.integrationInstance(),
         "incident_type": "Doppel_Incident",
     }
 
-def _get_last_fetch_datetime():
-    """
-    Fetch the last run (time of the last fetch)
-    """
-    last_run = demisto.getLastRun()
-    # creates incidents queue
-    incidents_queue = last_run.get('incidents_queue', [])
-    last_fetch = last_run.get("last_fetch", None)
+def _get_last_fetch_datetime(last_run):
+    # Fetch the last run (time of the last fetch)
+    last_fetch = last_run
     last_fetch_datetime: datetime = datetime.now()
-    if last_fetch and isinstance(last_fetch, float):
-        last_fetch_datetime = datetime.fromtimestamp(last_fetch)
+    if last_fetch:
+        if isinstance(last_fetch, str):
+            last_fetch_datetime = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%SZ")
+            demisto.debug(f"Alerts were fetched last on: {last_fetch_datetime}")
+        else:
+            raise ValueError(f'Last fetch value error :- {type(last_fetch)} and last run data :- {last_run}')
     else:
         # If no last run is found
-
         first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
         last_fetch_datetime = dateparser.parse(first_fetch_time)
         assert last_fetch_datetime is not None, f'could not parse {first_fetch_time}'
-    return last_fetch_datetime, incidents_queue
-
-def _get_last_fetch_datetime():
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get("last_fetch", None)
-    last_fetch_datetime: datetime = datetime.now()
-    if last_fetch and isinstance(last_fetch, float):
-        last_fetch_datetime = datetime.fromtimestamp(last_fetch)
-        demisto.debug(f"Alerts were fetch last on: {last_fetch_datetime}")  
-    else:
-        # If no last run is found
-        historical_days: int = 1
-        historical_days_str: str = demisto.params().get('historical_days', None)
-        if historical_days_str:
-            try:
-                historical_days = int(historical_days_str)
-            except ValueError:
-                demisto.error(f'{historical_days} is not an int value. We will use the default historical value as {historical_days} day')
-        demisto.info(f'Fetching alerts created in last {historical_days} days')
-        last_fetch_datetime = datetime.now() - timedelta(days=historical_days)
         demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch_datetime}")
         
     return last_fetch_datetime
@@ -356,8 +333,9 @@ def doppel_update_alert_command(client: Client, args: Dict[str, Any]) -> Command
 
     if alert_id and entity:
         raise ValueError("Only one of 'alert_id' or 'entity' can be specified.")
-    if not queue_state or not entity_state:
-        raise ValueError("Both 'queue_state' and 'entity_state' must be specified.")
+
+    if not any([queue_state, entity_state, comment]):
+        raise ValueError("At least one of 'queue_state', 'entity_state', or 'comment' must be provided.")
 
     try:
         result = client.update_alert(queue_state=queue_state, entity_state=entity_state, alert_id=alert_id, entity=entity , comment=comment)
@@ -499,26 +477,37 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
     This function fetches alerts directly from Doppel
     """
     demisto.debug("Fetching alerts from Doppel.")
+
     # Fetch the last run (time of the last fetch)
-    last_fetch_datetime, incidents_queue = _get_last_fetch_datetime()
+    last_run = demisto.getLastRun()
+    demisto.debug(f"Last run details:- {last_run}")
+
+    # creates incidents queue
+    incidents_queue = last_run.get('incidents_queue', [])
+
+    last_run = last_run.get("last_run", None)
+    last_fetch_datetime = _get_last_fetch_datetime(last_run)
+
+
+    demisto.debug(f"Last fetch datetime is {last_fetch_datetime}")
+
 
     # Fetch alerts
-    page: int = 0
-    incidents = []
-    timeout = arg_to_number(demisto.params().get('fetch_timeout', TIMEOUT))
-    fetch_limit = arg_to_number(demisto.params().get('max_fetch', 10))
-    start_time = time.time()
-    mirroring_object = _get_mirroring_fields()
+    fetch_limit = int(demisto.params().get("max_fetch"))
+
+    demisto.debug(f"Fetch limit is {fetch_limit} and  incidents queue is {len(incidents_queue)}.")
     if len(incidents_queue) < fetch_limit:
+        page: int = 0
+        incidents = []
+        demisto.info("Fetching alerts from Doppel.")
+        mirroring_object = _get_mirroring_fields()
         while True:
-            time_delta = time.time() - start_time
-            if timeout and time_delta > timeout:
-                raise DemistoException(
-                    "Fetch incidents - Time out. Please change first_fetch parameter to be more recent one")
             alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
+
             if not alerts:
                 demisto.info("No new alerts fetched from Doppel. Exiting fetch_incidents.")
                 break
+
             last_fetch = last_fetch_datetime.timestamp()
             new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
             for alert in alerts:
@@ -534,50 +523,70 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
                         'rawJSON': json.dumps(alert),
                     }
                     incidents.append(incident)
-            # Update last run with the new_last_fetch value
-            demisto.setLastRun({"last_fetch": new_last_fetch})
-            demisto.debug(f"Updated last_fetch to: {new_last_fetch}")
+
             demisto.info(f'Fetched Doppel alerts from page {page} Successfully.')
             page = page+1
+            incidents_queue += incidents
+
     oldest_incidents = incidents_queue[:fetch_limit]
-    new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_fetch_datetime  # newest incident creation time
-    demisto.setLastRun({'last_run': new_last_run,
+
+    if oldest_incidents:
+        new_last_run = incidents_queue[-1]["occurred"]  # newest incident creation time
+        last_fetch_datetime = datetime.strptime(new_last_run, "%Y-%m-%dT%H:%M:%SZ")
+        # Increment by one second
+        next_fetch_datetime = last_fetch_datetime + timedelta(seconds=1)
+        next_fetch = next_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    else:
+        next_fetch = last_run
+    demisto.setLastRun({'last_run': next_fetch,
                         'incidents_queue': incidents_queue[fetch_limit:]})
+    demisto.debug({'last_run': next_fetch,'incidents_queue': incidents_queue[fetch_limit:]})
+
 
     # Create incidents in XSOAR
-    if incidents and len(incidents) > 0:
+    if oldest_incidents and len(oldest_incidents) > 0:
         try:
-            demisto.incidents(incidents)
-            demisto.info(f"Successfully created {len(incidents)} incidents in XSOAR.")
+            demisto.incidents(oldest_incidents)
+            demisto.info(f"Successfully created {len(oldest_incidents)} incidents in XSOAR.")
         except Exception as e:
             raise ValueError(f"Incident creation failed due to: {str(e)}")
     else:
         demisto.incidents([])
         demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
-def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
-    demisto.debug('Command get-modified-remote-data is not implemented')
-    raise NotImplementedError('The command "get-modified-remote-data" is not implemented, \
-        as Doppel does not provide the API to fetch updated alerts.')
-    
-def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+# Adding get modified remote data command
+def get_modified_remote_data_command(client: Client, args: dict):
     """
-    Retrieves remote incident data from the external system and returns it in the appropriate format.
-
+    Gets the modified remote incidents.
     Args:
-        client (Client): 
-            An instance of the Client class, used to communicate with the external system.
-        args (Dict[str, Any]): 
-            A dictionary containing parameters required to fetch the remote incident data.
-            Expected keys include:
-                - "id" (str): The unique identifier of the incident to retrieve.
-                - "lastUpdate" (str, optional): A timestamp indicating the last time the incident was updated.
+        args:
+            last_update: the last time we retrieved modified incidents.
 
     Returns:
-        GetRemoteDataResponse: 
-            An object containing the updated incident data retrieved from the external system.
+        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents IDs.
     """
 
+    remote_args = GetModifiedRemoteDataArgs(args)
+
+    last_update = dateparser.parse(remote_args.last_update)
+    assert last_update is not None, f"could not parse{remote_args.last_update}"
+
+    demisto.debug(f"Remote arguments last_update in UTC is {last_update}")
+    modified_ids_to_mirror = []
+    last_update = last_update.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+    remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(client, remote_args.remote_incident_id, last_update)
+
+    for threat in raw_threats:
+        modified_ids_to_mirror.append(remote_updated_incident_data.get("id"))
+
+    demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
+
+    return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
+
+
+
+def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
     try:
         demisto.debug(f'Calling the "get-remote-data" for {args["id"]}')
         parsed_args = GetRemoteDataArgs(args)

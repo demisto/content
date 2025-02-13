@@ -181,7 +181,9 @@ script:
   - arguments:
     - description: The id of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
       name: alert_id
-    - description: The entity of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
+    - description: The id of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
+      name: comment
+    - description: A new comment to add to the alert.
       name: entity
     - auto: PREDEFINED
       description: Status of which queue the alert is in.
