@@ -797,15 +797,136 @@ script:
       required: true
       isArray: true
       default: true
+    outputs:
+    - contextPath: ASM.IP.ip
+      description: The IP address of the asset.
+      type: string
+    - contextPath: ASM.IP.domain
+      description: The domain affiliated with an asset.
+      type: string
+    - contextPath: ASM.IP.name
+      description: The asset name.
+      type: string
+    - contextPath: ASM.IP.asset_type
+      description: The asset type.
+      type: string
+    - contextPath: ASM.IP.first_observed
+      description: When the asset was first observed.
+    - contextPath: ASM.IP.last_observed
+      description: When the asset was last observed.
+    - contextPath: ASM.IP.asm_ids
+      description: The ID of the asset.
+    - contextPath: ASM.IP.service_type
+      description: Affiliated service types for the asset.
+    - contextPath: ASM.IP.tags
+      description: A list of tags that have been assigned to the asset.
+    - contextPath: ASM.IP.asset_explainers
+      description: The asset explanation details.
+    - contextPath: ASM.IP.domain_details
+      description: Additional domain details.
+    - contextPath: ASM.IP.recent_ips
+      description: Details about the recent IP observations.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: ASM.TIM.IP.name 
+      description: The existing Cortex Xpanse IP address recently updated in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.indicator_type
+      description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.id  
+      description: The existing indicator ID in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.reliability 
+      description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.score
+      description: The existing indicator score recently updated in the Cortex XSOAR indicators.
+      type: Number
     description: (Deprecated) Returns enrichment for an IP address.
     deprecated: true
   - name: domain
     arguments:
     - name: domain
-      required: false
+      required: true
       description: Domain to enrich.
       isArray: true
-      default: false
+      default: true
+    outputs:
+    - contextPath: ASM.Domain.domain
+      description: The domain affiliated with an asset.
+      type: string
+    - contextPath: ASM.Domain.name
+      description: The asset name.
+      type: string
+    - contextPath: ASM.Domain.asset_type
+      description: The asset type.
+      type: string
+    - contextPath: ASM.Domain.first_observed
+      description: When the asset was first observed.
+    - contextPath: ASM.Domain.last_observed
+      description: When the asset was last observed.
+    - contextPath: ASM.Domain.asm_ids
+      description: The ID of the asset.
+    - contextPath: ASM.Domain.service_type
+      description: Affiliated service types for the asset.
+    - contextPath: ASM.Domain.tags
+      description: A list of tags that have been assigned to the asset.
+    - contextPath: ASM.Domain.asset_explainers
+      description: The asset explanation details.
+    - contextPath: ASM.Domain.domain_details
+      description: Additional domain details.
+    - contextPath: ASM.Domain.recent_ips
+      description: Details about the recent IP observations.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: ASM.TIM.Domain.name
+      description: The existing Cortex Xpanse domain recently updated in XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.indicator_type 
+      description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.id 
+      description: The existing indicator ID in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.reliability 
+      description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.score 
+      description: The existing indicator score recently updated in the Cortex XSOAR indicators.
+      type: Number
     description: (Deprecated) Returns enrichment for a domain.
     deprecated: true
   - name: asm-get-incident
