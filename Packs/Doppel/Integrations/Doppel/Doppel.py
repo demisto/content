@@ -216,10 +216,9 @@ def _get_mirroring_fields():
 
 def _get_last_fetch_datetime(last_run):
     # Fetch the last run (time of the last fetch)
-    last_fetch = last_run
     last_fetch_datetime: datetime = datetime.now()
-    if last_fetch:
-        last_fetch_datetime = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%SZ")
+    if last_run:
+        last_fetch_datetime = datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%SZ")
         demisto.debug(f"Alerts were fetched last on: {last_fetch_datetime}")
     else:
         # If no last run is found
@@ -484,19 +483,14 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
 
     last_run = last_run.get("last_run", None)
     last_fetch_datetime = _get_last_fetch_datetime(last_run)
-
-
     demisto.debug(f"Last fetch datetime is {last_fetch_datetime}")
-
 
     # Fetch alerts
     fetch_limit = int(demisto.params().get("max_fetch"))
 
-    demisto.debug(f"Fetch limit is {fetch_limit} and  incidents queue is {len(incidents_queue)}.")
     if len(incidents_queue) < fetch_limit:
         page: int = 0
         incidents = []
-        demisto.info("Fetching alerts from Doppel.")
         mirroring_object = _get_mirroring_fields()
         while True:
             alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
@@ -539,7 +533,6 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
                         'incidents_queue': incidents_queue[fetch_limit:]})
     demisto.debug({'last_run': next_fetch,'incidents_queue': incidents_queue[fetch_limit:]})
 
-
     # Create incidents in XSOAR
     if oldest_incidents and len(oldest_incidents) > 0:
         try:
@@ -574,8 +567,8 @@ def get_modified_remote_data_command(client: Client, args: dict):
 
     remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(client, remote_args.remote_incident_id, last_update)
 
-    for threat in raw_threats:
-        modified_ids_to_mirror.append(remote_updated_incident_data.get("id"))
+    for alerts in remote_updated_incident_data:
+        modified_ids_to_mirror.append(alerts.get("id"))
 
     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
 
