@@ -204,7 +204,6 @@ class Client(BaseClient):
         )
         return results
 
-
     def get_formatted_brands(self) -> list[dict[str, str]]:
         results = self.get_brands()
         brands_data_raw = {
@@ -734,7 +733,7 @@ class BuilderCommandResponses:
             for updated_image in updated_images:
                 results.append(
                     fileResult(
-                        filename=f"Attached image {updated_image.get('file_sha', 'default')}",
+                        filename=f"Attached image {updated_image.get('file_sha', 'default')}",  # type: ignore
                         data=updated_image.get("image_data", ""),
                     )
                 )
