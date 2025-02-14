@@ -1,0 +1,131 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Group-IB Digital Risk Protection
+  version: -1
+configuration:
+- defaultvalue: https://drp.group-ib.com/client_api/
+  display: GIB DRP URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: "Violation Section to filter the received Violation"
+  name: violationSection
+  type: 15
+  required: false
+  options:
+  - "Web"
+  - "Marketplace"
+  - "Advertising"
+  - "Mobile_apps"
+  - "Social_networks"
+  - "Instant_messengers"
+- display: Brands to filter the received Violation
+  name: brands
+  type: 0
+  required: false
+  additionalinfo: Brands for filtering received violations. The list of available brands can be obtained with the command !gibdrp-get-brands in the menu WarRoom -> Playground. After getting the brands you must specify the brand ID for which you want to receive violations. Attention! Currently filtering is available only by one brand in one Instance
+- additionalinfo: Date to start fetching incidents from.
+  defaultvalue: 3 days
+  display: Incidents first fetch
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Download images
+  name: download_images
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Enables or disables loading of each image in each violation. Can significantly affect the speed of data collection if the parameter is enabled, i.e. set to True
+- display: Number of requests per collection
+  name: max_fetch
+  type: 15
+  required: true
+  defaultvalue: "1"
+  options:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+  - "5"
+  - "6"
+  additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 30 incidents). If you face some runtime errors, lower the value.
+description: Pack helps to integrate Group-IB Digital Risk Protection and get violations incidents directly into Cortex XSOAR.
+display: Group-IB Digital Risk Protection
+name: Group-IB Digital Risk Protection
+script:
+  dockerimage: demisto/vendors-sdk:1.0.0.2432953
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+  commands:
+  - name: gibdrp-get-brands
+    arguments: []
+    description: Receive all configured brands.
+    outputs:
+    - contextPath: GIBDRP.OtherInfo
+      description: List of configured brands.
+      type: string
+  - name: gibdrp-get-subscriptions
+    arguments: []
+    outputs:
+    - contextPath: GIBDRP.OtherInfo
+      description: List of configured subscriptions.
+      type: string
+    description: Receive all configured subscriptions.
+  - name: gibdrp-get-violation-by-id
+    arguments:
+    - name: id
+      required: true
+      description: ID violation.
+    description: Getting a single violation by its ID.
+  - name: gibdrp-change-violation-status
+    arguments:
+    - name: id
+      required: true
+      description: ID violation.
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - approve
+      - reject
+      description: What status to change to.
+    description: Changing the status of a single violation.
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

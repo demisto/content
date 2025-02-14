@@ -1,0 +1,9 @@
+# This is ignored because in fact commands are added to the integration code, 
+# they are just not written explicitly and are created on the fly in the code, 
+# but they are realized
+
+[file:GroupIBDigitalRiskProtection.py]
+ignore=E9010,E9011
+
+[file:GroupIBDigitalRiskProtection.yml]
+ignore=E9010,E9011

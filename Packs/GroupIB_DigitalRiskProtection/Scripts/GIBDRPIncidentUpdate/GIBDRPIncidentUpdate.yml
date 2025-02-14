@@ -1,0 +1,21 @@
+comment: |-
+  This script prevents duplication of existing incidents.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+commonfields:
+  id: GIBDRPIncidentUpdate
+  version: -1
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+name: GIBDRPIncidentUpdate
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- preProcessing
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,27 @@
+{
+    "name": "Group-IB Digital Risk Protection",
+    "description": "Test description",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Group-IB",
+    "url": "https://www.group-ib.com/",
+    "email": "integration@group-ib.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "itemPrefix": [
+        "GIB"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Threat intelligence"
+    ],
+    "githubUser": [
+        "Kchekh"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

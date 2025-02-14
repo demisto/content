@@ -1,0 +1,82 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Group-IB Digital Risk Protection (mapper)",
+    "mapping": {
+        "GIB DRP Violation": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB DRP Approve State": {
+                    "simple": "approve_state"
+                },
+                "GIB DRP Approved": {
+                    "simple": "dates_approved_date"
+                },
+                "GIB DRP Brand": {
+                    "simple": "brand"
+                },
+                "GIB DRP Company": {
+                    "simple": "company"
+                },
+                "GIB DRP Created": {
+                    "simple": "dates_created_date"
+                },
+                "GIB DRP Current Status Date": {
+                    "simple": "dates_current_status_date"
+                },
+                "GIB DRP Description": {
+                    "simple": "description"
+                },
+                "GIB DRP Detected": {
+                    "simple": "detected"
+                },
+                "GIB DRP First Active": {
+                    "simple": "first_active"
+                },
+                "GIB DRP First Detected": {
+                    "simple": "first_detected"
+                },
+                "GIB DRP First Solved": {
+                    "simple": "first_solved"
+                },
+                "GIB DRP Found": {
+                    "simple": "dates_found_date"
+                },
+                "GIB DRP ID": {
+                    "simple": "id"
+                },
+                "GIB DRP Link": {
+                    "simple": "link"
+                },
+                "GIB DRP Scores Table": {
+                    "simple": "scores"
+                },
+                "GIB DRP Source": {
+                    "simple": "source"
+                },
+                "GIB DRP Status": {
+                    "simple": "violation_status"
+                },
+                "GIB DRP Tags": {
+                    "simple": "tags"
+                },
+                "GIB DRP Title": {
+                    "simple": "title"
+                },
+                "GIB DRP Type": {
+                    "simple": "violation_type"
+                },
+                "GIB DRP Violation URI": {
+                    "simple": "violation_uri"
+                },
+                "GIB DRP HTML Images": {
+                    "simple": "images"
+                }
+            }
+        }
+    },
+    "name": "Group-IB Digital Risk Protection (mapper)",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

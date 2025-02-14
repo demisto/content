@@ -1,0 +1,55 @@
+{
+    "action": "script",
+    "enabled": true,
+    "id": "gib_drp",
+    "index": 1,
+    "itemVersion": "",
+    "linkTo": "oldest",
+    "locked": false,
+    "name": "gib_drp",
+    "newEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibdrpid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "packID": "",
+    "period": {
+        "by": "days",
+        "fromValue": 30
+    },
+    "readyNewEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibdrpid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "scriptName": "",
+    "searchClosed": false,
+    "system": false,
+    "toServerVersion": "",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
