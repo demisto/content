@@ -599,7 +599,7 @@ script:
       - 'True'
       - 'False'
       defaultValue: true
-      description: Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note. 
+      description: Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note.
     description: Adds a note to an asset in Xpanse.
     outputs:
     - contextPath: ASM.AssetAnnotation.status
@@ -791,16 +791,15 @@ script:
       description: IDs of the updated alerts.
     description: Updates the state of one or more alerts.
   - name: ip
-    deprecated: true
     arguments:
     - name: ip
       description: IP address to enrich.
-      required: false
+      required: true
       isArray: true
-      default: false
+      default: true
     description: (Deprecated) Returns enrichment for an IP address.
-  - name: domain
     deprecated: true
+  - name: domain
     arguments:
     - name: domain
       required: false
@@ -808,6 +807,7 @@ script:
       isArray: true
       default: false
     description: (Deprecated) Returns enrichment for a domain.
+    deprecated: true
   - name: asm-get-incident
     arguments:
     - name: incident_id
@@ -851,7 +851,7 @@ script:
   - name: asm-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isFetchSamples: true
   isfetch: true
   script: ''

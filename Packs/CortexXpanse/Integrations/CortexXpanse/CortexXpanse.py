@@ -1325,8 +1325,8 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_key_field=None,
         outputs=None,
         raw_response=None,
-        readable_output="The `!ip` command for the Cortex Xpanse integration has been deprecated, " \
-                        "please use the `asm-get-asset-internet-exposure` command or the " \
+        readable_output="The `!ip` command for the Cortex Xpanse integration has been deprecated, "
+                        "please use the `asm-get-asset-internet-exposure` command or the "
                         "[Xpanse Feed Integration](https://xsoar.pan.dev/docs/reference/integrations/xpanse-feed)."
     )
     return command_results
@@ -1338,8 +1338,8 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_key_field=None,
         outputs=None,
         raw_response=None,
-        readable_output="The `!domain` command for the Cortex Xpanse integration has been deprecated, " \
-                        "please use the `asm-get-asset-internet-exposure` command or the " \
+        readable_output="The `!domain` command for the Cortex Xpanse integration has been deprecated, "
+                        "please use the `asm-get-asset-internet-exposure` command or the "
                         "[Xpanse Feed Integration](https://xsoar.pan.dev/docs/reference/integrations/xpanse-feed)."
     )
     return command_results
