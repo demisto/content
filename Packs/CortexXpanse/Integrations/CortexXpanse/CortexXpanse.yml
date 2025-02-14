@@ -599,7 +599,7 @@ script:
       - 'True'
       - 'False'
       defaultValue: true
-      description: Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note. 
+      description: Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note.
     description: Adds a note to an asset in Xpanse.
     outputs:
     - contextPath: ASM.AssetAnnotation.status
@@ -844,22 +844,23 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-    - contextPath: ASM.TIM.IP.name 
+    - contextPath: ASM.TIM.IP.name
       description: The existing Cortex Xpanse IP address recently updated in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.IP.indicator_type
       description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.IP.id  
+    - contextPath: ASM.TIM.IP.id
       description: The existing indicator ID in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.IP.reliability 
+    - contextPath: ASM.TIM.IP.reliability
       description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.IP.score
       description: The existing indicator score recently updated in the Cortex XSOAR indicators.
       type: Number
-    description: Returns enrichment for an IP address.
+    description: (Deprecated) Returns enrichment for an IP address.
+    deprecated: true
   - name: domain
     arguments:
     - name: domain
@@ -914,19 +915,20 @@ script:
     - contextPath: ASM.TIM.Domain.name
       description: The existing Cortex Xpanse domain recently updated in XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.Domain.indicator_type 
+    - contextPath: ASM.TIM.Domain.indicator_type
       description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.Domain.id 
+    - contextPath: ASM.TIM.Domain.id
       description: The existing indicator ID in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.Domain.reliability 
+    - contextPath: ASM.TIM.Domain.reliability
       description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.Domain.score 
+    - contextPath: ASM.TIM.Domain.score
       description: The existing indicator score recently updated in the Cortex XSOAR indicators.
       type: Number
-    description: Returns enrichment for a domain.
+    description: (Deprecated) Returns enrichment for a domain.
+    deprecated: true
   - name: asm-get-incident
     arguments:
     - name: incident_id
@@ -970,7 +972,7 @@ script:
   - name: asm-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isFetchSamples: true
   isfetch: true
   script: ''
