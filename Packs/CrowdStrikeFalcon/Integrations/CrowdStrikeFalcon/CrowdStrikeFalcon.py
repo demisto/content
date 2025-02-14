@@ -270,10 +270,12 @@ STATUS_NUM_TO_TEXT = {20: 'New',
 
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
-DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'}
-IDP_AND_MOBILE_DETECTION_STATUS = {'new', 'in_progress', 'closed', 'reopened'}
+LEGACY_DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'}
+STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES = {'new', 'in_progress', 'closed', 'reopened'}
+LEGACY_CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(LEGACY_DETECTION_STATUS)}'}
 
-CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(DETECTION_STATUS)}'}
+CS_FALCON_DETECTION_OUTGOING_ARGS = {
+    'status': f'Updated detection status, one of {"/".join(STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES)}'}
 
 CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident',
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
@@ -340,6 +342,16 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def disable_for_xsiam():
+    """Validates if command is not running on an unsupported Cortex platform.
+
+    Raises:
+        DemistoException: If command is being run on XSIAM.
+    """
+    if is_xsiam():
+        raise DemistoException("This command is not supported on this Cortex platform.")
 
 
 def truncate_long_time_str(detections: List[Dict], time_key: str) -> List[Dict]:
@@ -2025,8 +2037,7 @@ def search_device(filter_operator='AND'):
                                                                    arg_filter=arg_filter)
             else:
                 # All args should be a list. this is a fallback
-                url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
-                                                                                  inp_arg=k, arg_val=arg)
+                url_filter = f"{url_filter}{op}{k}:'{arg}'"
     raw_res = http_request('GET', '/devices/queries/devices/v1',
                            params={'filter': url_filter, 'limit': limit, 'offset': offset, 'sort': sort})
     device_ids = raw_res.get('resources')
@@ -2100,23 +2111,6 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
                                                                                                    '"show_in_ui": true')
     url = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "/detects/entities/detects/v2"
     return http_request('PATCH', url, data=data)
-
-
-def resolve_idp_or_mobile_detection(ids, status):
-    """
-        Send a request to update IDP/Mobile detection status.
-        :type ids: ``list``
-        :param ids: The list of ids to update.
-        :type status: ``str``
-        :param status: The new status to set.
-        :return: The response.
-        :rtype ``dict``
-    """
-    data = {
-        "action_parameters": [{"name": "update_status", "value": status}],
-        "ids": ids
-    }
-    return http_request('PATCH', '/alerts/entities/alerts/v2', data=json.dumps(data))
 
 
 def contain_host(ids):
@@ -2248,9 +2242,10 @@ def update_incident_request(ids: list[str], action_parameters: dict[str, Any]):
 
 
 def update_detection_request(ids: list[str], status: str) -> dict:
-    if status not in DETECTION_STATUS:
+    list_of_stats = LEGACY_DETECTION_STATUS if LEGACY_VERSION else STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
+    if status not in list_of_stats:
         raise DemistoException(f'CrowdStrike Falcon Error: '
-                               f'Status given is {status} and it is not in {DETECTION_STATUS}')
+                               f'Status given is {status} and it is not in {list_of_stats}')
     return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
 
 
@@ -2264,10 +2259,10 @@ def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
         :return: The response.
         :rtype ``dict``
     """
-    if status not in IDP_AND_MOBILE_DETECTION_STATUS:
+    if status not in STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES:
         raise DemistoException(f'CrowdStrike Falcon Error: '
-                               f'Status given is {status} and it is not in {IDP_AND_MOBILE_DETECTION_STATUS}')
-    return resolve_idp_or_mobile_detection(ids=ids, status=status)
+                               f'Status given is {status} and it is not in {STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES}')
+    return resolve_detections_request(ids=ids, update_status=status)
 
 
 def list_host_groups(filter: str | None, limit: str | None, offset: str | None) -> dict:
@@ -2883,11 +2878,25 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         incident_type_scheme.add_field(name=argument, description=description)
     mapping_response.add_scheme_type(incident_type_scheme)
 
-    detection_type_scheme = SchemeTypeMapping(type_name='CrowdStrike Falcon Detection')
-    for argument, description in CS_FALCON_DETECTION_OUTGOING_ARGS.items():
-        detection_type_scheme.add_field(name=argument, description=description)
-    mapping_response.add_scheme_type(detection_type_scheme)
+    if LEGACY_VERSION:
+        legacy_detection_type_scheme = SchemeTypeMapping(type_name='CrowdStrike Falcon Detection - LAGACY')
+        for argument, description in LEGACY_CS_FALCON_DETECTION_OUTGOING_ARGS.items():
+            legacy_detection_type_scheme .add_field(name=argument, description=description)
+        mapping_response.add_scheme_type(legacy_detection_type_scheme)
 
+        return mapping_response
+
+    # Supported only in the new version (Raptor) and not in the legacy version
+    detection_types = [
+        'CrowdStrike Falcon Detection',
+        'CrowdStrike Falcon OFP Detection',
+        'CrowdStrike Falcon On-Demand Scans Detection']
+
+    for detection_type in detection_types:
+        detection_type_scheme = SchemeTypeMapping(type_name=detection_type)
+        for argument, description in CS_FALCON_DETECTION_OUTGOING_ARGS.items():
+            detection_type_scheme.add_field(name=argument, description=description)
+        mapping_response.add_scheme_type(detection_type_scheme)
     return mapping_response
 
 
@@ -2943,7 +2952,7 @@ def fetch_incidents():
     current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
     fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
-    look_back = int(params.get('look_back') or 1)
+    look_back = int(params.get('look_back') or 2)
     fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
@@ -4082,7 +4091,7 @@ def search_device_command():
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
             headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
         else:
-            if device_groups := single_device['groups']:
+            if device_groups := single_device.get('groups'):
                 single_device.update({'group_names': list(enrich_groups(device_groups).values())})
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_VERBOSE_KEY_MAP)
             headers = list(SEARCH_DEVICE_VERBOSE_KEY_MAP.values())
@@ -4651,6 +4660,7 @@ def run_script_command():
         demisto.error(str(e))
         raise ValueError('Timeout argument should be an integer, for example: 30')
 
+    full_command = ''  # initialized variable here to avoid pylint errors
     if script_name and raw:
         raise ValueError('Only one of the arguments script_name or raw should be provided, not both.')
     elif not script_name and not raw:
@@ -7084,6 +7094,7 @@ def main():
             result = module_test()
             return_results(result)
         elif command == 'fetch-incidents':
+            disable_for_xsiam()
             demisto.incidents(fetch_incidents())
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
@@ -7123,11 +7134,11 @@ def main():
         elif command == 'cs-falcon-run-get-command':
             demisto.results(run_get_command())
         elif command == 'cs-falcon-status-get-command':
-            demisto.results(status_get_command(demisto.args()))
+            demisto.results(status_get_command(args))
         elif command == 'cs-falcon-status-command':
             demisto.results(status_command())
         elif command == 'cs-falcon-get-extracted-file':
-            demisto.results(get_extracted_file_command(demisto.args()))
+            demisto.results(get_extracted_file_command(args))
         elif command == 'cs-falcon-list-host-files':
             demisto.results(list_host_files_command())
         elif command == 'cs-falcon-refresh-session':
@@ -7218,6 +7229,7 @@ def main():
 
         elif command == 'cs-falcon-rtr-list-network-stats':
             host_id = args.get('host_id')
+
             offline = argToBoolean(args.get('queue_offline', False))
             timeout = arg_to_number(args.get('timeout'))
             return_results(
@@ -7240,12 +7252,16 @@ def main():
             return_results(get_detection_for_incident_command(args.get('incident_id')))
         # Mirroring commands
         elif command == 'get-remote-data':
+            disable_for_xsiam()
             return_results(get_remote_data_command(args))
-        elif demisto.command() == 'get-modified-remote-data':
+        elif command == 'get-modified-remote-data':
+            disable_for_xsiam()
             return_results(get_modified_remote_data_command(args))
         elif command == 'update-remote-system':
+            disable_for_xsiam()
             return_results(update_remote_system_command(args))
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
+            disable_for_xsiam()
             return_results(get_mapping_fields_command())
         elif command == 'cs-falcon-spotlight-search-vulnerability':
             return_results(cs_falcon_spotlight_search_vulnerability_command(args))
@@ -7310,7 +7326,7 @@ def main():
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
     except Exception as e:
-        return_error(str(e))
+        return_error(f'Failed to execute {command!r} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):

@@ -2227,11 +2227,16 @@ def panorama_edit_address_group_command(args: dict):
     addresses_param: str
     addresses_path: str
     result: Any
+    addresses = []
     if type_ == 'dynamic':
         if not match:
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
         match_param = add_argument_open(match, 'filter', False)
         match_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/dynamic/filter"
+    else:
+        match_param = ""
+        match_path = ""
+        demisto.debug(f"{type_=} -> {match_param=} {match_path=}")
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
@@ -2253,6 +2258,10 @@ def panorama_edit_address_group_command(args: dict):
                 )
         addresses_param = add_argument_list(addresses, 'member', False)
         addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
+    else:
+        addresses_param = ""
+        addresses_path = ""
+        demisto.debug(f"{type_=} -> {addresses_param=} {addresses_path=}")
 
     description = args.get('description')
     tags = argToList(args['tags']) if 'tags' in args else None
@@ -2270,6 +2279,7 @@ def panorama_edit_address_group_command(args: dict):
     if DEVICE_GROUP:
         address_group_output['DeviceGroup'] = DEVICE_GROUP
 
+    result = None
     if type_ == 'dynamic' and match:
         params['xpath'] = match_path
         params['element'] = match_param
@@ -11156,8 +11166,11 @@ class UniversalCommand:
         result_data = []
         for device in topology.all(filter_string=device_filter_str, target=target):
             command = UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
-            response = run_op_command(device, command)
-
+            try:
+                response = run_op_command(device, command)
+            except panos.errors.PanDeviceXapiError:
+                demisto.debug(f'Could not find The given ID {id} in the specific device {device}.')
+                continue
             for job in response.findall("./result/job"):
                 result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData, job)
 
@@ -11167,11 +11180,14 @@ class UniversalCommand:
                     and (result_data_obj.type == job_type or not job_type)
                 ):
                     result_data.append(result_data_obj)
-
+            break
         # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
         # being returned, return it as a dict instead of a list.
         if len(result_data) == 1:
             return result_data[0]  # type: ignore
+
+        if not result_data and id:  # in case of an empty list and a specific ID, it means ID not found in all devices
+            raise DemistoException(f"The given ID {id} is not found in all devices of the topology.")
 
         return result_data
 
@@ -14354,6 +14370,9 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
             'xpath': xpath,
             'key': API_KEY,
         }
+    else:
+        params = {}
+        demisto.debug(f"{action_type=} -> {params=}")
 
     try:
         raw_response = http_request(URL, 'GET', params=params)

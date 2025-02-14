@@ -94,6 +94,6 @@
 <p><a href="../../doc_files/protectwise_event_search.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwise_event_search.png" alt="image" width="751" height="269"></a></p>
 <p><a href="../../doc_files/protectwith_sensors.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwith_sensors.png" alt="image" width="752" height="180"></a></p>
 <p><a href="../../doc_files/protectwise_event_info.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwise_event_info.png" alt="image" width="751" height="404"></a><br><a href="../../doc_files/netflows.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/netflows.png" alt="image" width="751" height="277"></a></p>
-<p> <a href="../../doc_files/protectwise_uploaded_file.png"" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwise_uploaded_file.png" alt="image" width="750" height="275"></a></p>
+<p> <a href="../../doc_files/protectwise_uploaded_file.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwise_uploaded_file.png" alt="image" width="750" height="275"></a></p>
 <p> </p>
 <p> </p>

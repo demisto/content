@@ -32,71 +32,81 @@ This integration was integrated and tested with version 2.0.0 of Zoom
 ### Server configuration (XSOAR 6.x)
 
 In the Server Configuration section, verify that the value for the instance.execute.external.`INTEGRATION-INSTANCE-NAME` key is set to true. If this key does not exist:
+
 1. Click **+ Add Server Configuration**.
 2. Add **instance.execute.external.`INTEGRATION-INSTANCE-NAME`** and set the value to **true**. 
 
 XSOAR endpoint URL-
-   - **For Cortex XSOAR 6.x**: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
-   - **For Cortex XSOAR 8.x / XSIAM**: you need to run using external engine: `https://<Engine URL>:<port>`. For example, https://my-engine-url:7001. 
+
+- **For Cortex XSOAR 6.x**: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+- **For Cortex XSOAR 8.x / XSIAM**: you need to run using external engine: `https://<Engine URL>:<port>`. For example, <https://my-engine-url:7001>. 
 
 
 ## Create Zoom ChatBOT app
-1. Navigate to https://marketplace.zoom.us/.
-2. Click **Develop** > **Build Team** > **Team Chat Apps**.
-3. Enter the **App Name**.
+
+1. Log onto the Zoom App Marketplace: <https://marketplace.zoom.us/>.
+2. Click **Develop** > **Build App**.
+3. Choose **General App**.
 4. Click **Create**.
 
 ![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/create-team-chat-app.gif)
+
 ### Configure App Settings
-Enter your Cortex XSOAR endpoint URL in all Redirect URLS.
 
-
-1. Click **Feature** > **Team Chat**.
-In the Team Chat Subscription section under BOT endpoint URL, add:
+1. Update your app’s name. By default, the build flow generates a generic name for your app. To change your app's name, select the edit icon (pencil) and update the name. To save your changes, click anywhere outside of the app name field.
+2. Under the section "Select how the app is managed", select "Admin-managed", and click "Save".
+3. Enter your Cortex XSOAR endpoint URL in the **OAuth Redirect URL**.
+4. Click **Features** > **Surface** > **Team Chat**.
+Toggle on the "Team Chat Subscription" section. Under "Bot Endpoint URL", add:
    - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
-   - For Cortex XSOAR 8.x / XSIAM you need to run using external engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
+   - For Cortex XSOAR 8.x / XSIAM you need to run using external engine: `https://<Engine Url>:<port>`. For example, <https://my-engine-url:7001>. 
 
 ![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/bot_endpoint_url.gif)
 
-2. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
+5. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
 
    | Scope Type | Scope Name | 
    | --- |  --- | 
-   | Team Chat |  Enable Chatbot within Zoom Team Chat Client /imchat:bot |
-   | Team Chat |  Send a team chat message to a Zoom Team Chat user or channel on behalf of a Chatbot /imchat:write:admin |
-   | Team Chat |  View and manage all users' team chat channels /chat_channel:write:admin |
-   | User |   View all user information /user:read:admin |
+   | Team Chat | /imchat:bot |
+   | Team Chat | /team_chat:read:user_message:admin |
+   | Team Chat | /team_chat:read:list_user_sessions:admin |
+   | Team Chat | /team_chat:read:list_user_messages:admin |
+   | Team Chat | /team_chat:write:user_channel:admin |
+   | Team Chat | /team_chat:write:members:admin |
+   | Team Chat | /team_chat:update:user_channel:admin |
+   | User | /user:read:user:admin |
+
 ![enter image description here](../../doc_files/scope-premissions.png)
 
-3. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
+6. Click **Local Test** > **Add App Now** to test your app and authorize your Cortex XSOAR app.
    
- ![enter image description here](../../doc_files/test-zoom-app.gif)
+7. If mirroring is enabled in the integration configuration or using `ZoomAsk`:
+   - **Endpoint URL Requirements:**
+   According to the [Zoom requirements](https://developers.zoom.us/docs/api/webhooks/#webhook-endpoint-requirements) in order to receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:
+       - Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
+       - Employ the `https://` scheme.
+       - Be able to accept HTTP POST requests containing JSON payloads.
+       - Be a fully qualified domain name (FQDN).
+       -  be able to respond with an HTTP Status Code.
 
-4. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
+   - **Zoom Configurations:**
+     
+     1. Copy the **Secret Token** from the "Features" > "Access" page under the "Token" section and add it to the instance configuration. ![enter image description here](../../doc_files/zoom-token.png)
+     2. Configure Event Subscriptions.
+     3. In the "Features" section, under "Access", in the "General Features" section, enable "Event Subscription".
+     4. Click **+Add New Event Subscription**.
+     5.  Enter the following information:
+         - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent")
+         - Add Events: Click **+Add Events**. Under Event Types, select **Chat Message**, and then select **Chat Message Sent**.
+         - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
+         - Authentication Header Option - 
+           1. **Default Header Provided by Zoom option** - This option allows you to use a verification token provided by Zoom. Copy the **Verification Token** under the "Token" section and add it to the instance configuration.
+          ![enter image description here](../../doc_files/verification.png)
 
-    **Endpoint URL Requirements:**
-   
-      To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:   
-      * Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
-      * Be able to accept HTTP POST requests.
-      * Be able to respond with a 200 or 204 HTTP Status Code.
-    ---
-    1. Copy the **secret token** from the "Feature" page under the "Token" section and add it to the instance configuration.
-    ![enter image description here](../../doc_files/zoom-token.png)
-    2. Configure Event Subscriptions. 
-        1. In the "Feature" page under the "General Features" section, enable "Event Subscriptions".
-        2. Click **+Add New Event Subscription**.
-        3. Enter the following information:
-            - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
-            - Authentication Header Option - 
-              1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.
-              ![enter image description here](../../doc_files/verification.png)
-              2. **Basic Authentication Option** you can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration. 
-              ![enter image description here](../../doc_files/authentication_header.png)
-            - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
-            - Validate the URL: Just after setting up/configuration of the Cortex XSOAR side you can validate the URL.
-            - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
-![enter image description here](../../doc_files/add-event.gif)
+           2. **Basic Authentication option** - You can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration.
+          ![enter image description here](../../doc_files/authentication_header.png)
+
+        ![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/add-event.gif)
 
 
 ## Commands
@@ -1943,7 +1953,8 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Message
->User SSO token for user usetobe@myself.com is deleted
+>
+>User SSO token for user <useremail@myself.com> is deleted
 
 ### send-notification
 
@@ -1978,6 +1989,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Message
+>
 >Message sent to Zoom successfully. Message ID is: 20230815153245201_BPK3S3S_aw1
 
 
