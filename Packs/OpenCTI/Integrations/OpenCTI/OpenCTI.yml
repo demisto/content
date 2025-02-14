@@ -60,9 +60,13 @@ script:
       name: last_run_id
     - description: The observable's value to filter by. Can be a partial value.
       name: search
+    - description: "List of filters to apply. Format: [{key: str, operator: str, values: list[str], mode: str}, ...]."
+      name: additional_filters
+      type: string
+      isArray: true
     - auto: PREDEFINED
       defaultValue: "false"
-      description: When the argument is set to true, the limit argument is ignored. 
+      description: When the argument is set to true, the limit argument is ignored.
       name: all_results
       predefined:
       - "true"
@@ -376,9 +380,13 @@ script:
       name: limit
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Incidents.LastRunID context path.
       name: last_run_id
+    - description: "List of filters to apply. Format: [{key: str, operator: str, values: list[str], mode: str}, ...]."
+      name: additional_filters
+      type: string
+      isArray: true
     - auto: PREDEFINED
       defaultValue: "false"
-      description: When the argument is set to true, the limit argument is ignored. 
+      description: When the argument is set to true, the limit argument is ignored.
       name: all_results
       predefined:
       - "true"
@@ -471,10 +479,10 @@ script:
       name: description
       type: string
     - defaultValue: "50"
-      description: Confidence level for the indicator, value between 0 and 100. 
+      description: Confidence level for the indicator, value between 0 and 100.
       name: confidence
     - defaultValue: "50"
-      description: The score of the indicator, value between 0 and 100. 
+      description: The score of the indicator, value between 0 and 100.
       name: score
     - description: The valid-from date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ.
       name: valid_from
@@ -555,10 +563,10 @@ script:
       name: description
       type: string
     - defaultValue: "50"
-      description: Confidence level for the indicator, value between 0 and 100. 
+      description: Confidence level for the indicator, value between 0 and 100.
       name: confidence
     - defaultValue: "50"
-      description: The score of the indicator, value between 0 and 100. 
+      description: The score of the indicator, value between 0 and 100.
       name: score
     - description: The valid-from date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ.
       name: valid_from
@@ -621,9 +629,13 @@ script:
       name: limit
     - description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Indicators.LastRunID context path.
       name: last_run_id
+    - description: "List of filters to apply. Format: [{key: str, operator: str, values: list[str], mode: str}, ...]."
+      name: additional_filters
+      type: string
+      isArray: true
     - auto: PREDEFINED
       defaultValue: "false"
-      description: When the argument is set to true, the limit argument is ignored. 
+      description: When the argument is set to true, the limit argument is ignored.
       name: all_results
       predefined:
       - "true"
@@ -764,7 +776,7 @@ script:
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.name
       description: Indicator type name.
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.description
-      description: Indicator type description.  
+      description: Indicator type description.
   dockerimage: demisto/vendors-sdk:1.0.0.110574
   runonce: false
   script: '-'
