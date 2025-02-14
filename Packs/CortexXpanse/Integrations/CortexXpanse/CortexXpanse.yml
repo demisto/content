@@ -844,16 +844,16 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-    - contextPath: ASM.TIM.IP.name 
+    - contextPath: ASM.TIM.IP.name
       description: The existing Cortex Xpanse IP address recently updated in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.IP.indicator_type
       description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.IP.id  
+    - contextPath: ASM.TIM.IP.id
       description: The existing indicator ID in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.IP.reliability 
+    - contextPath: ASM.TIM.IP.reliability
       description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.IP.score
@@ -915,16 +915,16 @@ script:
     - contextPath: ASM.TIM.Domain.name
       description: The existing Cortex Xpanse domain recently updated in XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.Domain.indicator_type 
+    - contextPath: ASM.TIM.Domain.indicator_type
       description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.Domain.id 
+    - contextPath: ASM.TIM.Domain.id
       description: The existing indicator ID in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.Domain.reliability 
+    - contextPath: ASM.TIM.Domain.reliability
       description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
       type: String
-    - contextPath: ASM.TIM.Domain.score 
+    - contextPath: ASM.TIM.Domain.score
       description: The existing indicator score recently updated in the Cortex XSOAR indicators.
       type: Number
     description: (Deprecated) Returns enrichment for a domain.
