@@ -498,7 +498,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "8"
+      - "29"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -608,7 +608,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 900
+          "y": 1010
         }
       }
     note: false
@@ -1961,7 +1961,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 1330
+          "y": 1350
         }
       }
     note: false
@@ -2031,7 +2031,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 1130
+          "y": 1170
         }
       }
     note: false
@@ -2231,7 +2231,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "19"
@@ -2280,6 +2279,62 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: f127825e-9cc0-45f3-852c-beabcce6848a
+    type: condition
+    task:
+      id: f127825e-9cc0-45f3-852c-beabcce6848a
+      version: -1
+      name: Is PDF File Encrypted
+      description: Checks if the PDF file is encrypted or not.
+      scriptName: IsPDFFileEncrypted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "19"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2290,10 +2345,12 @@ view: |-
       "21_10_#default#": 0.1,
       "23_10_#default#": 0.14,
       "23_22_yes": 0.43,
+      "29_19_yes": 0.13,
+      "29_8_no": 0.57,
       "5_10_#default#": 0.33,
       "5_6_yes": 0.36,
       "7_10_#default#": 0.1,
-      "7_8_yes": 0.24,
+      "7_29_yes": 0.42,
       "9_10_#default#": 0.18,
       "9_11_yes": 0.35
     },
