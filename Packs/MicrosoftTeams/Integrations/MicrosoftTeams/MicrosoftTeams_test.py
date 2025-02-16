@@ -2810,6 +2810,7 @@ def test_auth_type_handling_for_first_run_of_the_instance(mocker):
     assert 'This is the first run of the integration instance' in debug_log_mocker.call_args[0][0]
     assert debug_log_mocker.call_count == 1
 
+
 def test_message_update(mocker, requests_mock):
     """
     Given:
