@@ -68,7 +68,7 @@ def parse_rfc_3164_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     try:
         syslog_message: syslogmp.Message = parse_no_length_limit(log_message)
     except syslogmp.parser.MessageFormatError as e:
-        demisto.debug(f'Could not parse the log message, got MessageFormatError. Error was: {e}. Message is: {log_message.decode("utf-8")}')
+        demisto.debug(f'Could not parse the log message, got MessageFormatError. Error was: {e}')
         return None
     return SyslogMessageExtract(
         app_name=None,
@@ -98,7 +98,7 @@ def parse_rfc_5424_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     try:
         syslog_message: SyslogMessage = SyslogMessage.parse(log_message.decode('utf-8'))
     except ParseError as e:
-        demisto.debug(f'Could not parse the log message, got ParseError. Error was: {e}. Message is {log_message.decode("utf-8")}')
+        demisto.debug(f'Could not parse the log message, got ParseError. Error was: {e}')
         return None
     return SyslogMessageExtract(
         app_name=syslog_message.appname,
@@ -139,7 +139,7 @@ def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
             if extracted_message:
                 return extracted_message
     except ValueError as e:
-        demisto.debug(f'Could not parse the log message, got ValueError. Error was: {e}. Message is {log_message.decode("utf-8")}')
+        demisto.debug(f'Could not parse the log message, got ValueError. Error was: {e}')
         return None
     return None
 
