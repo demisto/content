@@ -1,0 +1,27 @@
+args:
+- default: true
+  description: An array for which to return the first element.
+  name: value
+  required: true
+comment: Returns the first element of an array.  If the value passed is not an array, it returns the original value that was passed.
+commonfields:
+  id: agamt
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+name: agamt
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- general
+- transformer
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
