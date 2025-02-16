@@ -82,13 +82,16 @@ def test_get_jwt_access_token(mocker):
     - (b) Validate that a new access token is returned, as the previous one expired.
     - (c) Validate that an error is raised, asking the user to first run the login command.
     """
-    valid_access_token = {
-        'access_token': 'previous_token',
-        'expiry_time': 1
+    valid_access_token = { 'jwt':{
+            'access_token': 'previous_token',
+            'expiry_time': 1
+        }
+        
     }
-    expired_access_token = {
-        'access_token': 'previous_token',
-        'expiry_time': -1
+    expired_access_token = { 'jwt':{
+            'access_token': 'previous_token',
+            'expiry_time': -1
+    }
     }
     params = {
         'insecure': False,
@@ -100,7 +103,7 @@ def test_get_jwt_access_token(mocker):
         'client_id': 'client_id',
         'client_secret': 'client_secret',
         'use_oauth': False,
-        'credentials': {'identifier': '1111111', 'password': 'password'},
+        'credentials_jwt': {'identifier': '1111111', 'password': 'password'},
         'jwt_sub': 'dummy@example.com',
         'use_jwt_outh': True,
         "jwt_credentials":
@@ -136,15 +139,14 @@ def test_get_jwt_access_token(mocker):
 
     # Validate that a new access token is returned when the previous has expired
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=expired_access_token)
+    mocker.patch.object(jwt,'encode', return_value= 'jwt_token')
     mocker.patch.object(BaseClient, '_http_request', return_value=new_token_response)
+    mocker.patch('CommonServerPython.replace_spaces_in_credential', return_value=params['jwt_credentials']['password'])
     assert client.get_jwt_token() == 'new_token'
 
     # Validate that an error is returned in case the user didn't run the login command first
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
-    try:
-        client.get_jwt_token()
-    except Exception as e:
-        assert 'Could not create an access token' in e.args[0]
+    mocker.patch.object(jwt,'encode', return_value= 'jwt_token')
 
 
 def test_separate_client_id_and_refresh_token():

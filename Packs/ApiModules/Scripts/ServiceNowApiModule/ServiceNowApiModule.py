@@ -222,7 +222,6 @@ class ServiceNowClient(BaseClient):
         }
 
         jwt_token = jwt.encode(payload, replace_spaces_in_credential(self.jwt_key), algorithm="RS256", headers=header)
-        demisto.debug(f'####{jwt_token=}###')
 
         oauth_data = {'assertion': jwt_token, 'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'}
         access_token = self.generate_servicenow_oauth_token(oauth_data)
