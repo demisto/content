@@ -354,15 +354,23 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Op
         reputation: string representing reputation of the indicator
     Returns: List of indicators created from the galaxies
     """
-    tags = indicator_obj['rawJSON']['value'].get('Tag', [])
-    galaxy_indicators = []
-    for tag in tags:
-        tag_name = tag.get('name', None)
-        type_ = get_galaxy_indicator_type(tag_name)
-        if tag_name and type_:
-            value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
-            galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
-
+    try:
+        tags = indicator_obj['rawJSON']['value'].get('Tag', [])
+        galaxy_indicators = []
+        tag = None
+        tag_name = None
+        for tag in tags:
+            tag_name = tag.get('name', None)
+            type_ = get_galaxy_indicator_type(tag_name)
+            if tag_name and type_:
+                demisto.debug(f"{tag_name=}, {type_=}")
+                value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
+                galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
+    except ValueError as e:
+        if tag and tag_name:
+            demisto.debug(f"A ValueError was raised on {tag=}, specifically with {tag_name=}")
+        demisto.debug(f"{e}")
+        raise e
     return galaxy_indicators
 
 
