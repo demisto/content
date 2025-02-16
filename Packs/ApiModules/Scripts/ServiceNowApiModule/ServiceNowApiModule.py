@@ -4,7 +4,6 @@ import jwt
 import uuid
 
 TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
-TOKEN_RENEWAL_TIME_LIMIT = 60  # In seconds. The minimum time before the token expires to renew it.
 OAUTH_URL = '/oauth_token.do'
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
@@ -195,7 +194,7 @@ class ServiceNowClient(BaseClient):
             jwt_key (str): The key to use for the JWT token (for the 'aud' claim).
             jwt_sub (str): The bla to use for the JWT token (UPN of the requested AD service user.
         Returns:
-            str: The JWT token.
+            str: The access code that as generate with JWT token.
         """
         integration_context = get_integration_context()
         previous_token = integration_context.get('jwt', {})

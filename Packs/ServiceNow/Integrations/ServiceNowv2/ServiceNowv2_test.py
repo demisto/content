@@ -1328,14 +1328,16 @@ def test_test_module_success(mocker, use_jwt_token, oauth_params):
         Validate the content of the HumanReadable.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', oauth_params=oauth_params, use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username',
+                    'password', 'verify', 'fetch_time', 'sysparm_query',
+                    oauth_params=oauth_params, use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = module(client)
     assert result[0] == 'ok'
 
-    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username',
+                    'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', use_oauth_token=True, oauth_params=OAUTH_PARAMS)
 
@@ -1356,7 +1358,8 @@ def test_test_module_failure(mocker):
     - Validate that an error is returned, indicating that the `Test` button can't be used when using OAuth 2.0.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username',
+                    'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', use_oauth_token=True, oauth_params=OAUTH_PARAMS)
 
@@ -1378,8 +1381,9 @@ def test_oauth_test_module_failure(mocker, use_jwt_token):
     - (b) validate that an error is returned, indicating that the function should be called when using OAuth only
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username',
+                    'password', 'verify', 'fetch_time', 'sysparm_query',
+                    use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
     with pytest.raises(Exception) as e:
         oauth_test_module(client)
@@ -1398,8 +1402,9 @@ def test_oauth_test_module_success(mocker):
     - Validate that the instance was configured successfully.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', use_oauth_token=True, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username',
+                    'password', 'verify', 'fetch_time', 'sysparm_query',
+                    use_oauth_token=True, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = oauth_test_module(client)
@@ -1421,8 +1426,9 @@ def test_oauth_login_command_failure(mocker, use_jwt_token):
     - (b) Validate that the login was successful.
     """
     mocker.patch('ServiceNowv2.ServiceNowClient.login')
-    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username',
+                    'password', 'verify', 'fetch_time', 'sysparm_query',
+                    use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
     with pytest.raises(Exception) as e:
         login_command(client, args={'username': 'username', 'password': 'password'})
@@ -1443,8 +1449,9 @@ def test_oauth_login_command_success(mocker):
     - (b) Validate that the login was successful.
     """
     mocker.patch('ServiceNowv2.ServiceNowClient.login')
-    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', use_oauth_token=True, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username',
+                    'password', 'verify', 'fetch_time', 'sysparm_query',
+                    use_oauth_token=True, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = login_command(client, args={'username': 'username', 'password': 'password'})
