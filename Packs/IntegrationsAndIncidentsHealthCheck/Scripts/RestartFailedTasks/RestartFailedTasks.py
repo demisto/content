@@ -38,7 +38,7 @@ def remove_exclusion(failed_tasks: list, playbook_exclusion: list):
 
     for playbook in playbook_exclusion:
         for task in failed_tasks:
-            if playbook in task['Playbook Name']:
+            if task and playbook in task['Playbook Name']:
                 failed_tasks.remove(task)
     return failed_tasks
 
