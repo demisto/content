@@ -1,13 +1,29 @@
-[RULE:SUPPORTED_FORMAT]
+[INGEST:vendor="cisco", product="wlc", target_dataset="cisco_wlc_raw", no_hit=keep]
+
+filter _raw_log ~= "\d+:\s\d*\s*\S+\s+\d+\s+\S+\s*\S*\:\s+\%" or _raw_log ~= "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):"
 /*
-Supported date time formats: 
-- MMM dd hh:mm:ss.nnn
-- MMM dd hh:mm:ss.nnn TZ
-- yyyy MMM dd hh:mm:ss.nnn
-- yyyy MMM dd hh:mm:ss.nnn TZ
-For example: "2021 Jan 01 10:00:00.123 UTC".
+First section is modifing syslog log with field raw log that contain timestamp in the format: MMM DD YYYY HH:mm:ss.m
+And converting to format YYYY MMM DD HH:mm:ss.m
+For example: Feb 4 2025 17:40:49.388 UTC and converting it to 2025 Feb 4 2025 17:40:49.388 UTC
 */
-alter
+
+// Extract prefix 
+| alter tmp_get_prefix = arrayindex(regextract(_raw_log ,"<\d{1,3}>(\d+:\s)\w{3}"),0)
+// Extract date and time including time zone e.g. UTC:
+| alter tmp_get_time = arrayindex(regextract(_raw_log  ,"\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+:)"),0)
+// Extract the year
+| alter tmp_get_year = arrayindex(regextract(tmp_get_time ,"\d{4}"),0)
+// Remove the year 
+| alter tmp_remove_year =  replex(tmp_get_time  , "(\s+\d{4})", "" )
+// Concat prefix, year and the rest of the date
+| alter tmp_change_location = concat(tmp_get_prefix,tmp_get_year ," ",tmp_remove_year )
+// Replace using regex the original timestamp with the new timestamp
+| alter _raw_log = coalesce(replex(_raw_log , "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):", tmp_change_location ),_raw_log )
+
+/*
+This section altering time stamp (from existing mapping)
+*/
+| alter
     tmp_get_log_datetime = arraystring(regextract(_raw_log, "(\d*\s*\S+\s+\d+\s+\S+)\s*\S*\:\s+\%"), "")
 | alter
     tmp_get_year = if(tmp_get_log_datetime ~= "\d{4}", arraystring(regextract(tmp_get_log_datetime, "\d{4}"), ""), "1970"),
@@ -17,36 +33,4 @@ alter
     tmp_full_timestamp = arraystring(arraycreate(tmp_get_year, tmp_get_month_day, tmp_get_time_milli), " ")
 | alter
     _time = if(tmp_full_timestamp ~= "1970", _insert_time, parse_timestamp("%Y %h %e %H:%M:%E3S", tmp_full_timestamp))
-| fields -tmp_get_log_datetime, tmp_get_year, tmp_get_time_milli, tmp_get_month_day, tmp_full_timestamp;
-
-
-/*
-NEW_TIMESTAMP_FORMAT rule is a rule that adjust the raw log that contain timestamp in the format: MMM DD YYYY HH:mm:ss.m
-For example: Feb 4 2025 17:40:49.388 UTC and converting it to 2025 Feb 4 2025 17:40:49.388 UTC
-*/
-
-[RULE:NEW_TIMESTAMP_FORMAT]
-// Extract the prefix number
-alter tmp_get_prefix = arrayindex(regextract(_raw_log ,"<\d{1,3}>(\d+:\s)\w{3}"),0)
-// Extract date and time including time zone e.g. UTC:
-| alter tmp_get_time = arrayindex(regextract(_raw_log  ,"\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+:)"),0)
-// Extract the year
-| alter tmp_get_year = arrayindex(regextract(tmp_get_time ,"\d{4}"),0)
-// Remove the year 
-| alter tmp_remove_year =  replex(tmp_get_time  , "(\s+\d{4})", "" )
-// Concat prefix, year and the rest of the date
-| alter tmp_change_location = concat(tmp_get_prefix,tmp_get_year ," ",tmp_remove_year )
-// Replace using regex, the original timestamo with the new timestamp 
-| alter _raw_log = replex(_raw_log , "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):", tmp_change_location )
-| fields -tmp_get_prefix, tmp_get_time , tmp_get_year , tmp_remove_year , tmp_change_location ;
-
-
-[INGEST:vendor="cisco", product="wlc", target_dataset="cisco_wlc_raw", no_hit=keep]
-
-filter _raw_log ~= "\d*\s*\S+\s+\d+\s+\S+\s*\S*\:\s+\%"
-| call SUPPORTED_FORMAT ;
-
-// addition to the new format
-filter _raw_log ~= "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):"
-| call NEW_TIMESTAMP_FORMAT 
-| call SUPPORTED_FORMAT ;
+| fields -tmp_get_log_datetime, tmp_get_year, tmp_get_time_milli, tmp_get_month_day, tmp_full_timestamp, tmp_get_prefix, tmp_get_time , tmp_get_year , tmp_remove_year , tmp_change_location;
