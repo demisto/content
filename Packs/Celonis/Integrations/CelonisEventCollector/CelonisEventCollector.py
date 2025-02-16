@@ -136,9 +136,9 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             if e.res.status_code == 401:
                 demisto.debug("Regenerates token for fetching audit logs.")
                 client.create_access_token_for_audit()
+                continue
             else:
                 raise e
-            response = client.get_audit_logs(start_time, end_time)
 
         content = response.json().get('content', [])
 
