@@ -532,7 +532,7 @@ def test_unsupported_file_return_error(mocker):
     with pytest.raises(Exception):
         run_file_command(hash, params)
     mock_return_error.assert_called_once_with('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
-        
+
 
 def test_unsupported_file_return_warning(mocker):
     from URLHaus import run_file_command
