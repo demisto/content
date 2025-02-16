@@ -1994,8 +1994,8 @@ def update_message(service_url: str, conversation_id: str, message_id: str, text
             'type': 'message',
             'text': text
         }
-    url: str = f'{service_url}/v3/conversations/{conversation_id}/activities/{message_id}' # type:ignore
-    res: dict = http_request('PUT', url, json_=conversation, api='bot') # type:ignore
+    url: str = f'{service_url}/v3/conversations/{conversation_id}/activities/{message_id}'  # type:ignore
+    res: dict = http_request('PUT', url, json_=conversation, api='bot')  # type:ignore
 
     return res
 
@@ -2094,10 +2094,10 @@ def send_message_request(service_url: str,
     """
     if not message_id:
         url: str = f'{service_url}/v3/conversations/{channel_id}/activities'
-        res: dict = http_request('POST', url, json_=conversation, api='bot')
+        res: dict = http_request('POST', url, json_=conversation, api='bot') #type:ignore
     else:
-        url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels/{channel_id}/messages/{message_id}/replies' # type:ignore
-        res: dict = http_request('POST', url, json_=conversation) # type:ignore
+        url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels/{channel_id}/messages/{message_id}/replies'  # type:ignore
+        res: dict = http_request('POST', url, json_=conversation)  # type:ignore
     return res
 
 
