@@ -100,10 +100,11 @@ def test_fetch_events_token_expired(mocker):
     mocker.patch('CelonisEventCollector.demisto.getLastRun', return_value=last_run_mock)
     mocker.patch('CelonisEventCollector.Client.create_access_token_for_audit')
 
-    mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=[exception, mock_response])
+    get_audit_logs_mock = mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=[exception, mock_response])
 
     output, new_last_run = fetch_events(client, fetch_limit=10)
 
+    assert get_audit_logs_mock.call_count == 2
     assert len(output) == 10
     assert new_last_run.get('start_date') == '2025-02-10T14:52:10.904Z'
 

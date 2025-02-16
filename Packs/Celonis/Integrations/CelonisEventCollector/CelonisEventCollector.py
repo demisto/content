@@ -42,7 +42,8 @@ class Client(BaseClient):
             method="POST",
             url_suffix="/oauth2/token",
             data=data,
-            auth=(self.client_id, self.client_secret)
+            auth=(self.client_id, self.client_secret),
+            retries=3
         )
         self.token = results.get('access_token', '')
 
@@ -113,16 +114,12 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
-    if get_events_args:  # handle get_event command
-        start_time = get_events_args.get('start_date', '')
-        end_time = get_events_args.get('end_date', '')
-    else:  # handle fetch_events case
-        last_run = demisto.getLastRun() or {}
-        start_time = last_run.get('start_date', '')
+    last_run = demisto.getLastRun() or {}
+    start_time = (get_events_args or last_run).get('start_date', '') or get_current_time().strftime(DATE_FORMAT)
+    end_time = (get_events_args or {}).get('end_date', get_current_time().strftime(DATE_FORMAT))
+
+    if not get_events_args:  # Only set token for fetch_events case
         client.set_token(last_run.get('audit_token', ''))
-        if not start_time:
-            start_time = get_current_time().strftime(DATE_FORMAT)
-        end_time = get_current_time().strftime(DATE_FORMAT)
 
     demisto.debug(f'Fetching audit logs events from date={start_time} to date={end_time}.')
 
@@ -132,16 +129,16 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             response = client.get_audit_logs(start_time, end_time)
         except Exception as e:
             if e.res.status_code == 429:
-                demisto.debug(f"Rate limit reached. Returning {len(output)} instead of {fetch_limit}"
-                              f" Audit logs. Wait for the next fetch cycle.")
-                new_last_run = {'start_date': start_time, 'audit_token': client.token}
-                return output, new_last_run
+                retry_after = int(e.res.headers.get('x-ratelimit-reset', 2))
+                demisto.debug(f"Rate limit reached. Waiting {retry_after} seconds before retrying.")
+                time.sleep(retry_after)  # pylint: disable=E9003
+                continue
             if e.res.status_code == 401:
                 demisto.debug("Regenerates token for fetching audit logs.")
                 client.create_access_token_for_audit()
-                response = client.get_audit_logs(start_time, end_time)
             else:
                 raise e
+            response = client.get_audit_logs(start_time, end_time)
 
         content = response.json().get('content', [])
 
@@ -161,9 +158,6 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
                 return output, new_last_run
 
         start_time = add_millisecond(event_date)
-        rate_limit_reset = int(response.headers.get('x-ratelimit-reset'))
-        demisto.debug(f"Waiting {rate_limit_reset} seconds before calling the next request.")
-        time.sleep(rate_limit_reset)
 
     new_last_run = {'start_date': start_time, 'audit_token': client.token}
     return output, new_last_run
