@@ -138,18 +138,22 @@ def poc_prepare_events(events: list, event_type: str, last_run: dict) -> list[An
     # dedup with IDs from previous fetch, if available
     # get max epoch from fetch events
 
-    last_fetch_ids = set(last_run.get(event_type, {}).get("last_fetch_ids", []))
-    ids = set()
+    last_fetch_ids = last_run.get(event_type, {}).get("last_fetch_ids", [])
+    ids = []
     creation_timestamp_epochs: list[str] = []
+    deduped_events = []
     for event in events:
+        event_id = str(event.get("_id"))
+        if event_id in last_fetch_ids:
+            continue
         populate_parsing_rule_fields(event, event_type)
-        event_id = event.get("_id")
-        ids.add(event_id)
+        ids.append(event_id)
         event["event_id"] = event_id
-        creation_timestamp_epochs.extend(event.get("_creation_timestamp"))
+        creation_timestamp_epochs.append(str(event.get("_creation_timestamp")))
+        deduped_events.append(event)
 
-    deduped_events = list(ids - last_fetch_ids)
-
+    if not last_run.get(event_type):
+        last_run[event_type] = {}
     last_run[event_type]["last_fetch_ids"] = ids
     last_run[event_type]["last_fetch_max_epoch"] = max(creation_timestamp_epochs)
 
@@ -323,7 +327,12 @@ def poc_get_all_events(client: Client, last_run: dict, all_event_types: list, li
     """
     Iterates over all supported event types and call the handle event fetch logic.
 
-    Example request:
+    Endpoint: /api/v2/events/data/
+    Docs: https://www.postman.com/netskope-tech-alliances/netskope-rest-api/request/zknja6y/get-network-events-generated-by-netskope
+
+
+
+    Example HTTP request:
     <baseUrl>/api/v2/events/data/network?offset=0&starttime=1707466628&endtime=1739089028&query=_creation_timestamp gte 1739058516
 
     Args:
@@ -340,8 +349,8 @@ def poc_get_all_events(client: Client, last_run: dict, all_event_types: list, li
 
     for event_type in client.event_types_to_fetch:
         # event_type_operation = last_run.get(event_type, {}).get('operation')
-        epoch_starttime = int(last_run.get(event_type, {}).get("last_fetch_max_epoch", "")) or int(
-            arg_to_datetime("now").timestamp() # type: ignore[union-attr]
+        epoch_starttime = arg_to_number(last_run.get(event_type, {}).get("last_fetch_max_epoch", "")) or int(
+            arg_to_datetime("1 Month").timestamp()  # type: ignore[union-attr]
         )
         query = f"_creation_timestamp gte {epoch_starttime}"  # TODO: add some sorting by '_creation_timestamp' key
         params = assign_params(limit=limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time, query=query)
@@ -350,7 +359,7 @@ def poc_get_all_events(client: Client, last_run: dict, all_event_types: list, li
         results = response.get("result", [])
         demisto.debug(f"The number of received events - {len(results)}")
 
-        deduped_events, ids, max_epoch = poc_prepare_events(results, event_type, last_run)
+        deduped_events = poc_prepare_events(results, event_type, last_run)
         all_event_types.extend(deduped_events)
 
     return last_run
@@ -453,11 +462,18 @@ def main() -> None:  # pragma: no cover
         elif command_name == 'fetch-events':
             if POC:
                 start = datetime.utcnow()
-                demisto.debug(f'Starting fetch with "/api/v2/events/data/" endpoint')
+                demisto.debug('Starting fetch with "/api/v2/events/data/" endpoint')
                 new_last_run = poc_get_all_events(
                     client=client, last_run=last_run, limit=max_fetch, all_event_types=all_event_types
                 )
                 end = datetime.utcnow()
+
+                demisto.debug(f"Handled {len(all_event_types)} total events in {(end - start).seconds} seconds")
+                next_trigger_time(len(all_event_types), max_fetch, new_last_run)
+                demisto.debug(f"Setting the last_run to: {new_last_run}")
+                demisto.setLastRun(new_last_run)
+
+
             else:
                 # We have this try-finally block for fetch events where wrapping up should be done if errors occur
                 start = datetime.utcnow()
