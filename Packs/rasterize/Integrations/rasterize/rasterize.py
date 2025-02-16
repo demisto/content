@@ -367,10 +367,18 @@ def add_new_chrome_instance(new_chrome_instance_content: Optional[Dict] = None) 
     :param new_chrome_instance_content: Data to write to the file. If None, an empty file is created.
 
     """
+    # existing_data = read_json_file()
+    #
+    # if new_chrome_instance_content:
+    #     existing_data.update(new_chrome_instance_content)
+    #
+    # write_chrome_instances_file(existing_data)
     existing_data = read_json_file()
 
     if new_chrome_instance_content:
-        existing_data.update(new_chrome_instance_content)
+        # Append new data to existing data
+        for key, value in new_chrome_instance_content.items():
+            existing_data[key] = value
 
     write_chrome_instances_file(existing_data)
 
@@ -909,7 +917,8 @@ def perform_rasterize(path: str | list[str],
     demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
 
     # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
-    browser, chrome_port = chrome_manager_one_port()
+    # browser, chrome_port = chrome_manager_one_port()
+    browser, chrome_port = chrome_manager()
 
     if browser:
         support_multithreading()
