@@ -82,15 +82,7 @@ class OktaASAClient(BaseClient):
 
         params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
         self.generate_token_if_required()
-        try:
-            events_response = self.get_audit_events_request(params)
-        except DemistoException as e:
-            if e.res is not None and e.res.status_code == 401 and "Authentication token expired" in e.res.text:
-                self.generate_token_if_required(hard=True)
-                demisto.debug(f"{INTEGRATION_NAME}: Hard refresh token")
-                events_response = self.get_audit_events_request(params)
-            else:
-                raise e
+        events_response = self.get_audit_events_request(params)
         return events_response
 
     def generate_token_if_required(self, hard: bool = False) -> None:
@@ -193,7 +185,7 @@ def add_time_to_events(events: List[Dict]):
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client: OktaASAClient, args: dict) -> str:
+def test_module(client: OktaASAClient) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -202,15 +194,13 @@ def test_module(client: OktaASAClient, args: dict) -> str:
 
     Args:
         client (OktaASAClient): OktaASAClient client to use.
-        args (dict): A dictionary containing the command arguments.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
         get_events_command(
-            client=client,
-            args=args
+            client=client
         )
 
     except Exception as e:
@@ -222,7 +212,7 @@ def test_module(client: OktaASAClient, args: dict) -> str:
     return 'ok'
 
 
-def get_events_command(client: OktaASAClient, args: dict) -> tuple[List[Dict], CommandResults]:
+def get_events_command(client: OktaASAClient, args: dict = {}) -> tuple[List[Dict], CommandResults]:
     """
         Gets audit events from Audits Events endpoint.
 
@@ -300,7 +290,7 @@ def main() -> None:  # pragma: no cover
             proxy=proxy)
 
         if command == 'test-module':
-            result = test_module(client, args)
+            result = test_module(client)
             return_results(result)
 
         elif command == 'okta-asa-get-events':

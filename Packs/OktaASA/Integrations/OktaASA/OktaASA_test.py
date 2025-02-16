@@ -82,7 +82,7 @@ def test_test_module_command(mocker):
         OktaASAClient, "search_events", return_value=(None, None, None)
     )
     client = get_mock_client()
-    res = test_module(client=client, args={})
+    res = test_module(client=client)
     assert res == "ok"
     assert search_events_command_mocker.call_count == 1
     search_events_command_mocker.assert_called_with(limit=50)
@@ -104,7 +104,7 @@ def test_test_module_arguments(mocker):
 
     client = get_mock_client()
     get_events_command_mocker = mocker.patch.object(OktaASA, "get_events_command")
-    result = test_module(client=client, args={})
+    result = test_module(client=client)
     assert result == "ok"
     assert get_events_command_mocker.call_count == 1
     get_events_command_mocker.assert_called_with(
@@ -276,51 +276,6 @@ def test_generate_token_if_required_hard_is_true_and_integration_context_is_not_
     assert get_token_request_mocker.call_count == 1
     assert getIntegrationContext_mocker.call_count == 1
     assert setIntegrationContext_mocker.call_count == 1
-
-
-def test_execute_audit_events_request_token_expired_401_exception(
-    mocker,
-):
-    """
-    Given:
-    - OktaASAClient.
-
-    When:
-    - Call the execute_audit_events_request method
-
-    Then:
-    - The token is expired and we refresh the token with hard argument.
-    """
-
-    class MockException:
-        def __init__(self, status_code, text) -> None:
-            self.status_code = status_code
-            self.text = text
-
-    from OktaASA import OktaASAClient
-
-    client = get_mock_client()
-    generate_token_if_required_mocker = mocker.patch.object(
-        OktaASAClient,
-        "generate_token_if_required",
-    )
-    get_audit_events_request_mocker = mocker.patch.object(
-        OktaASAClient,
-        "get_audit_events_request",
-        side_effect=[
-            DemistoException(
-                "Authentication token expired",
-                res=MockException(401, "Authentication token expired"),
-            ),
-            [],
-        ],
-    )
-    client.execute_audit_events_request(
-        offset=None, count=None, descending=None, prev=None
-    )
-    assert get_audit_events_request_mocker.call_count == 2
-    assert generate_token_if_required_mocker.call_count == 2
-    assert generate_token_if_required_mocker.call_args_list[1].kwargs.get("hard") is True
 
 
 def test_execute_audit_events_request_exception(
