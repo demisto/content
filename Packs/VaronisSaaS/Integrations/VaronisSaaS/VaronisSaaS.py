@@ -1400,7 +1400,7 @@ def enrich_with_url(output: dict[str, Any], baseUrl: str, id: str) -> dict[str, 
     :rtype: ``Dict[str, Any]``
     """
 
-    output['Url'] = urljoin(baseUrl, f'/#/app/analytics/entity/Alert/{id}')
+    output['Url'] = urljoin(baseUrl, f'/analytics/entity/Alert/{id}')
     return output
 
 
