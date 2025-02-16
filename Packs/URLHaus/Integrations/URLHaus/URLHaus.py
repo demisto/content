@@ -578,7 +578,7 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
     elif params.get('should_error', True):
         return_error('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
     else:
-        return_warning('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types', True)
+        return_warning('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types', exit=True)
 
     file_information = query_payload_information(hash_type, params.get('api_url'), params.get('use_ssl'),
                                                  hash).json()
