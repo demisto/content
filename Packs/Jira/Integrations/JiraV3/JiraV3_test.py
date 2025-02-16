@@ -989,7 +989,7 @@ class TestJiraGetIDOffsetCommand:
         run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
         command_result = get_id_offset_command(client=client, args={})
         assert run_query_mocker.call_args[1].get('query_params', {}).get('jql') == 'ORDER BY created ASC'
-        assert {'Ticket': {'idOffSet': '10161'}} == command_result.to_context()['EntryContext']
+        assert command_result.to_context()['EntryContext'] == {'Ticket': {'idOffSet': '10161'}}
 
     def test_get_id_offset_command_with_custom_query_argument(self, mocker):
         """
@@ -2309,7 +2309,7 @@ class TestJiraFetchIncidents:
         expected_issue = add_extracted_data_to_incident(issue=issue)
         expected_extracted_issue_data = {'extractedSubtasks': [
             {'id': '21525', 'key': 'COMPANYSA-63'}, {'id': '21538', 'key': 'COMPANYSA-70'}],
-            'extractedCreator': 'Example User(admin@demistodev.com)', 'extractedComponents': [
+            'extractedCreator': 'Example User(admin@test.com)', 'extractedComponents': [
                 'Almost-Done', 'dummy-comp', 'Integration', 'New-Component']}
         assert expected_extracted_issue_data.items() <= expected_issue.items()
 
