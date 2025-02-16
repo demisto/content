@@ -3546,20 +3546,20 @@ RESPONSE_GENERIC_TICKET = {
 }
 
 JWT_OAUTH_PARAMS = {
-        'credentials': {
-            'identifier': 'username',
-            'password': 'password'
-        },
-        'client_id': 'client_id',
-        'client_secret': 'client_secret',
-        'url': 'url',
-        'headers': {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        'verify': False,
-        'proxy': False,
-        'jwt_key_id': 'jwt_key_id',
-        'jwt_private_key': 'private_key',
-        'jwt_sub': 'sub',
+    'credentials': {
+        'identifier': 'username',
+        'password': 'password'
+    },
+    'client_id': 'client_id',
+    'client_secret': 'client_secret',
+    'url': 'url',
+    'headers': {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    },
+    'verify': False,
+    'proxy': False,
+    'jwt_key_id': 'jwt_key_id',
+    'jwt_private_key': 'private_key',
+    'jwt_sub': 'sub',
 }

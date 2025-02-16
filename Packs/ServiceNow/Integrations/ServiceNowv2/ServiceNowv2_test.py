@@ -1305,7 +1305,7 @@ def test_oauth_authentication(mocker, requests_mock):
     assert ServiceNowClient.get_access_token.called
 
 
-@pytest.mark.parametrize("use_jwt_token, oauth_params", [(False, {}), (True,JWT_OAUTH_PARAMS)])
+@pytest.mark.parametrize("use_jwt_token, oauth_params", [(False, {}), (True, JWT_OAUTH_PARAMS)])
 def test_test_module_success(mocker, use_jwt_token, oauth_params):
     """Unit test
     Given
@@ -1326,10 +1326,10 @@ def test_test_module_success(mocker, use_jwt_token, oauth_params):
     (b)
         - run the test module command using the Client
         Validate the content of the HumanReadable.
-    """    
+    """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query',oauth_params=oauth_params, use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at',
+                    'sysparm_query', oauth_params=oauth_params, use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = module(client)
@@ -1363,8 +1363,6 @@ def test_test_module_failure(mocker):
     with pytest.raises(Exception) as e:
         module(client)
     assert 'Test button cannot be used when using OAuth 2.0' in str(e)
-
-
 
 
 @pytest.mark.parametrize("use_jwt_token", [False, True])
