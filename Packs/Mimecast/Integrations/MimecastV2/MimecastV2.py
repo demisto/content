@@ -45,6 +45,7 @@ PASSWORD = demisto.params().get('password') or demisto.params().get('credentials
 if isinstance(PASSWORD, dict):
     PASSWORD = PASSWORD.get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+MAX_FETCH=arg_to_number(demisto.params().get('max_fetch', 100)) or 100
 
 
 CLIENT_ID = demisto.params().get('client_id')
@@ -112,7 +113,6 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
     len_of_results = 0
     results = []
-    current_command = demisto.command()
     while True:
         if response.get('fail'):
             raise Exception(json.dumps(response.get('fail')[0].get('errors')))
@@ -122,11 +122,11 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
             response_data = response.get('data')
         for entry in response_data:
             # If returning this log will not exceed the specified limit
-            if not limit or len_of_results < limit or current_command == 'fetch-incidents':
+            if not limit or len_of_results < limit:
                 len_of_results += 1
                 results.append(entry)
         # If limit is reached or there are no more pages
-        if not next_page or (current_command != 'fetch-incidents' and limit and len_of_results >= limit):
+        if not next_page or (limit and len_of_results >= limit):
             break
         pagination = {'page_size': page_size,  # type: ignore
                       'pageToken': next_page}  # type: ignore
@@ -2016,7 +2016,8 @@ def fetch_incidents():
         }
         url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
                                               data=[search_params],
-                                              response_param='clickLogs')
+                                              response_param='clickLogs',
+                                              limit=MAX_FETCH)
         demisto.debug(f"number of url_logs={len(url_logs)}")
         for url_log in url_logs:
             incident = url_to_incident(url_log)
@@ -2041,7 +2042,8 @@ def fetch_incidents():
         demisto.debug(search_params, 'search_params')
         attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                      data=[search_params],
-                                                     response_param='attachmentLogs')
+                                                     response_param='attachmentLogs',
+                                                     limit=MAX_FETCH)
         demisto.debug(f"number of attachment_logs={len(attachment_logs)}")
         for attachment_log in attachment_logs:
             incident = attachment_to_incident(attachment_log)
@@ -2066,7 +2068,8 @@ def fetch_incidents():
         }
         impersonation_logs, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
                                                         data=[search_params],
-                                                        response_param='impersonationLogs')
+                                                        response_param='impersonationLogs',
+                                                        limit=MAX_FETCH)
         demisto.debug(f"number of impersonation_logs={len(impersonation_logs)}")
         for impersonation_log in impersonation_logs:
             incident = impersonation_to_incident(impersonation_log)
@@ -2089,7 +2092,8 @@ def fetch_incidents():
             'admin': True
         }
         held_messages, _ = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
-                                                   data=[search_params])
+                                                   data=[search_params],
+                                                   limit=MAX_FETCH)
         demisto.debug(f"number of held_messages={len(held_messages)}")
         for held_message in held_messages:
             incident = held_to_incident(held_message)

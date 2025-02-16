@@ -131,6 +131,11 @@ configuration:
   name: fetchDelta
   type: 0
   required: false
+- defaultValue: '100'
+  display: Max fetch limit (for each incident type)
+  name: max_fetch
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: new_insecure
   type: 8
