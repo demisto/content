@@ -174,8 +174,8 @@ class ServiceNowClient(BaseClient):
         previous_token = get_integration_context() or {}
         data = {}
         # Check if there is an existing valid access token
-        if ('expiry_time' in previous_token and 'access_token' in previous_token and
-            previous_token['expiry_time'] > date_to_timestamp(datetime.now())):
+        if ('expiry_time' in previous_token and 'access_token' in previous_token
+                and previous_token['expiry_time'] > date_to_timestamp(datetime.now())):
             return previous_token.get('access_token')
         else:
             # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
