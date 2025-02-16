@@ -17,9 +17,6 @@ COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
-TOKEN_RENEWAL_TIME_LIMIT = 60  # In seconds. The minimum time before the token expires to renew it.
-
 DATE_FORMAT_OPTIONS = {
     'MM-dd-yyyy': '%m-%d-%Y %H:%M:%S',
     'MM/dd/yyyy': '%m/%d/%Y %H:%M:%S',
