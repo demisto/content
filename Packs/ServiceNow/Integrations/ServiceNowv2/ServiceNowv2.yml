@@ -1,7 +1,7 @@
 category: Case Management
 sectionOrder:
 - Connect
-- Collect Basic
+- Collect
 - Optimize
 commonfields:
   id: ServiceNow v2
