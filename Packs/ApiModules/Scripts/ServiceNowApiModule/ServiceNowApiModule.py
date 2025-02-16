@@ -3,8 +3,6 @@ from CommonServerUserPython import *
 import jwt
 import uuid
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
-
 TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
 TOKEN_RENEWAL_TIME_LIMIT = 60  # In seconds. The minimum time before the token expires to renew it.
 OAUTH_URL = '/oauth_token.do'
