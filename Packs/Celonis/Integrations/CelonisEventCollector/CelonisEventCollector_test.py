@@ -70,13 +70,20 @@ def test_fetch_events_reaching_rate_limit(mocker):
 
     exception = Exception("Rate limit exceeded")
     exception.res = SimpleNamespace(status_code=429)
+    exception.res.headers = MagicMock()
+    exception.res.headers.get.return_value = '0'  # Mocking `get('x-ratelimit-reset', 2)`
+
+    raw_response_audit_logs = util_load_json('test_data/raw_response_audit_logs.json')
+    mock_response = MagicMock()
+    mock_response.json.return_value = raw_response_audit_logs
+
     last_run_mock = {"start_date": "2025-02-06T00:00:00.000Z", "audit_token": "123"}
-    mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=exception)
+    mocker.patch('CelonisEventCollector.Client.get_audit_logs', side_effect=[exception, mock_response])
     mocker.patch('CelonisEventCollector.demisto.getLastRun', return_value=last_run_mock)
 
     output, new_last_run = fetch_events(client, fetch_limit=10)
-    assert output == []
-    assert new_last_run == last_run_mock
+    assert len(output) == 10
+    assert new_last_run == {'audit_token': '123', 'start_date': '2025-02-10T14:52:10.904Z'}
 
 
 def test_fetch_events_token_expired(mocker):
