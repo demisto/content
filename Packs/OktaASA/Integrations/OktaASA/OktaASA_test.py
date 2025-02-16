@@ -108,7 +108,7 @@ def test_test_module_arguments(mocker):
     assert result == "ok"
     assert get_events_command_mocker.call_count == 1
     get_events_command_mocker.assert_called_with(
-        client=client, args={}
+        client=client
     )
 
 
