@@ -638,7 +638,7 @@ class Client(BaseClient):
                                              'using the `Use Display Value` option.'
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
-            self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
+            self.snow_client = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
                                                                   use_oauth=self.use_oauth,
                                                                   client_id=oauth_params.get('client_id', ''),
                                                                   client_secret=oauth_params.get('client_secret', ''),
@@ -648,17 +648,17 @@ class Client(BaseClient):
                                                                   headers=oauth_params.get('headers', ''))
 
         elif self.use_jwt:  # if user selected the `Use JWT` checkbox, JWT OAuth authentication should be used
-            self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
-                                                                  use_jwt=self.use_jwt,
-                                                                  client_id=oauth_params.get('client_id', ''),
-                                                                  client_secret=oauth_params.get('client_secret', ''),
-                                                                  url=oauth_params.get('url', ''),
-                                                                  verify=oauth_params.get('verify', False),
-                                                                  proxy=oauth_params.get('proxy', False),
-                                                                  headers=oauth_params.get('headers', ''),
-                                                                  jwt_key_id=oauth_params.get('jwt_key_id', ''),
-                                                                  jwt_key=oauth_params.get('jwt_private_key', ''),
-                                                                  jwt_sub=oauth_params.get('jwt_sub', ''))
+            self.snow_client = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
+                                                use_jwt=self.use_jwt,
+                                                client_id=oauth_params.get('client_id', ''),
+                                                client_secret=oauth_params.get('client_secret', ''),
+                                                url=oauth_params.get('url', ''),
+                                                verify=oauth_params.get('verify', False),
+                                                proxy=oauth_params.get('proxy', False),
+                                                headers=oauth_params.get('headers', ''),
+                                                jwt_key_id=oauth_params.get('jwt_key_id', ''),
+                                                jwt_key=oauth_params.get('jwt_private_key', ''),
+                                                jwt_sub=oauth_params.get('jwt_sub', ''))
         else:
             self._auth = (self._username, self._password)
 
