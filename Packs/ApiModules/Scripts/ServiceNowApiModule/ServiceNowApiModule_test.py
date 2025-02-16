@@ -18,9 +18,8 @@ PARAMS = {
         {'identifier': '22222222222',
          'password': """-----BEGIN PRIVATE KEY-----
             sertificate_example=
------END PRIVATE KEY-----"""} 
+-----END PRIVATE KEY-----"""}
 }
-
 
 
 # Unit tests for OAuth authorization
@@ -100,25 +99,24 @@ def test_get_jwt_access_token(mocker):
         'expiry_time': -1
     }
     params = {
-    'insecure': False,
-    'credentials': {
-        'identifier': 'user1',
-        'password:': '12345'
-    },
-    'proxy': False,
-    'client_id': 'client_id',
-    'client_secret': 'client_secret',
-    'use_oauth': False,
-    'credentials': {'identifier': '1111111', 'password': 'password'},
-    'jwt_sub': 'dummy@example.com',
-    'use_jwt_outh': True,
-    "jwt_credentials":
+        'insecure': False,
+        'credentials': {
+            'identifier': 'user1',
+            'password:': '12345'
+        },
+        'proxy': False,
+        'client_id': 'client_id',
+        'client_secret': 'client_secret',
+        'use_oauth': False,
+        'credentials': {'identifier': '1111111', 'password': 'password'},
+        'jwt_sub': 'dummy@example.com',
+        'use_jwt_outh': True,
+        "jwt_credentials":
         {'identifier': '22222222222',
          'password': """-----BEGIN PRIVATE KEY-----
             sertificate_example=
-    -----END PRIVATE KEY-----"""} 
+    -----END PRIVATE KEY-----"""}
     }
-
 
     from requests.models import Response
     new_token_response = Response()

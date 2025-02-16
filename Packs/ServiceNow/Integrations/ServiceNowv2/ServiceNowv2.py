@@ -3254,8 +3254,8 @@ def main():
         jwt_key_id = params.get('jwt_credentials', {}).get('identifier')
         private_key = params.get('jwt_credentials', {}).get('password')
         sub = params.get('jwt_sub', '')
-        if not(jwt_key_id and private_key and sub and client_id and client_secret):
-            raise DemistoException('The following paramters must be configured for JWT Oauth:'\
+        if not (jwt_key_id and private_key and sub and client_id and client_secret):
+            raise DemistoException('The following paramters must be configured for JWT Oauth:'
                                    'Client ID, Client Secret, Private key, kid (Key Id), Sub')
         oauth_params['jwt_key_id'] = jwt_key_id
         oauth_params['jwt_private_key'] = private_key
