@@ -14,3 +14,5 @@ dependson: {}
 timeout: 0s
 dockerimage: demisto/auth-utils:1.0.0.116752
 fromversion: 5.0.0
+tests:
+- No test
