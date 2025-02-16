@@ -1,0 +1,21 @@
+{
+    "name": "Duo Push",
+    "description": "Sends a Duo push notification with additional context via the pushinfo parameter. Must have access to the auth api in order to use this.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Mihovil Magdic",
+    "url": "",
+    "email": "",
+    "created": "2025-02-16T14:12:39Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "cheersmann"
+    ]
+}
