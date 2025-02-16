@@ -585,7 +585,8 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict = {}, use_oauth_token: bool = False, use_jwt_token: bool = False, version: str | None = None, look_back: int = 0,
+                 incident_name: str, oauth_params=None, use_oauth_token: bool = False, use_jwt_token: bool = False,
+                 version: str | None = None, look_back: int = 0,
                  use_display_value: bool = False, display_date_format: str = ''):
         """
 
@@ -607,8 +608,10 @@ class Client(BaseClient):
             ticket_type: default ticket type
             get_attachments: whether to get ticket attachments by default
             incident_name: the ServiceNow ticket field to be set as the incident name
-            look_back: defines how much backwards (minutes) should we go back to try to fetch incidents.
+            look_back: defines how many backwards (minutes) should we go back to try to fetch incidents.
         """
+        if oauth_params is None:
+            oauth_params = {}
         self._base_url = server_url
         self._sc_server_url = sc_server_url
         self._cr_server_url = cr_server_url
@@ -733,10 +736,13 @@ class Client(BaseClient):
                     file_entry = file['id']
                     file_name = file['name']
                     file_path = demisto.getFilePath(file_entry)['path']
-                    with open(file_path, 'rb') as f:
+                    with (open(file_path, 'rb') as f):
                         file_info = (file_name, f, self.get_content_type(file_name))
                         if self.use_oauth or self.use_jwt:
-                            access_token = self.snow_client.get_access_token() if self.use_oauth else self.snow_client.get_jwt_token()
+                            if self.use_oauth:
+                                access_token = self.snow_client.get_access_token()
+                            else:
+                                access_token = self.snow_client.get_jwt_token()
                             headers.update({
                                 'Authorization': f'Bearer {access_token}'
                             })
@@ -3334,10 +3340,10 @@ def main():
     try:
         client = Client(server_url=server_url, sc_server_url=sc_server_url, cr_server_url=cr_server_url,
                         username=username, password=password, verify=verify, fetch_time=fetch_time,
-                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit, use_oauth_token=use_oauth, use_jwt_token=use_jwt_oauth,
-                        timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
-                        incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back,
-                        use_display_value=use_display_value, display_date_format=display_date_format)
+                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit, use_oauth_token=use_oauth,
+                        use_jwt_token=use_jwt_oauth, timestamp_field=timestamp_field, ticket_type=ticket_type,
+                        get_attachments=get_attachments, incident_name=incident_name, oauth_params=oauth_params, version=version,
+                        look_back=look_back, use_display_value=use_display_value, display_date_format=display_date_format)
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-oauth-test': oauth_test_module,

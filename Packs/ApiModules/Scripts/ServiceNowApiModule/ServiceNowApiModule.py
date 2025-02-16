@@ -3,6 +3,8 @@ from CommonServerUserPython import *
 import jwt
 import uuid
 
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
+
 TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
 TOKEN_RENEWAL_TIME_LIMIT = 60  # In seconds. The minimum time before the token expires to renew it.
 OAUTH_URL = '/oauth_token.do'
@@ -11,8 +13,9 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 class ServiceNowClient(BaseClient):
 
-    def __init__(self, credentials: dict, use_oauth: bool = False, use_jwt: bool = False, client_id: str = '', client_secret: str = '',
-                 url: str = '', jwt_key_id: str = '', jwt_key: str = '', jwt_sub: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
+    def __init__(self, credentials: dict, use_oauth: bool = False, use_jwt: bool = False, client_id: str = '',
+                 client_secret: str = '', url: str = '', jwt_key_id: str = '', jwt_key: str = '', jwt_sub: str = '',
+                 verify: bool = False, proxy: bool = False, headers: dict = None):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
@@ -29,7 +32,8 @@ class ServiceNowClient(BaseClient):
         self.auth = None
         self.use_oauth = use_oauth
         self.use_jwt = use_jwt
-        if self.use_oauth or self.use_jwt:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
+        # if user selected the `Use OAuth`/`Use JWT`  box use OAuth authorization, else use basic authorization
+        if self.use_oauth or self.use_jwt:
             self.client_id = client_id
             self.client_secret = client_secret
             self.jwt_key_id = jwt_key_id
@@ -170,7 +174,8 @@ class ServiceNowClient(BaseClient):
         previous_token = get_integration_context() or {}
         data = {}
         # Check if there is an existing valid access token
-        if ['expiry_time', 'access_token'] in previous_token and previous_token['expiry_time'] > date_to_timestamp(datetime.now()):
+        if ('expiry_time' in previous_token and 'access_token' in previous_token and
+            previous_token['expiry_time'] > date_to_timestamp(datetime.now())):
             return previous_token.get('access_token')
         else:
             # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.

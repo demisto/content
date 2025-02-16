@@ -11,14 +11,6 @@ PARAMS = {
     'client_id': 'client_id',
     'client_secret': 'client_secret',
     'use_oauth': True,
-    'credentials': {'identifier': '1111111', 'password': 'password'},
-    'jwt_sub': 'dummy@example.com',
-    'use_jwt_outh': True,
-    "jwt_credentials":
-        {'identifier': '22222222222',
-         'password': """-----BEGIN PRIVATE KEY-----
-            sertificate_example=
------END PRIVATE KEY-----"""}
 }
 
 
