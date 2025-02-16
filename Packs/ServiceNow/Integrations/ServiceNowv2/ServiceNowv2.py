@@ -643,7 +643,8 @@ class Client(BaseClient):
                                                                   verify=oauth_params.get('verify', False),
                                                                   proxy=oauth_params.get('proxy', False),
                                                                   headers=oauth_params.get('headers', ''))
-        elif self.use_jwt:
+
+        elif self.use_jwt:  # if user selected the `Use JWT` checkbox, JWT OAuth authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
                                                                   use_jwt=self.use_jwt,
                                                                   client_id=oauth_params.get('client_id', ''),
