@@ -30,6 +30,7 @@ The following timestamp formats are currently supported for ingestion from Cisco
 * MMM dd hh:mm:ss.nnn TZ
 * yyyy MMM dd hh:mm:ss.nnn
 * yyyy MMM dd hh:mm:ss.nnn TZ
+* MMM dd yyyy hh:mm:ss.nnn
 
 In order to configure one of the above formats, follow these instructions:
 1. Open your Cisco WLC CLI terminal, and type **enable** to enter Privileged EXEC mode.
