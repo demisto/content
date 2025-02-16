@@ -36,7 +36,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
     RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, \
     RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, \
-    RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_FETCH_USE_DISPLAY_VALUE
+    RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_FETCH_USE_DISPLAY_VALUE, JWT_OAUTH_PARAMS
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -1305,27 +1305,31 @@ def test_oauth_authentication(mocker, requests_mock):
     assert ServiceNowClient.get_access_token.called
 
 
-def test_test_module(mocker):
+@pytest.mark.parametrize("use_jwt_token, oauth_params", [(False, {}), (True,JWT_OAUTH_PARAMS)])
+def test_test_module_success(mocker, use_jwt_token, oauth_params):
     """Unit test
     Given
     - test module command
     - command args
     - command raw response
     When
-    (a)
+    (a) - using basic auth.
         - mock the parse_date_range.
         - mock the Client's send_request.
-    (b) - calling the test module when using OAuth 2.0 authorization.
+    (b) - using JWT oauth auth.
+        - mock the parse_date_range.
+        - mock the Client's send_request.
     Then
     (a)
         - run the test module command using the Client
         Validate the content of the HumanReadable.
     (b)
-        Validate that an error is returned, indicating that the `Test` button can't be used when using OAuth 2.0.
-    """
+        - run the test module command using the Client
+        Validate the content of the HumanReadable.
+    """    
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    'sysparm_query',oauth_params=oauth_params, use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = module(client)
@@ -1333,44 +1337,79 @@ def test_test_module(mocker):
 
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
-                    get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
+                    get_attachments=False, incident_name='description', use_oauth_token=True, oauth_params=OAUTH_PARAMS)
 
     with pytest.raises(Exception) as e:
         module(client)
     assert 'Test button cannot be used when using OAuth 2.0' in str(e)
 
 
-def test_oauth_test_module(mocker):
+def test_test_module_failure(mocker):
+    """Unit test
+    Given
+    - test module command
+    - command args
+    - command raw response
+    When
+    - calling the test module when using OAuth 2.0 authorization.
+    Then
+    - Validate that an error is returned, indicating that the `Test` button can't be used when using OAuth 2.0.
+    """
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    get_attachments=False, incident_name='description', use_oauth_token=True, oauth_params=OAUTH_PARAMS)
+
+    with pytest.raises(Exception) as e:
+        module(client)
+    assert 'Test button cannot be used when using OAuth 2.0' in str(e)
+
+
+
+
+@pytest.mark.parametrize("use_jwt_token", [False, True])
+def test_oauth_test_module_failure(mocker, use_jwt_token):
     """
     Given:
     - oauth_test_module command
     When:
     - (a) trying to call the command when using basic auth.
-    - (b)
-        - trying to call the command when using OAuth 2.0
-        - mock the parse_date_range.
-        - mock the Client's send_request.
+    - (b) trying to call the command when using JWT oauth auth.
     Then:
     - (a) validate that an error is returned, indicating that the function should be called when using OAuth only.
-    - (b) Validate that the instance was configured successfully.
+    - (b) validate that an error is returned, indicating that the function should be called when using OAuth only
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    'sysparm_query', use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
     with pytest.raises(Exception) as e:
         oauth_test_module(client)
     assert 'command should be used only when using OAuth 2.0 authorization.' in str(e)
 
+
+def test_oauth_test_module_success(mocker):
+    """
+    Given:
+    - oauth_test_module command
+    When:
+    - trying to call the command when using OAuth 2.0:
+        - mock the parse_date_range.
+        - mock the Client's send_request.
+    Then:
+    - Validate that the instance was configured successfully.
+    """
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    'sysparm_query', use_oauth_token=True, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = oauth_test_module(client)
     assert '### Instance Configured Successfully.' in result[0]
 
 
-def test_oauth_login_command(mocker):
+@pytest.mark.parametrize("use_jwt_token", [False, True])
+def test_oauth_login_command_failure(mocker, use_jwt_token):
     """
     Given:
     - login command
@@ -1385,14 +1424,29 @@ def test_oauth_login_command(mocker):
     """
     mocker.patch('ServiceNowv2.ServiceNowClient.login')
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    'sysparm_query', use_jwt_token=use_jwt_token, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
     with pytest.raises(Exception) as e:
         login_command(client, args={'username': 'username', 'password': 'password'})
     assert '!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization' in str(e)
 
+
+def test_oauth_login_command_success(mocker):
+    """
+    Given:
+    - login command
+    When:
+    - (a) trying to call the command when using basic auth.
+    - (b)
+        - trying to call the command when using OAuth 2.0.
+        - mocking the login command of ServiceNowClient.
+    Then:
+    - (a) validate that an error is returned, indicating that the function should be called when using OAuth only.
+    - (b) Validate that the login was successful.
+    """
+    mocker.patch('ServiceNowv2.ServiceNowClient.login')
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    'sysparm_query', use_oauth_token=True, sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = login_command(client, args={'username': 'username', 'password': 'password'})
@@ -2093,7 +2147,7 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     # Preparations and mocking:
     client = Client("url", 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name', oauth_params={'oauth_params': ''})
+                    'incident_name', use_oauth_token=True, oauth_params={'oauth_params': ''})
 
     mock_res_for_get_ticket_attachments = \
         {'result': [

@@ -639,13 +639,13 @@ class Client(BaseClient):
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
-                                                                  use_oauth=self.use_oauth,
-                                                                  client_id=oauth_params.get('client_id', ''),
-                                                                  client_secret=oauth_params.get('client_secret', ''),
-                                                                  url=oauth_params.get('url', ''),
-                                                                  verify=oauth_params.get('verify', False),
-                                                                  proxy=oauth_params.get('proxy', False),
-                                                                  headers=oauth_params.get('headers', ''))
+                                                use_oauth=self.use_oauth,
+                                                client_id=oauth_params.get('client_id', ''),
+                                                client_secret=oauth_params.get('client_secret', ''),
+                                                url=oauth_params.get('url', ''),
+                                                verify=oauth_params.get('verify', False),
+                                                proxy=oauth_params.get('proxy', False),
+                                                headers=oauth_params.get('headers', ''))
 
         elif self.use_jwt:  # if user selected the `Use JWT` checkbox, JWT OAuth authentication should be used
             self.snow_client = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
@@ -2483,9 +2483,6 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     if client.use_oauth:
         raise Exception('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login '
                         'command followed by the !servicenow-oauth-test command to test the instance.')
-    elif client.use_jwt:
-        jwt_token = client.snow_client.get_jwt_token()
-        return 'ok', {'jwt_token': jwt_token}, {}, True
 
     if client._version == 'v2' and client.get_attachments:
         raise DemistoException('Retrieving incident attachments is not supported when using the V2 API.')

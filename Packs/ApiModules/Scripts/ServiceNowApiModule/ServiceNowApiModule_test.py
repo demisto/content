@@ -102,7 +102,6 @@ def test_get_jwt_access_token(mocker):
         'proxy': False,
         'client_id': 'client_id',
         'client_secret': 'client_secret',
-        'use_oauth': False,
         'credentials_jwt': {'identifier': '1111111', 'password': 'password'},
         'jwt_sub': 'dummy@example.com',
         'use_jwt_outh': True,
