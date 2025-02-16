@@ -2,7 +2,7 @@
     "name": "ApiModules",
     "description": "API Modules",
     "support": "xsoar",
-    "currentVersion": "2.2.30",
+    "currentVersion": "2.2.40",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -988,6 +988,10 @@ def fetch_incidents(
             "perPage": arg_to_number(max_fetch),
             "query": f"status in ('Open', 'Active', 'Awaiting Action') AND earliest = '{start_time}'"
         }
+    else:
+        query = ""
+        variables = {}
+        demisto.debug(f"No condition was met -> {query=} {variables=}")
 
     result = client.graphql_run(query=query, variables=variables)
     if result.get("errors") and result["errors"]:

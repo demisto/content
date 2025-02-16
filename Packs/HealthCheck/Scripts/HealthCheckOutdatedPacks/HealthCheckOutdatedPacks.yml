@@ -2,7 +2,7 @@ comment: Presenting Outdated Packs
 commonfields:
   id: HealthCheckOutdatedPacks
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: HealthCheckOutdatedPacks
 runas: DBotWeakRole

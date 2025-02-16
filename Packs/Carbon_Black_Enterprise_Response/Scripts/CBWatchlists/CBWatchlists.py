@@ -14,7 +14,7 @@ def main():
         else:
             matches = entry["Contents"]
             if matches:
-                if type(matches) == dict:
+                if type(matches) is dict:
                     matches = [matches]
                 filtered_matches = [{k: m[k] for k in cols if k in m} for m in matches]
                 res.append(

@@ -1,3 +1,4 @@
+from enum import Enum
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -26,24 +27,28 @@ FetchIncidentsStorage = TypedDict("FetchIncidentsStorage", {
 """ CLIENT """
 
 ALLOWED_SORT_FIELDS = ["timestamp", "last_modified"]
-ALLOWED_ALERT_FILTERS = ["last_modified_min_date",
-                         "min_timestamp", "max_timestamp"]
+ALLOWED_ALERT_FILTERS = [
+    "last_modified_min_date",
+    "escalated_min_date",
+    "min_timestamp",
+    "max_timestamp"
+]
 
 
 class ZFClient(BaseClient):
     def __init__(
-        self, username, password, only_escalated, *args, **kwargs
+        self, username, token, only_escalated, *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.credentials = {
             "username": username,
-            "password": password
+            "password": token
         }
         self.only_escalated = only_escalated
-        self.auth_token = ""
+        self.auth_token = token
 
     def raw_api_request(
-            self,
+        self,
         method: str,
         url_suffix: str = "/",
         full_url: str | None = None,
@@ -53,7 +58,6 @@ class ZFClient(BaseClient):
         files: dict[str, Any] | None = None,
         prefix: str | None = "1.0",
         empty_response: bool = False,
-        error_handler: Callable[[Any], Any] | None = None,
         **kwargs
     ) -> Response:
         pref_string = f"/{prefix}" if prefix else ""
@@ -69,7 +73,7 @@ class ZFClient(BaseClient):
             ok_codes=ok_codes,
             empty_valid_codes=(200, 201),
             return_empty_response=empty_response,
-            error_handler=error_handler,
+            error_handler=self.handle_zerofox_error,
             files=files,
             resp_type="response",
             **kwargs
@@ -87,7 +91,6 @@ class ZFClient(BaseClient):
         files: dict[str, Any] | None = None,
         prefix: str | None = "1.0",
         empty_response: bool = False,
-        error_handler: Callable[[Any], Any] | None = None,
         **kwargs
     ) -> dict[str, Any]:
         """
@@ -138,38 +141,35 @@ class ZFClient(BaseClient):
             ok_codes=ok_codes,
             empty_valid_codes=(200, 201),
             return_empty_response=empty_response,
-            error_handler=error_handler,
+            error_handler=self.handle_zerofox_error,
             files=files,
             **kwargs
         )
 
-    def handle_auth_error(self, raw_response: Response):
+    def handle_zerofox_error(self, raw_response: Response):
+        status_code = raw_response.status_code
+        if status_code >= 500:
+            raise ZeroFoxInternalException(
+                status_code=status_code,
+                cause=raw_response.text,
+            )
+        cause = self._build_exception_cause(raw_response)
         response = raw_response.json()
-        if "res_content" in response:
-            raise Exception("Failure resolving URL.")
-        error_msg_list: list[str] = response.get("non_field_errors", [])
-        if not error_msg_list:
-            raise Exception("Unable to log in with provided credentials.")
-        else:
-            raise Exception(error_msg_list[0])
-
-    def get_authorization_token(self) -> str:
-        """
-        :return: Returns the authorization token
-        """
-        if self.auth_token:
-            return self.auth_token
-        url_suffix: str = "/1.0/api-token-auth/"
-        response_content = self.api_request(
-            "POST",
-            url_suffix,
-            data=self.credentials,
-            error_handler=self.handle_auth_error,
-            headers_builder_type=None,
-            prefix=None,
+        if status_code in [401, 403]:
+            raise ZeroFoxAuthException(cause=cause)
+        raise ZeroFoxInternalException(
+            status_code=status_code,
+            cause=str(response),
         )
-        self.auth_token = response_content.get("token", "")
-        return self.auth_token
+
+    def _build_exception_cause(self, raw_response: Response) -> str:
+        try:
+            response = raw_response.json()
+            if non_field_errors := response.get("non_field_errors", []):
+                return non_field_errors[0]
+            return str(response)
+        except json.JSONDecodeError:
+            return raw_response.text
 
     def _get_new_access_token(self) -> str:
         url_suffix: str = "/auth/token/"
@@ -192,7 +192,7 @@ class ZFClient(BaseClient):
         return token
 
     def get_api_request_header(self) -> dict[str, str]:
-        token: str = self.get_authorization_token()
+        token: str = self.auth_token
         return {
             "Authorization": f"Token {token}",
             "Content-Type": "application/json",
@@ -246,42 +246,54 @@ class ZFClient(BaseClient):
         """
         RETRIES = 3
         url_suffix: str = "/alerts/"
-        params = {}
-        if filter_by:
-            params.update({
-                k: v for k, v in filter_by.items()
-                if k in ALLOWED_ALERT_FILTERS
-            })
-        if sort_direction := kwargs.pop("sort_direction", "asc"):
-            params['sort_direction'] = sort_direction
-        if sort_by in ALLOWED_SORT_FIELDS:
-            params['sort_field'] = sort_by
-        if self.only_escalated:
-            params['escalated'] = 'true'
-        response_content = self.api_request(
-            "GET",
-            url_suffix,
-            retries=RETRIES,
-            params=params
-        )
-        alerts = response_content.get("alerts", [])
-        while next_page := response_content.get("next", None):
+        try:
+            params = {}
+            if filter_by:
+                params.update({
+                    k: v for k, v in filter_by.items()
+                    if k in ALLOWED_ALERT_FILTERS
+                })
+            if sort_direction := kwargs.pop("sort_direction", "asc"):
+                params['sort_direction'] = sort_direction
+            if sort_by in ALLOWED_SORT_FIELDS:
+                params['sort_field'] = sort_by
+            if self.only_escalated:
+                params['escalated'] = 'true'
             response_content = self.api_request(
                 "GET",
+                url_suffix,
                 retries=RETRIES,
-                full_url=next_page
+                params=params
             )
-            alerts += (response_content.get("alerts", []))
-        return alerts
+            alerts = response_content.get("alerts", [])
+            while next_page := response_content.get("next", None):
+                response_content = self.api_request(
+                    "GET",
+                    retries=RETRIES,
+                    full_url=next_page
+                )
+                alerts += (response_content.get("alerts", []))
+            return alerts
+        except Exception as e:
+            raise ZeroFoxGetAlertsException(
+                escalated=self.only_escalated,
+                cause=e
+            )
 
     def get_alert(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
-        url_suffix: str = f"/alerts/{alert_id}/"
-        response_content = self.api_request("GET", url_suffix)
-        return response_content.get("alert", {})
+        try:
+            url_suffix: str = f"/alerts/{alert_id}/"
+            response_content = self.api_request("GET", url_suffix)
+            return response_content.get("alert", {})
+        except Exception as e:
+            raise ZeroFoxGetAlertException(
+                alert_id=alert_id,
+                cause=e
+            )
 
     def alert_user_assignment(
         self,
@@ -303,57 +315,63 @@ class ZFClient(BaseClient):
         )
         return response_content
 
+    class AlertAction(str, Enum):
+        OPEN = "open"
+        CLOSE = "close"
+        REQUEST_TAKEDOWN = "request_takedown"
+        CANCEL_TAKEDOWN = "cancel_takedown"
+
+        def __str__(self) -> str:
+            return self.value
+
+    def alert_action(self, alert_id: int, action: AlertAction) -> dict[str, Any]:
+        """
+        :param alert_id: The ID of the alert.
+        :param action: action to apply on alert
+        :return: HTTP request content.
+        """
+        try:
+            url_suffix: str = f"/alerts/{alert_id}/{action}/"
+            response_content = self.api_request(
+                "POST",
+                url_suffix,
+                empty_response=True,
+            )
+            return response_content
+        except Exception as e:
+            raise ZeroFoxAlertActionException(
+                alert_id=alert_id,
+                action=action,
+                cause=e
+            )
+
     def close_alert(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
-        url_suffix: str = f"/alerts/{alert_id}/close/"
-        response_content = self.api_request(
-            "POST",
-            url_suffix,
-            empty_response=True,
-        )
-        return response_content
+        return self.alert_action(alert_id, self.AlertAction.CLOSE)
 
     def open_alert(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
-        url_suffix: str = f"/alerts/{alert_id}/open/"
-        response_content = self.api_request(
-            "POST",
-            url_suffix,
-            empty_response=True,
-        )
-        return response_content
+        return self.alert_action(alert_id, self.AlertAction.OPEN)
 
     def alert_request_takedown(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
-        url_suffix: str = f"/alerts/{alert_id}/request_takedown/"
-        response_content = self.api_request(
-            "POST",
-            url_suffix,
-            empty_response=True,
-        )
-        return response_content
+        return self.alert_action(alert_id, self.AlertAction.REQUEST_TAKEDOWN)
 
     def alert_cancel_takedown(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
-        url_suffix: str = f"/alerts/{alert_id}/cancel_takedown/"
-        response_content = self.api_request(
-            "POST",
-            url_suffix,
-            empty_response=True,
-        )
-        return response_content
+        return self.alert_action(alert_id, self.AlertAction.CANCEL_TAKEDOWN)
 
     def modify_alert_tags(
         self,
@@ -443,15 +461,21 @@ class ZFClient(BaseClient):
         :param notes: The notes for the alert.
         :return: HTTP request content.
         """
-        url_suffix: str = f"/alerts/{alert_id}/"
-        request_body = {"notes": notes}
-        response_content = self.api_request(
-            "POST",
-            url_suffix,
-            data=request_body,
-            empty_response=True,
-        )
-        return response_content
+        try:
+            url_suffix: str = f"/alerts/{alert_id}/"
+            request_body = {"notes": notes}
+            response_content = self.api_request(
+                "POST",
+                url_suffix,
+                data=request_body,
+                empty_response=True,
+            )
+            return response_content
+        except Exception as e:
+            raise ZeroFoxModifyNotesException(
+                alert_id=alert_id,
+                cause=e
+            )
 
     def submit_threat(
         self,
@@ -679,6 +703,74 @@ class ZFClient(BaseClient):
 
 
 """ HELPERS """
+
+
+class ZeroFoxGetAlertsException(Exception):
+    def __init__(self, escalated: bool, cause: Exception):
+        self.escalated = escalated
+        self.cause = cause
+        super().__init__(self._generate_msg())
+
+    def _generate_msg(self) -> str:
+        escalated = "escalated " if self.escalated else ""
+        return f"An error occurred while trying to fetch {escalated}alerts:\
+            \n {self.cause}"
+
+
+class ZeroFoxAlertActionException(Exception):
+    def __init__(self, alert_id: int, action: str, cause: Exception):
+        self.alert_id = alert_id
+        self.action = action
+        self.cause = cause
+        super().__init__(self._generate_msg())
+
+    def _generate_msg(self) -> str:
+        return f"An error occurred while trying to apply action {self.action} on alert {self.alert_id}:\
+            \n {self.cause}"
+
+
+class ZeroFoxInternalException(Exception):
+    def __init__(self, status_code: int, cause: str):
+        self.status_code = status_code
+        self.cause = cause
+        super().__init__(self._generate_msg())
+
+    def _generate_msg(self) -> str:
+        return f"An error occurred within ZeroFox, please try again later.\
+              If the issue persists, contact support.\
+              Status Code: {self.status_code}, Response: {self.cause}"
+
+
+class ZeroFoxAuthException(Exception):
+    def __init__(self, cause: str):
+        self.cause = cause
+        super().__init__(self._generate_msg())
+
+    def _generate_msg(self) -> str:
+        return f"An error occurred while trying to authenticate with ZeroFox:\
+            \n {self.cause}"
+
+
+class ZeroFoxGetAlertException(Exception):
+    def __init__(self, alert_id: int, cause: Exception):
+        self.alert_id = alert_id
+        self.cause = cause
+        super().__init__(self._generate_msg())
+
+    def _generate_msg(self) -> str:
+        return f"An error occurred while trying to fetch alert {self.alert_id}:\
+            \n {self.cause}"
+
+
+class ZeroFoxModifyNotesException(Exception):
+    def __init__(self, alert_id: int, cause: Exception):
+        self.alert_id = alert_id
+        self.cause = cause
+        super().__init__(self._generate_msg())
+
+    def _generate_msg(self) -> str:
+        return f"An error occurred while trying to modify notes for alert {self.alert_id}:\
+            \n {self.cause}"
 
 
 class AlertToIncident:
@@ -1208,15 +1300,26 @@ def _build_incidents_given_last_fetch(
     is_valid_alert: Callable[[dict[str, Any]], bool],
 ) -> tuple[list[dict[str, Any]], datetime, list[str]]:
 
-    alerts = [
-        alert for alert in client.get_alerts(
-            filter_by={
-                "min_timestamp": created_since.strftime(DATE_FORMAT)},
-            sort_by="timestamp",
-            sort_direction="asc"
-        )
-        if is_valid_alert(alert)
-    ]
+    if client.only_escalated:
+        alerts = [
+            alert for alert in client.get_alerts(
+                filter_by={
+                    "escalated_min_date": created_since.strftime(DATE_FORMAT)},
+                sort_by="timestamp",
+                sort_direction="asc"
+            )
+            if is_valid_alert(alert)
+        ]
+    else:
+        alerts = [
+            alert for alert in client.get_alerts(
+                filter_by={
+                    "min_timestamp": created_since.strftime(DATE_FORMAT)},
+                sort_by="timestamp",
+                sort_direction="asc"
+            )
+            if is_valid_alert(alert)
+        ]
     if not alerts:
         return [], created_since, []
 
@@ -2011,7 +2114,7 @@ def main():
             base_url=BASE_URL,
             ok_codes={200, 201},
             username=USERNAME,
-            password=PASSWORD,
+            token=PASSWORD,
             verify=USE_SSL,
             proxy=PROXY,
             only_escalated=ONLY_ESCALATED,
@@ -2039,7 +2142,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error(e)
+        return_error(f"Failed to execute {command}:\n {str(e)}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

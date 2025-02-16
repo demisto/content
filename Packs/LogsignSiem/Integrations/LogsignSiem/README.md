@@ -200,7 +200,7 @@ Gets Incidents from Logsign SIEM
 
 #### Human Readable Output
 
-![Logsign-FetchIncident-HumanReadable-Data](doc_imgs/logsign-fetch-inc-HR.jpg)
+![Logsign-FetchIncident-HumanReadable-Data](../../doc_files/logsign-fetch-inc-HR.jpg)
 
 ### logsign-get-columns-query
 ***

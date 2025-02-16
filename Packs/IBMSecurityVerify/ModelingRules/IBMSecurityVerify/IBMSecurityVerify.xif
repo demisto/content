@@ -1,11 +1,12 @@
 //Created a generic mapping rule for fields relevant to most event types in IBM Security Verify.
 [RULE: generic_fields_mapping]
 alter
-    src_ipv6 = arrayindex(regextract(data -> origin, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0)
+    src_ipv6 = arrayindex(regextract(data -> origin, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    src_ipv4 = arrayindex(regextract(data -> origin, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
 | alter
     xdm.event.type = if(event_type in ("sso", "authentication"), "authentication", event_type),
     xdm.event.id = id,
-    xdm.source.ipv4 = if(incidr(data -> origin, "0.0.0.0/0"), data -> origin, ""),
+    xdm.source.ipv4 = if(src_ipv4 != null, src_ipv4, ""),
     xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, ""),
     xdm.source.user_agent = data -> devicetype,
     xdm.observer.name = if(tenantname != null AND servicename != null, concat(tenantname, " - ", servicename), tenantname),
@@ -50,7 +51,8 @@ filter event_type = "sso"
     xdm.event.description = data -> cause,
     xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
-    xdm.auth.service = data -> subtype,
+    xdm.auth.service = "SP",
+    xdm.auth.auth_method = data -> subtype,
     xdm.source.user.identifier = data -> userid,
     xdm.source.user.username = coalesce(src_user, data -> username),
     xdm.source.user.upn = if(src_user != null, data -> username),
@@ -82,7 +84,8 @@ filter event_type = "authentication"
     xdm.event.operation = if(subtype = "mfa",  XDM_CONST.OPERATION_TYPE_AUTH_MFA, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN),
     xdm.event.operation_sub_type = if(mfamethod = "fido2", "hardware_token", mfamethod = "email otp", "email", mfamethod = "ibm verify push", "application", mfamethod = "sms otp", "sms", subtype in ("certificate", "social", "socialjwt"), "application", subtype = "user_password", "password", subtype = "federation", "Generic SSO", subtype = "device trust", "trusted_login", subtype),
     xdm.event.description = data -> cause,
-    xdm.auth.service = data -> sourcetype,
+    xdm.auth.service = "IDP",
+    xdm.auth.auth_method = data -> sourcetype,
     xdm.source.user.identifier = if(data -> subject = "UNKNOWN", null, coalesce(data -> subject, data -> performedby)),
     xdm.target.url = data -> ["target"],
     xdm.source.user.username = coalesce(src_user, data -> username),
@@ -129,6 +132,7 @@ filter event_type = "access_request"
     inter_user2 = arrayindex(regextract(data -> performedby_username, "(.+)\@") ,0),
     src_user1 = arrayindex(regextract(data -> requestor_username, "(.+)\@") ,0),
     src_user2 = arrayindex(regextract(data -> beneficiary_username, "(.+)\@") ,0),
+    src_ipv4 =  arrayindex(regextract(data -> origin, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
     src_ipv6 = arrayindex(regextract(data -> origin, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
     action = lowercase(data -> action),
     stat = data -> status
@@ -145,7 +149,7 @@ filter event_type = "access_request"
     xdm.target.resource.name = data -> entitlement_name,
     xdm.target.resource.value = if(data -> entitlement_rights = "", null, data -> entitlement_rights),
     xdm.target.resource.type = data -> entitlement_type,
-    xdm.source.ipv4 = if(incidr(data -> origin, "0.0.0.0/0"), data -> origin),
+    xdm.source.ipv4 = src_ipv4,
     xdm.source.ipv6 = src_ipv6,
     xdm.session_context_id = data -> request,
     xdm.event.operation_sub_type = data -> resource,

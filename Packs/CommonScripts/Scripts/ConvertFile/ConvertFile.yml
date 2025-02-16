@@ -42,7 +42,7 @@ outputs:
   description: The file type.
   type: String
 scripttarget: 0
-dockerimage: demisto/office-utils:2.0.0.117112
+dockerimage: demisto/office-utils:2.0.0.2020302
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)

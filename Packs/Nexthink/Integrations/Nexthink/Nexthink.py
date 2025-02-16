@@ -16,26 +16,17 @@ deviceEntry = {}
 
 args = demisto.args()
 
-if 'hostname' in args:
-    device = args['hostname']
-else:
-    device = None
+device = args.get('hostname', None)
 
-if 'ipaddress' in args:
-    ip = args['ipaddress']
-else:
-    ip = None
+ip = args.get('ipaddress', None)
 
-if 'package' in args:
-    package = args['package']
-else:
-    package = None
+package = args.get('package', None)
 
-SEARCH_DEVICE_USING_IP = "(select (*) (from device (where device ( eq ip_addresses (ip_address '{0}')))))".format(ip)
-SEARCH_DEVICE_USING_DEVICE = "(select (*) (from device (where device ( eq name (string {0})))))".format(device)
+SEARCH_DEVICE_USING_IP = f"(select (*) (from device (where device ( eq ip_addresses (ip_address '{ip}')))))"
+SEARCH_DEVICE_USING_DEVICE = f"(select (*) (from device (where device ( eq name (string {device})))))"
 SEARCH_COMPLIANCE_PACKAGE_DEVICE = """(select ((device (*)) (package (*))) (from (device package)
-(with package (where package (eq name (pattern '*{0}*')))
-(where device (eq name (pattern '{1}')))))
+(with package (where package (eq name (pattern '*{}*')))
+(where device (eq name (pattern '{}')))))
 (limit 100))""".format(package, device)
 TEST_MODULE = "(select (name) (from device ) (limit 1))"
 
@@ -64,7 +55,7 @@ def nexthink_request(method, nxql):
             "https": None,
         }
 
-    BASE_URL = 'https://{0}:{1}/2/query?platform=windows&format=json&query='.format(base_url, port)
+    BASE_URL = f'https://{base_url}:{port}/2/query?platform=windows&format=json&query='
     NXQL = urllib.parse.quote(nxql)
     urlFragment = BASE_URL + NXQL
 
@@ -119,9 +110,9 @@ def nexthink_endpoint_details(device: None, ip: None):
         return dArgs
     else:
         if not device:
-            return 'No endpoint found with ip "{0}"'.format(ip)
+            return f'No endpoint found with ip "{ip}"'
         else:
-            return 'No endpoint found with hostname "{0}"'.format(device)
+            return f'No endpoint found with hostname "{device}"'
 
 
 def nexthink_installed_packages(device: None, package: None):
@@ -152,10 +143,11 @@ def nexthink_installed_packages(device: None, package: None):
 
         return dArgs
     else:
-        return 'No package "{0}" found on endpoint {1}'.format(package, device)
+        return f'No package "{package}" found on endpoint {device}'
 
 
 def nexthink_compliance_check(device: None, ip: None):
+    data = ""
     if not device and not ip:
         return_results('Please provide hostname or ipaddress argument')
         sys.exit(0)
@@ -200,9 +192,9 @@ def nexthink_compliance_check(device: None, ip: None):
         return dArgs
     else:
         if not device:
-            return 'No endpoint found with ip "{0}"'.format(ip)
+            return f'No endpoint found with ip "{ip}"'
         else:
-            return 'No endpoint found with hostname "{0}"'.format(device)
+            return f'No endpoint found with hostname "{device}"'
 
 
 def main():

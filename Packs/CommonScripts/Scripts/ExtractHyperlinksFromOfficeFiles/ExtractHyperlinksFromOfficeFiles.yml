@@ -18,5 +18,5 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/office-utils:2.0.0.117112
+dockerimage: demisto/office-utils:2.0.0.2020302
 fromversion: 5.5.0

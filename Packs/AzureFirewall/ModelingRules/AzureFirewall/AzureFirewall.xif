@@ -1,0 +1,204 @@
+/*-------------------------------
+   ----------- MODEL -------------
+   ------------------------------- */
+// supported log categories: AZFWApplicationRule", "AZFWApplicationRuleAggregation", "AZFWDnsQuery", "AZFWFatFlow", "AZFWFlowTrace", "AZFWFqdnResolveFailure", "AZFWInternalFqdnResolutionFailure", "AZFWIdpsSignature", "AZFWNatRule", "AZFWNatRuleAggregation", "AZFWNetworkRule", "AZFWNetworkRuleAggregation", "AZFWThreatIntel"
+[MODEL: dataset=msft_azure_firewall_raw]
+// Azure Firewall Azure Firewall IDPS Signature (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwidpssignature)
+filter category in ("AZFWFqdnResolveFailure", "AZFWInternalFqdnResolutionFailure")
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_policy_rule_fields
+| alter dns_server_ipv4 = arrayindex(regextract(properties -> ServerIp, "^((?:\d{1,3}\.){3}\d{1,3})$"), 0)
+| alter
+	xdm.event.outcome = XDM_CONST.OUTCOME_FAILED,
+	xdm.event.outcome_reason = if(properties -> Error != "", properties -> Error),
+	xdm.intermediate.host.ipv4_public_addresses = if(dns_server_ipv4 != null and not incidr(dns_server_ipv4, "10.0.0.0/8") and not incidr(dns_server_ipv4, "172.16.0.0/12") and not incidr(dns_server_ipv4, "192.168.0.0/16") and not incidr(dns_server_ipv4, "127.0.0.0/8") and not incidr(dns_server_ipv4, "169.254.0.0/16") and not incidr(dns_server_ipv4, "100.64.0.0/10"), arraycreate(dns_server_ipv4)),
+	xdm.intermediate.ipv4 = dns_server_ipv4,
+	xdm.intermediate.ipv6 = arrayindex(regextract(properties -> ServerIp, "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$"), 0), // DNS server IP
+	xdm.intermediate.port = to_integer(properties -> ServerPort), // DNS server port
+	xdm.target.host.fqdn = properties -> Fqdn;
+
+// Azure Firewall Azure Firewall IDPS Signature (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwidpssignature)
+filter category = "AZFWIdpsSignature"
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
+| call msft_azure_firewall_map_ip_protocol
+| alter
+	xdm.alert.original_threat_id = if(properties -> SignatureId != "", properties -> SignatureId),
+	xdm.alert.original_threat_name = if(properties -> Description != "", properties -> Description),
+	xdm.alert.severity = if(properties -> Severity != "", to_string(properties -> Severity)),
+	xdm.alert.subcategory = if(properties -> Category != "", properties -> Category),
+	xdm.event.outcome = if(action = "Allow", XDM_CONST.OUTCOME_SUCCESS, action = "Deny" or action = "Drop", XDM_CONST.OUTCOME_FAILED);
+
+// Azure Firewall Threat Intelligence https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwthreatintel
+filter category = "AZFWThreatIntel"
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
+| call msft_azure_firewall_map_ip_protocol
+| alter target_url = if(properties -> TargetUrl != "", properties -> TargetUrl)
+| alter
+	xdm.alert.original_threat_name = if(properties -> ThreatDescription != "", properties -> ThreatDescription),
+	xdm.network.http.url = target_url,
+	xdm.target.host.fqdn = if(properties -> Fqdn != "", properties -> Fqdn),
+	xdm.target.url = target_url;
+
+// Azure Firewall Nat Rule (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnatrule)
+filter category in ("AZFWNatRule", "AZFWNatRuleAggregation")
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_ip_protocol
+| call msft_azure_firewall_map_policy_rule_fields
+| call msft_azure_firewall_map_source_peer_common_fields
+| alter
+	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "^((?:\d{1,3}\.){3}\d{1,3})$"), 0),
+	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$"), 0),
+	translated_destination_ipv4 = arrayindex(regextract(properties -> TranslatedIp, "^((?:\d{1,3}\.){3}\d{1,3})$"), 0),
+	translated_destination_ipv6 = arrayindex(regextract(properties -> TranslatedIp, "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$"), 0)
+| alter
+	xdm.intermediate.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
+	xdm.intermediate.ipv4 = destination_ipv4,
+	xdm.intermediate.ipv6 = destination_ipv6,
+	xdm.intermediate.is_nat = to_boolean("TRUE"),
+	xdm.intermediate.port = to_integer(properties -> DestinationPort),
+	xdm.target.host.ipv4_public_addresses = if(translated_destination_ipv4 != null and not incidr(translated_destination_ipv4, "10.0.0.0/8") and not incidr(translated_destination_ipv4, "172.16.0.0/12") and not incidr(translated_destination_ipv4, "192.168.0.0/16") and not incidr(translated_destination_ipv4, "127.0.0.0/8") and not incidr(translated_destination_ipv4, "169.254.0.0/16") and not incidr(translated_destination_ipv4, "100.64.0.0/10"), arraycreate(translated_destination_ipv4)),
+	xdm.target.ipv4 = translated_destination_ipv4,
+	xdm.target.ipv6 = translated_destination_ipv6,
+	xdm.target.port = to_integer(properties -> TranslatedPort);
+
+// Azure Firewall DNS query (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwdnsquery)
+filter category = "AZFWDnsQuery"
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_ip_protocol
+| call msft_azure_firewall_map_source_peer_common_fields
+| alter
+	dns_query_type = properties -> QueryType,
+	dns_query_class = properties -> QueryClass,
+	dns_response_code = properties -> ResponseCode,
+	dns_response_flags = split(uppercase(properties -> ResponseFlags), ","),
+	error_msg = properties -> ErrorMessage // Description of the error returned to the client. Empty if request is successful.
+| alter
+	xdm.event.duration = to_integer(multiply(to_number(properties -> RequestDurationSecs), 1000)), // convert seconds to milliseconds
+	xdm.event.id = to_string(properties -> QueryId),
+	xdm.event.outcome = if(dns_response_code = "NOERROR", XDM_CONST.OUTCOME_SUCCESS, dns_response_code != "0" or (error_msg != null and error_msg != ""), XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+	xdm.event.outcome_reason = if(error_msg != null and error_msg != "", error_msg, dns_response_code),
+	xdm.network.dns.authoritative = array_any(dns_response_flags, "@element" = "AA"), // see https://datatracker.ietf.org/doc/html/rfc1035#section-4.1.1
+	xdm.network.dns.dns_question.class = if(dns_query_class = "IN", 1, dns_query_class = "CS", 2, dns_query_class = "CH", 3, dns_query_class = "HS", 4), // see https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4
+	xdm.network.dns.dns_question.name = properties -> QueryName,
+	xdm.network.dns.dns_question.type = if(dns_query_type = "A", XDM_CONST.DNS_RECORD_TYPE_A, dns_query_type = "AAAA", XDM_CONST.DNS_RECORD_TYPE_AAAA, dns_query_type = "AFSDB", XDM_CONST.DNS_RECORD_TYPE_AFSDB, dns_query_type = "APL", XDM_CONST.DNS_RECORD_TYPE_APL, dns_query_type = "CAA", XDM_CONST.DNS_RECORD_TYPE_CAA, dns_query_type = "CDNSKEY", XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, dns_query_type = "CDS", XDM_CONST.DNS_RECORD_TYPE_CDS, dns_query_type = "CERT", XDM_CONST.DNS_RECORD_TYPE_CERT, dns_query_type = "CNAME", XDM_CONST.DNS_RECORD_TYPE_CNAME, dns_query_type = "CSYNC", XDM_CONST.DNS_RECORD_TYPE_CSYNC, dns_query_type = "DHCID", XDM_CONST.DNS_RECORD_TYPE_DHCID, dns_query_type = "DLV", XDM_CONST.DNS_RECORD_TYPE_DLV, dns_query_type = "DNAME", XDM_CONST.DNS_RECORD_TYPE_DNAME, dns_query_type = "DNSKEY", XDM_CONST.DNS_RECORD_TYPE_DNSKEY, dns_query_type = "DS", XDM_CONST.DNS_RECORD_TYPE_DS, dns_query_type = "EUI48", XDM_CONST.DNS_RECORD_TYPE_EUI48, dns_query_type = "EUI64", XDM_CONST.DNS_RECORD_TYPE_EUI64, dns_query_type = "HINFO", XDM_CONST.DNS_RECORD_TYPE_HINFO, dns_query_type = "HIP", XDM_CONST.DNS_RECORD_TYPE_HIP, dns_query_type = "HTTPS", XDM_CONST.DNS_RECORD_TYPE_HTTPS, dns_query_type = "IPSECKEY", XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, dns_query_type = "KEY", XDM_CONST.DNS_RECORD_TYPE_KEY, dns_query_type = "KX", XDM_CONST.DNS_RECORD_TYPE_KX, dns_query_type = "LOC", XDM_CONST.DNS_RECORD_TYPE_LOC, dns_query_type = "MX", XDM_CONST.DNS_RECORD_TYPE_MX, dns_query_type = "NAPTR", XDM_CONST.DNS_RECORD_TYPE_NAPTR, dns_query_type = "NS", XDM_CONST.DNS_RECORD_TYPE_NS, dns_query_type = "NSEC", XDM_CONST.DNS_RECORD_TYPE_NSEC, dns_query_type = "NSEC3", XDM_CONST.DNS_RECORD_TYPE_NSEC3, dns_query_type = "NSEC3PARAM", XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, dns_query_type = "OPENPGPKEY", XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, dns_query_type = "PTR", XDM_CONST.DNS_RECORD_TYPE_PTR, dns_query_type = "RRSIG", XDM_CONST.DNS_RECORD_TYPE_RRSIG, dns_query_type = "RP", XDM_CONST.DNS_RECORD_TYPE_RP, dns_query_type = "SIG", XDM_CONST.DNS_RECORD_TYPE_SIG, dns_query_type = "SMIMEA", XDM_CONST.DNS_RECORD_TYPE_SMIMEA, dns_query_type = "SOA", XDM_CONST.DNS_RECORD_TYPE_SOA, dns_query_type = "SRV", XDM_CONST.DNS_RECORD_TYPE_SRV, dns_query_type = "SSHFP", XDM_CONST.DNS_RECORD_TYPE_SSHFP, dns_query_type = "SVCB", XDM_CONST.DNS_RECORD_TYPE_SVCB, dns_query_type = "TA", XDM_CONST.DNS_RECORD_TYPE_TA, dns_query_type = "TKEY", XDM_CONST.DNS_RECORD_TYPE_TKEY, dns_query_type = "TLSA", XDM_CONST.DNS_RECORD_TYPE_TLSA, dns_query_type = "TSIG", XDM_CONST.DNS_RECORD_TYPE_TSIG, dns_query_type = "TXT", XDM_CONST.DNS_RECORD_TYPE_TXT, dns_query_type = "URI", XDM_CONST.DNS_RECORD_TYPE_URI, dns_query_type = "ZONEMD", XDM_CONST.DNS_RECORD_TYPE_ZONEMD, dns_query_type),
+	xdm.network.dns.is_truncated = array_any(dns_response_flags, "@element" = "TC"), // see https://datatracker.ietf.org/doc/html/rfc1035#section-4.1.1
+	xdm.network.dns.response_code = if(dns_response_code = "NOERROR", XDM_CONST.DNS_RESPONSE_CODE_NO_ERROR, dns_response_code = "FORMERR", XDM_CONST.DNS_RESPONSE_CODE_FORMAT_ERROR, dns_response_code = "SERVFAIL", XDM_CONST.DNS_RESPONSE_CODE_SERVER_FAILURE, dns_response_code = "NXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NON_EXISTENT_DOMAIN, dns_response_code = "NOTIMP", XDM_CONST.DNS_RESPONSE_CODE_NOT_IMPLEMENTED, dns_response_code = "REFUSED", XDM_CONST.DNS_RESPONSE_CODE_QUERY_REFUSED, dns_response_code = "YXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NAME_EXISTS_WHEN_IT_SHOULD_NOT, dns_response_code = "YXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_EXISTS_WHEN_IT_SHOULD_NOT, dns_response_code = "NXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_THAT_SHOULD_EXIST_DOES_NOT, dns_response_code = "NOTAUTH", XDM_CONST.DNS_RESPONSE_CODE_SERVER_NOT_AUTHORITATIVE_FOR_ZONE, dns_response_code = "NOTZONE", XDM_CONST.DNS_RESPONSE_CODE_NAME_NOT_CONTAINED_IN_ZONE, dns_response_code = "BADVERS", XDM_CONST.DNS_RESPONSE_CODE_BAD_OPT_VERSION, dns_response_code = "BADSIG", XDM_CONST.DNS_RESPONSE_CODE_TSIG_SIGNATURE_FAILURE, dns_response_code = "BADKEY", XDM_CONST.DNS_RESPONSE_CODE_KEY_NOT_RECOGNIZED, dns_response_code = "BADTIME", XDM_CONST.DNS_RESPONSE_CODE_SIGNATURE_OUT_OF_TIME_WINDOW, dns_response_code = "BADMODE", XDM_CONST.DNS_RESPONSE_CODE_BAD_TKEY_MODE, dns_response_code = "BADNAME", XDM_CONST.DNS_RESPONSE_CODE_DUPLICATE_KEY_NAME, dns_response_code = "BADALG", XDM_CONST.DNS_RESPONSE_CODE_ALGORITHM_NOT_SUPPORTED, dns_response_code = "BADTRUNC", XDM_CONST.DNS_RESPONSE_CODE_BAD_TRUNCATION, dns_response_code),
+	xdm.source.sent_bytes = to_integer(properties -> RequestSize),
+	xdm.target.sent_bytes = to_integer(properties -> ResponseSize);
+
+// Azure Firewall Network Rule (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwnetworkrule)
+filter category in ("AZFWNetworkRule", "AZFWNetworkRuleAggregation")
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
+| call msft_azure_firewall_map_ip_protocol
+| call msft_azure_firewall_map_policy_rule_fields
+| alter
+	xdm.event.outcome = if(action = "Allow", XDM_CONST.OUTCOME_SUCCESS, action = "Deny" or action = "Drop", XDM_CONST.OUTCOME_FAILED),
+	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason);
+
+// Azure Firewall Application Rule (https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwapplicationrule)
+filter category in("AZFWApplicationRule", "AZFWApplicationRuleAggregation")
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_policy_rule_fields
+| call msft_azure_firewall_map_source_peer_common_fields
+| alter
+	application_protocol = uppercase(properties -> Protocol),
+	is_explicit_proxy_request = to_boolean(properties -> IsExplicitProxyRequest),
+	target_fqdn = properties -> Fqdn,
+	target_url = if(properties -> TargetUrl != "", properties -> TargetUrl),
+	web_category = if(properties -> WebCategory != "", uppercase(properties -> WebCategory))
+| alter
+	target_ipv4 = if(target_fqdn ~= "^(?:\d{1,3}\.){3}\d{1,3}$", target_fqdn),
+	target_ipv6 = if(target_fqdn ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", target_fqdn)
+| alter
+	xdm.event.outcome = if(action = "Allow", XDM_CONST.OUTCOME_SUCCESS, action = "Deny" or action = "Drop", XDM_CONST.OUTCOME_FAILED),
+	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason),
+	xdm.intermediate.is_proxy = if(is_explicit_proxy_request, to_boolean("TRUE")),
+	xdm.network.application_protocol = application_protocol,
+	xdm.network.http.url = target_url,
+	xdm.network.http.url_category = if(web_category = "ABORTION", XDM_CONST.URL_CATEGORY_ABORTION, web_category ~= "DRUGS", XDM_CONST.URL_CATEGORY_ABUSED_DRUGS, web_category = "ADULT", XDM_CONST.URL_CATEGORY_ADULT, web_category ~= "ALCOHOL|TOBACCO", XDM_CONST.URL_CATEGORY_ALCOHOL_AND_TOBACCO, web_category = "AUCTIONS", XDM_CONST.URL_CATEGORY_AUCTIONS, web_category ~= "BUSINESS|ECONOMY", XDM_CONST.URL_CATEGORY_BUSINESS_AND_ECONOMY, web_category ~= "COMMAND|CONTROL", XDM_CONST.URL_CATEGORY_COMMAND_AND_CONTROL, web_category ~= "COMPUTER|INTERNET INFO", XDM_CONST.URL_CATEGORY_COMPUTER_AND_INTERNET_INFO, web_category ~= "CONTENT DELIVERY NETWORKS|CDN", XDM_CONST.URL_CATEGORY_CONTENT_DELIVERY_NETWORKS, web_category ~= "COPYRIGHT|INFRINGEMENT", XDM_CONST.URL_CATEGORY_COPYRIGHT_INFRINGEMENT, web_category ~= "CRYPTO", XDM_CONST.URL_CATEGORY_CRYPTOCURRENCY, web_category = "DATING", XDM_CONST.URL_CATEGORY_DATING, web_category ~= "DNS", XDM_CONST.URL_CATEGORY_DYNAMIC_DNS, web_category ~= "EDUCATIONAL|INSTITUTIONS", XDM_CONST.URL_CATEGORY_EDUCATIONAL_INSTITUTIONS, web_category ~= "ENTERTAINMENT|ARTS", XDM_CONST.URL_CATEGORY_ENTERTAINMENT_AND_ARTS, web_category = "EXTREMISM", XDM_CONST.URL_CATEGORY_EXTREMISM, web_category = "FINANCIAL|FINANCE", XDM_CONST.URL_CATEGORY_FINANCIAL_SERVICES, web_category = "GAMBLING", XDM_CONST.URL_CATEGORY_GAMBLING, web_category = "GAMES", XDM_CONST.URL_CATEGORY_GAMES, web_category = "GOVERNMENT", XDM_CONST.URL_CATEGORY_GOVERNMENT, web_category = "GRAYWARE", XDM_CONST.URL_CATEGORY_GRAYWARE, web_category = "HACKING", XDM_CONST.URL_CATEGORY_HACKING, web_category ~= "HEALTH|MEDICINE", XDM_CONST.URL_CATEGORY_HEALTH_AND_MEDICINE, web_category ~= "HOME|GARDEN", XDM_CONST.URL_CATEGORY_HOME_AND_GARDEN, web_category ~= "HUNTING|FISHING", XDM_CONST.URL_CATEGORY_HUNTING_AND_FISHING, web_category = "INSUFFICIENT CONTENT", XDM_CONST.URL_CATEGORY_INSUFFICIENT_CONTENT, web_category ~= "INTERNET COMMUNICATIONS|TELEPHONY", XDM_CONST.URL_CATEGORY_INTERNET_COMMUNICATIONS_AND_TELEPHONY, web_category = "PORTAL", XDM_CONST.URL_CATEGORY_INTERNET_PORTALS, web_category ~= "JOB", XDM_CONST.URL_CATEGORY_JOB_SEARCH, web_category = "LEGAL", XDM_CONST.URL_CATEGORY_LEGAL, web_category = "MALWARE", XDM_CONST.URL_CATEGORY_MALWARE, web_category = "MILITARY", XDM_CONST.URL_CATEGORY_MILITARY, web_category ~= "MOTOR|VEHICLES", XDM_CONST.URL_CATEGORY_MOTOR_VEHICLES, web_category = "MUSIC", XDM_CONST.URL_CATEGORY_MUSIC, web_category = "REGISTERED DOMAIN", XDM_CONST.URL_CATEGORY_NEWLY_REGISTERED_DOMAIN, web_category = "NEWS", XDM_CONST.URL_CATEGORY_NEWS, web_category = "NOT RESOLVED", XDM_CONST.URL_CATEGORY_NOT_RESOLVED, web_category = "NUDITY", XDM_CONST.URL_CATEGORY_NUDITY, web_category ~= "STORAGE|BACKUP", XDM_CONST.URL_CATEGORY_ONLINE_STORAGE_AND_BACKUP, web_category = "PARKED", XDM_CONST.URL_CATEGORY_PARKED, web_category ~= "PEER", XDM_CONST.URL_CATEGORY_PEER_TO_PEER, web_category ~= "PERSONAL SITE|BLOGS", XDM_CONST.URL_CATEGORY_PERSONAL_SITES_AND_BLOGS, web_category ~= "PHILOSOPHY|POLITICAL|ADVOCACY", XDM_CONST.URL_CATEGORY_PHILOSOPHY_AND_POLITICAL_ADVOCACY, web_category = "PHISHING", XDM_CONST.URL_CATEGORY_PHISHING, web_category = "PRIVATE IP", XDM_CONST.URL_CATEGORY_PRIVATE_IP_ADDRESSES, web_category ~= "PROXY AVOIDANCE|ANONYMIZERS", XDM_CONST.URL_CATEGORY_PROXY_AVOIDANCE_AND_ANONYMIZERS, web_category = "QUESTIONABLE", XDM_CONST.URL_CATEGORY_QUESTIONABLE, web_category = "REAL ESTATE", XDM_CONST.URL_CATEGORY_REAL_ESTATE, web_category ~= "RECREATION|HOBBIES", XDM_CONST.URL_CATEGORY_RECREATION_AND_HOBBIES, web_category ~= "REFERENCE|RESEARCH", XDM_CONST.URL_CATEGORY_REFERENCE_AND_RESEARCH, web_category = "RELIGION", XDM_CONST.URL_CATEGORY_RELIGION, web_category ~= "SEARCH ENGINE", XDM_CONST.URL_CATEGORY_SEARCH_ENGINES, web_category = "SEX EDUCATION", XDM_CONST.URL_CATEGORY_SEX_EDUCATION, web_category ~= "SHAREWARE|FREEWARE", XDM_CONST.URL_CATEGORY_SHAREWARE_AND_FREEWARE, web_category = "SHOPPING", XDM_CONST.URL_CATEGORY_SHOPPING, web_category ~= "SOCIAL NETWORK", XDM_CONST.URL_CATEGORY_SOCIAL_NETWORKING, web_category = "SOCIETY", XDM_CONST.URL_CATEGORY_SOCIETY, web_category = "SPORTS", XDM_CONST.URL_CATEGORY_SPORTS, web_category ~= "STOCK", XDM_CONST.URL_CATEGORY_STOCK_ADVICE_AND_TOOLS, web_category ~= "STREAM|MEDIA", XDM_CONST.URL_CATEGORY_STREAMING_MEDIA, web_category ~= "SWIMSUITS|APPAREL", XDM_CONST.URL_CATEGORY_SWIMSUITS_AND_INTIMATE_APPAREL, web_category ~= "TRAINING", XDM_CONST.URL_CATEGORY_TRAINING_AND_TOOLS, web_category = "TRANSLATION", XDM_CONST.URL_CATEGORY_TRANSLATION, web_category = "TRAVEL", XDM_CONST.URL_CATEGORY_TRAVEL, web_category = "UNKNOWN", XDM_CONST.URL_CATEGORY_UNKNOWN, web_category = "WEAPONS", XDM_CONST.URL_CATEGORY_WEAPONS, web_category ~= "ADVERTISEMENTS", XDM_CONST.URL_CATEGORY_WEB_ADVERTISEMENTS, web_category = "WEB HOSTING", XDM_CONST.URL_CATEGORY_WEB_HOSTING, web_category ~= "EMAIL", XDM_CONST.URL_CATEGORY_WEB_BASED_EMAIL),
+	xdm.target.host.fqdn = if(target_ipv4 = null and target_ipv6 = null, target_fqdn), // assert the given FQDN is not an IPv4/6 address
+	xdm.target.host.ipv4_public_addresses = if(target_ipv4 != null and not incidr(target_ipv4, "10.0.0.0/8") and not incidr(target_ipv4, "172.16.0.0/12") and not incidr(target_ipv4, "192.168.0.0/16") and not incidr(target_ipv4, "127.0.0.0/8") and not incidr(target_ipv4, "169.254.0.0/16") and not incidr(target_ipv4, "100.64.0.0/10"), arraycreate(target_ipv4)),
+	xdm.target.ipv4 = target_ipv4,
+	xdm.target.ipv6 = target_ipv6,
+	xdm.target.port = to_integer(properties -> DestinationPort),
+	xdm.target.url = target_url;
+
+// https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwfatflow
+filter category = "AZFWFatFlow" // Azure Firewall Fat Flow Log
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
+| call msft_azure_firewall_map_ip_protocol;
+
+// https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/azfwflowtrace
+filter category = "AZFWFlowTrace" // Azure Firewall Flow Trace Log
+| call msft_azure_firewall_map_common_event_fields
+| call msft_azure_firewall_map_common_network_fields
+| call msft_azure_firewall_map_ip_protocol
+| alter flag = properties -> Flag
+| alter
+	xdm.event.outcome = if(flag ~= "\-ACK", XDM_CONST.OUTCOME_SUCCESS, flag = "INVALID", XDM_CONST.OUTCOME_FAILED),
+	xdm.event.outcome_reason = if(properties -> ActionReason != "", properties -> ActionReason);
+
+
+/*-------------------------------
+   ----------- RULES -------------
+   ------------------------------- */
+[RULE: msft_azure_firewall_map_common_event_fields]
+alter action = if(properties -> Action != "", properties -> Action)
+| alter
+	xdm.event.original_event_type = category,
+	xdm.event.type = if(
+		category = "AZFWApplicationRule", "Azure Firewall Application Rule",
+		category = "AZFWApplicationRuleAggregation", "Azure Firewall Application Rule Aggregation",
+		category = "AZFWDnsQuery", "Azure Firewall DNS query",
+		category = "AZFWFatFlow", "Azure Firewall Fat Flow Log",
+		category = "AZFWFlowTrace", "Azure Firewall Flow Trace Log",
+		category in ("AZFWFqdnResolveFailure", "AZFWInternalFqdnResolutionFailure"), "Azure Firewall FQDN Resolution Failure",
+		category = "AZFWIdpsSignature", "Azure Firewall IDPS Signature",
+		category = "AZFWNatRule", "Azure Firewall Nat Rule",
+		category = "AZFWNatRuleAggregation", "Azure Firewall Nat Rule Aggregation",
+		category = "AZFWNetworkRule", "Azure Firewall Network Rule",
+		category = "AZFWNetworkRuleAggregation", "Azure Firewall Network Rule Aggregation",
+		category = "AZFWThreatIntel", "Azure Firewall Threat Intelligence"),
+	xdm.observer.action = action,
+	xdm.observer.name = arrayindex(regextract(resourceId, "/([^\/]+)$"), -1), // extract from resourceId last segment from after last /
+	xdm.observer.type = "Microsoft.Network/azureFirewalls", // https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-logs/microsoft-network-azurefirewalls-logs
+	xdm.observer.unique_identifier = resourceId,
+	xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
+	xdm.target.resource.id = resourceId;
+
+[RULE: msft_azure_firewall_map_ip_protocol]
+alter ip_protocol = uppercase(properties -> Protocol)
+| alter
+	xdm.network.icmp.type = to_integer(arrayindex(regextract(ip_protocol, "ICMP TYPE=(\d+)"), 0)),
+	xdm.network.ip_protocol = if(ip_protocol = null, null, ip_protocol="UDP", XDM_CONST.IP_PROTOCOL_UDP, ip_protocol="TCP", XDM_CONST.IP_PROTOCOL_TCP, ip_protocol ~= "ICMP", XDM_CONST.IP_PROTOCOL_ICMP, ip_protocol="HOPOPT", XDM_CONST.IP_PROTOCOL_HOPOPT, ip_protocol="IGMP", XDM_CONST.IP_PROTOCOL_IGMP, ip_protocol="GGP", XDM_CONST.IP_PROTOCOL_GGP, ip_protocol="IP", XDM_CONST.IP_PROTOCOL_IP, ip_protocol="ST", XDM_CONST.IP_PROTOCOL_ST, ip_protocol="CBT", XDM_CONST.IP_PROTOCOL_CBT, ip_protocol="EGP", XDM_CONST.IP_PROTOCOL_EGP, ip_protocol="IGP", XDM_CONST.IP_PROTOCOL_IGP, ip_protocol="BBN_RCC_MON", XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, ip_protocol="NVP_II", XDM_CONST.IP_PROTOCOL_NVP_II, ip_protocol="PUP", XDM_CONST.IP_PROTOCOL_PUP, ip_protocol="ARGUS", XDM_CONST.IP_PROTOCOL_ARGUS, ip_protocol="EMCON", XDM_CONST.IP_PROTOCOL_EMCON, ip_protocol="XNET", XDM_CONST.IP_PROTOCOL_XNET, ip_protocol="CHAOS", XDM_CONST.IP_PROTOCOL_CHAOS,  ip_protocol="MUX", XDM_CONST.IP_PROTOCOL_MUX, ip_protocol="DCN_MEAS", XDM_CONST.IP_PROTOCOL_DCN_MEAS, ip_protocol="HMP", XDM_CONST.IP_PROTOCOL_HMP, ip_protocol="PRM", XDM_CONST.IP_PROTOCOL_PRM, ip_protocol="XNS_IDP", XDM_CONST.IP_PROTOCOL_XNS_IDP, ip_protocol="TRUNK_1", XDM_CONST.IP_PROTOCOL_TRUNK_1, ip_protocol="TRUNK_2", XDM_CONST.IP_PROTOCOL_TRUNK_2, ip_protocol="LEAF_1", XDM_CONST.IP_PROTOCOL_LEAF_1, ip_protocol="LEAF_2", XDM_CONST.IP_PROTOCOL_LEAF_2, ip_protocol="RDP", XDM_CONST.IP_PROTOCOL_RDP, ip_protocol="IRTP", XDM_CONST.IP_PROTOCOL_IRTP, ip_protocol="ISO_TP4", XDM_CONST.IP_PROTOCOL_ISO_TP4, ip_protocol="NETBLT", XDM_CONST.IP_PROTOCOL_NETBLT, ip_protocol="MFE_NSP", XDM_CONST.IP_PROTOCOL_MFE_NSP, ip_protocol="MERIT_INP", XDM_CONST.IP_PROTOCOL_MERIT_INP, ip_protocol="DCCP", XDM_CONST.IP_PROTOCOL_DCCP, ip_protocol="3PC", XDM_CONST.IP_PROTOCOL_3PC, ip_protocol="IDPR", XDM_CONST.IP_PROTOCOL_IDPR, ip_protocol="XTP", XDM_CONST.IP_PROTOCOL_XTP, ip_protocol="DDP", XDM_CONST.IP_PROTOCOL_DDP, ip_protocol="IDPR_CMTP", XDM_CONST.IP_PROTOCOL_IDPR_CMTP, ip_protocol="TP", XDM_CONST.IP_PROTOCOL_TP, ip_protocol="IL", XDM_CONST.IP_PROTOCOL_IL, ip_protocol="IPV6", XDM_CONST.IP_PROTOCOL_IPV6, ip_protocol="SDRP", XDM_CONST.IP_PROTOCOL_SDRP, ip_protocol="IPV6_ROUTE", XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, ip_protocol="IPV6_FRAG", XDM_CONST.IP_PROTOCOL_IPV6_FRAG, ip_protocol="IDRP", XDM_CONST.IP_PROTOCOL_IDRP, ip_protocol="RSVP", XDM_CONST.IP_PROTOCOL_RSVP, ip_protocol="GRE", XDM_CONST.IP_PROTOCOL_GRE, ip_protocol="DSR", XDM_CONST.IP_PROTOCOL_DSR, ip_protocol="BNA", XDM_CONST.IP_PROTOCOL_BNA, ip_protocol="ESP", XDM_CONST.IP_PROTOCOL_ESP, ip_protocol="AH", XDM_CONST.IP_PROTOCOL_AH, ip_protocol="I_NLSP", XDM_CONST.IP_PROTOCOL_I_NLSP, ip_protocol="SWIPE", XDM_CONST.IP_PROTOCOL_SWIPE, ip_protocol="NARP", XDM_CONST.IP_PROTOCOL_NARP, ip_protocol="MOBILE", XDM_CONST.IP_PROTOCOL_MOBILE, ip_protocol="TLSP", XDM_CONST.IP_PROTOCOL_TLSP, ip_protocol="SKIP", XDM_CONST.IP_PROTOCOL_SKIP, ip_protocol="IPV6_ICMP", XDM_CONST.IP_PROTOCOL_IPV6_ICMP, ip_protocol="IPV6_NONXT", XDM_CONST.IP_PROTOCOL_IPV6_NONXT, ip_protocol="IPV6_OPTS", XDM_CONST.IP_PROTOCOL_IPV6_OPTS, ip_protocol="CFTP", XDM_CONST.IP_PROTOCOL_CFTP, ip_protocol="SAT_EXPAK", XDM_CONST.IP_PROTOCOL_SAT_EXPAK, ip_protocol="KRYPTOLAN", XDM_CONST.IP_PROTOCOL_KRYPTOLAN, ip_protocol="RVD", XDM_CONST.IP_PROTOCOL_RVD, ip_protocol="IPPC", XDM_CONST.IP_PROTOCOL_IPPC, ip_protocol="SAT_MON", XDM_CONST.IP_PROTOCOL_SAT_MON, ip_protocol="VISA", XDM_CONST.IP_PROTOCOL_VISA, ip_protocol="IPCV", XDM_CONST.IP_PROTOCOL_IPCV, ip_protocol="CPNX", XDM_CONST.IP_PROTOCOL_CPNX, ip_protocol="CPHB", XDM_CONST.IP_PROTOCOL_CPHB, ip_protocol="WSN", XDM_CONST.IP_PROTOCOL_WSN, ip_protocol="PVP", XDM_CONST.IP_PROTOCOL_PVP, ip_protocol="BR_SAT_MON", XDM_CONST.IP_PROTOCOL_BR_SAT_MON, ip_protocol="SUN_ND", XDM_CONST.IP_PROTOCOL_SUN_ND, ip_protocol="WB_MON", XDM_CONST.IP_PROTOCOL_WB_MON, ip_protocol="WB_EXPAK", XDM_CONST.IP_PROTOCOL_WB_EXPAK, ip_protocol="ISO_IP", XDM_CONST.IP_PROTOCOL_ISO_IP, ip_protocol="VMTP", XDM_CONST.IP_PROTOCOL_VMTP, ip_protocol="SECURE_VMTP", XDM_CONST.IP_PROTOCOL_SECURE_VMTP, ip_protocol="VINES", XDM_CONST.IP_PROTOCOL_VINES, ip_protocol="TTP", XDM_CONST.IP_PROTOCOL_TTP, ip_protocol="NSFNET_IGP", XDM_CONST.IP_PROTOCOL_NSFNET_IGP, ip_protocol="DGP", XDM_CONST.IP_PROTOCOL_DGP, ip_protocol="TCF", XDM_CONST.IP_PROTOCOL_TCF, ip_protocol="EIGRP", XDM_CONST.IP_PROTOCOL_EIGRP, ip_protocol="OSPFIGP", XDM_CONST.IP_PROTOCOL_OSPFIGP, ip_protocol="SPRITE_RPC", XDM_CONST.IP_PROTOCOL_SPRITE_RPC, ip_protocol="LARP", XDM_CONST.IP_PROTOCOL_LARP, ip_protocol="MTP", XDM_CONST.IP_PROTOCOL_MTP, ip_protocol="AX25", XDM_CONST.IP_PROTOCOL_AX25, ip_protocol="IPIP", XDM_CONST.IP_PROTOCOL_IPIP, ip_protocol="MICP", XDM_CONST.IP_PROTOCOL_MICP, ip_protocol="SCC_SP", XDM_CONST.IP_PROTOCOL_SCC_SP, ip_protocol="ETHERIP", XDM_CONST.IP_PROTOCOL_ETHERIP, ip_protocol="ENCAP", XDM_CONST.IP_PROTOCOL_ENCAP, ip_protocol="GMTP", XDM_CONST.IP_PROTOCOL_GMTP, ip_protocol="IFMP", XDM_CONST.IP_PROTOCOL_IFMP, ip_protocol="PNNI", XDM_CONST.IP_PROTOCOL_PNNI, ip_protocol="PIM", XDM_CONST.IP_PROTOCOL_PIM, ip_protocol="ARIS", XDM_CONST.IP_PROTOCOL_ARIS, ip_protocol="SCPS", XDM_CONST.IP_PROTOCOL_SCPS, ip_protocol="QNX", XDM_CONST.IP_PROTOCOL_QNX, ip_protocol="AN", XDM_CONST.IP_PROTOCOL_AN, ip_protocol="IPCOMP", XDM_CONST.IP_PROTOCOL_IPCOMP, ip_protocol="SNP", XDM_CONST.IP_PROTOCOL_SNP, ip_protocol="COMPAQ_PEER", XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, ip_protocol="IPX_IN_IP", XDM_CONST.IP_PROTOCOL_IPX_IN_IP, ip_protocol="VRRP", XDM_CONST.IP_PROTOCOL_VRRP, ip_protocol="PGM", XDM_CONST.IP_PROTOCOL_PGM, ip_protocol="L2TP", XDM_CONST.IP_PROTOCOL_L2TP, ip_protocol="DDX", XDM_CONST.IP_PROTOCOL_DDX, ip_protocol="IATP", XDM_CONST.IP_PROTOCOL_IATP, ip_protocol="STP", XDM_CONST.IP_PROTOCOL_STP, ip_protocol="SRP", XDM_CONST.IP_PROTOCOL_SRP, ip_protocol="UTI", XDM_CONST.IP_PROTOCOL_UTI, ip_protocol="SMP", XDM_CONST.IP_PROTOCOL_SMP, ip_protocol="SM", XDM_CONST.IP_PROTOCOL_SM, ip_protocol="PTP", XDM_CONST.IP_PROTOCOL_PTP, ip_protocol="ISIS", XDM_CONST.IP_PROTOCOL_ISIS, ip_protocol="FIRE", XDM_CONST.IP_PROTOCOL_FIRE, ip_protocol="CRTP", XDM_CONST.IP_PROTOCOL_CRTP, ip_protocol="CRUDP", XDM_CONST.IP_PROTOCOL_CRUDP, ip_protocol="SSCOPMCE", XDM_CONST.IP_PROTOCOL_SSCOPMCE, ip_protocol="IPLT", XDM_CONST.IP_PROTOCOL_IPLT, ip_protocol="SPS", XDM_CONST.IP_PROTOCOL_SPS, ip_protocol="PIPE", XDM_CONST.IP_PROTOCOL_PIPE, ip_protocol="SCTP", XDM_CONST.IP_PROTOCOL_SCTP, ip_protocol="FC", XDM_CONST.IP_PROTOCOL_FC, ip_protocol="RSVP_E2E_IGNORE", XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, ip_protocol="MOBILITY", XDM_CONST.IP_PROTOCOL_MOBILITY, ip_protocol="UDPLITE", XDM_CONST.IP_PROTOCOL_UDPLITE, ip_protocol="MPLS_IN_IP", XDM_CONST.IP_PROTOCOL_MPLS_IN_IP, ip_protocol="MANET", XDM_CONST.IP_PROTOCOL_MANET, ip_protocol="HIP", XDM_CONST.IP_PROTOCOL_HIP, ip_protocol="SHIM6", XDM_CONST.IP_PROTOCOL_SHIM6, ip_protocol="WESP", XDM_CONST.IP_PROTOCOL_WESP, ip_protocol="ROHC", XDM_CONST.IP_PROTOCOL_ROHC, ip_protocol="RESERVED", XDM_CONST.IP_PROTOCOL_RESERVED);
+
+[RULE: msft_azure_firewall_map_common_network_fields]
+call msft_azure_firewall_map_source_peer_common_fields
+| call msft_azure_firewall_map_target_peer_common_fields;
+
+[RULE: msft_azure_firewall_map_source_peer_common_fields]
+alter
+	source_ipv4 = arrayindex(regextract(properties -> SourceIp, "^((?:\d{1,3}\.){3}\d{1,3})$"), 0),
+	source_ipv6 = arrayindex(regextract(properties -> SourceIp, "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$"), 0)
+| alter
+	xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
+	xdm.source.ipv4 = source_ipv4,
+	xdm.source.ipv6 = source_ipv6,
+	xdm.source.port = to_integer(properties -> SourcePort);
+
+[RULE: msft_azure_firewall_map_target_peer_common_fields]
+alter
+	destination_ipv4 = arrayindex(regextract(properties -> DestinationIp, "^((?:\d{1,3}\.){3}\d{1,3})$"), 0),
+	destination_ipv6 = arrayindex(regextract(properties -> DestinationIp, "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$"), 0)
+| alter
+	xdm.target.host.ipv4_public_addresses = if(destination_ipv4 != null and not incidr(destination_ipv4, "10.0.0.0/8") and not incidr(destination_ipv4, "172.16.0.0/12") and not incidr(destination_ipv4, "192.168.0.0/16") and not incidr(destination_ipv4, "127.0.0.0/8") and not incidr(destination_ipv4, "169.254.0.0/16") and not incidr(destination_ipv4, "100.64.0.0/10"), arraycreate(destination_ipv4)),
+	xdm.target.ipv4 = destination_ipv4,
+	xdm.target.ipv6 = destination_ipv6,
+	xdm.target.port = to_integer(properties -> DestinationPort);
+
+[RULE: msft_azure_firewall_map_policy_rule_fields]
+alter xdm.network.rule = to_string(object_create("Policy", properties -> Policy, "RuleCollectionGroup", properties -> RuleCollectionGroup, "RuleCollection", properties -> RuleCollection, "Rule", properties -> Rule));

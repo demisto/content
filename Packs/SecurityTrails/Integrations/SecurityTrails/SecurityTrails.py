@@ -75,6 +75,9 @@ class Client(BaseClient):
                 resp_type='response',
                 timeout=self.timeout
             )
+        else:
+            res = {}
+            demisto.debug(f"The {query_type=} didn't match any value. {res=}")
 
         return res
 
@@ -710,6 +713,9 @@ def get_dns_history_command(client, args):
         pull_field = "email"
     elif record_type == "txt":
         pull_field = "value"
+    else:
+        pull_field = ""
+        demisto.debug(f"There is no matching value for {record_type=}. {pull_field=}")
     records = res.get('records', {})
     for record in records:
         for value in record.get('values'):
@@ -736,7 +742,7 @@ def get_dns_history_command(client, args):
 
     latest_record = res.get('records', [])[0]
     values = latest_record.get('values', [])
-    values = [values] if type(values) == dict else values
+    values = [values] if type(values) is dict else values
     # hosts = [x['host'] for x in values if "host" in x]
     ipv4 = [x['ip'] for x in values if "ip" in x]
     ipv6 = [x['ip'] for x in values if "ipv6" in x]

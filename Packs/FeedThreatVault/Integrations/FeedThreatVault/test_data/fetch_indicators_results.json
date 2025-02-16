@@ -1,0 +1,26 @@
+[
+    {
+        "value": "192.168.1.0-192.168.1.255",
+        "type": "IP",
+        "fields": {
+            "indicatoridentification": "192.168.1.0-192.168.1.255",
+            "tags": [
+                "EXAMPLE",
+                "edl"
+            ],
+            "trafficlightprotocol": "TLP:CLEAR"
+        }
+    },
+    {
+        "value": "192.168.0.0-192.168.0.255",
+        "type": "IP",
+        "fields": {
+            "indicatoridentification": "192.168.0.0-192.168.0.255",
+            "tags": [
+                "EXAMPLE",
+                "edl"
+            ],
+            "trafficlightprotocol": "TLP:CLEAR"
+        }
+    }
+]

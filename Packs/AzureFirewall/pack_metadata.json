@@ -1,8 +1,8 @@
 {
     "name": "Azure Firewall",
-    "description": "Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure.It's a fully stateful, firewall as a service with built-in high availability and unrestricted cloud scalability.",
+    "description": "Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful firewall as a service, with built-in high availability and unrestricted cloud scalability. This pack contains an integration with a main goal to manage Azure Firewall security service, and normalization rules for ingesting and modeling Azure Firewall Resource logs.",
     "support": "xsoar",
-    "currentVersion": "1.1.45",
+    "currentVersion": "1.1.46",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,19 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Azure",
+        "MSFT",
+        "Microsoft",
+        "Firewall"
+    ],
     "githubUser": [],
     "certification": "certified",
     "marketplaces": [

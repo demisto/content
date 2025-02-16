@@ -2,7 +2,7 @@
     "name": "TwitterIOCHunter - Full Daily Feed",
     "description": "Implements the Twitter IOC project daily full feed as indicator feed into XSOAR. http://tweettioc.com/feed/api",
     "support": "community",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "",

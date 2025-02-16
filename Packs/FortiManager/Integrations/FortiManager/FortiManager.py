@@ -145,7 +145,7 @@ def resolve_enum(entity_object, field_name, enum_dict):
     """
     Method resolves enum values to
     """
-    if type(entity_object) == list:
+    if type(entity_object) is list:
         for entity in entity_object:
             if field_name in entity:
                 entity[field_name] = enum_dict.get(entity[field_name], entity[field_name])
@@ -164,7 +164,7 @@ def list_adom_devices_command(client, args):
 
     # Only show vdom names in human readable
     hr_devices_data = devices_data
-    if type(devices_data) == list:
+    if type(devices_data) is list:
         for device in devices_data:
             vdom_names = []
             for vdom in device.get('vdom', []):

@@ -30,6 +30,9 @@ def main():
     server_url_res = demisto.executeCommand("GetServerURL", {})
     if server_url_res and len(server_url_res) > 0:
         server_url = server_url_res[0].get("Contents")
+    else:
+        server_url = ""
+        demisto.debug(f"{server_url_res=} -> {server_url=}")
 
     link = f"{server_url}/entry/download/{entry_id}" if server_url else None
 

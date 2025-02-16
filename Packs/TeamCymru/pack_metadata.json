@@ -2,7 +2,7 @@
     "name": "Team Cymru",
     "description": "Team Cymru's Scout integration provides comprehensive insights on IP addresses and domains for threat investigations.",
     "support": "partner",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.3",
     "author": "Team Cymru",
     "url": "",
     "email": "support@cymru.com",

@@ -1,3 +1,6 @@
+### Deprecation Note: 
+`Fetch incidents` is deprecated. Use the `Microsoft Graph Security`integration instead.
+
 # Authentication
 ### Authentication Based on Azure Active Directory Applications
 
@@ -11,7 +14,7 @@ There are 2 application authentication methods available:
 Depending on the authentication method that you use, the integration parameters might change.
 
 To allow us access to Microsoft Defender Advanced Threat Protection, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-defender-atp).
-After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields.
+After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields.
 
 ## Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)
 

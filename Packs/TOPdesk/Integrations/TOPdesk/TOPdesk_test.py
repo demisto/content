@@ -1,7 +1,6 @@
 import pytest
 import demistomock as demisto
 import json
-import io
 from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, \
     fetch_incidents, entry_types_command, call_types_command, categories_command, subcategories_command, \
     list_persons_command, list_operators_command, branches_command, get_incidents_list_command, \
@@ -12,7 +11,7 @@ from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, \
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

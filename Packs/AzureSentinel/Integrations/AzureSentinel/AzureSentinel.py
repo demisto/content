@@ -1782,7 +1782,7 @@ def list_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -
 
     url_suffix = 'alertRules' + (f'/{rule_id}' if rule_id else '')
 
-    raw_results = []
+    raw_results: list = []
     next_link = True
     while next_link:
         full_url = next_link if isinstance(next_link, str) else None
@@ -1824,7 +1824,7 @@ def list_alert_rule_template_command(client: AzureSentinelClient, args: Dict[str
 
     url_suffix = 'alertRuleTemplates' + (f'/{template_id}' if template_id else '')
 
-    raw_results = []
+    raw_results: list = []
     next_link = True
     while next_link:
         full_url = next_link if isinstance(next_link, str) else None

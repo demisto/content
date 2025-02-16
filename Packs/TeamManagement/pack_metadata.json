@@ -2,7 +2,7 @@
     "name": "Team Management",
     "description": "This pack contains playbooks and automation scripts to help with the management of team members within an incident. It's current features include:\n\n- Ability to add team members to an incident based on username or role\n",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Adam Burt",
     "url": "",
     "email": "",

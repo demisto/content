@@ -815,7 +815,7 @@ script:
     - name: properties
       description: Properties of the issue.
     description: Update an issue.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: '-'
   subtype: python3

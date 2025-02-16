@@ -1,45 +1,63 @@
-category: Network Security
 commonfields:
   id: Nozomi Networks
   version: -1
+name: Nozomi Networks
+display: Nozomi Networks
+category: Network Security
+fromversion: 5.0.0
+tests:
+- No tests
+description: "The Nozomi Networks platform, available as a hardware, virtual appliance, or via the Vantage Cloud product, provides comprehensive monitoring for OT, IoT, and IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring, and advanced threat detection in a unified solution. The integration is designed to gather alerts and asset information from Nozomi, whether deployed on-premises or in the cloud via Vantage, ensuring seamless visibility and security across environments."
+sectionOrder:
+- Connect
+- Collect
 configuration:
-- additionalinfo: Your Nozomi Networks appliance endpoint URL appliance
-  defaultvalue: https://nozomi_instance.com
-  display: Endpoint url
+- display: Endpoint url
   name: endpoint
-  required: true
+  defaultvalue: https://nozomi_instance.com
   type: 0
-- additionalinfo: A user having APIs access privileges credentials.
-  display: Username
-  name: credentials
+  section: Connect
   required: true
+  additionalinfo: Your Nozomi Networks appliance endpoint URL appliance
+- display: Username
+  name: credentials
   type: 9
+  section: Connect
+  required: true
+  additionalinfo: A user having APIs access privileges credentials.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
   required: false
 - display: Incident type
   name: incidentType
   type: 13
+  section: Collect
   required: false
-- additionalinfo: 'Set the time frame to get incidents by. Default is 7 days. Other examples: 30 seconds, 1 minute, 4 hours, 2 days...'
-  defaultvalue: 7 days
-  display: Get incidents from last
+- display: Get incidents from last
   name: fetchTime
+  defaultvalue: 7 days
   type: 0
+  section: Collect
   required: false
-- additionalinfo: Will only fetch incident with a risk higher or equal to the selected value.
-  defaultvalue: '1'
-  display: Get incidents from risk level
+  additionalinfo: 'Set the time frame to get incidents by. Default is 7 days. Other examples: 30 seconds, 1 minute, 4 hours, 2 days...'
+- display: Get incidents from risk level
   name: riskFrom
+  defaultvalue: '1'
+  type: 15
+  section: Collect
+  required: false
   options:
   - '1'
   - '2'
@@ -51,28 +69,37 @@ configuration:
   - '8'
   - '9'
   - '10'
-  type: 15
-  required: false
-- additionalinfo: In the Nozomi platform, alerts are single events and incidents are an aggregation of alerts. By default only alerts will be fetched by CORTEX XSOAR, however, if selected, incidents will also be fetched.
-  display: Fetch also Nozomi incidents
+  additionalinfo: Will only fetch incident with a risk higher or equal to the selected value.
+- display: Fetch also Nozomi incidents
   name: fecthAlsoIncidents
   type: 8
+  section: Collect
   required: false
-description: |-
-  The Nozomi Networks Guardian platform is a hardware or virtual appliance that is used to monitor OT/IoT/IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring and threat detection in a single solution.
-    This integration is used to gather alerts and assets information from Nozomi.
-display: Nozomi Networks
-name: Nozomi Networks
+  additionalinfo: In the Nozomi platform, alerts are single events and incidents are an aggregation of alerts. By default only alerts will be fetched by CORTEX XSOAR, however, if selected, incidents will also be fetched.
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  type: 19
+  section: Collect
+  required: false
+- display: Incidents per run
+  name: incidentPerRun
+  defaultvalue: '100'
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Specifies the maximum number of incidents to retrieve during each fetch operation. This value determines the size of the result set fetched from the source system. Default is 100.
 script:
+  script: ''
+  type: python
   commands:
-  - arguments:
-    - description: You can add a filter to get exactly the assets you want, to know how to filter assets using the Nozomi query language take a look at the n2os user documentation. For example 'where ip match 10.0.1.10', 'where vendor ==  Selta Telematica S.p.a'.
-      name: filter
-    - defaultValue: '50'
+  - name: nozomi-find-assets
+    arguments:
+    - name: filter
+      description: You can add a filter to get exactly the assets you want, to know how to filter assets using the Nozomi query language take a look at the n2os user documentation. For example 'where ip match 10.0.1.10', 'where vendor ==  Selta Telematica S.p.a'.
+    - name: limit
       description: Maximun number of assets get from Nozomi, can't be bigger than 100.
-      name: limit
-    description: This command permits you to get some assets from Nozomi, you can use the query filter to to refine your search. With the limits you can decide the max number of assets you can retrieve from Nozomi, the limit can't be bigger than 100.
-    name: nozomi-find-assets
+      defaultValue: '50'
     outputs:
     - contextPath: Nozomi.Asset.id
       description: uniq id of an asset.
@@ -113,48 +140,45 @@ script:
     - contextPath: protocols
       description: array of asset protocols.
       type: Unknown
-  - arguments:
-    - description: List of IDs to close as security.
+    description: This command permits you to get some assets from Nozomi, you can use the query filter to to refine your search. With the limits you can decide the max number of assets you can retrieve from Nozomi, the limit can't be bigger than 100.
+  - name: nozomi-close-incidents-as-security
+    arguments:
+    - name: ids
+      description: List of IDs to close as security.
       isArray: true
-      name: ids
     description: Close incidents as security.
-    name: nozomi-close-incidents-as-security
-  - arguments:
-    - description: List of IDs to close as change.
+  - name: nozomi-close-incidents-as-change
+    arguments:
+    - name: ids
+      description: List of IDs to close as change.
       isArray: true
-      name: ids
     description: Close incidents as change.
-    name: nozomi-close-incidents-as-change
-  - arguments:
-    - defaultValue: alerts | count
-      description: 'A valid query, to learn how to create a Nozomi query you can take a look into the Nozomi Networks user documentation.'
-      name: query
+  - name: nozomi-query
+    arguments:
+    - name: query
       required: true
-    description: |-
-      Can execute a nozomi query to get all the information you want.
-      A query can be something like that: "alerts | select id name status ack | where status == open"
-      Take a look to n2os manual to know how to do a query.
-    name: nozomi-query
+      description: A valid query, to learn how to create a Nozomi query you can take a look into the Nozomi Networks user documentation.
+      defaultValue: alerts | count
     outputs:
     - contextPath: Nozomi.Query.Result
       description: An array of items.
       type: Unknown
-  - arguments:
-    - defaultValue: ''''''
-      description: a mac address.
-      name: mac
+    description: "Can execute a nozomi query to get all the information you want.\nA query can be something like that: \"alerts | select id name status ack | where status == open\"\nTake a look to n2os manual to know how to do a query."
+  - name: nozomi-find-ip-by-mac
+    arguments:
+    - name: mac
       required: true
-    - auto: PREDEFINED
+      description: a mac address.
+      defaultValue: "''"
+    - name: only_nodes_confirmed
+      required: true
       default: true
-      defaultValue: 'True'
-      description: 'This argument permit you to return only the nodes IPs from a mac address of nodes having the status to "confirmed". Default value is True.'
-      name: only_nodes_confirmed
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-      required: true
-    description: Find a node ip from a mac address.
-    name: nozomi-find-ip-by-mac
+      description: This argument permit you to return only the nodes IPs from a mac address of nodes having the status to "confirmed". Default value is True.
+      defaultValue: 'True'
     outputs:
     - contextPath: Nozomi.IpByMac.ips
       description: Array of ips found for the mac address passed, empty if not found.
@@ -162,12 +186,8 @@ script:
     - contextPath: Nozomi.IpByMac.mac
       description: Mac found the ips.
       type: String
-  dockerimage: demisto/python3:3.10.14.92207
+    description: Find a node ip from a mac address.
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetch: true
   runonce: false
-  script: '-'
   subtype: python3
-  type: python
-tests:
-- No tests - partner instance test in NonCircleFolder
-fromversion: 5.0.0

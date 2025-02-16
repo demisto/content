@@ -253,7 +253,7 @@ def test_create_test_incident_command_happy(mocker, incidents, attachment, expec
     CreateIncidents.create_test_incident_from_file_command(CLIENT_MOCK,
                                                            {'incidents_path': 'example.json',
                                                             'attachment_paths': attachment})
-    assert type(parse_mock.call_args[0][0]) == list
+    assert type(parse_mock.call_args[0][0]) is list
     assert len(parse_mock.call_args[0][0]) == expected
 
 

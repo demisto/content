@@ -137,3 +137,42 @@ def test_copy_tagged_note_entries(mocker):
     assert len(mocked_ec.call_args_list) == 2
     assert mocked_ec.call_args_list[1][0][0] == 'addEntries'
     assert mocked_ec.call_args_list[1][0][1]['entries'] == mock_target_entries
+
+
+def test_copy_note_entries_disable_auto_extract(mocker):
+    """
+    Given:
+        - an existing nonempty set of source notes
+        - arguments - target incident id, tags (empty list), auto_extract = False
+    When
+        - copying note entries from current incident to target
+    Then
+        - all notes are copied with the 'IgnoreAutoExtract' field set to True.
+    """
+    mock_source_entries = load_test_data("test_data/entries.json")
+
+    mock_target_entries = [e for e in mock_source_entries if isinstance(e, dict) and 'Note' in e and e['Note'] is True]
+
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+        if name == 'getEntries':
+            return mock_target_entries
+        elif name == 'addEntries':
+            if 'id' not in args:
+                raise ValueError('id must be provided to addEntries')
+            if 'entries' not in args or not isinstance(args['entries'], list):
+                raise ValueError('a list of entries must be provided to addEntries')
+            return [{"OK": "OK"}]
+
+        raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
+
+    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+
+    copy_notes_to_target_incident({
+        'target_incident': MOCK_TARGET_INCIDENT_ID,
+        'auto_extract': False,
+        'tags': []
+    })
+
+    entries = mocked_ec.call_args_list[1][0][1]['entries']
+    for entry in entries:
+        assert entry.get('IgnoreAutoExtract')

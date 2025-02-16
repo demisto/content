@@ -18,26 +18,28 @@ class ResultsSummary:
             "others": []
         }
 
-    def update_success(self, playbook_id: str, alert_ids: list):
+    def update_success(self, playbook_id: str, alert_ids: str | list):
         """Update the 'success' dictionary with alert IDs for the given playbook ID."""
+        alert_ids = [alert_ids] if isinstance(alert_ids, str) else alert_ids
         if playbook_id in self.results_summary["success"]:
             self.results_summary["success"][playbook_id].extend(alert_ids)
         else:
-            self.results_summary["success"].update({playbook_id: alert_ids})
+            self.results_summary["success"][playbook_id] = alert_ids
 
-    def update_failure_create(self, playbook_id: str, failed_ids: list):
+    def update_failure_create(self, playbook_id: str, failed_ids: str | list):
         """Update the 'failure_create' dictionary with failed IDs for the given playbook ID."""
+        failed_ids = [failed_ids] if isinstance(failed_ids, str) else failed_ids
         if playbook_id in self.results_summary["failure_create"]:
             self.results_summary["failure_create"][playbook_id].extend(failed_ids)
         else:
-            self.results_summary["failure_create"].update({playbook_id: failed_ids})
+            self.results_summary["failure_create"][playbook_id] = failed_ids
 
     def update_failure_set(self, playbook_id: str, alert_ids: list):
         """Update the 'failure_set' dictionary with alert IDs for the given playbook ID."""
         if playbook_id in self.results_summary["failure_set"]:
             self.results_summary["failure_set"][playbook_id].extend(alert_ids)
         else:
-            self.results_summary["failure_set"].update({playbook_id: alert_ids})
+            self.results_summary["failure_set"][playbook_id] = alert_ids
 
     def update_reopened(self, reopened_alerts: list):
         """Update the 'reopened' list with alerts from the provided alert_inv_status."""
@@ -62,19 +64,20 @@ class ResultsSummary:
                 playbook_info = get_playbook_info(playbook_failure_create, self.playbooks_dict)
                 final_message.append(
                     f"Playbook {playbook_info} could not be executed for alerts: "
-                    f"{sorted(alerts_fail)} due to failure in creating an investigation playbook.")
+                    f"{sorted(alerts_fail)}.")
 
         if self.results_summary["failure_set"]:
             for playbook_failure_set, alerts_fail_set in self.results_summary["failure_set"].items():
                 playbook_info = get_playbook_info(playbook_failure_set, self.playbooks_dict)
                 final_message.append(
                     f"Playbook {playbook_info} "
-                    f"was not found for alerts {sorted(alerts_fail_set)}.")
+                    f"was not found for alerts: {sorted(alerts_fail_set)}.")
 
         if reopened_alerts := self.results_summary["reopened"]:
             final_message.append(f"Alerts {sorted(reopened_alerts)} have been reopened.")
 
         final_message.extend(self.results_summary["others"])
+        demisto.debug('\n'.join(final_message))
         return '\n'.join(final_message)
 
 
@@ -151,37 +154,48 @@ def get_playbook_id(playbook_id: str, playbook_name: str, playbooks_dict: dict) 
     raise DemistoException(f"Playbook '{playbook_name or playbook_id}' wasn't found. Please check the name and try again.")
 
 
-def handle_results(command_results: dict, playbook_id: str, alert_ids: list, results_summary: ResultsSummary):
-    """Extract and format the relevant info from the result dict.
+def handle_results(command_results: dict, playbook_id: str, alert_ids: str | list, results_summary: ResultsSummary):
+    """
+    Processes API call results and updates the results summary with success or failure details.
 
     Args:
-        command_results (dict): The results from the API call.
-        playbook_id (str): The playbook id for info.
-        alert_ids (list): A list of alert Ids for info.
+        command_results (dict): The results from the API call, including contents and response details.
+        playbook_id (str): The identifier of the playbook associated with the operation.
+        alert_ids (str | list): The alert ID(s) being processed.
+        results_summary (ResultsSummary): An object for tracking success and failure summaries.
 
     Returns:
-        str: A summary of the operation status, indicating either success or the error log.
+        Returns an error message string if an exception occurs during processing.
     """
     if not command_results:
         return None
 
     try:
-        if "The request requires the right permissions" in command_results[0].get('Contents'):
-            return_error("Request Failed: Insufficient permissions. Ensure the API key has the appropriate access rights.")
+        result_dict = command_results[0].get('Contents', {})
+        if isinstance(alert_ids, str):
+            if type(result_dict) is str:
+                results_summary.update_failure_create(playbook_id, alert_ids)
+                return None
 
-        result_dict = command_results[0].get('Contents', {}).get('response', {})
-
-        if not result_dict:
             results_summary.update_success(playbook_id, alert_ids)
-            return None
 
-        failed_ids = list(result_dict.keys())
-        succeeded_ids = list(set(alert_ids) - set(failed_ids))
+        elif isinstance(alert_ids, list):
+            if "The request requires the right permissions" in command_results[0].get('Contents'):
+                return_error("Request Failed: Insufficient permissions. Ensure the API key has the appropriate access rights.")
 
-        results_summary.update_failure_create(playbook_id, failed_ids)
+            result_dict = result_dict.get('response', {})
 
-        if succeeded_ids:
-            results_summary.update_success(playbook_id, succeeded_ids)
+            if not result_dict:
+                results_summary.update_success(playbook_id, alert_ids)
+                return None
+
+            failed_ids = list(result_dict.keys())
+            succeeded_ids = list(set(alert_ids) - set(failed_ids))
+
+            results_summary.update_failure_create(playbook_id, failed_ids)
+
+            if succeeded_ids:
+                results_summary.update_success(playbook_id, succeeded_ids)
 
     except Exception as e:
         return f"Unexpected error occurred: {str(e)}. Response: {command_results[0]}"
@@ -202,13 +216,15 @@ def open_investigation(results_summary: ResultsSummary, alert_ids: list) -> None
     results_summary.update_reopened(alert_ids)
 
 
-def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: dict, results_summary: ResultsSummary):
+def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: dict, results_summary: ResultsSummary,
+                           flag_pending_idle: bool):
     """Using an API call, create a new investigation Playbook with a given playbook ID and alerts ID
 
     Args:
         playbook_id (str): The playbook id to set.
         alert_ids (list): A list of alert Ids. limited to 10 at a time.
-
+        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle.
+                If true, bulk API calls are used; otherwise, an alternative API call is utilized.
     Returns:
         dict: The command results.
     """
@@ -217,12 +233,19 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
         return
 
     demisto.debug(f"Start setting playbook {playbook_id} on alerts {alert_ids}.")
-    command_results = demisto.executeCommand(
-        "core-api-post", {"uri": "/xsoar/inv-playbook/new", "body":
-                          {"playbookId": playbook_id, "alertIds": alert_ids, "version": -1}})
+    if flag_pending_idle:
+        command_results = demisto.executeCommand(
+            "core-api-post", {"uri": "/xsoar/inv-playbook/new", "body":
+                              {"playbookId": playbook_id, "alertIds": alert_ids, "version": -1}})
 
-    demisto.debug(f"Results of setting playbook {playbook_id} on alerts {alert_ids}:\n{command_results}")
-    handle_results(command_results, playbook_id, alert_ids, results_summary)
+        demisto.debug(f"Results of setting playbook {playbook_id} on alerts {alert_ids}:\n{command_results}")
+        handle_results(command_results, playbook_id, alert_ids, results_summary)
+    else:
+        for alert_id in alert_ids:
+            command_result = demisto.executeCommand(
+                "core-api-post", {"uri": f"/xsoar/inv-playbook/new/{playbook_id}/{alert_id}"})
+            demisto.debug(f"Results of setting playbook {playbook_id} on alert {alert_id}:\n{command_result}")
+            handle_results(command_result, playbook_id, alert_id, results_summary)
 
 
 def split_alert_ids_into_bulks(alert_inv_status: dict[str, list]) -> tuple[list, list, list]:
@@ -252,7 +275,7 @@ def split_alert_ids_into_bulks(alert_inv_status: dict[str, list]) -> tuple[list,
 
 
 def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_closed_inv: bool, playbooks_dict: dict,
-                   results_summary: ResultsSummary):
+                   results_summary: ResultsSummary, flag_pending_idle: bool):
     """
     Loops through alerts, processes them in batches, and assigns a specified playbook to the alerts.
     Optionally reopens closed investigations based on the provided flag.
@@ -265,6 +288,7 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
         If True, closed alerts will be reopened.
         playbooks_dict (dict): A dictionary mapping playbook IDs to their corresponding playbook names.
         results_summary (ResultsSummary): An object for summarizing the results, including tracking reopened alerts.
+        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle.
     """
     demisto.debug(f"Calling loop_on_alerts with {len(incidents)=}, {playbook_id=}.")
     alert_inv_status: dict[str, list] = {
@@ -301,12 +325,13 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
             playbook_id=playbook_id,
             alert_ids=bulk,
             playbooks_dict=playbooks_dict,
-            results_summary=results_summary
+            results_summary=results_summary,
+            flag_pending_idle=flag_pending_idle
         )
 
 
 def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: bool, playbooks_dict: dict,
-                       results_summary: ResultsSummary) -> None:
+                       results_summary: ResultsSummary, flag_pending_idle: bool) -> None:
     """
     Groups incidents by their assigned playbook ID and processes each group.
     If an incident does not have an assigned playbook, it is tracked and reported separately.
@@ -317,7 +342,7 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
         reopen_closed_inv (bool): Flag indicating whether to reopen closed investigations for applicable incidents.
         playbooks_dict (dict): A dictionary mapping playbook IDs to their respective names, used for validation and logging.
         results_summary (ResultsSummary): An object for tracking the processing results, including alerts missing playbooks.
-
+        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle.
     Raises:
         DemistoException: If a required attribute is missing in an incident or if processing fails.
     """
@@ -337,15 +362,22 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
             missing_playbook_alerts.append(inc["id"])
 
     if missing_playbook_alerts:
-        results_summary.append_to_others(f"Could not find an attached playbook for alerts {missing_playbook_alerts}.")
+        results_summary.append_to_others(f"Could not find an attached playbook for alerts: {missing_playbook_alerts}.")
 
     for playbook_id, playbook_incidents in playbook_map.items():
-        loop_on_alerts(playbook_incidents, playbook_id, limit, reopen_closed_inv, playbooks_dict, results_summary)
+        loop_on_alerts(playbook_incidents, playbook_id, limit, reopen_closed_inv,
+                       playbooks_dict, results_summary, flag_pending_idle)
 
 
 def main():
     try:
         args = demisto.args()
+        original_query = args.get("query", "runStatus:Pending")
+        # Filters incidents to retrieve only open ones when the client chooses not to reopen closed investigations.
+        if not argToBoolean(args.get("reopen_closed_inv")):
+            updated_query = f"-status:closed AND {original_query}"
+            args.update({"query": updated_query})
+
         if from_date := arg_to_datetime(args.get("fromDate")):
             demisto.debug(f"Fetching alerts {from_date=}")
 
@@ -363,11 +395,16 @@ def main():
         if playbook_id or playbook_name:
             playbook_id = get_playbook_id(playbook_id, playbook_name, playbooks_dict)
 
+        flag_pending_idle = False
+        if "pending" in original_query or "idle" in original_query:
+            demisto.debug("The query includes runStatus of pending or idle. Setting flag_pending_idle true.")
+            flag_pending_idle = True
+
         results_summary = ResultsSummary(playbooks_dict)
         if not playbook_id:
-            split_by_playbooks(incidents, limit, reopen_closed_inv, playbooks_dict, results_summary)
+            split_by_playbooks(incidents, limit, reopen_closed_inv, playbooks_dict, results_summary, flag_pending_idle)
         else:
-            loop_on_alerts(incidents, playbook_id, limit, reopen_closed_inv, playbooks_dict, results_summary)
+            loop_on_alerts(incidents, playbook_id, limit, reopen_closed_inv, playbooks_dict, results_summary, flag_pending_idle)
 
         results_message = results_summary.generate_summary()
         script_results = CommandResults(
