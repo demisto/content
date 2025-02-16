@@ -543,4 +543,4 @@ def test_unsupported_file_return_warning(mocker):
     mock_return_warning = mocker.patch('URLHaus.return_warning', side_effect=Exception())
     with pytest.raises(Exception):
         run_file_command(hash, params)
-    mock_return_warning.assert_called_once_with('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types', True)
+    mock_return_warning.assert_called_once_with('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types', exit=True)
