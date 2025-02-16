@@ -47,14 +47,14 @@ class Client(BaseClient):
         )
         self.token = results.get('access_token', '')
 
-    def get_audit_logs(self, start_date: str, end_date: str) -> dict:
+    def get_audit_logs(self, start_date: str, end_date: str) -> requests.Response:
         """
         Retrieves audit logs for the given date range using the access token.
         Args:
             start_date (str): The start date of the logs in ISO 8601 format (e.g., "2025-02-05T14:30:00Z").
             end_date (str): The end date of the logs in ISO 8601 format (e.g., "2025-02-05T15:00:00Z").
         Returns:
-            dict: The audit logs in JSON format.
+            dict: The raw response.
         """
         results = self._http_request(
             method="GET",
@@ -127,7 +127,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     while True:
         try:
             response = client.get_audit_logs(start_time, end_time)
-        except Exception as e:
+        except DemistoException as e:
             if e.res.status_code == 429:
                 retry_after = int(e.res.headers.get('x-ratelimit-reset', 2))
                 demisto.debug(f"Rate limit reached. Waiting {retry_after} seconds before retrying.")
@@ -140,7 +140,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             else:
                 raise e
 
-        content = response.json().get('content', [])
+        content: list = response.json().get('content', [])
 
         if not content:
             break

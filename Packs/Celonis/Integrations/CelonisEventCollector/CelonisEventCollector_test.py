@@ -1,8 +1,8 @@
 from CelonisEventCollector import Client
 import json
 from types import SimpleNamespace
-from unittest.mock import patch, Mock, MagicMock
-import requests
+from unittest.mock import MagicMock
+from CommonServerPython import *
 
 
 MOCK_BASEURL = "https://example.com"
@@ -68,7 +68,7 @@ def test_fetch_events_reaching_rate_limit(mocker):
     from CelonisEventCollector import fetch_events
     client = create_client()
 
-    exception = Exception("Rate limit exceeded")
+    exception = DemistoException("Rate limit exceeded")
     exception.res = SimpleNamespace(status_code=429)
     exception.res.headers = MagicMock()
     exception.res.headers.get.return_value = '0'  # Mocking `get('x-ratelimit-reset', 2)`
@@ -97,7 +97,7 @@ def test_fetch_events_token_expired(mocker):
 
     raw_response_audit_logs = util_load_json('test_data/raw_response_audit_logs.json')
 
-    exception = Exception("Unauthorized access")
+    exception = DemistoException("Unauthorized access")
     exception.res = SimpleNamespace(status_code=401)
 
     mock_response = MagicMock()
