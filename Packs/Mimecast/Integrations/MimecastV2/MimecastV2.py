@@ -1996,6 +1996,7 @@ def get_impersonation_logs():
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
+    demisto.debug(f"Before fetch {last_run=}")
 
     # handle first time fetch
     if last_fetch is None:
@@ -2005,6 +2006,7 @@ def fetch_incidents():
         last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
         last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
     current_fetch = last_fetch
+    demisto.debug(f"handle_first_time_fetch {current_fetch=}, {last_fetch=}, {last_fetch_date_time=}")
 
     incidents = []  # type: List[Any]
     if FETCH_URL:
@@ -2015,16 +2017,21 @@ def fetch_incidents():
         url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
                                               data=[search_params],
                                               response_param='clickLogs')
+        demisto.debug(f"number of url_logs={len(url_logs)}")
         for url_log in url_logs:
             incident = url_to_incident(url_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
             # update last run
             if temp_date > last_fetch:
+                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
                 last_fetch = temp_date + timedelta(seconds=1)
+                demisto.debug(f"Increased last_fetch to {last_fetch}")
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
+            else:
+                demisto.debug(f"Did not appended incident with name {incident.get('name')} since {temp_date=} but {current_fetch=}")
 
     if FETCH_ATTACHMENTS:
         search_params = {
@@ -2035,17 +2042,22 @@ def fetch_incidents():
         attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                      data=[search_params],
                                                      response_param='attachmentLogs')
+        demisto.debug(f"number of attachment_logs={len(attachment_logs)}")
         for attachment_log in attachment_logs:
             incident = attachment_to_incident(attachment_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
             # update last run
             if temp_date > last_fetch:
+                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
                 last_fetch = temp_date + timedelta(seconds=1)
+                demisto.debug(f"Increased last_fetch to {last_fetch}")
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
+            else:
+                demisto.debug(f"Did not appended incident with name {incident.get('name')} since {temp_date=} but {current_fetch=}")
 
     if FETCH_IMPERSONATIONS:
         search_params = {
@@ -2055,17 +2067,22 @@ def fetch_incidents():
         impersonation_logs, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
                                                         data=[search_params],
                                                         response_param='impersonationLogs')
+        demisto.debug(f"number of impersonation_logs={len(impersonation_logs)}")
         for impersonation_log in impersonation_logs:
             incident = impersonation_to_incident(impersonation_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
             # update last run
             if temp_date > last_fetch:
+                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
                 last_fetch = temp_date + timedelta(seconds=1)
+                demisto.debug(f"Increased last_fetch to {last_fetch}")
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
+            else:
+                demisto.debug(f"Did not appended incident with name {incident.get('name')} since {temp_date=} but {current_fetch=}")
     if FETCH_HELD_MESSAGES:
         search_params = {
             'start': last_fetch_date_time,
@@ -2073,19 +2090,25 @@ def fetch_incidents():
         }
         held_messages, _ = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
                                                    data=[search_params])
+        demisto.debug(f"number of held_messages={len(held_messages)}")
         for held_message in held_messages:
             incident = held_to_incident(held_message)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
             # update last run
             if temp_date > last_fetch:
+                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
                 last_fetch = temp_date + timedelta(seconds=1)
+                demisto.debug(f"Increased last_fetch to {last_fetch}")
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
+            else:
+                demisto.debug(f"Did not appended incident with name {incident.get('name')} since {temp_date=} but {current_fetch=}")
 
     demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
+    demisto.debug(f"changed the next fetch time to {last_fetch.isoformat().split('.')[0] + 'Z'}")
     demisto.incidents(incidents)
 
 
