@@ -19,7 +19,7 @@ args:
 - auto: PREDEFINED
   defaultValue: 'false'
   description: 'If set to false, bring the data from TIM only.'
-  name: third_enrichment
+  name: external_enrichment
   predefined:
   - 'true'
   - 'false'

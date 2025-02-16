@@ -565,10 +565,10 @@ def enrich_external_ip_address(ips: list[str]):
     # return raw_results, outputs
 
 
-def gather_enrichment_data(ips: list[str], third_enrichment: bool, verbose: bool):
+def gather_enrichment_data(ips: list[str], external_enrichment: bool, verbose: bool):
     print("gather_enrichment_data")
     search_indicators_raw_results, search_indicators_outputs = search_indicators(ips)
-    if not third_enrichment and search_indicators_outputs:
+    if not external_enrichment and search_indicators_outputs:
         return
     internal_ips, external_ips = separate_ips(ips)
     print(f"Internal IPs: {internal_ips}")
@@ -583,10 +583,10 @@ def merge_enrichment_data():
     pass
 
 
-def ip_enrichment(ips, third_enrichment, verbose):
+def ip_enrichment(ips, external_enrichment, verbose):
     """Perform IP enrichment with validation."""
     try:
-        gather_enrichment_data(ips, third_enrichment, verbose)
+        gather_enrichment_data(ips, external_enrichment, verbose)
         merge_enrichment_data()
 
 
@@ -600,7 +600,7 @@ def main():
     try:
         args = demisto.args()
         ips = argToList(args.get("ip", ""))
-        third_enrichment = argToBoolean(args.get("third_enrichment", False))
+        external_enrichment = argToBoolean(args.get("external_enrichment", False))
         verbose = argToBoolean(args.get("verbose", False))
         # ip_command_runner = IPCommandRunner(verbose)
 
@@ -608,7 +608,7 @@ def main():
             raise ValueError("No IPs provided for enrichment.")
 
         try:
-            ip_enrichment(ips, third_enrichment, verbose)
+            ip_enrichment(ips, external_enrichment, verbose)
 
         except Exception as e:
             print(f"Failed to enrich IP: {e}")
