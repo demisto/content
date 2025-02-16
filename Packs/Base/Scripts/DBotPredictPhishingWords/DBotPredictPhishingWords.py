@@ -9,25 +9,26 @@ import logging
 logging.getLogger('transformers').setLevel(logging.ERROR)
 
 FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
-TORCH_TYPE = 'torch'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
-
-
-class TEMP_RES:
-    data = {}
-
-
-def log_io(func, loc):
-    def new_func(*x, **y):
-        TEMP_RES.data[f'{loc}-{func.__name__}'] = {'input': (x, y)}
-        res = func(*x, **y)
-        TEMP_RES.data[f'{loc}-{func.__name__}']['output'] = res
-        return res
-    return new_func
+TORCH_TYPE = demisto_ml.ModelType.Torch.value
+FASTTEXT_TYPE = demisto_ml.ModelType.FastText.value
 
 
 def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
+
+
+def update_model(model_data, model_type, model_name):
+    res = demisto.executeCommand(
+        'createMLModel',
+        {
+            'modelData': model_data,
+            'modelName': model_name,
+            'modelType': model_type,
+        }
+    )
+    if is_error(res):
+        raise DemistoException(f'Unable to update model: {res}')
 
 
 def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> tuple[dict, str]:
@@ -119,10 +120,18 @@ def preprocess_text(text, model_type, is_return_error):
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
                            word_threshold, top_word_limit, is_return_error, set_incidents_fields=False):
     model_data, model_type = get_model_data(model_name, model_store_type, is_return_error)
-    if model_type.strip() == '' or model_type.strip() == 'Phishing':
-        model_type = FASTTEXT_MODEL_TYPE
-    if model_type not in [FASTTEXT_MODEL_TYPE, TORCH_TYPE, UNKNOWN_MODEL_TYPE]:
-        model_type = UNKNOWN_MODEL_TYPE
+
+    if model_type in ('Phishing', 'torch'):
+        model_data, model_type = demisto_ml.renew_model(model_data, model_type)
+        update_model(model_data, model_type, model_name)
+    
+    model_type = {
+        '': FASTTEXT_MODEL_TYPE,
+        FASTTEXT_TYPE: FASTTEXT_MODEL_TYPE,
+        FASTTEXT_MODEL_TYPE: FASTTEXT_MODEL_TYPE,
+        TORCH_TYPE: TORCH_TYPE,
+        UNKNOWN_MODEL_TYPE: UNKNOWN_MODEL_TYPE,
+    }.get(model_type.strip(), UNKNOWN_MODEL_TYPE)
 
     phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
 
@@ -143,13 +152,13 @@ def predict_batch_incidents_light_output(email_subject, email_body, phishing_mod
     batch_predictions = []
     for input_text in preprocessed_text_list:
         incident_res = {'Label': -1, 'Probability': -1, 'Error': ''}
-        filtered_text, filtered_text_number_of_words = log_io(phishing_model.filter_model_words, 'batch')(input_text)
+        filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
         if filtered_text_number_of_words == 0:
             incident_res['Error'] = "The model does not contain any of the input text words"
         elif filtered_text_number_of_words < min_text_length:
             incident_res['Error'] = "The model contains fewer than %d words" % min_text_length
         else:
-            pred = log_io(phishing_model.predict, 'batch')(input_text)
+            pred = phishing_model.predict(input_text)
             incident_res['Label'] = pred[0]
             prob = pred[1]
             if isinstance(prob, np.floating):
@@ -169,14 +178,13 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
                                         word_threshold):
     text = f"{email_subject} \n{email_body}"
     input_text, words_to_token_maps = preprocess_text(text, model_type, is_return_error)
-
-    filtered_text, filtered_text_number_of_words = log_io(phishing_model.filter_model_words, 'single')(input_text)
+    filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
     if filtered_text_number_of_words == 0:
         handle_error("The model does not contain any of the input text words", is_return_error)
     if filtered_text_number_of_words < min_text_length:
         handle_error("The model contains fewer than %d words" % min_text_length, is_return_error)
 
-    explain_result = log_io(phishing_model.explain_model_words, 'single')(
+    explain_result = phishing_model.explain_model_words(
         input_text,
         0,
         word_threshold,
@@ -270,7 +278,6 @@ def main():
                                     demisto.args()['returnError'] == 'true',
                                     demisto.args().get('setIncidentFields', 'false') == 'true'
                                     )
-
     return result
 
 
