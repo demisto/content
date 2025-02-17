@@ -440,6 +440,7 @@ class Client(BaseClient):
         ticket_filter: str = None,
         include: str = None,
         order_type: str = None,
+        resp_type: str = "json"
     ) -> dict[str, Any]:
         """ Lists all the Tickets in a Freshservice account.
 
@@ -470,7 +471,8 @@ class Client(BaseClient):
         url_suffix = '/filter' if updated_query else url_suffix
         return self._http_request('GET',
                                   f'api/v2/tickets{url_suffix}',
-                                  params=params)
+                                  params=params,
+                                  resp_type=resp_type)
 
     def freshservice_ticket_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new Ticket in a Freshservice account.
@@ -926,6 +928,7 @@ class Client(BaseClient):
         problem_id: int = None,
         updated_since: str = None,
         order_type: str = None,
+        resp_type: str = "json"
     ) -> dict[str, Any]:
         """ Lists all the problems in a Freshservice account.
 
@@ -949,7 +952,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'api/v2/problems{get_url_suffix(problem_id)}',
-            params=params)
+            params=params,
+            resp_type=resp_type)
 
     def freshservice_problem_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new problem request in Freshservice.
@@ -1185,6 +1189,7 @@ class Client(BaseClient):
         change_id: int = None,
         updated_since: str = None,
         order_type: str = None,
+        resp_type: str = "json"
     ) -> dict[str, Any]:
         """ Lists all the changes in a Freshservice account.
 
@@ -1207,7 +1212,8 @@ class Client(BaseClient):
 
         return self._http_request('GET',
                                   f'api/v2/changes{get_url_suffix(change_id)}',
-                                  params=params)
+                                  params=params,
+                                  resp_type=resp_type)
 
     def freshservice_change_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new change request in Freshservice.
@@ -1433,6 +1439,7 @@ class Client(BaseClient):
         updated_query: str = None,
         updated_since: str = None,
         order_type: str = None,
+        resp_type: str = "json"
     ) -> dict[str, Any]:
         """ Lists all the releases in a Freshservice account.
 
@@ -1456,7 +1463,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'api/v2/releases{get_url_suffix(release_id)}',
-            params=params)
+            params=params,
+            resp_type=resp_type)
 
     def freshservice_release_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new release request in Freshservice.
@@ -3487,10 +3495,29 @@ def fetch_incidents(client: Client, params: dict):
             'updated_since': convert_datetime_to_iso(last_run_datetime_str),
             'order_type': 'asc'
         }
-        response = freshservice_request(**request_args)
+        demisto.debug(f"Request arguments: {request_args}")
+
+        response = freshservice_request(**request_args, resp_type='response')
+        tickets = response.json().get(f'{ticket_type}s', [])
+        demisto.debug(f"Initial tickets count:{len(tickets)=}")
+
+        while (link_header := response.headers.get("link", "") or response.headers.get("Link", "")):
+            demisto.debug(f"Next link header: {link_header=}")
+
+            match = re.search(r'<([^>]+)>;\s*rel="next"', link_header)
+            if not match:
+                demisto.debug("No more pages to fetch.")
+                break
+
+            next_url = match.group(1)
+            demisto.debug(f"Fetching next page: {next_url=}")
+            response = client._http_request('GET', full_url=next_url, resp_type='response')
+            new_tickets = response.json().get(f'{ticket_type}s', [])
+            tickets.extend(new_tickets)
+            demisto.debug(f"Fetched additional {len(new_tickets)} tickets, total: {len(tickets)}")
 
         alert_list = convert_response_properties(
-            response.get(f'{ticket_type}s'),
+            tickets,
             TICKET_PROPERTIES_BY_TYPE[ticket_type],
         )
 
