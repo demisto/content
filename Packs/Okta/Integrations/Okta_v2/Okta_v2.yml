@@ -1326,7 +1326,7 @@ script:
     - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
       isArray: true
       name: proxyIPs
-    - description: 'Indicate the action of adding an IP to an existing zone or overriding the existing IPs.'
+    - description: 'Indicate the update type: APPEND - add an IP to an existing list of zone IPs. OVERRIDE: overriding the existing IP list with the given IP.'
       isArray: false
       name: updateType
       auto: PREDEFINED
