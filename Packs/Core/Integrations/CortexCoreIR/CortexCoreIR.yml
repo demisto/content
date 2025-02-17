@@ -177,6 +177,10 @@ script:
     - description: The endpoint ID (string) to isolate. Retrieve the string from the core-get-endpoints command.
       name: endpoint_id
       required: true
+      prettyname: Run action on
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Suppress an error when trying to isolate a disconnected endpoint. When set to false, an error is returned.
@@ -187,6 +191,7 @@ script:
     description: Isolates the specified endpoint.
     execution: true
     name: core-isolate-endpoint
+    prettyname: Isolate Endpoint
     polling: true
     outputs:
     - contextPath: Core.Isolation.endpoint_id
@@ -961,12 +966,24 @@ script:
     - description: List of endpoint IDs.
       isArray: true
       name: endpoint_id_list
+      prettyname: Run action on
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
       required: true
     - description: String that represents the path of the file you want to quarantine.
       name: file_path
+      prettyname: File Path
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
       required: true
     - description: String that represents the file’s hash. Must be a valid SHA256 hash.
       name: file_hash
+      prettyname: File Hash (SHA256)
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
       required: true
     - description: For polling use.
       isArray: true
@@ -978,6 +995,7 @@ script:
       name: timeout_in_seconds
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: core-quarantine-files
+    prettyname: Quarantine File
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1024,6 +1042,10 @@ script:
       name: incident_id
     - description: String that represents the file in hash. Must be a valid SHA256 hash.
       name: file_hash
+      prettyname: File Hash (SHA256)
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
       required: true
     - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
       name: endpoint_id
@@ -1037,6 +1059,7 @@ script:
       name: timeout_in_seconds
     description: Restores a quarantined file on requested endpoints.
     name: core-restore-file
+    prettyname: Restore File From Quarantine
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1072,6 +1095,10 @@ script:
     - description: List of endpoint IDs.
       isArray: true
       name: endpoint_id_list
+      prettyname: Run action on list of endpoint IDs.
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
     - description: Name of the distribution list.
       isArray: true
       name: dist_name
@@ -1128,6 +1155,7 @@ script:
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: core-endpoint-scan
+    prettyname: Run Malware Scan
     polling: true
     outputs:
     - contextPath: Core.endpointScan.actionId
@@ -1418,6 +1446,10 @@ script:
       isArray: true
       name: endpoint_ids
       required: true
+      prettyname: Run action on
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
     - description: A comma-separated list of file paths on the Windows platform.
       isArray: true
       name: windows_file_paths
@@ -1430,6 +1462,10 @@ script:
     - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
       isArray: true
       name: generic_file_path
+      prettyname: File to retrieve
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
     - description: For polling use.
       isArray: true
       name: action_id
@@ -1440,6 +1476,7 @@ script:
       name: timeout_in_seconds
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
     name: core-retrieve-files
+    prettyname: Retrieve File
     polling: true
     outputs:
     - contextPath: Core.RetrievedFiles.action_id
@@ -3263,9 +3300,17 @@ script:
     - description: A comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
+      prettyname: Run action on
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
     - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
+      prettyname: Script
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
     - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
       name: parameters
     - defaultValue: '600'
@@ -3289,6 +3334,7 @@ script:
       defaultValue: true
     description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
     name: core-script-run
+    prettyname: Run Endpoint Script
     polling: true
     outputs:
     - contextPath: Core.ScriptResult.action_id
@@ -3401,6 +3447,10 @@ script:
   - arguments:
     - description: The agent ID.
       name: agent_id
+      prettyname: Run action on
+      prettypredefined:
+      - placeholder_1: ${alert.placeholder_1}
+      - placeholder_2: ${alert.placeholder_2}
       isArray: false
       required: true
     - description: The causality ID.
@@ -3424,6 +3474,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-causality
+    prettyname: Terminate CGO
     description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
