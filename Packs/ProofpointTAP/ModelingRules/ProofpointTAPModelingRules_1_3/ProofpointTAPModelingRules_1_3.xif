@@ -24,4 +24,4 @@ alter
     xdm.source.user_agent = userAgent,
     xdm.target.url = url,
     // Parse message messageTime
-    xdm.email.delivery_timestamp = if(messageTime ~= "^\d{4}-\d{2}-\d{2}", parse_timestamp("%FT%R:%E*SZ", to_string(messageTime)), messageTime ~= "^\w{3}", parse_timestamp("%b %d %Y %X", to_string(messageTime)));
+    xdm.email.delivery_timestamp = messageTime;
