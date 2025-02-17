@@ -1199,7 +1199,7 @@ class Client(BaseClient):
         updated_since: str = None,
         order_type: str = None,
         resp_type: str = "json",
-        full_url='',
+        full_url: str = '',
     ) -> dict[str, Any]:
         """ Lists all the changes in a Freshservice account.
 
@@ -1453,7 +1453,7 @@ class Client(BaseClient):
         updated_since: str = None,
         order_type: str = None,
         resp_type: str = "json",
-        full_url='',
+        full_url: str = '',
     ) -> dict[str, Any]:
         """ Lists all the releases in a Freshservice account.
 
