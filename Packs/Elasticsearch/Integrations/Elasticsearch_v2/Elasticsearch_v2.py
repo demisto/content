@@ -156,7 +156,7 @@ def get_api_key_header_val(api_key):
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
 
-    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection]] = {
+    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection, RequestsHttpNode]] = {
         "hosts": [SERVER],
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
@@ -834,14 +834,14 @@ def execute_raw_query(es, raw_query, index=None, size=100, page=0):
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
 
     requested_index = index or FETCH_INDEX
-    search = Search(using=es, index=requested_index).query(body.get('query'))[page:page + size]
-    
+
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
+        search = Search(using=es, index=requested_index).query(body.get('query'))[page:page + size]
         response = search.execute().to_dict()
-        
-    else: # Elasticsearch v7 and below
+
+    else:  # Elasticsearch v7 and below
         response = es.search(index=requested_index, body=body, size=size, from_=page)
-    
+
     return response
 
 
@@ -1136,9 +1136,9 @@ def main():  # pragma: no cover
 
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
-            return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
-                         'Please try using the Open Search client in the instance configuration.'
-                         '\nError message: {}'.format(demisto.command(), str(e)), error=str(e))
+            return_error(f'Failed executing {demisto.command()}. Seems that the client does not support the server\'s '
+                         f'distribution, Please try using the Open Search client in the instance configuration.'
+                         f'\nError message: {str(e)}', error=str(e))
         if 'failed to parse date field' in str(e):
             return_error(f'Failed to execute the {demisto.command()} command. Make sure the `Time field type` is correctly set.',
                          error=str(e))
