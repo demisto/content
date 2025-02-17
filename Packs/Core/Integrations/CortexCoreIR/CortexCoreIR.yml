@@ -192,6 +192,7 @@ script:
     execution: true
     name: core-isolate-endpoint
     prettyname: Isolate Endpoint
+    quickaction: true
     polling: true
     outputs:
     - contextPath: Core.Isolation.endpoint_id
@@ -996,6 +997,7 @@ script:
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: core-quarantine-files
     prettyname: Quarantine File
+    quickaction: true
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1060,6 +1062,7 @@ script:
     description: Restores a quarantined file on requested endpoints.
     name: core-restore-file
     prettyname: Restore File From Quarantine
+    quickaction: true
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1156,6 +1159,7 @@ script:
     execution: true
     name: core-endpoint-scan
     prettyname: Run Malware Scan
+    quickaction: true
     polling: true
     outputs:
     - contextPath: Core.endpointScan.actionId
@@ -1477,6 +1481,7 @@ script:
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
     name: core-retrieve-files
     prettyname: Retrieve File
+    quickaction: true
     polling: true
     outputs:
     - contextPath: Core.RetrievedFiles.action_id
@@ -3335,6 +3340,7 @@ script:
     description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
     name: core-script-run
     prettyname: Run Endpoint Script
+    quickaction: true
     polling: true
     outputs:
     - contextPath: Core.ScriptResult.action_id
@@ -3475,6 +3481,7 @@ script:
       name: timeout_in_seconds
     name: core-terminate-causality
     prettyname: Terminate CGO
+    quickaction: true
     description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
@@ -3572,4 +3579,5 @@ script:
   dockerimage: demisto/google-cloud-storage:1.0.0.117186
 tests:
 - No tests
+supportsquickactions: true
 fromversion: 6.2.0
