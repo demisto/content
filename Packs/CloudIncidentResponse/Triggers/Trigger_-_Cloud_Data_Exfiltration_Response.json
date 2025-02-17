@@ -1,8 +1,4 @@
 {
-  "xsoar_data": {
-    "id": "trigger_id",
-    "name": "trigger_name"
-  },
   "trigger_id": "3138b81e2f9359a688026162234eb419",
   "playbook_id": "Cloud Data Exfiltration Response",
   "suggestion_reason": "Recommended for alerts involving cloud data exfiltration",
