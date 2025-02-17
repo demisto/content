@@ -325,8 +325,6 @@ def poc_get_all_events(client: Client, last_run: dict, all_event_types: list, li
     Endpoint: /api/v2/events/data/
     Docs: https://www.postman.com/netskope-tech-alliances/netskope-rest-api/request/zknja6y/get-network-events-generated-by-netskope
 
-
-
     Example HTTP request:
     <baseUrl>/api/v2/events/data/network?offset=0&starttime=1707466628&endtime=1739089028&query=_creation_timestamp gte 1739058516
 
@@ -341,21 +339,45 @@ def poc_get_all_events(client: Client, last_run: dict, all_event_types: list, li
     """
     remove_unsupported_event_types(last_run, client.event_types_to_fetch)
     epoch_current_time = str(int(arg_to_datetime("now").timestamp()))  # type: ignore[union-attr]
+    request_limit = limit if limit < MAX_EVENTS_PAGE_SIZE else MAX_EVENTS_PAGE_SIZE
+
+    demisto.debug(f"Starting event fetch with current time: {epoch_current_time}, request limit: {request_limit}")
 
     for event_type in client.event_types_to_fetch:
-        # event_type_operation = last_run.get(event_type, {}).get('operation')
-        epoch_starttime = last_run.get(event_type, {}).get("last_fetch_max_epoch", "") or str(
-            object=int(arg_to_datetime("1 Month").timestamp())  # type: ignore[union-attr]
-        )
-        query = f"_creation_timestamp gte {epoch_starttime}"  # TODO: add some sorting by '_creation_timestamp' key
-        params = assign_params(limit=limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time, query=query)
+        events = []
+        demisto.debug(f"Fetching event type: {event_type}")
 
-        response = client.poc_fetch_events(event_type, params)
-        results = response.get("result", [])
-        demisto.debug(f"The number of received events - {len(results)}")
+        while len(events) < limit:
+            epoch_starttime = last_run.get(event_type, {}).get("last_fetch_max_epoch", "") or str(
+                int(arg_to_datetime("1 Year").timestamp())  # type: ignore[union-attr]
+            )
+            query = f"_creation_timestamp gte {epoch_starttime}"  # TODO: add some sorting by '_creation_timestamp' key
+            params = assign_params(
+                limit=request_limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time, query=query
+            )
 
-        deduped_events = poc_prepare_events(results, event_type, last_run, epoch_starttime)
-        all_event_types.extend(deduped_events)
+            demisto.debug(f"Fetching events with params: {params}")
+
+            response = client.poc_fetch_events(event_type, params)
+            result = response.get("result", [])
+            demisto.debug(f"The number of fetched events - {len(result)}")
+
+            deduped_events = poc_prepare_events(result, event_type, last_run, epoch_starttime)
+            events.extend(deduped_events)
+
+            demisto.debug(
+                f"Deduped events: {len(deduped_events)} out of {len(result)} fetched events in current fetch cycle. Total events fetched so far: {len(events)}"
+            )
+
+            if (not result) or (not deduped_events):
+                demisto.debug(
+                    f"No new events fetched, finishing current fetch cycle for {event_type} event type with total of - {len(events)} new events"
+                )
+                break
+
+            all_event_types.extend(deduped_events)
+
+    demisto.debug(f"Finished fetching all event types. Total events fetched: {len(all_event_types)}")
 
     return last_run
 
