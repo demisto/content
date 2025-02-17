@@ -549,20 +549,20 @@ class Client(BaseClient):
         )["data"]
         tags = [_["id"] for _ in tags_data["tags"]]
         if operation == "add_tag_indicator":
+            url_suffix = "ingestion/threat-data/action/add_tag/"
             tags.extend([_.strip() for _ in tag_id.split(",")])
+            data = {'tag_id':list(set(tags))}
         elif operation == "remove_tag_from_indicator":
-            removable_tags = [_.strip() for _ in tag_id.split(",")]
-            for r_tag in removable_tags:
-                if r_tag in tags:
-                    tags.remove(r_tag)
-        final_tags = list(set(tags))
-        url_suffix = "ingestion/threat-data/action/add_tag/"
+            url_suffix = "ingestion/threat-data/action/remove_tag/"
+            tags = [_.strip() for _ in tag_id.split(",")]
+            data = {"tag_ids": list(set(tags))}
+       
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size, "q": q}
         payload = {
             "object_id": object_id,
             "object_type": object_type,
-            "data": {"tag_id": final_tags},
+            "data": data,
         }
         return self.post_http_request(client_url, payload, params)
 
