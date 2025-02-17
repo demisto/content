@@ -266,7 +266,7 @@ RESTAPI_TAS_RESULT = [
                     "completedBy": "DBot",
                     "completedDate": "2020-09-29T16:48:30.427891714Z",
                     "continueOnError": True,
-                    "continueOnErrorType":"errorPath",
+                    "continueOnErrorType": "errorPath",
                     "doNotSaveTaskHistory": True,
                     "dueDate": "0001-01-01T00:00:00Z",
                     "dueDateDuration": 0,
@@ -290,7 +290,7 @@ RESTAPI_TAS_RESULT = [
                         "#none#": [
                             "1"
                         ]
-                        
+
                     },
                     "note": False,
                     "outputs": {},
