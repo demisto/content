@@ -121,6 +121,7 @@ class Client(BaseClient):
         if not res.startswith("["):
             res = f"[{res}]"
         json_res =  json.loads(res)
+
         try:
             json_str = json.dumps(json_res)
             demisto.info(f"The size of raw res.text after replacing = {len(json_str)}")
