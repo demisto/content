@@ -1,6 +1,9 @@
 commonfields:
   id: Symantec Endpoint Security
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: Symantec Endpoint Security
 display: Symantec Endpoint Security
 category: Analytics & SIEM
