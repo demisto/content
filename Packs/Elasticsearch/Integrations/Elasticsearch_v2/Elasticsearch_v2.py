@@ -156,7 +156,7 @@ def get_api_key_header_val(api_key):
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
 
-    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection, RequestsHttpNode]] = {
+    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection]] = {
         "hosts": [SERVER],
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
@@ -173,7 +173,7 @@ def elasticsearch_builder(proxies):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self.session.proxies = proxies
-        connection_args['node_class'] = CustomHttpNode
+        connection_args['node_class'] = CustomHttpNode  # type: ignore[assignment]
 
     if API_KEY_ID:
         connection_args["api_key"] = API_KEY
@@ -835,11 +835,11 @@ def execute_raw_query(es, raw_query, index=None, size=100, page=0):
 
     requested_index = index or FETCH_INDEX
 
-    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
         search = Search(using=es, index=requested_index).query(body.get('query'))[page:page + size]
         response = search.execute().to_dict()
 
-    else:  # Elasticsearch v7 and below
+    else:  # Elasticsearch v7 and below or OpenSearch
         response = es.search(index=requested_index, body=body, size=size, from_=page)
 
     return response
