@@ -25,11 +25,13 @@ configuration:
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -46,7 +48,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-description: 'Celonis Event Collector is an integration that supports fetching audit log events.'
+description: 'The Celonis Platform offers you a suite of process mining and intelligence features, helping you to integrate your data and then use that data to analyze, improve, and monitor your business performance across key metrics.'
 display: Celonis
 name: CelonisEventCollector
 script:

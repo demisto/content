@@ -115,7 +115,8 @@ def test_module(client: Client) -> str:
 
 def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
     last_run = demisto.getLastRun() or {}
-    start_time = (get_events_args or last_run).get('start_date', '') or get_current_time().strftime(DATE_FORMAT)
+    # start_time = (get_events_args or last_run).get('start_date', '') or get_current_time().strftime(DATE_FORMAT)
+    start_time = (get_events_args or last_run).get('start_date', '') or "2025-02-02T09:00:00"
     end_time = (get_events_args or {}).get('end_date', get_current_time().strftime(DATE_FORMAT))
 
     if not get_events_args:  # Only set token for fetch_events case
@@ -148,7 +149,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         events = sort_events_by_timestamp(content)
         for event in events:
             event_date = event.get('timestamp')
-            event['_TIME'] = event_date
+            event['_time'] = event_date
             output.append(event)
 
             if len(output) >= fetch_limit:
