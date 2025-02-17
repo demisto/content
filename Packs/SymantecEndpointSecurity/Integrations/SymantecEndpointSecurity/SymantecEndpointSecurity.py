@@ -106,11 +106,28 @@ class Client(BaseClient):
             resp_type="text",
             headers=self.headers,
         )
+        try:
+            demisto.info(f"The size of the raw res.text = {len(res)}")
+        except Exception as e:
+            demisto.info(f"Failed to printing the size of raw res.text, Error: {e}")
+
         # Formats a string into a valid JSON array
         res = res.replace("}\n{", ",")
+        try:
+            demisto.info(f"The size of raw res.text after replacing = {len(res)}")
+        except Exception as e:
+            demisto.info(f"Failed to printing the size of raw res.text, Error: {e}")
+
         if not res.startswith("["):
             res = f"[{res}]"
-        return json.loads(res)
+        json_res =  json.loads(res)
+        try:
+            json_str = json.dumps(json_res)
+            demisto.info(f"The size of raw res.text after replacing = {len(json_str)}")
+        except Exception as e:
+            demisto.info(f"Failed to convert from dict to json string, Error: {e}")
+
+        return json_res
 
 
 def sleep_if_necessary(last_run_duration: float) -> None:
