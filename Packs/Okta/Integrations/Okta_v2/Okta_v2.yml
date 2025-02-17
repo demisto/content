@@ -1320,10 +1320,10 @@ script:
       required: true
     - description: Updates the zone name.
       name: zoneName
-    - description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+    - description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16), single IP address (2.2.2.2) or an IP range (1.2.3.4-1.2.3.5).'
       isArray: true
       name: gatewayIPs
-    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16), single IP address (2.2.2.2) or an IP range (1.2.3.4-1.2.3.5).'
       isArray: true
       name: proxyIPs
     - description: 'Indicate the action of adding an IP to an existing zone or overriding the existing IPs.'
@@ -1414,9 +1414,9 @@ script:
     - description: Zone name.
       name: name
       required: true
-    - description: 'Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+    - description: 'Update Gateway IP addresses: CIDR range (1.1.0.0/16), single IP address (2.2.2.2) or an IP range (1.2.3.4-1.2.3.5).'
       name: gateway_ips
-    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16), single IP address (2.2.2.2) or an IP range (1.2.3.4-1.2.3.5).'
       name: proxies
     description: Creates a Zone with the specified name.
     name: okta-create-zone
