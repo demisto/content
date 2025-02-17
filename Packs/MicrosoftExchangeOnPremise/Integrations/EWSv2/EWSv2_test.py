@@ -4,6 +4,7 @@ import uuid
 
 from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
 
+from EWSApiModule import EWSClient
 import EWSv2
 import logging
 
@@ -25,49 +26,63 @@ class TestNormalCommands:
 
     """
 
-    class MockClient:
+    class MockClient(EWSClient):
         class MockAccount:
+            DEFAULT_FOLDER_TRAVERSAL_DEPTH = 3
+
             def __init__(self):
                 self.root = self
                 self.walk_res = []
-                self.all_res = ""
+                self.all_res = ''
                 self.contacts = self
 
             def walk(self):
                 return self.walk_res
 
             def tree(self):
-                return ""
+                return ''
 
             def all(self):
                 return self.all_res
 
-        def __init__(self):
-            self.default_target_mailbox = ""
-            self.client_id = ""
-            self.client_secret = ""
-            self.tenant_id = ""
-            self.folder = ""
-            self.is_public_folder = ""
-            self.request_timeout = ""
-            self.max_fetch = ""
-            self.self_deployed = ""
-            self.insecure = ""
-            self.proxy = ""
+        def __init__(self, max_fetch: int = 50):
+            self.default_target_mailbox = ''
+            self.client_id = ''
+            self.client_secret = ''
+            self.tenant_id = ''
+            self.account_email = ''
+            self.folder = ''
+            self.is_public_folder = False
+            self.request_timeout = ''
+            self.max_fetch = max_fetch
+            self.self_deployed = False
+            self.insecure = False
+            self.proxy = False
             self.account = self.MockAccount()
-            self.protocol = ""
-            self.inbox = self.MockInbox()
+            self.protocol = ''
+            self.mark_as_read = False
+            self.folder_name = 'Inbox'
 
-        class MockInbox:
-            class parent:
-                def __init__(self):
-                    self.children = ""
+        def get_account(self, target_mailbox=None, access_type=None):
+            return self.account
 
-            def __init__(self):
-                self.parent = self.parent()
+        def get_protocol(self):
+            return self.protocol
+
+        def get_attachments_for_item(self, item_id, account, attachment_ids=None):
+            return ''
+
+        def is_default_folder(self, folder_path, is_public):
+            return ''
 
         def get_folder_by_path(self, path, account=None, is_public=False):
-            return ""
+            return ''
+
+        def send_email(self, message):
+            return
+
+        def reply_email(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments, from_mailbox, account):
+            return ''
 
 
 def test_keys_to_camel_case():
@@ -118,8 +133,7 @@ def test_fetch_last_emails_first_fetch(mocker, since_datetime, expected_result):
     client = TestNormalCommands.MockClient()
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2021, 5, 23, 13, 18, 14, 901293,
                                                                             datetime.UTC))
-    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
-
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_folder_by_path', return_value=MockObject())
     mocker.patch.object(MockObject, 'filter')
 
     fetch_last_emails(client, since_datetime=since_datetime)
@@ -154,7 +168,7 @@ def test_fetch_last_emails_last_run(mocker, since_datetime, expected_result):
         def order_by(self, *args):
             return [Message(), Message(), Message(), Message(), Message()]
 
-    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_folder_by_path', return_value=MockObject())
     mocker.patch.object(MockObject, 'filter')
 
     client = TestNormalCommands.MockClient()
@@ -197,9 +211,8 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
         def order_by(self, *args):
             return [Message(), Message(), Message(), Message(), Message()]
 
-    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
-    EWSv2.MAX_FETCH = limit
-    client = TestNormalCommands.MockClient()
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_folder_by_path', return_value=MockObject())
+    client = TestNormalCommands.MockClient(max_fetch=limit)
 
     x = fetch_last_emails(client, since_datetime='since_datetime')
     assert len(x) == expected_result
@@ -240,9 +253,8 @@ def test_fetch_last_emails_fail(mocker):
         def order_by(self, *args):
             return [Message(), Message(), Message(), Message(), Message()]
 
-    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
-    EWSv2.MAX_FETCH = 1
-    client = TestNormalCommands.MockClient()
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_folder_by_path', return_value=MockObject())
+    client = TestNormalCommands.MockClient(max_fetch=1)
 
     mocker.patch('EWSv2.isinstance', side_effect=[ErrorMimeContentConversionFailed(AttributeError()), ValueError()])
 
@@ -287,9 +299,8 @@ def test_fetch_last_emails_object_stream_behavior(mocker):
         def order_by(self, *args):
             return [Message(), Message(), Message()]
 
-    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
-    EWSv2.MAX_FETCH = 3
-    client = TestNormalCommands.MockClient()
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_folder_by_path', return_value=MockObject())
+    client = TestNormalCommands.MockClient(max_fetch=3)
 
     mocker.patch('EWSv2.isinstance', side_effect=[True, ErrorMimeContentConversionFailed(AttributeError()), True])
 
@@ -300,7 +311,7 @@ def test_fetch_last_emails_object_stream_behavior(mocker):
 def test_dateparser():
     """Test that dateparser works fine. See: https://github.com/demisto/etc/issues/39240 """
     now = datetime.datetime.now()
-    res = dateparser.parse(EWSv2.FETCH_TIME)
+    res = dateparser.parse('10 minutes')
     assert res is not None
     assert res < now
 
@@ -403,13 +414,11 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
         def order_by(self, *args):
             return messages
 
-    client = TestNormalCommands.MockClient()
-    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
-    mocker.patch.object(EWSv2, 'get_account', return_value='test_account')
-    EWSv2.MAX_FETCH = 1
+    client = TestNormalCommands.MockClient(max_fetch=1)
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_folder_by_path', return_value=MockObject())
     last_run = mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'getLastRun', return_value=current_last_run)
-    fetch_emails_as_incidents(client, 'Inbox', False)
+    fetch_emails_as_incidents(client, False)
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
 
@@ -450,9 +459,8 @@ def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_
     )
     mocker.patch.object(EWSv2, "parse_incident_from_item", side_effect=exception_type)
     mocker.patch.object(EWSv2, "fetch_last_emails", return_value=[MockEmailObject()])
-    mocker.patch.object(EWSv2, "get_account", return_value=[{}])
     with pytest.raises((Exception, UnicodeError, IndexError)) as e:
-        fetch_emails_as_incidents(client, "Inbox", skip_unparsable_emails_param)
+        fetch_emails_as_incidents(client, skip_unparsable_emails_param)
         assert expected == str(e)
 
 
@@ -503,9 +511,13 @@ def test_send_mail(mocker):
         as a list of strings.
     """
     from EWSv2 import send_email
-    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_account',
+                        return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=(''))
-    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com"})
+
+    client = TestNormalCommands.MockClient()
+    results = send_email(client, {'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
@@ -526,10 +538,15 @@ def test_send_mail_with_from_arg(mocker):
         as a list of strings.
     """
     from EWSv2 import send_email
-    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_account',
+                        return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=('', [
         {'Contents': '', 'ContentsFormat': 'text', 'Type': 'png', 'File': 'image.png', 'FileID': '12345'}]))
-    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
+
+    client = TestNormalCommands.MockClient()
+    results = send_email(client,
+                         {'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
@@ -549,10 +566,13 @@ def test_send_mail_with_trailing_comma(mocker):
         verify that the 'to' field was extracted correctly and that the trailing comma was handled.
     """
     from EWSv2 import send_email
-    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_account',
+                        return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=('', [
         {'Contents': '', 'ContentsFormat': 'text', 'Type': 'png', 'File': 'image.png', 'FileID': '12345'}]))
-    results = send_email({'to': "test@gmail.com,", 'subject': "test"})
+
+    client = TestNormalCommands.MockClient()
+    results = send_email(client, {'to': "test@gmail.com,", 'subject': "test"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
@@ -596,15 +616,15 @@ def test_get_items_from_mailbox(mocker, item_ids, should_throw_exception):
         Case C: make sure an exception is raised
         Case D: make sure an exception is raised
     """
-    from EWSv2 import get_items_from_mailbox
-
     mocker.patch('EWSv2.Item', side_effect=[MockItem(item_id=item_id) for item_id in item_ids])
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_account', return_value=MockAccount())
 
+    client = TestNormalCommands.MockClient()
     if should_throw_exception:
         with pytest.raises(Exception):
-            get_items_from_mailbox(MockAccount(), item_ids=item_ids)
+            client.get_items_from_mailbox(None, item_ids=item_ids)
     else:
-        assert get_items_from_mailbox(MockAccount(), item_ids=item_ids) == item_ids
+        assert client.get_items_from_mailbox(None, item_ids=item_ids) == item_ids
 
 
 def test_categories_parse_item_as_dict():
@@ -634,7 +654,7 @@ def test_categories_parse_item_as_dict():
     assert return_value.get("categories") == ['Purple category', 'Orange category']
 
 
-def test_parse_incident_from_item():
+def test_parse_incident_from_item(mocker):
     """
     Given -
         a Message with attachments contains non-ASCII characters.
@@ -648,6 +668,7 @@ def test_parse_incident_from_item():
     from EWSv2 import parse_incident_from_item
     from exchangelib.attachments import AttachmentId, ItemAttachment
 
+    mocker.patch('EWSv2.fileResult')
     message = Message(subject='message4',
                       message_id='message4',
                       text_body='Hello World',
@@ -665,7 +686,7 @@ def test_parse_incident_from_item():
                       ],
                       )
 
-    return_value = parse_incident_from_item(message, is_fetch=False)
+    return_value = parse_incident_from_item(message, is_fetch=False, mark_as_read=False)
     assert return_value.get("attachment")
 
 
@@ -768,10 +789,14 @@ def test_resolve_names_command_no_contact(mocker):
     protocol = mocker.Mock()
     email = '1234@demisto.com'
     protocol.resolve_names.return_value = [Mailbox(email_address=email)]
-    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
-    assert email in result.get('HumanReadable')
-    assert email == list(result.get('EntryContext').values())[0][0].get('email_address')
-    assert not list(result.get('EntryContext').values())[0][0].get('FullContactInfo')
+    client = TestNormalCommands.MockClient()
+    client.protocol = protocol
+
+    result = resolve_name_command(client, {'identifier': 'someIdentifier'})
+
+    assert email in result.get('HumanReadable', '')
+    assert email == list(result.get('EntryContext', {}).values())[0][0].get('email_address')
+    assert not list(result.get('EntryContext', {}).values())[0][0].get('FullContactInfo')
 
 
 def test_resolve_names_command_with_contact(mocker):
@@ -790,9 +815,13 @@ def test_resolve_names_command_with_contact(mocker):
     phone_numbers = [PhoneNumber(label=number_label, phone_number='+972 058 000 0000'),
                      PhoneNumber(label='Bussiness', phone_number='+972 058 000 0000')]
     protocol.resolve_names.return_value = [(Mailbox(email_address=email), Contact(phone_numbers=phone_numbers))]
-    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
-    assert email in result.get('HumanReadable')
-    context_output = list(result.get('EntryContext').values())[0][0]
+    client = TestNormalCommands.MockClient()
+    client.protocol = protocol
+
+    result = resolve_name_command(client, {'identifier': 'someIdentifier'})
+
+    assert email in result.get('HumanReadable', '')
+    context_output = list(result.get('EntryContext', {}).values())[0][0]
     assert email == context_output.get('email_address')
 
     assert any(number.get('label') == number_label for number in context_output.get('FullContactInfo').get('phoneNumbers'))
@@ -810,7 +839,11 @@ def test_resolve_names_command_no_result(mocker):
     from EWSv2 import resolve_name_command
     protocol = mocker.Mock()
     protocol.resolve_names.return_value = [ErrorNameResolutionNoResults(value='No results')]
-    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    client = TestNormalCommands.MockClient()
+    client.protocol = protocol
+
+    result = resolve_name_command(client, {'identifier': 'someIdentifier'})
+
     assert result == 'No results were found.'
 
 
@@ -876,7 +909,7 @@ def test_get_message_for_body_type_no_body_type_with_html_body_and_image_and_han
     result = get_message_for_body_type(body, None, html_body, True)
     assert isinstance(result[0], HTMLBody)
     assert isinstance(result[1][0], FileAttachment)
-    assert result[0] == HTMLBody('<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>')
+    assert result[0] == HTMLBody('<p>This is an HTML body</p><p><img src="cid:image0@123456_123456"/></p>')
 
 
 def test_get_message_for_body_type_no_body_type_with_html_body_and_image_and_handle_image_is_false():
@@ -1033,19 +1066,19 @@ def test_get_attachment_name(attachment_name, content_id, is_inline, attachment_
     pytest.param('image1.png', None, False, "image1.png"),
 
 ])
-def test_get_attachment_name_legacy_name(monkeypatch, attachment_name, content_id, is_inline, expected_result):
+def test_get_attachment_name_legacy_name(mocker, attachment_name, content_id, is_inline, expected_result):
     """
     Given:
         - case 1: attachment is not inline.
         - case 1: attachment is inline.
         - case 3: attachment is not inline.
     When:
-        - get_attachment_name is called with LEGACY_NAME=FALSE
+        - get_attachment_name is called with legacy_name=True
     Then:
         All cases should not add an ID to the attachment name.
 
     """
-    monkeypatch.setattr('EWSv2.LEGACY_NAME', True)
+    mocker.patch.object(demisto, 'params', return_value={'legacy_name': True})
     assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
                                is_inline=is_inline) == expected_result
 
@@ -1123,8 +1156,65 @@ def test_get_item_as_eml(mocker):
                     'X-EXTRA-Missed-Header: EXTRA\r\n' \
                     '\r\nHello'
     mock_file_result = mocker.patch('EWSv2.fileResult')
-    mocker.patch.object(EWSv2, 'get_item_from_mailbox', return_value=Item(mime_content=content, headers=item_headers))
-    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_item_from_mailbox',
+                        return_value=Item(mime_content=content, headers=item_headers))
+    mocker.patch.object(TestNormalCommands.MockClient, 'get_account',
+                        return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    client = TestNormalCommands.MockClient()
 
-    get_item_as_eml("Inbox", "test@gmail.com")
+    get_item_as_eml(client, "Inbox", "test@gmail.com")
     mock_file_result.assert_called_once_with("demisto_untitled_eml.eml", expected_data)
+
+
+@pytest.mark.parametrize('manual_username, expected_username', [('', 'test@gmail.com'),
+                                                                ('test2@gmail.com', 'test2@gmail.com')])
+def test_get_client_from_params(mocker, manual_username, expected_username):
+    """
+    Given:
+        - Parameters for EWS connection.
+    When:
+        - get_client_from_params is called.
+    Then:
+        - The expected EWS client is returned.
+    """
+    from EWSApiModule import EWSClient
+    from exchangelib.protocol import BaseProtocol
+    from EWSv2 import get_client_from_params
+
+    mocker.patch.object(EWSClient, '_configure_auth', return_value=(None, None, None))
+
+    params = {
+        'credentials': {
+            'identifier': 'test@gmail.com',
+            'password': 'test_pass'
+        },
+        'impersonation': True,
+        'defaultTargetMailbox': 'test1@gmail.com',
+        'maxFetch': 10,
+        'ewsServer': 'some_server_url',
+        'authType': 'Basic',
+        'defaultServerVersion': '2016',
+        'folder': 'Test_Folder',
+        'isPublicFolder': True,
+        'requestTimeout': 60,
+        'markAsRead': True,
+        'domainAndUserman': manual_username,
+        'insecure': False,
+    }
+
+    client = get_client_from_params(params)
+
+    assert isinstance(client, EWSClient)
+    assert client.client_id == expected_username
+    assert client.client_secret == 'test_pass'
+    assert client.access_type == 'impersonation'
+    assert client.account_email == 'test1@gmail.com'
+    assert client.max_fetch == 10
+    assert client.ews_server == 'some_server_url'
+    assert client.auth_type == 'basic'
+    assert client.version == '2016'
+    assert client.folder_name == 'Test_Folder'
+    assert client.is_public_folder
+    assert BaseProtocol.TIMEOUT == 60
+    assert client.mark_as_read
+    assert not client.insecure
