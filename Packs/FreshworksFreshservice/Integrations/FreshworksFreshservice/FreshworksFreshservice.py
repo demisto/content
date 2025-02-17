@@ -440,6 +440,8 @@ class Client(BaseClient):
         ticket_filter: str = None,
         include: str = None,
         order_type: str = None,
+        resp_type: str = "json",
+        full_url='',
     ) -> dict[str, Any]:
         """ Lists all the Tickets in a Freshservice account.
 
@@ -468,9 +470,13 @@ class Client(BaseClient):
 
         url_suffix = get_url_suffix(ticket_id)
         url_suffix = '/filter' if updated_query else url_suffix
+        if full_url:
+            return self._http_request('GET', full_url=full_url, )
+
         return self._http_request('GET',
                                   f'api/v2/tickets{url_suffix}',
-                                  params=params)
+                                  params=params,
+                                  resp_type=resp_type)
 
     def freshservice_ticket_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new Ticket in a Freshservice account.
@@ -926,6 +932,7 @@ class Client(BaseClient):
         problem_id: int = None,
         updated_since: str = None,
         order_type: str = None,
+        resp_type: str = "json"
     ) -> dict[str, Any]:
         """ Lists all the problems in a Freshservice account.
 
@@ -949,7 +956,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'api/v2/problems{get_url_suffix(problem_id)}',
-            params=params)
+            params=params,
+            resp_type=resp_type)
 
     def freshservice_problem_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new problem request in Freshservice.
@@ -1185,6 +1193,7 @@ class Client(BaseClient):
         change_id: int = None,
         updated_since: str = None,
         order_type: str = None,
+        resp_type: str = "json"
     ) -> dict[str, Any]:
         """ Lists all the changes in a Freshservice account.
 
@@ -1207,7 +1216,8 @@ class Client(BaseClient):
 
         return self._http_request('GET',
                                   f'api/v2/changes{get_url_suffix(change_id)}',
-                                  params=params)
+                                  params=params,
+                                  resp_type=resp_type)
 
     def freshservice_change_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new change request in Freshservice.
@@ -1433,6 +1443,7 @@ class Client(BaseClient):
         updated_query: str = None,
         updated_since: str = None,
         order_type: str = None,
+        resp_type: str = "json"
     ) -> dict[str, Any]:
         """ Lists all the releases in a Freshservice account.
 
@@ -1456,7 +1467,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'api/v2/releases{get_url_suffix(release_id)}',
-            params=params)
+            params=params,
+            resp_type=resp_type)
 
     def freshservice_release_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new release request in Freshservice.
@@ -3435,6 +3447,24 @@ def parse_incident(alert: dict, entity_name: str, mirror_direction: str | None) 
     }
 
 
+def get_next_link(response):
+    link_header = response.headers.get("link", "") or response.headers.get("Link", "")
+    demisto.debug(f"Link header: {link_header}")
+
+    if not link_header:
+        demisto.debug("No 'link' header found in response.")
+        return ""
+
+    match = re.search(r'<([^>]+)>;\s*rel="next"', link_header)
+    if match:
+        next_link = match.group(1)
+        demisto.debug(f"Found next link: {next_link}")
+        return next_link
+
+    demisto.debug("No 'next' link found in the link header.")
+    return ""
+
+
 def fetch_incidents(client: Client, params: dict):
     """ This function retrieves new alerts from an API endpoint every interval (default is 1 minute).
         It is responsible for fetching incidents only once and ensuring that no incidents are missed.
@@ -3487,10 +3517,22 @@ def fetch_incidents(client: Client, params: dict):
             'updated_since': convert_datetime_to_iso(last_run_datetime_str),
             'order_type': 'asc'
         }
-        response = freshservice_request(**request_args)
+        demisto.debug(f"Request arguments: {request_args}")
+        tickets = []
+        next_link = ''
+
+        while True:
+            response = freshservice_request(**request_args, full_url=next_link, resp_type='response')
+            json_response = response.json()
+            new_tickets = json_response.get(f'{ticket_type}s', [])
+            tickets.extend(new_tickets)
+            demisto.debug(f"Fetched additional {len(new_tickets)} tickets, total: {len(tickets)}")
+
+            if not (next_link := get_next_link(response)):
+                break
 
         alert_list = convert_response_properties(
-            response.get(f'{ticket_type}s'),
+            tickets,
             TICKET_PROPERTIES_BY_TYPE[ticket_type],
         )
 
