@@ -441,7 +441,7 @@ class Client(BaseClient):
         include: str = None,
         order_type: str = None,
         resp_type: str = "json",
-        full_url='',
+        full_url: str = '',
     ) -> dict[str, Any]:
         """ Lists all the Tickets in a Freshservice account.
 
@@ -458,6 +458,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
+        if full_url:
+            return self._http_request('GET', full_url=full_url, resp_type=resp_type)
+
         params = remove_empty_elements({
             'page': page,
             'per_page': page_size,
@@ -470,8 +473,6 @@ class Client(BaseClient):
 
         url_suffix = get_url_suffix(ticket_id)
         url_suffix = '/filter' if updated_query else url_suffix
-        if full_url:
-            return self._http_request('GET', full_url=full_url, )
 
         return self._http_request('GET',
                                   f'api/v2/tickets{url_suffix}',
@@ -932,7 +933,8 @@ class Client(BaseClient):
         problem_id: int = None,
         updated_since: str = None,
         order_type: str = None,
-        resp_type: str = "json"
+        resp_type: str = "json",
+        full_url: str = '',
     ) -> dict[str, Any]:
         """ Lists all the problems in a Freshservice account.
 
@@ -946,6 +948,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
+        if full_url:
+            return self._http_request('GET', full_url=full_url, resp_type=resp_type)
+
         params = remove_empty_elements({
             'page': page,
             'per_page': page_size,
@@ -1193,7 +1198,8 @@ class Client(BaseClient):
         change_id: int = None,
         updated_since: str = None,
         order_type: str = None,
-        resp_type: str = "json"
+        resp_type: str = "json",
+        full_url='',
     ) -> dict[str, Any]:
         """ Lists all the changes in a Freshservice account.
 
@@ -1207,6 +1213,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
+        if full_url:
+            return self._http_request('GET', full_url=full_url, resp_type=resp_type)
+
         params = remove_empty_elements({
             'page': page,
             'per_page': page_size,
@@ -1443,7 +1452,8 @@ class Client(BaseClient):
         updated_query: str = None,
         updated_since: str = None,
         order_type: str = None,
-        resp_type: str = "json"
+        resp_type: str = "json",
+        full_url='',
     ) -> dict[str, Any]:
         """ Lists all the releases in a Freshservice account.
 
@@ -1456,6 +1466,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
+        if full_url:
+            return self._http_request('GET', full_url=full_url, resp_type=resp_type)
+
         params = remove_empty_elements({
             'page': page,
             'per_page': page_size,
@@ -1845,6 +1858,7 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
+        resp_type=''
     ) -> dict[str, Any]:
         """ Lists all the Assets in a Freshservice account.
 
@@ -1874,6 +1888,8 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
+        full_url: str = '',
+        resp_type: str = "json"
     ) -> dict[str, Any]:
         """ Lists all the purchase orders in a Freshservice account.
 
@@ -1885,6 +1901,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
+        if full_url:
+            return self._http_request('GET', full_url=full_url, resp_type=resp_type)
+
         params = remove_empty_elements({'page': page, 'per_page': page_size})
 
         return self._http_request(
