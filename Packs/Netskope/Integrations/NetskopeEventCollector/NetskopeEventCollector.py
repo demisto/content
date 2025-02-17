@@ -122,9 +122,12 @@ def prepare_events(events: list, event_type: str) -> list:
 
     return events
 
-def poc_prepare_events(events: list, event_type: str, last_run: dict) -> list[Any]:
+def poc_prepare_events(events: list, event_type: str, last_run: dict, epoch_starttime: str) -> list[Any]:
     """
-    Iterates over a list of given events and add/modify special fields like event_id, _time and source_log_event.
+    - Iterates over a list of given events and add/modify special fields like event_id, _time and source_log_event.
+    - sort results by _creation_timestamp key
+    - dedup with IDs from previous fetch, if available
+    - get max epoch from fetch events
 
     Args:
         events (list): list of events to modify.
@@ -133,29 +136,21 @@ def poc_prepare_events(events: list, event_type: str, last_run: dict) -> list[An
     Returns:
         list: the list of modified events
     """
+    last_fetch_ids = set(last_run.get(event_type, {}).get("last_fetch_ids", []))
 
-    # sort results by _creation_timestamp key
-    # dedup with IDs from previous fetch, if available
-    # get max epoch from fetch events
-
-    last_fetch_ids = last_run.get(event_type, {}).get("last_fetch_ids", [])
-    ids = []
-    creation_timestamp_epochs: list[str] = []
     deduped_events = []
-    for event in events:
-        event_id = str(event.get("_id"))
-        if event_id in last_fetch_ids:
-            continue
-        populate_parsing_rule_fields(event, event_type)
-        ids.append(event_id)
-        event["event_id"] = event_id
-        creation_timestamp_epochs.append(str(event.get("_creation_timestamp")))
-        deduped_events.append(event)
+    max_epoch = epoch_starttime
 
-    if not last_run.get(event_type):
-        last_run[event_type] = {}
-    last_run[event_type]["last_fetch_ids"] = ids
-    last_run[event_type]["last_fetch_max_epoch"] = max(creation_timestamp_epochs)
+    for event in events:
+        if (event_id := str(event.get("_id"))) not in last_fetch_ids:
+            populate_parsing_rule_fields(event, event_type)
+            event["event_id"] = event_id
+            deduped_events.append(event)
+            max_epoch = max(max_epoch, str(event.get("_creation_timestamp", "")))
+
+    last_run.setdefault(event_type, {})
+    last_run[event_type]["last_fetch_ids"] = [event["event_id"] for event in deduped_events]
+    last_run[event_type]["last_fetch_max_epoch"] = max_epoch
 
     return deduped_events
 
@@ -345,12 +340,12 @@ def poc_get_all_events(client: Client, last_run: dict, all_event_types: list, li
         dict: The updated last_run object.
     """
     remove_unsupported_event_types(last_run, client.event_types_to_fetch)
-    epoch_current_time = int(arg_to_datetime("now").timestamp())  # type: ignore[union-attr]
+    epoch_current_time = str(int(arg_to_datetime("now").timestamp()))  # type: ignore[union-attr]
 
     for event_type in client.event_types_to_fetch:
         # event_type_operation = last_run.get(event_type, {}).get('operation')
-        epoch_starttime = arg_to_number(last_run.get(event_type, {}).get("last_fetch_max_epoch", "")) or int(
-            arg_to_datetime("1 Month").timestamp()  # type: ignore[union-attr]
+        epoch_starttime = last_run.get(event_type, {}).get("last_fetch_max_epoch", "") or str(
+            object=int(arg_to_datetime("1 Month").timestamp())  # type: ignore[union-attr]
         )
         query = f"_creation_timestamp gte {epoch_starttime}"  # TODO: add some sorting by '_creation_timestamp' key
         params = assign_params(limit=limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time, query=query)
@@ -359,7 +354,7 @@ def poc_get_all_events(client: Client, last_run: dict, all_event_types: list, li
         results = response.get("result", [])
         demisto.debug(f"The number of received events - {len(results)}")
 
-        deduped_events = poc_prepare_events(results, event_type, last_run)
+        deduped_events = poc_prepare_events(results, event_type, last_run, epoch_starttime)
         all_event_types.extend(deduped_events)
 
     return last_run
