@@ -2,7 +2,7 @@
     "name": "SaaS Security by Palo Alto Networks",
     "description": "SaaS Security connects directly to your sanctioned SaaS applications to provide data classification, sharing and permission visibility, and threat detection.",
     "support": "xsoar",
-    "currentVersion": "2.0.36",
+    "currentVersion": "2.0.39",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
