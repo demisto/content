@@ -18,7 +18,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 TIME_FORMAT_Z = "%Y-%m-%dT%H:%M:%SZ"
 V1_URL_SUFFIX = "/public_api/v1"
 V2_URL_SUFFIX = "/public_api/v2"
-PACK_VERSION = get_pack_version()
+PACK_VERSION = "1.2.6"
 DEMISTO_VERSION = demisto.demistoVersion()
 SEVERITY_DICT = {
     'informational': IncidentSeverity.INFO,
