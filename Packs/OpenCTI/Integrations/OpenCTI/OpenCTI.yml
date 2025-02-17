@@ -784,7 +784,7 @@ script:
       description: Indicator type name.
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.description
       description: Indicator type description.
-  dockerimage: demisto/vendors-sdk:1.0.0.110574
+  dockerimage: demisto/vendors-sdk:1.0.0.2432953
   runonce: false
   script: '-'
   subtype: python3
