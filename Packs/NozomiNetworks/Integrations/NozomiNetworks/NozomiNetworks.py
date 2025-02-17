@@ -77,7 +77,7 @@ class Client:
         status_code = response.status_code
 
         if status_code in (401, 403):
-            raise Exception(f"Authentication failure or resource forbidden.")
+            raise Exception("Authentication failure or resource forbidden.")
 
         if status_code not in (200, 201, 202, 204):
             demisto.info(f"Unexpected status code: {status_code}, path {path} Returning empty JSON.")
@@ -223,7 +223,8 @@ def ack_unack_alerts(ids, status, client):
     data = []
     for id in ids:
         data.append({'id': id, 'ack': status})
-    client.http_post_request('/api/open/alerts/ack', {'data': data})
+    if data:
+        client.http_post_request('/api/open/alerts/ack', {'data': data})
 
 
 def ack_alerts(ids, client):

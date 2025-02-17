@@ -142,6 +142,12 @@ def test_response_with_error():
     assert ack_unack_alerts(ids=[1, 2, 3], status=True, client=client) is None
 
 
+def test_ack_unack_alerts_no_call_for_empty_data():
+    client = MagicMock()
+    ack_unack_alerts([], True, client)
+    client.http_post_request.assert_not_called()
+
+
 def test_incidents_filtered(requests_mock):
     fi, lr = incidents(
         '1392048082000',
