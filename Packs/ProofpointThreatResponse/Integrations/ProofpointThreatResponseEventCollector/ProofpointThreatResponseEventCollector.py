@@ -11,6 +11,8 @@ urllib3.disable_warnings()
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 PRODUCT = 'threat_response'
 VENDOR = 'proofpoint'
+FIRST_ID = '0'
+LOOKBACK_OPTIONS = ['1 day', '2 days', '3 days']
 
 
 class Client(BaseClient):
@@ -83,10 +85,15 @@ def create_incidents_human_readable(human_readable_message, incidents_list):
     return tableToMarkdown(human_readable_message, human_readable, human_readable_headers, removeNull=True)
 
 
-def list_incidents_command(client, args):
+def list_incidents_command(client, args, look_back):
     """ Retrieves incidents from ProofPoint API """
     limit = arg_to_number(args.pop('limit'))
-
+    
+    if 'created_after' not in args:
+        current = datetime.strptime(datetime.now(timezone.utc).strftime(TIME_FORMAT), TIME_FORMAT).replace(tzinfo=timezone.utc)
+        args['created_after'] = (current-get_lookback_delta(look_back)).strftime(TIME_FORMAT)
+        args["created_before"] = current.strftime(TIME_FORMAT)
+    
     raw_response = client.get_incidents_request(args)
 
     incidents_list = raw_response[:limit]
@@ -269,23 +276,34 @@ def get_incidents_batch_by_time_request(client, params):
     return incidents_list_limit
 
 
-def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta, incidents_states):
+def get_lookback_delta(look_back):
+    if look_back not in LOOKBACK_OPTIONS:
+        raise DemistoException(f'Maximum lookback should be one of the following: {LOOKBACK_OPTIONS}')
+    lst = look_back.split(' ')
+    return timedelta(days=int(lst[0]))
+
+
+def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta, incidents_states, look_back):
     """
         Fetches incidents from the ProofPoint API.
     """
     last_fetch = last_run.get('last_fetch', {})
     last_fetched_id = last_run.get('last_fetched_incident_id', {})
     current_ts = datetime.now(timezone.utc).strftime(TIME_FORMAT)
+    look_back_delta = get_lookback_delta(look_back)
 
     for state in incidents_states:
         if not last_fetch.get(state):
             last_fetch[state] = first_fetch
         if not last_fetched_id.get(state):
-            last_fetched_id[state] = '0'
+            last_fetched_id[state] = FIRST_ID
         
-        if datetime.strptime(current_ts, TIME_FORMAT).replace(tzinfo=timezone.utc)-datetime.strptime(last_fetch[state], TIME_FORMAT).replace(tzinfo=timezone.utc) > timedelta(days=3):
-            last_fetch[state] = (datetime.strptime(current_ts, TIME_FORMAT).replace(tzinfo=timezone.utc) - timedelta(days=3)).strftime(TIME_FORMAT)
-            demisto.debug(f'last_fetch of state {state} is older than 3 days, setting last_fetch to current time - 3 days')
+        utc_str_current = datetime.strptime(current_ts, TIME_FORMAT).replace(tzinfo=timezone.utc)
+        utc_str_last_fetch = datetime.strptime(last_fetch[state], TIME_FORMAT).replace(tzinfo=timezone.utc)
+        if utc_str_current - utc_str_last_fetch > look_back_delta:
+            last_fetch[state] = (utc_str_current - look_back_delta).strftime(TIME_FORMAT)
+            demisto.debug(f'last_fetch of state {state} is older than 3 days, setting last_fetch to {utc_str_current}',
+                          f'- {look_back_delta} = {utc_str_current - look_back_delta}')
 
     incidents = []
     for state in incidents_states:
@@ -310,14 +328,14 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
     demisto.debug(f"End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id"
                   f" {str(last_fetched_id)}")
 
+    demisto.debug(f'Fetched {len(incidents)} events')
+    events = get_events_from_incidents(incidents)
+    
     last_run = {
         'last_fetch': last_fetch,
         'last_fetched_incident_id': last_fetched_id
     }
-
-    demisto.debug(f'Fetched {len(incidents)} events')
-
-    events = get_events_from_incidents(incidents)
+    
     return events, last_run
 
 
@@ -380,7 +398,7 @@ def main():  # pragma: no cover
     fetch_limit = params.get('fetch_limit', '100')
     fetch_delta = params.get('fetch_delta', '6 hours')
     incidents_states = argToList(params.get('states', ['new', 'open', 'assigned', 'closed', 'ignored']))
-
+    look_back = params.get('look_back', '1 day')
     demisto.debug(f'Command being called is {command}')
 
     try:
@@ -400,7 +418,7 @@ def main():  # pragma: no cover
 
         elif command == 'proofpoint-trap-get-events':
             should_push_events = args.pop('should_push_events')
-            events, human_readable, raw_response = list_incidents_command(client, args)
+            events, human_readable, raw_response = list_incidents_command(client, args, look_back)
             results = CommandResults(raw_response=raw_response, readable_output=human_readable)
             return_results(results)
             if argToBoolean(should_push_events):
@@ -420,6 +438,7 @@ def main():  # pragma: no cover
                 fetch_limit,
                 fetch_delta,
                 incidents_states,
+                look_back
             )
 
             send_events_to_xsiam(
