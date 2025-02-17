@@ -1504,7 +1504,7 @@ def issue_details_get_command(
         elif "ip_address" in entry:
             ip = entry.get("ip_address")
         elif "connection_attributes" in entry:
-            ip = entry.get("connection_attributes").get("dst_ip")
+            ip = entry.get("connection_attributes", {}).get("dst_ip")
         else:
             ip = ""
 
@@ -1513,14 +1513,14 @@ def issue_details_get_command(
         elif "scheme" in entry:
             protocol = entry.get("scheme")
         elif "connection_attributes" in entry:
-            protocol = entry.get("connection_attributes").get("protocol")
+            protocol = entry.get("connection_attributes", {}).get("protocol")
         else:
             protocol = ""
 
         if "port" in entry:
             port = entry.get("port")
         elif "connection_attributes" in entry:
-            port = entry.get("connection_attributes").get("dst_port")
+            port = entry.get("connection_attributes", {}).get("dst_port")
         else:
             port = ""
 
