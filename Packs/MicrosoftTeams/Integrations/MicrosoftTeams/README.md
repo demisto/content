@@ -243,6 +243,8 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
    - ChatMessage.Send
    - ChannelSettings.ReadWrite.All
    - ChannelMember.Read.All
+   - ChannelMember.ReadWrite.All
+   - TeamsAppInstallation.ReadWriteForTeam
 9. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
 
 
@@ -282,23 +284,27 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 ##### Authentication Using the Client Credentials Flow
 
 1. Choose the 'Client Credentials' option in the *Authentication Type* parameter.
-2. Enter your Client/Application ID in the *Bot ID* parameter. 
+2. Enter your Client/Application ID in the *Bot ID* parameter.
 3. Enter your Client Secret in the *Bot Password* parameter.
-4. Save the instance.
-5. Click **Test** to validate the URLs, token, and connection.
-6. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
+4. Set the *Default team* and the *Notifications channel* parameters.
+5. Set the *Long running instance* parameter to 'True'.
+6. Save the instance.
+7. Click **Test** to validate the URLs, token, and connection.
+8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
 
 ##### Authentication Using the Authorization Code Flow
 
 1. Choose the 'Authorization Code' option in the *Authentication Type* parameter.
-2. Enter your Client/Application ID in the *Bot ID* parameter. 
+2. Enter your Client/Application ID in the *Bot ID* parameter.
 3. Enter your Client Secret in the *Bot Password* parameter.
 4. Enter your Application redirect URI in the *Application redirect URI* parameter.
-5. Save the instance.
-6. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
-7. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
-8. Save the instance.
-9. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
+5. Set the *Default team* and the *Notifications channel* parameters.
+6. Set the *Long running instance* parameter to 'True'.
+7. Save the instance.
+8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
+9. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
+10. Save the instance.
+11. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
 
 ### Add the Demisto Bot to a Team
@@ -315,9 +321,9 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 6. In the `webApplicationInfo`, replace the value of `id` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
 7. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
 8. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
-9. Click the **+Upload** button.
+9. Click the **Actions** button and then the **+ Upload new app** button.
 10. In the pop-up window, click the **Upload** button.
-11. Browse for the ZIP file you created in step 5, open it, and wait a few seconds until it loads.
+11. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
 12. Search for **Demisto Bot**.
 13. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
 14. Click the **Add to team** button.
@@ -341,10 +347,14 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### send-notification
+
 ***
 Sends a message to the specified teams.
-To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
+To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;.
 
+If sending a reply to a message, the message ID must be provided and the reply will be sent via the Graph API which means
+the message will appear from the account used to authorize the integration instance and not the bot. Setting the account's name
+and picture to match the bot will make it appear to be from the same source.
 
 ##### Base Command
 
@@ -356,20 +366,22 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 
 ##### Input
 
-| **Argument Name** | **Description**                                                                                                                                                         | **Required** |
-|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| channel           | The channel to which to send messages. Supports only standard channels.                                                                                                 | Optional     | 
-| message           | The message to send to the channel or team member.                                                                                                                      | Optional     | 
-| team_member       | Display name or email address of the team member to send the message to.                                                                                                | Optional     | 
-| team              | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional     | 
-| adaptive_card     | The Microsoft Teams adaptive card to send.                                                                                                                              | Optional     | 
-| to                | The team member to which to send the message.                                                                                                                           | Optional     | 
-| external_form_url_header                | The header of an external form hyperlink.message.                                                                                                                           | Optional     | 
-
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The channel to which to send messages. Supports only standard channels. | Optional | 
+| message | The message to send to the channel or team member. | Optional | 
+| team_member | Display name or email address of the team member to send the message to. | Optional | 
+| team | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional | 
+| message_id | ID of the message to send the notification to as a reply when sending to a channel. | Optional | 
+| adaptive_card | The Microsoft Teams adaptive card to send. | Optional | 
+| to | The team member to which to send the message. | Optional | 
+| external_form_url_header | The header of an external form hyperlink. Default is Microsoft Teams Form. | Optional | 
 
 ##### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.Message.ID | String | ID of the message sent. | 
 
 ##### Command Example
 ```!send-notification channel=General message="hello world!" team=DemistoTeam```
@@ -1103,9 +1115,9 @@ There is no context output for this command.
 ***
 Run this command if for some reason you need to rerun the graph authentication process.
 Notes:
-- Use this command to switch between authentication flows and ensure the integration uses the appropriate token.
 - After making changes to permissions in the Azure Portal, reset the authentication to ensure that the token reflects the updated permissions.
-- When using the `Authorization Code Flow`, after executing the command, regenerate the **Authorization code** parameter, and then run the *!microsoft-teams-auth-test* command to verify the authentication.
+- This command is triggered automatically when an authentication flow type switch is detected. The auto resetting ensures the integration uses the appropriate token.
+- When switching the authentication type to the `Authorization Code Flow`, this command will be triggered automatically. Then you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
 
 #### Base Command
 
@@ -1176,6 +1188,38 @@ There is no context output for this command.
 > The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the prerequisites of the integration's setup.
 > For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
 
+### microsoft-teams-message-update
+
+***
+Updates a message.
+
+##### Base Command
+
+`microsoft-teams-message-update`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message_id | ID of the message to update. Also referred to as Activity ID. | Required | 
+| team | The team in which the specified message exists. | Optional | 
+| channel | The channel in which the specified message exists. | Optional | 
+| message | The new message content. | Optional | 
+| team_member | The team member the message to be edited was sent to. | Optional | 
+| format_as_card | Whether or not an adaptive card is being updated. | Optional | 
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.Message.ID | String | ID of the message sent. | 
+
+
+##### Command Example
+```!microsoft-teams-message-update message_id=1737151779 team=MyTeam channel=General message="New message"```
+
+##### Human Readable Output
+Message was sent successfully.
 
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
@@ -1225,7 +1269,8 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, it means the AAD application has insufficient permissions. 
 To retrieves the API permissions associated with the used graph access token you can run the `microsoft-teams-token-permissions-list` command ([microsoft-teams-token-permissions-list documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-token-permissions-list)).
-Compare the permissions list obtained for the token with the permissions required for the command you wish to execute (can be found in the command documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)).
+Compare the permissions list obtained for the token with the permissions required for the command you wish to execute (can be found in the command documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)). 
+If your authentication type is the `Authorization Code Flow`, after running the `microsoft-teams-auth-reset` command you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
 
 3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
 

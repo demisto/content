@@ -1363,7 +1363,7 @@ class CoreClient(BaseClient):
             resp_type='response',
         )
 
-    def action_status_get(self, action_id) -> Dict[str, Any]:
+    def action_status_get(self, action_id) -> Dict[str, Dict[str, Any]]:
         request_data: Dict[str, Any] = {
             'group_action_id': action_id,
         }
@@ -1376,7 +1376,7 @@ class CoreClient(BaseClient):
         )
         demisto.debug(f"action_status_get = {reply}")
 
-        return reply.get('reply').get('data')
+        return reply.get('reply')
 
     @logger
     def get_file(self, file_link):
@@ -1757,6 +1757,7 @@ def run_polling_command(client: CoreClient,
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
     if values_raise_error and result in values_raise_error:
+        return_results(command_results)
         raise DemistoException(f"The command {cmd} failed. Received status {result}")
     if cond:
         # schedule next poll
@@ -1959,22 +1960,36 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
     demisto.debug(f'action_status_get_command {action_id_list=}')
     result = []
     for action_id in action_id_list:
-        data = client.action_status_get(action_id)
+        reply = client.action_status_get(action_id)
+        data = reply.get('data') or {}
+        error_reasons = reply.get('errorReasons', {})
 
         for endpoint_id, status in data.items():
-            result.append({
+            action_result = {
                 'action_id': action_id,
                 'endpoint_id': endpoint_id,
                 'status': status,
-            })
+            }
+            if error_reason := error_reasons.get(endpoint_id):
+                action_result['ErrorReasons'] = error_reason
+                action_result['error_description'] = (error_reason.get('errorDescription')
+                                                      or get_missing_files_description(error_reason.get('missing_files'))
+                                                      or 'An error occurred while processing the request.')
+            result.append(action_result)
 
     return CommandResults(
-        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
+                                        headers=['action_id', 'endpoint_id', 'status', 'error_description']),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
                        f'GetActionStatus(val.action_id == obj.action_id)',
         outputs=result,
         raw_response=result
     )
+
+
+def get_missing_files_description(missing_files):
+    if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):
+        return missing_files[0].get('description')
 
 
 def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
@@ -2787,19 +2802,29 @@ def get_audit_agent_reports_command(client, args):
 def get_distribution_url_command(client, args):
     distribution_id = args.get('distribution_id')
     package_type = args.get('package_type')
+    download_package = argToBoolean(args.get('download_package', False))
 
     url = client.get_distribution_url(distribution_id, package_type)
 
-    return (
-        f'[Distribution URL]({url})',
-        {
-            f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution(val.id == obj.id)': {
+    if download_package and package_type not in ['x64', 'x86']:
+        raise DemistoException("`download_package` argument can be used only for package_type 'x64' or 'x86'.")
+
+    if not download_package:
+        return CommandResults(
+            outputs={
                 'id': distribution_id,
                 'url': url
-            }
-        },
-        url
-    )
+            },
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution',
+            outputs_key_field='id',
+            readable_output=f'[Distribution URL]({url})'
+        )
+
+    return download_installation_package(client,
+                                         url,
+                                         package_type,
+                                         distribution_id,
+                                         args.get("integration_context_brand", "CoreApiModule"))
 
 
 def get_distribution_status_command(client, args):
@@ -2821,6 +2846,32 @@ def get_distribution_status_command(client, args):
         },
         distribution_list
     )
+
+
+def download_installation_package(client, url: str, package_type: str, distribution_id: str, brand: str):
+    dist_file_contents = client._http_request(
+        method='GET',
+        full_url=url,
+        resp_type="content"
+    )
+    if package_type in ["x64", "x86"]:
+        file_ext = "msi"
+    else:
+        file_ext = "zip"
+    file_result = fileResult(
+        filename=f"xdr-agent-install-package.{file_ext}",
+        data=dist_file_contents
+    )
+    result = CommandResults(
+        outputs={
+            'id': distribution_id,
+            'url': url
+        },
+        outputs_prefix=f'{brand}.Distribution',
+        outputs_key_field='id',
+        readable_output="Installation package downloaded successfully."
+    )
+    return [file_result, result]
 
 
 def get_process_context(alert, process_type):
@@ -4455,7 +4506,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
 
     else:
-        list_limit = int(args.get('limit', 50))
+        list_limit = int(args.get('limit', 10))
 
         try:
             outputs = get_func().get('reply', [])[:list_limit]

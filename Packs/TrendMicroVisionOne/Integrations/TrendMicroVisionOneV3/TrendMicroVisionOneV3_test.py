@@ -1414,6 +1414,7 @@ def test_update_status(mocker):
         "workbench_id": "WB-20837-20220418-00000",
         "if_match": "d41d8cd98f00b204e9800998ecf8427e",
         "status": "in_progress",
+        "inv_result": "no_findings",
     }
     result = update_status(client, args)
     assert result.outputs["code"] == 204

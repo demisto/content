@@ -2,16 +2,22 @@
     "name": "MongoDB Atlas",
     "description": "Cloud-based database service for deploying, managing, and scaling MongoDB clusters.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Database"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
     "keywords": [
+        "mongo",
+        "db",
+        "atlas",
         "event collector"
     ],
     "marketplaces": [

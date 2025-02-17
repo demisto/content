@@ -790,7 +790,7 @@ def get_remote_data_command(client, args):
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": f'Lumu Portal : {lumu_actions[0]["comment"]}',
+                    "closeReason": f'Lumu Portal : {lumu_actions[0]["comment"]}',  # type: ignore[index]
                 },
                 "ContentsFormat": EntryFormat.JSON,
             }

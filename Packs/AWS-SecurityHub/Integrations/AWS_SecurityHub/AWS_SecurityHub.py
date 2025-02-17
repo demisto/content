@@ -992,7 +992,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], res
             }
         demisto.debug(f'The {resolve_findings=} ,{parsed_args.inc_status=}')
         if parsed_args.inc_status == IncidentStatus.DONE and resolve_findings:
-            kwargs['Workflow']['Status'] = 'RESOLVED'
+            kwargs['Workflow']['Status'] = 'RESOLVED'  # type: ignore[index]
             parsed_args.data['Workflow.Status'] = ['RESOLVED']
             demisto.debug(f"{parsed_args.data['Workflow.Status']=}")
 
@@ -1053,8 +1053,7 @@ def main():  # pragma: no cover
             role_session_duration=args.get('roleSessionDuration')
         )
 
-        LOG('Command being called is {command}'.format(
-            command=command))
+        LOG(f'Command being called is {command}')
 
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
@@ -1092,8 +1091,7 @@ def main():  # pragma: no cover
         return_outputs(human_readable, outputs, response)
 
     except Exception as e:
-        return_error('Error has occurred in the AWS securityhub Integration: {code} {message}'.format(
-            code=type(e), message=e), error=e)
+        return_error(f'Error has occurred in the AWS securityhub Integration: {type(e)} {e}', error=e)
 
 
 from AWSApiModule import *  # noqa: E402

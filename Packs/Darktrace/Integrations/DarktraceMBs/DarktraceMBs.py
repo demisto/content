@@ -5,7 +5,7 @@ import hmac
 import json
 import time
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any, cast
 from collections.abc import Mapping
 
@@ -29,14 +29,15 @@ COMMENT_BREACH = "/comments"
 
 MIN_SCORE_TO_FETCH = 0
 MAX_INCIDENTS_TO_FETCH = 50
-PLEASE_CONTACT = "Please contact your Darktrace representative."
+PLEASE_CONTACT = "Please create a ticket on the Darktrace Customer Portal."
 
 DARKTRACE_API_ERRORS = {
     'SIGNATURE_ERROR': 'API Signature Error. You have invalid credentials in your config.',
     'DATE_ERROR': 'API Date Error. Check that the time on this machine matches that of the Darktrace instance.',
-    'ENDPOINT_ERROR': f'Invalid Endpoint. - {PLEASE_CONTACT}',
+    'ENDPOINT_ERROR': f'Invalid Endpoint. {PLEASE_CONTACT}',
     'PRIVILEGE_ERROR': 'User has insufficient permissions to access the API endpoint.',
-    'UNDETERMINED_ERROR': f'Darktrace was unable to process your request - {PLEASE_CONTACT}',
+    'UNDETERMINED_ERROR': f'Darktrace was unable to process your request. {PLEASE_CONTACT}',
+    'DATA_NOT_FOUND_ERROR': 'Darktrace was unable to find the requested data.',
     'FAILED_TO_PARSE': 'N/A'
 }
 
@@ -115,23 +116,33 @@ class Client(BaseClient):
         if res.status_code == 400:
             values = res.json().values()
             if 'API SIGNATURE ERROR' in values:
-                raise Exception(DARKTRACE_API_ERRORS['SIGNATURE_ERROR'])
+                raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['SIGNATURE_ERROR']}")
             elif 'API DATE ERROR' in values:
-                raise Exception(DARKTRACE_API_ERRORS['DATE_ERROR'])
+                raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['DATE_ERROR']}")
+        elif res.status_code == 404:
+            try:
+                res_json = res.json()
+                error = res_json.get("error", False)
+                if error:
+                    raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['DATA_NOT_FOUND_ERROR']} {error}.")
+                else:
+                    raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['DATA_NOT_FOUND_ERROR']}")
+            except json.JSONDecodeError:
+                raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['DATA_NOT_FOUND_ERROR']}")
         elif res.status_code == 302:
             # Valid hmac but invalid endpoint (should not happen)
             if res.text == 'Found. Redirecting to /login':
-                raise Exception(DARKTRACE_API_ERRORS['ENDPOINT_ERROR'])
+                raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['ENDPOINT_ERROR']}")
             # Insufficient permissions but valid hmac
             elif res.text == 'Found. Redirecting to /403':
-                raise Exception(DARKTRACE_API_ERRORS['PRIVILEGE_ERROR'])
+                raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['PRIVILEGE_ERROR']}")
         elif res.status_code >= 300:
-            raise Exception(DARKTRACE_API_ERRORS['UNDETERMINED_ERROR'])
+            raise Exception(f"{res.status_code} - {DARKTRACE_API_ERRORS['UNDETERMINED_ERROR']}")
 
     def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> dict[str, str]:
         """Create headers required for successful authentication"""
         public_token, _ = self._auth
-        date = (datetime.now(timezone.utc)).isoformat(timespec="auto")
+        date = (datetime.now(UTC)).isoformat(timespec="auto")
         signature = _create_signature(self._auth, query_uri, date, query_data, is_json=is_json)
         return {'DTAPI-Token': public_token, 'DTAPI-Date': date, 'DTAPI-Signature': signature}
 
@@ -211,7 +222,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
         query_uri = f'{MODEL_BREACH_ENDPOINT}/{pbid}{ACK_BREACH}'
-        return self.post(query_uri, data={'acknowledge': 'true'})
+        return self.post(query_uri, json={"acknowledge": "true"})
 
     def unacknowledge_model_breach(self, pbid: str) -> dict[str, Any]:
         """Unacknowledges a modelbreach using '/modelbreaches/<pbid>/unacknowledge?unacknowledge=true'
@@ -221,7 +232,7 @@ class Client(BaseClient):
         :rtype: ```Dict[str, Any]``
         """
         query_uri = f"{MODEL_BREACH_ENDPOINT}/{pbid}{UNACK_BREACH}"
-        return self.post(query_uri, data={"unacknowledge": "true"})
+        return self.post(query_uri, json={"unacknowledge": "true"})
 
     def post_comment_to_model_breach(self, pbid: str, comment: str) -> dict[str, Any]:
         """Posts a comment to a model breach'
@@ -702,19 +713,22 @@ def acknowledge_model_breach_command(client: Client, args: dict[str, Any]) -> Co
     pbid = str(args['pbid'])
 
     ack_response = client.acknowledge_model_breach(pbid=pbid)
-    if ack_response["response"] != "SUCCESS":
-        ack_response["response"] = "Model Breach already acknowledged."
+    ack_output: Dict[str, Any] = {}
+
+    if "response" in ack_response and ack_response["response"] == "SUCCESS":
+        ack_output["response"] = "Successfully acknowledged."
+    elif "replicate" in ack_response and ack_response['replicate'] is True:
+        ack_output["response"] = "Successfully acknowledged."
     else:
-        ack_response["response"] = "Successfully acknowledged."
-    ack_response['pbid'] = int(pbid)
-    ack_response['acknowledged'] = "True"
-    readable_output = tableToMarkdown(f'Model Breach {pbid} Acknowledged', ack_response)
+        ack_output["response"] = "Model Breach already acknowledged."
+    ack_output['pbid'] = int(pbid)
+    readable_output = tableToMarkdown(f'Model Breach {pbid} Acknowledged', ack_output)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Darktrace.ModelBreach',
         outputs_key_field='pbid',
-        outputs=ack_response
+        outputs=ack_output
     )
 
 
@@ -739,19 +753,22 @@ def unacknowledge_model_breach_command(client: Client, args: dict[str, Any]) -> 
     pbid = str(args.get('pbid', None))
 
     ack_response = client.unacknowledge_model_breach(pbid=pbid)
-    if ack_response['response'] != 'SUCCESS':
-        ack_response['response'] = 'Model Breach already unacknowledged.'
+    ack_output: Dict[str, Any] = {}
+
+    if "response" in ack_response and ack_response["response"] == "SUCCESS":
+        ack_output["response"] = "Successfully unacknowledged."
+    elif "replicate" in ack_response and ack_response['replicate'] is True:
+        ack_output["response"] = "Successfully unacknowledged."
     else:
-        ack_response['response'] = 'Successfully unacknowledged.'
-    ack_response['pbid'] = int(pbid)
-    ack_response['acknowledged'] = 'False'
-    readable_output = tableToMarkdown(f'Model Breach {pbid} Acknowledged', ack_response)
+        ack_output["response"] = "Model Breach already unacknowledged."
+    ack_output['pbid'] = int(pbid)
+    readable_output = tableToMarkdown(f'Model Breach {pbid} Unacknowledged', ack_output)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Darktrace.ModelBreach',
         outputs_key_field='pbid',
-        outputs=ack_response
+        outputs=ack_output
     )
 
 

@@ -153,7 +153,7 @@ script:
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.80547
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
 fromversion: 5.5.0
 tests:
 - Audit Log - Test

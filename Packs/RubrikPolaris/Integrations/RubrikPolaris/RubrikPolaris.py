@@ -10,6 +10,7 @@ import urllib3
 import traceback
 from datetime import date
 import jwt
+import re
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -45,6 +46,7 @@ DEFAULT_SORT_BY_SLA_DOMAIN = "NAME"
 DEFAULT_CLUSTER_SORT_BY = "ClusterName"
 DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version(pack_name='') or '1.2.0'}"
 DEFAULT_PRINCIPAL_SUMMARY_CATEGORY = "USERS_WITH_SENSITIVE_ACCESS"
+DEFAULT_RELIABILITY = "A - Completely reliable"
 SCAN_ID = "Scan ID"
 SNAPSHOT_ID = "Snapshot ID"
 START_TIME = "Start Time"
@@ -95,6 +97,12 @@ HIGH_RISK_HITS = "High Risk Hits"
 MEDIUM_RISK_HITS = "Medium Risk Hits"
 LOW_RISK_HITS = "Low Risk Hits"
 POLICY_NAME = "Policy Name"
+VENDOR_NAME = "Rubrik Security Cloud"
+GENERAL_INFO_KEY = "generalInfo"
+SENSITIVE_INFO_KEY = "sensitiveInfo"
+ANOMALY_INFO_KEY = "anomalyInfo"
+THREAT_HUNT_INFO_KEY = "threatHuntInfo"
+THREAT_MONITORING_INFO_KEY = "threatMonitoringInfo"
 
 DAILY_HITS_CHANGE = "Daily Hits Change"
 START_CURSOR = "Start Cursor"
@@ -113,7 +121,10 @@ MESSAGES = {
     'NEXT_PAGE_TOKEN': ('Note: To retrieve the next set of results, use **next_page_token** = "{}".'
                         '\nIf **next_page_token** is provided, then it will reset the record numbers. '
                         'For the initial use of **next_page_token**, please avoid specifying the **page_number**.'),
-    'NO_RESPONSE': "No response was returned for the given argument(s)."
+    'NO_RESPONSE': "No response was returned for the given argument(s).",
+    'IP_NOT_FOUND': "No details found for IP: \"{}\".",
+    'DOMAIN_NOT_FOUND': "No details found for domain: \"{}\".",
+    'NO_OBJECT_FOUND': "No Objects Found",
 }
 
 OUTPUT_PREFIX = {
@@ -152,6 +163,8 @@ OUTPUT_PREFIX = {
     "FILE_CONTEXT": "RubrikPolaris.FileContext",
     "PAGE_TOKEN_FILE_CONTEXT": "RubrikPolaris.PageToken.FileContext",
     "SUSPICIOUS_FILE": "RubrikPolaris.SuspiciousFile",
+    "IP": "RubrikPolaris.IP",
+    "DOMAIN": "RubrikPolaris.Domain",
 }
 
 ERROR_MESSAGES = {
@@ -180,6 +193,14 @@ ERROR_MESSAGES = {
                               "to specify the indicator to scan for.",
     "INVALID_FORMAT": "Invalid format for '{}', please check it's format in the argument's help-text. ",
     "IP_ADDRESS_REQUIRED": "IP Address is required for fetching snapshot files download results command"
+}
+
+DBOT_SCORE_MAPPING = {
+    'unknown': 0,  # Unknown
+    'no risk': 1,  # Good
+    'low': 1,  # Good
+    'medium': 2,  # Suspicious
+    'high': 3  # Bad
 }
 
 TOKEN_EXPIRY_TIME_SPAN = 86400
@@ -926,10 +947,10 @@ def prepare_context_hr_vm_object_list(response: dict):
             else None,
             "RBS Status": node.get('agentStatus', {}).get('agentStatus', "") if node.get('agentStatus') else None,
             "Source Storage": convert_bytes(
-                node.get('reportSnappable', {}).get('archiveStorage', "") if node.get('reportSnappable')
+                node.get('reportSnappable', {}).get('archiveStorage', "") if node.get('reportSnappable')  # type: ignore[arg-type]
                 else None),
             "Archival Storage": convert_bytes(
-                node.get('reportSnappable', {}).get('physicalBytes', "") if node.get('reportSnappable')
+                node.get('reportSnappable', {}).get('physicalBytes', "") if node.get('reportSnappable')  # type: ignore[arg-type]
                 else None)
         })
         context.append(remove_empty_elements(node))
@@ -1038,7 +1059,7 @@ def prepare_context_hr_vm_object_snapshot(response: dict):
                                            f" {node.get('groupByInfo').get('end')}",
                        SNAPSHOT_IDS: []}
             ids = []
-            for sub_node in sub_nodes:
+            for sub_node in sub_nodes:  # type: ignore[union-attr]
                 ids.append(sub_node.get("id"))
             hr_data[SNAPSHOT_IDS] = ids
             hr.append(hr_data)
@@ -2092,6 +2113,70 @@ def prepare_context_hr_suspicious_file_list(snappable_investigations_data: dict,
     return context, f"{anomaly_hr}\n\n{suspicious_file_hr}"
 
 
+def prepare_score_and_hr_for_reputation_command(response: dict, indicator_value: str, indicator_type: str) -> tuple[int, str]:
+    """
+    Prepare severity score and human-readable response for generic reputation command.
+
+    :type response: ``dict``
+    :param response: IP response received from the API.
+
+    :type indicator_value: ``str``
+    :param indicator_value: Indicator value.
+
+    :type indicator_type: ``str``
+    :param indicator_type: Indicator type.
+
+    :return: Severity score and human-readable for the command.
+    """
+    sensitive_info = response.get(SENSITIVE_INFO_KEY, {})
+    severity_str = sensitive_info.get('riskLevel', 'unknown').lower()
+    if 'none' in severity_str:
+        severity_str = 'unknown'
+    severity_score: int = DBOT_SCORE_MAPPING.get(severity_str, 0)
+    general_info = response.get(GENERAL_INFO_KEY, {})
+    severity_str = severity_str.replace(' risk', '')
+    human_readable = tableToMarkdown(f'General Information for the given {severity_str} risk {indicator_type}: {indicator_value}',
+                                     general_info, removeNull=True, headerTransform=pascalToSpace,
+                                     url_keys=["redirectLink"])
+    human_readable += '\n' + tableToMarkdown(
+        'Sensitive Information', sensitive_info, headerTransform=pascalToSpace,
+        removeNull=True, url_keys=["redirectLink"]) if sensitive_info else ''
+    anomalies_info = response.get(ANOMALY_INFO_KEY, {})
+    human_readable += '\n' + tableToMarkdown(
+        'Anomaly Information', anomalies_info,
+        headerTransform=pascalToSpace, removeNull=True, url_keys=["redirectLink"]) if anomalies_info else ''
+    threat_hunt_info = response.get(THREAT_HUNT_INFO_KEY, {})
+    human_readable += '\n' + tableToMarkdown(
+        'Threat Hunt Information', threat_hunt_info,
+        headerTransform=pascalToSpace, removeNull=True, url_keys=["redirectLink"]) if threat_hunt_info else ''
+    threat_monitoring_info = response.get(THREAT_MONITORING_INFO_KEY, {})
+    human_readable += '\n' + tableToMarkdown(
+        'Threat Monitoring Information', threat_monitoring_info, headerTransform=pascalToSpace,
+        removeNull=True, url_keys=["redirectLink"]) if threat_monitoring_info else ''
+
+    return severity_score, human_readable
+
+
+def validate_ip_addresses(ips_list: List[str]) -> tuple[List[str], List[str]]:
+    '''
+    Given a list of IP addresses, returns the invalid and valid ips.
+
+    :type ips_list: ``List[str]``
+    :param ips_list: List of ip addresses.
+
+    :return: invalid_ip_addresses and valid_ip_addresses.
+    :rtype: ``Tuple[List[str], List[str]]``
+    '''
+    invalid_ip_addresses = []
+    valid_ip_addresses = []
+    for ip in ips_list:
+        if is_ip_valid(ip, accept_v6_ips=True):
+            valid_ip_addresses.append(ip)
+        else:
+            invalid_ip_addresses.append(ip)
+    return invalid_ip_addresses, valid_ip_addresses
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -2735,7 +2820,7 @@ def rubrik_sonar_ondemand_scan_result_command(client: PolarisClient, args: Dict[
                           raw_response=raw_response)
 
 
-def rubrik_radar_anomaly_csv_analysis_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+def rubrik_radar_anomaly_csv_analysis_command(client: PolarisClient, args: Dict[str, Any]) -> list[Union[CommandResults, Any]]:
     """
     Request for the analysis and retrieve the download link for the Radar CSV analyzed file.
 
@@ -2750,13 +2835,14 @@ def rubrik_radar_anomaly_csv_analysis_command(client: PolarisClient, args: Dict[
     cluster_id = validate_required_arg("cluster_id", args.get('cluster_id'))
     snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
     object_id = validate_required_arg("object_id", args.get("object_id"))
+    download_file = argToBoolean(args.get('download_file', False))
 
     response = client.get_csv_result(cluster_id=cluster_id, snappable_id=object_id, snapshot_id=snapshot_id)
 
     data = response.get("data", {})
     download_data = data.get('investigationCsvDownloadLink', {})
     if not download_data:
-        return CommandResults(readable_output=MESSAGES["NO_RESPONSE"])
+        return [CommandResults(readable_output=MESSAGES["NO_RESPONSE"])]
     context = {
         "clusterId": cluster_id,
         "snapshotId": snapshot_id,
@@ -2767,13 +2853,29 @@ def rubrik_radar_anomaly_csv_analysis_command(client: PolarisClient, args: Dict[
     hr = [f"Download the analyzed [CSV]({download_data.get('downloadLink')}) file."]
     readable_output = tableToMarkdown(table_name, hr, ["CSV Download Link"], removeNull=True)
 
-    return CommandResults(
+    result = [CommandResults(
         outputs_prefix=OUTPUT_PREFIX["RADAR_ANOMALY_CSV_ANALYSIS"],
         outputs_key_field=["clusterId", "snapshotId", "objectId"],
         outputs=context,
         raw_response=response,
         readable_output=readable_output
-    )
+    )]
+
+    if download_file:
+        file_content = requests.request("GET", download_data.get('downloadLink')).text
+        extract_file_name = re.search(r'[^\/]+\.csv', download_data.get('downloadLink'))
+        file_name = ''
+        if extract_file_name:
+            file_name = extract_file_name.group()
+
+        file_result = fileResult(
+            filename=file_name,
+            data=file_content
+        )
+
+        result.append(file_result)
+
+    return result
 
 
 def rubrik_sonar_csv_download_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
@@ -4012,6 +4114,164 @@ def rubrik_radar_suspicious_file_list_command(client: PolarisClient, args: Dict[
     return CommandResults(outputs=outputs, raw_response=raw_response, readable_output=hr)
 
 
+def ip_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResults]:
+    '''
+    Retrieve the detail information of given ip(s).
+
+    :type client: ``Client``
+    :param client: Object of Client class.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :rtype: ``List[CommandResults]``
+    :return: List of standard command result.
+    '''
+    ips_list = argToList(args.get('ip'))
+    ips = []
+
+    for raw_ip in ips_list:
+        ip = raw_ip.strip('\"').strip()
+        if ip:
+            ips.append(ip)
+
+    if not ips:
+        raise ValueError(ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('ip'))
+
+    invalid_ips, valid_ips = validate_ip_addresses(ips)
+    if invalid_ips:
+        return_warning('The following IP Addresses were found invalid: {}'.format(', '.join(invalid_ips)),
+                       exit=len(invalid_ips) == len(ips))
+
+    command_results = []
+
+    for ip in valid_ips:
+        raw_resp = requests.get(
+            f"{client._baseurl}/thirdparty/workload_summary",
+            params={"search_string": ip, "search_type": "ipv6" if is_ipv6_valid(ip) else "ipv4"},
+            headers=client.prepare_headers(),
+            verify=client._verify,
+            proxies=client._proxies,
+            timeout=60
+        )
+        raw_resp.raise_for_status()
+        response = raw_resp.json()
+
+        if MESSAGES["NO_OBJECT_FOUND"] in response.get(GENERAL_INFO_KEY, {}).get("fid", MESSAGES["NO_OBJECT_FOUND"]):
+            return_warning(MESSAGES["IP_NOT_FOUND"].format(ip))
+            continue
+
+        ip_response = deepcopy(response)
+        ip_response = remove_empty_elements(ip_response)
+        severity_score, ip_hr_output = prepare_score_and_hr_for_reputation_command(ip_response, ip, "IP")
+        ip_response["ip"] = ip
+
+        dbot_score = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name=VENDOR_NAME,
+            score=severity_score,
+            reliability=demisto.params().get('integration_reliability', DEFAULT_RELIABILITY)
+        )
+        dbot_score.integration_name = VENDOR_NAME
+
+        ip_indicator = Common.IP(
+            ip=ip,
+            updated_date=response.get('threatMonitoringInfo', {}).get(
+                'latestThreatMonitoring', {}).get('monitoringScanTime'),
+            dbot_score=dbot_score,
+        )
+
+        command_result = CommandResults(
+            outputs_prefix=OUTPUT_PREFIX['IP'],
+            outputs_key_field='ip',
+            outputs=ip_response,
+            raw_response=response,
+            readable_output=ip_hr_output,
+            indicator=ip_indicator,
+        )
+
+        command_results.append(command_result)
+
+    return command_results
+
+
+def domain_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResults]:
+    '''
+    Retrieve the detail information of given domain(s).
+
+    :type client: ``Client``
+    :param client: Object of Client class.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :rtype: ``List[CommandResults]``
+    :return: List of standard command result.
+    '''
+    domain_list = argToList(args.get('domain'))
+    domains = []
+
+    for raw_domain in domain_list:
+        domain = raw_domain.strip('\"').strip()
+        if domain:
+            domains.append(domain)
+
+    if not domains:
+        raise ValueError(ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('domain'))
+    command_results = []
+
+    for domain in domains:
+        raw_resp = requests.get(
+            f"{client._baseurl}/thirdparty/workload_summary",
+            params={"search_string": domain, "search_type": "name"},
+            headers=client.prepare_headers(),
+            verify=client._verify,
+            proxies=client._proxies,
+            timeout=60
+        )
+        raw_resp.raise_for_status()
+        response = raw_resp.json()
+
+        if MESSAGES["NO_OBJECT_FOUND"] in response.get(GENERAL_INFO_KEY, {}).get("fid", MESSAGES["NO_OBJECT_FOUND"]):
+            return_warning(MESSAGES["DOMAIN_NOT_FOUND"].format(domain))
+            continue
+
+        domain_response = deepcopy(response)
+        domain_response = remove_empty_elements(domain_response)
+        severity_score, domain_hr_output = prepare_score_and_hr_for_reputation_command(domain_response, domain, "domain")
+        domain_response["domain"] = domain
+
+        dbot_score = Common.DBotScore(
+            indicator=domain,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name=VENDOR_NAME,
+            score=severity_score,
+            reliability=demisto.params().get('integration_reliability', DEFAULT_RELIABILITY)
+        )
+        dbot_score.integration_name = VENDOR_NAME
+
+        domain_indicator = Common.Domain(
+            domain=domain,
+            updated_date=response.get('threatMonitoringInfo', {}).get(
+                'latestThreatMonitoring', {}).get('monitoringScanTime'),
+            dbot_score=dbot_score,
+        )
+
+        command_result = CommandResults(
+            outputs_prefix=OUTPUT_PREFIX['DOMAIN'],
+            outputs_key_field='domain',
+            outputs=domain_response,
+            raw_response=response,
+            readable_output=domain_hr_output,
+            indicator=domain_indicator,
+        )
+
+        command_results.append(command_result)
+
+    return command_results
+
+
 def trim_spaces_from_args(args):
     """
     Trim spaces from values of the args dict.
@@ -4140,6 +4400,8 @@ def main() -> None:
                 "rubrik-sonar-user-access-get": rubrik_sonar_user_access_get_command,
                 "rubrik-sonar-file-context-list": rubrik_sonar_file_context_list_command,
                 "rubrik-radar-suspicious-file-list": rubrik_radar_suspicious_file_list_command,
+                "ip": ip_command,
+                "domain": domain_command,
             }
             if COMMAND_TO_FUNCTION.get(demisto.command()):
                 args = demisto.args()

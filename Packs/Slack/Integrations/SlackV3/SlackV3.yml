@@ -50,6 +50,8 @@ configuration:
   name: permitted_notifications
   type: 16
   section: Collect
+  hidden:
+  - marketplacev2
   required: false
   options:
   - incidentAssigned
@@ -64,8 +66,9 @@ configuration:
   - failedFetchIncidents
   - mentionNew
   - mentionOld
+  - deprecatedContentInUse
   advanced: true
-  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
+  additionalinfo: Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).To enable use User (User Name) -> User Preferences -> Notifications
 - display: Type of incidents created in Slack
   name: incidentType
   type: 13
@@ -379,7 +382,7 @@ script:
     name: slack-rename-channel
   - arguments:
     - default: true
-      description: The Slack user (username or email).
+      description: The Slack user (username, email or user ID).
       name: user
       required: true
     description: Get details about a specified user.
@@ -500,7 +503,7 @@ script:
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  dockerimage: demisto/slackv3:1.0.0.112417
+  dockerimage: demisto/slackv3:1.0.0.117556
   longRunning: true
   runonce: false
   script: '-'

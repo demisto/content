@@ -71,7 +71,7 @@ class Client(CoreClient):
             method="POST",
             json_data={"asset_id": asset_id},
             headers=self._headers,
-            url_suffix="/unified-assets-inventory/get_asset/",
+            url_suffix="/unified-asset-inventory/get_asset/",
         )
         return reply
 
@@ -277,7 +277,7 @@ def main():  # pragma: no cover
                                                stop_polling=True))
 
         elif command == 'core-get-distribution-url':
-            return_outputs(*get_distribution_url_command(client, args))
+            return_results(get_distribution_url_command(client, args))
 
         elif command == 'core-get-create-distribution-status':
             return_outputs(*get_distribution_status_command(client, args))
@@ -512,7 +512,7 @@ def main():  # pragma: no cover
         elif command == 'core-terminate-process':
             if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
                                          build_number=TERMINATE_BUILD_NUM):
-                raise DemistoException('This command is only available for XSIAM 2.4')
+                raise DemistoException('This command is only available for XSIAM 2.4 and above')
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-process",
@@ -532,7 +532,7 @@ def main():  # pragma: no cover
         elif command == 'core-terminate-causality':
             if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
                                          build_number=TERMINATE_BUILD_NUM):
-                raise DemistoException("This command is only available for XSIAM 2.4")
+                raise DemistoException("This command is only available for XSIAM 2.4 and above")
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-causality",

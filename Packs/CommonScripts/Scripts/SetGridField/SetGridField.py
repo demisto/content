@@ -390,11 +390,11 @@ def main():  # pragma: no cover
         # we want to check if the incident was succefully updated
         # we execute command and not using `demisto.incident()` because we want to get the updated incident and context
         res = demisto.executeCommand("getIncidents", {"id": demisto.incident().get("id")})
-        custom_fields = {}
+        custom_fields: dict = {}
         for entry in res:
             if entry['Contents']:
                 data = entry["Contents"]["data"]
-                custom_fields = data[0].get("CustomFields") if data and data[0].get("CustomFields") else {}
+                custom_fields = data[0].get("CustomFields", {}) if data else {}
         # in the debugger, there is an addition of the "_grid" suffix to the grid_id.
         if is_xsiam_or_xsoar_saas() and table and grid_id not in custom_fields and f"{grid_id}_grid" not in custom_fields:
             raise ValueError(get_error_message(grid_id))

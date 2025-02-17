@@ -80,6 +80,6 @@ def test_advisory_to_indicator() -> None:
     mock_data = util_load_json("test_data/advisories4.json")
 
     result = advisory_to_indicator(mock_data["response"])
-    assert result["value"] == "CVE-2023-38802"
+    assert result["value"] == "CVE-2024-0012"
     assert result["type"] == "CVE"
     assert result["fields"] == mock_data["excepted_response"]["fields"]

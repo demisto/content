@@ -260,7 +260,7 @@ def test_unexpected_error_handle_results():
     assert result.startswith("Unexpected error occurred")
 
 
-def test_set_playbook_on_alerts_success(mocker):
+def test_set_playbook_on_alerts_flag_pending_idle_true_success(mocker):
     """
     GIVEN:
         A playbook ID, a list of alert IDs, and a playbooks dictionary.
@@ -279,14 +279,9 @@ def test_set_playbook_on_alerts_success(mocker):
     playbooks_dict = {playbook_id: "name of playbook"}
 
     mock_execute_command = mocker.patch.object(demisto, 'executeCommand')
-    mock_execute_command.return_value = [{
-        "Contents": {
-            "response": {}
-        }
-    }]
     mock_execute_command.return_value = [{'Contents': {'response': {}}}]
 
-    set_playbook_on_alerts(playbook_id, alert_ids, playbooks_dict, results_summary_instance)
+    set_playbook_on_alerts(playbook_id, alert_ids, playbooks_dict, results_summary_instance, True)
 
     mock_execute_command.assert_called_once_with(
         "core-api-post",
@@ -313,10 +308,32 @@ def test_set_playbook_on_alerts_invalid_playbook():
     alert_ids = ["alert1", "alert2"]
     playbooks_dict = {"playbook_123": "name of playbook"}
 
-    set_playbook_on_alerts(playbook_id, alert_ids, playbooks_dict, results_summary_instance)
+    set_playbook_on_alerts(playbook_id, alert_ids, playbooks_dict, results_summary_instance, False)
 
     assert playbook_id in results_summary_instance.results_summary["failure_set"]
     assert results_summary_instance.results_summary["failure_set"][playbook_id] == alert_ids
+
+
+def test_set_playbook_on_alerts_flag_pending_idle_false_success(mocker):
+    mock_execute_command = mocker.patch.object(demisto, 'executeCommand')
+    playbook_id = "test_playbook"
+    alert_ids = ["alert1", "alert2"]
+    playbooks_dict = {"test_playbook": "playbook_info"}
+    results_summary = mocker
+    flag_pending_idle = False
+
+    mock_execute_command.return_value = [{'Contents': {'response': {}}}]
+
+    set_playbook_on_alerts(
+        playbook_id, alert_ids, playbooks_dict,
+        results_summary, flag_pending_idle
+    )
+
+    for alert_id in alert_ids:
+        mock_execute_command.assert_any_call(
+            "core-api-post",
+            {"uri": f"/xsoar/inv-playbook/new/{playbook_id}/{alert_id}"}
+        )
 
 
 def test_loop_on_alerts_success(mocker):
@@ -340,7 +357,7 @@ def test_loop_on_alerts_success(mocker):
     mock_set_playbook_on_alerts = mocker.patch("TroubleshootExecutePlaybookByAlertQuery.set_playbook_on_alerts")
 
     loop_on_alerts(incidents, playbook_id, limit=15, reopen_closed_inv=False,
-                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance)
+                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance, flag_pending_idle=False)
 
     mock_set_playbook_on_alerts.assert_called()
     assert len(mock_set_playbook_on_alerts.call_args_list) == 2
@@ -373,7 +390,7 @@ def test_loop_on_alerts_with_closed_investigations(mocker):
     mock_set_playbook_on_alerts = mocker.patch("TroubleshootExecutePlaybookByAlertQuery.set_playbook_on_alerts")
 
     loop_on_alerts(incidents, playbook_id, limit=4, reopen_closed_inv=True,
-                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance)
+                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance, flag_pending_idle=False)
 
     assert mock_open_investigation.call_count == 1
 
@@ -401,7 +418,7 @@ def test_loop_on_alerts_empty_incidents(mocker):
     mock_set_playbook_on_alerts = mocker.patch("TroubleshootExecutePlaybookByAlertQuery.set_playbook_on_alerts")
 
     loop_on_alerts(incidents, playbook_id, limit=10, reopen_closed_inv=False,
-                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance)
+                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance, flag_pending_idle=False)
 
     mock_open_investigation.assert_not_called()
     mock_set_playbook_on_alerts.assert_not_called()
@@ -428,7 +445,7 @@ def test_loop_on_alerts_with_limit(mocker):
     mock_set_playbook_on_alerts = mocker.patch("TroubleshootExecutePlaybookByAlertQuery.set_playbook_on_alerts")
 
     loop_on_alerts(incidents, playbook_id, limit=10, reopen_closed_inv=False,
-                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance)
+                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance, flag_pending_idle=False)
 
     assert mock_set_playbook_on_alerts.call_count == 1
 
@@ -460,7 +477,7 @@ def test_loop_on_alerts_with_closed_investigations_not_reopening(mocker):
     mock_set_playbook_on_alerts = mocker.patch("TroubleshootExecutePlaybookByAlertQuery.set_playbook_on_alerts")
 
     loop_on_alerts(incidents, playbook_id, limit=4, reopen_closed_inv=False,
-                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance)
+                   playbooks_dict=playbooks_dict, results_summary=results_summary_instance, flag_pending_idle=False)
 
     mock_open_investigation.assert_not_called()
 
@@ -492,7 +509,7 @@ def test_split_by_playbooks_success(mocker):
     mock_loop_on_alerts = mocker.patch("TroubleshootExecutePlaybookByAlertQuery.loop_on_alerts")
 
     split_by_playbooks(incidents, limit=4, reopen_closed_inv=False,
-                       playbooks_dict=playbooks_dict, results_summary=results_summary_instance)
+                       playbooks_dict=playbooks_dict, results_summary=results_summary_instance, flag_pending_idle=False)
 
     assert mock_loop_on_alerts.call_count == 2
     mock_loop_on_alerts.assert_any_call(
@@ -501,7 +518,8 @@ def test_split_by_playbooks_success(mocker):
         4,
         False,
         playbooks_dict,
-        results_summary_instance
+        results_summary_instance,
+        False
     )
     mock_loop_on_alerts.assert_any_call(
         [{"id": "alert2", "playbookId": "playbook_456"}],
@@ -509,9 +527,10 @@ def test_split_by_playbooks_success(mocker):
         4,
         False,
         playbooks_dict,
-        results_summary_instance
+        results_summary_instance,
+        False
     )
-    assert "Could not find an attached playbook for alerts ['alert4']." in results_summary_instance.results_summary["others"]
+    assert "Could not find an attached playbook for alerts: ['alert4']." in results_summary_instance.results_summary["others"]
 
 
 def test_split_by_playbooks_missing_playbook(mocker):
@@ -539,7 +558,7 @@ def test_split_by_playbooks_missing_playbook(mocker):
     mock_loop_on_alerts = mocker.patch("TroubleshootExecutePlaybookByAlertQuery.loop_on_alerts")
 
     split_by_playbooks(incidents, limit=4, reopen_closed_inv=False,
-                       playbooks_dict=playbooks_dict, results_summary=results_summary_instance)
+                       playbooks_dict=playbooks_dict, results_summary=results_summary_instance, flag_pending_idle=False)
 
     assert mock_loop_on_alerts.call_count == 2
     mock_loop_on_alerts.assert_any_call(
@@ -548,7 +567,8 @@ def test_split_by_playbooks_missing_playbook(mocker):
         4,
         False,
         playbooks_dict,
-        results_summary_instance
+        results_summary_instance,
+        False
     )
     mock_loop_on_alerts.assert_any_call(
         [{"id": "alert3", "playbookId": "playbook_456"}],
@@ -556,10 +576,11 @@ def test_split_by_playbooks_missing_playbook(mocker):
         4,
         False,
         playbooks_dict,
-        results_summary_instance
+        results_summary_instance,
+        False
     )
 
-    assert "Could not find an attached playbook for alerts ['alert2', 'alert4']." in \
+    assert "Could not find an attached playbook for alerts: ['alert2', 'alert4']." in \
         results_summary_instance.results_summary["others"]
 
 
@@ -586,11 +607,11 @@ def test_split_by_playbooks_all_missing_playbooks(mocker):
     mock_loop_on_alerts = mocker.patch("TroubleshootExecutePlaybookByAlertQuery.loop_on_alerts")
 
     split_by_playbooks(incidents, limit=4, reopen_closed_inv=False,
-                       playbooks_dict=playbooks_dict, results_summary=results_summary_instance)
+                       playbooks_dict=playbooks_dict, results_summary=results_summary_instance, flag_pending_idle=False)
 
     assert mock_loop_on_alerts.call_count == 0
 
-    assert "Could not find an attached playbook for alerts ['alert1', 'alert2', 'alert3']." in \
+    assert "Could not find an attached playbook for alerts: ['alert1', 'alert2', 'alert3']." in \
         results_summary_instance.results_summary["others"]
 
 
@@ -620,7 +641,7 @@ def test_split_by_playbooks_limit(mocker):
     mock_loop_on_alerts = mocker.patch("TroubleshootExecutePlaybookByAlertQuery.loop_on_alerts")
 
     split_by_playbooks(incidents, limit=3, reopen_closed_inv=False,
-                       playbooks_dict=playbooks_dict, results_summary=results_summary_instance)
+                       playbooks_dict=playbooks_dict, results_summary=results_summary_instance, flag_pending_idle=False)
 
     assert mock_loop_on_alerts.call_count == 2
     mock_loop_on_alerts.assert_any_call(
@@ -629,7 +650,8 @@ def test_split_by_playbooks_limit(mocker):
         3,
         False,
         playbooks_dict,
-        results_summary_instance
+        results_summary_instance,
+        False
     )
     mock_loop_on_alerts.assert_any_call(
         [{'id': 'alert3', 'playbookId': 'playbook_456'}],
@@ -637,7 +659,8 @@ def test_split_by_playbooks_limit(mocker):
         3,
         False,
         playbooks_dict,
-        results_summary_instance
+        results_summary_instance,
+        False
     )
 
 
@@ -750,9 +773,8 @@ def test_generate_summary():
     expected_summary = (
         "Playbook Test Playbook 1 with ID 123 was set successfully for alerts: ['alert1', 'alert2'].\n"
         "Playbook Test Playbook 2 with ID 456 was set successfully for alerts: ['alert3'].\n"
-        "Playbook with ID 789 could not be executed for alerts: ['alert4'] due to failure "
-        "in creating an investigation playbook.\n"
-        "Playbook with ID 999 was not found for alerts ['alert5', 'alert6'].\n"
+        "Playbook with ID 789 could not be executed for alerts: ['alert4'].\n"
+        "Playbook with ID 999 was not found for alerts: ['alert5', 'alert6'].\n"
         "Alerts ['alert7', 'alert8'] have been reopened.\n"
         "Some other information here."
     )
@@ -760,44 +782,80 @@ def test_generate_summary():
     assert summary == expected_summary
 
 
-def test_update_success():
+def test_update_success_with_string_alert_id():
+    """
+    GIVEN:
+        A ResultsSummary instance with an empty 'success' dictionary.
+    WHEN:
+        update_success is called with a playbook ID and a single alert ID as a string.
+    THEN:
+        The 'success' dictionary should be updated with the alert ID for the given playbook ID.
+    """
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
+    results_summary_instance.results_summary = {"success": {}}
+
+    results_summary_instance.update_success("playbook_123", "alert1")
+    assert results_summary_instance.results_summary["success"]["playbook_123"] == ["alert1"]
+
+    results_summary_instance.update_success("playbook_123", "alert2")
+    assert results_summary_instance.results_summary["success"]["playbook_123"] == ["alert1", "alert2"]
+
+
+def test_update_success_with_list_alert_ids():
     """
     GIVEN:
         A ResultsSummary instance with an empty 'success' dictionary.
     WHEN:
         update_success is called with a playbook ID and a list of alert IDs.
     THEN:
-        The 'success' dictionary should be updated with the alert IDs for the given playbook ID.
+        The 'success' dictionary should be updated with all the alert IDs for the given playbook ID.
     """
     results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     results_summary_instance.results_summary = {"success": {}}
 
     results_summary_instance.update_success("playbook_123", ["alert1", "alert2"])
+    assert results_summary_instance.results_summary["success"]["playbook_123"] == ["alert1", "alert2"]
 
-    assert results_summary_instance.results_summary["success"] == {"playbook_123": ["alert1", "alert2"]}
-
-    results_summary_instance.update_success("playbook_123", ["alert3"])
-    assert results_summary_instance.results_summary["success"]["playbook_123"] == ["alert1", "alert2", "alert3"]
+    results_summary_instance.update_success("playbook_123", ["alert3", "alert4"])
+    assert results_summary_instance.results_summary["success"]["playbook_123"] == ["alert1", "alert2", "alert3", "alert4"]
 
 
-def test_update_failure_create():
+def test_update_failure_create_with_string_failed_id():
     """
     GIVEN:
         A ResultsSummary instance with an empty 'failure_create' dictionary.
     WHEN:
-        update_failure_create is called with a playbook ID and a list of failed alert IDs.
+        update_failure_create is called with a playbook ID and a single failed ID as a string.
     THEN:
-        The 'failure_create' dictionary should be updated with the failed alert IDs for the given playbook ID.
+        The 'failure_create' dictionary should be updated with the failed ID for the given playbook ID.
     """
     results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
     results_summary_instance.results_summary = {"failure_create": {}}
 
-    results_summary_instance.update_failure_create("playbook_789", ["alert4"])
+    results_summary_instance.update_failure_create("playbook_789", "alert4")
+    assert results_summary_instance.results_summary["failure_create"]["playbook_789"] == ["alert4"]
 
-    assert results_summary_instance.results_summary["failure_create"] == {"playbook_789": ["alert4"]}
+    results_summary_instance.update_failure_create("playbook_789", "alert5")
+    assert results_summary_instance.results_summary["failure_create"]["playbook_789"] == ["alert4", "alert5"]
 
-    results_summary_instance.update_failure_create("playbook_789", ["alert5", "alert6"])
-    assert results_summary_instance.results_summary["failure_create"]["playbook_789"] == ["alert4", "alert5", "alert6"]
+
+def test_update_failure_create_with_list_failed_ids():
+    """
+    GIVEN:
+        A ResultsSummary instance with an empty 'failure_create' dictionary.
+    WHEN:
+        update_failure_create is called with a playbook ID and a list of failed IDs.
+    THEN:
+        The 'failure_create' dictionary should be updated with all the failed IDs for the given playbook ID.
+    """
+    results_summary_instance = ResultsSummary(PLAYBOOKS_DICT)
+    results_summary_instance.results_summary = {"failure_create": {}}
+
+    results_summary_instance.update_failure_create("playbook_789", ["alert4", "alert5"])
+    assert results_summary_instance.results_summary["failure_create"]["playbook_789"] == ["alert4", "alert5"]
+
+    results_summary_instance.update_failure_create("playbook_789", ["alert6", "alert7"])
+    assert results_summary_instance.results_summary["failure_create"]["playbook_789"] == ["alert4", "alert5", "alert6", "alert7"]
 
 
 def test_update_failure_set():

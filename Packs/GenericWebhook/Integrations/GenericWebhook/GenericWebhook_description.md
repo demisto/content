@@ -6,7 +6,7 @@ We recommend that you use Cortex XSOAR server rerouting when using this integrat
 </~XSOAR_ON_PREM>
 
 
-**Note**: The **Listen Port** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.                                      
+**Note**: The **Listen Port** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.For more information about long-running integrations, check out the <~XSIAM>[Forward requests to long-running integrations](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) article.</~XSIAM> <~XSOAR_SAAS>Forward Requests to Long-Running Integrations article: [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations) or [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) documentation.</~XSOAR_SAAS>
 
 #### Security
 - We recommend using the authorization header, as described below, to validate the requests sent from your app. If you do not use this header it might result in incident creation from unexpected requests.

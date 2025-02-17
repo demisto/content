@@ -14,7 +14,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Fetch Events Limitation
 
-The collector can handle 10K events per minute on average per each event type  
+The collector can handle up to 35K events per minute on average. 
 
 ## Commands
 

@@ -4,7 +4,7 @@ Unit testing for CiscoAMP (Advanced Malware Protection)
 import json
 import io
 import os
-from typing import Dict, List, Any
+from typing import Any
 import pytest
 from AMPv2 import Client
 from CommonServerPython import DemistoException
@@ -15,7 +15,7 @@ SERVER_URL = "https://api.eu.amp.cisco.com"
 BASE_URL = f"{SERVER_URL}/{Client.API_VERSION}"
 
 
-def assert_output_has_no_links(outputs: List[Dict]):
+def assert_output_has_no_links(outputs: list[dict]):
     """
     Check that there are no 'links' keys in the outputs.
 
@@ -36,7 +36,7 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     """
     path = os.path.join("test_data", file_name)
 
-    with io.open(path, mode="r", encoding="utf-8") as mock_file:
+    with open(path, encoding="utf-8") as mock_file:
         if os.path.splitext(file_name)[1] == ".json":
             return json.loads(mock_file.read())
 
@@ -561,7 +561,7 @@ def test_computer_move_command(requests_mock, mock_client):
     -   Ensure outputs_prefix is correct.
     -   Ensure a links doesn't exist in outputs.
     """
-    args: Dict[str, Any] = {"connector_guid": 1, "group_guid": 2}
+    args: dict[str, Any] = {"connector_guid": 1, "group_guid": 2}
 
     mock_response = load_mock_response("computer_move_response.json")
     requests_mock.patch(
@@ -589,7 +589,7 @@ def test_computer_delete_command(requests_mock, mock_client):
     Then:
     -   Ensure the computer has been deleted.
     """
-    args: Dict[str, Any] = {"connector_guid": 1}
+    args: dict[str, Any] = {"connector_guid": 1}
 
     mock_response = load_mock_response("computer_delete_response.json")
     requests_mock.delete(
@@ -614,7 +614,7 @@ def test_computer_delete_error_command(requests_mock, mock_client):
     Then:
     -   Ensure a value error has been raised.
     """
-    args: Dict[str, Any] = {"connector_guid": 1}
+    args: dict[str, Any] = {"connector_guid": 1}
 
     mock_response = load_mock_response("computer_delete_fail_response.json")
     requests_mock.delete(
@@ -692,7 +692,7 @@ def test_computer_isolation_feature_availability_get_command(
     Then:
     -   Ensure readable_output is correct.
     """
-    args: Dict[str, Any] = {"connector_guid": 1}
+    args: dict[str, Any] = {"connector_guid": 1}
 
     requests_mock.options(
         f'{BASE_URL}/computers/{args["connector_guid"]}/isolation',
@@ -723,7 +723,7 @@ def test_computer_isolation_get_command(requests_mock, mock_client):
     -   Ensure outputs_prefix is correct.
     -   Ensure comment is set in readable_output.
     """
-    args: Dict[str, Any] = {"connector_guid": 1}
+    args: dict[str, Any] = {"connector_guid": 1}
     mock_response = load_mock_response("isolation_response.json")
 
     requests_mock.get(
@@ -751,7 +751,7 @@ def test_computer_isolation_create_command(requests_mock, mock_client):
     Then:
     -   Ensure outputs_prefix is correct.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "connector_guid": "1",
         "comment": "Hello",
         "unlock_code": "Goodbye",
@@ -783,7 +783,7 @@ def test_computer_isolation_delete_command(requests_mock, mock_client):
     Then:
     -   Ensure outputs_prefix is correct.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "connector_guid": "1",
     }
 
@@ -817,7 +817,7 @@ def test_event_list_command(requests_mock, mock_client):
     mock_response = load_mock_response("event_list_response.json")
     requests_mock.get(f"{BASE_URL}/events", json=mock_response)
 
-    args: Dict[str, Any] = {}
+    args: dict[str, Any] = {}
 
     from AMPv2 import event_list_command
 
@@ -869,6 +869,44 @@ def test_event_list_command(requests_mock, mock_client):
         + "| data[14]_id | data[14]_date | data[14]_event_type | "
         + "data[14]_detection | data[14]_connector_guid | data[14]_severity |\n"
     )
+
+
+def test_file_command(requests_mock, mock_client):
+    """
+    Given:
+        - a file (sha256)
+    When:
+        - executing file_command function
+    Then:
+        - Ensure raw_response is an empty dict.
+        - Ensure readable_output is correct and contains an informative message.
+    """
+    mock_response = {
+        "version": "version",
+        "metadata": {
+            "links": {
+                "self": "metadata_links_self",
+                "next": "metadata_links_next"
+            },
+            "results": {
+                "total": "metadata_results_total",
+                "current_item_count": "metadata_results_current_item_count",
+                "index": "metadata_results_index",
+                "items_per_page": "metadata_results_items_per_page"
+            }
+        },
+        "data": []
+    }
+    requests_mock.get(f"{BASE_URL}/events", json=mock_response)
+    file_sha_256 = "e" * 64
+    args: dict[str, Any] = {"file": file_sha_256}
+
+    from AMPv2 import file_command
+
+    response = file_command(mock_client, args)
+
+    assert response[0].readable_output == f'Cisco AMP: {file_sha_256} not found in Cisco AMP v2.'
+    assert response[0].raw_response == {}
 
 
 @pytest.mark.parametrize(
@@ -961,7 +999,7 @@ def test_file_list_list_command(
 
     assert response.outputs_prefix == "CiscoAMP.FileList"
 
-    if not isinstance(response.outputs, List):
+    if not isinstance(response.outputs, list):
         response.outputs = [response.outputs]
 
     if isinstance(mock_response["data"], dict):
@@ -1042,7 +1080,7 @@ def test_file_list_item_create_command(requests_mock, mock_client):
     -   Ensure outputs_prefix is correct.
     -   Ensure there are no links in the outputs.
     """
-    args: Dict[str, Any] = {"file_list_guid": "1", "sha256": "1"}
+    args: dict[str, Any] = {"file_list_guid": "1", "sha256": "1"}
 
     mock_response = load_mock_response("file_list_item_create_response.json")
     requests_mock.post(
@@ -1241,7 +1279,7 @@ def test_group_parent_update_command(requests_mock, mock_client, file):
     -   Ensure outputs_prefix is correct.
     -   Ensure there are no links in the outputs.
     """
-    args: Dict[str, Any] = {"child_guid": "1"}
+    args: dict[str, Any] = {"child_guid": "1"}
 
     mock_response = load_mock_response(file)
     requests_mock.patch(
@@ -1281,7 +1319,7 @@ def test_group_create_command(requests_mock, mock_client):
     -   Ensure outputs_prefix is correct.
     -   Ensure there are no links in the outputs.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "name": "Til",
         "description": "Tamar",
     }
@@ -1321,7 +1359,7 @@ def test_group_delete_command(requests_mock, mock_client):
     Then:
     -   Ensure the deletion succeeded.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "group_guid": "1",
     }
 
@@ -1349,7 +1387,7 @@ def test_group_delete_error_command(requests_mock, mock_client):
     Then:
     -   Ensure the deletion failed.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "group_guid": "1",
     }
 
@@ -1495,7 +1533,7 @@ def test_version_get_command(requests_mock, mock_client):
     Then:
     -   Ensure outputs_prefix is correct.
     """
-    arg: Dict[str, Any] = {}
+    arg: dict[str, Any] = {}
 
     mock_response = load_mock_response("version_get_response.json")
     requests_mock.get(f"{BASE_URL}/version", json=mock_response)

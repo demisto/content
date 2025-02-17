@@ -1,4 +1,4 @@
-from CheckEmailAuthenticity import main, get_authentication_value
+from CheckEmailAuthenticity import main, get_authentication_value, get_spf
 import demistomock as demisto
 
 MOCK_HEADERS = [
@@ -83,3 +83,16 @@ def test_get_authentication_value():
     assert get_authentication_value(MOCK_HEADERS, original_authentication_header_included_in_headers) \
         == 'spf=pass (sender IP is 8.8.8.8) smtp.mailfrom=test.com; dkim=fail (body hash did not verify) ' \
         'header.d=test.com; dmarc=pass action=none header.from=test.com;compauth=pass reason=100'
+
+
+def test_get_spf_formats():
+    spf_with_parentheses = 'Pass (test.com: domain of test.com designates 8.8.8.8 as permitted sender)'
+    spf_without_parentheses = 'Pass test.com: domain of test.com designates 8.8.8.8 as permitted sender'
+
+    spf_data = get_spf(auth=None, spf=spf_with_parentheses)
+    assert spf_data['Validation-Result'] == 'pass'
+    assert spf_data['Sender-IP'] == '8.8.8.8'
+
+    spf_data = get_spf(auth=None, spf=spf_without_parentheses)
+    assert spf_data['Validation-Result'] == 'pass'
+    assert spf_data['Sender-IP'] == '8.8.8.8'

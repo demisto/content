@@ -11,6 +11,7 @@ Send messages and notifications to your Slack team and integrates with Slack's s
 - Removes users from the specified channel.
 - Renames a channel in Slack.
 - Gets details about a specified user.
-- Returns the integration context as a file (for debugging purposes only).
+- Returns the integration con
+text as a file (for debugging purposes only).
 
 As part of this pack, you will get a playbook that investigates failed login events.

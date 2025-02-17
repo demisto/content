@@ -44,4 +44,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Scan_Nexpose_Assets](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Scan_Nexpose_Assets.png)
+![Scan_Nexpose_Assets](../doc_files/Scan_Nexpose_Assets.png)

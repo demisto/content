@@ -10795,9 +10795,9 @@ def custom_predifined_whitelist_update_command(
         else response
     )
     for type in data:
-        for member in type["details"]:
-            if member["value"]:
-                id = member["id"]
+        for member in type["details"]:  # type: ignore[index]
+            if member["value"]:  # type: ignore[index]
+                id = member["id"]  # type: ignore[index]
                 rel_data.update({f"{id}_enable": "on"})
     id = args["id"]
     if status == "enable":

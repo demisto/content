@@ -200,7 +200,7 @@ class Email:
             demisto.info(f'Could not identify date for mail with ID {self.id}. Setting its date to be now.')
             date = datetime.now(timezone.utc).isoformat()  # noqa: UP017
         else:
-            date = self.date.isoformat()
+            date = self.date.isoformat()  # type: ignore[union-attr]
         return {
             'labels': self._generate_labels(),
             'occurred': date,

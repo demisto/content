@@ -1,0 +1,1260 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Gatewatcher Mapper Incoming",
+    "mapping": {
+        "Gatewatcher Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+		"Destination IP": {
+		    "simple": "destination.ip"
+		},
+		"Destination Port": {
+		    "simple": "destination.port"
+		},
+                "Gatewatcher Flow ID": {
+                    "simple": "network.flow_id"
+                },
+                "Gatewatcher GCap": {
+                    "simple": "observer.gcap.hostname"
+                },
+                "Gatewatcher GCap interface": {
+                    "simple": "observer.gcap.ingress.interface"
+                },
+                "Gatewatcher GCenter": {
+                    "simple": "observer.hostname"
+                },
+                "Gatewatcher Raw Event": {
+                    "simple": "."
+                },
+                "Gatewatcher beacon.active": {
+                    "simple": "beacon.active"
+                },
+                "Gatewatcher beacon.hostname_resolution": {
+                    "simple": "beacon.hostname_resolution"
+                },
+                "Gatewatcher beacon.id": {
+                    "simple": "beacon.id"
+                },
+                "Gatewatcher beacon.mean_time_interval": {
+                    "simple": "beacon.mean_time_interval"
+                },
+                "Gatewatcher beacon.possible_cnc": {
+                    "simple": "beacon.possible_cnc"
+                },
+                "Gatewatcher beacon.session_count": {
+                    "simple": "beacon.session_count"
+                },
+                "Gatewatcher beacon.type": {
+                    "simple": "beacon.type"
+                },
+                "Gatewatcher dcerpc.call_id": {
+                    "simple": "dcerpc.call_id"
+                },
+                "Gatewatcher dcerpc.req": {
+                    "simple": "dcerpc.req"
+                },
+                "Gatewatcher dcerpc.request": {
+                    "simple": "dcerpc.request"
+                },
+                "Gatewatcher dcerpc.res": {
+                    "simple": "dcerpc.res"
+                },
+                "Gatewatcher dcerpc.response": {
+                    "simple": "dcerpc.response"
+                },
+                "Gatewatcher dcerpc.rpc_version": {
+                    "simple": "dcerpc.rpc_version"
+                },
+                "Gatewatcher dga.dga_count": {
+                    "simple": "dga.dga_count"
+                },
+                "Gatewatcher dga.dga_ratio": {
+                    "simple": "dga.dga_ratio"
+                },
+                "Gatewatcher dga.malware_behavior_confidence": {
+                    "simple": "dga.malware_behavior_confidence"
+                },
+                "Gatewatcher dga.nx_domain_count": {
+                    "simple": "dga.nx_domain_count"
+                },
+                "Gatewatcher dga.top_DGA": {
+                    "simple": "dga.top_DGA"
+                },
+                "Gatewatcher dhcp.assigned_ip": {
+                    "simple": "dhcp.assigned_ip"
+                },
+                "Gatewatcher dhcp.client_ip": {
+                    "simple": "dhcp.client_ip"
+                },
+                "Gatewatcher dhcp.client_mac": {
+                    "simple": "dhcp.client_mac"
+                },
+                "Gatewatcher dhcp.dhcp_type": {
+                    "simple": "dhcp.dhcp_type"
+                },
+                "Gatewatcher dhcp.dns_servers": {
+                    "simple": "dhcp.dns_servers"
+                },
+                "Gatewatcher dhcp.hostname": {
+                    "simple": "dhcp.hostname"
+                },
+                "Gatewatcher dhcp.id": {
+                    "simple": "dhcp.id"
+                },
+                "Gatewatcher dhcp.lease_time": {
+                    "simple": "dhcp.lease_time"
+                },
+                "Gatewatcher dhcp.next_server_ip": {
+                    "simple": "dhcp.next_server_ip"
+                },
+                "Gatewatcher dhcp.relay_ip": {
+                    "simple": "dhcp.relay_ip"
+                },
+                "Gatewatcher dhcp.routers": {
+                    "simple": "dhcp.routers"
+                },
+                "Gatewatcher dhcp.subnet_mask": {
+                    "simple": "dhcp.subnet_mask"
+                },
+                "Gatewatcher dhcp.type": {
+                    "simple": "dhcp.type"
+                },
+                "Gatewatcher dnp3.application": {
+                    "simple": "dnp3.application"
+                },
+                "Gatewatcher dnp3.control": {
+                    "simple": "dnp3.control"
+                },
+                "Gatewatcher dnp3.dst": {
+                    "simple": "dnp3.dst"
+                },
+                "Gatewatcher dnp3.iin": {
+                    "simple": "dnp3.iin"
+                },
+                "Gatewatcher dnp3.src": {
+                    "simple": "dnp3.src"
+                },
+                "Gatewatcher dnp3.type": {
+                    "simple": "dnp3.type"
+                },
+                "Gatewatcher dns": {
+                    "simple": "dns"
+                },
+                "Gatewatcher dns.answers": {
+                    "simple": "dns.answers"
+                },
+                "Gatewatcher dns.authorities": {
+                    "simple": "dns.authorities"
+                },
+                "Gatewatcher dns.response_code": {
+                    "simple": "dns.response_code"
+                },
+                "Gatewatcher dns.type": {
+                    "simple": "dns.type"
+                },
+                "Gatewatcher ecs.version": {
+                    "simple": "ecs.version"
+                },
+                "Gatewatcher event.module": {
+                    "simple": "event.module"
+                },
+                "Gatewatcher file.hash": {
+                    "simple": "file.hash"
+                },
+                "Gatewatcher file.magic": {
+                    "simple": "file.magic"
+                },
+                "Gatewatcher file.name": {
+                    "simple": "file.name"
+                },
+                "Gatewatcher ftp.command": {
+                    "simple": "ftp.command"
+                },
+                "Gatewatcher ftp.completion_code": {
+                    "simple": "ftp.completion_code"
+                },
+                "Gatewatcher ftp.dynamic_port": {
+                    "simple": "ftp.dynamic_port"
+                },
+                "Gatewatcher ftp.reply": {
+                    "simple": "ftp.reply"
+                },
+                "Gatewatcher ftp.reply_received": {
+                    "simple": "ftp.reply_received"
+                },
+                "Gatewatcher ftp.reply_truncated": {
+                    "simple": "ftp.reply_truncated"
+                },
+                "Gatewatcher http.accept": {
+                    "simple": "http.accept"
+                },
+                "Gatewatcher http.date": {
+                    "simple": "http.date"
+                },
+                "Gatewatcher http.hostname": {
+                    "simple": "http.hostname"
+                },
+                "Gatewatcher http.http2": {
+                    "simple": "http.http2"
+                },
+                "Gatewatcher http.http_refer": {
+                    "simple": "http.http_refer"
+                },
+                "Gatewatcher http.last_modified": {
+                    "simple": "http.last_modified"
+                },
+                "Gatewatcher http.request.method": {
+                    "simple": "http.request.method"
+                },
+                "Gatewatcher http.request.mime_type": {
+                    "simple": "http.request.mime_type"
+                },
+                "Gatewatcher http.response.mime_type": {
+                    "simple": "http.response.mime_type"
+                },
+                "Gatewatcher http.response.status": {
+                    "simple": "http.response.status"
+                },
+                "Gatewatcher http.version": {
+                    "simple": "http.version"
+                },
+                "Gatewatcher http2.http2": {
+                    "simple": "http2.http2"
+                },
+                "Gatewatcher http2.http_method": {
+                    "simple": "http2.http_method"
+                },
+                "Gatewatcher http2.http_user_agent": {
+                    "simple": "http2.http_user_agent"
+                },
+                "Gatewatcher http2.length": {
+                    "simple": "http2.length"
+                },
+                "Gatewatcher http2.request_headers": {
+                    "simple": "http2.request_headers"
+                },
+                "Gatewatcher http2.response_headers": {
+                    "simple": "http2.response_headers"
+                },
+                "Gatewatcher http2.status": {
+                    "simple": "http2.status"
+                },
+                "Gatewatcher http2.url": {
+                    "simple": "http2.url"
+                },
+                "Gatewatcher http2.version": {
+                    "simple": "http2.version"
+                },
+                "Gatewatcher ikev2.alg_auth": {
+                    "simple": "ikev2.alg_auth"
+                },
+                "Gatewatcher ikev2.alg_dh": {
+                    "simple": "ikev2.alg_dh"
+                },
+                "Gatewatcher ikev2.alg_enc": {
+                    "simple": "ikev2.alg_enc"
+                },
+                "Gatewatcher ikev2.alg_perf": {
+                    "simple": "ikev2.alg_perf"
+                },
+                "Gatewatcher ikev2.errors": {
+                    "simple": "ikev2.errors"
+                },
+                "Gatewatcher ikev2.esn": {
+                    "simple": "ikev2.esn"
+                },
+                "Gatewatcher ikev2.exchange_type": {
+                    "simple": "ikev2.exchange_type"
+                },
+                "Gatewatcher ikev2.init_spi": {
+                    "simple": "ikev2.init_spi"
+                },
+                "Gatewatcher ikev2.message_id": {
+                    "simple": "ikev2.message_id"
+                },
+                "Gatewatcher ikev2.notify": {
+                    "simple": "ikev2.notify"
+                },
+                "Gatewatcher ikev2.payload": {
+                    "simple": "ikev2.payload"
+                },
+                "Gatewatcher ikev2.resp_spi": {
+                    "simple": "ikev2.resp_spi"
+                },
+                "Gatewatcher ikev2.role": {
+                    "simple": "ikev2.role"
+                },
+                "Gatewatcher ikev2.version_major": {
+                    "simple": "ikev2.version_major"
+                },
+                "Gatewatcher ikev2.version_minor": {
+                    "simple": "ikev2.version_minor"
+                },
+                "Gatewatcher ioc.campaigns": {
+                    "simple": "ioc.campaigns"
+                },
+                "Gatewatcher ioc.case_id": {
+                    "simple": "ioc.case_id"
+                },
+                "Gatewatcher ioc.categories": {
+                    "simple": "ioc.categories"
+                },
+                "Gatewatcher ioc.creation_date": {
+                    "simple": "ioc.creation_date"
+                },
+                "Gatewatcher ioc.description": {
+                    "simple": "ioc.description"
+                },
+                "Gatewatcher ioc.external_links": {
+                    "simple": "ioc.external_links"
+                },
+                "Gatewatcher ioc.families": {
+                    "simple": "ioc.families"
+                },
+                "Gatewatcher ioc.kill_chain_phases": {
+                    "simple": "ioc.kill_chain_phases"
+                },
+                "Gatewatcher ioc.meta_data": {
+                    "simple": "ioc.meta_data"
+                },
+                "Gatewatcher ioc.package_date": {
+                    "simple": "ioc.package_date"
+                },
+                "Gatewatcher ioc.relations": {
+                    "simple": "ioc.relations"
+                },
+                "Gatewatcher ioc.signature": {
+                    "simple": "ioc.signature"
+                },
+                "Gatewatcher ioc.tags": {
+                    "simple": "ioc.tags"
+                },
+                "Gatewatcher ioc.targeted_countries": {
+                    "simple": "ioc.targeted_countries"
+                },
+                "Gatewatcher ioc.targeted_organizations": {
+                    "simple": "ioc.targeted_organizations"
+                },
+                "Gatewatcher ioc.targeted_platforms": {
+                    "simple": "ioc.targeted_platforms"
+                },
+                "Gatewatcher ioc.targeted_sectors": {
+                    "simple": "ioc.targeted_sectors"
+                },
+                "Gatewatcher ioc.threat_actor": {
+                    "simple": "ioc.threat_actor"
+                },
+                "Gatewatcher ioc.tlp": {
+                    "simple": "ioc.tlp"
+                },
+                "Gatewatcher ioc.ttp": {
+                    "simple": "ioc.ttp"
+                },
+                "Gatewatcher ioc.type": {
+                    "simple": "ioc.type"
+                },
+                "Gatewatcher ioc.updated_date": {
+                    "simple": "ioc.updated_date"
+                },
+                "Gatewatcher ioc.usage_mode": {
+                    "simple": "ioc.usage_mode"
+                },
+                "Gatewatcher ioc.value": {
+                    "simple": "ioc.value"
+                },
+                "Gatewatcher ioc.vulnerabilities": {
+                    "simple": "ioc.vulnerabilities"
+                },
+                "Gatewatcher krb.cname": {
+                    "simple": "krb.cname"
+                },
+                "Gatewatcher krb.encryption": {
+                    "simple": "krb.encryption"
+                },
+                "Gatewatcher krb.msg_type": {
+                    "simple": "krb.msg_type"
+                },
+                "Gatewatcher krb.realm": {
+                    "simple": "krb.realm"
+                },
+                "Gatewatcher krb.sname": {
+                    "simple": "krb.sname"
+                },
+                "Gatewatcher krb.weak_encryption": {
+                    "simple": "krb.weak_encryption"
+                },
+                "Gatewatcher malcore.detail_threat_found": {
+                    "simple": "malcore.detail_threat_found"
+                },
+                "Gatewatcher malcore.engines_last_update_date": {
+                    "simple": "malcore.engines_last_update_date"
+                },
+                "Gatewatcher malcore.magic_details": {
+                    "simple": "malcore.magic_details"
+                },
+                "Gatewatcher malcore.state": {
+                    "simple": "malcore.state"
+                },
+                "Gatewatcher malcore.total_found": {
+                    "simple": "malcore.total_found"
+                },
+                "Gatewatcher malicious_powershell.proba_obfuscated": {
+                    "simple": "malicious_powershell.proba_obfuscated"
+                },
+                "Gatewatcher malicious_powershell.score": {
+                    "simple": "malicious_powershell.score"
+                },
+                "Gatewatcher mqtt.connack": {
+                    "simple": "mqtt.connack"
+                },
+                "Gatewatcher nba.action": {
+                    "simple": "nba.action"
+                },
+                "Gatewatcher nba.category": {
+                    "simple": "nba.category"
+                },
+                "Gatewatcher nba.gid": {
+                    "simple": "nba.gid"
+                },
+                "Gatewatcher nba.metadata": {
+                    "simple": "nba.metadata"
+                },
+                "Gatewatcher nba.packet": {
+                    "simple": "nba.packet"
+                },
+                "Gatewatcher nba.payload": {
+                    "simple": "nba.payload"
+                },
+                "Gatewatcher nba.payload_printable": {
+                    "simple": "nba.payload_printable"
+                },
+                "Gatewatcher nba.rev": {
+                    "simple": "nba.rev"
+                },
+                "Gatewatcher nba.signature": {
+                    "simple": "nba.signature"
+                },
+                "Gatewatcher nba.signature_id": {
+                    "simple": "nba.signature_id"
+                },
+                "Gatewatcher nba.stream": {
+                    "simple": "nba.stream"
+                },
+                "Gatewatcher network.transport": {
+                    "simple": "network.transport"
+                },
+                "Gatewatcher nfs.file_tx": {
+                    "simple": "nfs.file_tx"
+                },
+                "Gatewatcher nfs.filename": {
+                    "simple": "nfs.filename"
+                },
+                "Gatewatcher nfs.hhash": {
+                    "simple": "nfs.hhash"
+                },
+                "Gatewatcher nfs.id": {
+                    "simple": "nfs.id"
+                },
+                "Gatewatcher nfs.procedure": {
+                    "simple": "nfs.procedure"
+                },
+                "Gatewatcher nfs.status": {
+                    "simple": "nfs.status"
+                },
+                "Gatewatcher nfs.type": {
+                    "simple": "nfs.type"
+                },
+                "Gatewatcher nfs.version": {
+                    "simple": "nfs.version"
+                },
+                "Gatewatcher ransomware.alert_threshold": {
+                    "simple": "ransomware.alert_threshold"
+                },
+                "Gatewatcher ransomware.malicious_behavior_confidence": {
+                    "simple": "ransomware.malicious_behavior_confidence"
+                },
+                "Gatewatcher ransomware.session_score": {
+                    "simple": "ransomware.session_score"
+                },
+                "Gatewatcher rdp.channels": {
+                    "simple": "rdp.channels"
+                },
+                "Gatewatcher rdp.client": {
+                    "simple": "rdp.client"
+                },
+                "Gatewatcher rdp.event_type": {
+                    "simple": "rdp.event_type"
+                },
+                "Gatewatcher rdp.tx_id": {
+                    "simple": "rdp.tx_id"
+                },
+                "Gatewatcher rfb.authentication": {
+                    "simple": "rfb.authentication"
+                },
+                "Gatewatcher rfb.client_protocol_version": {
+                    "simple": "rfb.client_protocol_version"
+                },
+                "Gatewatcher rfb.server_protocol_version": {
+                    "simple": "rfb.server_protocol_version"
+                },
+                "Gatewatcher rfb.server_security_failure_reason": {
+                    "simple": "rfb.server_security_failure_reason"
+                },
+                "Gatewatcher shellcode.encodings": {
+                    "simple": "shellcode.encodings"
+                },
+                "Gatewatcher shellcode.sub_type": {
+                    "simple": "shellcode.sub_type"
+                },
+                "Gatewatcher sigflow.action": {
+                    "simple": "sigflow.action"
+                },
+                "Gatewatcher sigflow.category": {
+                    "simple": "sigflow.category"
+                },
+                "Gatewatcher sigflow.payload": {
+                    "simple": "sigflow.payload"
+                },
+                "Gatewatcher sigflow.payload_printable": {
+                    "simple": "sigflow.payload_printable"
+                },
+                "Gatewatcher sip.code": {
+                    "simple": "sip.code"
+                },
+                "Gatewatcher sip.reason": {
+                    "simple": "sip.reason"
+                },
+                "Gatewatcher sip.response_line": {
+                    "simple": "sip.response_line"
+                },
+                "Gatewatcher sip.version": {
+                    "simple": "sip.version"
+                },
+                "Gatewatcher smb": {
+                    "simple": "smb"
+                },
+                "Gatewatcher smb.command": {
+                    "simple": "smb.command"
+                },
+                "Gatewatcher smb.dialect": {
+                    "simple": "smb.dialect"
+                },
+                "Gatewatcher smb.filename": {
+                    "simple": "smb.filename"
+                },
+                "Gatewatcher smb.fuid": {
+                    "simple": "smb.fuid"
+                },
+                "Gatewatcher smb.id": {
+                    "simple": "smb.id"
+                },
+                "Gatewatcher smb.session_id": {
+                    "simple": "smb.session_id"
+                },
+                "Gatewatcher smb.share": {
+                    "simple": "smb.share"
+                },
+                "Gatewatcher smb.status": {
+                    "simple": "smb.status"
+                },
+                "Gatewatcher smb.status_code": {
+                    "simple": "smb.status_code"
+                },
+                "Gatewatcher smb.tree_id": {
+                    "simple": "smb.tree_id"
+                },
+                "Gatewatcher smtp.helo": {
+                    "simple": "smtp.helo"
+                },
+                "Gatewatcher smtp.mail_from": {
+                    "simple": "smtp.mail_from"
+                },
+                "Gatewatcher smtp.rcpt_to": {
+                    "simple": "smtp.rcpt_to"
+                },
+                "Gatewatcher snmp.comm": {
+                    "simple": "snmp.comm"
+                },
+                "Gatewatcher snmp.pdu_type": {
+                    "simple": "snmp.pdu_type"
+                },
+                "Gatewatcher snmp.vars": {
+                    "simple": "snmp.vars"
+                },
+                "Gatewatcher snmp.version": {
+                    "simple": "snmp.version"
+                },
+                "Gatewatcher ssh.client": {
+                    "simple": "ssh.client"
+                },
+                "Gatewatcher ssh.server": {
+                    "simple": "ssh.server"
+                },
+                "Gatewatcher tftp.file": {
+                    "simple": "tftp.file"
+                },
+                "Gatewatcher tftp.mode": {
+                    "simple": "tftp.mode"
+                },
+                "Gatewatcher tftp.packet": {
+                    "simple": "tftp.packet"
+                },
+                "Gatewatcher tls.client": {
+                    "simple": "tls.client"
+                },
+                "Gatewatcher tls.ja3": {
+                    "simple": "tls.ja3"
+                },
+                "Gatewatcher tls.ja3s": {
+                    "simple": "tls.ja3s"
+                },
+                "Gatewatcher tls.serial": {
+                    "simple": "tls.serial"
+                },
+                "Gatewatcher tls.server": {
+                    "simple": "tls.server"
+                },
+                "Gatewatcher tls.sni": {
+                    "simple": "tls.sni"
+                },
+                "Gatewatcher tls.version": {
+                    "simple": "tls.version"
+                },
+		"Protocol": {
+		    "simple": "network.protocol"
+		},
+		"Source IP": {
+		    "simple": "source.ip"
+		},
+		"Source Port": {
+		    "simple": "source.port"
+		}
+            }
+        },
+	"Gatewatcher Alert Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+		"Destination IP": {
+		    "simple": "destination.ip"
+		},
+		"Destination Port": {
+		    "simple": "destination.port"
+		},
+                "Gatewatcher Flow ID": {
+                    "simple": "network.flow_id"
+                },
+                "Gatewatcher GCap": {
+                    "simple": "observer.gcap.hostname"
+                },
+                "Gatewatcher GCap interface": {
+                    "simple": "observer.gcap.ingress.interface"
+                },
+                "Gatewatcher GCenter": {
+                    "simple": "observer.hostname"
+                },
+                "Gatewatcher Raw Event": {
+                    "simple": "."
+                },
+                "Gatewatcher beacon.active": {
+                    "simple": "beacon.active"
+                },
+                "Gatewatcher beacon.hostname_resolution": {
+                    "simple": "beacon.hostname_resolution"
+                },
+                "Gatewatcher beacon.id": {
+                    "simple": "beacon.id"
+                },
+                "Gatewatcher beacon.mean_time_interval": {
+                    "simple": "beacon.mean_time_interval"
+                },
+                "Gatewatcher beacon.possible_cnc": {
+                    "simple": "beacon.possible_cnc"
+                },
+                "Gatewatcher beacon.session_count": {
+                    "simple": "beacon.session_count"
+                },
+                "Gatewatcher beacon.type": {
+                    "simple": "beacon.type"
+                },
+                "Gatewatcher dcerpc.call_id": {
+                    "simple": "dcerpc.call_id"
+                },
+                "Gatewatcher dcerpc.req": {
+                    "simple": "dcerpc.req"
+                },
+                "Gatewatcher dcerpc.request": {
+                    "simple": "dcerpc.request"
+                },
+                "Gatewatcher dcerpc.res": {
+                    "simple": "dcerpc.res"
+                },
+                "Gatewatcher dcerpc.response": {
+                    "simple": "dcerpc.response"
+                },
+                "Gatewatcher dcerpc.rpc_version": {
+                    "simple": "dcerpc.rpc_version"
+                },
+                "Gatewatcher dga.dga_count": {
+                    "simple": "dga.dga_count"
+                },
+                "Gatewatcher dga.dga_ratio": {
+                    "simple": "dga.dga_ratio"
+                },
+                "Gatewatcher dga.malware_behavior_confidence": {
+                    "simple": "dga.malware_behavior_confidence"
+                },
+                "Gatewatcher dga.nx_domain_count": {
+                    "simple": "dga.nx_domain_count"
+                },
+                "Gatewatcher dga.top_DGA": {
+                    "simple": "dga.top_DGA"
+                },
+                "Gatewatcher dhcp.assigned_ip": {
+                    "simple": "dhcp.assigned_ip"
+                },
+                "Gatewatcher dhcp.client_ip": {
+                    "simple": "dhcp.client_ip"
+                },
+                "Gatewatcher dhcp.client_mac": {
+                    "simple": "dhcp.client_mac"
+                },
+                "Gatewatcher dhcp.dhcp_type": {
+                    "simple": "dhcp.dhcp_type"
+                },
+                "Gatewatcher dhcp.dns_servers": {
+                    "simple": "dhcp.dns_servers"
+                },
+                "Gatewatcher dhcp.hostname": {
+                    "simple": "dhcp.hostname"
+                },
+                "Gatewatcher dhcp.id": {
+                    "simple": "dhcp.id"
+                },
+                "Gatewatcher dhcp.lease_time": {
+                    "simple": "dhcp.lease_time"
+                },
+                "Gatewatcher dhcp.next_server_ip": {
+                    "simple": "dhcp.next_server_ip"
+                },
+                "Gatewatcher dhcp.relay_ip": {
+                    "simple": "dhcp.relay_ip"
+                },
+                "Gatewatcher dhcp.routers": {
+                    "simple": "dhcp.routers"
+                },
+                "Gatewatcher dhcp.subnet_mask": {
+                    "simple": "dhcp.subnet_mask"
+                },
+                "Gatewatcher dhcp.type": {
+                    "simple": "dhcp.type"
+                },
+                "Gatewatcher dnp3.application": {
+                    "simple": "dnp3.application"
+                },
+                "Gatewatcher dnp3.control": {
+                    "simple": "dnp3.control"
+                },
+                "Gatewatcher dnp3.dst": {
+                    "simple": "dnp3.dst"
+                },
+                "Gatewatcher dnp3.iin": {
+                    "simple": "dnp3.iin"
+                },
+                "Gatewatcher dnp3.src": {
+                    "simple": "dnp3.src"
+                },
+                "Gatewatcher dnp3.type": {
+                    "simple": "dnp3.type"
+                },
+                "Gatewatcher dns": {
+                    "simple": "dns"
+                },
+                "Gatewatcher dns.answers": {
+                    "simple": "dns.answers"
+                },
+                "Gatewatcher dns.authorities": {
+                    "simple": "dns.authorities"
+                },
+                "Gatewatcher dns.response_code": {
+                    "simple": "dns.response_code"
+                },
+                "Gatewatcher dns.type": {
+                    "simple": "dns.type"
+                },
+                "Gatewatcher ecs.version": {
+                    "simple": "ecs.version"
+                },
+                "Gatewatcher event.module": {
+                    "simple": "event.module"
+                },
+                "Gatewatcher file.hash": {
+                    "simple": "file.hash"
+                },
+                "Gatewatcher file.magic": {
+                    "simple": "file.magic"
+                },
+                "Gatewatcher file.name": {
+                    "simple": "file.name"
+                },
+                "Gatewatcher ftp.command": {
+                    "simple": "ftp.command"
+                },
+                "Gatewatcher ftp.completion_code": {
+                    "simple": "ftp.completion_code"
+                },
+                "Gatewatcher ftp.dynamic_port": {
+                    "simple": "ftp.dynamic_port"
+                },
+                "Gatewatcher ftp.reply": {
+                    "simple": "ftp.reply"
+                },
+                "Gatewatcher ftp.reply_received": {
+                    "simple": "ftp.reply_received"
+                },
+                "Gatewatcher ftp.reply_truncated": {
+                    "simple": "ftp.reply_truncated"
+                },
+                "Gatewatcher http.accept": {
+                    "simple": "http.accept"
+                },
+                "Gatewatcher http.date": {
+                    "simple": "http.date"
+                },
+                "Gatewatcher http.hostname": {
+                    "simple": "http.hostname"
+                },
+                "Gatewatcher http.http2": {
+                    "simple": "http.http2"
+                },
+                "Gatewatcher http.http_refer": {
+                    "simple": "http.http_refer"
+                },
+                "Gatewatcher http.last_modified": {
+                    "simple": "http.last_modified"
+                },
+                "Gatewatcher http.request.method": {
+                    "simple": "http.request.method"
+                },
+                "Gatewatcher http.request.mime_type": {
+                    "simple": "http.request.mime_type"
+                },
+                "Gatewatcher http.response.mime_type": {
+                    "simple": "http.response.mime_type"
+                },
+                "Gatewatcher http.response.status": {
+                    "simple": "http.response.status"
+                },
+                "Gatewatcher http.version": {
+                    "simple": "http.version"
+                },
+                "Gatewatcher http2.http2": {
+                    "simple": "http2.http2"
+                },
+                "Gatewatcher http2.http_method": {
+                    "simple": "http2.http_method"
+                },
+                "Gatewatcher http2.http_user_agent": {
+                    "simple": "http2.http_user_agent"
+                },
+                "Gatewatcher http2.length": {
+                    "simple": "http2.length"
+                },
+                "Gatewatcher http2.request_headers": {
+                    "simple": "http2.request_headers"
+                },
+                "Gatewatcher http2.response_headers": {
+                    "simple": "http2.response_headers"
+                },
+                "Gatewatcher http2.status": {
+                    "simple": "http2.status"
+                },
+                "Gatewatcher http2.url": {
+                    "simple": "http2.url"
+                },
+                "Gatewatcher http2.version": {
+                    "simple": "http2.version"
+                },
+                "Gatewatcher ikev2.alg_auth": {
+                    "simple": "ikev2.alg_auth"
+                },
+                "Gatewatcher ikev2.alg_dh": {
+                    "simple": "ikev2.alg_dh"
+                },
+                "Gatewatcher ikev2.alg_enc": {
+                    "simple": "ikev2.alg_enc"
+                },
+                "Gatewatcher ikev2.alg_perf": {
+                    "simple": "ikev2.alg_perf"
+                },
+                "Gatewatcher ikev2.errors": {
+                    "simple": "ikev2.errors"
+                },
+                "Gatewatcher ikev2.esn": {
+                    "simple": "ikev2.esn"
+                },
+                "Gatewatcher ikev2.exchange_type": {
+                    "simple": "ikev2.exchange_type"
+                },
+                "Gatewatcher ikev2.init_spi": {
+                    "simple": "ikev2.init_spi"
+                },
+                "Gatewatcher ikev2.message_id": {
+                    "simple": "ikev2.message_id"
+                },
+                "Gatewatcher ikev2.notify": {
+                    "simple": "ikev2.notify"
+                },
+                "Gatewatcher ikev2.payload": {
+                    "simple": "ikev2.payload"
+                },
+                "Gatewatcher ikev2.resp_spi": {
+                    "simple": "ikev2.resp_spi"
+                },
+                "Gatewatcher ikev2.role": {
+                    "simple": "ikev2.role"
+                },
+                "Gatewatcher ikev2.version_major": {
+                    "simple": "ikev2.version_major"
+                },
+                "Gatewatcher ikev2.version_minor": {
+                    "simple": "ikev2.version_minor"
+                },
+                "Gatewatcher ioc.campaigns": {
+                    "simple": "ioc.campaigns"
+                },
+                "Gatewatcher ioc.case_id": {
+                    "simple": "ioc.case_id"
+                },
+                "Gatewatcher ioc.categories": {
+                    "simple": "ioc.categories"
+                },
+                "Gatewatcher ioc.creation_date": {
+                    "simple": "ioc.creation_date"
+                },
+                "Gatewatcher ioc.description": {
+                    "simple": "ioc.description"
+                },
+                "Gatewatcher ioc.external_links": {
+                    "simple": "ioc.external_links"
+                },
+                "Gatewatcher ioc.families": {
+                    "simple": "ioc.families"
+                },
+                "Gatewatcher ioc.kill_chain_phases": {
+                    "simple": "ioc.kill_chain_phases"
+                },
+                "Gatewatcher ioc.meta_data": {
+                    "simple": "ioc.meta_data"
+                },
+                "Gatewatcher ioc.package_date": {
+                    "simple": "ioc.package_date"
+                },
+                "Gatewatcher ioc.relations": {
+                    "simple": "ioc.relations"
+                },
+                "Gatewatcher ioc.signature": {
+                    "simple": "ioc.signature"
+                },
+                "Gatewatcher ioc.tags": {
+                    "simple": "ioc.tags"
+                },
+                "Gatewatcher ioc.targeted_countries": {
+                    "simple": "ioc.targeted_countries"
+                },
+                "Gatewatcher ioc.targeted_organizations": {
+                    "simple": "ioc.targeted_organizations"
+                },
+                "Gatewatcher ioc.targeted_platforms": {
+                    "simple": "ioc.targeted_platforms"
+                },
+                "Gatewatcher ioc.targeted_sectors": {
+                    "simple": "ioc.targeted_sectors"
+                },
+                "Gatewatcher ioc.threat_actor": {
+                    "simple": "ioc.threat_actor"
+                },
+                "Gatewatcher ioc.tlp": {
+                    "simple": "ioc.tlp"
+                },
+                "Gatewatcher ioc.ttp": {
+                    "simple": "ioc.ttp"
+                },
+                "Gatewatcher ioc.type": {
+                    "simple": "ioc.type"
+                },
+                "Gatewatcher ioc.updated_date": {
+                    "simple": "ioc.updated_date"
+                },
+                "Gatewatcher ioc.usage_mode": {
+                    "simple": "ioc.usage_mode"
+                },
+                "Gatewatcher ioc.value": {
+                    "simple": "ioc.value"
+                },
+                "Gatewatcher ioc.vulnerabilities": {
+                    "simple": "ioc.vulnerabilities"
+                },
+                "Gatewatcher krb.cname": {
+                    "simple": "krb.cname"
+                },
+                "Gatewatcher krb.encryption": {
+                    "simple": "krb.encryption"
+                },
+                "Gatewatcher krb.msg_type": {
+                    "simple": "krb.msg_type"
+                },
+                "Gatewatcher krb.realm": {
+                    "simple": "krb.realm"
+                },
+                "Gatewatcher krb.sname": {
+                    "simple": "krb.sname"
+                },
+                "Gatewatcher krb.weak_encryption": {
+                    "simple": "krb.weak_encryption"
+                },
+                "Gatewatcher malcore.detail_threat_found": {
+                    "simple": "malcore.detail_threat_found"
+                },
+                "Gatewatcher malcore.engines_last_update_date": {
+                    "simple": "malcore.engines_last_update_date"
+                },
+                "Gatewatcher malcore.magic_details": {
+                    "simple": "malcore.magic_details"
+                },
+                "Gatewatcher malcore.state": {
+                    "simple": "malcore.state"
+                },
+                "Gatewatcher malcore.total_found": {
+                    "simple": "malcore.total_found"
+                },
+                "Gatewatcher malicious_powershell.proba_obfuscated": {
+                    "simple": "malicious_powershell.proba_obfuscated"
+                },
+                "Gatewatcher malicious_powershell.score": {
+                    "simple": "malicious_powershell.score"
+                },
+                "Gatewatcher mqtt.connack": {
+                    "simple": "mqtt.connack"
+                },
+                "Gatewatcher nba.action": {
+                    "simple": "nba.action"
+                },
+                "Gatewatcher nba.category": {
+                    "simple": "nba.category"
+                },
+                "Gatewatcher nba.gid": {
+                    "simple": "nba.gid"
+                },
+                "Gatewatcher nba.metadata": {
+                    "simple": "nba.metadata"
+                },
+                "Gatewatcher nba.packet": {
+                    "simple": "nba.packet"
+                },
+                "Gatewatcher nba.payload": {
+                    "simple": "nba.payload"
+                },
+                "Gatewatcher nba.payload_printable": {
+                    "simple": "nba.payload_printable"
+                },
+                "Gatewatcher nba.rev": {
+                    "simple": "nba.rev"
+                },
+                "Gatewatcher nba.signature": {
+                    "simple": "nba.signature"
+                },
+                "Gatewatcher nba.signature_id": {
+                    "simple": "nba.signature_id"
+                },
+                "Gatewatcher nba.stream": {
+                    "simple": "nba.stream"
+                },
+                "Gatewatcher network.transport": {
+                    "simple": "network.transport"
+                },
+                "Gatewatcher nfs.file_tx": {
+                    "simple": "nfs.file_tx"
+                },
+                "Gatewatcher nfs.filename": {
+                    "simple": "nfs.filename"
+                },
+                "Gatewatcher nfs.hhash": {
+                    "simple": "nfs.hhash"
+                },
+                "Gatewatcher nfs.id": {
+                    "simple": "nfs.id"
+                },
+                "Gatewatcher nfs.procedure": {
+                    "simple": "nfs.procedure"
+                },
+                "Gatewatcher nfs.status": {
+                    "simple": "nfs.status"
+                },
+                "Gatewatcher nfs.type": {
+                    "simple": "nfs.type"
+                },
+                "Gatewatcher nfs.version": {
+                    "simple": "nfs.version"
+                },
+                "Gatewatcher ransomware.alert_threshold": {
+                    "simple": "ransomware.alert_threshold"
+                },
+                "Gatewatcher ransomware.malicious_behavior_confidence": {
+                    "simple": "ransomware.malicious_behavior_confidence"
+                },
+                "Gatewatcher ransomware.session_score": {
+                    "simple": "ransomware.session_score"
+                },
+                "Gatewatcher rdp.channels": {
+                    "simple": "rdp.channels"
+                },
+                "Gatewatcher rdp.client": {
+                    "simple": "rdp.client"
+                },
+                "Gatewatcher rdp.event_type": {
+                    "simple": "rdp.event_type"
+                },
+                "Gatewatcher rdp.tx_id": {
+                    "simple": "rdp.tx_id"
+                },
+                "Gatewatcher rfb.authentication": {
+                    "simple": "rfb.authentication"
+                },
+                "Gatewatcher rfb.client_protocol_version": {
+                    "simple": "rfb.client_protocol_version"
+                },
+                "Gatewatcher rfb.server_protocol_version": {
+                    "simple": "rfb.server_protocol_version"
+                },
+                "Gatewatcher rfb.server_security_failure_reason": {
+                    "simple": "rfb.server_security_failure_reason"
+                },
+                "Gatewatcher shellcode.encodings": {
+                    "simple": "shellcode.encodings"
+                },
+                "Gatewatcher shellcode.sub_type": {
+                    "simple": "shellcode.sub_type"
+                },
+                "Gatewatcher sigflow.action": {
+                    "simple": "sigflow.action"
+                },
+                "Gatewatcher sigflow.category": {
+                    "simple": "sigflow.category"
+                },
+                "Gatewatcher sigflow.payload": {
+                    "simple": "sigflow.payload"
+                },
+                "Gatewatcher sigflow.payload_printable": {
+                    "simple": "sigflow.payload_printable"
+                },
+                "Gatewatcher sip.code": {
+                    "simple": "sip.code"
+                },
+                "Gatewatcher sip.reason": {
+                    "simple": "sip.reason"
+                },
+                "Gatewatcher sip.response_line": {
+                    "simple": "sip.response_line"
+                },
+                "Gatewatcher sip.version": {
+                    "simple": "sip.version"
+                },
+                "Gatewatcher smb": {
+                    "simple": "smb"
+                },
+                "Gatewatcher smb.command": {
+                    "simple": "smb.command"
+                },
+                "Gatewatcher smb.dialect": {
+                    "simple": "smb.dialect"
+                },
+                "Gatewatcher smb.filename": {
+                    "simple": "smb.filename"
+                },
+                "Gatewatcher smb.fuid": {
+                    "simple": "smb.fuid"
+                },
+                "Gatewatcher smb.id": {
+                    "simple": "smb.id"
+                },
+                "Gatewatcher smb.session_id": {
+                    "simple": "smb.session_id"
+                },
+                "Gatewatcher smb.share": {
+                    "simple": "smb.share"
+                },
+                "Gatewatcher smb.status": {
+                    "simple": "smb.status"
+                },
+                "Gatewatcher smb.status_code": {
+                    "simple": "smb.status_code"
+                },
+                "Gatewatcher smb.tree_id": {
+                    "simple": "smb.tree_id"
+                },
+                "Gatewatcher smtp.helo": {
+                    "simple": "smtp.helo"
+                },
+                "Gatewatcher smtp.mail_from": {
+                    "simple": "smtp.mail_from"
+                },
+                "Gatewatcher smtp.rcpt_to": {
+                    "simple": "smtp.rcpt_to"
+                },
+                "Gatewatcher snmp.comm": {
+                    "simple": "snmp.comm"
+                },
+                "Gatewatcher snmp.pdu_type": {
+                    "simple": "snmp.pdu_type"
+                },
+                "Gatewatcher snmp.vars": {
+                    "simple": "snmp.vars"
+                },
+                "Gatewatcher snmp.version": {
+                    "simple": "snmp.version"
+                },
+                "Gatewatcher ssh.client": {
+                    "simple": "ssh.client"
+                },
+                "Gatewatcher ssh.server": {
+                    "simple": "ssh.server"
+                },
+                "Gatewatcher tftp.file": {
+                    "simple": "tftp.file"
+                },
+                "Gatewatcher tftp.mode": {
+                    "simple": "tftp.mode"
+                },
+                "Gatewatcher tftp.packet": {
+                    "simple": "tftp.packet"
+                },
+                "Gatewatcher tls.client": {
+                    "simple": "tls.client"
+                },
+                "Gatewatcher tls.ja3": {
+                    "simple": "tls.ja3"
+                },
+                "Gatewatcher tls.ja3s": {
+                    "simple": "tls.ja3s"
+                },
+                "Gatewatcher tls.serial": {
+                    "simple": "tls.serial"
+                },
+                "Gatewatcher tls.server": {
+                    "simple": "tls.server"
+                },
+                "Gatewatcher tls.sni": {
+                    "simple": "tls.sni"
+                },
+                "Gatewatcher tls.version": {
+                    "simple": "tls.version"
+                }
+            }
+        }
+    },
+    "name": "Gatewatcher Mapper Incoming",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

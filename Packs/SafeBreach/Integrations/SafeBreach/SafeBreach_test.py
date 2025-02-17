@@ -174,7 +174,7 @@ def test_get_user_id_by_name_or_email(client, mocker):
             assert expected_result["outputs"][key].get("data")[0]["deletedAt"] is None
         elif key in ["deleted_with_name", "deleted_without_name"]:
             assert expected_result["outputs"][key].get("data")[0]["deletedAt"] is not None
-            assert type(expected_result["outputs"][key].get("data")[0]["deletedAt"]) == str
+            assert type(expected_result["outputs"][key].get("data")[0]["deletedAt"]) is str
         else:
             assert isinstance(expected_result["outputs"][key].get("data"), types.FunctionType)
 

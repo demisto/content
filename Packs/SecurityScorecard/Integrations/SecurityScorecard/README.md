@@ -209,8 +209,8 @@ Create alert based on grade.
 | --- | --- | --- |
 | change_direction | Direction of change. Possible values are: rises, drops. | Required | 
 | score_types | Comma-separated list of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. | Required | 
-| target | What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified. Possible values are: my_scorecard, any_followed_company. | Optional | 
-| portfolios | A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. | Optional | 
+| target | What do you want to monitor with this alert. This argument is required if the `portfolio` argument is not specified. Possible values are: my_scorecard, any_followed_company. | Optional | 
+| portfolio | A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. | Optional | 
 
 #### Context Output
 
@@ -234,8 +234,8 @@ Create alert based threshold met.
 | change_direction | Direction of change. Possible values are: rises_above, drops_below. | Required | 
 | threshold | The numeric score used as the threshold to trigger the alert. | Required | 
 | score_types | Comma separated list of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple factors, provide comma-separated list, i.e. leaked_information,social_engineering. | Required | 
-| target | What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified. Possible values are: my_scorecard, any_followed_company. | Optional | 
-| portfolios | A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. | Optional | 
+| target | What do you want to monitor with this alert. This argument is required if the `portfolio` argument is not specified. Possible values are: my_scorecard, any_followed_company. | Optional | 
+| portfolio | A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. | Optional | 
 
 #### Context Output
 
@@ -257,7 +257,6 @@ Delete an alert.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | Alert ID. | Required | 
-| alert_type | Type of Alert to delete. Possible values are: score, grade. | Required | 
 
 #### Context Output
 
@@ -393,3 +392,26 @@ Retrieve metadata for an issue type, including description and recommendation.
 | SecurityScorecard.Metadata.Issues.short_description | string | issue short description. | 
 | SecurityScorecard.Metadata.Issues.long_description | string | issue long description. | 
 | SecurityScorecard.Metadata.Issues.recommendation | string | issue recommendation. | 
+
+### securityscorecard-alert-rules-list
+
+***
+List alert subscriptions for the user.
+
+#### Base Command
+
+`securityscorecard-alert-rules-list`
+
+#### Input
+
+This command does not require any arguments.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SecurityScorecard.AlertRules.Rule.id | String | Alert Rule ID. | 
+| SecurityScorecard.AlertRules.Rule.name | String | Alert Rule name. | 
+| SecurityScorecard.AlertRules.Rule.target | String | Target of the Rule. | 
+| SecurityScorecard.AlertRules.Rule.updated_at | Date | Timestamp when the alert rule was last updated. | 
+| SecurityScorecard.AlertRules.Rule.paused_at | String | Timestamp when the alert rule was paused. | 
