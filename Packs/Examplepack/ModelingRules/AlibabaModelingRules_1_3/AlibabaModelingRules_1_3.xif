@@ -1,0 +1,32 @@
+[MODEL: dataset=alibaba_action_trail_raw]
+filter
+    event_eventtype in("ApiCall","ConsoleOperation","AliyunServiceEvent","PasswordReset")
+| alter
+    xdm.event.type = event_eventtype,
+    xdm.target.cloud.region = event_acsregion,
+    xdm.event.id = event_eventid,
+    xdm.event.operation = event_eventname,
+    xdm.target.resource.name = event_resourcename,
+    xdm.target.resource.type = event_resourcetype,
+    xdm.source.ipv4 = event_sourceipaddress,
+    xdm.source.user.user_type = if(event_useridentity_type in("root-account","cloudsso-user","saml-user","alibaba-cloud-account"),XDM_CONST.USER_TYPE_REGULAR, event_useridentity_type in("ram-user","assumed-role"),XDM_CONST.USER_TYPE_SERVICE_ACCOUNT ,to_string(event_useridentity_type)),
+    xdm.source.user.identifier = event_useridentity_principalid,
+    xdm.source.user.username = event_useridentity_username,
+    xdm.event.description=event_errormessage,
+    xdm.observer.vendor=_vendor,
+    xdm.observer.product=_product;
+
+filter
+    event_eventtype in("ConsoleSignin","ConsoleSignout")
+| alter
+    xdm.source.location.region = event_acsregion,
+    xdm.event.id = event_eventid,
+    xdm.event.operation = event_eventname,
+    xdm.source.ipv4 = event_sourceipaddress,
+    xdm.source.user.user_type = if(event_useridentity_type in("root-account","cloudsso-user","saml-user","alibaba-cloud-account"),XDM_CONST.USER_TYPE_REGULAR, event_useridentity_type in("ram-user","assumed-role"),XDM_CONST.USER_TYPE_SERVICE_ACCOUNT ,to_string(event_useridentity_type)),
+    xdm.source.user.identifier = event_useridentity_principalid,
+    xdm.source.user.username = event_useridentity_username,
+    xdm.session_context_id=event_useridentity_accesskeyid,
+    xdm.event.description=event_errormessage,
+    xdm.observer.vendor=_vendor,
+    xdm.observer.product=_product;

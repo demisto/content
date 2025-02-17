@@ -1,0 +1,33 @@
+alert_category: EXECUTION
+alert_description: This alert will trigger in an event where multiple attempts of unauthorized actions were detected in the Alibaba ActionTrail account
+alert_fields:
+  actor_process_image_name:
+  actor_process_image_path: xdm.source.user.user_type
+  actor_process_command_line:
+  agent_device_domain:
+  actor_process_image_sha256:
+  agent_hostname:
+  action_local_ip:
+  action_remote_ip: xdm.source.ipv4
+  action_remote_port:
+  actor_effective_username: xdm.source.user.username
+alert_name: Alibaba ActionTrail - multiple unauthorized action attempts detected by a user
+crontab: '*/10 * * * *'
+dataset: alerts
+description: This alert will trigger in an event where multiple attempts of unauthorized actions were detected in the Alibaba ActionTrail account
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+id: bb268634-30a7-4989-90b6-cb833b5591cf
+investigation_query_link:
+mapping_strategy: CUSTOM
+mitre_defs: {}
+name: Alibaba ActionTrail - multiple unauthorized action attempts detected by a user
+search_window: 10 minutes
+severity: SEV_030_MEDIUM
+suppression_duration:
+suppression_enabled: false
+suppression_fields:
+user_defined_category:
+user_defined_severity:
+xql_query: "datamodel dataset = alibaba_action_trail_raw \r\n|filter xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|comp count() as TotalCount by xdm.source.user.username, xdm.source.ipv4, xdm.source.user.user_type\r\n|filter TotalCount > 5"
+fromversion: 6.10.0

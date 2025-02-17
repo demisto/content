@@ -1,0 +1,126 @@
+{
+    "fromVersion": "8.4.0",
+    "id": "28e5d036d8954c93ad8383b55b72c05d",
+    "templates_data": [
+        {
+            "report_name": "Test Report",
+            "report_description": "Test",
+            "layout": [
+                {
+                    "id": "Row 1",
+                    "data": [
+                        {
+                            "key": "header",
+                            "data": {
+                                "name": "NIST 800-171 Compliance Report",
+                                "type": "",
+                                "width": 100,
+                                "height": 140,
+                                "tenantId": "1004205575214",
+                                "description": "Monitor NIST 800-171 controls and produce evidence for audits.",
+                                "customerName": "Palo Alto Networks - TMECortexXDR"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-9444",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "NIST 800-171 Section 3.1: Access Control",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-6948",
+                    "data": [
+                        {
+                            "key": "xql_1692974494975",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "params": [
+                                    {
+                                        "name": "host",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "preset = xdr_login_events \n",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_template_id": 1,
+            "time_frame": {
+                "relativeTime": 86400000
+            },
+            "global_id": "28e5d036d8954c93ad8383b55b72c05d",
+            "time_offset": -18000,
+            "metadata": "{\"params\": []}"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1692974494975",
+            "title": "Compliance: Access Control",
+            "creation_time": 1696525542609,
+            "description": "Implement policies and procedures to monitor access to systems. Use this widget to query XDR login events.",
+            "data": {
+                "params": [
+                    {
+                        "name": "host",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "preset = xdr_login_events \n| filter array_length(assigned_privileges ) > 0 or elevated_token != null\n| filter agent_hostname in($host)\n| comp count() as login_count by agent_hostname, agent_ip_addresses, agent_os_type  \n| sort desc login_count\n| fields agent_hostname, agent_ip_addresses, agent_os_type, login_count\n| limit 100",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ]
+}

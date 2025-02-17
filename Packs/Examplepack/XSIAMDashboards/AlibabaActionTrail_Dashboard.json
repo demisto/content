@@ -1,0 +1,552 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Alibaba Overview Dashboard",
+            "description": "This dashboard displays key information from the Alibaba account such as Top IP locations, TOP users with unauthorized events, etc.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-1768",
+                    "data": [
+                        {
+                            "key": "xql_1668676732415",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 434,
+                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter xdm.target.cloud.region!=null\r\n|alter countrycode=arrayindex(regextract(xdm.target.cloud.region,\"(\\w+)-\"),0)\r\n|comp count(countrycode) as Count by countrycode\r\n| view graph type = map header = \"Alibaba Cloud Regions\" xaxis = countrycode yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "map",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Alibaba Cloud Regions\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "countrycode"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "15"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "10"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "`false`"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668676934356",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 434,
+                                "params": [],
+                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter xdm.source.ipv4!=null\r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "map",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"IP Locations\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "country"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "15"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "10"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "`false`"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7469",
+                    "data": [
+                        {
+                            "key": "xql_1668676995963",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 434,
+                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.user.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Unauthorized events by Username\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "username"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "TotalCount"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668676812432",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 434,
+                                "phrase": "dataset = incidents \r\n|filter description contains \"Alibaba\"\r\n|filter status contains \"New\" \r\n|comp count (severity) as Count by severity\r\n| view graph type = pie header = \"Open Incidents by Severity (Last 30 days)\" xaxis = severity yaxis = Count ",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Open Incidents by Severity (Last 30 days)\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "severity"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668677213404",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 434,
+                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n |comp count() as Count by xdm.event.type\n| view graph type = column subtype = grouped header = \"Count of Event Types\" xaxis = xdm.event.type yaxis = Count seriescolor(\"Count\",\"#7cecc6\") ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Count of Event Types\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.event.type"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "\"Count\"",
+                                                    "\"#7cecc6\""
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "f9c52470483a41e4a6afa65c93f70a4b"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1668676732415",
+            "title": "Alibaba Cloud Regions",
+            "creation_time": 1668676732415,
+            "description": "This widget displays the cloud regions associated to the account and their usage volume",
+            "data": {
+                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter xdm.target.cloud.region!=null\r\n|alter countrycode=arrayindex(regextract(xdm.target.cloud.region,\"(\\w+)-\"),0)\r\n|comp count(countrycode) as Count by countrycode\r\n| view graph type = map header = \"Alibaba Cloud Regions\" xaxis = countrycode yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "map",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Alibaba Cloud Regions\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "countrycode"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "15"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "10"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "`false`"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668676812432",
+            "title": "Alibaba Open Incidents",
+            "creation_time": 1668676812432,
+            "description": "This widget displays the open incidents related to Alibaba in XSIAM",
+            "data": {
+                "phrase": "dataset = incidents \r\n|filter description contains \"Alibaba\"\r\n|filter status contains \"New\" \r\n|comp count (severity) as Count by severity\r\n| view graph type = pie header = \"Open Incidents by Severity (Last 30 days)\" xaxis = severity yaxis = Count ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Open Incidents by Severity (Last 30 days)\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "severity"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "incidents"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668676934356",
+            "title": "Alibaba Top IP Sources",
+            "creation_time": 1668676934356,
+            "description": "This widget displays the top IP sources acceesing the Alibaba account",
+            "data": {
+                "params": [],
+                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n |filter xdm.source.ipv4!=null\r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "map",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"IP Locations\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "country"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "15"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "10"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "`false`"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668676995963",
+            "title": "Alibaba Top unauthorized events by Username",
+            "creation_time": 1668676995963,
+            "description": "This widget displays count of unauthorized events made a user within the account",
+            "data": {
+                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n |filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.user.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Unauthorized events by Username\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "username"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "TotalCount"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668677213404",
+            "title": "Alibaba TOP Event Types in Account",
+            "creation_time": 1668677213404,
+            "description": "This widget displays the top event types occurring in the Alibaba account",
+            "data": {
+                "phrase": "datamodel dataset = alibaba_action_trail_raw \n |comp count() as Count by xdm.event.type\n| view graph type = column subtype = grouped header = \"Count of Event Types\" xaxis = xdm.event.type yaxis = Count seriescolor(\"Count\",\"#7cecc6\") ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Count of Event Types\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.event.type"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"Count\"",
+                                    "\"#7cecc6\""
+                                ],
+                                "name": "seriescolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0",
+    "id": "f9c52470483a41e4a6afa65c93f70a4b"
+}

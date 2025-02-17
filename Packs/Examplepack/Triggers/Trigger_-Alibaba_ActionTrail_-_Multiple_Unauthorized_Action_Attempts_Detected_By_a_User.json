@@ -1,0 +1,19 @@
+{
+  "id": "abfa084a92abfb031de08b57b3f78ec44",
+  "playbook_id": "Test Playbook",
+  "suggestion_reason": "Recommended for multiple unauthorized action_attempts detected by a user related alerts",
+  "description": "This trigger is responsible for handling 'Alibaba ActionTrail - multiple unauthorized action_attempts detected by a user' alerts",
+  "name": "Test Playbook trigger",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Alibaba ActionTrail - multiple unauthorized action attempts detected by a user"
+        }
+      ]
+    }
+  }
+}
+
