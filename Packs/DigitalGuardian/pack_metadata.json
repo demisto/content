@@ -22,5 +22,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "DigitalGuardianARCEventCollector"
+    "defaultDataSource": "DigitalGuardianARCEventCollector",
+    "supportedModules": []
 }

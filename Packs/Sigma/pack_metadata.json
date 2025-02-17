@@ -52,5 +52,6 @@
             "mandatory": false,
             "display_name": "Elasticsearch"
         }
-    }
+    },
+    "supportedModules": []
 }

@@ -66,5 +66,6 @@
         "CommonTypes",
         "CrowdStrikeFalcon"
     ],
-    "defaultDataSource": "Code42 Event Collector"
+    "defaultDataSource": "Code42 Event Collector",
+    "supportedModules": []
 }

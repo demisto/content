@@ -18,5 +18,6 @@
         "platform"
     ],
     "defaultDataSource": "VBR REST API",
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

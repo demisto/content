@@ -73,5 +73,6 @@
         "Digital Shadows",
         "SearchLight"
     ],
-    "defaultDataSource": "ReliaQuest GreyMatter DRP Incidents"
+    "defaultDataSource": "ReliaQuest GreyMatter DRP Incidents",
+    "supportedModules": []
 }

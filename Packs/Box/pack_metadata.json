@@ -18,5 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "BoxEventsCollector"
+    "defaultDataSource": "BoxEventsCollector",
+    "supportedModules": []
 }

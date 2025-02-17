@@ -18,5 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "PhishLabs IOC"
+    "defaultDataSource": "PhishLabs IOC",
+    "supportedModules": []
 }

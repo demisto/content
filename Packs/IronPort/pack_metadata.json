@@ -24,5 +24,6 @@
             "name": "Phishing"
         }
     },
-    "itemPrefix": "CiscoESA"
+    "itemPrefix": "CiscoESA",
+    "supportedModules": []
 }

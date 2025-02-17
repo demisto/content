@@ -47,5 +47,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "QRadar v3"
+    "defaultDataSource": "QRadar v3",
+    "supportedModules": []
 }

@@ -43,5 +43,6 @@
         "integration@prodaft.com"
     ],
     "githubUser": [],
-    "defaultDataSource": "USTA Account Takeover Prevention"
+    "defaultDataSource": "USTA Account Takeover Prevention",
+    "supportedModules": []
 }

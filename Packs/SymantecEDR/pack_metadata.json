@@ -23,5 +23,6 @@
     ],
     "itemPrefix": [
         "SymantecEDR"
-    ]
+    ],
+    "supportedModules": []
 }

@@ -45,5 +45,6 @@
         "CoreAlertFields",
         "CommonTypes",
         "CommonPlaybooks"
-    ]
+    ],
+    "supportedModules": []
 }

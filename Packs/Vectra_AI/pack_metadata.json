@@ -47,5 +47,6 @@
             "mandatory": true,
             "display_name": "Common Types"
         }
-    }
+    },
+    "supportedModules": []
 }

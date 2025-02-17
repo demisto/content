@@ -43,5 +43,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "RecordedFutureEventCollector"
+    "defaultDataSource": "RecordedFutureEventCollector",
+    "supportedModules": []
 }

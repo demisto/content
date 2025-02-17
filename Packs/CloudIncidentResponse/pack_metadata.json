@@ -27,5 +27,6 @@
         "marketplacev2",
         "xsoar",
         "platform"
-    ]
+    ],
+    "supportedModules": []
 }

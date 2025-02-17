@@ -20,5 +20,6 @@
     ],
     "itemPrefix": [
         "Exabeam"
-    ]
+    ],
+    "supportedModules": []
 }

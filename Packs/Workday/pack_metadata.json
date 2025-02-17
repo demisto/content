@@ -18,5 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Workday Event Collector"
+    "defaultDataSource": "Workday Event Collector",
+    "supportedModules": []
 }

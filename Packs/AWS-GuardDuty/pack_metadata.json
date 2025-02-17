@@ -29,5 +29,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "AWS - GuardDuty Event Collector"
+    "defaultDataSource": "AWS - GuardDuty Event Collector",
+    "supportedModules": []
 }

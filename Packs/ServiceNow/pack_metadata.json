@@ -27,5 +27,6 @@
         "xpanse",
         "platform"
     ],
-    "defaultDataSource": "ServiceNow v2"
+    "defaultDataSource": "ServiceNow v2",
+    "supportedModules": []
 }

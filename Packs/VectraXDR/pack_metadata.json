@@ -41,5 +41,6 @@
         "platform"
     ],
     "devEmail": [],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

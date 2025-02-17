@@ -20,5 +20,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Zimperium v2"
+    "defaultDataSource": "Zimperium v2",
+    "supportedModules": []
 }

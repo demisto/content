@@ -20,5 +20,6 @@
     "devEmail": [
         "team-integration@sekoia.io"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

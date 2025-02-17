@@ -31,5 +31,6 @@
     },
     "displayedImages": [
         "CommonPlaybooks"
-    ]
+    ],
+    "supportedModules": []
 }

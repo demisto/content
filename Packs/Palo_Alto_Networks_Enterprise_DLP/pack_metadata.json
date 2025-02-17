@@ -22,5 +22,6 @@
     "itemPrefix": [
         "PAN",
         "DLP"
-    ]
+    ],
+    "supportedModules": []
 }

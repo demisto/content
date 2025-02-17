@@ -18,5 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "NetskopeEventCollector"
+    "defaultDataSource": "NetskopeEventCollector",
+    "supportedModules": []
 }

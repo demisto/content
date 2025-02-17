@@ -16,5 +16,6 @@
     "marketplaces": [
         "marketplacev2",
         "platform"
-    ]
+    ],
+    "supportedModules": []
 }

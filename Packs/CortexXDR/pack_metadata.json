@@ -93,5 +93,6 @@
         "MalwareInvestigationAndResponse",
         "AutoFocus",
         "Jira"
-    ]
+    ],
+    "supportedModules": []
 }

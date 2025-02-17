@@ -31,5 +31,6 @@
     ],
     "itemPrefix": [
         "Commvault"
-    ]
+    ],
+    "supportedModules": []
 }

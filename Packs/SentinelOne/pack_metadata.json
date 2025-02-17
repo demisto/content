@@ -18,5 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "SentinelOneEventCollector"
+    "defaultDataSource": "SentinelOneEventCollector",
+    "supportedModules": []
 }

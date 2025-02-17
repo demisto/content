@@ -20,5 +20,6 @@
     "devEmail": [
         "hruuttila@paloaltonetworks.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

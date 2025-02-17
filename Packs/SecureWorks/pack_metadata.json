@@ -18,5 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Dell Secureworks"
+    "defaultDataSource": "Dell Secureworks",
+    "supportedModules": []
 }

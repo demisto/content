@@ -28,5 +28,6 @@
         "xsoar@ctm360.com"
     ],
     "githubUser": [],
-    "defaultDataSource": "CTM360_CyberBlindspot"
+    "defaultDataSource": "CTM360_CyberBlindspot",
+    "supportedModules": []
 }

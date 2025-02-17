@@ -62,5 +62,6 @@
     ],
     "itemPrefix": [
         "Hox"
-    ]
+    ],
+    "supportedModules": []
 }

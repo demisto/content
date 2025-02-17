@@ -42,5 +42,6 @@
         "xpanse",
         "platform"
     ],
-    "defaultDataSource": "Slack Event Collector"
+    "defaultDataSource": "Slack Event Collector",
+    "supportedModules": []
 }

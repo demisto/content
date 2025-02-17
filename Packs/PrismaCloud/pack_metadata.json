@@ -85,5 +85,6 @@
         "xpanse",
         "platform"
     ],
-    "hybrid": true
+    "hybrid": true,
+    "supportedModules": []
 }

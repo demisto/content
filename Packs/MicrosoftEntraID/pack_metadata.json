@@ -44,5 +44,6 @@
             "mandatory": true,
             "display_name": "Azure App Service"
         }
-    }
+    },
+    "supportedModules": []
 }

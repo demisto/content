@@ -24,5 +24,6 @@
     "devEmail": [
         "integrations@spycloud.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

@@ -22,5 +22,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Salesforce"
+    "defaultDataSource": "Salesforce",
+    "supportedModules": []
 }

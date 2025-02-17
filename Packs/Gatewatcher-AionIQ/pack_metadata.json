@@ -23,5 +23,6 @@
         "ThibaultReboul",
         "clement-lyonnet"
     ],
-    "defaultDataSource": "GCenter 103"
+    "defaultDataSource": "GCenter 103",
+    "supportedModules": []
 }

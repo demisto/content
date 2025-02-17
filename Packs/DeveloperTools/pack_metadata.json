@@ -44,5 +44,6 @@
         "CommonScripts",
         "GenericSQL",
         "CommonTypes"
-    ]
+    ],
+    "supportedModules": []
 }

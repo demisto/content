@@ -19,5 +19,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Orca Event Collector"
+    "defaultDataSource": "Orca Event Collector",
+    "supportedModules": []
 }

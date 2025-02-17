@@ -26,5 +26,6 @@
         "marketplacev2",
         "xpanse",
         "platform"
-    ]
+    ],
+    "supportedModules": []
 }

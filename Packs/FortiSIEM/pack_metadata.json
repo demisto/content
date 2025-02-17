@@ -18,5 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "FortiSIEMV2"
+    "defaultDataSource": "FortiSIEMV2",
+    "supportedModules": []
 }

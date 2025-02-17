@@ -30,5 +30,6 @@
             "mandatory": false,
             "display_name": "Content Installation"
         }
-    }
+    },
+    "supportedModules": []
 }

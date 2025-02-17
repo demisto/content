@@ -122,5 +122,6 @@
         "Jira",
         "Tenable_io",
         "Venafi"
-    ]
+    ],
+    "supportedModules": []
 }

@@ -60,5 +60,6 @@
         "CommonTypes",
         "CoreAlertFields",
         "CommonScripts"
-    ]
+    ],
+    "supportedModules": []
 }

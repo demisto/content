@@ -24,5 +24,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Github Event Collector"
+    "defaultDataSource": "Github Event Collector",
+    "supportedModules": []
 }

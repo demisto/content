@@ -31,5 +31,6 @@
         "marketplacev2",
         "platform"
     ],
-    "tags": []
+    "tags": [],
+    "supportedModules": []
 }

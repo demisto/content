@@ -20,5 +20,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "DeepInstinct v3"
+    "defaultDataSource": "DeepInstinct v3",
+    "supportedModules": []
 }

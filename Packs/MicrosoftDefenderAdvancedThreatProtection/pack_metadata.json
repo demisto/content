@@ -67,5 +67,6 @@
         "CommonPlaybooks",
         "CommonTypes"
     ],
-    "defaultDataSource": "Microsoft Defender Advanced Threat Protection"
+    "defaultDataSource": "Microsoft Defender Advanced Threat Protection",
+    "supportedModules": []
 }

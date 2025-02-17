@@ -18,5 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "supportedModules": []
 }

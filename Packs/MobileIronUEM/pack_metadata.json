@@ -27,5 +27,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "MobileIronCORE"
+    "defaultDataSource": "MobileIronCORE",
+    "supportedModules": []
 }

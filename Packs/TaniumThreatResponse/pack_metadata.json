@@ -18,5 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Tanium Threat Response v2"
+    "defaultDataSource": "Tanium Threat Response v2",
+    "supportedModules": []
 }

@@ -71,5 +71,6 @@
         "CommonPlaybooks",
         "Malware",
         "FeedMitreAttackv2"
-    ]
+    ],
+    "supportedModules": []
 }

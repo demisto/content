@@ -21,5 +21,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "FireEye HX Event Collector"
+    "defaultDataSource": "FireEye HX Event Collector",
+    "supportedModules": []
 }

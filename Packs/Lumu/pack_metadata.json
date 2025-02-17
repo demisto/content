@@ -31,5 +31,6 @@
         "Shellyber",
         "xsoar-bot",
         "content-bot"
-    ]
+    ],
+    "supportedModules": []
 }

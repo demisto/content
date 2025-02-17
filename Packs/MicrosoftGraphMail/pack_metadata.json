@@ -19,5 +19,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "MicrosoftGraphMail"
+    "defaultDataSource": "MicrosoftGraphMail",
+    "supportedModules": []
 }

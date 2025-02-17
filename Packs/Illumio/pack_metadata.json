@@ -29,5 +29,6 @@
         "dsommerville-illumio",
         "illumio-app-integrations"
     ],
-    "devEmail": []
+    "devEmail": [],
+    "supportedModules": []
 }

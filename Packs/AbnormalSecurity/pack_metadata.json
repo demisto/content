@@ -25,5 +25,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Abnormal Security Event Collector"
+    "defaultDataSource": "Abnormal Security Event Collector",
+    "supportedModules": []
 }
