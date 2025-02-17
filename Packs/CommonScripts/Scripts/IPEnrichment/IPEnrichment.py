@@ -368,7 +368,7 @@ def generate_common_ip_from_ip_indicator(ip_address: str, ip_type: str, score: i
 
     """
     geolocation = custom_fields.get("geolocation", "").split(':')
-    geo_latitude ,  geo_longitude = geolocation if len(geolocation) == 2 else (None, None)
+    geo_latitude, geo_longitude = geolocation if len(geolocation) == 2 else (None, None)
     return Common.IP(
         dbot_score=Common.DBotScore(indicator=ip_address, indicator_type=DBotScoreType.IP, score=score),
         ip=ip_address,
@@ -474,45 +474,68 @@ def search_indicators(ips: list[str]):
 
 ######################################## internal flow #######################################
 
+def generate_common_ip_from_endpoint_data():
+    return {}
+
+
+def map_endpoint_data_to_context(endpoint_data):
+    return endpoint_data
+
+
 def get_endpoint_data_outputs(endpoints_data) -> List[dict]:
-    pass
-    # print("get_endpoint_data_outputs")
-    # outputs = []
-    # for endpoint_data in endpoints_data:
-    #     # todo - which fields should be excluded?
-    #     common_ip = generate_common_ip_from_ip_indicator(ip_address=ip_indicator.get('value'),
-    #                                                      ip_type=ip_indicator.get('indicator_type'),
-    #                                                      score=ip_indicator.get('score'),
-    #                                                      custom_fields=ip_indicator.get('CustomFields', {}))
-    #     ip_indicator_mapped_context = map_search_indicator_to_context(ip_indicator)
-    #     print(ip_indicator_mapped_context)
-    #     common_ip_mapped_context = common_ip.to_context()
-    #     print(common_ip_mapped_context)
-    #     common_keys = set(ip_indicator_mapped_context.keys()) & set(common_ip_mapped_context.keys())
-    #
-    #     if common_keys:
-    #         raise DemistoException(f"get_search_indicators_outputs - Common keys found: {common_keys}")
-    #
-    #     outputs.append(common_ip_mapped_context | ip_indicator_mapped_context)
-    # return outputs
+    print("get_endpoint_data_outputs")
+    outputs = []
+    for endpoint_data in endpoints_data:
+        # common_ip = generate_common_ip_from_endpoint_data()
+        endpoint_data_mapped_context = map_endpoint_data_to_context()
+        print(endpoint_data_mapped_context)
+        common_ip_mapped_context = {} #common_ip.to_context()
+        # print(common_ip_mapped_context)
+        outputs.append(common_ip_mapped_context | endpoint_data_mapped_context)
+    return outputs
 
 
-def get_endpoint_data(ips):
-    raw_results = demisto.executeCommand("get-endpoint-data", {"agent_ip": ips, "verbose" : "true"})
-    print(raw_results)
-    outputs = get_endpoint_data_outputs(raw_results.get('Contents', []))
-    return raw_results , outputs
+def get_endpoint_data(ips: str, verbose: bool):
+    #running with 192.168.1.143
+    #todo: check what happens when verbose is false
+    raw_results = demisto.executeCommand("get-endpoint-data", {"agent_ip": ips, "verbose": str(verbose)})
+    #todo: how is data returned for a list?
+    outputs = get_endpoint_data_outputs(raw_results.get('EntryContext', {}).get('Endpoint(val.Hostname.Value && '
+                                                                                'val.Hostname.Value == obj.Hostname.Value)' ,
+                                                                                [])) #todo: can I access the key in this way?
+    return raw_results, outputs
+
+
 ######################################## external flow #######################################
-def check_reputation(ip_command_runner: IPCommandRunner, ips: str):
+def generate_common_ip_from_reputations_data(dict):
+    pass
+
+
+def map_reputation_data_to_context(reputation_data: dict):
+    return reputation_data
+
+
+def get_reputation_outputs(reputations_data) -> List[dict]:
+    print("get_reputation_outputs")
+    outputs = []
+    for reputation_data in reputations_data:
+        # common_ip = generate_common_ip_from_reputations_data()
+        reputation_data_mapped_context = map_reputation_data_to_context(reputation_data)
+        print(reputation_data_mapped_context)
+        common_ip_mapped_context = {} #common_ip.to_context()
+        # print(common_ip_mapped_context)
+        outputs.append(common_ip_mapped_context | reputation_data_mapped_context)
+    return outputs
+def check_reputation(ips: str):
     """Check the reputation of an IP address."""
     print("REPUTATION")
-    ip_command = Command(
-        name="ip",
-        output_keys=["Contents"],
-        output_mapping=lambda x: x.get("Contents", [])
-    )
-    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(
-        ip_command, {"ip": ips})
+    raw_results = demisto.executeCommand("ip", {"ip": ips})
+    print(raw_results)
+    outputs = get_reputation_outputs(raw_results) 
+    return raw_results, outputs
+
+
+
     command_context_outputs = command_context_outputs[0] if isinstance(command_context_outputs, list) else command_context_outputs
     enriched_data = enrich_data_with_source(command_context_outputs, "Reputation")
 
@@ -533,36 +556,27 @@ def get_analytics_prevalence(ip_command_runner: IPCommandRunner, ips: str) -> di
 
 
 ######################################### general flow #######################################
-def enrich_internal_ip_address(ips: list[str]):
+def enrich_internal_ip_address(ips: list[str], verbose: bool):
     """Handle internal IP enrichment."""
-    outputs = []
     demisto.debug(f"Internal IP detected: {ips}")
     joined_ips = ",".join(ips)
-    get_endpoint_data_raw_results, get_endpoint_data_outputs = get_endpoint_data(joined_ips)
-
-
-    # get_endpoint_data_command = Command(
-    #     name="get-endpoint-data",
-    #     output_keys=["Contents"],
-    #     output_mapping=lambda x: x.get("Contents", [])
-    # )
-    # command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(
-    #     get_endpoint_data_command, {"agent_ip": joined_ips})
-    # get_outputs("Core.AnalyticsPrevalence.Ip", command_context_outputs[0])
-    return raw_results, outputs
+    get_endpoint_data_raw_results, get_endpoint_data_outputs = get_endpoint_data(joined_ips, verbose)
+    return get_endpoint_data_raw_results, get_endpoint_data_outputs
 
 
 def enrich_external_ip_address(ips: list[str]):
     """Handle external IP enrichment."""
     pass
-    # raw_results, outputs = [], []
-    # demisto.debug(f"External IPs detected: {ips}")
-    # print("EXTERNAL IP")
-    # joined_ips = ",".join(ips)
-    # check_reputation(ip_command_runner, joined_ips)
+    raw_results, outputs = [], []
+    demisto.debug(f"External IPs detected: {ips}")
+    print("EXTERNAL IP")
+    joined_ips = ",".join(ips)
+    check_reputation_raw_results, check_reputation_outputs = check_reputation(joined_ips)
+    raw_results.append(check_reputation_raw_results)
+    outputs.append(check_reputation_outputs)
     # if is_xsiam():
-    #     get_analytics_prevalence(ip_command_runner, joined_ips)
-    # return raw_results, outputs
+    #     get_analytics_prevalence(joined_ips)
+    return raw_results, outputs
 
 
 def gather_enrichment_data(ips: list[str], external_enrichment: bool, verbose: bool):
@@ -574,7 +588,7 @@ def gather_enrichment_data(ips: list[str], external_enrichment: bool, verbose: b
     print(f"Internal IPs: {internal_ips}")
     print(f"External IPs: {external_ips}")
     if internal_ips:
-        enrich_internal_ip_address(internal_ips)
+        enriched_internal_ip_address_raw_results, enriched_internal_ip_address_outputs = enrich_internal_ip_address(internal_ips, verbose)
     if external_ips:
         enrich_external_ip_address(external_ips)
 
