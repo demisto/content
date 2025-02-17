@@ -964,7 +964,7 @@ def test_whois_and_domain_command_with_exception(mocker: MockerFixture):
 
     assert len(res) == 2
     assert res[0].readable_output == \
-           "Exception of type PywhoisError was caught while performing whois lookup with the domain 'raw.githubusercontent.com': "
+        "Exception of type PywhoisError was caught while performing whois lookup with the domain 'raw.githubusercontent.com': "
     assert res[0].entry_type == 4
 
 
