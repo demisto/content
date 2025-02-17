@@ -641,22 +641,28 @@ There is no context output for this command.
 >ok
 
 ### msgraph-user-session-revoke
-***
-Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
-Permission: Directory.AccessAsUser.All(Delegated)
 
+***
+Revoke a user session by invalidating all refresh tokens issued to applications for a user. 
+This command requires an administrator role.
+Permission required: Directory.AccessAsUser.All (Delegated).
 
 #### Base Command
 
 `msgraph-user-session-revoke`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user | User ID or userPrincipalName. | Required | 
 
+#### Context Output
+
+There is no context output for this command.
 
 ### msgraph-user-generate-login-url
+
 ***
 Generate the login url used for Authorization code flow.
 
