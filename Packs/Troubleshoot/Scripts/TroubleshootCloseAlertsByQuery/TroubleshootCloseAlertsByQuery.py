@@ -13,7 +13,7 @@ def main():
             for alert in alert_ids]
         if closed_results:
             for result in closed_results:
-                if type(result) == list:
+                if type(result) is list:
                     final_message += f'{result[0].get("Contents")}\n'
 
         return_results(final_message)

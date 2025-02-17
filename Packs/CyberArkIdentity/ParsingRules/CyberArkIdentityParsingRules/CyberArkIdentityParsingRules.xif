@@ -1,3 +1,3 @@
 [INGEST:vendor="cyberark", product="identity", target_dataset="cyberark_identity_raw", no_hit=keep]
-filter WhenOccurred ~= "[0-9]+"
-| alter _time = to_timestamp(to_integer(arrayindex(regextract(WhenOccurred, "[0-9]+"), 0)), "MILLIS");
+filter to_string(WhenOccurred) ~= "[0-9]+"
+| alter _time = to_timestamp(to_integer(arrayindex(regextract(to_string(WhenOccurred), "[0-9]+"), 0)), "MILLIS");

@@ -299,7 +299,7 @@
 ]
 </pre>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/35098543/38619069-02ebbb4e-3da4-11e8-97be-d9f096860fae.png"></p>
+<p><img src="../../doc_files/38619069-02ebbb4e-3da4-11e8-97be-d9f096860fae.png"></p>
 <hr>
 <h3 id="h_481137833691529412381792">Search</h3>
 <p>Deprecated. See <a href="#h_43812108861529412371473">Search Pattern Matches.</a></p>
@@ -592,7 +592,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/35098543/38617956-fe7a9a24-3da0-11e8-9a0a-62762a81ff8c.png"></p>
+<p><img src="../../doc_files/38617956-fe7a9a24-3da0-11e8-9a0a-62762a81ff8c.png"></p>
 <p> </p>
 <p><strong>More Query Command Examples:</strong></p>
 <p><code>!netwitness-query size="5" query="select*where device.class contains 'Anti Virus'"</code><br><br><code>!netwitness-query size="5" query="select*where sessionid=1831740465537" </code><br><br><br></p>
@@ -701,7 +701,7 @@
 <h5>Raw Output</h5>
 <p>There is no raw output for this command.</p>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/35098543/38615982-2db34cce-3d9b-11e8-8a7e-48a679f0d10c.png"></p>
+<p><img src="../../doc_files/38615982-2db34cce-3d9b-11e8-8a7e-48a679f0d10c.png"></p>
 <hr>
 <h3 id="h_8700184822501529412408968">Get meta ID range</h3>
 <p>Returns the meta ID range for the session range.</p>
@@ -769,7 +769,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/35098543/38616096-834a48e0-3d9b-11e8-8b06-a2a0a309a95e.png"></p>
+<p><img src="../../doc_files/38616096-834a48e0-3d9b-11e8-8b06-a2a0a309a95e.png"></p>
 <hr>
 <h3 id="h_5257788533091529412417936">Get packet content</h3>
 <p>Returns the packet content for a session.</p>
@@ -915,7 +915,7 @@
 <h5>Raw Output</h5>
 <p>There is no raw output for this command.</p>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/35098543/38616236-f1648674-3d9b-11e8-8e27-e805af8d0679.png"></p>
+<p><img src="../../doc_files/38616236-f1648674-3d9b-11e8-8e27-e805af8d0679.png"></p>
 <hr>
 <h3 id="h_1272381413671529412427675">Get summary</h3>
 <p>Returns summary information from the databases.</p>
@@ -971,7 +971,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/35098543/38616272-1ae3b682-3d9c-11e8-81db-f873a0c0e454.png" width="843" height="52"></p>
+<p><img src="../../doc_files/38616272-1ae3b682-3d9c-11e8-81db-f873a0c0e454.png" width="843" height="52"></p>
 <hr>
 <h3 id="h_6082900294241529412438868">Get value count</h3>
 <p>Performs a value count query and returns the matching values in a report.</p>
@@ -1196,7 +1196,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/35098543/38617765-8289dd30-3da0-11e8-9d43-07e43711cbd5.png"></p>
+<p><img src="../../doc_files/38617765-8289dd30-3da0-11e8-9d43-07e43711cbd5.png"></p>
 <hr>
 <h3 id="h_2458732204801529412449371">Dump information</h3>
 <p>Dumps information out of the database in nwd formatted files.</p>
@@ -1476,7 +1476,7 @@
 }
 </pre>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/35098543/38618665-00d56770-3da3-11e8-84ab-364a38e82cfe.png" width="552" height="479"></p>
+<p><img src="../../doc_files/38618665-00d56770-3da3-11e8-84ab-364a38e82cfe.png" width="552" height="479"></p>
 <hr>
 <h2>Error Responses</h2>
 <table style="height: 156px; width: 750px;" border="6" cellpadding="2">

@@ -208,7 +208,7 @@ def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResul
 def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
     queue_ids = argToList(args.get('queue_ids', ''))
 
-    raw_response = client.fe_client.release_quarantined_emails_request(queue_ids)
+    raw_response = client.fe_client.release_quarantined_emails_request(queue_ids, '')
 
     if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
         raise DemistoException(raw_response.json())
@@ -216,7 +216,7 @@ def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandR
         md_ = f'{INTEGRATION_NAME} released emails successfully.'
     return CommandResults(
         readable_output=md_,
-        raw_response=raw_response
+        raw_response=""
     )
 
 
@@ -232,7 +232,7 @@ def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandRe
 
     return CommandResults(
         readable_output=md_,
-        raw_response=raw_response
+        raw_response=""
     )
 
 

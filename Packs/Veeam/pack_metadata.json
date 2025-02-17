@@ -2,7 +2,7 @@
     "name": "Veeam App",
     "description": "The Veeam Apps allow Veeam Data Platform Advanced and Premium customers to combine the automation and orchestration features of the Cortex product suite with a simple and powerful Veeam Data Platform that goes beyond backup providing businesses with reliable data protection, seamless recovery, and streamlined data management.",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.7",
     "author": "Veeam Software",
     "url": "https://www.veeam.com/support.html",
     "email": "paloaltoappsupport@veeam.com",

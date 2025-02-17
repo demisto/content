@@ -16,6 +16,7 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 | Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000. | False |
 | Anomaly Event Critical Severity Level Mapping | When a Anomaly event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
 | Anomaly Event Warning Severity Level Mapping | When a Anomaly event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
 
@@ -681,7 +682,7 @@ Retrieve the download link for the requested scanned file.
 
 ### rubrik-radar-anomaly-csv-analysis
 ***
-Request for the analysis and retrieve the download link for the Radar CSV analyzed file.
+Request for the analysis and retrieve the download link or directly download file for the Radar CSV analyzed file.
 
 
 #### Base Command
@@ -694,6 +695,7 @@ Request for the analysis and retrieve the download link for the Radar CSV analyz
 | cluster_id | The unique ID of the cluster.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
 | snapshot_id | The CDM snapshot ID.<br/><br/>Note: Users can retrieve the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command.<br/>Use the "rubrik-radar-suspicious-file-list" command to retrieve the actual CDM ID from the Anomaly ID.<br/>Example format to get the snapshot CDM ID from Anomaly ID: "&lt;Cluster-ID&gt;:::VirtualMachine:::&lt;Snappable-ID&gt;:::&lt;CDM-ID&gt;". | Required | 
 | object_id | The VM object ID (Snappable ID).<br/><br/>Note: Users can retrieve the list of Snappable IDs by executing the "rubrik-polaris-vm-objects-list" command.<br/>Example format to get the Snappable ID: "VirtualMachine:::&lt;Snappable-ID&gt;". | Required | 
+| download_file | If set to True, the command downloads the anomaly analysis CSV file directly on XSOAR server.<br/><br/>Possible values are: True, False. Default is False. | Optional |
 
 
 #### Context Output
@@ -704,16 +706,40 @@ Request for the analysis and retrieve the download link for the Radar CSV analyz
 | RubrikPolaris.RadarAnomalyCSV.snapshotId | String | Snapshot ID of the CSV. | 
 | RubrikPolaris.RadarAnomalyCSV.objectId | String | Object ID of the CSV. | 
 | RubrikPolaris.RadarAnomalyCSV.investigationCsvDownloadLink.downloadLink | String | The download link of the CSV analysis. | 
+| File.Size | String | File size in bytes. | 
+| File.SHA1 | String | SHA1 hash of file. | 
+| File.SHA256 | String | SHA256 hash of file. | 
+| File.SHA512 | String | SHA512 hash of file. | 
+| File.Name | String | File name. | 
+| File.SSDeep | String | SSDeep hash of the file. | 
+| File.EntryID | Unknown | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
 
 
 #### Command Example
-```!rubrik-radar-anomaly-csv-analysis cluster_id="cc19573c-db6c-418a-9d48-067a256543ba" snapshot_id="7b71d588-911c-4165-b6f3-103a1684d2a3" object_id="868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-4335"```
+```!rubrik-radar-anomaly-csv-analysis cluster_id="0000-000-000-000-0000" snapshot_id="0000-000-000-000-0000" object_id="0000-000-000-000-vm-0000" download_file=True```
 
 #### Human Readable Output
-### Radar Anomaly CSV Analysis
-|CSV Download Link|
-|---|
-| Download the analyzed [CSV](https://www.example.com/csv_file) file. |
+>### Radar Anomaly CSV Analysis
+>|CSV Download Link|
+>|---|
+>| Download the analyzed [CSV](https://www.example.com/snapshot_000-000-000-000.csv) file. |
+
+>Uploaded file: snapshot_000-000-000-000.csv Download
+>
+>|Property|Value|
+>|---|---|
+>| Type | text/csv; charset=utf-8 |
+>| Size | 10,069 bytes |
+>| Info | ASCII text, with very long lines |
+>| MD5 | 10000000000000000000000000 |
+>| SHA1 | 1000000000000000000000000000000 |
+>| SHA256 | 1000000000000000000000000000000000000000000000000000000000 |
+>| SHA512 | 10000000000000000000000000000000000000000000000000000000000000000000000 |
+>| SSDeep | 1:100000000000000000000000000000000000000000000000000000000: |
 
 
 
@@ -2717,3 +2743,453 @@ Retrieve the suspicious list of files for a snapshot ID with detected file anoma
 >|---|---|---|---|
 >| /C:/Shares/Restore-My-Files.txt.lockbit | Ransomware Encryption | 2512 | 2024-02-05T16:00:44.000Z |
 >| /C:/Users/Public/Desktop/Restore-My-Files.txt | Ransomware Note | 2484 | 2024-02-08T02:00:03.000Z |
+
+
+### ip
+
+***
+Retrieve the sensitive information available for the given IP address(es).
+
+#### Base Command
+
+`ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The IP address\(es\) for which to retrieve sensitive information. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| IP.Address | String | IP address. | 
+| IP.Relationships.EntityA | String | The source of the relationship. | 
+| IP.Relationships.EntityB | String | The destination of the relationship. | 
+| IP.Relationships.Relationship | String | The name of the relationship. | 
+| IP.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| IP.Relationships.EntityBType | String | The type of the destination of the relationship. | 
+| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
+| IP.Hostname | String | The hostname that is mapped to this IP address. | 
+| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
+| IP.Geo.Country | String | The country in which the IP address is located. | 
+| IP.Geo.Description | String | Additional information about the location. | 
+| IP.DetectionEngines | Number | The total number of engines that checked the indicator. | 
+| IP.PositiveDetections | Number | The number of engines that positively detected the indicator as malicious. | 
+| IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
+| IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
+| IP.Tags | Unknown | Tags of the IP address. | 
+| IP.FeedRelatedIndicators.value | String | Indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the IP address. | 
+| IP.MalwareFamily | String | The malware family associated with the IP address. | 
+| IP.Organization.Name | String | The organization of the IP address. | 
+| IP.Organization.Type | String | The organization type of the IP address. | 
+| IP.ASOwner | String | The autonomous system owner of the IP address. | 
+| IP.Region | String | The region in which the IP address is located. | 
+| IP.Port | String | Ports that are associated with the IP address. | 
+| IP.Internal | Boolean | Whether the IP address is internal or external. | 
+| IP.UpdatedDate | Date | The date that the IP address was last updated. | 
+| IP.Registrar.Abuse.Name | String | The name of the contact for reporting abuse. | 
+| IP.Registrar.Abuse.Address | String | The address of the contact for reporting abuse. | 
+| IP.Registrar.Abuse.Country | String | The country of the contact for reporting abuse. | 
+| IP.Registrar.Abuse.Network | String | The network of the contact for reporting abuse. | 
+| IP.Registrar.Abuse.Phone | String | The phone number of the contact for reporting abuse. | 
+| IP.Registrar.Abuse.Email | String | The email address of the contact for reporting abuse. | 
+| IP.Campaign | String | The campaign associated with the IP address. | 
+| IP.TrafficLightProtocol | String | The Traffic Light Protocol \(TLP\) color that is suitable for the IP address. | 
+| IP.CommunityNotes.note | String | Notes on the IP address that were given by the community. | 
+| IP.CommunityNotes.timestamp | Date | The time in which the note was published. | 
+| IP.Publications.source | String | The source in which the article was published. | 
+| IP.Publications.title | String | The name of the article. | 
+| IP.Publications.link | String | A link to the original article. | 
+| IP.Publications.timestamp | Date | The time in which the article was published. | 
+| IP.ThreatTypes.threatcategory | String | The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc. | 
+| IP.ThreatTypes.threatcategoryconfidence | String | The confidence level provided by the vendor for the threat type category For example, a confidence of 90 for the threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | 
+| RubrikPolaris.IP.ip | String | IP address of the object. | 
+| RubrikPolaris.IP.generalInfo.fid | String | The foreign ID of the object. | 
+| RubrikPolaris.IP.generalInfo.name | String | The name of the object. | 
+| RubrikPolaris.IP.generalInfo.objectType | String | The type of the object. | 
+| RubrikPolaris.IP.generalInfo.protectionStatus | String | The protection status of the object. | 
+| RubrikPolaris.IP.generalInfo.lastSnapshot | Date | The timestamp of the last snapshot of the object. | 
+| RubrikPolaris.IP.generalInfo.redirectLink | String | The link to the object in the Rubrik UI. | 
+| RubrikPolaris.IP.sensitiveInfo.riskLevel | String | The risk level of the object. | 
+| RubrikPolaris.IP.sensitiveInfo.sensitiveFiles.mediumCount | String | The number of sensitive files of medium risk level. | 
+| RubrikPolaris.IP.sensitiveInfo.sensitiveHits | Number | The number of sensitive files. | 
+| RubrikPolaris.IP.sensitiveInfo.openAccessFiles | Number | The number of open access files. | 
+| RubrikPolaris.IP.sensitiveInfo.staleFiles | Number | The number of stale files. | 
+| RubrikPolaris.IP.sensitiveInfo.redirectLink | String | The link to the sensitive information in the Rubrik UI. | 
+| RubrikPolaris.IP.sensitiveInfo.policyNames | String | The names of the policies associated with the object. | 
+| RubrikPolaris.IP.anomalyInfo.severity | String | The severity of the anomaly. | 
+| RubrikPolaris.IP.anomalyInfo.detectionTime | Date | The timestamp of the anomaly detection. | 
+| RubrikPolaris.IP.anomalyInfo.createdFileCount | String | The number of created files. | 
+| RubrikPolaris.IP.anomalyInfo.deletedFileCount | String | The number of deleted files. | 
+| RubrikPolaris.IP.anomalyInfo.modifiedFileCount | String | The number of modified files. | 
+| RubrikPolaris.IP.anomalyInfo.suspiciousFileCount | String | The number of suspicious files. | 
+| RubrikPolaris.IP.anomalyInfo.redirectLink | String | The link to the anomaly information in the Rubrik UI. | 
+| RubrikPolaris.IP.threatHuntInfo.latestThreatHunt.huntId | String | The ID of the latest threat hunt. | 
+| RubrikPolaris.IP.threatHuntInfo.latestThreatHunt.huntStartTime | Date | The timestamp of the latest threat hunt. | 
+| RubrikPolaris.IP.threatHuntInfo.latestThreatHunt.isMalicious | String | Whether the latest threat hunt is malicious. | 
+| RubrikPolaris.IP.threatHuntInfo.latestMaliciousThreatHunt.huntId | String | The ID of the latest malicious threat hunt. | 
+| RubrikPolaris.IP.threatHuntInfo.latestMaliciousThreatHunt.huntStartTime | Date | The timestamp of the latest malicious threat hunt. | 
+| RubrikPolaris.IP.threatHuntInfo.latestMaliciousThreatHunt.isMalicious | String | Whether the latest malicious threat hunt is malicious. | 
+| RubrikPolaris.IP.threatHuntInfo.redirectLink | String | The link to the threat hunt information in the Rubrik UI. | 
+| RubrikPolaris.IP.threatMonitoringInfo.latestThreatMonitoring.snapshotFid | String | The foreign ID of the latest threat monitoring snapshot. | 
+| RubrikPolaris.IP.threatMonitoringInfo.latestThreatMonitoring.monitoringScanTime | Date | The timestamp of the latest threat monitoring scan. | 
+| RubrikPolaris.IP.threatMonitoringInfo.latestThreatMonitoring.isMalicious | String | Whether the latest threat monitoring snapshot is malicious. | 
+| RubrikPolaris.IP.threatMonitoringInfo.latestMaliciousThreatMonitoring.snapshotFid | String | The foreign ID of the latest malicious threat monitoring snapshot. | 
+| RubrikPolaris.IP.threatMonitoringInfo.latestMaliciousThreatMonitoring.monitoringScanTime | Date | The timestamp of the latest malicious threat monitoring scan. | 
+| RubrikPolaris.IP.threatMonitoringInfo.latestMaliciousThreatMonitoring.isMalicious | String | Whether the latest malicious threat monitoring snapshot is malicious. | 
+| RubrikPolaris.IP.threatMonitoringInfo.redirectLink | String | The link to the threat monitoring information in the Rubrik UI. | 
+
+#### Command example
+```!ip ip="0.0.0.1"```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "0.0.0.1",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "ip",
+        "Vendor": "Rubrik Security Cloud"
+    },
+    "IP": {
+        "Address": "0.0.0.1",
+        "UpdatedDate": "2024-10-21T08:51:52Z"
+    },
+    "RubrikPolaris": {
+        "IP": {
+            "ip": "0.0.0.1",
+            "generalInfo": {
+                "fid": "12345678-1234-1234-1234-123456789012",
+                "name": "DEMO-RADAR",
+                "objectType": "Vsphere Virtual Machine",
+                "protectionStatus": "Protected",
+                "lastSnapshot": "2024-10-18T06:02:25Z",
+                "redirectLink": "https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview"
+            },
+            "sensitiveInfo": {
+                "riskLevel": "Medium",
+                "sensitiveFiles": {
+                    "mediumCount": "11"
+                },
+                "sensitiveHits": 2910,
+                "openAccessFiles": 6,
+                "staleFiles": 11,
+                "redirectLink": "https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse",
+                "policyNames": [
+                    "U.S. PII"
+                ]
+            },
+            "anomalyInfo": {
+                "severity": "Critical",
+                "detectionTime": "2024-10-14T17:57:06Z",
+                "createdFileCount": "4487",
+                "deletedFileCount": "4477",
+                "modifiedFileCount": "32",
+                "suspiciousFileCount": "4476",
+                "redirectLink": "https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary"
+            },
+            "threatHuntInfo": {
+                "latestThreatHunt": {
+                    "huntId": "12345678-1234-1234-1234-123456789012",
+                    "huntStartTime": "2024-10-11T09:23:26Z",
+                    "isMalicious": "Matches Found"
+                },
+                "latestMaliciousThreatHunt": {
+                    "huntId": "12345678-1234-1234-1234-123456789012",
+                    "huntStartTime": "2024-10-11T09:23:26Z",
+                    "isMalicious": "Matches Found"
+                },
+                "redirectLink": "https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details"
+            },
+            "threatMonitoringInfo": {
+                "latestThreatMonitoring": {
+                    "snapshotFid": "12345678-1234-1234-1234-123456789012",
+                    "monitoringScanTime": "2024-10-18T05:51:31Z",
+                    "isMalicious": "No Matches"
+                },
+                "latestMaliciousThreatMonitoring": {
+                    "snapshotFid": "12345678-1234-1234-1234-123456789012",
+                    "monitoringScanTime": "2024-10-14T04:41:15Z",
+                    "isMalicious": "Matches Found"
+                },
+                "redirectLink": "https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### General Information for the given medium risk IP: 0.0.0.1
+>|Fid|Last Snapshot|Name|Object Type|Protection Status|Redirect Link|
+>|---|---|---|---|---|---|
+>| 12345678-1234-1234-1234-123456789012 | 2024-10-18T06:02:25Z | DEMO-RADAR | Vsphere Virtual Machine | Protected | [https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview](https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview) |
+>
+>### Sensitive Information
+>|Open Access Files|Policy Names|Redirect Link|Risk Level|Sensitive Files|Sensitive Hits|Stale Files|
+>|---|---|---|---|---|---|---|
+>| 6 | U.S. PII | [https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse](https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse) | Medium | mediumCount: 11 | 2910 | 11 |
+>
+>### Anomaly Information
+>|Created File Count|Deleted File Count|Detection Time|Modified File Count|Redirect Link|Severity|Suspicious File Count|
+>|---|---|---|---|---|---|---|
+>| 4487 | 4477 | 2024-10-14T17:57:06Z | 32 | [https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary](https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary) | Critical | 4476 |
+>
+>### Threat Hunt Information
+>|Latest Malicious Threat Hunt|Latest Threat Hunt|Redirect Link|
+>|---|---|---|
+>| huntId: 12345678-1234-1234-1234-123456789012<br/>huntStartTime: 2024-10-11T09:23:26Z<br/>isMalicious: Matches Found | huntId: 12345678-1234-1234-1234-123456789012<br/>huntStartTime: 2024-10-11T09:23:26Z<br/>isMalicious: Matches Found | [https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details](https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details) |
+>
+>### Threat Monitoring Information
+>|Latest Malicious Threat Monitoring|Latest Threat Monitoring|Redirect Link|
+>|---|---|---|
+>| snapshotFid: 12345678-1234-1234-1234-123456789012<br/>monitoringScanTime: 2024-10-14T04:41:15Z<br/>isMalicious: Matches Found | snapshotFid: 12345678-1234-1234-1234-123456789012<br/>monitoringScanTime: 2024-10-18T05:51:31Z<br/>isMalicious: No Matches | [https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90](https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90) |
+
+
+### domain
+
+***
+Retrieve the sensitive information available for the given domain(s).
+
+#### Base Command
+
+`domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain(s) for which to retrieve sensitive information. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| Domain.Relationships.EntityA | string | The source of the relationship. | 
+| Domain.Relationships.EntityB | string | The destination of the relationship. | 
+| Domain.Relationships.Relationship | string | The name of the relationship. | 
+| Domain.Relationships.EntityAType | string | The type of the source of the relationship. | 
+| Domain.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| Domain.DNS | String | A list of IP objects resolved by DNS. | 
+| Domain.DetectionEngines | Number | The total number of engines that checked the indicator. | 
+| Domain.PositiveDetections | Number | The number of engines that positively detected the indicator as malicious. | 
+| Domain.CreationDate | Date | The date that the domain was created. | 
+| Domain.UpdatedDate | String | The date that the domain was last updated. | 
+| Domain.ExpirationDate | Date | The expiration date of the domain. | 
+| Domain.DomainStatus | Datte | The status of the domain. | 
+| Domain.NameServers | Unknown | \(List&lt;String&gt;\) Name servers of the domain. | 
+| Domain.Organization | String | The organization of the domain. | 
+| Domain.Subdomains | Unknown | \(List&lt;String&gt;\) Subdomains of the domain. | 
+| Domain.Admin.Country | String | The country of the domain administrator. | 
+| Domain.Admin.Email | String | The email address of the domain administrator. | 
+| Domain.Admin.Name | String | The name of the domain administrator. | 
+| Domain.Admin.Phone | String | The phone number of the domain administrator. | 
+| Domain.Registrant.Country | String | The country of the registrant. | 
+| Domain.Registrant.Email | String | The email address of the registrant. | 
+| Domain.Registrant.Name | String | The name of the registrant. | 
+| Domain.Registrant.Phone | String | The phone number for receiving abuse reports. | 
+| Domain.Tags | Unknown | Tags of the domain. | 
+| Domain.FeedRelatedIndicators.value | String | Indicators that are associated with the domain. | 
+| Domain.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the domain. | 
+| Domain.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the domain. | 
+| Domain.MalwareFamily | String | The malware family associated with the domain. | 
+| Domain.WHOIS.DomainStatus | String | The status of the domain. | 
+| Domain.WHOIS.NameServers | String | \(List&lt;String&gt;\) Name servers of the domain. | 
+| Domain.WHOIS.CreationDate | Date | The date that the domain was created. | 
+| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated. | 
+| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
+| Domain.WHOIS.Registrant.Name | String | The name of the registrant. | 
+| Domain.WHOIS.Registrant.Email | String | The email address of the registrant. | 
+| Domain.WHOIS.Registrant.Phone | String | The phone number of the registrant. | 
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: "GoDaddy". | 
+| Domain.WHOIS.Registrar.AbuseEmail | String | The email address of the contact for reporting abuse. | 
+| Domain.WHOIS.Registrar.AbusePhone | String | The phone number of contact for reporting abuse. | 
+| Domain.WHOIS.Admin.Name | String | The name of the domain administrator. | 
+| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. | 
+| Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. | 
+| Domain.WHOIS/History | String | List of Whois objects. | 
+| Domain.Malicious.Vendor | String | The vendor reporting the domain as malicious. | 
+| Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. | 
+| Domain.DomainIDNName | String | The internationalized domain name \(IDN\) of the domain. | 
+| Domain.Port | String | Ports that are associated with the domain. | 
+| Domain.Internal | Bool | Whether or not the domain is internal or external. | 
+| Domain.Category | String | The category associated with the indicator. | 
+| Domain.Campaign | String | The campaign associated with the domain. | 
+| Domain.TrafficLightProtocol | String | The Traffic Light Protocol \(TLP\) color that is suitable for the domain. | 
+| Domain.ThreatTypes.threatcategory | String | The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc. | 
+| Domain.ThreatTypes.threatcategoryconfidence | String | Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | 
+| Domain.Geo.Location | String | The geolocation where the domain address is located, in the format: latitude:longitude. | 
+| Domain.Geo.Country | String | The country in which the domain address is located. | 
+| Domain.Geo.Description | String | Additional information about the location. | 
+| Domain.Tech.Country | String | The country of the domain technical contact. | 
+| Domain.Tech.Name | String | The name of the domain technical contact. | 
+| Domain.Tech.Organization | String | The organization of the domain technical contact. | 
+| Domain.Tech.Email | String | The email address of the domain technical contact. | 
+| Domain.CommunityNotes.note | String | Notes on the domain that were given by the community. | 
+| Domain.CommunityNotes.timestamp | Date | The time in which the note was published. | 
+| Domain.Publications.source | String | The source in which the article was published. | 
+| Domain.Publications.title | String | The name of the article. | 
+| Domain.Publications.link | String | A link to the original article. | 
+| Domain.Publications.timestamp | Date | The time in which the article was published. | 
+| Domain.Billing | String | The billing address of the domain. | 
+| RubrikPolaris.Domain.domain | String | The domain of the object. | 
+| RubrikPolaris.Domain.generalInfo.fid | String | The foreign ID of the object. | 
+| RubrikPolaris.Domain.generalInfo.name | String | The name of the object. | 
+| RubrikPolaris.Domain.generalInfo.objectType | String | The type of the object. | 
+| RubrikPolaris.Domain.generalInfo.protectionStatus | String | The protection status of the object. | 
+| RubrikPolaris.Domain.generalInfo.lastSnapshot | Date | The timestamp of the last snapshot of the object. | 
+| RubrikPolaris.Domain.generalInfo.redirectLink | String | The link to the object in the Rubrik UI. | 
+| RubrikPolaris.Domain.sensitiveInfo.riskLevel | String | The risk level of the object. | 
+| RubrikPolaris.Domain.sensitiveInfo.sensitiveFiles.mediumCount | String | The number of sensitive files of medium risk level. | 
+| RubrikPolaris.Domain.sensitiveInfo.sensitiveHits | Number | The number of sensitive files. | 
+| RubrikPolaris.Domain.sensitiveInfo.openAccessFiles | Number | The number of open access files. | 
+| RubrikPolaris.Domain.sensitiveInfo.staleFiles | Number | The number of stale files. | 
+| RubrikPolaris.Domain.sensitiveInfo.redirectLink | String | The link to the sensitive information in the Rubrik UI. | 
+| RubrikPolaris.Domain.sensitiveInfo.policyNames | String | The names of the policies associated with the object. | 
+| RubrikPolaris.Domain.anomalyInfo.severity | String | The severity of the anomaly. | 
+| RubrikPolaris.Domain.anomalyInfo.detectionTime | Date | The timestamp of the anomaly detection. | 
+| RubrikPolaris.Domain.anomalyInfo.createdFileCount | String | The number of created files. | 
+| RubrikPolaris.Domain.anomalyInfo.deletedFileCount | String | The number of deleted files. | 
+| RubrikPolaris.Domain.anomalyInfo.modifiedFileCount | String | The number of modified files. | 
+| RubrikPolaris.Domain.anomalyInfo.suspiciousFileCount | String | The number of suspicious files. | 
+| RubrikPolaris.Domain.anomalyInfo.redirectLink | String | The link to the anomaly information in the Rubrik UI. | 
+| RubrikPolaris.Domain.threatHuntInfo.latestThreatHunt.huntId | String | The ID of the latest threat hunt. | 
+| RubrikPolaris.Domain.threatHuntInfo.latestThreatHunt.huntStartTime | Date | The timestamp of the latest threat hunt. | 
+| RubrikPolaris.Domain.threatHuntInfo.latestThreatHunt.isMalicious | String | Whether the latest threat hunt is malicious. | 
+| RubrikPolaris.Domain.threatHuntInfo.latestMaliciousThreatHunt.huntId | String | The ID of the latest malicious threat hunt. | 
+| RubrikPolaris.Domain.threatHuntInfo.latestMaliciousThreatHunt.huntStartTime | Date | The timestamp of the latest malicious threat hunt. | 
+| RubrikPolaris.Domain.threatHuntInfo.latestMaliciousThreatHunt.isMalicious | String | Whether the latest malicious threat hunt is malicious. | 
+| RubrikPolaris.Domain.threatHuntInfo.redirectLink | String | The link to the threat hunt information in the Rubrik UI. | 
+| RubrikPolaris.Domain.threatMonitoringInfo.latestThreatMonitoring.snapshotFid | String | The foreign ID of the latest threat monitoring snapshot. | 
+| RubrikPolaris.Domain.threatMonitoringInfo.latestThreatMonitoring.monitoringScanTime | Date | The timestamp of the latest threat monitoring scan. | 
+| RubrikPolaris.Domain.threatMonitoringInfo.latestThreatMonitoring.isMalicious | String | Whether the latest threat monitoring snapshot is malicious. | 
+| RubrikPolaris.Domain.threatMonitoringInfo.latestMaliciousThreatMonitoring.snapshotFid | String | The foreign ID of the latest malicious threat monitoring snapshot. | 
+| RubrikPolaris.Domain.threatMonitoringInfo.latestMaliciousThreatMonitoring.monitoringScanTime | Date | The timestamp of the latest malicious threat monitoring scan. | 
+| RubrikPolaris.Domain.threatMonitoringInfo.latestMaliciousThreatMonitoring.isMalicious | String | Whether the latest malicious threat monitoring snapshot is malicious. | 
+| RubrikPolaris.Domain.threatMonitoringInfo.redirectLink | String | The link to the threat monitoring information in the Rubrik UI. | 
+
+#### Command example
+```!domain domain="DEMO-RADAR" using-brand=RubrikPolaris```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "DEMO-RADAR",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "domain",
+        "Vendor": "Rubrik Security Cloud"
+    },
+    "Domain": {
+        "Name": "DEMO-RADAR",
+        "UpdatedDate": "2024-11-05T04:34:47Z",
+        "WHOIS": {
+            "UpdatedDate": "2024-11-05T04:34:47Z"
+        }
+    },
+    "RubrikPolaris": {
+        "Domain": {
+            "domain": "DEMO-RADAR",
+            "generalInfo": {
+                "fid": "12345678-1234-1234-1234-123456789012",
+                "name": "DEMO-RADAR",
+                "objectType": "Vsphere Virtual Machine",
+                "protectionStatus": "Protected",
+                "lastSnapshot": "2024-10-18T06:02:25Z",
+                "redirectLink": "https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview"
+            },
+            "anomalyInfo": {
+                "severity": "Critical",
+                "detectionTime": "2024-10-14T17:57:06Z",
+                "createdFileCount": "4487",
+                "deletedFileCount": "4477",
+                "modifiedFileCount": "32",
+                "suspiciousFileCount": "4476",
+                "redirectLink": "https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary"
+            },
+            "sensitiveInfo": {
+                "riskLevel": "Medium",
+                "sensitiveFiles": {
+                    "mediumCount": "11"
+                },
+                "sensitiveHits": 2910,
+                "openAccessFiles": 6,
+                "staleFiles": 11,
+                "redirectLink": "https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse",
+                "policyNames": [
+                    "U.S. PII"
+                ]
+            },
+            "threatHuntInfo": {
+                "latestThreatHunt": {
+                    "huntId": "12345678-1234-1234-1234-123456789012",
+                    "huntStartTime": "2024-10-11T09:23:26Z",
+                    "isMalicious": "Matches Found"
+                },
+                "latestMaliciousThreatHunt": {
+                    "huntId": "12345678-1234-1234-1234-123456789012",
+                    "huntStartTime": "2024-10-11T09:23:26Z",
+                    "isMalicious": "Matches Found"
+                },
+                "redirectLink": "https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details"
+            },
+            "threatMonitoringInfo": {
+                "latestThreatMonitoring": {
+                    "snapshotFid": "12345678-1234-1234-1234-123456789012",
+                    "monitoringScanTime": "2024-10-18T05:51:31Z",
+                    "isMalicious": "No Matches"
+                },
+                "latestMaliciousThreatMonitoring": {
+                    "snapshotFid": "12345678-1234-1234-1234-123456789012",
+                    "monitoringScanTime": "2024-10-14T04:41:15Z",
+                    "isMalicious": "Matches Found"
+                },
+                "redirectLink": "https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### General Information for the given medium risk domain: DEMO-RADAR
+>|Fid|Last Snapshot|Name|Object Type|Protection Status|Redirect Link|
+>|---|---|---|---|---|---|
+>| 12345678-1234-1234-1234-123456789012 | 2024-10-18T06:02:25Z | DEMO-RADAR | Vsphere Virtual Machine | Protected | [https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview](https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview) |
+>
+### Sensitive Information
+>|Open Access Files|Policy Names|Redirect Link|Risk Level|Sensitive Files|Sensitive Hits|Stale Files|
+>|---|---|---|---|---|---|---|
+>| 6 | U.S. PII | [https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse](https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse) | Medium | mediumCount: 11 | 2910 | 11 |
+>
+>### Anomaly Information
+>|Created File Count|Deleted File Count|Detection Time|Modified File Count|Redirect Link|Severity|Suspicious File Count|
+>|---|---|---|---|---|---|---|
+>| 4487 | 4477 | 2024-10-14T17:57:06Z | 32 | [https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary](https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary) | Critical | 4476 |
+>
+>### Threat Hunt Information
+>|Latest Malicious Threat Hunt|Latest Threat Hunt|Redirect Link|
+>|---|---|---|
+>| huntId: 12345678-1234-1234-1234-123456789012<br>huntStartTime: 2024-10-11T09:23:26Z<br>isMalicious: Matches Found | huntId: 12345678-1234-1234-1234-123456789012<br>huntStartTime: 2024-10-11T09:23:26Z<br>isMalicious: Matches Found | [https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details](https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details) |
+>
+>### Threat Monitoring Information
+>|Latest Malicious Threat Monitoring|Latest Threat Monitoring|Redirect Link|
+>|---|---|---|
+>| snapshotFid: 12345678-1234-1234-1234-123456789012<br>monitoringScanTime: 2024-10-14T04:41:15Z<br>isMalicious: Matches Found | snapshotFid: 12345678-1234-1234-1234-123456789012<br>monitoringScanTime: 2024-10-18T05:51:31Z<br>isMalicious: No Matches | [https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90](https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90) |

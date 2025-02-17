@@ -2222,11 +2222,21 @@ def panorama_edit_address_group_command(args: dict):
     element_to_remove = argToList(
         args['element_to_remove']) if 'element_to_remove' in args else None
 
+    match_path: str
+    match_param: str
+    addresses_param: str
+    addresses_path: str
+    result: Any
+    addresses = []
     if type_ == 'dynamic':
         if not match:
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
         match_param = add_argument_open(match, 'filter', False)
         match_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/dynamic/filter"
+    else:
+        match_param = ""
+        match_path = ""
+        demisto.debug(f"{type_=} -> {match_param=} {match_path=}")
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
@@ -2240,7 +2250,7 @@ def panorama_edit_address_group_command(args: dict):
         if element_to_add:
             addresses = list(set(element_to_add + address_group_list))
         else:
-            addresses = [item for item in address_group_list if item not in element_to_remove]
+            addresses = [item for item in address_group_list if item not in element_to_remove]  # type: ignore[operator]
             if not addresses:
                 raise DemistoException(
                     f'cannot remove {address_group_list} addresses from address group {address_group_name}, '
@@ -2248,6 +2258,10 @@ def panorama_edit_address_group_command(args: dict):
                 )
         addresses_param = add_argument_list(addresses, 'member', False)
         addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
+    else:
+        addresses_param = ""
+        addresses_path = ""
+        demisto.debug(f"{type_=} -> {addresses_param=} {addresses_path=}")
 
     description = args.get('description')
     tags = argToList(args['tags']) if 'tags' in args else None
@@ -2265,6 +2279,7 @@ def panorama_edit_address_group_command(args: dict):
     if DEVICE_GROUP:
         address_group_output['DeviceGroup'] = DEVICE_GROUP
 
+    result = None
     if type_ == 'dynamic' and match:
         params['xpath'] = match_path
         params['element'] = match_param
@@ -2718,7 +2733,7 @@ def panorama_create_service_group_command(args: dict):
     services = argToList(args['services'])
     tags = argToList(args['tags']) if 'tags' in args else None
 
-    result = panorama_create_service_group(service_group_name, services, tags)
+    result = panorama_create_service_group(service_group_name, services, tags)  # type: ignore[arg-type]
 
     service_group_output = {
         'Name': service_group_name,
@@ -2790,7 +2805,7 @@ def panorama_edit_service_group(service_group_name: str, services: List[str], ta
         'element': '',
         'key': API_KEY,
     }
-
+    result: Any
     if services:
         services_xpath = XPATH_OBJECTS + "service-group/entry[@name='" + service_group_name + "']/members"
         services_element = '<members>' + add_argument_list(services, 'member', False) + '</members>'
@@ -2839,12 +2854,12 @@ def panorama_edit_service_group_command(args: dict):
         if services_to_add:
             services = list(set(services_to_add + service_group_list))
         else:
-            services = [item for item in service_group_list if item not in services_to_remove]
+            services = [item for item in service_group_list if item not in services_to_remove]  # type: ignore[operator]
 
         if len(services) == 0:
             raise Exception('A Service group must have at least one service.')
 
-    result = panorama_edit_service_group(service_group_name, services, tag)
+    result = panorama_edit_service_group(service_group_name, services, tag)  # type: ignore[arg-type]
 
     service_group_output = {'Name': service_group_name}
     if DEVICE_GROUP:
@@ -4268,7 +4283,7 @@ def panorama_custom_block_rule_command(args: dict):
     tags = argToList(args['tags']) if 'tags' in args else None
     where = args.get('where', 'bottom')
     dst = args.get('dst')
-
+    result: Any
     if not DEVICE_GROUP:
         if target:
             raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
@@ -11151,8 +11166,11 @@ class UniversalCommand:
         result_data = []
         for device in topology.all(filter_string=device_filter_str, target=target):
             command = UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
-            response = run_op_command(device, command)
-
+            try:
+                response = run_op_command(device, command)
+            except panos.errors.PanDeviceXapiError:
+                demisto.debug(f'Could not find The given ID {id} in the specific device {device}.')
+                continue
             for job in response.findall("./result/job"):
                 result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData, job)
 
@@ -11162,11 +11180,14 @@ class UniversalCommand:
                     and (result_data_obj.type == job_type or not job_type)
                 ):
                     result_data.append(result_data_obj)
-
+            break
         # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
         # being returned, return it as a dict instead of a list.
         if len(result_data) == 1:
             return result_data[0]  # type: ignore
+
+        if not result_data and id:  # in case of an empty list and a specific ID, it means ID not found in all devices
+            raise DemistoException(f"The given ID {id} is not found in all devices of the topology.")
 
         return result_data
 
@@ -14317,7 +14338,7 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
     ip_duration_sec = args.get('ip_duration_sec', '')
     exception_id = ""
     exception_name = ""
-
+    params: dict
     if xpath_action == 'block-ip' and (not ip_track_by or not ip_duration_sec):
         raise DemistoException(
             "ip_track_by and ip_duration_sec are required when action is 'Block IP'."
@@ -14349,6 +14370,9 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
             'xpath': xpath,
             'key': API_KEY,
         }
+    else:
+        params = {}
+        demisto.debug(f"{action_type=} -> {params=}")
 
     try:
         raw_response = http_request(URL, 'GET', params=params)

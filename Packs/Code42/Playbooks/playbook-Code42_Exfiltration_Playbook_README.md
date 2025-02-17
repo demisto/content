@@ -21,7 +21,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* code42-alert-resolve
+* code42-alert-update
 * cs-falcon-search-device
 * cs-falcon-contain-host
 * closeInvestigation

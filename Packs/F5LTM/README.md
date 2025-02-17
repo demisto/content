@@ -11,7 +11,7 @@ Go to F5 LTM and navigate to **System** -> **Logs** -> **Configuration** -> **Re
 
 Press **Add** and **Update** to apply the new configuration. 
 
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/5534b2cbce764bc75c0150c78e42863079748436/Packs/F5LTM/doc_imgs/F5LTM.png)
+![Server Screenshot](doc_files/F5LTM.png)
 
 ## Collect Events from Vendor
 

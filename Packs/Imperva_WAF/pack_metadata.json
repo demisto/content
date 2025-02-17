@@ -2,7 +2,7 @@
     "name": "Imperva WAF",
     "description": "Use the Imperva WAF integration to manage IP groups and Web security policies in Imperva WAF.",
     "support": "xsoar",
-    "currentVersion": "1.0.19",
+    "currentVersion": "1.0.20",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

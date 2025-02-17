@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import traceback
 import urllib3
+from requests import Response
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -62,7 +63,7 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
     operations = []
     for key, value in new_user_data.items():
         operation = {
-            'op': 'replace' if key in old_user_data.keys() else 'add',
+            'op': 'replace' if key in old_user_data else 'add',
             'path': key,
             'value': [value] if key in ('emails', 'phoneNumbers') and not isinstance(value, list) else value,
         }
@@ -491,6 +492,7 @@ def create_group_command(client, args):
 
 
 def update_group_command(client, args):
+    res = Response()
     scim = safe_load_json(args.get('scim'))
 
     group_id = scim.get('id')

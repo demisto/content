@@ -8,6 +8,7 @@ import slack_sdk
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
+
 from SlackV3 import get_war_room_url, parse_common_channels
 
 from CommonServerPython import *
@@ -485,7 +486,7 @@ def setup(mocker):
 
 class AsyncMock(MagicMock):
     async def __call__(self, *args, **kwargs):
-        return super(AsyncMock, self).__call__(*args, **kwargs)
+        return super().__call__(*args, **kwargs)
 
 
 @pytest.mark.asyncio
@@ -3935,14 +3936,30 @@ def test_get_user(mocker):
     from SlackV3 import get_user
 
     # Set
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        new_user = {
+            'name': 'perikles',
+            'profile': {
+                'email': 'perikles@acropoli.com',
+                'display_name': 'Dingus',
+                'real_name': 'Lingus'
+            },
+            'id': 'U012B3CUI'
+        }
+        if method == 'users.info':
+            user = {'user': js.loads(USERS)[0]}
+            return user
+        elif method == 'users.lookupByEmail':
+            return {'user': new_user}
+        return None
 
     mocker.patch.object(demisto, 'args', return_value={'user': 'spengler'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(demisto, 'results')
 
     # Arrange
-
     get_user()
     user_results = demisto.results.call_args[0]
 

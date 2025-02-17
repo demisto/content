@@ -1,8 +1,8 @@
 {
-    "name": "CTM360 CyberBlindspot",
+    "name": "CTM360",
     "description": "Take action on incidents derived from threat intelligence that is directly linked to your organization.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "2.1.0",
     "author": "CTM360",
     "url": "https://www.ctm360.com",
     "email": "xsoar@ctm360.com",
@@ -26,5 +26,6 @@
     "devEmail": [
         "xsoar@ctm360.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "defaultDataSource": "CTM360_CyberBlindspot"
 }

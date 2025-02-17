@@ -28,9 +28,9 @@ This pack includes, out of the box, a full layout, scripts, and incident fields.
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the *preprocessing.support.default.arguments* key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *preprocessing.support.default.arguments* key and set the value to *true*.
-3. (Optional for XSOAR 6.x): Increase the server configuration widget.entry.max.size entry to prevent the email thread dynamic display widget from erroring out from too much content. Note, increasing this too much can cause a performance impact.
+3. (Optional for Cortex XSOAR 6.x): Increase the server configuration widget.entry.max.size entry to prevent the email thread dynamic display widget from erroring out from too much content. Note, increasing this too much can cause a performance impact.
 
 ---
 For more information about the pack, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/email-communication)
 
-![Email_Communication_layout](https://raw.githubusercontent.com/demisto/content/master/Packs/EmailCommunication/doc_files/Email_Communication_layout.png)
+![Email_Communication_layout](doc_files/Email_Communication_layout.png)

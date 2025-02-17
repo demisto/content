@@ -56,12 +56,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.\nNote: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.                     "
-  display: Listen Port
-  name: longRunningPort
-  type: 0
-  section: Connect
-  required: false
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
@@ -84,6 +78,12 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.\nNote: If you click the **Test** button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.                     "
+  display: Listen Port
+  name: longRunningPort
+  type: 0
+  section: Connect
+  required: true
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
@@ -152,7 +152,7 @@ configuration:
   - To Ranges
 - additionalinfo: 'CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.'
   defaultvalue: 8
-  display: 'Maximum CIDR network prefix bits size'
+  display: 'Maximum Size of CIDR Block (by mask bit)'
   name: maximum_cidr_size
   type: 0
   section: Collect
@@ -179,6 +179,7 @@ configuration:
   name: hsts_header
   type: 8
   required: false
+  section: Collect
 - additionalinfo: For use with McAfee Web Gateway format - set the indicator list type.
   display: "McAfee Gateway: Indicator List Type"
   name: mwg_type
@@ -430,7 +431,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.113398
+  dockerimage: demisto/flask-nginx:1.0.0.117310
   longRunning: true
   longRunningPort: true
   script: '-'

@@ -8,7 +8,6 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-import io
 import json
 
 import pytest
@@ -26,7 +25,7 @@ def octox_client(requests_mock) -> OctoxLabs:
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -296,3 +295,179 @@ def test_get_permissions(requests_mock, octox_client):
     first_data = result.outputs
     assert first_data["count"] == 1
     assert first_data["results"][0]["app"] == "activities"
+
+
+def test_get_scroll_devices(requests_mock, octox_client):
+    devices_data = util_load_json(path="test_data/get_devices.json")
+    devices_data["scroll_id"] = "scroll-id"
+    requests_mock.post("/devices/devices", json=devices_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-search-scroll-devices", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["Hostname"] == ["dev-1"]
+    devices_data["results"] = []
+    requests_mock.post("/devices/devices", json=devices_data)
+    second_result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-search-scroll-devices",
+        args={"scroll_id": "scroll-id"},
+    )
+    second_data = second_result.outputs
+    assert second_data["count"] == 1
+    assert not second_data["results"]
+
+
+def test_get_scroll_users(requests_mock, octox_client):
+    users_data = util_load_json(path="test_data/get_users_inv.json")
+    users_data["scroll_id"] = "scroll-id"
+    requests_mock.post("/userinventory/users", json=users_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-search-scroll-users", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["Username"] == ["octouser-1"]
+    users_data["results"] = []
+    requests_mock.post("/userinventory/users", json=users_data)
+    second_result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-search-scroll-users",
+        args={"scroll_id": "scroll-id"},
+    )
+    second_data = second_result.outputs
+    assert second_data["count"] == 1
+    assert not second_data["results"]
+
+
+def test_get_scroll_applications(requests_mock, octox_client):
+    app_data = util_load_json(path="test_data/get_applications.json")
+    app_data["scroll_id"] = "scroll-id"
+    requests_mock.post("/appinventory/applications", json=app_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-search-scroll-applications", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["Groups"] == ["hp"]
+    app_data["results"] = []
+    requests_mock.post("/appinventory/applications", json=app_data)
+    second_result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-search-scroll-applications",
+        args={"scroll_id": "scroll-id"},
+    )
+    second_data = second_result.outputs
+    assert second_data["count"] == 1
+    assert not second_data["results"]
+
+
+def test_get_scroll_avm(requests_mock, octox_client):
+    avm_data = util_load_json(path="test_data/get_avm.json")
+    avm_data["scroll_id"] = "scroll-id"
+    requests_mock.post("/avm/vulnerabilities", json=avm_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-search-scroll-avm", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["Id"] == ["CVE-2024-21423"]
+    avm_data["results"] = []
+    requests_mock.post("/avm/vulnerabilities", json=avm_data)
+    second_result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-search-scroll-avm",
+        args={"scroll_id": "scroll-id"},
+    )
+    second_data = second_result.outputs
+    assert second_data["count"] == 1
+    assert not second_data["results"]
+
+
+def test_search_devices(requests_mock, octox_client):
+    devices_data = util_load_json(path="test_data/get_devices.json")
+    requests_mock.post("/devices/devices", json=devices_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-search-devices", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["Hostname"] == ["dev-1"]
+
+
+def test_search_users_inventory(requests_mock, octox_client):
+    users_data = util_load_json(path="test_data/get_users_inv.json")
+    requests_mock.post("/userinventory/users", json=users_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-search-users-inventory", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["Username"] == ["octouser-1"]
+
+
+def test_search_applications(requests_mock, octox_client):
+    app_data = util_load_json(path="test_data/get_applications.json")
+    requests_mock.post("/appinventory/applications", json=app_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-search-applications", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["Groups"] == ["hp"]
+
+
+def test_search_avm(requests_mock, octox_client):
+    avm_data = util_load_json(path="test_data/get_avm.json")
+    requests_mock.post("/avm/vulnerabilities", json=avm_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-search-avm", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["Id"] == ["CVE-2024-21423"]
+
+
+def test_get_user_detail(requests_mock, octox_client):
+    users_data = util_load_json(path="test_data/get_user_inv_detail.json")
+    requests_mock.post("/userinventory/users/None", json=users_data)
+    requests_mock.get("/discoveries/last", json={"id": 1})
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-user-inventory-detail", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["Username"] == "octouser-1"
+
+
+def test_get_application_detail(requests_mock, octox_client):
+    app_data = util_load_json(path="test_data/get_application_detail.json")
+    requests_mock.post("/appinventory/applications/None", json=app_data)
+    requests_mock.get("/discoveries/last", json={"id": 1})
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-application-detail", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["Count"] == 1174
+
+
+def test_get_device_detail(requests_mock, octox_client):
+    device_data = util_load_json(path="test_data/get_device_detail.json")
+    requests_mock.post("/devices/devices/None", json=device_data)
+    requests_mock.get("/discoveries/last", json={"id": 1})
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-device", args={}
+    )
+    first_data = result.outputs
+
+    assert first_data["Hostname"] == "dev-1"

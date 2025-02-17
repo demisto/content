@@ -1,0 +1,59 @@
+{
+    "domain": "DEMO-RADAR",
+    "generalInfo": {
+        "fid": "12345678-1234-1234-1234-123456789012",
+        "name": "DEMO-RADAR",
+        "objectType": "Vsphere Virtual Machine",
+        "protectionStatus": "Protected",
+        "lastSnapshot": "2024-10-18T06:02:25Z",
+        "redirectLink": "https://rubrik-test.my.rubrik.com/inventory_hierarchy/vsphere/12345678-1234-1234-1234-123456789012/overview"
+    },
+    "sensitiveInfo": {
+        "riskLevel": "Medium",
+        "sensitiveFiles": {
+            "mediumCount": "11"
+        },
+        "sensitiveHits": 2910,
+        "openAccessFiles": 6,
+        "staleFiles": 11,
+        "redirectLink": "https://rubrik-test.my.rubrik.com/sonar/objects/detail/12345678-1234-1234-1234-123456789012/12345678-1234-1234-1234-123456789012/browse",
+        "policyNames": [
+            "U.S. PII"
+        ]
+    },
+    "anomalyInfo": {
+        "severity": "Critical",
+        "detectionTime": "2024-10-14T17:57:06Z",
+        "createdFileCount": "4487",
+        "deletedFileCount": "4477",
+        "modifiedFileCount": "32",
+        "suspiciousFileCount": "4476",
+        "redirectLink": "https://rubrik-test.my.rubrik.com/radar/investigations/vsphere/12345678-1234-1234-1234-123456789012/snapshot/77dc1474-a654-5f20-bcac-348a0f83cd3a/summary"
+    },
+    "threatHuntInfo": {
+        "latestThreatHunt": {
+            "huntId": "12345678-1234-1234-1234-123456789012",
+            "huntStartTime": "2024-10-11T09:23:26Z",
+            "isMalicious": "Matches Found"
+        },
+        "latestMaliciousThreatHunt": {
+            "huntId": "12345678-1234-1234-1234-123456789012",
+            "huntStartTime": "2024-10-11T09:23:26Z",
+            "isMalicious": "Matches Found"
+        },
+        "redirectLink": "https://rubrik-test.my.rubrik.com/radar/investigations/threat_hunts/12345678-1234-1234-1234-123456789012/details"
+    },
+    "threatMonitoringInfo": {
+        "latestThreatMonitoring": {
+            "snapshotFid": "12345678-1234-1234-1234-123456789012",
+            "monitoringScanTime": "2024-10-18T05:51:31Z",
+            "isMalicious": "No Matches"
+        },
+        "latestMaliciousThreatMonitoring": {
+            "snapshotFid": "12345678-1234-1234-1234-123456789012",
+            "monitoringScanTime": "2024-10-14T04:41:15Z",
+            "isMalicious": "Matches Found"
+        },
+        "redirectLink": "https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90"
+    }
+}

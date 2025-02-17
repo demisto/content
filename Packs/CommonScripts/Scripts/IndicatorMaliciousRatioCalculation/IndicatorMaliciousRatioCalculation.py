@@ -23,7 +23,7 @@ def get_incident_labels_map(labels):
 def hash_object(str_list_dict):
     if str_list_dict == "" or str_list_dict is None:
         return str_list_dict
-    if (type(str_list_dict)) == dict:
+    if (type(str_list_dict)) is dict:
         return {k_v[0]: hash_object(k_v[1]) for k_v in iter(str_list_dict.items())}
     if (isinstance(str_list_dict, list)):
         return [hash_object(x) for x in str_list_dict]
