@@ -74,9 +74,14 @@ class Client:
             **kwargs
         )
 
-        if response.status_code not in (200, 201, 202, 204):
-            demisto.info(f"Unexpected status code: {response.status_code}, path {path} Returning empty JSON.")
-            return {"result": None, "error": f"Unexpected status code: {response.status_code}"}
+        status_code = response.status_code
+
+        if status_code in (401, 403):
+            raise Exception(f"Authentication failure or resource forbidden.")
+
+        if status_code not in (200, 201, 202, 204):
+            demisto.info(f"Unexpected status code: {status_code}, path {path} Returning empty JSON.")
+            return {"result": None, "error": f"Unexpected status code: {status_code}"}
 
         return response.json()
 
