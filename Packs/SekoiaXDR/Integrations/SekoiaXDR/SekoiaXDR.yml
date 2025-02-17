@@ -7,7 +7,7 @@ category: Analytics & SIEM
 sectionOrder:
 - Connect
 - Collect
-description: Fetch alerts and events from SEKOIA.IO XDR.\nTo use this integration, please create an API Key with the appropriate permissions.
+description: Fetch alerts and events from SEKOIA.IO XDR. To use this integration, please create an API Key with the appropriate permissions.
 configuration:
 - section: Connect
   display: API key

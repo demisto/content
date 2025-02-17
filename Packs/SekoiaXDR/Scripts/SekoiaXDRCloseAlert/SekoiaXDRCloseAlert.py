@@ -104,7 +104,13 @@ def main():  # pragma: no cover
     close_notes = demisto.getArg("closeNotes")
     username = demisto.getArg("closingUserId")  # type: ignore
     close_alert(
-        alert_short_id, reject, close_reason, close_notes, username, mirror_direction, is_mirror_out  # type: ignore
+        alert_short_id,
+        reject,
+        close_reason,
+        close_notes,
+        username,
+        mirror_direction,
+        is_mirror_out,  # type: ignore
     )
 
 

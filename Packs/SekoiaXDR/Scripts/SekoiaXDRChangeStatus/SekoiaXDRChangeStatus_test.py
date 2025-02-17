@@ -27,7 +27,11 @@ def test_update_status(mocker):
 
 def test_main(mocker):
     mocker.patch.object(
-        demisto, "incidents", return_value=[{"dbotMirrorDirection": "In", "CustomFields": {"sekoiaxdrmirrorout": True}}]
+        demisto,
+        "incidents",
+        return_value=[
+            {"dbotMirrorDirection": "In", "CustomFields": {"sekoiaxdrmirrorout": True}}
+        ],
     )
     mocker.patch.object(
         demisto,
