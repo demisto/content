@@ -932,6 +932,42 @@ def test_whois_and_domain_command(mocker: MockerFixture):
     assert isinstance(res[0].raw_response, dict)
 
 
+def test_whois_and_domain_command_with_exception(mocker: MockerFixture):
+    """
+    Given:
+    - an unknown domain
+    - The "with_error" param is set to True
+
+    When:
+    - executing whois_and_domain_command function
+
+    Then:
+    - Ensure an informative message in the readable output (regarding the unknown domain)
+    - Ensure entry_type is 4 which means EntryType.ERROR (since we mocked "with_error" param as True)
+    - Ensure no exception or error was thrown
+    """
+
+    from Whois import whois_and_domain_command
+    import whois
+    from whois.parser import PywhoisError
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "args", return_value={"domain": "raw.githubusercontent.com"})
+    mocker.patch.object(demisto, 'params', return_value={"with_error": True})
+    mocker.patch.object(ExecutionMetrics, "is_supported", return_value=True)
+    mocker.patch.object(
+        whois,
+        "whois",
+        side_effect=PywhoisError
+    )
+    res = whois_and_domain_command("domain", DBotScoreReliability.B)
+
+    assert len(res) == 2
+    assert res[0].readable_output == \
+           "Exception of type PywhoisError was caught while performing whois lookup with the domain 'raw.githubusercontent.com': "
+    assert res[0].entry_type == 4
+
+
 @pytest.mark.parametrize(
     "domain_info, expected_output, expected_domain_info",
     [
