@@ -59,8 +59,9 @@ Retrieves a list of audit logs events from the Celonis instance.
 
 #### Context Output
 
-There is no context output for this command.
-
+| **Path**      | **Type** | **Description**                |
+|---------------| --- |--------------------------------|
+| Celonis.Audit | List | The list of audit logs events. | 
 
 #### Command example
 ```!celonis-get-events should_push_events=false limit=10 end_date=2025-02-04T10:33:24.647Z start_date=2025-02-10T10:33:24.647Z```
