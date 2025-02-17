@@ -461,6 +461,11 @@ def main() -> None:  # pragma: no cover
                 new_last_run = poc_get_all_events(
                     client=client, last_run=last_run, limit=max_fetch, all_event_types=all_event_types
                 )
+
+                send_events_to_xsiam(
+                    events=all_event_types, vendor=vendor, product=product, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
+                )
+
                 end = datetime.utcnow()
 
                 demisto.debug(f"Handled {len(all_event_types)} total events in {(end - start).seconds} seconds")
