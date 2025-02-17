@@ -360,6 +360,12 @@ def get_events_command(client: Client, integration_context: dict) -> None:
         demisto.info("No events received")
         return
 
+    try:
+        uuids = [event["uuid"] for event in events]
+        demisto.info(f"UUIDs = {uuids}")
+    except Exception as e:
+        demisto.info(f"Failed to printing the uuids of the events, Error: {e}")
+
     demisto.debug(f"Starting event filtering. Initial number of events: {len(events)}")
     filtered_events = filter_duplicate_events(events, integration_context)
     demisto.debug(
