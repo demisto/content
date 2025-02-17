@@ -10,7 +10,7 @@
             "detected_at": "2021-12-01T10:45:00+00:00",
             "incident_id": "YAZ1MQ",
             "incident_type": "cve",
-            "ip": "131.66.150.35",
+            "ip": "0.0.0.0",
             "keywords": [
                 {
                     "id": "46ba52b6-c789-47ea-adf7-1af9e08acc40",
@@ -27,7 +27,7 @@
                 "vulnerability",
                 "high-risk"
             ],
-            "url": "https://platform.cybelangel.com/reports/8bb43081-3349-4c89-b301-8dff0dcca56e"
+            "url": "https://example.com/reports/8bb43081-3349-4c89-b301-8dff0dcca56e"
         },
         {
             "id": "1aa13072-1234-4abc-a011-1aff2cbbd123",
@@ -39,7 +39,7 @@
             "detected_at": "2023-01-15T11:00:00+00:00",
             "incident_id": "PHISH123",
             "incident_type": "phishing",
-            "ip": "192.168.10.10",
+            "ip": "0.0.0.0",
             "keywords": [
                 {
                     "id": "12345abc-de67-890f-gh12-3456789ijkl",
@@ -56,7 +56,7 @@
                 "phishing",
                 "medium-risk"
             ],
-            "url": "https://platform.cybelangel.com/reports/1aa13072-1234-4abc-a011-1aff2cbbd123"
+            "url": "https://example.com/reports/1aa13072-1234-4abc-a011-1aff2cbbd123"
         },
         {
             "id": "9cc44093-9876-5dfg-bc90-8dgg0fccb876",
@@ -68,7 +68,7 @@
             "detected_at": "2023-03-12T08:45:00+00:00",
             "incident_id": "RANS567",
             "incident_type": "ransomware",
-            "ip": "10.0.0.1",
+            "ip": "0.0.0.0",
             "keywords": [
                 {
                     "id": "98ba98f6-1111-44ef-bb12-56abcd123456",
@@ -85,7 +85,7 @@
                 "ransomware",
                 "critical"
             ],
-            "url": "https://platform.cybelangel.com/reports/9cc44093-9876-5dfg-bc90-8dgg0fccb876"
+            "url": "https://example.com/reports/9cc44093-9876-5dfg-bc90-8dgg0fccb876"
         },
         {
             "id": "4ff98024-5678-4cde-ba01-4ffc1eabb234",
@@ -97,7 +97,7 @@
             "detected_at": "2023-05-25T13:00:00+00:00",
             "incident_id": "DBEX789",
             "incident_type": "data_exposure",
-            "ip": "172.16.20.20",
+            "ip": "0.0.0.0",
             "keywords": [
                 {
                     "id": "12345def-6789-1234-abcd-0987654321fe",
@@ -114,7 +114,7 @@
                 "data-exposure",
                 "low-risk"
             ],
-            "url": "https://platform.cybelangel.com/reports/4ff98024-5678-4cde-ba01-4ffc1eabb234"
+            "url": "https://example.com/reports/4ff98024-5678-4cde-ba01-4ffc1eabb234"
         }
     ]
 }

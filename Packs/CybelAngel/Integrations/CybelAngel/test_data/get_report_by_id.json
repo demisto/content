@@ -19,8 +19,8 @@
     "hostnames": [],
     "incident_id": "YAZ1MQ",
     "incident_type": "cve",
-    "investigation_id": "60f8b8d4-515c-492f-be96-1615169cc034:f604e0e0-9950-4c99-90c8-a074c16146bc:ef15f1ee-5427-4fda-8975-a0c06d55e9a1",
-    "ip": "131.66.150.35",
+    "investigation_id": "60f8b8d4-515c-492f-be96-1615169cc034:f994e0e0-9950-4c99-90c8-a074c16146bc:ef15f1ee-5427-4fda-8975-a0c06d55e9a1",
+    "ip": "0.0.0.0",
     "keywords": [
         {
             "id": "46ba52b6-c789-47ea-adf7-1af9e08acc40",
@@ -59,12 +59,12 @@
     "samples": [
         {
             "type": "other",
-            "sample": "<img alt=\"cba-image\" src=\"/api/v1/assets/report_image/d078cdee-96aa-43c2-bf7a-f3d7c714d415\" width=\"90%\" style=\"display: block; margin: auto; cursor: default;\"><p><br></p>"
+            "sample": "<img alt=\"cba-image\" src=\"/api/v1/assets/report_image/d078cdee-96xx-43c2-bf7a-f3d7c714d415\" width=\"90%\" style=\"display: block; margin: auto; cursor: default;\"><p><br></p>"
         }
     ],
     "screenshots": [],
-    "sender": "david.neil@cybelangel.com",
-    "sender_tenant_id": "cybelangel",
+    "sender": "jd@example.com",
+    "sender_tenant_id": "example",
     "sent_at": "2023-10-19T14:27:33+00:00",
     "source": "",
     "solved_at": null,
@@ -86,7 +86,7 @@
         "hello",
         "barbara"
     ],
-    "url": "https://platform.cybelangel.com/reports/8bb43081-3349-4c89-b301-8dff0dcca56e",
+    "url": "https://example.com/reports/8bb43081-3349-4c89-b301-8dff0dcca56e",
     "usergroups": [],
     "user_session": null,
     "machine_name": null,
