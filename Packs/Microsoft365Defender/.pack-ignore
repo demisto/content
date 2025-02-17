@@ -7,7 +7,7 @@ ignore=BA124
 [file:MS365DefenderCountIncidentCategories.yml]
 ignore=BA124
 
-[file:Microsoft365Defender.yml]
+[file:README.md]
 ignore=RM102
 
 # GR103 is temporary, see CIAC-11705
