@@ -1,0 +1,679 @@
+category: Analytics & SIEM
+commonfields:
+  id: SplunkPy - test
+  version: -1
+configuration:
+- display: Server URL
+  name: host
+  required: true
+  section: Connect
+  type: 0
+- display: Username
+  name: authentication
+  required: true
+  section: Connect
+  type: 9
+- additionalinfo: The port in Splunk server which is open to the REST API calls.
+  defaultvalue: '8089'
+  display: Port
+  name: port
+  required: true
+  section: Connect
+  type: 0
+- additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES notable events, make sure to include the \`notable\` macro in your query.
+  defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
+  display: Fetch events query
+  name: fetchQuery
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: '50'
+  display: Fetch Limit (Max.- 200, Recommended less than 50)
+  name: fetch_limit
+  required: false
+  section: Collect
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- additionalinfo: Whether to use the Splunk clock time from the Splunk server for fetch, or not.
+  advanced: true
+  defaultvalue: 'true'
+  display: Use Splunk Clock Time For Fetch
+  name: useSplunkTime
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: Whether to parse the raw part of the Notables, or not.
+  advanced: true
+  defaultvalue: 'false'
+  display: Parse Raw Part of Notable Events
+  name: parseNotableEventsRaw
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: Whether to replace special characters to underscore when parsing the raw data of the Notables, or not.
+  advanced: true
+  defaultvalue: 'false'
+  display: Replace with Underscore in Incident Fields
+  name: replaceKeys
+  required: false
+  section: Collect
+  type: 8
+- advanced: true
+  display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled.
+  name: timezone
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option.
+  defaultvalue: 10 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: fetch_time
+  required: false
+  section: Collect
+  type: 0
+- advanced: true
+  display: Extract Fields - CSV fields that will be parsed out of _raw notable events
+  name: extractFields
+  required: false
+  section: Collect
+  type: 12
+- additionalinfo: Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field.
+  advanced: true
+  defaultvalue: source
+  display: Event Type Field
+  name: type_field
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (supported from Cortex XSOAR V6.0), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information.
+  advanced: true
+  defaultvalue: 'false'
+  display: Use CIM Schemas for Mapping
+  name: use_cim
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk to Cortex XSOAR), Outgoing (from Cortex XSOAR to Splunk), or Incoming and Outgoing (from/to Cortex XSOAR and Splunk).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  section: Collect
+  type: 15
+- additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
+  advanced: true
+  defaultvalue: 'false'
+  display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
+  name: close_incident
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: 'A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident (Example: Resolved,False-Positive).'
+  display: Additional Splunk status labels to close on mirror (Incoming Mirroring)
+  name: close_extra_labels
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: When selected, Splunk Notable Events with a status that is marked as "End Status" will close the Cortex XSOAR incident.
+  advanced: true
+  defaultvalue: 'false'
+  display: Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)
+  name: close_end_status_statuses
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
+  advanced: true
+  defaultvalue: 'false'
+  display: Close Mirrored Splunk Notable Events (Outgoing Mirroring)
+  name: close_notable
+  required: false
+  section: Collect
+  type: 8
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: The app context of the namespace
+  name: app
+  required: false
+  section: Collect
+  type: 0
+- advanced: true
+  display: ''
+  displaypassword: HEC Token (HTTP Event Collector)
+  hiddenusername: true
+  name: cred_hec_token
+  required: false
+  section: Collect
+  type: 9
+- advanced: true
+  display: HEC Token (HTTP Event Collector)
+  hidden: true
+  name: hec_token
+  required: false
+  section: Collect
+  type: 4
+- advanced: true
+  display: 'HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/).'
+  name: hec_url
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see the integration additional info.
+  advanced: true
+  display: Enrichment Types
+  name: enabled_enrichments
+  options:
+  - Drilldown
+  - Asset
+  - Identity
+  required: false
+  section: Collect
+  type: 16
+- additionalinfo: CSV of the Splunk lookup tables from which to take the Asset enrichment data.
+  defaultvalue: asset_lookup_by_str,asset_lookup_by_cidr
+  display: Asset enrichment lookup tables
+  name: asset_enrich_lookup_tables
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: CSV of the Splunk lookup tables from which to take the Identity enrichment data.
+  defaultvalue: identity_lookup_expanded
+  display: Identity enrichment lookup tables
+  name: identity_enrich_lookup_tables
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
+  advanced: true
+  defaultvalue: '5'
+  display: Enrichment Timeout (Minutes)
+  name: enrichment_timeout
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" (not recommended).
+  advanced: true
+  defaultvalue: '20'
+  display: Number of Events Per Enrichment Type
+  name: num_enrichment_events
+  required: false
+  section: Collect
+  type: 0
+- advanced: true
+  display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
+  name: extensive_logs
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
+  advanced: true
+  defaultvalue: '15'
+  display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
+  name: occurrence_look_behind
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents.
+  advanced: true
+  display: 'Advanced: Unique ID fields'
+  name: unique_id_fields
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py#configure-user-mapping-between-splunk-and-cortex-xsoar
+  advanced: true
+  defaultvalue: 'false'
+  display: Enable user mapping
+  name: userMapping
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: The name of the lookup table in Splunk, containing the username's mapping data.
+  advanced: true
+  defaultvalue: splunk_xsoar_users
+  display: Users Lookup table name
+  name: user_map_lookup_name
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: The name of the lookup column containing the Cortex XSOAR username.
+  advanced: true
+  defaultvalue: xsoar_username
+  display: XSOAR user key
+  name: xsoar_user_field
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: The name of the lookup table containing the Splunk username.
+  advanced: true
+  defaultvalue: splunk_username
+  display: SPLUNK user key
+  name: splunk_user_field
+  required: false
+  section: Connect
+  type: 0
+- advanced: true
+  defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  section: Collect
+  type: 19
+- additionalinfo: Add this tag to an entry to mirror it as a comment from Splunk.
+  defaultvalue: FROM SPLUNK
+  display: Comment tag from Splunk
+  name: comment_tag_from_splunk
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
+  defaultvalue: FROM XSOAR
+  display: Comment tag to Splunk
+  name: comment_tag_to_splunk
+  required: false
+  section: Collect
+  type: 0
+description: Runs queries on Splunk servers.
+display: SplunkPy - test
+name: SplunkPy - test
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: ID of the search for which to return results.
+      name: sid
+      required: true
+    - defaultValue: '100'
+      description: The maximum number of returned results per search. To retrieve all results, enter "0" (not recommended).
+      name: limit
+    description: Returns the results of a previous Splunk search. You can use this command in conjunction with the splunk-job-create command.
+    name: splunk-results
+  - arguments:
+    - default: true
+      description: 'The Splunk search language string to execute. For example: "index=* | head 3". '
+      name: query
+      required: true
+    - description: 'Specifies the earliest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. Default is 1 week ago, in the format "-7d". You can also specify time in the format: 2014-06-19T12:00:00.000-07:00.'
+      name: earliest_time
+    - description: 'Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for 3 days ago).'
+      name: latest_time
+    - description: Maximum number of events to return. Default is 100. If "0", all results are returned.
+      name: event_limit
+    - defaultValue: '25000'
+      description: The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a batch_limit of 10, the results will be processed 10 at a time over 10 iterations. This does not effect the search or the context and outputs returned. In some cases, specifying a batch_size enhances search performance. If you think that the search execution is suboptimal, we recommend trying several batch_size values to determine which works best for your search. Default is 25,000.
+      name: batch_limit
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: 'Determines whether the results will be entered into the context. Possible values: "true" and "false".'
+      name: update_context
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A string that contains the application namespace in which to restrict searches.
+      name: app
+    - auto: PREDEFINED
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '30'
+      description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: The job sid.
+      name: sid
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: The Fast mode prioritizes the performance of the search and does not return nonessential field or event data. This means that the search returns what is essential and required if fast_mode equals 'true'.
+      name: fast_mode
+      predefined:
+      - 'true'
+      - 'false'
+    description: Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
+    name: splunk-search
+    outputs:
+    - contextPath: Splunk.Result
+      description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
+      type: Unknown
+    - contextPath: Splunk.JobStatus.SID
+      description: ID of the job.
+      type: String
+    - contextPath: Splunk.JobStatus.Status
+      description: Status of the job.
+      type: String
+    - contextPath: Splunk.JobStatus.TotalResults
+      description: The number of events that were returned by the job.
+      type: String
+    polling: true
+  - arguments:
+    - description: Splunk index in which to push data. Run the splunk-get-indexes command to get all indexes.
+      name: index
+      required: true
+    - default: true
+      description: The new event data to push. Can be any string.
+      name: data
+      required: true
+    - description: Event source type.
+      name: sourcetype
+      required: true
+    - description: Event host. Can be "Local" or "120.0.0.1".
+      name: host
+      required: true
+    description: Creates a new event in Splunk.
+    name: splunk-submit-event
+  - arguments: []
+    description: Prints all Splunk index names.
+    name: splunk-get-indexes
+  - arguments:
+    - description: A comma-separated list of event IDs of notable events.
+      name: eventIDs
+      required: true
+    - description: A Splunk user to assign to the notable events.
+      name: owner
+    - description: Comment to add to the notable events.
+      name: comment
+    - auto: PREDEFINED
+      description: 'Notable event urgency. Possible values: "critical", "high", "medium", "low", and "informational".'
+      name: urgency
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - informational
+    - description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed.
+      name: status
+    - auto: PREDEFINED
+      description: Disposition of the notable. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list.
+      name: disposition
+      predefined:
+      - True Positive - Suspicious Activity
+      - Benign Positive - Suspicious But Expected
+      - False Positive - Incorrect Analytic Logic
+      - False Positive - Inaccurate Data
+      - Other
+      - Undetermined
+    description: Updates existing notable events in Splunk ES.
+    execution: true
+    name: splunk-notable-event-edit
+  - arguments:
+    - description: The Splunk search language string to execute. For example :"index=* | head 3".
+      name: query
+      required: true
+    - description: A string that contains the application namespace in which to restrict searches.
+      name: app
+    description: Creates a new search job in Splunk.
+    name: splunk-job-create
+    outputs:
+    - contextPath: Splunk.Job
+      description: The SID of the created job.
+      type: Unknown
+  - arguments:
+    - default: true
+      defaultValue: ${Splunk.Result._raw}
+      description: The raw data of the Splunk event (string).
+      name: raw
+    description: Parses the raw part of the event.
+    name: splunk-parse-raw
+    outputs:
+    - contextPath: Splunk.Raw.Parsed
+      description: The raw event data (parsed).
+      type: unknown
+  - arguments:
+    - description: "Event payload key-value pair.\nString example: \"event\": \"Access log test message\"."
+      name: event
+    - description: Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields.
+      name: fields
+    - description: The index name.
+      name: index
+    - description: The hostname.
+      name: host
+    - description: User-defined event source type.
+      name: source_type
+    - description: User-defined event source.
+      name: source
+    - description: Epoch-formatted time.
+      name: time
+    - description: A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). If the indexer acknowledgment is turned on, a channel is required.
+      name: request_channel
+    - description: 'A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. If provided all arguments except of `request_channel` are ignored.'
+      name: batch_event_data
+    - description: The entry ID in Cortex XSOAR of the file containing a batch of events. If provided, the arguments related to a single event are ignored.
+      name: entry_id
+    description: Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
+    name: splunk-submit-event-hec
+  - arguments:
+    - description: ID of the job for which to get the status.
+      name: sid
+      required: true
+    description: Returns the status of a job.
+    name: splunk-job-status
+    outputs:
+    - contextPath: Splunk.JobStatus.SID
+      description: ID of the job.
+      type: String
+    - contextPath: Splunk.JobStatus.Status
+      description: Status of the job.
+      type: String
+  - arguments:
+    - description: The name of the KV store collection.
+      name: kv_store_name
+      required: true
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application in which to create the KV store. The default is "search".
+      name: app_name
+      required: true
+    description: Creates a new KV store table.
+    name: splunk-kv-store-collection-create
+  - arguments:
+    - description: The name of the KV store collection.
+      name: kv_store_collection_name
+      required: true
+    - description: "The list of names and value types used to define the KV store collection scheme, e.g., id=number, name=string, address=string.\n"
+      isArray: true
+      name: kv_store_fields
+      required: true
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      name: app_name
+      required: true
+    description: Configures the KV store fields.
+    name: splunk-kv-store-collection-config
+  - arguments:
+    - description: The name of the KV store collection.
+      name: kv_store_collection_name
+      required: true
+    - description: "A comma-delimited list of the fields supported by the collection, e.g., _key,id,name,address. If no value is specified, the KV Store collection configuration will be used.\n"
+      name: supported_fields
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection.
+      name: app_name
+      required: true
+    description: Creates the KV store collection transform.
+    name: splunk-kv-store-collection-create-transform
+  - arguments:
+    - description: 'The data to add to the KV store collection, according to the collection JSON format, e.g., [{"name": "Splunk HQ", "id": 456, "address": { "street": "340 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "121212"}}, {"name": "Splunk HQ", "id": 123, "address": { "street": "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}].'
+      name: kv_store_data
+      required: true
+    - description: The name of the KV store collection.
+      name: kv_store_collection_name
+      required: true
+    - description: The path to the indicator value in kv_store_data.
+      name: indicator_path
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      name: app_name
+      required: true
+    description: Adds objects to a KV store utilizing the batch-save API.
+    name: splunk-kv-store-collection-add-entries
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application in which to create the KV store. The default is "search".
+      name: app_name
+      required: true
+    description: Lists all collections for the specified application.
+    name: splunk-kv-store-collections-list
+    outputs:
+    - contextPath: Splunk.CollectionList
+      description: List of collections.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      name: app_name
+      required: true
+    - description: A comma-separated list of KV store collections.
+      isArray: true
+      name: kv_store_collection_name
+      required: true
+    - defaultValue: '50'
+      description: Maximum number of records to return. The default is 50.
+      name: limit
+    description: Lists all data within a specific KV store collection or collections.
+    name: splunk-kv-store-collection-data-list
+    outputs:
+    - contextPath: Splunk.KVstoreData
+      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<collection_name> is a list of the data in the collection.
+      type: Unknown
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection. For example, "search".
+      name: app_name
+      required: true
+    - description: A comma-separated list of KV store collections.
+      isArray: true
+      name: kv_store_collection_name
+      required: true
+    description: Deletes all data within the specified KV store collection or collections.
+    name: splunk-kv-store-collection-data-delete
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store. The default is "store".
+      name: app_name
+      required: true
+    - description: A comma-separated list of KV stores.
+      isArray: true
+      name: kv_store_name
+      required: true
+    description: Deletes the specified KV stores.
+    name: splunk-kv-store-collection-delete
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      name: app_name
+      required: true
+    - description: The name of the KV store collection.
+      name: kv_store_collection_name
+      required: true
+    - description: The key name to search in the store. If the query argument is used, this argument will be ignored.
+      name: key
+    - description: The value to search in the store. If the query argument is used, this argument will be ignored.
+      name: value
+    - description: 'Complex query to search in the store with operators such as "and", "or", "not", etc. For more information, see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore.'
+      name: query
+    description: Searches for specific objects in a store. The search can be a basic key-value pair or a full query.
+    name: splunk-kv-store-collection-search-entry
+    outputs:
+    - contextPath: Splunk.KVstoreData
+      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<collection_name> is a list of the data in the collection.
+      type: Unknown
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      name: app_name
+      required: true
+    - description: The name of the KV store collection.
+      name: kv_store_collection_name
+      required: true
+    - description: The path to the indicator value in kv_store_data.
+      name: indicator_path
+    - description: The key name to search in the store. If the query argument is used, this argument will be ignored.
+      name: key
+    - description: The value to search in the store. If the query argument is used, this argument will be ignored.
+      name: value
+    - description: "Complex query to search in the store with operators such as \"and\", \"or\", \"not\", etc.\nFor more information, see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore."
+      name: query
+    description: Deletes the specified object in store. The search can be a basic key-value pair or a full query.
+    name: splunk-kv-store-collection-delete-entry
+  - arguments: []
+    description: Query Splunk to retrieve a list of sample alerts by alert type. Used for mapping fetched incidents through the Get Schema option.
+    name: get-mapping-fields
+  - arguments:
+    - description: The remote event ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
+    name: get-remote-data
+  - arguments:
+    - description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets the list of notable events that were modified since the last update. This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
+    name: get-modified-remote-data
+  - arguments: []
+    description: Resets the enrichment mechanism of fetched notables.
+    name: splunk-reset-enriching-fetch-mechanism
+  - arguments:
+    - default: true
+      description: Cortex XSOAR username to match in Splunk's usernames records.
+      isArray: true
+      name: xsoar_username
+      required: true
+    description: Returns the Splunk's username matching the given Cortex XSOAR's username.
+    name: splunk-get-username-by-xsoar-user
+    outputs:
+    - contextPath: Splunk.UserMapping.XsoarUser
+      description: Cortex XSOAR user mapping.
+      type: String
+    - contextPath: Splunk.UserMapping.SplunkUser
+      description: Splunk user mapping.
+      type: String
+  dockerimage: demisto/splunksdk-py3:1.0.0.2074112
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
