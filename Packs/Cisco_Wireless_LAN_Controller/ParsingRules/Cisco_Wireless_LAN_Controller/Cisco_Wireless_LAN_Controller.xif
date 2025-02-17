@@ -11,7 +11,7 @@ Supported date time formats:
 */
 
 
-|filter _raw_log ~= "\d+:\s\d*\s*\S+\s+\d+\s+\S+\s*\S*\:\s+\%" or _raw_log ~= "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):"
+filter _raw_log ~= "\d+:\s\d*\s*\S+\s+\d+\s+\S+\s*\S*\:\s+\%" or _raw_log ~= "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):"
 /*
 First section is modifing syslog log with field raw log that contain timestamp in the format: MMM dd yyyy HH:mm:ss.nnn
 And converting to format yyyy MMM dd HH:mm:ss.nnn
