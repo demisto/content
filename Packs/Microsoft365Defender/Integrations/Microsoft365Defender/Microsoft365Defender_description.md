@@ -79,3 +79,11 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. Select the **Use Azure Managed Identities** checkbox.
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
+
+
+### Using National Cloud
+Using a national cloud endpoint is supported by setting the *Endpoint Type* parameter to one of the following options:
+* US Government GCC Endpoint: `https://api-gcc.security.microsoft.us`
+* US Government GCC-High Endpoint: `https://api-gov.security.microsoft.us`
+* US Government Department of Defence (DoD) Endpoint: `https://api-gov.security.microsoft.us`
+When using **US Government GCC-High Endpoint** with **Device Code** Flow, tenant ID is a required parameter in the instance configuration.
