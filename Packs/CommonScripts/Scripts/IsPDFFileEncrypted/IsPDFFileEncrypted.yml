@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - Utility
 - Condition
-comment: Checks if the PDF file is encrypted or not.
+comment: Checks whether the PDF file is encrypted.
 enabled: true
 args:
 - name: EntryID

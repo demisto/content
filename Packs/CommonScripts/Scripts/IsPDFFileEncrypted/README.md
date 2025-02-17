@@ -1,4 +1,4 @@
-Checks if the PDF file is encrypted or not.
+Checks whether the PDF file is encrypted.
 
 ## Script Data
 
