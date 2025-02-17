@@ -1,6 +1,7 @@
 {
     "fromVersion": "8.4.0",
     "id": "28e5d036d8954c93ad8383b55b72c05d",
+    "name": "Test Report",
     "templates_data": [
         {
             "report_name": "Test Report",
