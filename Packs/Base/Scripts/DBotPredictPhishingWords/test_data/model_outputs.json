@@ -1,0 +1,68 @@
+{
+    "torch": {
+        "single-filter_model_words": {
+            "input": [
+                [
+                    "Your Renewal plans 99743255 of Service Dear test@demisto.com, Your mail Confirmation Thank you, Support Team"
+                ],
+                {}
+            ],
+            "output": [
+                "your renewal plans of service dear test @ , your mail confirmation thank you , support team",
+                17
+            ]
+        },
+        "single-explain_model_words": {
+            "input": [
+                [
+                    "Your Renewal plans 99743255 of Service Dear test@demisto.com, Your mail Confirmation Thank you, Support Team",
+                    0,
+                    0.05,
+                    20
+                ],
+                {}
+            ],
+            "output": {
+                "Label": "Malicious",
+                "Probability": 0.9435704350471497,
+                "PositiveWords": [],
+                "NegativeWords": [],
+                "OriginalText": "Your Renewal plans 99743255 of Service \nDear test@demisto.com,\r\nYour mail \r\nConfirmation \r\n\r\nThank you,\r\n\r\nSupport Team",
+                "TextTokensHighlighted": "Your Renewal plans 99743255 of Service \nDear test@demisto.com,\r\nYour mail \r\nConfirmation \r\n\r\nThank you,\r\n\r\nSupport Team"
+            }
+        }
+    },
+    "fasttext": {
+        "single-filter_model_words": {
+            "input": [
+                [
+                    "boat mark substance type legal boy metal substance boat mark boat faulty metal metal substance faulty type substance argument argument legal metal type argument ntidy boy legal argument squeamish close gratis angle smash"
+                ],
+                {}
+            ],
+            "output": [
+                "boat mark substance type legal boy metal substance boat mark boat faulty metal metal substance faulty type substance argument argument legal metal type argument ntidy boy legal argument squeamish close gratis angle smash",
+                33
+            ]
+        },
+        "single-explain_model_words": {
+            "input": [
+                [
+                    "boat mark substance type legal boy metal substance boat mark boat faulty metal metal substance faulty type substance argument argument legal metal type argument ntidy boy legal argument squeamish close gratis angle smash",
+                    0,
+                    0.05,
+                    20
+                ],
+                {}
+            ],
+            "output": {
+                "Probability": 0.9852770566940308,
+                "Label": "Tag2",
+                "PositiveWords": [],
+                "NegativeWords": [],
+                "OriginalText": "[\"boat marked substance type legal boy metal substance boat marked boat faulty metal metal substance faulty type substance argument argument legal metal type argument ntidy boy legal argument squeamish closed gratis angle smash\"]",
+                "TextTokensHighlighted": "[\"boat marked substance type legal boy metal substance boat marked boat faulty metal metal substance faulty type substance argument argument legal metal type argument ntidy boy legal argument squeamish closed gratis angle smash\"]"
+            }
+        }
+    }
+}
