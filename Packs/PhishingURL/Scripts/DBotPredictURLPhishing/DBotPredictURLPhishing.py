@@ -21,7 +21,6 @@ MSG_SOMETHING_WRONG_IN_RASTERIZE = "Something went wrong with rasterize"
 MSG_ENABLE_WHOIS = "Please enable whois integration for more accurate prediction"
 MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: {}.{}"
 MSG_NO_MODEL_IN_DEMISTO = "There is no existing model version in demisto"
-MSG_NO_URL_GIVEN = "Please input at least one URL"
 MSG_FAILED_RASTERIZE = "Rasterize error: ERR_NAME_NOT_RESOLVED"
 MSG_FAILED_RASTERIZE_TIMEOUT = "Timeout rasterize"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
@@ -639,12 +638,7 @@ def get_final_urls(urls: list[str], max_urls: int, model: Model) -> list[str]:
 
 
 def extract_embedded_urls_from_html(html: str) -> list[str]:
-    embedded_urls = []
-    soup = BeautifulSoup(html)
-    for a in soup.find_all('a'):
-        if a.has_attr('href') and a['href'] not in a.get_text():
-            embedded_urls.append(a['href'])
-    return embedded_urls
+    return [a.get('href') for a in BeautifulSoup(html).find_all('a') if a.get('href')]
 
 
 def get_urls_to_run(
@@ -654,10 +648,7 @@ def get_urls_to_run(
     if email_body:
         urls_email_body = extract_urls(email_body)
     else:
-        if email_html:
-            urls_email_body = extract_urls(BeautifulSoup(email_html).get_text())
-        else:
-            urls_email_body = []
+        urls_email_body = extract_urls(BeautifulSoup(email_html).get_text()) if email_html else []
     if email_html:
         urls_email_html = extract_embedded_urls_from_html(email_html)
     else:
@@ -679,8 +670,7 @@ def get_urls_to_run(
             readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_urls}'))
 
     if not urls:
-        msg_list.append(MSG_NO_URL_GIVEN)
-        return_results(MSG_NO_URL_GIVEN)
+        return_results('No URLs for prediction.')
         return [], msg_list
     urls = get_final_urls(urls, max_urls, model)
     unescaped_urls = demisto.executeCommand("UnEscapeURLs", {"input": urls}) or []
@@ -699,7 +689,7 @@ def main():
         force_model = args.get('forceModel') == 'True'
         email_body = args.get('emailBody', "")
         email_html = args.get('emailHTML', "")
-        max_urls = int(arg_to_number(args.get('maxNumberOfURL', 5), 'maxNumberOfURL', required=True))
+        max_urls = cast(int, arg_to_number(args.get('maxNumberOfURL', 5), 'maxNumberOfURL', required=True))
         urls_argument = args.get('urls', '')
         rasterize_timeout = arg_to_number(args.get('rasterize_timeout', TIMEOUT_RASTERIZE)) or 0
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
@@ -724,6 +714,7 @@ def main():
                 if debug:
                     return_results(msg_list)
                 return general_summary, detailed_summary, msg_list
+
     except Exception as e:
         return_error(f'Failed to execute URL Phishing script. Error: {e}')
 
