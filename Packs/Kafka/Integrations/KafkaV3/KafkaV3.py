@@ -651,7 +651,7 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     """
     topic = demisto_args.get('topic')
     value = demisto_args.get('value')
-    value_schema_type = demisto_args.get('value_schema_type', 'None')
+    value_schema_type = demisto_args.get('value_schema_type')
     value_schema_str = demisto_args.get('value_schema_str', None)
     value_schema_subject_name = demisto_args.get('value_schema_subject_name', None)
     partition_arg = demisto_args.get('partitioning_key', '0')
