@@ -29,9 +29,9 @@ The following timestamp formats are currently supported for ingestion from Cisco
 
 * MMM dd hh:mm:ss.nnn
 * MMM dd hh:mm:ss.nnn TZ
+* MMM dd yyyy hh:mm:ss.nnn TZ
 * yyyy MMM dd hh:mm:ss.nnn
 * yyyy MMM dd hh:mm:ss.nnn TZ
-* MMM dd yyyy hh:mm:ss.nnn TZ
 
 In order to configure one of the above formats, follow these instructions:
 
