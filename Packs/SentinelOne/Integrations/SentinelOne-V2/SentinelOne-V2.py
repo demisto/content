@@ -1043,6 +1043,10 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix='singularity-marketplace/applications', params=params)
         return response.get('data', []), response.get('pagination', {})
 
+    def get_service_users_request(self, params: dict):
+        response = self._http_request(method='GET', url_suffix='service-users', params=params)
+        return response.get('data', []), response.get('pagination', {})
+
     def remove_empty_fields(self, json_payload):
         """
         Removes empty fields from a JSON payload and returns a new JSON object with non-empty fields.
@@ -3439,7 +3443,7 @@ def get_power_query_results(client: Client, args: dict):
 
 def list_installed_applications_command(client: Client, args: dict) -> CommandResults:
     """
-    List all agents matching the input filter
+    List all installed applications matching the input filter
     """
     # Get arguments
     query_params = assign_params(
@@ -3509,6 +3513,70 @@ def list_installed_applications_command(client: Client, args: dict) -> CommandRe
         outputs_key_field='ID',
         outputs=context_entries,
         raw_response=installed_applications)
+
+
+def get_service_users_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get all service users matching the input filter
+    """
+    # Get arguments
+    query_params = assign_params(
+        accountIds=args.get('account_ids'),
+        roleIds=args.get('role_ids'),
+        cursor=args.get('cursor'),
+        ids=args.get('ids'),
+        limit=int(args.get('limit', 1000)),
+        siteIds=args.get('site_ids')
+    )
+    # Make request and get raw response
+    service_users, pagination = client.get_service_users_request(query_params)
+
+    if pagination and pagination.get("nextCursor") is not None:
+        demisto.results("Use the below cursor value to get the next page service users \n {}".format(
+            pagination['nextCursor']))
+
+    context_entries = []
+    if service_users:
+        for each_service_user in service_users:
+            entry = {
+                'ID': each_service_user.get('id'),
+                'ApiTokenCreatedAt': each_service_user.get('apiToken', {}).get('createdAt'),
+                'ApiTokenExpiresAt': each_service_user.get('apiToken', {}).get('expiresAt'),
+                'CreatedAt': each_service_user.get('createdAt'),
+                'CreatedById': each_service_user.get('createdBy', {}).get('id'),
+                'CreatedByName': each_service_user.get('createdBy', {}).get('name'),
+                'Description': each_service_user.get('description'),
+                'LastActivation': each_service_user.get('lastActivation'),
+                'Name': each_service_user.get('name'),
+                'Scope': each_service_user.get('scope'),
+                'UpdatedAt': each_service_user.get('updatedAt'),
+                'UpdatedById': each_service_user.get('updatedBy', {}).get("id"),
+                'UpdatedByName': each_service_user.get('updatedBy', {}).get("name"),
+            }
+            if each_service_user.get('scopeRoles') and len(each_service_user.get('scopeRoles')) > 0:
+                scope_role_items = each_service_user['scopeRoles'][0]
+                if scope_role_items:
+                    entry['ScopeRolesRoleId'] = scope_role_items.get('roleId')
+                    entry['ScopeRolesRoleName'] = scope_role_items.get('roleName')
+                    entry['ScopeRolesAccountName'] = scope_role_items.get('accountName')
+                    entry['ScopeRolesId'] = scope_role_items.get('id')
+            context_entries.append(entry)
+        meta = "Provides summary information and details for all the service users that matched your search criteria."
+    else:
+        meta = "The search filters provided are returning no results. Please review and adjust them accordingly."
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'Sentinel One - Get Service Users',
+            context_entries,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=meta
+        ),
+        outputs_prefix='SentinelOne.ServiceUsers',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=service_users)
 
 
 def get_mapping_fields_command():
@@ -3951,6 +4019,7 @@ def main():
             'sentinelone-remote-script-automate-results': remote_script_automate_results,
             'sentinelone-get-power-query-results': get_power_query_results,
             'sentinelone-list-installed-applications': list_installed_applications_command,
+            'sentinelone-get-service-users': get_service_users_command,
         },
         'commands_with_params': {
             'get-remote-data': get_remote_data_command,

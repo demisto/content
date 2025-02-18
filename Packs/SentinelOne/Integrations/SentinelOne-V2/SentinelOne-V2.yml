@@ -2713,6 +2713,78 @@ script:
       description: Application instance name.
       type: string
   - arguments:
+    - name: account_ids
+      description: A comma-separated list of account IDs.
+      isArray: true
+    - name: role_ids
+      description: A comma-separated list of rbac roles to filter by.
+      isArray: true
+    - name: cursor
+      description: Cursor position returned by the last request. 
+    - defaultValue: "1000"
+      description: The maximum number of results to return (1-1000).
+      name: limit
+    - name: ids
+      description: A comma-separated list of service user IDs to filter by.
+      isArray: true
+    - name: site_ids
+      description: A comma-separated list of site IDs.
+      isArray: true
+    description: Returns all service users that match the specified criteria.
+    name: sentinelone-get-service-users
+    outputs:
+    - contextPath: SentinelOne.ServiceUsers.ID
+      description: The service user ID.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.ApiTokenCreatedAt
+      description: Api token created at.
+      type: date
+    - contextPath: SentinelOne.ServiceUsers.ApiTokenExpiresAt
+      description: Api token expires at.
+      type: date
+    - contextPath: SentinelOne.ServiceUsers.CreatedAt
+      description: Service user created at.
+      type: date
+    - contextPath: SentinelOne.ServiceUsers.CreatedById
+      description: The service user created by Id.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.CreatedByName
+      description: The service user created by name.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.Description
+      description: Service user description.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.LastActivation
+      description: Last activation.
+      type: date
+    - contextPath: SentinelOne.ServiceUsers.Name
+      description: Service user name.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.Scope
+      description: Service user scope.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.UpdatedAt
+      description: Service user updated at.
+      type: date
+    - contextPath: SentinelOne.ServiceUsers.UpdatedById
+      description: Service user updated by Id.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.UpdatedByName
+      description: Service user updated by Id.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.ScopeRolesRoleId
+      description: Scope roles role Id.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.ScopeRolesRoleName
+      description: Scope roles role name.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.ScopeRolesAccountName
+      description: Scope roles account name.
+      type: string
+    - contextPath: SentinelOne.ServiceUsers.ScopeRolesId
+      description: Scope roles Id.
+      type: string
+  - arguments:
     - description: The ID of the threat.
       name: threat_id
       required: true
