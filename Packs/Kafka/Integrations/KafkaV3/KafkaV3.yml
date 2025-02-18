@@ -154,11 +154,9 @@ script:
     - description: Message partition (number).
       name: partitioning_key
     - auto: PREDEFINED
-      defaultValue: None
-      description: Value schema type. If set to None, no schema is used, and schema-related arguments are ignored. Default is None.
+      description: Value schema type. If not set, no schema is used, and schema-related arguments are ignored.
       name: value_schema_type
       predefined:
-      - None
       - AVRO
     - description: Value schema in string format. Used only if `schema_type` is provided and `schema_subject_name` is not. Mutually exclusive with `schema_subject_name`.
       name: value_schema_str
