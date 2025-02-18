@@ -36,7 +36,7 @@ configuration:
   type: 9
   section: Connect
 description: Sends a Duo push notification with additional context via the pushinfo parameter. Must have access to the auth api in order to use this.
-display: DuoAuth (Community Contribution)
+display: DuoAuth
 name: DuoAuth
 script:
   commands:
