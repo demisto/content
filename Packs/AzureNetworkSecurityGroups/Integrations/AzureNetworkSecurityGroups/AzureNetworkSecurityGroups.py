@@ -241,7 +241,7 @@ def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List 
     """
     for data_to_extract in dict_to_extract:
         extract_inner_dict(data, *data_to_extract)
-        
+
     for data_to_extract in list_to_extract:
         extract_list(data, *data_to_extract)
 
