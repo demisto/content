@@ -15,6 +15,7 @@ DEFAULT_LIMIT = 5000
 
 ''' CLIENT CLASS '''
 
+
 class Client(BaseClient):
     """Client class to interact with the service API
 
@@ -29,7 +30,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool,
-                org_name: str, zone:str, api_limit=DEFAULT_LIMIT, **kwargs):
+                 org_name: str, zone: str, api_limit=DEFAULT_LIMIT, **kwargs):
         self.username = username
         self.password = password
         self.org_name = org_name
@@ -94,7 +95,7 @@ class Client(BaseClient):
             'password': self.password,
             'grant_type': 'password'
         }
-        headers={
+        headers = {
             'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
             'Accept': 'application/json;charset=utf-8',
             'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0'
@@ -121,16 +122,16 @@ class Client(BaseClient):
             bool: True if token has expired, False if not.
         """
         return time.time() - token_initiate_time < token_expiration_seconds - 60
-    
+
     def get_logs(self, from_date, to_time: int) -> Any:
-        res= self.http_request(
+        res = self.http_request(
             method='GET',
             url_suffix=f'/v1/audits/organizations/{self.org_name}',
             params={'startTime': from_date, 'endTime': to_time, 'expand': True}
         )
         return res
-    
-    def search_events(self,max_fetch: int, last_fetch_time: float = 0) -> tuple[List[Dict[str, Any]], Dict[str, float]]:
+
+    def search_events(self, max_fetch: int, last_fetch_time: float = 0) -> tuple[List[Dict[str, Any]], Dict[str, float]]:
         """
         Searches for logs using the '/<url_suffix>' API endpoint.
         Args:
@@ -151,7 +152,7 @@ class Client(BaseClient):
         events = logs[:max_fetch + 1]
         if not events:
             return events, {'last_run': to_time}
-        
+
         if len(logs) >= max_fetch:
             next_fetch_time = logs[max_fetch].get('timeStamp')
             for i in range(max_fetch, 0, -1):
@@ -161,7 +162,7 @@ class Client(BaseClient):
                     break
         else:
             next_fetch_time = to_time
-        
+
         return events, {'last_run': next_fetch_time}
 
 
@@ -215,7 +216,7 @@ def fetch_events(client: Client, last_run: Dict[str, float], max_events_per_fetc
     from_time = last_run.get('last_run', 0)
     demisto.info(f"looking for backward events from:{from_time}")
     events, next_fetch_time = client.search_events(max_events_per_fetch, from_time)
-    
+
     return next_fetch_time, events
 
 
@@ -257,7 +258,7 @@ def main() -> None:  # pragma: no cover
         max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_LIMIT
 
         client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy,
-                        org_name=org_name, zone=zone ,username=username, password=password)
+                        org_name=org_name, zone=zone, username=username, password=password)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
