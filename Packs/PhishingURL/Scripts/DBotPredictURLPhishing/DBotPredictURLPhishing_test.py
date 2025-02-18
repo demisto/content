@@ -50,7 +50,7 @@ def executeCommand(command, args=None):
         return None
     elif command == 'UnEscapeURLs':
         url = args.get('input')
-        return [{'Contents': url[0]}]
+        return [{'Contents': url[0]}] if url else None
     return None
 
 
@@ -320,3 +320,16 @@ def test_model_predictions(mocker: MockerFixture):
         output = model.predict(pd.DataFrame(pred['input']))
         output['logo_name'] = pred['output']['logo_name'] = None
         assert output == pred['output'], f"Prediction failed with {pred['input']['name']}"
+
+
+def test_get_urls_to_run_max_urls_zero(mocker: MockerFixture):
+    """
+    Given: max_urls is set to 0.
+    When: calling get_urls_to_run.
+    Then: the function should return an empty list without errors.
+    """
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    model_example = Model()
+    model_example.top_domains = {}
+    urls, _ = get_urls_to_run("", "", ["www.google.com"], 0, model_example, [""], False)
+    assert urls == []

@@ -683,7 +683,8 @@ def get_urls_to_run(
         return_results(MSG_NO_URL_GIVEN)
         return [], msg_list
     urls = get_final_urls(urls, max_urls, model)
-    urls = [res['Contents'] for res in demisto.executeCommand("UnEscapeURLs", {"input": urls})]  # type: ignore
+    unescaped_urls = demisto.executeCommand("UnEscapeURLs", {"input": urls}) or []
+    urls = [res['Contents'] for res in unescaped_urls]  # type: ignore
     if debug:
         return_results(urls)
     return urls, msg_list
@@ -723,7 +724,6 @@ def main():
                 if debug:
                     return_results(msg_list)
                 return general_summary, detailed_summary, msg_list
-
     except Exception as e:
         return_error(f'Failed to execute URL Phishing script. Error: {e}')
 
