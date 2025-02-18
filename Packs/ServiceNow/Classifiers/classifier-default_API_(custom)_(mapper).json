@@ -1,0 +1,24 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "default_API (custom) (mapper)",
+    "mapping": {
+        "Malware": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "level"
+                }
+            }
+        }
+    },
+    "name": "default_API (custom) (mapper)",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
