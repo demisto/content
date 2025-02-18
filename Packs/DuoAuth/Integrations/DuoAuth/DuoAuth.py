@@ -119,7 +119,7 @@ def duo_push_command(client: Client, args: Dict[str, str]) -> CommandResults:
                      f"**Message**: {status_message}"
 
     return CommandResults(
-        outputs_prefix="DuoAuth",
+        outputs_prefix="DuoAuth.PushNotification",
         outputs_key_field="User",
         outputs=outputs,
         raw_response=response,
