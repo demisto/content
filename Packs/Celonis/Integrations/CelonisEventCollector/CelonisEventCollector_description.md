@@ -1,9 +1,6 @@
 ## Celonis Help
 
 #### How to create an OAuth client and generate client ID and Client Secret:
-[Link to Celonis Audit Logs Documentation.](https://developer.celonis.com/celonis-apis/audit-log-api/#creating-an-application-and-granting-it-api-permissions)
-
-[Link to Celonis Documentation.](https://docs.celonis.com/en/using-oauth-2-0.html)
 
 1. To start, you need to create an OAuth client in your team and then grant this client API permissions.
 2. Click **Admin & Settings** and select **Applications**.
@@ -18,3 +15,5 @@ When creating your OAuth client, use the following configurations: **Authenticat
 7. Assign **Audit Log API**, ***Login History API**, and **Studio Adoption APIs** permissions to your newly created application as required.
 8. Click **Save**.
 The OAuth client now has the relevant API permissions. 
+
+[For more information visit Celonis Audit Logs Documentation.](https://developer.celonis.com/celonis-apis/audit-log-api/#creating-an-application-and-granting-it-api-permissions)
