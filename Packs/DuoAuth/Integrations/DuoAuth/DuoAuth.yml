@@ -1,0 +1,62 @@
+category: Utilities
+commonfields:
+  id: DuoAuth
+  version: -1
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: API Hostname
+  name: api_hostname
+  required: true
+  type: 0
+- display: ''
+  displaypassword: Integration Key
+  hiddenusername: true
+  name: integration_key
+  required: true
+  type: 9
+- display: ''
+  displaypassword: Secret Key
+  hiddenusername: true
+  name: secret_key
+  required: true
+  type: 9
+description: Sends a Duo push notification with additional context via the pushinfo parameter. Must have access to the auth api in order to use this.
+display: DuoAuth (Community Contribution)
+name: DuoAuth
+script:
+  commands:
+  - arguments:
+    - description: Insert username.
+      name: username
+      required: true
+    - description: "A set of URL-encoded key/value pairs with additional contextual information associated with this authentication attempt. The Duo Mobile app will display this information to the user. For example: from=login%20portal&domain=example.com, The URL-encoded string's total length must be less than 20,000 bytes."
+      name: pushinfo
+    - description: This string is displayed in the Duo Mobile app push notification and UI.
+      name: type
+    description: Send push message to Duo user.
+    name: duo-auth
+    outputs:
+    - contextPath: DuoAuth.Status
+      description: Status of a Push message.
+      type: String
+    - contextPath: DuoAuth.Message
+      description: E.g. if approved, "Success. Logging you in…".
+      type: String
+    - contextPath: DuoAuth.User
+      description: Username receiving Push message.
+      type: String
+  dockerimage: demisto/python3:3.12.8.1983910
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
