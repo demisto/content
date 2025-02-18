@@ -291,8 +291,9 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
         else:
             break
     else:
-        raise DemistoException(f"Failed to find any running Chrome processes on port {port} after {DEFAULT_RETRIES_COUNT} attempts")
-    
+        raise DemistoException(
+            f"Failed to find any running Chrome processes on port {port} after {DEFAULT_RETRIES_COUNT} attempts")
+
     # connect to the Chrome browser instance
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
     for i in range(DEFAULT_RETRIES_COUNT):
