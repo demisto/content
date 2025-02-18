@@ -2770,7 +2770,7 @@ script:
       description: Service user updated by Id.
       type: string
     - contextPath: SentinelOne.ServiceUsers.UpdatedByName
-      description: Service user updated by Id.
+      description: Service user updated by name.
       type: string
     - contextPath: SentinelOne.ServiceUsers.ScopeRolesRoleId
       description: Scope roles role Id.
