@@ -1,12 +1,7 @@
-from typing import Dict
-from email.utils import formatdate
-from urllib.parse import urlencode
-import hashlib
+#from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 import hmac
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-demisto.debug('pack name = Duo Push, pack version = 1.0.0')
-#
+import hashlib
+from typing import Dict
 
 
 class Client(BaseClient):
@@ -26,13 +21,14 @@ class Client(BaseClient):
         params_encoded = urllib.parse.urlencode(sorted(params.items()))
 
         # 3. Construct the canonical string
-        canonical_string = f"{date_header}\n{method.upper()}\n{self._base_url.replace('https://', '').rstrip('/')}\n{path}\n{params_encoded}"
+        canonical_string = f"{date_header}\n{method.upper()}\n{self._base_url.replace('https://', '').rstrip('/')}\n{path}\n" \
+                           f"{params_encoded}"
 
         # 4. Generate the HMAC signature
         signature = hmac.new(
             key=self.secret_key.encode('utf-8'),
             msg=canonical_string.encode('utf-8'),
-            digestmod=hashlib.sha1
+            digestmod=hashlib.sha512
         ).hexdigest()
 
         # 5. Base64 encode the Authorization header
@@ -43,6 +39,7 @@ class Client(BaseClient):
             "Date": date_header,
             "Authorization": f"Basic {auth_header}"
         }
+
 
     def call_duo_api(self, method: str, path: str, params: Dict[str, str]) -> Dict:
         """
@@ -67,7 +64,7 @@ class Client(BaseClient):
             return "ok"
         raise DemistoException(f"Failed to connect to Duo: {response.get('message', 'Unknown error')}")
 
-    def send_push_notification(self, username: str, factor: str, pushinfo: str, type: str) -> Dict:
+    def send_push_notification(self, username: str, factor: str, pushinfo: str, type: str ) -> Dict:
         """
         Calls the '/auth' endpoint to send a push notification.
         """
@@ -90,12 +87,13 @@ def test_module(client: Client) -> str:
 
 def duo_push_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
-    Executes the 'duo-push' command to perform second-factor authentication (send push in our case).
+    Executes the 'duo-auth' command to perform second-factor authentication (send push in our case).
     """
     username = args.get("username")
-    factor = args.get("factor", "push")  # Default to "push"
-    pushinfo = args.get("pushinfo", "Approve this request to proceed.")
-    type = args.get("type")  # Default value if not provided
+    factor = "push" # Default to "push"
+    pushinfo = args.get("pushinfo")
+    type = args.get("type", "Activities")  # Default value if not provided
+
 
     if not username:
         raise DemistoException("Missing required argument: username.")
@@ -120,7 +118,7 @@ def duo_push_command(client: Client, args: Dict[str, str]) -> CommandResults:
                      f"**Message**: {status_message}"
 
     return CommandResults(
-        outputs_prefix="DuoPush",
+        outputs_prefix="DuoAuth",
         outputs_key_field="User",
         outputs=outputs,
         raw_response=response,
@@ -134,7 +132,7 @@ def main():
     command = demisto.command()
 
     api_hostname = params.get("api_hostname", "").strip()
-    integration_key = params.get("integration_key", "").get("password", "").strip()
+    integration_key = params.get("integration_key", {}).get("password", "").strip()
     secret_key = params.get("secret_key", {}).get("password", "").strip()
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -157,7 +155,7 @@ def main():
 
         if command == "test-module":
             return_results(test_module(client))
-        elif command == "duo-push":
+        elif command == "duo-auth":
             return_results(duo_push_command(client, args))
         else:
             raise NotImplementedError(f"The command '{command}' is not implemented.")
