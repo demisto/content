@@ -31,3 +31,4 @@ user_defined_category:
 user_defined_severity:
 xql_query: "datamodel dataset = gitlab_gitlab_raw \r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type \r\n| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\""
 fromversion: 6.10.0
+toversion: 8.9.0
