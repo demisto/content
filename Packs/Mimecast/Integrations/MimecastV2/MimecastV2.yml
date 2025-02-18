@@ -132,10 +132,11 @@ configuration:
   type: 0
   required: false
 - defaultValue: '100'
-  display: Max fetch limit (for each incident type)
+  display: Max fetch limit
   name: max_fetch
   type: 0
   required: false
+  additionalinfo: Limit For each fetched incident type separately. Maximum is 200.
 - display: Trust any certificate (not secure)
   name: new_insecure
   type: 8
