@@ -288,7 +288,7 @@ def test_doppel_create_alert_command(client, mocker):
     assert result.outputs == test_response  # Check if the result matches the mocked response
 
     assert "Alert Summary" in result.readable_output
-    assert "test-doppel.com" in result.readable_output  # Ensure the entity is included in the output
+    assert "test-doppel.com" in result.readable_output.split()  # Ensure the entity is included in the output
 
 def test_doppel_create_alert_command_missing_entity(client):
     """Test case when 'entity' is missing in the arguments."""

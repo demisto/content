@@ -217,6 +217,12 @@
 				"Additional Indicators": {
 					"simple": "entity"
 				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
@@ -234,9 +240,6 @@
 				},
 				"Doppel  Alert Brand": {
 					"simple": "brand"
-				},
-				"Doppel Alert ID": {
-					"simple": "id"
 				},
 				"Doppel Audit Logs": {
 					"simple": "audit_logs.[]."
@@ -297,12 +300,6 @@
 				},
 				"Doppel Severity": {
 					"simple": "severity"
-				},
-				"Doppel Source": {
-					"simple": "source"
-				},
-				"Doppel Tags": {
-					"simple": "tags"
 				},
 				"Doppel Uploaded By": {
 					"simple": "uploaded_by"
@@ -393,9 +390,6 @@
 				},
 				"severity": {
 					"simple": "severity"
-				},
-				"source": {
-					"simple": "source"
 				},
 				"sourceBrand": {
 					"simple": "brand"

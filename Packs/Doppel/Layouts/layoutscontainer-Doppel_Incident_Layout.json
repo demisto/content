@@ -353,7 +353,7 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "doppelalertid",
+								"fieldId": "alertid",
 								"height": 26,
 								"id": "a6ce5d89-5115-4f48-b430-d33799081c52",
 								"index": 0,
@@ -371,7 +371,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "doppelbrand",
+								"fieldId": "sourcebrand",
 								"height": 26,
 								"id": "31921aa2-3b76-4b3a-a6d3-5f1e43968dcb",
 								"index": 2,
@@ -479,16 +479,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "doppelsource",
-								"height": 26,
-								"id": "bd17abba-3f1f-4159-ab0e-9645d32c3c66",
-								"index": 10,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "doppeltags",
+								"fieldId": "tags",
 								"height": 26,
 								"id": "98baebf3-14e6-445c-ae21-91664a795ade",
 								"index": 10,
@@ -540,7 +531,7 @@
 								"script": "",
 								"selectValues": null,
 								"type": "shortText",
-								"width": 124
+								"width": 208
 							},
 							{
 								"displayName": "ip_address",
@@ -553,7 +544,7 @@
 								"script": "",
 								"selectValues": null,
 								"type": "shortText",
-								"width": 118
+								"width": 154
 							},
 							{
 								"displayName": "contact_email",
@@ -566,7 +557,7 @@
 								"script": "",
 								"selectValues": null,
 								"type": "shortText",
-								"width": 150
+								"width": 224
 							},
 							{
 								"displayName": "country_code",
@@ -605,7 +596,7 @@
 								"script": "",
 								"selectValues": [],
 								"type": "longText",
-								"width": 120
+								"width": 382
 							},
 							{
 								"displayName": "nameservers",
@@ -618,7 +609,7 @@
 								"script": "",
 								"selectValues": null,
 								"type": "longText",
-								"width": 264
+								"width": 451
 							}
 						],
 						"description": "Details about the entity received from Doppel",
@@ -742,7 +733,7 @@
 										"simple": "${incident.doppelalertid}"
 									},
 									"comment": {
-										"simple": "Safelist this Asset, we own it.",
+										"simple": "Safelist this Asset, We own it.",
 										"userMarkedRequired": true
 									},
 									"entity_state": {
@@ -770,7 +761,7 @@
 										"simple": "${incident.doppelalertid}"
 									},
 									"comment": {
-										"simple": "Throw out this Alert later \nas this is a Noise.",
+										"simple": "Throw out this Alert later as this is a Noise.",
 										"userMarkedRequired": true
 									},
 									"entity_state": {
@@ -845,6 +836,26 @@
 								"index": 4,
 								"listId": "chtyrfjhpp-46dd786d-8134-4c56-ab8e-f630302f49ee",
 								"name": "Monitor",
+								"scriptId": "Doppel|||doppel-update-alert",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"alert_id": {
+										"simple": "${incident.doppelalertid}"
+									},
+									"comment": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "3c802f06-c14f-4b70-baea-3a19d22749bb",
+								"index": 5,
+								"name": "Add Comment",
 								"scriptId": "Doppel|||doppel-update-alert",
 								"sectionItemType": "button",
 								"startCol": 0

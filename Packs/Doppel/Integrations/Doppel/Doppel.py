@@ -1,6 +1,3 @@
-from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (CommandMetadata, ConfKey, InputArgument, YMLMetadataCollector, OutputArgument, ParameterTypes)
-from CommonServerPython import BaseClient, CommandResults, datetime
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -32,7 +29,6 @@ MIRROR_DIRECTION = {
 }
 DOPPEL_ALERT = 'Doppel Alert'
 DOPPEL_INCIDENT = 'Doppel Incident'
-TIMEOUT = '30'
 
 ''' CLIENT CLASS '''
 
@@ -197,6 +193,7 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
                 "Type": EntryType.NOTE,
                 "Contents": most_recent_audit_log,
                 "ContentsFormat": EntryFormat.JSON,
+                "Note": True
             }]
             demisto.debug(f'Successfully returning the updated alert and entries: {updated_doppel_alert, entries}')
             return updated_doppel_alert, entries
@@ -207,7 +204,7 @@ def _get_mirroring_fields():
     """
     Get tickets mirroring.
     """
-    mirror_direction: str = demisto.params().get('mirror_direction', None)
+    mirror_direction: str = demisto.params().get('mirror_direction', 'None')
     return {
         "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
         "mirror_instance": demisto.integrationInstance(),
@@ -473,6 +470,8 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
     This function fetches alerts directly from Doppel
     """
     demisto.debug("Fetching alerts from Doppel.")
+    start_time = time.time()
+    timeout = float(demisto.params().get('fetch_timeout'))
 
     # Fetch the last run (time of the last fetch)
     last_run = demisto.getLastRun()
@@ -483,7 +482,6 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
 
     last_run = last_run.get("last_run", None)
     last_fetch_datetime = _get_last_fetch_datetime(last_run)
-    demisto.debug(f"Last fetch datetime is {last_fetch_datetime}")
 
     # Fetch alerts
     fetch_limit = int(demisto.params().get("max_fetch"))
@@ -493,6 +491,12 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
         incidents = []
         mirroring_object = _get_mirroring_fields()
         while True:
+            time_delta = time.time() - start_time
+
+            if timeout and time_delta > timeout:
+                raise DemistoException(
+                    "Fetch incidents - Time out. Please change first_fetch parameter to be more recent one")
+
             alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
 
             if not alerts:
@@ -505,15 +509,15 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
                 # Building the incident structure
                 created_at_str = alert.get("created_at")
                 created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-                new_last_fetch = created_at_datetime.timestamp()
-                if new_last_fetch > last_fetch:
-                    alert.update(mirroring_object)
-                    incident = {
-                        'name': f"Doppel Incident {uuid.uuid4()}",
-                        'occurred': created_at_datetime.strftime(XSOAR_DATE_FORMAT),
-                        'rawJSON': json.dumps(alert),
-                    }
-                    incidents.append(incident)
+                alert.update(mirroring_object)
+                incident = {
+                    'name': f"Doppel Incident {uuid.uuid4()}",
+                    'type': DOPPEL_ALERT,
+                    'occurred': created_at_datetime.strftime(XSOAR_DATE_FORMAT),
+                    'dbotMirrorId': str(alert.get("id")),
+                    'rawJSON': json.dumps(alert),
+                }
+                incidents.append(incident)
 
             demisto.info(f'Fetched Doppel alerts from page {page} Successfully.')
             page = page+1
@@ -544,7 +548,6 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
         demisto.incidents([])
         demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
-# Adding get modified remote data command
 def get_modified_remote_data_command(client: Client, args: dict):
     """
     Gets the modified remote incidents.
@@ -561,14 +564,21 @@ def get_modified_remote_data_command(client: Client, args: dict):
     last_update = dateparser.parse(remote_args.last_update)
     assert last_update is not None, f"could not parse{remote_args.last_update}"
 
-    demisto.debug(f"Remote arguments last_update in UTC is {last_update}")
     modified_ids_to_mirror = []
-    last_update = last_update.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-    remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(client, remote_args.remote_incident_id, last_update)
+    last_update = last_update.strftime(DOPPEL_API_DATE_FORMAT)
+    query_params = {
+        'created_after': last_update,  # Fetch alerts after the last_fetch,
+        'sort_type': 'date_sourced',
+        'sort_order': 'asc',
+        'page': 0,
+    }
+    get_alerts_response = client.get_alerts(params=query_params)
+    alerts = get_alerts_response.get('alerts', None)
 
-    for alerts in remote_updated_incident_data:
-        modified_ids_to_mirror.append(alerts.get("id"))
+    for alert in alerts:
+        remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(client, alert.get("id"), remote_args.last_update)
+        modified_ids_to_mirror.append(remote_updated_incident_data.get("id"))
 
     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
 
@@ -587,7 +597,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
         else:
             demisto.debug(f'Nothing new in the incident {parsed_args.remote_incident_id}')
             return GetRemoteDataResponse(mirrored_object={}, entries=[{}])
-      
+
     except Exception as e:
         demisto.error(f'Error while running get_remote_data_command: {e}')
         if "Rate limit exceeded" in str(e):
@@ -619,35 +629,41 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     """
     demisto.debug(f'Arguments for the update-remote-system is: {args}')
     parsed_args = UpdateRemoteSystemArgs(args)
-    new_incident_id: str = parsed_args.remote_incident_id
-    # We will Update the Doppel Alert only if the XSOAR Incident is closed
-    if parsed_args.inc_status == IncidentStatus.DONE:
-        if parsed_args.delta and any(parsed_args.delta.get(key) for key in ['closeReason', 'closeNotes', 'closingUserId']):
-            demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system')
-            if not parsed_args.remote_incident_id or parsed_args.incident_changed:
-                if parsed_args.remote_incident_id:
-                    # First, get the incident as we need the version
-                    old_incident = client.get_alert(id=parsed_args.remote_incident_id, entity=None)
-                    for changed_key in parsed_args.delta.keys():
-                        old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
-                    parsed_args.data = old_incident
-                else:
-                    parsed_args.data['createInvestigation'] = True
+    new_incident_id = parsed_args.remote_incident_id
 
-                # Update the queue_state value in the Doppel alert, if already not same
-                current_queue_state = parsed_args.data.get('queue_state')
-                target_queue_state = 'archived'
-                if current_queue_state != target_queue_state:
-                    client.update_alert(
-                        queue_state=target_queue_state,
-                        entity_state=old_incident['entity_state'],  # Keep the old entity_state
-                        alert_id=new_incident_id
-                    )
-            else:
-                demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
-                              f'not new nor changed.')
-        else:
-            demisto.debug(f'The incident changed, but it does not have required closing fields. Hence will not update the Doppel alert at this time')
+    demisto.debug(f'parsed_args data :- {parsed_args}')
+    demisto.debug(f'parsed_args data :- {parsed_args.data}')
+    try:
+        # Only update Doppel Alert if the XSOAR Incident is closed
+        if parsed_args.inc_status != IncidentStatus.DONE:
+            demisto.debug(f'Incident not closed. Skipping update for remote ID [{new_incident_id}].')
+            return new_incident_id
+
+        demisto.debug(f'Sending incident with remote ID [{new_incident_id}] to remote system')
+
+        if parsed_args.remote_incident_id and parsed_args.incident_changed:
+            # Fetch existing incident details to preserve versioning
+            old_incident = client.get_alert(id=new_incident_id, entity=None)
+
+            # Apply changes from XSOAR to the existing incident
+            old_incident.update(parsed_args.delta)  # Simplifies key-value assignment
+
+            parsed_args.data = old_incident
+        elif not parsed_args.remote_incident_id:
+            parsed_args.data['createInvestigation'] = True
+
+        # Ensure queue_state is updated to 'archived' if necessary
+        if parsed_args.data.get('queue_state') != 'archived':
+            client.update_alert(
+                queue_state='archived',
+                entity_state=parsed_args.data.get('entity_state', ''),  # Preserve old entity_state
+                comment=parsed_args.data.get('notes', ''),
+                alert_id=new_incident_id
+            )
+    except Exception as e:
+        demisto.error(f"Doppel - Error in outgoing mirror for incident {remote_incident_id} \n"
+                  f"Error message: {str(e)}")
+
     return new_incident_id
 
 def get_mapping_fields_command(client: Client, args: Dict[str, Any]):
@@ -675,7 +691,7 @@ def main() -> None:
     supported_commands = {
         'test-module': test_module,
         'fetch-incidents': fetch_incidents_command,
-        'get-modified-remote-data:': get_modified_remote_data_command,
+        'get-modified-remote-data': get_modified_remote_data_command,
         'get-remote-data': get_remote_data_command,
         'update-remote-system': update_remote_system_command,
         'get-mapping-fields': get_mapping_fields_command,

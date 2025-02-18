@@ -34,7 +34,6 @@ configuration:
 - additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring),
     Incoming (from Doppel to XSOAR), Outgoing (from XSOAR to Doppel), Incoming and
     Outgoing (from/to Cortex and Doppel)'
-  defaultvalue: Incoming And Outgoing
   display: Mirror Direction
   name: mirror_direction
   options:
@@ -44,14 +43,26 @@ configuration:
   - None
   required: false
   type: 15
-- additionalinfo: For the first time fetch (or on reset of "Last Run" timestamp),
-    fetch alerts created in the mentioned historical days
-  defaultvalue: "1"
-  display: Historical Days
-  name: historical_days
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: 1 day
+  display: First fetch
+  name: first_fetch
   required: false
   type: 0
-  - display: Trust any certificate (not secure)
+- additionalinfo: The time limit in seconds for fetch incidents to run. Leave this
+    empty to cancel the timeout limit.
+  defaultvalue: "30"
+  display: Fetch incidents timeout
+  name: fetch_timeout
+  required: false
+  type: 0
+- additionalinfo: Due to API limitations, the maximum is 100.
+  defaultvalue: "10"
+  display: Number of incidents for each fetch.
+  name: max_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
@@ -169,13 +180,13 @@ script:
       entity to be provided in the arguments.
     name: doppel-create-alert
     outputs:
-    - contextPath: CreatedAlert.id
+    - contextPath: Doppel.CreatedAlert.id
       description: 'The unique ID of the alert.'
       type: String
-    - contextPath: CreatedAlert.entity
+    - contextPath: Doppel.CreatedAlert.entity
       description: 'The entity URL associated with the alert.'
       type: String
-    - contextPath: CreatedAlert.doppel_link
+    - contextPath: Doppel.CreatedAlert.doppel_link
       description: 'The link to view the alert in the Doppel platform.'
       type: String  
   - arguments:
