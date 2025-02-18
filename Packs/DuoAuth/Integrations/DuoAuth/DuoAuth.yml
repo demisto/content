@@ -49,7 +49,7 @@ script:
     - description: This string is displayed in the Duo Mobile app push notification and UI.
       name: type
     description: Send push message to Duo user.
-    name: duo-auth
+    name: duoauth-push-notification
     outputs:
     - contextPath: DuoAuth.Status
       description: Status of a Push message.
