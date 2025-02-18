@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: DuoAuth
   version: -1
@@ -7,26 +10,31 @@ configuration:
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - display: API Hostname
   name: api_hostname
   required: true
   type: 0
+  section: Connect
 - display: ''
   displaypassword: Integration Key
   hiddenusername: true
   name: integration_key
   required: true
   type: 9
+  section: Connect
 - display: ''
   displaypassword: Secret Key
   hiddenusername: true
   name: secret_key
   required: true
   type: 9
+  section: Connect
 description: Sends a Duo push notification with additional context via the pushinfo parameter. Must have access to the auth api in order to use this.
 display: DuoAuth (Community Contribution)
 name: DuoAuth
