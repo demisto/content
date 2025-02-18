@@ -171,7 +171,7 @@ def extract_and_save_old_model_data(model_data: str, minor_version: int) -> Opti
 
     old_import = dill._dill._import_module
     dill._dill._import_module = lambda x, safe=False: old_import(x, safe=True)
-    model = cast(Model, dill.loads(base64_to_bytes(model_data)))
+    model = cast(Model, dill.loads(base64_to_bytes(model_data)))  # guardrails-disable-line
     dill._dill._import_module = old_import
 
     model_data = cast(ModelData, {

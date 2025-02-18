@@ -65,7 +65,7 @@ def load_old_model_data(encoded_model: str) -> ModelData:
 
     old_import = dill._dill._import_module
     dill._dill._import_module = lambda x, safe=False: old_import(x, safe=True)
-    model = cast(Model, dill.loads(base64.b64decode(encoded_model.encode())))
+    model = cast(Model, dill.loads(base64.b64decode(encoded_model.encode())))  # guardrails-disable-line
     dill._dill._import_module = old_import
 
     if demisto.getArg('action') != KEY_DISPLAY_LOGOS:
