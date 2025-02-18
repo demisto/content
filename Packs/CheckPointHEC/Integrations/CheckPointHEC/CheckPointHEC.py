@@ -157,7 +157,7 @@ class Client(BaseClient):
         )
         return self.token or ''
 
-    def _call_api(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None) -> dict[str, Any]:
+    def _call_api(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None, resp_type: str = 'json'):
         if self.is_infinity:
             path = '/'.join(['app', 'hec-api', self.api_version, url_suffix])
             request_string = None
@@ -172,7 +172,8 @@ class Client(BaseClient):
             url_suffix=path,
             headers=self._get_headers(request_string),
             params=params,
-            json_data=json_data
+            json_data=json_data,
+            resp_type=resp_type,
         )
 
     def test_api(self) -> dict[str, Any]:
@@ -440,6 +441,13 @@ class Client(BaseClient):
             'POST',
             'report/mis-classification',
             json_data=payload
+        )
+
+    def download_email(self, entity: str, original: bool = False):
+        return self._call_api(
+            'GET',
+            f'download/entity/{entity}?original={int(original)}',
+            resp_type='content',
         )
 
     def get_ap_exceptions(self, exc_type: str, exc_id: str = None):
@@ -847,13 +855,14 @@ def checkpointhec_get_events(client: Client, args: dict) -> CommandResults:
 
 def checkpointhec_get_scan_info(client: Client, args: dict) -> CommandResults:
     entity: str = args['entity']
+    include_clean: bool = arg_to_bool(args.get('include_clean'))
 
     result = client.get_entity(entity)
     outputs = {}
     if entities := result.get('responseData'):
         sec_result = entities[0]['entitySecurityResult']
         for tool, verdict in sec_result['combinedVerdict'].items():
-            if verdict not in (None, 'clean'):
+            if verdict is not None and (include_clean or verdict != 'clean'):
                 outputs[tool] = json.dumps(sec_result[tool])
         return CommandResults(
             outputs_prefix='CheckPointHEC.ScanResult',
@@ -1028,6 +1037,17 @@ def checkpointhec_report_mis_classification(client: Client, args: dict) -> Comma
         )
     else:
         raise DemistoException('Error reporting mis-classification')
+
+
+def checkpointhec_download_email(client: Client, args: dict) -> dict:
+    entity: str = args['entity']
+    original: bool = arg_to_bool(args.get('original'))
+    eml = client.download_email(entity, original)
+
+    return fileResult(
+        filename=f'{entity}.eml',
+        data=eml,
+    )
 
 
 def checkpointhec_get_ap_exceptions(client: Client, args: dict) -> CommandResults:
@@ -1676,6 +1696,8 @@ def main() -> None:  # pragma: no cover
             return_results(checkpointhec_send_notification(client, args))
         elif command == 'checkpointhec-report-mis-classification':
             return_results(checkpointhec_report_mis_classification(client, args))
+        elif command == 'checkpointhec-download-email':
+            return_results(checkpointhec_download_email(client, args))
         elif command == 'checkpointhec-get-ap-exceptions':
             return_results(checkpointhec_get_ap_exceptions(client, args))
         elif command == 'checkpointhec-create-ap-exception':
