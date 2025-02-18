@@ -65,13 +65,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "bandit"
-version = "1.8.2"
+version = "1.8.3"
 description = "Security oriented static analyser for python code."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "bandit-1.8.2-py3-none-any.whl", hash = "sha256:df6146ad73dd30e8cbda4e29689ddda48364e36ff655dbfc86998401fcf1721f"},
-    {file = "bandit-1.8.2.tar.gz", hash = "sha256:e00ad5a6bc676c0954669fe13818024d66b70e42cf5adb971480cf3b671e835f"},
+    {file = "bandit-1.8.3-py3-none-any.whl", hash = "sha256:28f04dc0d258e1dd0f99dee8eefa13d1cb5e3fde1a5ab0c523971f97b289bcd8"},
+    {file = "bandit-1.8.3.tar.gz", hash = "sha256:f5847beb654d309422985c36644649924e0ea4425c76dec2e89110b87506193a"},
 ]
 
 [package.dependencies]
@@ -724,84 +724,85 @@ version = "1.35.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
-files = []
-develop = false
+files = [
+    {file = "demisto_sdk-1.35.0-py3-none-any.whl", hash = "sha256:54da1a3c6fa174ab34f65167f40625569b3f7319d8aa38e94880908cf579799d"},
+    {file = "demisto_sdk-1.35.0.tar.gz", hash = "sha256:59c9bd08470ac6bbbf4cdaee1a8e6bfa9c0cb195f879e9ea4d46466383ad411d"},
+]
 
 [package.dependencies]
-autopep8 = "^2.0.4"
-bandit = "^1.7.4"
-beautifulsoup4 = "^4.11.1"
+autopep8 = ">=2.0.4,<3.0.0"
+bandit = ">=1.7.4,<2.0.0"
+beautifulsoup4 = ">=4.11.1,<5.0.0"
 chardet = ">=4,<6"
-coloredlogs = "^15.0.1"
-configparser = "^5.2.0"
-coverage = "^7.2.1,<7.4"
-dateparser = "^1.1.1"
-decorator = "^5.1.1"
-demisto-py = "^3.2.10"
-dictdiffer = "^0.9.0"
-dictor = "^0.1.9"
-docker = "^7.1.0"
-flatten-dict = "^0.4.2"
-gitdb = "^4.0.9"
-GitPython = "^3.1.37"
-giturlparse = "^0.10.0"
-google-cloud-secret-manager = "^2.18.3"
-google-cloud-storage = "^2.13.0"
-imagesize = "^1.3.0"
-importlib-resources = "^5.6.0"
-inflection = "^0.5.1"
-json5 = "^0.9.14"
-jsonschema = "^4.4.0"
-junitparser = "^3.1.0"
-loguru = "^0.7.2"
-lxml = "^5.0.0"
-mergedeep = "^1.3.4"
-more-itertools = "^10.0.0"
-mypy = "^0.982"
-neo4j = "^5.14.0"
-networkx = "^2.7.1"
-nltk = "==3.9.1"
-ordered-set = "^4.1.0"
-orjson = "^3.8.3"
-packaging = "^24.0"
+coloredlogs = ">=15.0.1,<16.0.0"
+configparser = ">=5.2.0,<6.0.0"
+coverage = ">=7.2.1,<7.4"
+dateparser = ">=1.1.1,<2.0.0"
+decorator = ">=5.1.1,<6.0.0"
+demisto-py = ">=3.2.10,<4.0.0"
+dictdiffer = ">=0.9.0,<0.10.0"
+dictor = ">=0.1.9,<0.2.0"
+docker = ">=7.1.0,<8.0.0"
+flatten-dict = ">=0.4.2,<0.5.0"
+gitdb = ">=4.0.9,<5.0.0"
+GitPython = ">=3.1.37,<4.0.0"
+giturlparse = ">=0.10.0,<0.11.0"
+google-cloud-secret-manager = ">=2.18.3,<3.0.0"
+google-cloud-storage = ">=2.13.0,<3.0.0"
+imagesize = ">=1.3.0,<2.0.0"
+importlib-resources = ">=5.6.0,<6.0.0"
+inflection = ">=0.5.1,<0.6.0"
+json5 = ">=0.9.14,<0.10.0"
+jsonschema = ">=4.4.0,<5.0.0"
+junitparser = ">=3.1.0,<4.0.0"
+loguru = ">=0.7.2,<0.8.0"
+lxml = ">=5.0.0,<6.0.0"
+mergedeep = ">=1.3.4,<2.0.0"
+more-itertools = ">=10.0.0,<11.0.0"
+mypy = ">=0.982,<0.983"
+neo4j = ">=5.14.0,<6.0.0"
+networkx = ">=2.7.1,<3.0.0"
+nltk = "3.9.1"
+ordered-set = ">=4.1.0,<5.0.0"
+orjson = ">=3.8.3,<4.0.0"
+packaging = ">=24.0,<25.0"
 paramiko = ">=3.4.1,<4.0"
 Pebble = ">=4.6.3,<6.0.0"
-pre-commit = "^3.5.0"
-prettytable = "^3.2.0"
-pydantic = "^1.10"
-pygithub = "^2.2.0"
-pykwalify = "^1.8.0"
-pylint = "^3.3.2"
-PyPDF2 = "^1.28.6"
-pyspellchecker = "^0.6.3"
-pytest-freezegun = "^0.4.2"
-python-dotenv = "^0.20.0"
-requests = "^2.27.1"
-"ruamel.yaml" = "^0.17.21"
-setuptools = "^75.5.0"
-slack-sdk = "^3.17.0"
+pre-commit = ">=3.5.0,<4.0.0"
+prettytable = ">=3.2.0,<4.0.0"
+pydantic = ">=1.10,<2.0"
+pygithub = ">=2.2.0,<3.0.0"
+pykwalify = ">=1.8.0,<2.0.0"
+pylint = ">=3.3.2,<4.0.0"
+PyPDF2 = ">=1.28.6,<2.0.0"
+pyspellchecker = ">=0.6.3,<0.7.0"
+pytest-freezegun = ">=0.4.2,<0.5.0"
+python-dotenv = ">=0.20.0,<0.21.0"
+requests = ">=2.27.1,<3.0.0"
+"ruamel.yaml" = ">=0.17.21,<0.18.0"
+setuptools = ">=75.5.0,<76.0.0"
+slack-sdk = ">=3.17.0,<4.0.0"
 tabulate = ">=0.8.9,<0.10.0"
-tenacity = "^8.4.1"
-toml = "^0.10.2"
-typer = {version = "^0.13.0", extras = ["all"]}
-typing-extensions = "^4.1.1"
-ujson = "^5.1.0"
+tenacity = ">=8.4.1,<9.0.0"
+toml = ">=0.10.2,<0.11.0"
+typer = {version = ">=0.13.0,<0.14.0", extras = ["all"]}
+typing-extensions = ">=4.1.1,<5.0.0"
+ujson = ">=5.1.0,<6.0.0"
 urllib3 = ">=1.26,<3"
-uv = "^0.1.5"
-vulture = "^2.3"
-wcmatch = "^8.3"
-werkzeug = "^2.2.0"
-yamlordereddictloader = "^0.4.0"
+uv = ">=0.1.5,<0.2.0"
+vulture = ">=2.3,<3.0"
+wcmatch = ">=8.3,<9.0"
+werkzeug = ">=2.2.0,<3.0.0"
+yamlordereddictloader = ">=0.4.0,<0.5.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
 generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 
 [package.source]
-type = "git"
-url = "https://github.com/demisto/demisto-sdk.git"
-reference = "platform-content-support"
-resolved_reference = "cc7707d515c1b5733573dbd40a9514e2f87a5e98"
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "pypi-public"
 
 [[package]]
 name = "deprecated"
@@ -1161,13 +1162,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "google-cloud-secret-manager"
-version = "2.22.1"
+version = "2.23.0"
 description = "Google Cloud Secret Manager API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google_cloud_secret_manager-2.22.1-py2.py3-none-any.whl", hash = "sha256:f18c5094d2d462a58d1ef23cd62895f68ad0adebf96f6b8612f35197a456908c"},
-    {file = "google_cloud_secret_manager-2.22.1.tar.gz", hash = "sha256:f245e505b429990388f0f92cd4a24d424a4c4cdc2acb866e52c24e7680d15e77"},
+    {file = "google_cloud_secret_manager-2.23.0-py2.py3-none-any.whl", hash = "sha256:fc4c28dd3e932b89d1057100c6625686a43b5ca26e6dd73ffea2afbfbbc97209"},
+    {file = "google_cloud_secret_manager-2.23.0.tar.gz", hash = "sha256:0249f433b6f0899b5e2adfc495e5b2d4a76c484937cad7c27e2b374bebf8f248"},
 ]
 
 [package.dependencies]
@@ -1279,13 +1280,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.66.0"
+version = "1.67.0"
 description = "Common protobufs used in Google APIs"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "googleapis_common_protos-1.66.0-py2.py3-none-any.whl", hash = "sha256:d7abcd75fabb2e0ec9f74466401f6c119a0b498e27370e9be4c94cb7e382b8ed"},
-    {file = "googleapis_common_protos-1.66.0.tar.gz", hash = "sha256:c3e7b33d15fdca5374cc0a7346dd92ffa847425cc4ea941d970f13680052ec8c"},
+    {file = "googleapis_common_protos-1.67.0-py2.py3-none-any.whl", hash = "sha256:579de760800d13616f51cf8be00c876f00a9f146d3e6510e19d1f4111758b741"},
+    {file = "googleapis_common_protos-1.67.0.tar.gz", hash = "sha256:21398025365f138be356d5923e9168737d94d46a72aefee4a6110a1f23463c86"},
 ]
 
 [package.dependencies]
@@ -2627,13 +2628,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "pygithub"
-version = "2.5.0"
+version = "2.6.0"
 description = "Use the full Github API v3"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "PyGithub-2.5.0-py3-none-any.whl", hash = "sha256:b0b635999a658ab8e08720bdd3318893ff20e2275f6446fcf35bf3f44f2c0fd2"},
-    {file = "pygithub-2.5.0.tar.gz", hash = "sha256:e1613ac508a9be710920d26eb18b1905ebd9926aa49398e88151c1b526aad3cf"},
+    {file = "PyGithub-2.6.0-py3-none-any.whl", hash = "sha256:22635b245b885413c607bb86393603cadcfdcb67a9b81ce9a64634e64f308084"},
+    {file = "pygithub-2.6.0.tar.gz", hash = "sha256:04784fd6f4acfcaf91df5d3f08ef14153709395a34e706850f92337d9914548f"},
 ]
 
 [package.dependencies]
@@ -3897,13 +3898,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "types-decorator"
-version = "5.1.8.20250121"
+version = "5.1.8.20250215"
 description = "Typing stubs for decorator"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "types_decorator-5.1.8.20250121-py3-none-any.whl", hash = "sha256:6bfd5f4464f444a1ee0aea92705ed8466d74c0ddd7ade4bbd003c235db51d21a"},
-    {file = "types_decorator-5.1.8.20250121.tar.gz", hash = "sha256:1b89bb1c481a1d3399e28f1aa3459366b76dde951490992ae8475ba91287cd04"},
+    {file = "types_decorator-5.1.8.20250215-py3-none-any.whl", hash = "sha256:0289b854559c12f92e8166f9880a6194eb475256d93a6d6b611dc1a9ddcc5867"},
+    {file = "types_decorator-5.1.8.20250215.tar.gz", hash = "sha256:735d96deb5007544e27fa62ed27c80951f83a2c93db67cc07998152e0f839b8f"},
 ]
 
 [package.source]
@@ -4652,4 +4653,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.11"
-content-hash = "3269b221150a45b5fe4141fdf792cb258f40a5ea4de4f917bf07e46f95886932"
+content-hash = "53d43eaac9fb46c7ca202a6775f9b6de762e40ae341f71f57715e5ddf25e86f7"
