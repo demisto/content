@@ -1,0 +1,21 @@
+{
+    "name": "Contribution Test Pack",
+    "description": "This is an updated description.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Octocat Smith",
+    "url": "",
+    "email": "",
+    "created": "2025-02-18T09:01:57Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "xsoar-bot"
+    ]
+}
