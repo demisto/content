@@ -1122,7 +1122,7 @@ class Client(BaseClient):
     def alarm_drilldown_raw_response_request(self, alarm_id):  # pragma: no cover
         headers = self._headers | {'content-type': 'application/json'}
         response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers,
-                                      resp_type='response')
+                                      resp_type='response', return_empty_response=True)
         drilldown_results = response.get('Data', {}).get('DrillDownResults')
         return drilldown_results, response
 
