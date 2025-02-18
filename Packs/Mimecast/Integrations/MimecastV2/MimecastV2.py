@@ -2047,7 +2047,7 @@ def fetch_incidents():
             if temp_date > current_fetch:
                 incidents.append(incident)
             else:
-                demisto.debug(f"Did not appended incident with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
+                demisto.debug(f"Did not appended url_log with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
 
     if FETCH_ATTACHMENTS:
         search_params = {
@@ -2074,7 +2074,7 @@ def fetch_incidents():
             if temp_date > current_fetch:
                 incidents.append(incident)
             else:
-                demisto.debug(f"Did not appended incident with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
+                demisto.debug(f"Did not appended attachment_log with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
 
     if FETCH_IMPERSONATIONS:
         search_params = {
@@ -2100,7 +2100,7 @@ def fetch_incidents():
             if temp_date > current_fetch:
                 incidents.append(incident)
             else:
-                demisto.debug(f"Did not appended incident with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
+                demisto.debug(f"Did not appended impersonation_logs with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
     if FETCH_HELD_MESSAGES:
         # Added dedup mechanism only to held_messages due to a bug
         next_dedup_held_messages = dedup_held_messages = last_run.get('dedup_held_messages', [])
@@ -2137,7 +2137,7 @@ def fetch_incidents():
                     incidents.append(incident)
                     current_held_message_count += 1
                 else:
-                    demisto.debug(f"Did not append incident with name {incident.get('name')} since {temp_date=} <= "
+                    demisto.debug(f"Did not append held_message with name {incident.get('name')} since {temp_date=} <= "
                                   f"{current_held_message_count=}.")
             else:
                 demisto.debug(f"Dropped held message with id {held_message_id}.")
