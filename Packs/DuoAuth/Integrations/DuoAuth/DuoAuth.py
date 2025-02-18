@@ -156,7 +156,7 @@ def main():
 
         if command == "test-module":
             return_results(test_module(client))
-        elif command == "duo-auth":
+        elif command == "duoauth-push-notification":
             return_results(duo_push_command(client, args))
         else:
             raise NotImplementedError(f"The command '{command}' is not implemented.")
