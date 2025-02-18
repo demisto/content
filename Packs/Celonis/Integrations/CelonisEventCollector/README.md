@@ -32,7 +32,7 @@ When creating your OAuth client, use the following configurations: **Authenticat
 8. Click **Save**.
 The OAuth client now has the relevant API permissions.
 
-[For more information visit Celonis Audit Logs Documentation.](https://developer.celonis.com/celonis-apis/audit-log-api/#creating-an-application-and-granting-it-api-permissions)
+For more information visit [Celonis Audit Logs Documentation.](https://developer.celonis.com/celonis-apis/audit-log-api/#creating-an-application-and-granting-it-api-permissions)
 
 ## Commands
 
