@@ -423,8 +423,7 @@ view: |-
       }
     }
   }
-tests:
-- Test Playbook - MDE SIEM ingestion - Get Incident Data
+tests: []
 fromversion: 6.5.0
 marketplaces:
 - xsoar
