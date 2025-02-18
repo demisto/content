@@ -1,104 +1,82 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "Feedly - Report Mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 10,
-	"mapping": {
-		"Feedly Report": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Feedly Malware Names": {
-					"simple": "indicators.Malware"
-				},
-				"Feedly Threat Actor Names": {
-					"simple": "indicators.Threat Actor"
-				},
-				"Feedly crawled date": {
-					"simple": "create_time"
-				},
-				"Feedly url": {
-					"simple": "feedly_url"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Additional Email Addresses": {
-					"simple": "indicators.Email"
-				},
-				"CVE List": {
-					"simple": "indicators.CVE"
-				},
-				"Detected IPs": {
-					"simple": "indicators.IP"
-				},
-				"Domain Name": {
-					"simple": "indicators.Domain"
-				},
-				"Event ID": {
-					"simple": "event_id"
-				},
-				"File MD5": {
-					"simple": "indicators.File"
-				},
-				"MITRE Technique ID": {
-					"simple": "indicators.TTP"
-				},
-				"MITRE Technique Name": {
-					"simple": "indicators.Attack Pattern"
-				},
-				"Source name": {
-					"simple": "source.name"
-				},
-				"Source url": {
-					"simple": "source.url"
-				},
-				"Tags": {
-					"complex": {
-						"filters": [],
-						"root": "tags",
-						"transformers": []
-					}
-				},
-				"Threat Name": {
-					"simple": "indicators.Malware"
-				},
-				"URLs": {
-					"simple": "indicators.URL"
-				},
-				"Use Case Description": {
-					"simple": "content"
-				},
-				"name": {
-					"simple": "name"
-				}
-			}
-		}
-	},
-	"name": "Feedly - Report Mapper",
-	"nameRaw": "Feedly - Report Mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Feedly - Report Mapper",
+    "mapping": {
+        "Feedly Report": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Feedly Malware Names": {
+                    "simple": "indicators.Malware"
+                },
+                "Feedly Threat Actor Names": {
+                    "simple": "indicators.Threat Actor"
+                },
+                "Feedly crawled date": {
+                    "simple": "create_time"
+                },
+                "Feedly url": {
+                    "simple": "feedly_url"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Additional Email Addresses": {
+                    "simple": "indicators.Email"
+                },
+                "CVE List": {
+                    "simple": "indicators.CVE"
+                },
+                "Detected IPs": {
+                    "simple": "indicators.IP"
+                },
+                "Domain Name": {
+                    "simple": "indicators.Domain"
+                },
+                "Event ID": {
+                    "simple": "event_id"
+                },
+                "File MD5": {
+                    "simple": "indicators.File"
+                },
+                "MITRE Technique ID": {
+                    "simple": "indicators.TTP"
+                },
+                "MITRE Technique Name": {
+                    "simple": "indicators.Attack Pattern"
+                },
+                "Source name": {
+                    "simple": "source.name"
+                },
+                "Source url": {
+                    "simple": "source.url"
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "Threat Name": {
+                    "simple": "indicators.Malware"
+                },
+                "URLs": {
+                    "simple": "indicators.URL"
+                },
+                "Use Case Description": {
+                    "simple": "content"
+                },
+                "name": {
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "Feedly - Report Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
 }
