@@ -525,7 +525,7 @@ def get_incidents_batch_by_time_request(params):
         'created_before': created_before.isoformat().split('.')[0] + 'Z'
     }
 
-    if message_id:=params.get('message_id'): # used in search quarantine
+    if message_id := params.get('message_id'):  # used in search quarantine
         request_params['message_id'] = message_id
 
     # while loop relevant for fetching old incidents
