@@ -540,7 +540,11 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
                   f', late_indexed_pagination={new_last_run.get("late_indexed_pagination")}')
 
     last_run_data.update(new_last_run)
+    before = get_integration_context()
+    extensive_log(f'[SplunkPy XSUP-45810] in fetch_notables - before: {before}')
     demisto.setLastRun(last_run_data)
+    after = get_integration_context()
+    extensive_log(f'[SplunkPy XSUP-45810] in fetch_notables - after: {after}')
 
 
 def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
@@ -956,7 +960,11 @@ class Cache:
     def dump_to_integration_context(self):
         integration_context = get_integration_context()
         integration_context[CACHE] = json.dumps(self, default=lambda obj: obj.__dict__)
+        before = get_integration_context()
+        extensive_log(f'[SplunkPy XSUP-45810] in dump_to_integration_context - before: {before}')
         set_integration_context(integration_context)
+        after  = get_integration_context()
+        extensive_log(f'[SplunkPy XSUP-45810] in dump_to_integration_context - after: {after}')
 
 
 def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backslash=False):
@@ -1500,6 +1508,9 @@ def create_incidents_from_notables(
     mirrored_in_notables = {}
     incidents: list[dict] = []
 
+    before= get_integration_context()
+    extensive_log(f'[SplunkPy XSUP-45810] in create_incidents_from_notables - before: {before}')
+
     if is_mirror_in_enabled():
         integration_context = get_integration_context()
         mirrored_in_notables = integration_context.get(MIRRORED_ENRICHING_NOTABLES, {})
@@ -1518,6 +1529,8 @@ def create_incidents_from_notables(
         incidents.append(notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk))
     if integration_context:
         set_integration_context(integration_context)
+    after =  get_integration_context()
+    extensive_log(f'[SplunkPy XSUP-45810] in create_incidents_from_notables - after: {after}')
     return incidents
 
 
@@ -1582,8 +1595,11 @@ def store_incidents_for_mapping(incidents):
     """
     if incidents:
         integration_context = get_integration_context()
+        extensive_log(f'[SplunkPy XSUP-45810] in store_incidents_for_mapping - before: {integration_context}')
         integration_context[INCIDENTS] = incidents[:20]
         set_integration_context(integration_context)
+        after = get_integration_context()
+        extensive_log(f'[SplunkPy XSUP-45810] in store_incidents_for_mapping - after: {after}')
 
 
 def fetch_incidents_for_mapping(integration_context):
@@ -1602,11 +1618,18 @@ def reset_enriching_fetch_mechanism():
     """ Resets all the fields regarding the enriching fetch mechanism & the last run object """
 
     integration_context = get_integration_context()
+    extensive_log(f'[SplunkPy XSUP-45810] in reset_enriching_fetch_mechanism - before: {integration_context}')
     for field in (INCIDENTS, CACHE, MIRRORED_ENRICHING_NOTABLES):
         if field in integration_context:
             del integration_context[field]
     set_integration_context(integration_context)
+    after_1 = get_integration_context()
+    extensive_log(f'[SplunkPy XSUP-45810] in reset_enriching_fetch_mechanism - after: {after_1}')
     demisto.setLastRun({})
+    after_2 = get_integration_context()
+    extensive_log(f'[SplunkPy XSUP-45810] in reset_enriching_fetch_mechanism - after: {after_2}')
+    
+    
     return_results("Enriching fetch mechanism was reset successfully.")
 
 
@@ -1701,7 +1724,11 @@ def handle_enriching_notables(modified_notables: dict[str, dict]):
 
                 integration_context[MIRRORED_ENRICHING_NOTABLES] = delta_map
                 extensive_log(f'delta map after mirror update: {delta_map}')
+                before = get_integration_context()
+                extensive_log(f'[SplunkPy XSUP-45810] in handle_enriching_notables - before: {before}')
                 set_integration_context(integration_context)
+                after = get_integration_context()
+                extensive_log(f'[SplunkPy XSUP-45810] in handle_enriching_notables - after: {after}')
                 demisto.debug(f'mirror-in: delta updated for the enriching notables - {[n.id for n in enriched_and_changed]}')
             else:
                 demisto.debug('mirror-in: enriching notables was not updated in remote.')
