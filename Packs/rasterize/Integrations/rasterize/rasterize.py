@@ -283,7 +283,7 @@ def count_running_chromes(port):
 
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
-    # Verify that the process has started and is accepting connections
+    # Verify that the process has started
     for attempt in range(DEFAULT_RETRIES_COUNT):
         running_chromes_count = count_running_chromes(port)
         if running_chromes_count < 1:
@@ -291,7 +291,6 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
         else:
             break
     else:
-        # If after all attempts, the count is still less than 1, raise an exception
         raise DemistoException(f"Failed to find any running Chrome processes on port {port} after {DEFAULT_RETRIES_COUNT} attempts")
     
     # connect to the Chrome browser instance
