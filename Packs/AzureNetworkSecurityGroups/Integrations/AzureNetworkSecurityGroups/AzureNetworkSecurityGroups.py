@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2022-09-01'
-PARAMS = {'api-version': '2024-05-01'}
+NEW_API_VERSION_PARAMS = {'api-version': '2024-05-01'}
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
                        'Authorization Code': AUTHORIZATION_CODE,
                        'Client Credentials': CLIENT_CREDENTIALS}
@@ -140,33 +140,33 @@ and resource group "{resource_group_name}" was not found.')
     def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 publicIPAddresses'
-        return self.http_request('GET', full_url=full_url, params=PARAMS)
+        return self.http_request('GET', full_url=full_url, params=NEW_API_VERSION_PARAMS)
 
     @logger
     def list_virtual_networks_request(self, subscription_id: str, resource_group_name: str) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 virtualNetworks'
-        return self.http_request('GET', full_url=full_url, params=PARAMS)
+        return self.http_request('GET', full_url=full_url, params=NEW_API_VERSION_PARAMS)
 
     @logger
     def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 networkInterfaces'
-        return self.http_request('GET', full_url=full_url, params=PARAMS)
+        return self.http_request('GET', full_url=full_url, params=NEW_API_VERSION_PARAMS)
 
     @logger
     def create_or_update_security_group_request(self, subscription_id: str, resource_group_name: str, security_group_name: str,
                                                 location: str) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 networkSecurityGroups/{security_group_name}'
-        return self.http_request('PUT', full_url=full_url, params=PARAMS, data={'location': location})
+        return self.http_request('PUT', full_url=full_url, params=NEW_API_VERSION_PARAMS, data={'location': location})
 
     @logger
     def create_or_update_network_interface_request(self, subscription_id: str, resource_group_name: str, nic_name: str,
                                                    data: Dict) -> Dict:
         full_url = f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
 networkInterfaces/{nic_name}'
-        return self.http_request('PUT', full_url=full_url, params=PARAMS, data=data)
+        return self.http_request('PUT', full_url=full_url, params=NEW_API_VERSION_PARAMS, data=data)
 
 
 '''HELPER FUNCTIONS'''
@@ -200,7 +200,8 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
 
 def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> None:
     """
-    reformat data by extract nested dict {'key1': 'value1', 'key2': {'key3': 'value3'}}
+    reformat data by extract nested dict {'key1': 'value1', 'key2': {'key3': 'value3'},
+    the changes is on the sent data.
 
     Args:
         data (Dict): nested dict
@@ -215,7 +216,8 @@ def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> No
 
 def extract_list(data: Dict, list_key: str, property_name: str, field_name: str = '') -> None:
     """
-    reformat data: from {'key': [{'k': 'val1'}, {'k': 'val2'}]} to {'key': 'k':['val1', 'val2']}
+    reformat data: from {'key': [{'k': 'val1'}, {'k': 'val2'}]} to {'key': 'k':['val1', 'val2']},
+    the changes is on the sent data.
 
     Args:
         data (Dict): dict with list of dict that contains the same 'property_name' field
@@ -230,24 +232,18 @@ def extract_list(data: Dict, list_key: str, property_name: str, field_name: str 
 
 def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List = []) -> None:
     """
-    reformat data using extract_inner_dict and extract_list
+    reformat the sent data using extract_inner_dict and extract_list
 
     Args:
         data (Dict): data to reformat
         dict_to_extract (List, optional): keys of inner dict to extract to outter dict. Defaults to [].
         list_to_extract (List, optional): keys of inner list to extract to outter dict. Defaults to [].
     """
-    for dict in dict_to_extract:
-        fields = []
-        if len(dict) == 2:
-            fields = dict[1]
-        extract_inner_dict(data, dict[0], fields)
-
-    for list in list_to_extract:
-        name = ''
-        if len(list) == 3:
-            name = list[2]
-        extract_list(data, list[0], list[1], name)
+    for data_to_extract in dict_to_extract:
+        extract_inner_dict(data, *data_to_extract)
+        
+    for data_to_extract in list_to_extract:
+        extract_list(data, *data_to_extract)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -608,7 +604,7 @@ def azure_nsg_public_ip_addresses_list_command(client: AzureNSGClient, params: D
     outputs = deepcopy(data_from_response)
     for output in outputs:
         reformat_data(output, dict_to_extract=[('properties',), ('dnsSettings',)])
-        output['etag'] = output.get('etag')[3:-1]
+        output['etag'] = output.get('etag', '')[3:-1]
     readable_output = tableToMarkdown('Public IP Addresses List',
                                       outputs,
                                       [
@@ -653,7 +649,7 @@ def azure_nsg_virtual_networks_list_command(client: AzureNSGClient, params: Dict
                                        ('subnets', 'properties', 'subnetProperties'),
                                        ('subnetProperties', 'addressPrefix', 'subnetAdrdressPrefix')
                                        ])
-        data['etag'] = data.get('etag')[3:-1]
+        data['etag'] = data.get('etag', '')[3:-1]
 
     properties = data_from_response[0].get('subnetProperties', [{}])[0] or {}
     subnets_id = [conf.get('id') for conf in properties.get('ipConfigurations', [])]
@@ -699,7 +695,7 @@ def azure_nsg_security_group_create_command(client: AzureNSGClient, params: Dict
                                                               security_group_name=security_group_name, location=location)
     outputs = deepcopy(response)
     reformat_data(outputs, dict_to_extract=[('properties', 'securityRules')])
-    outputs['etag'] = outputs.get('etag')[3:-1]
+    outputs['etag'] = outputs.get('etag', '')[3:-1]
     readable_output = tableToMarkdown('Security Group List',
                                       outputs,
                                       ['name', 'etag', 'location', 'securityRules',],
@@ -835,7 +831,7 @@ def azure_nsg_network_interfaces_create_command(client: AzureNSGClient, params: 
         ('ipConfigurationSub', 'id', 'subnetId'),
     ])
 
-    outputs['etag'] = outputs.get('etag')[3:-1]
+    outputs['etag'] = outputs.get('etag', '')[3:-1]
     readable_output = tableToMarkdown('Network Interface',
                                       outputs,
                                       [

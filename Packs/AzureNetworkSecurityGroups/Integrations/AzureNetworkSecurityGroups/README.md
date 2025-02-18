@@ -953,94 +953,6 @@ Gets all resource groups for a subscription.
 >|---|---|---|
 >| cloud-shell-storage-eastus | eastus |  |
 >| demi | centralus | Owner: Demi |
-### azure-nsg-security-group-create
-
-***
-Creates a network security group in the specified resource group.
-
-#### Base Command
-
-`azure-nsg-security-group-create`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| security_group_name | The security group name. | Required | 
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| location | The Resource location. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureNSG.SecurityGroup.name | String | The network security group's name. | 
-| AzureNSG.SecurityGroup.etag | String | The network security group's etag. | 
-| AzureNSG.SecurityGroup.location | String | The network security group's location. | 
-| AzureNSG.SecurityGroup.properties.securityRules | List | A collection of security rules of the network security group. | 
-
-
-### azure-nsg-public-ip-addresses-list
-
-***
-Gets public IP addresses in a resource group.
-
-#### Base Command
-
-`azure-nsg-public-ip-addresses-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| limit | The maximum number of records to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureNSG.PublicIPAdress.name | String | The public IP address's name. | 
-| AzureNSG.PublicIPAdress.id | String | The public IP address's ID. | 
-| AzureNSG.PublicIPAdress.etag | String | The public IP address's etag. | 
-| AzureNSG.PublicIPAdress.provisioningState | String | The public IP address's provisioning state. | 
-| AzureNSG.PublicIPAdress.publicIPAddressVersion | String | The public IP address's version. | 
-| AzureNSG.PublicIPAdress.ipAddress | String | The public IP address's IP address. | 
-| AzureNSG.PublicIPAdress.domainNameLabel | String | The public IP address's domain name label. | 
-| AzureNSG.PublicIPAdress.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). | 
-
-### azure-nsg-virtual-networks-list
-
-***
-Gets virtual networks in a resource group.
-
-#### Base Command
-
-`azure-nsg-virtual-networks-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| limit | The maximum number of records to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureNSG.VirtualNetwork.name | String | The virtual network's name. | 
-| AzureNSG.VirtualNetwork.etag | String | The virtual network's etag. | 
-| AzureNSG.VirtualNetwork.location | String | The virtual network's location. | 
-| AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes | String | A list of address blocks reserved for this virtual network in CIDR notation. | 
-| AzureNSG.VirtualNetwork.properties.subnets.name | List | The virtual network's subnet name. | 
-| AzureNSG.VirtualNetwork.subnetAdrdressPrefix | List | The virtual network's subnet address prefix. | 
-| AzureNSG.VirtualNetwork.subnetID | List | List of the virtual network's subnets ID. | 
 
 ### azure-nsg-network-interfaces-create
 
@@ -1078,6 +990,678 @@ Creates or updates a network interface.
 | AzureNSG.NetworkInterface.ipConfigurationPublicIPAddressName | List | The ID of the public IP address of the IP configuration. | 
 | AzureNSG.NetworkInterface.subnetId | List | The subnet ID of the IP configuration. | 
 
+#### Command example
+```!azure-nsg-network-interfaces-create ip_config_name=ipconfig1 location=westeurope nic_name=test subnet_name=default vnet_name=reso-vnet```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "NetworkInterface": {
+            "allowPort25Out": false,
+            "auxiliaryMode": "None",
+            "auxiliarySku": "None",
+            "defaultOutboundConnectivityEnabled": false,
+            "disableTcpStateTracking": false,
+            "dnsSettings": {
+                "appliedDnsServers": [],
+                "dnsServers": [],
+                "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+            },
+            "enableAcceleratedNetworking": false,
+            "enableIPForwarding": false,
+            "etag": "9951f336-2839-426b-864f-9f7b6e5712228",
+            "hostedWorkloads": [],
+            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test",
+            "ipConfigurationName": [
+                "ipconfig1"
+            ],
+            "ipConfigurationPrivateIPAddress": [
+                "1.1.1.1"
+            ],
+            "ipConfigurationProperties": [
+                {
+                    "primary": true,
+                    "privateIPAddress": "1.1.1.1",
+                    "privateIPAddressVersion": "IPv4",
+                    "privateIPAllocationMethod": "Dynamic",
+                    "provisioningState": "Succeeded",
+                    "subnet": {
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                    }
+                }
+            ],
+            "ipConfigurationSub": [
+                {
+                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                }
+            ],
+            "ipConfigurations": [
+                {
+                    "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
+                    "name": "ipconfig1",
+                    "properties": {
+                        "primary": true,
+                        "privateIPAddress": "1.1.1.1",
+                        "privateIPAddressVersion": "IPv4",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "provisioningState": "Succeeded",
+                        "subnet": {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                        }
+                    },
+                    "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                }
+            ],
+            "kind": "Regular",
+            "location": "westeurope",
+            "name": "test",
+            "nicType": "Standard",
+            "properties": {
+                "allowPort25Out": false,
+                "auxiliaryMode": "None",
+                "auxiliarySku": "None",
+                "defaultOutboundConnectivityEnabled": false,
+                "disableTcpStateTracking": false,
+                "dnsSettings": {
+                    "appliedDnsServers": [],
+                    "dnsServers": [],
+                    "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "hostedWorkloads": [],
+                "ipConfigurations": [
+                    {
+                        "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
+                        "name": "ipconfig1",
+                        "properties": {
+                            "primary": true,
+                            "privateIPAddress": "1.1.1.1",
+                            "privateIPAddressVersion": "IPv4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "provisioningState": "Succeeded",
+                            "subnet": {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                            }
+                        },
+                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                    }
+                ],
+                "nicType": "Standard",
+                "provisioningState": "Succeeded",
+                "resourceGuid": "ac108ab8-3aa6-490c-921e-48b83685294d",
+                "tapConfigurations": [],
+                "vnetEncryptionSupported": false
+            },
+            "provisioningState": "Succeeded",
+            "resourceGuid": "ac108ab8-3aa6-490c-921e-48b83685294d",
+            "subnetId": [
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+            ],
+            "tapConfigurations": [],
+            "type": "Microsoft.Network/networkInterfaces",
+            "vnetEncryptionSupported": false
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Network Interface
+>|Name|Etag|Provisioning State|Ip Configuration Name|Ip Configuration Private IP Address|Subnet Id|
+>|---|---|---|---|---|---|
+>| test | 9951f336-2839-426b-864f-9f7b6e5712228 | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
+
+
+#### Command example
+```!azure-nsg-network-interfaces-create ip_config_name=ipconfig1 location=westeurope nic_name=test subnet_name=default vnet_name=reso-vnet nsg_name=b_tdemo```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "NetworkInterface": {
+            "allowPort25Out": false,
+            "auxiliaryMode": "None",
+            "auxiliarySku": "None",
+            "defaultOutboundConnectivityEnabled": false,
+            "disableTcpStateTracking": false,
+            "dnsSettings": {
+                "appliedDnsServers": [],
+                "dnsServers": [],
+                "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+            },
+            "enableAcceleratedNetworking": false,
+            "enableIPForwarding": false,
+            "etag": "b91a6977-be89-4454-9d76-5c1218427dec",
+            "hostedWorkloads": [],
+            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test",
+            "ipConfigurationName": [
+                "ipconfig1"
+            ],
+            "ipConfigurationPrivateIPAddress": [
+                "1.1.1.1"
+            ],
+            "ipConfigurationProperties": [
+                {
+                    "primary": true,
+                    "privateIPAddress": "1.1.1.1",
+                    "privateIPAddressVersion": "IPv4",
+                    "privateIPAllocationMethod": "Dynamic",
+                    "provisioningState": "Succeeded",
+                    "subnet": {
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                    }
+                }
+            ],
+            "ipConfigurationSub": [
+                {
+                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                }
+            ],
+            "ipConfigurations": [
+                {
+                    "etag": "W/\"b91a6977-be89-4454-9d76-5c1218427dec\"",
+                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
+                    "name": "ipconfig1",
+                    "properties": {
+                        "primary": true,
+                        "privateIPAddress": "1.1.1.1",
+                        "privateIPAddressVersion": "IPv4",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "provisioningState": "Succeeded",
+                        "subnet": {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                        }
+                    },
+                    "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                }
+            ],
+            "kind": "Regular",
+            "location": "westeurope",
+            "name": "test",
+            "networkSecurityGroup": {
+                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo"
+            },
+            "nicType": "Standard",
+            "properties": {
+                "allowPort25Out": false,
+                "auxiliaryMode": "None",
+                "auxiliarySku": "None",
+                "defaultOutboundConnectivityEnabled": false,
+                "disableTcpStateTracking": false,
+                "dnsSettings": {
+                    "appliedDnsServers": [],
+                    "dnsServers": [],
+                    "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "hostedWorkloads": [],
+                "ipConfigurations": [
+                    {
+                        "etag": "W/\"b91a6977-be89-4454-9d76-5c1218427dec\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
+                        "name": "ipconfig1",
+                        "properties": {
+                            "primary": true,
+                            "privateIPAddress": "1.1.1.1",
+                            "privateIPAddressVersion": "IPv4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "provisioningState": "Succeeded",
+                            "subnet": {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                            }
+                        },
+                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo"
+                },
+                "nicType": "Standard",
+                "provisioningState": "Succeeded",
+                "resourceGuid": "ac108ab8-3aa6-490c-921e-48b83685294d",
+                "tapConfigurations": [],
+                "vnetEncryptionSupported": false
+            },
+            "provisioningState": "Succeeded",
+            "resourceGuid": "ac108ab8-3aa6-490c-921e-48b83685294d",
+            "subnetId": [
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+            ],
+            "tapConfigurations": [],
+            "type": "Microsoft.Network/networkInterfaces",
+            "vnetEncryptionSupported": false
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Network Interface
+>|Name|Etag|Provisioning State|Ip Configuration Name|Ip Configuration Private IP Address|Subnet Id|
+>|---|---|---|---|---|---|
+>| test | b91a6977-be89-4454-9d76-5c1218427dec | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
+
+
+### azure-nsg-virtual-networks-list
+
+***
+Gets virtual networks in a resource group.
+
+#### Base Command
+
+`azure-nsg-virtual-networks-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.VirtualNetwork.name | String | The virtual network's name. | 
+| AzureNSG.VirtualNetwork.etag | String | The virtual network's etag. | 
+| AzureNSG.VirtualNetwork.location | String | The virtual network's location. | 
+| AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes | String | A list of address blocks reserved for this virtual network in CIDR notation. | 
+| AzureNSG.VirtualNetwork.properties.subnets.name | List | The virtual network's subnet name. | 
+| AzureNSG.VirtualNetwork.subnetAdrdressPrefix | List | The virtual network's subnet address prefix. | 
+| AzureNSG.VirtualNetwork.subnetID | List | List of the virtual network's subnets ID. | 
+
+#### Command example
+```!azure-nsg-virtual-networks-list```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "VirtualNetwork": {
+            "addressPrefixes": [
+                "1.1.1.1/16"
+            ],
+            "addressSpace": {
+                "addressPrefixes": [
+                    "1.1.1.1/16"
+                ]
+            },
+            "enableDdosProtection": false,
+            "etag": "702f1e03-4a6b-43de-a0ae-d09cc4808ba5",
+            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet",
+            "location": "westeurope",
+            "name": "reso-vnet",
+            "privateEndpointVNetPolicies": "Disabled",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "1.1.1.1/16"
+                    ]
+                },
+                "enableDdosProtection": false,
+                "privateEndpointVNetPolicies": "Disabled",
+                "provisioningState": "Succeeded",
+                "resourceGuid": "60d3a04a-d654-49e9-abf1-a4f0f33230b9",
+                "subnets": [
+                    {
+                        "etag": "W/\"702f1e03-4a6b-43de-a0ae-d09cc4808ba5\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default",
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "1.1.1.1/24",
+                            "delegations": [],
+                            "ipConfigurations": [
+                                {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TE/ipConfigurations/IPCONFIG1"
+                                },
+                                {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TEST/ipConfigurations/IPCONFIG1"
+                                },
+                                {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR___/ipConfigurations/IPCONFIG1"
+                                },
+                                {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/B_TEST/ipConfigurations/IPCONFIG1"
+                                },
+                                {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC/ipConfigurations/IPCONFIG1"
+                                },
+                                {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC1/ipConfigurations/IPCONFIG1"
+                                },
+                                {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC2/ipConfigurations/IPCONFIG1"
+                                },
+                                {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE/ipConfigurations/IPCONFIG1"
+                                },
+                                {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/TEST/ipConfigurations/IPCONFIG1"
+                                }
+                            ],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled",
+                            "provisioningState": "Succeeded"
+                        },
+                        "type": "Microsoft.Network/virtualNetworks/subnets"
+                    }
+                ],
+                "virtualNetworkPeerings": []
+            },
+            "provisioningState": "Succeeded",
+            "resourceGuid": "60d3a04a-d654-49e9-abf1-a4f0f33230b9",
+            "subnetAdrdressPrefix": [
+                "1.1.1.1/24"
+            ],
+            "subnetID": [
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TE/ipConfigurations/IPCONFIG1",
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TEST/ipConfigurations/IPCONFIG1",
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR___/ipConfigurations/IPCONFIG1",
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/B_TEST/ipConfigurations/IPCONFIG1",
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC/ipConfigurations/IPCONFIG1",
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC1/ipConfigurations/IPCONFIG1",
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC2/ipConfigurations/IPCONFIG1",
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE/ipConfigurations/IPCONFIG1",
+                "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/TEST/ipConfigurations/IPCONFIG1"
+            ],
+            "subnetName": [
+                "default"
+            ],
+            "subnetProperties": [
+                {
+                    "addressPrefix": "1.1.1.1/24",
+                    "delegations": [],
+                    "ipConfigurations": [
+                        {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TE/ipConfigurations/IPCONFIG1"
+                        },
+                        {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TEST/ipConfigurations/IPCONFIG1"
+                        },
+                        {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR___/ipConfigurations/IPCONFIG1"
+                        },
+                        {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/B_TEST/ipConfigurations/IPCONFIG1"
+                        },
+                        {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC/ipConfigurations/IPCONFIG1"
+                        },
+                        {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC1/ipConfigurations/IPCONFIG1"
+                        },
+                        {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC2/ipConfigurations/IPCONFIG1"
+                        },
+                        {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE/ipConfigurations/IPCONFIG1"
+                        },
+                        {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/TEST/ipConfigurations/IPCONFIG1"
+                        }
+                    ],
+                    "privateEndpointNetworkPolicies": "Enabled",
+                    "privateLinkServiceNetworkPolicies": "Enabled",
+                    "provisioningState": "Succeeded"
+                }
+            ],
+            "subnets": [
+                {
+                    "etag": "W/\"702f1e03-4a6b-43de-a0ae-d09cc4808ba5\"",
+                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default",
+                    "name": "default",
+                    "properties": {
+                        "addressPrefix": "1.1.1.1/24",
+                        "delegations": [],
+                        "ipConfigurations": [
+                            {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TE/ipConfigurations/IPCONFIG1"
+                            },
+                            {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TEST/ipConfigurations/IPCONFIG1"
+                            },
+                            {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR___/ipConfigurations/IPCONFIG1"
+                            },
+                            {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/B_TEST/ipConfigurations/IPCONFIG1"
+                            },
+                            {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC/ipConfigurations/IPCONFIG1"
+                            },
+                            {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC1/ipConfigurations/IPCONFIG1"
+                            },
+                            {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC2/ipConfigurations/IPCONFIG1"
+                            },
+                            {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE/ipConfigurations/IPCONFIG1"
+                            },
+                            {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/TEST/ipConfigurations/IPCONFIG1"
+                            }
+                        ],
+                        "privateEndpointNetworkPolicies": "Enabled",
+                        "privateLinkServiceNetworkPolicies": "Enabled",
+                        "provisioningState": "Succeeded"
+                    },
+                    "type": "Microsoft.Network/virtualNetworks/subnets"
+                }
+            ],
+            "type": "Microsoft.Network/virtualNetworks",
+            "virtualNetworkPeerings": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual Networks List
+>|Name|Etag|Location|Address Prefixes|Subnet Name|Subnet Adrdress Prefix|Subnet ID|
+>|---|---|---|---|---|---|---|
+>| reso-vnet | 702f1e03-4a6b-43de-a0ae-d09cc4808ba5 | westeurope | 1.1.1.1/16 | default | 1.1.1.1/24 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR___/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/B_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC1/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC2/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/TEST/ipConfigurations/IPCONFIG1 |
+
+
+### azure-nsg-security-group-create
+
+***
+Creates a network security group in the specified resource group.
+
+#### Base Command
+
+`azure-nsg-security-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| security_group_name | The security group name. | Required | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| location | The resource location. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.SecurityGroup.name | String | The network security group's name. | 
+| AzureNSG.SecurityGroup.etag | String | The network security group's etag. | 
+| AzureNSG.SecurityGroup.location | String | The network security group's location. | 
+| AzureNSG.SecurityGroup.properties.securityRules | List | A collection of security rules of the network security group. | 
+
+#### Command example
+```!azure-nsg-security-group-create location=westeurope security_group_name=b_tdemo```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "SecurityGroup": {
+            "etag": "793369e4-1c53-4d8e-b36d-a064fbb7ee78",
+            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo",
+            "location": "westeurope",
+            "name": "b_tdemo",
+            "properties": {
+                "defaultSecurityRules": [
+                    {
+                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/AllowVnetInBound",
+                        "name": "AllowVnetInBound",
+                        "properties": {
+                            "access": "Allow",
+                            "description": "Allow inbound traffic from all VMs in VNET",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefixes": [],
+                            "destinationPortRange": "*",
+                            "destinationPortRanges": [],
+                            "direction": "Inbound",
+                            "priority": 65000,
+                            "protocol": "*",
+                            "provisioningState": "Succeeded",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "sourceAddressPrefixes": [],
+                            "sourcePortRange": "*",
+                            "sourcePortRanges": []
+                        },
+                        "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+                    },
+                    {
+                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/AllowAzureLoadBalancerInBound",
+                        "name": "AllowAzureLoadBalancerInBound",
+                        "properties": {
+                            "access": "Allow",
+                            "description": "Allow inbound traffic from azure load balancer",
+                            "destinationAddressPrefix": "*",
+                            "destinationAddressPrefixes": [],
+                            "destinationPortRange": "*",
+                            "destinationPortRanges": [],
+                            "direction": "Inbound",
+                            "priority": 65001,
+                            "protocol": "*",
+                            "provisioningState": "Succeeded",
+                            "sourceAddressPrefix": "AzureLoadBalancer",
+                            "sourceAddressPrefixes": [],
+                            "sourcePortRange": "*",
+                            "sourcePortRanges": []
+                        },
+                        "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+                    },
+                    {
+                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/DenyAllInBound",
+                        "name": "DenyAllInBound",
+                        "properties": {
+                            "access": "Deny",
+                            "description": "Deny all inbound traffic",
+                            "destinationAddressPrefix": "*",
+                            "destinationAddressPrefixes": [],
+                            "destinationPortRange": "*",
+                            "destinationPortRanges": [],
+                            "direction": "Inbound",
+                            "priority": 65500,
+                            "protocol": "*",
+                            "provisioningState": "Succeeded",
+                            "sourceAddressPrefix": "*",
+                            "sourceAddressPrefixes": [],
+                            "sourcePortRange": "*",
+                            "sourcePortRanges": []
+                        },
+                        "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+                    },
+                    {
+                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/AllowVnetOutBound",
+                        "name": "AllowVnetOutBound",
+                        "properties": {
+                            "access": "Allow",
+                            "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefixes": [],
+                            "destinationPortRange": "*",
+                            "destinationPortRanges": [],
+                            "direction": "Outbound",
+                            "priority": 65000,
+                            "protocol": "*",
+                            "provisioningState": "Succeeded",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "sourceAddressPrefixes": [],
+                            "sourcePortRange": "*",
+                            "sourcePortRanges": []
+                        },
+                        "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+                    },
+                    {
+                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/AllowInternetOutBound",
+                        "name": "AllowInternetOutBound",
+                        "properties": {
+                            "access": "Allow",
+                            "description": "Allow outbound traffic from all VMs to Internet",
+                            "destinationAddressPrefix": "Internet",
+                            "destinationAddressPrefixes": [],
+                            "destinationPortRange": "*",
+                            "destinationPortRanges": [],
+                            "direction": "Outbound",
+                            "priority": 65001,
+                            "protocol": "*",
+                            "provisioningState": "Succeeded",
+                            "sourceAddressPrefix": "*",
+                            "sourceAddressPrefixes": [],
+                            "sourcePortRange": "*",
+                            "sourcePortRanges": []
+                        },
+                        "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+                    },
+                    {
+                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/DenyAllOutBound",
+                        "name": "DenyAllOutBound",
+                        "properties": {
+                            "access": "Deny",
+                            "description": "Deny all outbound traffic",
+                            "destinationAddressPrefix": "*",
+                            "destinationAddressPrefixes": [],
+                            "destinationPortRange": "*",
+                            "destinationPortRanges": [],
+                            "direction": "Outbound",
+                            "priority": 65500,
+                            "protocol": "*",
+                            "provisioningState": "Succeeded",
+                            "sourceAddressPrefix": "*",
+                            "sourceAddressPrefixes": [],
+                            "sourcePortRange": "*",
+                            "sourcePortRanges": []
+                        },
+                        "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+                    }
+                ],
+                "provisioningState": "Succeeded",
+                "resourceGuid": "8ec671ac-b5d3-4b95-9be3-21e6015044ce",
+                "securityRules": []
+            },
+            "securityRules": [],
+            "type": "Microsoft.Network/networkSecurityGroups"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Security Group List
+>|Name|Etag|Location|
+>|---|---|---|
+>| b_tdemo | 793369e4-1c53-4d8e-b36d-a064fbb7ee78 | westeurope |
+
 
 ### azure-nsg-network-interfaces-list
 
@@ -1111,8 +1695,471 @@ Gets network interfaces in a resource group.
 | AzureNSG.NetworkInterfaces.dnsServers | List | List of DNS servers IP addresses. | 
 | AzureNSG.NetworkInterfaces.appliedDnsServers | List | List of all DNS servers from all NICs that are part of the Availability Set. | 
 | AzureNSG.NetworkInterfaces.internalDomainNameSuffix | String | The network interface's internal domain name suffix. | 
-| AzureNSG.NetworkInterfaces.properties.macAddress | String | The network interface's mac address. | 
-| AzureNSG.NetworkInterfaces.properties.virtualMachine.id | String | The network interface's virtual machine's id. | 
+| AzureNSG.NetworkInterfaces.properties.macAddress | String | The network interface's MAC address. | 
+| AzureNSG.NetworkInterfaces.properties.virtualMachine.id | String | The network interface's virtual machine's ID. | 
 | AzureNSG.NetworkInterfaces.location | String | The network interface's location. | 
 | AzureNSG.NetworkInterfaces.kind | String | The network interface's kind. | 
+
+#### Command example
+```!azure-nsg-network-interfaces-list all_results=false limit=3```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "NetworkInterfaces": [
+            {
+                "allowPort25Out": false,
+                "appliedDnsServers": [],
+                "auxiliaryMode": "None",
+                "auxiliarySku": "None",
+                "defaultOutboundConnectivityEnabled": false,
+                "disableTcpStateTracking": false,
+                "dnsServers": [],
+                "dnsSettings": {
+                    "appliedDnsServers": [],
+                    "dnsServers": [],
+                    "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "etag": "W/\"4f006f0c-acd1-4aeb-8d53-37ae4159f05a\"",
+                "hostedWorkloads": [],
+                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te",
+                "internalDomainNameSuffix": "example.ax.internal.cloudapp.net",
+                "ipConfigurationID": [
+                    "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1"
+                ],
+                "ipConfigurationName": [
+                    "ipconfig1"
+                ],
+                "ipConfigurationPrivateIPAddress": [
+                    "1.1.1.1"
+                ],
+                "ipConfigurationPublicIPAddress": [
+                    {
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                    }
+                ],
+                "ipConfigurationPublicIPAddressName": [
+                    "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                ],
+                "ipConfigurations": [
+                    {
+                        "etag": "W/\"4f006f0c-acd1-4aeb-8d53-37ae4159f05a\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1",
+                        "name": "ipconfig1",
+                        "properties": {
+                            "primary": true,
+                            "privateIPAddress": "1.1.1.1",
+                            "privateIPAddressVersion": "IPv4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "provisioningState": "Succeeded",
+                            "publicIPAddress": {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                            },
+                            "subnet": {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                            }
+                        },
+                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                    }
+                ],
+                "ipConfigurationsProperties": [
+                    {
+                        "primary": true,
+                        "privateIPAddress": "1.1.1.1",
+                        "privateIPAddressVersion": "IPv4",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "provisioningState": "Succeeded",
+                        "publicIPAddress": {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                        },
+                        "subnet": {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                        }
+                    }
+                ],
+                "kind": "Regular",
+                "location": "westeurope",
+                "name": "b_te",
+                "networkSecurityGroup": {
+                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/test"
+                },
+                "nicType": "Standard",
+                "properties": {
+                    "allowPort25Out": false,
+                    "auxiliaryMode": "None",
+                    "auxiliarySku": "None",
+                    "defaultOutboundConnectivityEnabled": false,
+                    "disableTcpStateTracking": false,
+                    "dnsSettings": {
+                        "appliedDnsServers": [],
+                        "dnsServers": [],
+                        "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+                    },
+                    "enableAcceleratedNetworking": false,
+                    "enableIPForwarding": false,
+                    "hostedWorkloads": [],
+                    "ipConfigurations": [
+                        {
+                            "etag": "W/\"4f006f0c-acd1-4aeb-8d53-37ae4159f05a\"",
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1",
+                            "name": "ipconfig1",
+                            "properties": {
+                                "primary": true,
+                                "privateIPAddress": "1.1.1.1",
+                                "privateIPAddressVersion": "IPv4",
+                                "privateIPAllocationMethod": "Dynamic",
+                                "provisioningState": "Succeeded",
+                                "publicIPAddress": {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                                },
+                                "subnet": {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                                }
+                            },
+                            "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                        }
+                    ],
+                    "networkSecurityGroup": {
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/test"
+                    },
+                    "nicType": "Standard",
+                    "provisioningState": "Succeeded",
+                    "resourceGuid": "2afeba51-01f4-4cb7-b771-4ecc84a3417f",
+                    "tapConfigurations": [],
+                    "vnetEncryptionSupported": false
+                },
+                "provisioningState": "Succeeded",
+                "resourceGuid": "2afeba51-01f4-4cb7-b771-4ecc84a3417f",
+                "tapConfigurations": [],
+                "type": "Microsoft.Network/networkInterfaces",
+                "vnetEncryptionSupported": false
+            },
+            {
+                "allowPort25Out": false,
+                "appliedDnsServers": [],
+                "auxiliaryMode": "None",
+                "auxiliarySku": "None",
+                "defaultOutboundConnectivityEnabled": false,
+                "disableTcpStateTracking": false,
+                "dnsServers": [],
+                "dnsSettings": {
+                    "appliedDnsServers": [],
+                    "dnsServers": [],
+                    "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                "hostedWorkloads": [],
+                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test",
+                "internalDomainNameSuffix": "example.ax.internal.cloudapp.net",
+                "ipConfigurationID": [
+                    "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1"
+                ],
+                "ipConfigurationName": [
+                    "ipconfig1"
+                ],
+                "ipConfigurationPrivateIPAddress": [
+                    "1.1.1.1"
+                ],
+                "ipConfigurations": [
+                    {
+                        "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
+                        "name": "ipconfig1",
+                        "properties": {
+                            "primary": true,
+                            "privateIPAddress": "1.1.1.1",
+                            "privateIPAddressVersion": "IPv4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "provisioningState": "Succeeded",
+                            "subnet": {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                            }
+                        },
+                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                    }
+                ],
+                "ipConfigurationsProperties": [
+                    {
+                        "primary": true,
+                        "privateIPAddress": "1.1.1.1",
+                        "privateIPAddressVersion": "IPv4",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "provisioningState": "Succeeded",
+                        "subnet": {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                        }
+                    }
+                ],
+                "kind": "Regular",
+                "location": "westeurope",
+                "name": "test",
+                "nicType": "Standard",
+                "properties": {
+                    "allowPort25Out": false,
+                    "auxiliaryMode": "None",
+                    "auxiliarySku": "None",
+                    "defaultOutboundConnectivityEnabled": false,
+                    "disableTcpStateTracking": false,
+                    "dnsSettings": {
+                        "appliedDnsServers": [],
+                        "dnsServers": [],
+                        "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+                    },
+                    "enableAcceleratedNetworking": false,
+                    "enableIPForwarding": false,
+                    "hostedWorkloads": [],
+                    "ipConfigurations": [
+                        {
+                            "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
+                            "name": "ipconfig1",
+                            "properties": {
+                                "primary": true,
+                                "privateIPAddress": "1.1.1.1",
+                                "privateIPAddressVersion": "IPv4",
+                                "privateIPAllocationMethod": "Dynamic",
+                                "provisioningState": "Succeeded",
+                                "subnet": {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                                }
+                            },
+                            "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                        }
+                    ],
+                    "nicType": "Standard",
+                    "provisioningState": "Succeeded",
+                    "resourceGuid": "ac108ab8-3aa6-490c-921e-48b83685294d",
+                    "tapConfigurations": [],
+                    "vnetEncryptionSupported": false
+                },
+                "provisioningState": "Succeeded",
+                "resourceGuid": "ac108ab8-3aa6-490c-921e-48b83685294d",
+                "tapConfigurations": [],
+                "type": "Microsoft.Network/networkInterfaces",
+                "vnetEncryptionSupported": false
+            },
+            {
+                "allowPort25Out": false,
+                "appliedDnsServers": [],
+                "auxiliaryMode": "None",
+                "auxiliarySku": "None",
+                "defaultOutboundConnectivityEnabled": false,
+                "disableTcpStateTracking": false,
+                "dnsServers": [],
+                "dnsSettings": {
+                    "appliedDnsServers": [],
+                    "dnsServers": [],
+                    "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "etag": "W/\"330eecfe-c3f8-4f5e-8af0-6a21d4a1c80a\"",
+                "hostedWorkloads": [],
+                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___",
+                "internalDomainNameSuffix": "example.ax.internal.cloudapp.net",
+                "ipConfigurationID": [
+                    "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___/ipConfigurations/ipconfig1"
+                ],
+                "ipConfigurationName": [
+                    "ipconfig1"
+                ],
+                "ipConfigurationPrivateIPAddress": [
+                    "1.1.1.1"
+                ],
+                "ipConfigurations": [
+                    {
+                        "etag": "W/\"330eecfe-c3f8-4f5e-8af0-6a21d4a1c80a\"",
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___/ipConfigurations/ipconfig1",
+                        "name": "ipconfig1",
+                        "properties": {
+                            "primary": true,
+                            "privateIPAddress": "1.1.1.1",
+                            "privateIPAddressVersion": "IPv4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "provisioningState": "Succeeded",
+                            "subnet": {
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                            }
+                        },
+                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                    }
+                ],
+                "ipConfigurationsProperties": [
+                    {
+                        "primary": true,
+                        "privateIPAddress": "1.1.1.1",
+                        "privateIPAddressVersion": "IPv4",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "provisioningState": "Succeeded",
+                        "subnet": {
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                        }
+                    }
+                ],
+                "kind": "Regular",
+                "location": "westeurope",
+                "name": "b___",
+                "networkSecurityGroup": {
+                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/test"
+                },
+                "nicType": "Standard",
+                "properties": {
+                    "allowPort25Out": false,
+                    "auxiliaryMode": "None",
+                    "auxiliarySku": "None",
+                    "defaultOutboundConnectivityEnabled": false,
+                    "disableTcpStateTracking": false,
+                    "dnsSettings": {
+                        "appliedDnsServers": [],
+                        "dnsServers": [],
+                        "internalDomainNameSuffix": "example.ax.internal.cloudapp.net"
+                    },
+                    "enableAcceleratedNetworking": false,
+                    "enableIPForwarding": false,
+                    "hostedWorkloads": [],
+                    "ipConfigurations": [
+                        {
+                            "etag": "W/\"330eecfe-c3f8-4f5e-8af0-6a21d4a1c80a\"",
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___/ipConfigurations/ipconfig1",
+                            "name": "ipconfig1",
+                            "properties": {
+                                "primary": true,
+                                "privateIPAddress": "1.1.1.1",
+                                "privateIPAddressVersion": "IPv4",
+                                "privateIPAllocationMethod": "Dynamic",
+                                "provisioningState": "Succeeded",
+                                "subnet": {
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
+                                }
+                            },
+                            "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+                        }
+                    ],
+                    "networkSecurityGroup": {
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/test"
+                    },
+                    "nicType": "Standard",
+                    "provisioningState": "Succeeded",
+                    "resourceGuid": "d8289f9e-0a9f-47ba-8e01-061f2bf8e868",
+                    "tapConfigurations": [],
+                    "vnetEncryptionSupported": false
+                },
+                "provisioningState": "Succeeded",
+                "resourceGuid": "d8289f9e-0a9f-47ba-8e01-061f2bf8e868",
+                "tapConfigurations": [],
+                "type": "Microsoft.Network/networkInterfaces",
+                "vnetEncryptionSupported": false
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Network Interfaces List
+>|Name|Id|Provisioning State|Ip Configuration Name|Ip Configuration ID|Ip Configuration Private IP Address|Ip Configuration Public IP Address Name|Internal Domain Name Suffix|Location|Kind|
+>|---|---|---|---|---|---|---|---|---|---|
+>| b_te | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST | example.ax.internal.cloudapp.net | westeurope | Regular |
+>| test | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1 | 1.1.1.1 |  | example.ax.internal.cloudapp.net | westeurope | Regular |
+>| b___ | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___ | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___/ipConfigurations/ipconfig1 | 1.1.1.1 |  | example.ax.internal.cloudapp.net | westeurope | Regular |
+
+
+### azure-nsg-public-ip-addresses-list
+
+***
+Gets public IP addresses in a resource group.
+
+#### Base Command
+
+`azure-nsg-public-ip-addresses-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.PublicIPAdress.name | String | The public IP address's name. | 
+| AzureNSG.PublicIPAdress.id | String | The public IP address's ID. | 
+| AzureNSG.PublicIPAdress.etag | String | The public IP address's etag. | 
+| AzureNSG.PublicIPAdress.provisioningState | String | The public IP address's provisioning state. | 
+| AzureNSG.PublicIPAdress.publicIPAddressVersion | String | The public IP address's version. | 
+| AzureNSG.PublicIPAdress.ipAddress | String | The public IP address's IP address. | 
+| AzureNSG.PublicIPAdress.domainNameLabel | String | The public IP address's domain name label. | 
+| AzureNSG.PublicIPAdress.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). | 
+
+#### Command example
+```!azure-nsg-public-ip-addresses-list```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "PublicIPAddress": {
+            "ddosSettings": {
+                "protectionMode": "Enabled"
+            },
+            "etag": "f71be785-f134-4ccc-a1f9-b044415d9969",
+            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST",
+            "idleTimeoutInMinutes": 4,
+            "ipAddress": "1.1.1.1",
+            "ipConfiguration": {
+                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1"
+            },
+            "ipTags": [],
+            "location": "westeurope",
+            "name": "WinVM-CRTX-71942-ip-TEST",
+            "properties": {
+                "ddosSettings": {
+                    "protectionMode": "Enabled"
+                },
+                "idleTimeoutInMinutes": 4,
+                "ipAddress": "1.1.1.1",
+                "ipConfiguration": {
+                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1"
+                },
+                "ipTags": [],
+                "provisioningState": "Succeeded",
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "resourceGuid": "c9a6ea68-c4b9-4a90-97b3-60ff40e30ecb"
+            },
+            "provisioningState": "Succeeded",
+            "publicIPAddressVersion": "IPv4",
+            "publicIPAllocationMethod": "Static",
+            "resourceGuid": "c9a6ea68-c4b9-4a90-97b3-60ff40e30ecb",
+            "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+            },
+            "tags": {},
+            "type": "Microsoft.Network/publicIPAddresses",
+            "zones": [
+                "3",
+                "1",
+                "2"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Public IP Addresses List
+>|Name|Id|Etag|Provisioning State|Public IP Address Version|Ip Address|
+>|---|---|---|---|---|---|
+>| WinVM-CRTX-71942-ip-TEST | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST | f71be785-f134-4ccc-a1f9-b044415d9969 | Succeeded | IPv4 | 1.1.1.1 |
+
 
