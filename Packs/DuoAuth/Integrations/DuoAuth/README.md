@@ -27,7 +27,7 @@ Send push message to Duo user.
 
 #### Base Command
 
-`duo-auth`
+`duoauth-push-notification`
 
 #### Input
 
