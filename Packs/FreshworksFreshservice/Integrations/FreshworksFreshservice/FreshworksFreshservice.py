@@ -1198,16 +1198,8 @@ class Client(BaseClient):
         change_id: int = None,
         updated_since: str = None,
         order_type: str = None,
-<<<<<<< HEAD
         resp_type: str = "json",
-<<<<<<< HEAD
         full_url: str = '',
-=======
-        full_url='',
-=======
-        resp_type: str = "json"
->>>>>>> 02b2671c31294b1331d30838a636bc2a5b5b27d1
->>>>>>> f329b1bdd7dc912cd4464cb6e5821d1b584c5150
     ) -> dict[str, Any]:
         """ Lists all the changes in a Freshservice account.
 
@@ -1460,16 +1452,8 @@ class Client(BaseClient):
         updated_query: str = None,
         updated_since: str = None,
         order_type: str = None,
-<<<<<<< HEAD
         resp_type: str = "json",
-<<<<<<< HEAD
         full_url: str = '',
-=======
-        full_url='',
-=======
-        resp_type: str = "json"
->>>>>>> 02b2671c31294b1331d30838a636bc2a5b5b27d1
->>>>>>> f329b1bdd7dc912cd4464cb6e5821d1b584c5150
     ) -> dict[str, Any]:
         """ Lists all the releases in a Freshservice account.
 
@@ -3553,7 +3537,6 @@ def fetch_incidents(client: Client, params: dict):
             'order_type': 'asc'
         }
         demisto.debug(f"Request arguments: {request_args}")
-<<<<<<< HEAD
         tickets = []
         next_link = ''
 
@@ -3566,27 +3549,6 @@ def fetch_incidents(client: Client, params: dict):
 
             if not (next_link := get_next_link(response)):
                 break
-=======
-
-        response = freshservice_request(**request_args, resp_type='response')
-        tickets = response.json().get(f'{ticket_type}s', [])
-        demisto.debug(f"Initial tickets count:{len(tickets)=}")
-
-        while (link_header := response.headers.get("link", "") or response.headers.get("Link", "")):
-            demisto.debug(f"Next link header: {link_header=}")
-
-            match = re.search(r'<([^>]+)>;\s*rel="next"', link_header)
-            if not match:
-                demisto.debug("No more pages to fetch.")
-                break
-
-            next_url = match.group(1)
-            demisto.debug(f"Fetching next page: {next_url=}")
-            response = client._http_request('GET', full_url=next_url, resp_type='response')
-            new_tickets = response.json().get(f'{ticket_type}s', [])
-            tickets.extend(new_tickets)
-            demisto.debug(f"Fetched additional {len(new_tickets)} tickets, total: {len(tickets)}")
->>>>>>> 02b2671c31294b1331d30838a636bc2a5b5b27d1
 
         alert_list = convert_response_properties(
             tickets,
