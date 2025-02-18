@@ -703,7 +703,7 @@ script:
       - Medium Confidence
       - High Confidence
   - name: checkpointhec-download-email
-    description: Download email and attach to current incident.
+    description: Download email file.
     arguments:
     - name: entity
       description: Email entity id.
