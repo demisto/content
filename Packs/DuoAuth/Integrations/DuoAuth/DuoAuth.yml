@@ -51,13 +51,13 @@ script:
     description: Send push message to Duo user.
     name: duoauth-push-notification
     outputs:
-    - contextPath: DuoAuth.Status
+    - contextPath: DuoAuth.PushNotification.Status
       description: Status of a Push message.
       type: String
-    - contextPath: DuoAuth.Message
+    - contextPath: DuoAuth.PushNotification.Message
       description: E.g. if approved, "Success. Logging you in…".
       type: String
-    - contextPath: DuoAuth.User
+    - contextPath: DuoAuth.PushNotification.User
       description: Username receiving Push message.
       type: String
   dockerimage: demisto/python3:3.12.8.1983910
