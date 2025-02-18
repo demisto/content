@@ -1,0 +1,655 @@
+id: Test Playbook
+version: -1
+name: Test Playbook
+description: |-
+  This playbook investigates an “Alibaba ActionTrail - multiple unauthorized action attempts detected by a user” alert by gathering user and IP information and performing remediation based on the information gathered and received from the user.
+
+  Used Sub-playbooks:
+  * Enrichment for Verdict
+  * Block IP - Generic v3
+
+  To link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers:
+  Alert Source = Correlation
+  Alert Name = Alibaba ActionTrail - multiple unauthorized action attempts detected by a user
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 030169ce-04fe-4391-8693-fa341acba921
+    type: start
+    task:
+      id: 030169ce-04fe-4391-8693-fa341acba921
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a515b62e-f38d-4134-8724-53130ed9ce09
+    type: title
+    task:
+      id: a515b62e-f38d-4134-8724-53130ed9ce09
+      version: -1
+      name: Enrich Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8b64df8e-8740-4ca1-8e05-15f9e0966a18
+    type: title
+    task:
+      id: 8b64df8e-8740-4ca1-8e05-15f9e0966a18
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e505acd0-fec4-4348-8e9c-fd2b0bbb372b
+    type: title
+    task:
+      id: e505acd0-fec4-4348-8e9c-fd2b0bbb372b
+      version: -1
+      name: True Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 7f6ba393-b5f7-4683-8075-73872337076d
+    type: regular
+    task:
+      id: 7f6ba393-b5f7-4683-8075-73872337076d
+      version: -1
+      name: Close the alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      closeNotes:
+        simple: The user confirmed that he made these multiple unauthorized API call attempts.
+      closeReason:
+        simple: false  positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: cfc1aef7-7f3d-46cc-8577-00b2ed6dc22e
+    type: title
+    task:
+      id: cfc1aef7-7f3d-46cc-8577-00b2ed6dc22e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: abaa1e4a-e07b-4487-8acc-26952324d2a0
+    type: condition
+    task:
+      id: abaa1e4a-e07b-4487-8acc-26952324d2a0
+      version: -1
+      name: Continue based on verdict
+      description: Continue based on verdict.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      Malicious IP:
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: Malicious IP
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IPVerdict
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPVerdict
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Malicious
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: dae4ed4a-afd2-4f74-8b1a-dc0673bfb02a
+    type: collection
+    task:
+      id: dae4ed4a-afd2-4f74-8b1a-dc0673bfb02a
+      version: -1
+      name: EmailAsk User
+      description: EmailAsk asks the user to confirm the multiple unauthorized API call attempts.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: alert
+          accessor: employeeemail
+      subject:
+        simple: Unauthorized API call attempts were detected
+      body:
+        simple: "Hello,\n\nWe identified multiple unauthorized API call attempts initiated by your Alibaba user. Please confirm or deny that you initiated these activities. "
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Were the unauthorized action attempts made by you?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Unauthorized API call attempts were detected
+      description: 'We identified multiple unauthorized API call attempts initiated by your Alibaba user. Please confirm or deny that you initiated these activities. '
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 090360c1-4876-422c-8de9-89b307901a11
+    type: regular
+    task:
+      id: 090360c1-4876-422c-8de9-89b307901a11
+      version: -1
+      name: Continue Manual Investigation
+      description: "Continue investigating the alert manually and check whether:\n1- Additional activities initiated from the IP address and user account.\n2- Any successful API calls initiated by the user or IP address?\n3- The Alibaba user account has high privileges. "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 6a7ff31b-1051-454b-8536-3ca9b6198f93
+    type: playbook
+    task:
+      id: 6a7ff31b-1051-454b-8536-3ca9b6198f93
+      version: -1
+      name: Enrichment for Verdict
+      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
+      playbookName: Enrichment for Verdict
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      CloseReason:
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
+      Domain:
+        complex:
+          root: alert
+          accessor: domainname
+      FileSHA256:
+        complex:
+          root: alert.initiatorsha256
+          accessor: '[0]'
+      IP:
+        complex:
+          root: alert.remoteip
+          accessor: '[0]'
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      URL:
+        complex:
+          root: alert
+          accessor: url
+      User:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: uniq
+      query:
+        simple: remoteip:${alert.remoteip.[0]} and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+      threshold:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 724f2b0a-67a9-4c5b-8c0d-f250ce07b30e
+    type: condition
+    task:
+      id: 724f2b0a-67a9-4c5b-8c0d-f250ce07b30e
+      version: -1
+      name: User confirmed the activity?
+      description: |
+        Check if the user confirmed the activity.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Unauthorized API call attempts were detected.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: b8b32205-818f-4cfa-8137-6f1498497e88
+    type: playbook
+    task:
+      id: b8b32205-818f-4cfa-8137-6f1498497e88
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing).\nNote the following:\n- Some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: alert
+          accessor: remoteip
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      RuleDirection:
+        simple: inbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${alert.alertid}
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 7cc51070-069e-4761-80f6-9a4e25f1f6f2
+    type: regular
+    task:
+      id: 7cc51070-069e-4761-80f6-9a4e25f1f6f2
+      version: -1
+      name: Lower alert severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      severity:
+        simple: Low
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 89662d70-5716-459a-8743-b4b3e974e784
+    type: condition
+    task:
+      id: 89662d70-5716-459a-8743-b4b3e974e784
+      version: -1
+      name: Should block IP?
+      description: Approve or deny automated remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "Yes":
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_20_Malicious IP": 0.38,
+      "28_29_#default#": 0.53,
+      "33_20_#default#": 0.49,
+      "36_30_#default#": 0.54,
+      "36_34_Yes": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1845,
+        "width": 1340,
+        "x": 90,
+        "y": -110
+      }
+    }
+  }
+inputs:
+- key: InternalRange
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexExtractAll
+        args:
+          error_if_no_match: {}
+          ignore_case: {}
+          multi_line: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
+  required: false
+  description: List of internal IP ranges
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces: ["marketplacev2"]
