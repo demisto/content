@@ -13,9 +13,8 @@ Supported date time formats:
 
 filter _raw_log ~= "\d+:\s\d*\s*\S+\s+\d+\s+\S+\s*\S*\:\s+\%" or _raw_log ~= "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):"
 /*
-First section is modifing syslog log with field raw log that contain timestamp in the format: MMM dd yyyy HH:mm:ss.nnn
-And converting to format yyyy MMM dd HH:mm:ss.nnn
-For example: Feb 4 2025 17:40:49.388 UTC and converting it to 2025 Feb 4 17:40:49.388 UTC
+The first section modifies the syslog log, changing the timestamp format from MMM dd yyyy HH:mm:ss.nnn to yyyy MMM dd HH:mm:ss.nnn
+For example: Feb 4 2025 17:40:49.388 UTC is converted to 2025 Feb 4 17:40:49.388 UTC
 */
 
 // Extract prefix 
@@ -26,13 +25,13 @@ For example: Feb 4 2025 17:40:49.388 UTC and converting it to 2025 Feb 4 17:40:4
 | alter tmp_get_year = arrayindex(regextract(tmp_get_time ,"\d{4}"),0)
 // Remove the year 
 | alter tmp_remove_year =  replex(tmp_get_time  , "(\s+\d{4})", "" )
-// Concat prefix, year and the rest of the date
+// Concatenate prefix, year and the rest of the date
 | alter tmp_change_location = concat(tmp_get_prefix,tmp_get_year ," ",tmp_remove_year )
-// Replace using regex the original timestamp with the new timestamp
+// Replace the original timestamp with the new timestamp using regex
 | alter _raw_log = coalesce(replex(_raw_log , "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):", tmp_change_location ),_raw_log )
 
 /*
-This section altering time stamp (from existing mapping)
+This section alter time stamp (from existing mapping)
 */
 | alter
     tmp_get_log_datetime = arraystring(regextract(_raw_log, "(\d*\s*\S+\s+\d+\s+\S+)\s*\S*\:\s+\%"), "")
