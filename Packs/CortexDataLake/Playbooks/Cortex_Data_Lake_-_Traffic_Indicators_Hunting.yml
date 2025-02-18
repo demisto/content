@@ -3159,7 +3159,8 @@ inputs:
     For example, end_time="2018-04-26 00:00:00"
   playbookInputQuery:
 - key: limit
-  value: {}
+  value:
+    simple: "10"
   required: false
   description: "The maximum number of logs to return. \nDefault is 10."
   playbookInputQuery:
