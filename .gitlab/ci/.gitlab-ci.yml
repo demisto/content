@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "ia_CIAC-10446"
+  CURRENT_BRANCH_NAME: $INFRA_BRANCH
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "ia_CIAC-10446"
+    ref: $INFRA_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
