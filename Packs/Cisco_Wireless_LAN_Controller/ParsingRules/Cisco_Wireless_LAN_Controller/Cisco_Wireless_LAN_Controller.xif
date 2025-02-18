@@ -1,7 +1,7 @@
 [INGEST:vendor="cisco", product="wlc", target_dataset="cisco_wlc_raw", no_hit=keep]
 
 /*
-Supported date time formats: 
+Supported datetime formats: 
  - MMM dd hh:mm:ss.nnn
  - MMM dd hh:mm:ss.nnn TZ
  - MMM dd yyyy hh:mm:ss.nnn TZ
@@ -19,7 +19,7 @@ For example: Feb 4 2025 17:40:49.388 UTC is converted to 2025 Feb 4 17:40:49.388
 
 // Extract prefix 
 | alter tmp_get_prefix = arrayindex(regextract(_raw_log ,"<\d{1,3}>(\d+:\s)\w{3}"),0)
-// Extract date and time including time zone e.g. UTC:
+// Extract date and time including timezone e.g. UTC:
 | alter tmp_get_time = arrayindex(regextract(_raw_log  ,"\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+:)"),0)
 // Extract the year
 | alter tmp_get_year = arrayindex(regextract(tmp_get_time ,"\d{4}"),0)
@@ -31,7 +31,7 @@ For example: Feb 4 2025 17:40:49.388 UTC is converted to 2025 Feb 4 17:40:49.388
 | alter _raw_log = coalesce(replex(_raw_log , "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):", tmp_change_location ),_raw_log )
 
 /*
-This section alter timestamp (from existing mapping)
+This section alters the timestamp
 */
 | alter
     tmp_get_log_datetime = arraystring(regextract(_raw_log, "(\d*\s*\S+\s+\d+\s+\S+)\s*\S*\:\s+\%"), "")
