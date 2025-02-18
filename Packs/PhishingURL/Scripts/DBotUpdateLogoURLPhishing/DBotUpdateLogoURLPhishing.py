@@ -70,7 +70,7 @@ def load_old_model_data(encoded_model: str) -> ModelData:
 
     if demisto.getArg('action') != KEY_DISPLAY_LOGOS:
         delete_model()
-    
+
     return model_to_data(model)
 
 
