@@ -1,0 +1,327 @@
+id: 530e6c07-ea9c-47a2-8e2a-9ebdc61722a2
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: Violation Incident Postprocessing - Group-IB Digital Risk Protection
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dd2a29df-d880-4607-86a0-343151471f19
+    type: start
+    task:
+      id: dd2a29df-d880-4607-86a0-343151471f19
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 547b290a-cd52-43c6-81ee-708c0b3833c9
+    type: condition
+    task:
+      id: 547b290a-cd52-43c6-81ee-708c0b3833c9
+      version: -1
+      name: Is an action in violation required?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.gibdrpstatus
+            iscontext: true
+          right:
+            value:
+              simple: detected
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.gibdrpapprovestate
+            iscontext: true
+          right:
+            value:
+              simple: under_review
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 10df369a-8b31-4bf2-8e2e-123e0dc9c5d7
+    type: regular
+    task:
+      id: 10df369a-8b31-4bf2-8e2e-123e0dc9c5d7
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 115174e9-015b-4d4a-8f64-d66eee88a54c
+    type: regular
+    task:
+      id: 115174e9-015b-4d4a-8f64-d66eee88a54c
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assignBy:
+        simple: random
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 28170cd5-5006-49fc-8558-1f054d607acf
+    type: condition
+    task:
+      id: 28170cd5-5006-49fc-8558-1f054d607acf
+      version: -1
+      name: Selecting an action with a violation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "6"
+      Yes, i want:
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Do you want to “Approve” this incident?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Yes, i want
+      - "No"
+    externalFormUseAuth: true
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 31ee2b04-5c14-4f26-83db-4c589d9db86f
+    type: regular
+    task:
+      id: 31ee2b04-5c14-4f26-83db-4c589d9db86f
+      version: -1
+      name: Launching a violation approval
+      description: Changing the status of a single violation.
+      script: '|||gibdrp-change-violation-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        simple: incident.gibdrpid
+      status:
+        simple: approve
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2f0a4e3d-0078-4213-8eb8-ee093fb0fc62
+    type: regular
+    task:
+      id: 2f0a4e3d-0078-4213-8eb8-ee093fb0fc62
+      version: -1
+      name: Reject Violation
+      description: Changing the status of a single violation.
+      script: '|||gibdrp-change-violation-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        simple: incident.gibdrpid
+      status:
+        simple: reject
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: dbb43028-c9d7-4609-89e0-908e87190560
+    type: regular
+    task:
+      id: dbb43028-c9d7-4609-89e0-908e87190560
+      version: -1
+      name: Done
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1215,
+        "width": 1220,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true

@@ -516,7 +516,49 @@
                                 "index": 13,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
+                            },
+							{
+								"args": {
+									"id": {
+										"simple": "{incident.gibdrpid}"
+									},
+									"status": {
+										"simple": "reject"
+									}
+								},
+								"buttonClass": "error",
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"id": "4ad2d5d0-edcb-11ef-b8bb-2182ba34affd",
+								"index": 0,
+								"listId": "caseinfoid-96ff2940-71a2-11ef-8c49-f9d8b5e80cf6",
+								"name": "Reject Violation",
+								"scriptId": "Group-IB Digital Risk Protection|||gibdrp-change-violation-status",
+								"sectionItemType": "button",
+								"startCol": 4
+							},
+							{
+								"args": {
+									"id": {
+										"simple": "{incident.gibdrpid}"
+									},
+									"status": {
+										"simple": "approve"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"id": "ad1d0940-edcb-11ef-b8bb-2182ba34affd",
+								"index": 1,
+								"name": "Approve Violation",
+								"scriptId": "Group-IB Digital Risk Protection|||gibdrp-change-violation-status",
+								"sectionItemType": "button",
+								"startCol": 4
+							}
                         ],
                         "maxW": 3,
                         "minH": 1,
