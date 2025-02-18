@@ -821,7 +821,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     return {'range': {time_field: range_dict}}
 
 
-def execute_raw_query(es, raw_query, index=None, size=100, page=0):
+def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     try:
         raw_query = json.loads(raw_query)
         if raw_query.get('query'):
@@ -836,7 +836,9 @@ def execute_raw_query(es, raw_query, index=None, size=100, page=0):
     requested_index = index or FETCH_INDEX
 
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
-        search = Search(using=es, index=requested_index).query(body.get('query'))[page:page + size]
+        search = Search(using=es, index=requested_index).query(body.get('query'))
+        if page and size:
+            search = search[page:page + size]
         response = search.execute().to_dict()
 
     else:  # Elasticsearch v7 and below or OpenSearch
@@ -853,7 +855,7 @@ def fetch_incidents(proxies):
     time_range_dict = get_time_range(time_range_start=last_fetch)
 
     if RAW_QUERY:
-        response = execute_raw_query(es, RAW_QUERY, FETCH_SIZE)
+        response = execute_raw_query(es, RAW_QUERY)
     else:
         query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
