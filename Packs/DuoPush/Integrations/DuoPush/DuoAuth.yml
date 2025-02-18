@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: DuoPush
+  id: DuoAuth
   version: -1
 configuration:
 - display: Trust any certificate (not secure)
@@ -28,8 +28,8 @@ configuration:
   required: true
   type: 9
 description: Sends a Duo push notification with additional context via the pushinfo parameter. Must have access to the auth api in order to use this.
-display: DuoPush (Community Contribution)
-name: DuoPush
+display: DuoAuth (Community Contribution)
+name: DuoAuth
 script:
   commands:
   - arguments:
@@ -38,19 +38,18 @@ script:
       required: true
     - description: "A set of URL-encoded key/value pairs with additional contextual information associated with this authentication attempt. The Duo Mobile app will display this information to the user. For example: from=login%20portal&domain=example.com, The URL-encoded string's total length must be less than 20,000 bytes."
       name: pushinfo
-    - defaultValue: Activities
       description: This string is displayed in the Duo Mobile app push notification and UI.
       name: type
     description: Send push message to Duo user.
-    name: duo-push
+    name: duo-auth
     outputs:
-    - contextPath: DuoPush.Status
+    - contextPath: DuoAuth.Status
       description: Status of a Push message.
       type: String
-    - contextPath: DuoPush.Message
+    - contextPath: DuoAuth.Message
       description: E.g. if approved, "Success. Logging you in…".
       type: String
-    - contextPath: DuoPush.User
+    - contextPath: DuoAuth.User
       description: Username receiving Push message.
       type: String
   dockerimage: demisto/python3:3.12.8.1983910
