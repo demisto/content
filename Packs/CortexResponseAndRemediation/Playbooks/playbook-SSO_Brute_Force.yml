@@ -1,0 +1,1057 @@
+id: SSO Brute Force
+version: -1
+name: SSO Brute Force
+description: |-
+  This playbook addresses the following alerts:
+
+  - SSO Brute Force Threat Detected
+  - SSO Brute Force Activity Observed
+
+  Playbook Stages:
+  
+  Triage:
+
+  - The playbook checks the IP reputation and fetches the events related to the brute force login attempts.
+
+  Early Containment:
+
+  - The playbook checks if the IP is suspicious. If it is, the playbook suggests blocking the IP using PAN-OS. The investigation continues in parallel to this phase.
+
+  Investigation:
+
+  - The playbook assesses the risk score of the user who successfully logged in after a brute force attempt, examines the legitimacy of the user agent and if the brute force attempt is likely automated based on the timestamp interval. It also verifies if the user has MFA configured when the alert source is Okta.
+
+  Containment:
+  - If there is a successful login attempt and the user's risk score is high, or if the user agent is detected as suspicious, or if the time intervals indicates that the login attempts is likely automated, the playbook clears the user's session. If the user doesn't have MFA configured, the playbook recommends expiring the user's password. If there is no successful login detected, no action is taken.
+
+
+  Requirements:
+
+  For any response action, you need one of the following integrations:
+
+  - Microsoft Graph User
+  - Okta v2
+
+  For eradication step,  you need the following integration:
+
+  - Palo Alto Networks PAN-OS.
+tags:
+- TA0006 - Credential Access
+- T1110 - Brute Force
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 72533b42-17f0-41c5-89cf-6e94b9f74ac2
+    type: start
+    task:
+      id: 72533b42-17f0-41c5-89cf-6e94b9f74ac2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 20abd686-980a-43dd-8fe9-4a6881df88bc
+    type: playbook
+    task:
+      id: 20abd686-980a-43dd-8fe9-4a6881df88bc
+      version: -1
+      name: Containment Plan - Clear User Sessions
+      description: |-
+        ## Containment Plan - Clear User Sessions
+
+        This playbook is a sub-playbook within the containment plan playbook.
+        The playbook uses the 'Okta v2' and 'MSGraph User' integrations to clear user sessions.
+      playbookName: Containment Plan - Clear User Sessions
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      ClearUserSessions:
+        simple: "True"
+      Username:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: auth_identity
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 242c18e5-f1e7-4fea-85db-f9d42f4685cc
+    type: title
+    task:
+      id: 242c18e5-f1e7-4fea-85db-f9d42f4685cc
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+      - "28"
+      - "22"
+      - "16"
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3329c1de-c1f0-47ff-84e3-ddde3e1c7f94
+    type: title
+    task:
+      id: 3329c1de-c1f0-47ff-84e3-ddde3e1c7f94
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f0f71c4c-c584-4c50-802f-abc9477770d1
+    type: regular
+    task:
+      id: f0f71c4c-c584-4c50-802f-abc9477770d1
+      version: -1
+      name: Get login event attempt information
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: alert
+          accessor: id
+          transformers:
+          - operator: uniq
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 1133c2aa-8085-44e8-8708-791dc0ea0a95
+    type: regular
+    task:
+      id: 1133c2aa-8085-44e8-8708-791dc0ea0a95
+      version: -1
+      name: Get the user risk level to examine its threat potential
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      user_id:
+        simple: ${alert.username.[0]}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 620
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1da4e82d-8915-4d26-8226-2a03b9464bd3
+    type: title
+    task:
+      id: 1da4e82d-8915-4d26-8226-2a03b9464bd3
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 3b710eeb-d4b7-428a-8eb7-f30a4e06e716
+    type: condition
+    task:
+      id: 3b710eeb-d4b7-428a-8eb7-f30a4e06e716
+      version: -1
+      name: Found any suspicious evidence during investigation?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "41"
+      "Yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousUserAgent
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                accessor: Indicator
+            iscontext: true
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: IntervalAnalysis.IsPatternLikelyAutomated
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: d766566f-458b-49b1-87dc-59bfc76ce5ca
+    type: regular
+    task:
+      id: d766566f-458b-49b1-87dc-59bfc76ce5ca
+      version: -1
+      name: Get user MFA configuration to assess their resilience
+      description: Returns all the enrolled factors for the specified user.
+      script: '|||okta-get-user-factors'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      extend-context:
+        simple: MFAResult=
+      username:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: auth_identity
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 620
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 44da91f4-abdd-4773-819e-fadd023d4614
+    type: collection
+    task:
+      id: 44da91f4-abdd-4773-819e-fadd023d4614
+      version: -1
+      name: Decide whether to expire the user's password
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Would you like to expire the password of the user ${alert.username.[0]} using ${Core.OriginalAlert.event.vendor}?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Select to which user you like to expire password to
+      description: Decide whether the password should be expired for the user.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: be42e18c-391c-4925-8eb2-c2984464dca2
+    type: condition
+    task:
+      id: be42e18c-391c-4925-8eb2-c2984464dca2
+      version: -1
+      name: Should enforce password expiration for the user?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "41"
+      "Yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Select to which user you like to expire password to.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 6d46b05e-f658-4674-812b-82def9e65a60
+    type: regular
+    task:
+      id: 6d46b05e-f658-4674-812b-82def9e65a60
+      version: -1
+      name: Okta expire password
+      description: Expires a password for an existing Okta user.
+      script: '|||okta-expire-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      username:
+        simple: ${Core.OriginalAlert.event.auth_identity}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: f858553c-8b06-41fc-8cb7-4f39bc3b081e
+    type: regular
+    task:
+      id: f858553c-8b06-41fc-8cb7-4f39bc3b081e
+      version: -1
+      name: Extracting suspicious user agents
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      contextKey:
+        simple: SuspiciousUserAgent
+      data:
+        complex:
+          root: Core.OriginalAlert.raw_abioc.event
+          accessor: action_user_agent
+          transformers:
+          - operator: uniq
+      regex:
+        simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium)\b
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 620
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 25c0eac0-c072-47c3-83b9-e87d94654a09
+    type: title
+    task:
+      id: 25c0eac0-c072-47c3-83b9-e87d94654a09
+      version: -1
+      name: 'Triage '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: a140852f-a65a-4f8e-84b2-bbd6974d1c8d
+    type: regular
+    task:
+      id: a140852f-a65a-4f8e-84b2-bbd6974d1c8d
+      version: -1
+      name: 'Check IP reputation '
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      ip:
+        complex:
+          root: alert
+          accessor: localip
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 77a2bef0-43ff-4070-8eca-5e4324d34e5f
+    type: condition
+    task:
+      id: 77a2bef0-43ff-4070-8eca-5e4324d34e5f
+      version: -1
+      name: 'Is the IP malicious? '
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                accessor: Indicator
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: c9923adc-8b9d-4053-85fa-0300eb47c70b
+    type: title
+    task:
+      id: c9923adc-8b9d-4053-85fa-0300eb47c70b
+      version: -1
+      name: Early Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 18e6fb6f-2140-409f-83c1-cc4e917e1b33
+    type: condition
+    task:
+      id: 18e6fb6f-2140-409f-83c1-cc4e917e1b33
+      version: -1
+      name: Has successful login?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Core.OriginalAlert._all_events.auth_outcome
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 44f1ee78-30f3-46e4-8321-95c1c44e5317
+    type: condition
+    task:
+      id: 44f1ee78-30f3-46e4-8321-95c1c44e5317
+      version: -1
+      name: User has MFA Configured? (For Okta Only)
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "25"
+      No MFA:
+      - "24"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.Factor.ID
+            iscontext: true
+          right:
+            value: {}
+    - label: No MFA
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MFAResult
+            iscontext: true
+          right:
+            value:
+              simple: No Factors found
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: bc9a6285-fcce-4060-8f5a-67b86431ce03
+    type: regular
+    task:
+      id: bc9a6285-fcce-4060-8f5a-67b86431ce03
+      version: -1
+      name: Close Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - Handled by the playbook "SSO Brute Force"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 40cfbee3-783c-49d1-840e-f6b5b326b239
+    type: regular
+    task:
+      id: 40cfbee3-783c-49d1-840e-f6b5b326b239
+      version: -1
+      name: Analyze login timestamps for automated login patterns
+      description: Analyze a list of Unix timestamps in milliseconds, to detect simple patterns of consistency or high frequency. The script can aid in the investigation of multi-event alerts that contain a list of timestamps.
+      scriptName: AnalyzeTimestampIntervals
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      timestamps:
+        simple: ${Core.OriginalAlert._all_events.event_timestamp}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 620
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 5fb4ad1a-8483-44ef-8207-43dbc7af41cd
+    type: playbook
+    task:
+      id: 5fb4ad1a-8483-44ef-8207-43dbc7af41cd
+      version: -1
+      name: PAN-OS - Block IP
+      description: |-
+        This playbook blocks IP addresses with 2 optional actions:
+
+        - Block IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall. The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
+
+
+        - Utilize the Dynamic Address Group (DAG) capability of PAN-OS. DAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.
+        The playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.
+        If the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed.
+      playbookName: PAN-OS - Block IP
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      MaliciousIPs:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_41_#default#": 0.19,
+      "25_26_Yes": 0.49,
+      "25_41_#default#": 0.34,
+      "31_32_yes": 0.31,
+      "39_41_#default#": 0.17,
+      "40_24_No MFA": 0.42,
+      "40_25_#default#": 0.26,
+      "40_41_yes": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 2290,
+        "x": 20,
+        "y": -130
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs.
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+marketplaces:
+- marketplacev2

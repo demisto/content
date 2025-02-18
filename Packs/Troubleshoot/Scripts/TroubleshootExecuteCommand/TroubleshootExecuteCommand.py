@@ -16,7 +16,7 @@ def get_errors(response: Union[list, dict]) -> List[str]:
             errors.append(response['Contents'])
 
         for entry in response:
-            is_error_entry = type(entry) == dict and entry['Type'] == entryTypes['error']
+            is_error_entry = type(entry) is dict and entry['Type'] == entryTypes['error']
             if is_error_entry:
                 errors.append(entry['Contents'])
     return errors

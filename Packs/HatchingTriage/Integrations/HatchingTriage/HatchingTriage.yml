@@ -594,7 +594,7 @@ script:
       required: true
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

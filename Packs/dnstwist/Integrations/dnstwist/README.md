@@ -170,4 +170,4 @@
 	}
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/39294725/49379863-ed75db80-f718-11e8-8a6d-a320982019c7.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/39294725/49379863-ed75db80-f718-11e8-8a6d-a320982019c7.png" alt="image" width="749" height="412"></a></p>
+<p><a href="../../doc_files/dnswist_for_domain.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/dnswist_for_domain.png" alt="image" width="749" height="412"></a></p>

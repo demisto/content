@@ -2040,7 +2040,7 @@ script:
       - contextPath: ConfluenceCloud.Event.associatedObjects.objectType
         description: Type of the associated object.
         type: String
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   isfetchevents:xsoar: false
   runonce: false

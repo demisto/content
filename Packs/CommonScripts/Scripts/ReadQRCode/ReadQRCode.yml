@@ -26,7 +26,7 @@ tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/qrcode:1.0.0.112357
+dockerimage: demisto/qrcode:1.0.0.117542
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

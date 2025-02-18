@@ -9,11 +9,8 @@ This integration was integrated and tested with Branch: stable-50 of XDR.
 
 An API key of type **Advanced** with an **Administrator** role.
 
-## Configure Cortex XDR - IOC on Cortex XSOAR  
+## Configure Cortex XDR - IOC in Cortex
   
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.  
-2. Search for Cortex XDR - IOC.  
-3. Click **Add instance** to create and configure a new integration instance.  
   
 | **Parameter** | **Description** | **Required** |  
 | --- | --- | --- |  
@@ -21,7 +18,8 @@ An API key of type **Advanced** with an **Administrator** role.
 | apikey_id | API Key ID | True |  
 | apikey | API Key | True |  
 | feed | Fetch indicators | False |  
-| severity | the severity in Cortex XDR | True |  
+| severity | The severity in Cortex XDR | True |  
+| Tags | Appears in Cortex XSOAR if a modification was made on the Cortex XDR side and is being "mirrored" to Cortex XSOAR | False |  
 | query | Sync Query | True |  
 | insecure | Trust any certificate \(not secure\) | False |  
 | xsoar_severity_field | The Cortex XSOAR indicator field used as severity. | True |  
@@ -36,9 +34,8 @@ An API key of type **Advanced** with an **Administrator** role.
 | feedFetchInterval | Feed Fetch Interval (make sure to set it to at least 15 minutes) | False |  
 | feedBypassExclusionList | Bypass exclusion list | False |  
   
-4. Click **Test** to validate the URLs, token, and connection.  
 ## Commands  
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.  
+You can execute these commands from the CLI, as part of an automation, or in a playbook.  
 After you successfully execute a command, a DBot message appears in the War Room with the command details.  
 ### xdr-iocs-sync  
 ***

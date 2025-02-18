@@ -480,7 +480,7 @@ script:
       name: uid
     description: Delete a user profile.
     name: proofpoint-pps-delete-user
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

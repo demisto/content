@@ -2,7 +2,7 @@
     "name": "PingCastle",
     "description": "Active directory is quickly becoming a critical failure point in any big sized company, as it is both complex and costly to secure. PingCastle is a Windows-based utility to audit the risk level of your AD infrastructure and check for vulnerable practices. The Integrations and Playbooks in this allows you to listen for PingCastle reports, create an incident based on that report, upload the XML Report to the War Room as a file, and so on",
     "support": "community",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.11",
     "author": "soarxperts",
     "url": "",
     "email": "",

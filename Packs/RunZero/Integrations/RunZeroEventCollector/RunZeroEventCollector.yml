@@ -75,7 +75,7 @@ script:
       name: start_time
     description: Gets events from RunZero.
     name: runzero-get-events
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.116949
   isfetchevents: true
   script: '-'
   subtype: python3

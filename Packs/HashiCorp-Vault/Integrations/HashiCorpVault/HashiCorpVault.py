@@ -151,8 +151,7 @@ def get_role_id_command():
     role_name = args.get('role_name')
     path = f'/auth/approle/role/{role_name}/role-id'
     response = send_request(path=path, method='get', body={'role_name': role_name})
-    if response:
-        role_id = response.get('data', {}).get('role_id', '')
+    role_id = response.get('data', {}).get('role_id', '') if response else ''
 
     if not role_id:
         raise DemistoException(f"Role ID not found for AppRole '{role_name}'. Please check the role name and try again.")
@@ -646,9 +645,9 @@ def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600',
     if aws_method:
         engine_conf['aws_method'] = aws_method
 
-    ENGINE_CONFIGS.append(engine_conf)
+    ENGINE_CONFIGS.append(engine_conf)  # pylint: disable=E0606
 
-    set_integration_context({'configs': ENGINE_CONFIGS})
+    set_integration_context({'configs': ENGINE_CONFIGS})  # pylint: disable=E0606
 
 
 def fetch_credentials():  # pragma: no cover

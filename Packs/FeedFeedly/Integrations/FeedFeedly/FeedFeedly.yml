@@ -122,7 +122,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: feedly-get-indicators
-  dockerimage: demisto/python3:3.11.9.105369
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   isfetch: false
   longRunning: false

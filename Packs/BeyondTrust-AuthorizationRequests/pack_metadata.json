@@ -1,0 +1,21 @@
+{
+    "name": "BeyondTrust - Authorization Requests",
+    "description": "This integration is used to handle Beyond Trust authorization requests through XSOAR",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Nelson Prenga",
+    "url": "",
+    "email": "",
+    "created": "2024-12-30T14:41:06Z",
+    "categories": ["Identity and Access Management"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "nprenga"
+    ]
+}

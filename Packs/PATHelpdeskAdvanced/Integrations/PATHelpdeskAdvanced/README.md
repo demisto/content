@@ -1,25 +1,21 @@
 Improve the effectiveness of your service provision and resources, and the quality of your IT department.
 This integration was integrated and tested with version 11.2.3 of PATHelpdeskAdvanced.
 
-## Configure PAT HelpdeskAdvanced on Cortex XSOAR
+## Configure PAT HelpdeskAdvanced in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PAT HelpdeskAdvanced.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | PAT Helpdesk URL | True |
-    | Username | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| PAT Helpdesk URL | True |
+| Username | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### hda-create-ticket

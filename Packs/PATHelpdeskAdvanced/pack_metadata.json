@@ -2,7 +2,7 @@
     "name": "PAT Helpdesk Advanced",
     "description": "Manage helpdesk requests and tickets with PAT Helpdesk Advanced",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

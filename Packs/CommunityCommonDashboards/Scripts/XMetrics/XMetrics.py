@@ -83,14 +83,14 @@ def BuildEffortReductionTable(incidents, efforts) -> dict:
         for month, val in v.items():
             ival = int(val)
             if inctype in efforts:
-                autoeffort = int(ival * efforts[inctype][1])
+                deleff = efforts[inctype][0] - efforts[inctype][1]
+                effreduced = int(ival * deleff)
             else:
-                autoeffort = 0
+                effreduced = 0
             if inctype not in table:
                 table[inctype] = [0] * 12
-            if autoeffort != 0:
-                table[inctype][monthindex] = autoeffort
-                total[monthindex] += autoeffort
+            table[inctype][monthindex] = effreduced
+            total[monthindex] += effreduced
             monthindex += 1
 
     for inctype, v in table.items():

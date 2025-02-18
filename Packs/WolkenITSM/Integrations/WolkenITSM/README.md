@@ -1,26 +1,22 @@
 Use The Wolken IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 This integration was integrated and tested with version 1.0.0 of Wolken ITSM
 
-## Configure Wolken ITSM on Cortex XSOAR
+## Configure Wolken ITSM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Wolken ITSM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. api-brdcmitsmbst.wolkenservicedesk.com) | True |
-    | API Key | True |
-    | Client Id | True |
-    | Service Account | True |
-    | Domain | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Refresh Token | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. api-brdcmitsmbst.wolkenservicedesk.com) | True |
+| API Key | True |
+| Client Id | True |
+| Service Account | True |
+| Domain | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Refresh Token | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### wolken-add-internal-notes
 ***
@@ -371,5 +367,4 @@ Search in the list of incident using any parameters
 ``` ```
 
 #### Human Readable Output
-
 

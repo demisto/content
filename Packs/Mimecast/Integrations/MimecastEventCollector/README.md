@@ -1,23 +1,19 @@
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Mimecast Event Collector on Cortex XSOAR
+## Configure Mimecast Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Mimecast Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL |  | True |
-    | Application ID |  | True |
-    | Application Key |  | True |
-    | Access Key |  | True |
-    | Secret Key |  | True |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | This parameter is used only for the Audit logs configuration. SIEM logs always set to "7 days ago". For additional information, review the pack README. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL |  | True |
+| Application ID |  | True |
+| Application Key |  | True |
+| Access Key |  | True |
+| Secret Key |  | True |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | This parameter is used only for the Audit logs configuration. SIEM logs always set to "7 days ago". For additional information, review the pack README. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## General information 
 This integration is collecting events from 2 end points. 
@@ -30,7 +26,7 @@ This integration is collecting events from 2 end points.
     When all available logs are retrieved, the fetch mechanism will call every 1 minute to update the SIEM logs from Mimecast.  
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### mimecast-get-events
 ***

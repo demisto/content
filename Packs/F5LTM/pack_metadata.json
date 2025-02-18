@@ -2,7 +2,7 @@
     "name": "F5 LTM",
     "description": "You can use this pack to automate traffic management use cases in integration with F5 Local Traffic Manager (LTM), the integration with F5 LTM included with the pack comes with several commands to get LTM information about nodes, pools and pool members, along with that some of those commands can be used to automate remediation actions such as disabling an active node.",
     "support": "community",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.10",
     "author": "Ayman Mahmoud",
     "email": "amahmoud@paloaltonetworks.com",
     "url": "",

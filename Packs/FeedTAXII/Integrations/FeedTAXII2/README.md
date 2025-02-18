@@ -1,10 +1,7 @@
 Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 
-## Configure TAXII 2 Feed on Cortex XSOAR
+## Configure TAXII 2 Feed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for TAXII 2 Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -33,7 +30,6 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 | Tags | Supports CSV values. | False |
 | Default API Root to use | The Default API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. Providing an API root that can't be reached will result in an error message with all possible API roots listed. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Using API Token authentication
 In order to use the integration with an API token you'll first need to change the `Username / API Key (see '?')` field to `_api_token_key`. Following this step, you can now enter the API Token into the `Password` field - this value will be used as an API key.
@@ -47,7 +43,7 @@ Two or more Observation Expressions MAY be combined using a complex observation 
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### taxii2-get-indicators
@@ -146,4 +142,3 @@ There is no context output for this command.
 
 #### Human Readable Output
 Fetch was reset successfully. Your next indicator fetch will collect indicators from the configured "First Fetch Time"
-

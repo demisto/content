@@ -2,23 +2,19 @@ DUO for admins.
 Must have access to the admin api in order to use this.
 This integration was integrated and tested with version 4.4.0 of DUO Admin
 
-## Configure DUO Admin on Cortex XSOAR
+## Configure DUO Admin in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DUO Admin.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Hostname | True |
-    | Integration Key | True |
-    | Secret Key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| API Hostname | True |
+| Integration Key | True |
+| Secret Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### duoadmin-get-authentication-logs-by-user
 ***

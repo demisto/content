@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Tuple, Dict
 
 from CommonServerPython import *
 
@@ -89,7 +88,7 @@ def calculate_score(score: int, threshold: int) -> int:
     return 1
 
 
-def get_cve_results(client: Client, cve_id: str, report: dict, threshold: int) -> Tuple[str, dict, dict]:
+def get_cve_results(client: Client, cve_id: str, report: dict, threshold: int) -> tuple[str, dict, dict]:
     """
     Formats CVE report from X-Force Exchange into Demisto's outputs.
 
@@ -150,7 +149,7 @@ def test_module(client: Client) -> str:
     return 'ok' if client.url_report('google.com') else 'Connection failed.'
 
 
-def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def ip_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
     Executes IP enrichment against X-Force Exchange.
 
@@ -200,7 +199,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     return markdown, context, reports
 
 
-def domain_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
+def domain_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
     """
      Executes URL enrichment against X-Force Exchange.
 
@@ -244,7 +243,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> List[CommandResults]
     return command_results
 
 
-def url_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
+def url_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
     """
      Executes URL enrichment against X-Force Exchange.
 
@@ -288,7 +287,7 @@ def url_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     return command_results
 
 
-def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def cve_search_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
      Get details about vulnerabilities (latest / search) from X-Force Exchange.
 
@@ -312,7 +311,7 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
                                                     int(args.get('limit', 0)))
         total_rows, bookmark = '', ''
 
-    total_context: Dict[str, Any] = defaultdict(list)
+    total_context: dict[str, Any] = defaultdict(list)
     total_markdown = ''
 
     for report in reports:
@@ -330,7 +329,7 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     return total_markdown, total_context, reports
 
 
-def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def cve_get_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
      Executes CVE enrichment against X-Force Exchange.
 
@@ -346,7 +345,7 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, An
 
     threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
     markdown = ''
-    context: Dict[str, Any] = defaultdict(list)
+    context: dict[str, Any] = defaultdict(list)
     reports = []
 
     for cve_id in argToList(args.get('cve_id')):
@@ -363,7 +362,7 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, An
     return markdown, context, reports
 
 
-def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
+def file_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
     """
     Executes file hash enrichment against X-Force Exchange.
 
@@ -419,6 +418,9 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
             file = Common.File(sha1=file_hash, dbot_score=dbot_score, relationships=relationship)
         elif hash_type == 'sha256':
             file = Common.File(sha256=file_hash, dbot_score=dbot_score, relationships=relationship)
+        else:
+            file = None
+            demisto.debug(f"{hash_type=} doesn't match any condition. {file=}")
 
         context[f'XFE.{outputPaths["file"]}'] = hash_info
 
@@ -441,7 +443,7 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     return command_results
 
 
-def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def whois_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
     Gets information about the given host address.
 

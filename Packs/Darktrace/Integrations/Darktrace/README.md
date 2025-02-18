@@ -1,11 +1,8 @@
 Darktrace is a Cyber AI platform for threat detection and response across cloud, email, industrial, and the network.
 This integration was integrated and tested with version 4.1.0 of Darktrace
 
-## Configure Darktrace on Cortex XSOAR
+## Configure Darktrace in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Darktrace.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,11 +16,10 @@ This integration was integrated and tested with version 4.1.0 of Darktrace
 | max_alerts | Maximum Model Breaches per Fetch | False |
 | first_fetch | First fetch time | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### darktrace-get-breach
@@ -1413,4 +1409,3 @@ Returns a time sorted list of connections and events for a device or an entity s
 >| connection | Unknown | 10 | Kelly's Laptop | id: 1<br/>did: 1<br/>macaddress: 06:39:01:c2:b0:48<br/>ip: 172.31.17.246<br/>ips: {'ip': '172.31.17.246', 'timems': 1599850800000, 'time': '2020-09-11 19:00:00', 'sid': 1}<br/>sid: 1<br/>hostname: ip-172-31-17-246<br/>time: 1591729370000<br/>devicelabel: Kelly's Laptop<br/>typename: server<br/>typelabel: Server | 443 | in | connection | 443 | TCP | 62.113.227.26 | longitude: 9.491<br/>latitude: 51.299<br/>country: Germany<br/>countrycode: DE<br/>asn: AS47447 23media GmbH<br/>region: Europe<br/>ip: 62.113.227.26<br/>ippopularity: 0<br/>connectionippopularity: 0 | 28228 | failed | 2020-09-11 19:41:23 | 1599853283240 | CQ4hu824CoXul9KV01 |
 >| connection | Unknown | 10 | Kelly's Laptop | id: 1<br/>did: 1<br/>macaddress: 06:39:01:c2:b0:48<br/>ip: 172.31.17.246<br/>ips: {'ip': '172.31.17.246', 'timems': 1599850800000, 'time': '2020-09-11 19:00:00', 'sid': 1}<br/>sid: 1<br/>hostname: ip-172-31-17-246<br/>time: 1591729370000<br/>devicelabel: Kelly's Laptop<br/>typename: server<br/>typelabel: Server | 443 | in | connection | 443 | TCP | 62.113.227.26 | longitude: 9.491<br/>latitude: 51.299<br/>country: Germany<br/>countrycode: DE<br/>asn: AS47447 23media GmbH<br/>region: Europe<br/>ip: 62.113.227.26<br/>ippopularity: 0<br/>connectionippopularity: 0 | 54518 | failed | 2020-09-11 19:41:03 | 1599853263230 | CWYWpz2KmHrsjNGO01 |
 >| notice |  |  | Kelly's Laptop | id: 1<br/>did: 1<br/>macaddress: 06:39:01:c2:b0:48<br/>ip: 172.31.17.246<br/>ips: {'ip': '172.31.17.246', 'timems': 1599850800000, 'time': '2020-09-11 19:00:00', 'sid': 1}<br/>sid: 1<br/>hostname: ip-172-31-17-246<br/>time: 1591729370000<br/>devicelabel: Kelly's Laptop<br/>typename: server<br/>typelabel: Server | 22 | in | notice |  |  | 13.85.152.27 | longitude: -98.493<br/>latitude: 29.422<br/>city: San Antonio<br/>country: United States<br/>countrycode: US<br/>asn: AS8075 MICROSOFT-CORP-MSN-AS-BLOCK<br/>region: North America<br/>ip: 13.85.152.27<br/>ippopularity: 0 |  |  | 2020-09-11 19:40:48 | 1599853248000 | CMEAtvytG16vv0X01 |
-

@@ -66,7 +66,7 @@ function convertToCSV(objArray, headers) {
     }
 
     // create file content
-    var fileContent = headers.join() + '\r';
+    var fileContent = headers.join();
     for (var i = 0; i < rows.length;  i++) {
         var line = rows[i].join();
         fileContent += '\n' + line ;

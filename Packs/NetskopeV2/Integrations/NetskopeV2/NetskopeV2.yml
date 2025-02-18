@@ -163,7 +163,7 @@ script:
     - contextPath: Netskope.List.pending
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

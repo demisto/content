@@ -2496,7 +2496,7 @@ script:
     - contextPath: Box.Folder.item_status
       description: The status of the parent of the item.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.91447
+  dockerimage: demisto/auth-utils:1.0.0.1968974
   isfetch: true
   runonce: false
   script: '-'

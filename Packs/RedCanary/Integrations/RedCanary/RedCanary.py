@@ -397,7 +397,7 @@ def list_detections(page, per_page, since=None):
     if isinstance(since, datetime):
         since = datetime.strftime(since, TIME_FORMAT)
     res = http_get('/detections',
-                   data=assign_params(
+                   params=assign_params(
                        page=page,
                        per_page=per_page,
                        since=since
@@ -476,7 +476,7 @@ def list_endpoints_command():
 @logger
 def list_endpoints(page, per_page):
     res = http_get('/endpoints',
-                   data={
+                   params={
                        'page': page,
                        'per_page': per_page
                    },

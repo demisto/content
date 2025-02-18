@@ -67,7 +67,7 @@ tags:
 - http
 timeout: '0'
 type: python
-dockerimage: demisto/pcap-http-extractor:1.0.0.113908
+dockerimage: demisto/pcap-http-extractor:1.0.0.2034848
 tests:
 - PcapHTTPExtractor-Test
 subtype: python3

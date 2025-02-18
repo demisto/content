@@ -1,11 +1,8 @@
 Blueliv ThreatCompass systematically looks for information about companies,products, people, brands, logos, assets, technology and other information, depending on your needs. Blueliv ThreatCompass allows you to monitor and track all this information to keep your data, your
 organization and its employees safe
 
-## Configure Blueliv ThreatCompass on Cortex XSOAR
+## Configure Blueliv ThreatCompass in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Blueliv ThreatCompass.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -22,9 +19,8 @@ organization and its employees safe
 | fetch_status | Fetch resource status \(POSITIVE, NEGATIVE...\) | False |
 | first_fetch_time | First fetch time | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### blueliv-resource-all
 ***

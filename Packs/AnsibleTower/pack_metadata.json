@@ -2,7 +2,7 @@
     "name": "Ansible Automation Platform",
     "description": "Scale IT automation, manage complex deployments and speed productivity.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

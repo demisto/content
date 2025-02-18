@@ -833,7 +833,7 @@ script:
         - contextPath: ReversingLabs.customer_usage_yara
           description: Number of active YARA rulesets.
           type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.98754
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.1872154
   runonce: false
   script: "-"
   subtype: python3

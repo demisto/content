@@ -4,24 +4,20 @@ This integration was integrated and tested with version 9.1 of McAfeeNSMv2
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mcafee-nsm-v2).
 
-## Configure McAfee NSM v2 on Cortex XSOAR
+## Configure McAfee NSM v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for McAfee NSM v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | URL (for example: https://192.168.0.1:5000) | True |
-    | User Name | True |
-    | Password | True |
-    | Product Version | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| URL (for example: https://192.168.0.1:5000) | True |
+| User Name | True |
+| Password | True |
+| Product Version | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### nsm-list-domain-firewall-policy
 ***

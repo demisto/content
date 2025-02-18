@@ -2,7 +2,7 @@
     "name": "XM Cyber",
     "description": "The XM Cyber integration creates unique incidents with valuable data collected daily, and enriches your existing incidents with attack simulation context. This enables you to prioritize your responses based on XM Cyber's insights.",
     "support": "partner",
-    "currentVersion": "1.0.30",
+    "currentVersion": "1.0.31",
     "author": "XM Cyber",
     "url": "https://www.xmcyber.com",
     "email": "support@xmcyber.com",

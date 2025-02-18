@@ -2,7 +2,7 @@
     "name": "RSS Feed",
     "description": "RSS Feed reader, imports new articles as Report indicator.  All rss fields (e.g. author, published, tags) are available.",
     "support": "xsoar",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.16",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",

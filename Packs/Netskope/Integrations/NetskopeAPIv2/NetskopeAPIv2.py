@@ -12,6 +12,8 @@ MAX_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 1
 MAX_LIMIT = 50
 MIN_LIMIT = 1
+MAX_FETCH_PER_EVENT_TYPE = 50
+JS_NUMBER_LIMIT = 2 ** 53 - 1
 TIME_FORMAT = "%d-%m-%Y %H:%M"
 
 ALERT_HEADERS = [
@@ -828,7 +830,7 @@ def list_client_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    pagination_data = pagination(args)
+    pagination_data = pagination(args, False)
 
     page = pagination_data.updated_page
     limit = pagination_data.limit
@@ -955,6 +957,8 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
     alert_query = params.get("alerts_query")
     alert_max_fetch = arg_to_number(params["max_fetch"]) or MAX_LIMIT
 
+    num_event_types = len(event_types) if event_types else 1
+    max_fetch_per_event_type = MAX_FETCH_PER_EVENT_TYPE // num_event_types
     if (event_types and (event_max_fetch := arg_to_number(
             params["max_events_fetch"])) is not None):
         max_fetch_per_event_type = event_max_fetch // (len(event_types))
@@ -1248,6 +1252,11 @@ def parse_incident(
     incident["incident_type"] = incident_type
     incident["mirror_direction"] = mirror_direction
     incident["mirror_instance"] = demisto.integrationInstance()
+    for key, value in incident.items():
+        # JavaScript does not work well with large numbers larger than 2^53-1 so need to stringify them.
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
+        if isinstance(value, int) and value > JS_NUMBER_LIMIT:
+            incident[key] = str(value)
     return {
         "name": f"{incident_type} ID: {incident_id}",
         "incident_type": incident_type,
@@ -1758,23 +1767,24 @@ def validate_pagination_arguments(
         raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
-def pagination(args: dict[str, Any]) -> Pagination:
+def pagination(args: dict[str, Any], start_count_from_zero: bool = True) -> Pagination:
     """Return the correct limit and offset for the API
         based on the user arguments page and limit.
 
     Args:
         args (Dict[str, Any]): Command arguments from XSOAR.
-
+        start_count_from_zero (bool, optional): Whether to start the offset count from or 1.
+            Defaults to True.
     Returns:
         Tuple: page, limit, pagination_message.
     """
-    page = arg_to_number(args.get("page", 1))
+    page = arg_to_number(args.get("page")) or 1
     limit = arg_to_number(args.get("limit")) or 50
 
     validate_pagination_arguments(page, limit)
 
     pagination_message = f"Showing page {page}. \n Current page size: {limit}."
-    updated_page = page - 1 if isinstance(page, int) else 1
+    updated_page = (page - 1) * limit + (0 if start_count_from_zero else 1)
     return Pagination(updated_page, limit, pagination_message)
 
 

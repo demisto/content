@@ -559,7 +559,7 @@ script:
     - contextPath: HackerOne.Program.attributes.updated_at
       description: The date and time the object was updated. Formatted according to ISO 8601.
       type: Date
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

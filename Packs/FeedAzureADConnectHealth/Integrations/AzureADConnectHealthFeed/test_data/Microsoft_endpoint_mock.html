@@ -368,7 +368,7 @@
 </tr>
 <tr>
 <td>Allow the following websites if IE Enhanced Security is enabled</td>
-<td>If IE Enhanced Security is enabled, then the following websites must be allowed on the server that is going to have the agent installed.<br/><br/><li>https://login.microsoftonline.com</li><li>https://secure.aadcdn.microsoftonline-p.com</li><li>https://login.windows.net</li><li>https://aadcdn.msftauth.net</li><li>The federation server for your organization trusted by Azure Active Directory. For example: https://sts.contoso.com</li> Read more about <a href="https://support.microsoft.com/help/815141/internet-explorer-enhanced-security-configuration-changes-the-browsing" data-linktype="external">how to configure IE</a>. In case you have a proxy within your network , please see note below.</td>
+<td>If IE Enhanced Security is enabled, then the following websites must be allowed on the server that is going to have the agent installed.<br/><br/><code>https://login.microsoftonline.com</code><li>https://secure.aadcdn.microsoftonline-p.com</li><li>https://login.windows.net</li><li>https://aadcdn.msftauth.net</li><li>The federation server for your organization trusted by Azure Active Directory. For example: https://sts.contoso.com</li> Read more about <a data-linktype="external" href="https://support.microsoft.com/help/815141/internet-explorer-enhanced-security-configuration-changes-the-browsing">how to configure IE</a>. In case you have a proxy within your network , please see note below.</td>
 </tr>
 <tr>
 <td>Ensure PowerShell v4.0 or newer is installed</td>
@@ -396,7 +396,7 @@
 <tbody>
 <tr>
 <td>General Public</td>
-<td><li>*.blob.core.windows.net </li><li>*.aadconnecthealth.azure.com </li><li>*.servicebus.windows.net - Port: 5671 </li><li>*.adhybridhealth.azure.com/</li><li>https://management.azure.com </li><li>https://policykeyservice.dc.ad.msft.net/</li><li>https://login.windows.net</li><li>https://login.microsoftonline.com</li><li>https://secure.aadcdn.microsoftonline-p.com </li><li>https://www.office.com *this endpoint is only used for discovery purposes during registration.</li></td>
+<td><code>*.blob.core.windows.net </code><li>*.aadconnecthealth.azure.com </li><li>*.servicebus.windows.net - Port: 5671 </li><li>*.adhybridhealth.azure.com/</li><li>https://management.azure.com </li><li>https://policykeyservice.dc.ad.msft.net/</li><li>https://login.windows.net</li><code>https://login.microsoftonline.com</code><li>https://secure.aadcdn.microsoftonline-p.com </li><li>https://www.office.com *this endpoint is only used for discovery purposes during registration.</li></td>
 </tr>
 <tr>
 <td>Azure Germany</td>

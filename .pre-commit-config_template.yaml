@@ -27,14 +27,14 @@ repos:
     - --lock
     files: ^pyproject.toml$
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.1.2
+  rev: v2.5.0
   hooks:
   - id: pycln
     min_py_version: '3.7'
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.272
+  rev: v0.8.0
   hooks:
   - id: ruff
     parallel: false
@@ -88,9 +88,8 @@ repos:
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: pylint
     files: Packs\/.*\.py$
@@ -115,9 +114,8 @@ repos:
     - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py 
     - Tests/demistomock/demistomock.py
     description: Run mypy on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: mypy
     files: Packs\/.*\.py$
@@ -131,13 +129,12 @@ repos:
     - --implicit-optional
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
-    skip: true  #  skip until the https://github.com/demisto/demisto-sdk/pull/4468 will merge
+
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: python
     language: docker
@@ -179,9 +176,8 @@ repos:
   - id: pytest-network-in-docker
     name: pytest-network-in-docker
     description: Run pytest with network enabled on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: coverage
     language: docker
@@ -225,11 +221,7 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-folder
-    -  --skip-integration-script-file-name
-    -  --skip-markdown
-    -  --skip-suffix
-
+    
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json

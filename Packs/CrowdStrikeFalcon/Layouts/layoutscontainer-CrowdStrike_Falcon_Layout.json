@@ -279,6 +279,272 @@
 				],
 				"type": "custom"
 			},
+            {
+				"filters": [
+					[
+						{
+							"id": 0,
+							"ignoreCase": false,
+							"left": {
+								"isContext": true,
+								"value": {
+									"simple": "externalcategoryname"
+								}
+							},
+							"operator": "containsGeneral",
+							"right": {
+								"isContext": false,
+								"value": {
+									"simple": "detection"
+								}
+							},
+							"type": "multiSelect"
+						},
+                        [
+                            {
+                                "ignoreCase": false,
+                                "left": {
+                                    "isContext": true,
+                                    "value": {
+                                        "simple": "mitretechniqueid"
+                                    }
+                                },
+                                "operator": "containsString",
+                                "right": {
+                                    "isContext": false,
+                                    "value": {
+                                        "simple": "1059"
+                                    }
+                                },
+                                "type": "multiSelect"
+                            }
+                        ]
+					]
+				],
+				"hidden": false,
+				"id": "tulrxqmftr",
+				"name": "Investigation",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "tulrxqmftr-a419150a-50a8-42a7-b7cf-71ebcd864c12",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "filenames",
+								"height": 26,
+								"id": "1d5b6ff4-8ef8-4628-9ecf-c916c0b5dab4",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "filepaths",
+								"height": 26,
+								"id": "ba0795f3-f7f9-4e01-93eb-ba54a7e330ea",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "processcmd",
+								"height": 26,
+								"id": "0839247f-478c-4dd6-9585-5294a9f2844b",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "processid",
+								"height": 26,
+								"id": "e0b9b22d-6931-4c39-b19b-384111c3249a",
+								"index": 3,
+								"listId": "tulrxqmftr-a419150a-50a8-42a7-b7cf-71ebcd864c12",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "processmd5",
+								"height": 26,
+								"id": "9078cb1d-1ad9-4e4a-9dd1-0dabbbaebed5",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "processsha256",
+								"height": 26,
+								"id": "02f81a84-11d7-4072-987d-2995325daae4",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Process Information ",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 4,
+						"i": "tulrxqmftr-dea11965-05b6-4e56-a8b3-d2b9c8dfe7ce",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Policy Actions",
+						"query": "cspresentpolicyactions",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 2,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"h": 3,
+						"i": "tulrxqmftr-710a03b4-de7e-4839-ad1d-6e29dcc51598",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Grand Parent Process information ",
+						"query": "cspresentgrandparentprocess",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "tulrxqmftr-2bbd59a9-0a82-4bf0-9798-3c7b8e5f8aec",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Parent Process Information",
+						"query": "cspresentparentprocess",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "tulrxqmftr-f1099ad4-7694-4bd1-8f17-8b351ce0be36",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "externallink",
+								"height": 26,
+								"id": "887c2feb-a76f-4460-be93-c6182005a0d0",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "externalcategoryname",
+								"height": 26,
+								"id": "d41f5aa5-c229-4f19-a102-4fdd6df93a53",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "externalconfidence",
+								"height": 26,
+								"id": "d102289c-a10e-4ab5-899c-fd86c44b49c5",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "externalseverity",
+								"height": 26,
+								"id": "7073656e-a7cc-47a3-a929-7bba17d2fac8",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "externalsystemid",
+								"height": 26,
+								"id": "d0b92656-1304-4ff7-8797-ddbe016bfa91",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+                            {
+								"endCol": 2,
+								"fieldId": "hostnames",
+								"height": 26,
+								"id": "96efc4a6-2cff-4716-ba85-ed5071d62c70",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "agentsid",
+								"height": 26,
+								"id": "543df87f-2a97-4b10-91ca-172f1d9c37c6",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "deviceosname",
+								"height": 26,
+								"id": "9065a305-42dd-40e6-a8bf-6bcdc2e54680",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "deviceosversion",
+								"height": 26,
+								"id": "672ca090-3308-485a-9dda-ec5ed74cdafb",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "CrowdStrike General Info",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
+					}
+				],
+				"type": "custom"
+			},
 			{
 				"id": "warRoom",
 				"name": "War Room",
@@ -408,5 +674,8 @@
 	"system": false,
 	"version": -1,
 	"fromVersion": "6.0.0",
-	"description": ""
+	"description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

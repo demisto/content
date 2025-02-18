@@ -1,0 +1,81 @@
+[RULE: msft_azure_resourcelogs_commonfields]
+alter
+	xdm.target.resource.id = resourceId,
+	xdm.event.type = if(
+		category = "ApplicationGatewayFirewallLog", "Application Gateway Firewall Log",
+		category = "ApplicationGatewayAccessLog", "Application Gateway Access Log"),
+	xdm.source.cloud.project_id = coalesce(tenantId, arrayindex(regextract(resourceId, "/SUBSCRIPTIONS/([^\/]+)"), 0)),
+	xdm.event.original_event_type = category,
+	xdm.event.operation_sub_type = operationName,	
+	xdm.event.outcome_reason = if(resultType !~= "\d+", resultType, resultType ~= "\d+" and resultDescription != null, concat(resultDescription, " Error Code: ", resultType), concat("Error Code: ", resultType)),
+	xdm.session_context_id = correlationId,
+	xdm.source.user.username = to_string(identity),
+	xdm.event.log_level = if(level = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, level = "Error", XDM_CONST.LOG_LEVEL_ERROR, level = "Critical", XDM_CONST.LOG_LEVEL_CRITICAL, level = null, null, to_string(level)),
+	xdm.source.cloud.region = location,
+	xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE;
+
+
+[MODEL: dataset=msft_azure_waf_raw]
+call msft_azure_resourcelogs_commonfields
+| alter 
+	get_properties_action = properties -> action,
+	get_properties_httpStatus = to_integer(properties -> httpStatus),
+	get_properties_host = properties -> host,
+	get_properties_hostname = properties -> hostname,
+	get_properties_originalHost = properties -> originalHost,
+	get_properties_httpMethod = properties -> httpMethod,
+	get_properties_requestQuery = properties -> requestQuery,
+	get_properties_requestUri = properties -> requestUri,
+	get_properties_originalRequestUriWithArgs = properties -> originalRequestUriWithArgs,
+	get_properties_clientip = if(to_string(properties) ~= "clientIp", properties -> clientIp, to_string(properties) ~= "clientIP", properties -> clientIP),
+	get_resultSignature_resCode = if(resultSignature ~= "^\d{3}$", to_integer(resultSignature)),
+	get_callerIpAddress_ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(callerIpAddress, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0)),
+	get_callerIpAddress_ipv6 = if(callerIpAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", arrayindex(regextract(callerIpAddress, "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}"), 0))
+| alter
+	get_properties_clientip_ipv4 = if(get_properties_clientip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(get_properties_clientip, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0)),
+	get_properties_clientip_ipv6 = if(get_properties_clientip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_properties_clientip),
+	get_properties_host_ipv4 = if(get_properties_host ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(get_properties_host, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0)),
+	get_properties_host_ipv6 = if(get_properties_host ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_properties_host),
+	get_properties_host_name = if(get_properties_host ~= "[a-zA-Z0-9]", get_properties_host),
+	get_properties_hostname_ipv4 = if(get_properties_hostname ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(get_properties_hostname, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0)),
+	get_properties_hostname_ipv6 = if(get_properties_hostname ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_properties_hostname),
+	get_properties_hostname_name = if(get_properties_hostname ~= "[a-zA-Z0-9]", get_properties_hostname),
+	get_properties_originalHost_ipv4 = if(get_properties_originalHost ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(get_properties_originalHost, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0)),
+	get_properties_originalHost_ipv6 = if(get_properties_originalHost ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_properties_originalHost),
+	get_properties_originalHost_name = if(get_properties_originalHost ~= "[a-zA-Z0-9]", get_properties_originalHost)
+| alter
+	check_response_code = coalesce(get_properties_httpStatus, get_resultSignature_resCode),
+	check_duration = coalesce(to_integer(properties -> timeTaken), to_integer(durationMs)),
+	check_hostname = arraydistinct(arraycreate(get_properties_host_name, get_properties_hostname_name, get_properties_originalHost_name))
+| alter
+	xdm.observer.action = get_properties_action,
+	xdm.event.outcome = if(get_properties_action ~= "lock", XDM_CONST.OUTCOME_FAILED, get_properties_action = "Allowed", XDM_CONST.OUTCOME_SUCCESS, get_properties_action ~= "Matched|Detected", XDM_CONST.OUTCOME_PARTIAL, resultType ~= "Start", XDM_CONST.OUTCOME_UNKNOWN, resultType ~= "[Pp]rogress", XDM_CONST.OUTCOME_UNKNOWN, resultType ~= "Succe", XDM_CONST.OUTCOME_SUCCESS, resultType ~= "Fail", XDM_CONST.OUTCOME_FAILED, resultType ~= "Active", XDM_CONST.OUTCOME_UNKNOWN, resultType ~= "Resolv", XDM_CONST.OUTCOME_SUCCESS, resultType = null, null, to_string(resultType)),
+	xdm.network.http.response_code = if(check_response_code = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, check_response_code = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, check_response_code = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, check_response_code = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, check_response_code = 200, XDM_CONST.HTTP_RSP_CODE_OK, check_response_code = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, check_response_code = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, check_response_code = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, check_response_code = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, check_response_code = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, check_response_code = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, check_response_code = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, check_response_code = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, check_response_code = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, check_response_code = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, check_response_code = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, check_response_code = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, check_response_code = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, check_response_code = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, check_response_code = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, check_response_code = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, check_response_code = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, check_response_code = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, check_response_code = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, check_response_code = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, check_response_code = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, check_response_code = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, check_response_code = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, check_response_code = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, check_response_code = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, check_response_code = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, check_response_code = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, check_response_code = 410, XDM_CONST.HTTP_RSP_CODE_GONE, check_response_code = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, check_response_code = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, check_response_code = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, check_response_code = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, check_response_code = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, check_response_code = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, check_response_code = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, check_response_code = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, check_response_code = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, check_response_code = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, check_response_code = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, check_response_code = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, check_response_code = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, check_response_code = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, check_response_code = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, check_response_code = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, check_response_code = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, check_response_code = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, check_response_code = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, check_response_code = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, check_response_code = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, check_response_code = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, check_response_code = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, check_response_code = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, check_response_code = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, check_response_code = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, check_response_code = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, check_response_code = null, null, to_string(check_response_code)),
+	xdm.event.duration = check_duration,
+	xdm.source.ipv4 = coalesce(get_properties_clientip_ipv4, get_callerIpAddress_ipv4),
+	xdm.source.ipv6	= coalesce(get_properties_clientip_ipv6, get_callerIpAddress_ipv6),
+	xdm.source.host.ipv4_addresses = arraydistinct(arraycreate(get_properties_host_ipv4, get_properties_hostname_ipv4, get_properties_originalHost_ipv4)),
+	xdm.source.host.ipv6_addresses = arraydistinct(arraycreate(get_properties_host_ipv6, get_properties_hostname_ipv6, get_properties_originalHost_ipv6)),
+	xdm.source.host.hostname = arrayindex(check_hostname, 0),
+	xdm.source.cloud.project = Tenant,
+	xdm.intermediate.host.hostname = properties -> instanceId,
+	xdm.target.url = coalesce(get_properties_originalRequestUriWithArgs, get_properties_requestUri),
+	xdm.network.rule = to_string(object_create("ruleSetType", properties -> ruleSetType, "ruleSetVersion", properties -> ruleSetVersion, "ruleId", properties -> ruleId, "ruleGroup", properties -> ruleGroup)),
+	xdm.event.description = to_string(properties -> details{}),
+	xdm.alert.description = properties -> message,
+	xdm.event.id = properties -> transactionId,
+	xdm.observer.type = if(properties -> engine = "Azwaf", "MICROSOFT.NETWORK/APPLICATIONGATEWAYS"),
+	xdm.source.port = to_integer(properties -> clientPort),
+	xdm.network.http.method = if(get_properties_httpMethod = "ACL", XDM_CONST.HTTP_METHOD_ACL, get_properties_httpMethod = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, get_properties_httpMethod = "BIND", XDM_CONST.HTTP_METHOD_BIND, get_properties_httpMethod = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, get_properties_httpMethod = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, get_properties_httpMethod = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, get_properties_httpMethod = "COPY", XDM_CONST.HTTP_METHOD_COPY, get_properties_httpMethod = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, get_properties_httpMethod = "GET", XDM_CONST.HTTP_METHOD_GET, get_properties_httpMethod = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, get_properties_httpMethod = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, get_properties_httpMethod = "LINK", XDM_CONST.HTTP_METHOD_LINK, get_properties_httpMethod = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, get_properties_httpMethod = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, get_properties_httpMethod = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, get_properties_httpMethod = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, get_properties_httpMethod = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, get_properties_httpMethod = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, get_properties_httpMethod = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, get_properties_httpMethod = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, get_properties_httpMethod = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, get_properties_httpMethod = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, get_properties_httpMethod = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, get_properties_httpMethod = "POST", XDM_CONST.HTTP_METHOD_POST, get_properties_httpMethod = "PRI", XDM_CONST.HTTP_METHOD_PRI, get_properties_httpMethod = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, get_properties_httpMethod = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, get_properties_httpMethod = "PUT", XDM_CONST.HTTP_METHOD_PUT, get_properties_httpMethod = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, get_properties_httpMethod = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, get_properties_httpMethod = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, get_properties_httpMethod = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, get_properties_httpMethod = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, get_properties_httpMethod = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, get_properties_httpMethod = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, get_properties_httpMethod = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, get_properties_httpMethod = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, get_properties_httpMethod = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, get_properties_httpMethod = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, get_properties_httpMethod = null, null, to_string(get_properties_httpMethod)),
+	xdm.target.resource.type = if(get_properties_requestQuery = null, null, get_properties_requestQuery ~= "^\s*$", null, "requestQuery"),
+	xdm.target.resource.value = if(get_properties_requestQuery = null, null, get_properties_requestQuery ~= "^\s*$", null, get_properties_requestQuery),
+	xdm.source.user_agent = properties -> userAgent,
+	xdm.network.http.content_type = properties -> contentType,
+	xdm.target.sent_bytes = to_integer(properties -> receivedBytes),
+	xdm.source.sent_bytes = to_integer(properties -> sentBytes),
+	xdm.network.session_id = to_string(properties -> connectionSerialNumber),
+	xdm.observer.name = coalesce(properties -> WAFMode, arrayindex(regextract(resourceId, "/([^\/]+)$"), -1)),
+	xdm.observer.unique_identifier = properties -> WAFPolicyID,
+	xdm.network.tls.cipher = properties -> sslCipher,
+	xdm.network.tls.protocol_version = properties -> sslProtocol,
+	xdm.network.tls.client_certificate.issuer = properties -> sslClientCertificateIssuerName;

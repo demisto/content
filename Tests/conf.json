@@ -22,6 +22,10 @@
     "testInterval": 20,
     "tests": [
         {
+        "integrations": "qualys_fim",
+        "playbookID": "QualysFIM-Playbook"
+        },
+        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
         },
@@ -528,7 +532,8 @@
         {
             "integrations": "Absolute",
             "playbookID": "Absolute_TestPlaybook",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "instance_names": "absolute_instance_1"
         },
         {
             "integrations": "ServiceDeskPlus",
@@ -692,12 +697,14 @@
         {
             "integrations": "AzureFeed",
             "playbookID": "AzureFeed - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "Cofense Feed",
@@ -804,7 +811,8 @@
         },
         {
             "integrations": "JsonWhoIs",
-            "playbookID": "JsonWhoIs-Test"
+            "playbookID": "JsonWhoIs-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Maltiverse",
@@ -1297,41 +1305,47 @@
             "playbookID": "Panorama Query Logs - Test",
             "fromversion": "6.1.0",
             "timeout": 1500,
-            "nightly": true
+            "nightly": true,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "palo_alto_firewall_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 2400
+            "timeout": 2400,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "PAN-OS URL Filtering enrichment - Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
@@ -1350,7 +1364,8 @@
             "integrations": "Panorama",
             "instance_names": "panorama_instance_best_practice",
             "playbookID": "Panorama Best Practise - Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Tenable.io",
@@ -1413,7 +1428,8 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Test_EDL",
@@ -1449,13 +1465,15 @@
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "PAN-OS - Block IP - Static Address Group Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Block IP - Generic V3_Test",
@@ -1465,7 +1483,8 @@
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Endpoint Malware Investigation - Generic - Test",
@@ -1926,6 +1945,7 @@
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
             "instance_names": "ewv2_regular",
+            "timeout": 300,
             "memory_threshold": 100
         },
         {
@@ -2642,7 +2662,7 @@
             "timeout": 500
         },
         {
-            "playbookID": "DemistoUploadFileV2 Test",
+            "playbookID": "UploadFile Test",
             "integrations": "Core REST API"
         },
         {
@@ -2993,7 +3013,8 @@
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
-            "timeout": 1500
+            "timeout": 1500,
+            "memory_threshold": 200
         },
         {
             "playbookID": "PAN-OS EDL Setup v3 Test",
@@ -3002,7 +3023,8 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "timeout": 300
+            "timeout": 300,
+            "memory_threshold": 200
         },
         {
             "integrations": "Snowflake",
@@ -3106,8 +3128,8 @@
         },
         {
             "integrations": "AWS - EC2",
-            "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
+            "instance_names": "aws_alloacte_host",
             "fromversion": "5.0.0",
             "memory_threshold": 90,
             "timeout": 700,
@@ -3183,7 +3205,8 @@
             "fromversion": "5.0.0",
             "memory_threshold": 300,
             "pid_threshold": 200,
-            "timeout": 1500
+            "timeout": 1500,
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "integrations": "Rasterize",
@@ -3263,7 +3286,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "fromversion": "4.5.0",
-            "memory_threshold": 100
+            "memory_threshold": 100,
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "integrations": "Flashpoint",
@@ -3302,7 +3326,8 @@
         {
             "integrations": "Shodan_v2",
             "playbookID": "Test-Shodan_v2",
-            "timeout": 1000
+            "timeout": 1000,
+            "is_mockable": false
         },
         {
             "integrations": "Threat Crowd",
@@ -3330,7 +3355,8 @@
             "fromversion": "5.5.0",
             "timeout": 1500,
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama"
+            "instance_names": "palo_alto_panorama",
+            "memory_threshold": 200
         },
         {
             "integrations": "Elasticsearch v2",
@@ -3526,7 +3552,8 @@
         },
         {
             "integrations": "SaasSecurity",
-            "playbookID": "SaasSecurity-Test"
+            "playbookID": "SaasSecurity-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Recorded Future Feed",
@@ -3926,7 +3953,8 @@
             "integrations": "Rundeck",
             "playbookID": "Rundeck_test",
             "fromversion": "5.5.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "Field polling test",
@@ -4386,7 +4414,8 @@
             "fromversion": "6.9.0",
             "integrations": [
                 "VenafiTLSProtect"
-            ]
+            ],
+            "is_mockable": false
         },
         {
             "playbookID": "3da36d51-3cdf-4120-882a-cee03b038b89",
@@ -4887,10 +4916,11 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 160,
+            "memory_threshold": 250,
             "integrations": [
                 "CrowdStrike Falcon X"
-            ]
+            ],
+            "is_mockable": false
         },
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
@@ -4910,12 +4940,13 @@
         {
             "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
-            "timeout": 15000,
+            "timeout": 1800,
             "integrations": [
                 "Core REST API",
                 "Demisto Lock",
                 "EWS v2"
             ],
+            "scripts": ["SearchIncidentsV2"],
             "instance_names": [
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
@@ -5205,7 +5236,8 @@
         {
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
-            "has_api": true
+            "marketplaces": "xsoar_saas",
+            "timeout": 170
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -5682,7 +5714,8 @@
             "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
-            "fromversion": "6.9.0"
+            "fromversion": "6.9.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Secneurx Analysis",
@@ -5709,6 +5742,11 @@
             "integrations": "CiscoESA",
             "playbookID": "CiscoESA",
             "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "CiscoESA",
+            "playbookID": "CiscoESA_dictionary_commands_tpb",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "CiscoSMA",
@@ -5775,7 +5813,8 @@
         },
         {
             "integrations": "AWS - Route53",
-            "playbookID": "playbook-create_delete_record_Test"
+            "playbookID": "playbook-create_delete_record_Test",
+            "is_mockable": false
         },
         {
             "integrations": "Cylance Protect v2",
@@ -5825,9 +5864,15 @@
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
         {
-            "integrations": "AWS-SNS-Listener",
+            "integrations": [
+                "AWS-SNS-Listener",
+                "AWS - SNS"
+            ],
             "playbookID": "AWS SNS Listener - Test",
-            "instance_names": "AWS-SNS-Listener",
+            "instance_names": [
+                "AWS-SNS-Listener",
+                "AWSSNS"
+            ],
             "is_mockable": false
         },
         {
@@ -5871,9 +5916,15 @@
         {
             "integrations": "DSPM",
             "playbookID": "DSPM Test"
+        },
+        {
+            "integrations": "Symantec Email Security Cloud",
+            "playbookID": "SymantecEmailSecurity_TestPlaybook"
         }
     ],
     "skipped_tests": {
+        "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
+        "Okta IAM - Test Playbook": "Credentials issue CRTX-116483",
         "ThreatCrowd - Test": "The pack is deprecated",
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
         "test-threatConnectv3": "No instance - Instance issues",
@@ -5977,7 +6028,7 @@
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "Zscaler Test": "Issue 40157, API subscription currently Expired",
         "Cisco Firepower - Test": "Issue 32412",
-        "cisco-ise-test-playbook": "Issue 44351",
+        "cisco-ise-test-playbook": "CRTX-146167",
         "GuardiCoreV2-Test": "Issue 43822",
         "ExtractAttackPattern-Test": "Issue 44095",
         "playbook-EWS_O365_Extension_test": "Issue 25605, Issue 39008",
@@ -6014,7 +6065,6 @@
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
-        "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode - Test": "No credentials",
         "Google-KMS-test": "No instance",
         "hashicorp_test": "No instance",
@@ -6052,7 +6102,6 @@
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
         "VMWare Test": "CIAC-10276",
-        "AWS - EC2 Test Playbook": "CIAC-10426",
         "AWS SNS Listener - Test": "CIAC-10426",
         "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
         "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant",
@@ -6062,11 +6111,15 @@
         "test-ProofpointThreatProtectionIntegration-Playbook": "No instance",
         "Generic Webhook - Test": "CIAC-11234",
         "Netskope_V2_Test": "No instance - developed by Qmasters",
-        "IAMInitOktaUser - Test": "CIAC-12093"
+        "IAMInitOktaUser - Test": "CIAC-12093",
+        "TAXII2 Server Performance Test": "CIAC-9768",
+        "BoxV2_TestPlaybook": "CRTX-145174"
     },
     "skipped_integrations": {
+        "qualys_fim": "No Instance",
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
+        "RedCanary": "No instance",
         "CiscoWSAv2": "No instance - No license",
         "DatadogCloudSIEM": "No instance - No license",
         "Lastline v2": "No instance - No license",
@@ -6161,6 +6214,7 @@
         "Workday": "No instance - License expired Issue: 29595 - CIAC-1508",
         "FireEyeFeed": "No instance - License expired Issue: 31838",
         "Akamai WAF": "No instance - Issue 32318 - CIAC-1407",
+        "Akamai WAF SIEM": "No instance",
         "FreshworksFreshservice": "No instance - Issue 32318",
         "FraudWatch": "No instance - Issue 34299 - CIAC-1323",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
@@ -6198,7 +6252,8 @@
         "JoeSecurityV2": "CIAC-9872",
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
-        "DSPM": "No instance"
+        "DSPM": "No instance",
+        "Symantec Email Security Cloud": "No instance"
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",

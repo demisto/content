@@ -1,4 +1,4 @@
-category: Cloud Services
+category: Email
 sectionOrder:
 - Connect
 - Collect
@@ -930,7 +930,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.111961
+  dockerimage: demisto/crypto:1.0.0.114611
   isfetch: true
   script: ''
   type: python

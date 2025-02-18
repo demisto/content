@@ -712,6 +712,22 @@ script:
     - description: 'The reception time of the email in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z.'
       name: time
       required: true
+    - name: limit_quarantine_occurred_time
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether or not to limit the results to include only quarantines that occurred within a limited time after alert creation.
+      defaultValue: "True"
+    - name: quarantine_limit
+      description: Only used if 'limit_quarantine_occurred_time' argument is set to true. Sets
+        a limit on the quarantines retrieved to include only those where the time
+        difference between alert time and quarantined time is less than the number
+        of seconds specified. The time is in seconds.
+      defaultValue: "120"
+    - name: fetch_delta
+      defaultValue: '6'
+      description: The time frame (in hours) used to identify the size of batches when retrieving the messages. e.g., 12.
     outputs:
     - contextPath: ProofPointTRAP.Quarantine
       description: Results of the email quarantine operation.
@@ -723,7 +739,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.11.11.1940698
 tests:
 - No test - beta_integration
 beta: true

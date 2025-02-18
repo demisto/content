@@ -8,27 +8,23 @@ The list of included collections:
 Compromised Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware.
 This integration was integrated and tested with version 1.0 of Group-IB Threat Intelligence
 
-## Configure Group-IB Threat Intelligence on Cortex XSOAR
+## Configure Group-IB Threat Intelligence in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Group-IB Threat Intelligence.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                  | **Description** | **Required** |
-    |--------------------------------| --- | --- |
-    | GIB TI  URL                    | The FQDN/IP the integration should connect to. | True |
-    | Username                       | The API Key and Username required to authenticate to the service. | True |
-    | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
-    | Use system proxy settings      | Whether to use XSOAR system proxy settings to connect to the API. | False |
-    | Colletions to fetch            | Type\(s\) of incidents to fetch from the third party API. | False |
-    | Incidents first fetch          | Date to start fetching incidents from. | False |
-    | Number of requests per collection | A number of requests per collection that integration sends in one faetch iteration \(each request picks up to 200 incidents\). If you face some runtime errors, lower the value. | False |
+| **Parameter**                  | **Description** | **Required** |
+|--------------------------------| --- | --- |
+| GIB TI  URL                    | The FQDN/IP the integration should connect to. | True |
+| Username                       | The API Key and Username required to authenticate to the service. | True |
+| Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
+| Use system proxy settings      | Whether to use XSOAR system proxy settings to connect to the API. | False |
+| Colletions to fetch            | Type\(s\) of incidents to fetch from the third party API. | False |
+| Incidents first fetch          | Date to start fetching incidents from. | False |
+| Number of requests per collection | A number of requests per collection that integration sends in one faetch iteration \(each request picks up to 200 incidents\). If you face some runtime errors, lower the value. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gibtia-get-compromised-account-info
