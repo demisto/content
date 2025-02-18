@@ -45,7 +45,7 @@ getStandardAuthMethodHeaders = function(key, auth_id, content_type) {
                 'Content-Type': [content_type],
                 'Accept': ['application/json'],
                 'Connection': ['Keep-Alive'],
-                'Keep-Alive': ['timeout=60']
+                'Keep-Alive': ['timeout=5']
             }
 }
 
@@ -114,7 +114,7 @@ sendMultipart = function (uri, entryID, body) {
     var res;
     var tries = 0;
     do {
-        logDebug('Calling httpMultipart, try number ' + tries + ' with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', Headers = ' + headers + ', body = ' + body + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file.');
+        logDebug('Calling httpMultipart, try number ' + tries + ' with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', Headers = ' + JSON.stringify(headers) + ', body = ' + JSON.stringify(body) + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file.');
         res = httpMultipart(
             requestUrl,
             entryID,
@@ -170,7 +170,7 @@ var sendRequest = function(method, uri, body, raw) {
         }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
-    logDebug('Calling http() with requestUrl = ' + requestUrl + ', method = ' + method + ', body = ' + body + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy);
+    logDebug('Calling http() with requestUrl = ' + requestUrl + ', method = ' + method + ' Headers = ' + JSON.stringify(headers) + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy);
     var res = http(
         requestUrl,
         {
@@ -271,7 +271,7 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
         var headers = {'Connection': ['Keep-Alive'],'Keep-Alive': ['timeout=60']};
         var save_to_file = true;
         // download pack zip file
-        logDebug('Calling http() with pack_url = ' + pack_url + ', Method = ' + method + ', SaveToFile = ' + save_to_file);
+        logDebug('Calling http() with pack_url = ' + pack_url + ', Method = ' + method + 'Headers = ' + JSON.stringify(headers) + ', SaveToFile = ' + save_to_file);
         var res = http(
         pack_url,
         {
@@ -358,8 +358,8 @@ Returns:
 """
  */
 var uploadFile= function(incident_id, entry_id) {
-    logDebug('Calling httpMultipart with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id);
     var headers = {'Connection': ['Keep-Alive'],'Keep-Alive': ['timeout=60']};
+    logDebug('Calling httpMultipart with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id + 'Headers = ' + headers);
     var res = httpMultipart(`/entry/upload/${incident_id}`, entry_id, {Headers: headers});
     logDebug('After Calling to httpMultipart with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id + '. The satus code: ' + res.StatusCode);
     if (isError(res[0])) {
