@@ -178,7 +178,7 @@ script:
       name: endpoint_id
       required: true
       prettyname: Run action on
-      prettyPredefined:
+      prettypredefined:
         Issue initiator host: ${alert.placeholder_1}
         Issue remote host: ${alert.placeholder_2}
     - auto: PREDEFINED
@@ -969,7 +969,7 @@ script:
       name: endpoint_id_list
       prettyname: Run action on
       defaultValue: 'Initiator host endpoint ID'
-      prettyPredefined:
+      prettypredefined:
         Initiator host endpoint ID: ${alert.placeholder_1}
         Remote host endpoint ID: ${alert.placeholder_2}
       required: true
@@ -977,14 +977,14 @@ script:
       name: file_path
       prettyname: File Path
       defaultValue: 'File path from issue'
-      prettyPredefined:
+      prettypredefined:
         File path from issue: ${alert.placeholder_1}
       required: true
     - description: String that represents the file’s hash. Must be a valid SHA256 hash.
       name: file_hash
       defaultValue: 'File SHA256 from issue'
       prettyname: File Hash (SHA256)
-      prettyPredefined:
+      prettypredefined:
         File SHA256 from issue: ${alert.placeholder_1}
       required: true
     - description: For polling use.
@@ -1047,7 +1047,7 @@ script:
       name: file_hash
       defaultValue: 'File SHA256 from issue'
       prettyname: File Hash (SHA256)
-      prettyPredefined:
+      prettypredefined:
         File SHA256 from issue: ${alert.placeholder_1}
       required: true
     - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
@@ -1100,7 +1100,7 @@ script:
       isArray: true
       name: endpoint_id_list
       prettyname: Run action on list of endpoint IDs.
-      prettyPredefined:
+      prettypredefined:
         Issue initiator host: ${alert.placeholder_1}
         I ssue remote host: ${alert.placeholder_2}
     - description: Name of the distribution list.
@@ -1453,7 +1453,7 @@ script:
       required: true
       defaultValue: 'Issue initiator host'
       prettyname: Run action on
-      prettyPredefined:
+      prettypredefined:
         Issue initiator host: ${alert.placeholder_1}
         Remote host: ${alert.placeholder_2}
     - description: A comma-separated list of file paths on the Windows platform.
@@ -1470,7 +1470,7 @@ script:
       name: generic_file_path
       defaultValue: 'Issue initiator file'
       prettyname: File to retrieve
-      prettyPredefined:
+      prettypredefined:
         Issue initiator file: ${alert.placeholder_1}
         Issue CGO file path: ${alert.placeholder_2}
     - description: For polling use.
@@ -3310,14 +3310,14 @@ script:
       required: true
       prettyname: Run action on
       defaultValue: 'Initiator host endpoint ID'
-      prettyPredefined:
+      prettypredefined:
         Initiator host endpoint ID: ${alert.placeholder_1}
         Remote host endpoint ID: ${alert.placeholder_2}
     - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
       prettyname: Script
-      prettyPredefined:
+      prettypredefined:
         placeholder_1: ${alert.placeholder_1}
         placeholder_2: ${alert.placeholder_2}
     - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
@@ -3458,7 +3458,7 @@ script:
     - description: The agent ID.
       name: agent_id
       prettyname: Run action on
-      prettyPredefined:
+      prettypredefined:
         Endpoint id from host: ${alert.placeholder_1}
       isArray: false
       required: true
