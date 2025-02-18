@@ -607,7 +607,7 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
 
     def raise_connection_error(url):
         raise requests.exceptions.ConnectionError('connection error')
-    mocker.patch.object(rasterize,'count_running_chromes', return_value=1)
+    mocker.patch.object(rasterize, 'count_running_chromes', return_value=1)
     mocker.patch('pychrome.Browser', side_effect=raise_connection_error)
     mocker.patch('time.sleep')
     debug = mocker.patch.object(demisto, 'debug')
