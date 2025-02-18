@@ -1,4 +1,4 @@
-# Using Duo Push integration for XSOAR
+# Using Duo Auth integration for XSOAR
 
 ## First Steps
 Before starting:
