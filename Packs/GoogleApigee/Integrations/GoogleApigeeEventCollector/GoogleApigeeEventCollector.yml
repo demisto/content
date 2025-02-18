@@ -1,0 +1,86 @@
+commonfields:
+  id: Google Apigee Event Collector
+  version: -1
+sectionOrder:
+- Connect
+- Collect
+name: Google Apigee Event Collector
+display: Google Apigee
+category: Analytics & SIEM
+description: Apigee is Google Cloud's native API management platform that can be used to build, manage, and secure APIs — for any use case, environment, or scale. Apigee offers high performance API proxies to create a consistent, reliable interface for your backend services. The proxy layer gives you granular control over security, rate limiting, quotas, analytics, and more for all of your services. Apigee supports REST, gRPC, SOAP, and GraphQL, providing the flexibility to implement any API architectural style.
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Client ID
+  displaypassword: Password
+  name: client
+  required: true
+  type: 9
+  section: Connect
+- display: Organization Name
+  name:  org_name
+  required: true
+  type: 0
+  section: Connect
+- display: Zone
+  name:  zone
+  required: false
+  type: 0
+  section: Connect
+- display: The maximum number of Audit Logs per fetch
+  name:  max_fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+  defaultvalue: 5000
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - default: false
+      description: The number of events to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Date from which to get events.
+      name: from_date
+      required: false
+    deprecated: false
+    description: Gets logs from google apigee.
+    execution: false
+    name: google-apigee-get-events
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)
