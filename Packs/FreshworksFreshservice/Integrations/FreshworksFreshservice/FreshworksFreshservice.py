@@ -3473,7 +3473,7 @@ def get_next_link(response):
         demisto.debug(f"Found next link: {next_link}")
         return next_link
 
-    demisto.debug("No 'next' link found in the link header.")
+    demisto.debug(f"No 'next' link found in the link header, link: {link_header=}")
     return ""
 
 
@@ -3527,7 +3527,8 @@ def fetch_incidents(client: Client, params: dict):
         freshservice_request = get_command_request(client, ticket_type)
         request_args = {
             'updated_since': convert_datetime_to_iso(last_run_datetime_str),
-            'order_type': 'asc'
+            'order_type': 'asc',
+            'per_page': 100
         }
         demisto.debug(f"Request arguments: {request_args}")
         tickets = []
@@ -3538,11 +3539,12 @@ def fetch_incidents(client: Client, params: dict):
             json_response = response.json()
             new_tickets = json_response.get(f'{ticket_type}s', [])
             tickets.extend(new_tickets)
-            demisto.debug(f"Fetched additional {len(new_tickets)} tickets, total: {len(tickets)}")
+            demisto.debug(f"Fetched additional {len(new_tickets)} tickets")
 
             if not (next_link := get_next_link(response)):
                 break
 
+        demisto.debug(f"Total fetched: {len(tickets)}")
         alert_list = convert_response_properties(
             tickets,
             TICKET_PROPERTIES_BY_TYPE[ticket_type],
