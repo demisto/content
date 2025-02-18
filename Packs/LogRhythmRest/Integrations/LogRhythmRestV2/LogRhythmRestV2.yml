@@ -1,8 +1,8 @@
 commonfields:
-  id: LogRhythmRest V2
+  id: LogRhythmRest V2-fe2b6c3
   version: -1
-name: LogRhythmRest V2
-display: LogRhythmRest v2
+name: LogRhythmRest V2-fe2b6c3
+display: LogRhythmRest v2-fe2b6c3
 fromversion: 5.5.0
 category: Analytics & SIEM
 description: LogRhythm security intelligence.

@@ -1115,12 +1115,12 @@ class Client(BaseClient):
             try:
                 response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers,
                                             empty_valid_codes=[200,201,202,203,204])
-                demisto.debug(f"empty valid response type {type(response)}")
+                demisto.debug(f"empty valid response type {type(response)}, {response=}")
             except Exception as e:
                 demisto.debug(f"The exception is {e=}")
                 response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers,
                                               resp_type='response')
-                demisto.debug(f"resp_type=response {type(response)}")
+                demisto.debug(f"resp_type=response {type(response)}, {response=}")
         drilldown_results = response.get('Data', {}).get('DrillDownResults')
         demisto.debug(f"{drilldown_results=}")
         return drilldown_results, response
@@ -1129,9 +1129,7 @@ class Client(BaseClient):
         headers = self._headers | {'content-type': 'application/json'}
         response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers,
                                       resp_type='response')
-        demisto.debug(f"raw_response {type(response)}, {response=}")
         drilldown_results = response.get('Data', {}).get('DrillDownResults')
-        demisto.debug(f"{drilldown_results=}")
         return drilldown_results, response
 
     def cases_list_request(self, case_id=None, timestamp_filter_type=None, timestamp=None, priority=None, status=None,
@@ -1716,19 +1714,10 @@ def alarm_drilldown_raw_response_command(client: Client, args: Dict[str, Any]) -
     if not alarm_id:
         raise DemistoException('Invalid alarm_id')
     drilldown_results, raw_response = client.alarm_drilldown_raw_response_request(alarm_id)
-    drilldown_results['AlarmID'] = int(alarm_id)
-    ec = drilldown_results.copy()
-
-    hr = tableToMarkdown(f'Alarm {alarm_id} Drilldown', drilldown_results, headerTransform=pascalToSpace)
-
-    drilldown_results['AlarmID'] = int(alarm_id)
-
+    demisto.debug(f"raw_response {type(raw_response)}, {raw_response=}")
+    demisto.debug(f"drilldown_results {type(drilldown_results), {drilldown_results}}")
     command_results = CommandResults(
-        readable_output=hr,
-        outputs_prefix='LogRhythm.AlarmDrilldown',
-        outputs_key_field='AlarmID',
-        outputs=ec,
-        raw_response=raw_response,
+        readable_output="successfully added debug logs",
     )
 
     return command_results
