@@ -473,7 +473,6 @@ class Client(BaseClient):
 
         url_suffix = get_url_suffix(ticket_id)
         url_suffix = '/filter' if updated_query else url_suffix
-
         return self._http_request('GET',
                                   f'api/v2/tickets{url_suffix}',
                                   params=params,
@@ -1858,7 +1857,6 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
-        resp_type=''
     ) -> dict[str, Any]:
         """ Lists all the Assets in a Freshservice account.
 
@@ -1888,8 +1886,6 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-        full_url: str = '',
-        resp_type: str = "json"
     ) -> dict[str, Any]:
         """ Lists all the purchase orders in a Freshservice account.
 
@@ -1901,9 +1897,6 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        if full_url:
-            return self._http_request('GET', full_url=full_url, resp_type=resp_type)
-
         params = remove_empty_elements({'page': page, 'per_page': page_size})
 
         return self._http_request(
