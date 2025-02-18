@@ -1,225 +1,222 @@
 {
- "id": "csvDailyIncidentReport",
- "name": "Daily incidents",
- "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
- "tags": [
-
- ],
- "createdBy": "DBot",
- "type": "csv",
- "orientation": "",
- "recipients": [
-
- ],
- "system": true,
- "decoder": {
-  "incident.status.0": {
-   "type": "string",
-   "value": "Pending"
-  },
-  "incident.status.1": {
-   "type": "string",
-   "value": "Active"
-  },
-  "incident.status.2": {
-   "type": "string",
-   "value": "Closed"
-  },
-  "incident.status.3": {
-   "type": "string",
-   "value": "Closed"
-  },
-  "incident.status.4": {
-   "type": "string",
-   "value": "On Hold"
-  },
-  "incident.severity.0": {
-   "type": "string",
-   "value": "Unknown"
-  },
-  "incident.severity.0.5": {
-   "type": "string",
-   "value": "Informational"
-  },
-  "incident.severity.1": {
-   "type": "string",
-   "value": "Low"
-  },
-  "incident.severity.2": {
-   "type": "string",
-   "value": "Medium"
-  },
-  "incident.severity.3": {
-   "type": "string",
-   "value": "High"
-  },
-  "incident.severity.4": {
-   "type": "string",
-   "value": "Critical"
-  },
-  "incident.created": {
-   "type": "date",
-   "value": "Mon, 02 Jan 2006 15:04:05 MST"
-  },
-  "incident.occurred": {
-   "type": "date",
-   "value": "Mon, 02 Jan 2006 15:04:05 MST"
-  },
-  "incident.closed": {
-   "type": "date",
-   "value": "Mon, 02 Jan 2006 15:04:05 MST"
-  },
-  "incident.activated": {
-   "type": "date",
-   "value": "Mon, 02 Jan 2006 15:04:05 MST"
-  },
-  "incident.dueDate": {
-   "type": "date",
-   "value": "Mon, 02 Jan 2006 15:04:05 MST"
-  },
-  "incident.reminder": {
-   "type": "date",
-   "value": "Mon, 02 Jan 2006 15:04:05 MST"
-  },
-  "investigation.status.0": {
-   "type": "string",
-   "value": "Active"
-  },
-  "investigation.status.1": {
-   "type": "string",
-   "value": "Done"
-  },
-  "investigation.type.0": {
-   "type": "string",
-   "value": "Standard"
-  },
-  "investigation.type.1": {
-   "type": "string",
-   "value": "Restricted"
-  },
-  "investigation.type.9": {
-   "type": "string",
-   "value": "Playground"
-  },
-  "investigation.created": {
-   "type": "date",
-   "value": "Mon, 02 Jan 2006 15:04:05 MST"
-  },
-  "investigation.closed": {
-   "type": "date",
-   "value": "Mon, 02 Jan 2006 15:04:05 MST"
-  }
- },
- "sections": [
-  {
-   "type": "header",
-   "data": "Daily Incidents",
-   "layout": {
-    "rowPos": 1,
-    "columnPos": 1,
-    "style": {
-     "textAlign": "left",
-     "fontSize": 28
-    }
-   }
-  },
-  {
-   "type": "date",
-   "layout": {
-    "rowPos": 2,
-    "columnPos": 1,
-    "style": {
-     "textAlign": "left",
-     "color": "gray",
-     "fontSize": 13,
-     "fontStyle": "italic",
-     "marginBottom:": 12
+    "id": "csvDailyIncidentReport",
+    "name": "Daily incidents",
+    "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
+    "tags": [],
+    "createdBy": "DBot",
+    "type": "csv",
+    "orientation": "",
+    "recipients": [],
+    "system": true,
+    "decoder": {
+        "incident.status.0": {
+            "type": "string",
+            "value": "Pending"
+        },
+        "incident.status.1": {
+            "type": "string",
+            "value": "Active"
+        },
+        "incident.status.2": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.status.3": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.status.4": {
+            "type": "string",
+            "value": "On Hold"
+        },
+        "incident.severity.0": {
+            "type": "string",
+            "value": "Unknown"
+        },
+        "incident.severity.0.5": {
+            "type": "string",
+            "value": "Informational"
+        },
+        "incident.severity.1": {
+            "type": "string",
+            "value": "Low"
+        },
+        "incident.severity.2": {
+            "type": "string",
+            "value": "Medium"
+        },
+        "incident.severity.3": {
+            "type": "string",
+            "value": "High"
+        },
+        "incident.severity.4": {
+            "type": "string",
+            "value": "Critical"
+        },
+        "incident.created": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.occurred": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.closed": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.activated": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.dueDate": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.reminder": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "investigation.status.0": {
+            "type": "string",
+            "value": "Active"
+        },
+        "investigation.status.1": {
+            "type": "string",
+            "value": "Done"
+        },
+        "investigation.type.0": {
+            "type": "string",
+            "value": "Standard"
+        },
+        "investigation.type.1": {
+            "type": "string",
+            "value": "Restricted"
+        },
+        "investigation.type.9": {
+            "type": "string",
+            "value": "Playground"
+        },
+        "investigation.created": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "investigation.closed": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        }
     },
-    "format": "MMMM Do YYYY, h:mm:ss a z",
-    "useCurrentTime": true
-   }
-  },
-  {
-   "type": "placeholder",
-   "query": {
-    "type": "incident",
-    "filter": {
-     "totalOnly": true
-    }
-   },
-   "data": "Total incidents: {0}",
-   "layout": {
-    "rowPos": 3,
-    "columnPos": 1,
-    "sectionStyle": {
-     "width": 200
-    },
-    "style": {
-     "textAlign": "left",
-     "fontSize": 18
-    }
-   }
-  },
-  {
-   "type": "placeholder",
-   "query": {
-    "type": "incident",
-    "filter": {
-     "notStatus": [
-      2,
-      3
-     ],
-     "andOp": true,
-     "totalOnly": true,
-     "period": {
-      "by": "hour",
-      "fromValue": 24,
-      "toValue": 0,
-      "field": "created"
-     }
-    }
-   },
-   "data": "Last day incidents: {0}",
-   "layout": {
-    "rowPos": 3,
-    "columnPos": 2,
-    "style": {
-     "textAlign": "left",
-     "fontSize": 18
-    }
-   }
-  },
-  {
-   "type": "table",
-   "query": {
-    "type": "incident",
-    "filter": {
-     "notStatus": [
-      2,
-      3
-     ],
-     "andOp": true
-    }
-   },
-   "layout": {
-    "rowPos": 4,
-    "columnPos": 1,
-    "tableColumns": [
-     "id",
-     "name",
-     "occurred",
-     "created",
-     "type",
-     "owner",
-     "severity",
-     "status",
-     "phase",
-     "dueDate",
-     "details"
+    "sections": [
+        {
+            "type": "header",
+            "data": "Daily Incidents",
+            "layout": {
+                "rowPos": 1,
+                "columnPos": 1,
+                "style": {
+                    "textAlign": "left",
+                    "fontSize": 28
+                }
+            }
+        },
+        {
+            "type": "date",
+            "layout": {
+                "rowPos": 2,
+                "columnPos": 1,
+                "style": {
+                    "textAlign": "left",
+                    "color": "gray",
+                    "fontSize": 13,
+                    "fontStyle": "italic",
+                    "marginBottom:": 12
+                },
+                "format": "MMMM Do YYYY, h:mm:ss a z",
+                "useCurrentTime": true
+            }
+        },
+        {
+            "type": "placeholder",
+            "query": {
+                "type": "incident",
+                "filter": {
+                    "totalOnly": true
+                }
+            },
+            "data": "Total incidents: {0}",
+            "layout": {
+                "rowPos": 3,
+                "columnPos": 1,
+                "sectionStyle": {
+                    "width": 200
+                },
+                "style": {
+                    "textAlign": "left",
+                    "fontSize": 18
+                }
+            }
+        },
+        {
+            "type": "placeholder",
+            "query": {
+                "type": "incident",
+                "filter": {
+                    "notStatus": [
+                        2,
+                        3
+                    ],
+                    "andOp": true,
+                    "totalOnly": true,
+                    "period": {
+                        "by": "hour",
+                        "fromValue": 24,
+                        "toValue": 0,
+                        "field": "created"
+                    }
+                }
+            },
+            "data": "Last day incidents: {0}",
+            "layout": {
+                "rowPos": 3,
+                "columnPos": 2,
+                "style": {
+                    "textAlign": "left",
+                    "fontSize": 18
+                }
+            }
+        },
+        {
+            "type": "table",
+            "query": {
+                "type": "incident",
+                "filter": {
+                    "notStatus": [
+                        2,
+                        3
+                    ],
+                    "andOp": true
+                }
+            },
+            "layout": {
+                "rowPos": 4,
+                "columnPos": 1,
+                "tableColumns": [
+                    "id",
+                    "name",
+                    "occurred",
+                    "created",
+                    "type",
+                    "owner",
+                    "severity",
+                    "status",
+                    "phase",
+                    "dueDate",
+                    "details"
+                ],
+                "classes": "striped stackable small very compact"
+            }
+        }
     ],
-    "classes": "striped stackable small very compact"
-   }
-  }
- ],
- "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "toVersion": "8.9.0"
 }
