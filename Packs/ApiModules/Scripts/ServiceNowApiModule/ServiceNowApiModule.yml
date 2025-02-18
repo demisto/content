@@ -12,5 +12,7 @@ comment: Common ServiceNow code that will be appended to each ServiceNow integra
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/crypto:1.0.0.2005673
 fromversion: 5.0.0
+tests:
+- No test
