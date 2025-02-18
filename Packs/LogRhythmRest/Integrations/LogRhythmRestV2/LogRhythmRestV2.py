@@ -1108,9 +1108,30 @@ class Client(BaseClient):
 
     def alarm_drilldown_request(self, alarm_id):  # pragma: no cover
         headers = self._headers | {'content-type': 'application/json'}
-        response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers)
-
+        try:
+            response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers)
+        except Exception as e:
+            demisto.debug(f"The exception is {e=}")
+            try:
+                response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers,
+                                            empty_valid_codes=[200,201,202,203,204])
+                demisto.debug(f"empty valid response type {type(response)}")
+            except Exception as e:
+                demisto.debug(f"The exception is {e=}")
+                response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers,
+                                              resp_type='response')
+                demisto.debug(f"resp_type=response {type(response)}")
         drilldown_results = response.get('Data', {}).get('DrillDownResults')
+        demisto.debug(f"{drilldown_results=}")
+        return drilldown_results, response
+    
+    def alarm_drilldown_raw_response_request(self, alarm_id):  # pragma: no cover
+        headers = self._headers | {'content-type': 'application/json'}
+        response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers,
+                                      resp_type='response')
+        demisto.debug(f"raw_response {type(response)}, {response=}")
+        drilldown_results = response.get('Data', {}).get('DrillDownResults')
+        demisto.debug(f"{drilldown_results=}")
         return drilldown_results, response
 
     def cases_list_request(self, case_id=None, timestamp_filter_type=None, timestamp=None, priority=None, status=None,
@@ -1671,8 +1692,30 @@ def alarm_drilldown_command(client: Client, args: Dict[str, Any]) -> CommandResu
     alarm_id = args.get('alarm_id')
     if not alarm_id:
         raise DemistoException('Invalid alarm_id')
-
     drilldown_results, raw_response = client.alarm_drilldown_request(alarm_id)
+    drilldown_results['AlarmID'] = int(alarm_id)
+    ec = drilldown_results.copy()
+
+    hr = tableToMarkdown(f'Alarm {alarm_id} Drilldown', drilldown_results, headerTransform=pascalToSpace)
+
+    drilldown_results['AlarmID'] = int(alarm_id)
+
+    command_results = CommandResults(
+        readable_output=hr,
+        outputs_prefix='LogRhythm.AlarmDrilldown',
+        outputs_key_field='AlarmID',
+        outputs=ec,
+        raw_response=raw_response,
+    )
+
+    return command_results
+
+
+def alarm_drilldown_raw_response_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
+    alarm_id = args.get('alarm_id')
+    if not alarm_id:
+        raise DemistoException('Invalid alarm_id')
+    drilldown_results, raw_response = client.alarm_drilldown_raw_response_request(alarm_id)
     drilldown_results['AlarmID'] = int(alarm_id)
     ec = drilldown_results.copy()
 
@@ -2576,6 +2619,7 @@ def main() -> None:  # pragma: no cover
             'lr-alarm-summary': alarm_summary_command,
             'lr-get-alarm-details': get_alarm_details_command,
             'lr-alarm-drilldown': alarm_drilldown_command,
+            'lr-alarm-drilldown-raw-response': alarm_drilldown_raw_response_command,
             'lr-cases-list': cases_list_command,
             'lr-case-create': case_create_command,
             'lr-case-update': case_update_command,

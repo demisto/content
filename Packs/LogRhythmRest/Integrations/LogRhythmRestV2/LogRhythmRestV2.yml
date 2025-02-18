@@ -915,6 +915,88 @@ script:
     - type: String
       contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DefaultValue
       description: 'The value populated from the ARM when an alarm is added to the cache.'
+  - name: lr-alarm-drilldown-raw-response
+    description: 'Gets the drill-down logs per rule block for a specific alarm Id that fired associated with an AIE alarm.'
+    arguments:
+    - name: alarm_id
+      description: 'Numeric ID of the alarm to get.'
+      required: true
+    outputs:
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.AlarmID
+      description: 'The alarm ID.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.AIERuleID
+      description: 'The alarm AIE rule ID.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.Status.value
+      description: 'The value of the drilldown request.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.Status.name
+      description: 'The name of the drilldown request.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.Status.description
+      description: 'The description of the drilldown request.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RetryCount
+      description: 'The number of times the Data Indexer is queried for the drill-down results.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.LastDxTimestamp
+      description: 'The timestamp, in UTC, at which the Data Indexer was queried to obtain the drill-down results.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.DateInserted
+      description: 'The timestamp, in UTC, when the Alarm was added to the cache.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.AlarmGuid
+      description: 'The unique identification of the Alarm GUID.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.WebConsoleId
+      description: 'The unique identification of the Web Console ID.'
+    - type: Boolean
+      contextPath: LogRhythm.AlarmDrilldown.NotificationSent
+      description: 'The unique identification of the Alarm GUID.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.AIEMsgXml
+      description: 'The message XML associated with the event that triggered by the AI Engine.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.EventID
+      description: 'The event ID associated with the AI Engine alarm.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.NormalMessageDate
+      description: 'The date, in UTC, that specifies the time of occurrence of the log.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockID
+      description: 'The Rule Block Id associated with the AI Engine rule that triggered the alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockTypeID
+      description: 'The type of rule block as specified in the Events Msg XML.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DrillDownLogs
+      description: 'Logs that triggered the AI Engine rule associated with the rule block.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.AIECount
+      description: 'The number of logs identified by the AI Engine that triggered the alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DXCount
+      description: 'The number of logs stored in the Data Indexer that matched the drill-down criteria.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDate
+      description: 'The date, in UTC, that specifies the time of occurence of the log.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateUpper
+      description: 'The date, in UTC, that specifies the upper bound for the rule block triggered.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateLower
+      description: 'The date, in UTC, that specifies the lower bound for the rule block triggered.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.SummaryFieldType
+      description: 'The Summary Field type selected for the rule block.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DrillDownSummaries
+      description: 'The aggregate of the Summary Field type as found in the drill-down logs associated with the alarm.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DefaultValue
+      description: 'The value populated from the ARM when an alarm is added to the cache.'
   - name: lr-cases-list
     description: 'Get cases details using filter criteria.'
     arguments:
