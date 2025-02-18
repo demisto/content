@@ -179,8 +179,8 @@ script:
       required: true
       prettyname: Run action on
       prettyPredefined:
-      - Issue initiator host: ${alert.placeholder_1}
-      - Issue remote host: ${alert.placeholder_2}
+        Issue initiator host: ${alert.placeholder_1}
+        Issue remote host: ${alert.placeholder_2}
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Suppress an error when trying to isolate a disconnected endpoint. When set to false, an error is returned.
@@ -970,22 +970,22 @@ script:
       prettyname: Run action on
       defaultValue: 'Initiator host endpoint ID'
       prettyPredefined:
-      - Initiator host endpoint ID: ${alert.placeholder_1}
-      - Remote host endpoint ID: ${alert.placeholder_2}
+        Initiator host endpoint ID: ${alert.placeholder_1}
+        Remote host endpoint ID: ${alert.placeholder_2}
       required: true
     - description: String that represents the path of the file you want to quarantine.
       name: file_path
       prettyname: File Path
       defaultValue: 'File path from issue'
       prettyPredefined:
-      - File path from issue: ${alert.placeholder_1}
+        File path from issue: ${alert.placeholder_1}
       required: true
     - description: String that represents the file’s hash. Must be a valid SHA256 hash.
       name: file_hash
       defaultValue: 'File SHA256 from issue'
       prettyname: File Hash (SHA256)
       prettyPredefined:
-      - File SHA256 from issue: ${alert.placeholder_1}
+        File SHA256 from issue: ${alert.placeholder_1}
       required: true
     - description: For polling use.
       isArray: true
@@ -1048,7 +1048,7 @@ script:
       defaultValue: 'File SHA256 from issue'
       prettyname: File Hash (SHA256)
       prettyPredefined:
-      - File SHA256 from issue: ${alert.placeholder_1}
+        File SHA256 from issue: ${alert.placeholder_1}
       required: true
     - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
       name: endpoint_id
@@ -1101,8 +1101,8 @@ script:
       name: endpoint_id_list
       prettyname: Run action on list of endpoint IDs.
       prettyPredefined:
-      - Issue initiator host: ${alert.placeholder_1}
-      - I ssue remote host: ${alert.placeholder_2}
+        Issue initiator host: ${alert.placeholder_1}
+        I ssue remote host: ${alert.placeholder_2}
     - description: Name of the distribution list.
       isArray: true
       name: dist_name
@@ -1454,8 +1454,8 @@ script:
       defaultValue: 'Issue initiator host'
       prettyname: Run action on
       prettyPredefined:
-      - Issue initiator host: ${alert.placeholder_1}
-      - Remote host: ${alert.placeholder_2}
+        Issue initiator host: ${alert.placeholder_1}
+        Remote host: ${alert.placeholder_2}
     - description: A comma-separated list of file paths on the Windows platform.
       isArray: true
       name: windows_file_paths
@@ -1471,8 +1471,8 @@ script:
       defaultValue: 'Issue initiator file'
       prettyname: File to retrieve
       prettyPredefined:
-      - Issue initiator file: ${alert.placeholder_1}
-      - Issue CGO file path: ${alert.placeholder_2}
+        Issue initiator file: ${alert.placeholder_1}
+        Issue CGO file path: ${alert.placeholder_2}
     - description: For polling use.
       isArray: true
       name: action_id
@@ -3311,15 +3311,15 @@ script:
       prettyname: Run action on
       defaultValue: 'Initiator host endpoint ID'
       prettyPredefined:
-      - Initiator host endpoint ID: ${alert.placeholder_1}
-      - Remote host endpoint ID: ${alert.placeholder_2}
+        Initiator host endpoint ID: ${alert.placeholder_1}
+        Remote host endpoint ID: ${alert.placeholder_2}
     - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
       prettyname: Script
       prettyPredefined:
-      - placeholder_1: ${alert.placeholder_1}
-      - placeholder_2: ${alert.placeholder_2}
+        placeholder_1: ${alert.placeholder_1}
+        placeholder_2: ${alert.placeholder_2}
     - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
       name: parameters
     - defaultValue: '600'
@@ -3459,7 +3459,7 @@ script:
       name: agent_id
       prettyname: Run action on
       prettyPredefined:
-      - Endpoint id from host: ${alert.placeholder_1}
+        Endpoint id from host: ${alert.placeholder_1}
       isArray: false
       required: true
     - description: The causality ID.
@@ -3575,6 +3575,7 @@ script:
       description: The normalized fields associated with the asset.
     - contextPath: Core.CoreAsset.all_sources
       description: A list of all sources providing information about the asset.
+  supportsquickactions: true
   runonce: false
   script: '-'
   subtype: python3
@@ -3582,5 +3583,4 @@ script:
   dockerimage: demisto/google-cloud-storage:1.0.0.117186
 tests:
 - No tests
-supportsquickactions: true
 fromversion: 6.2.0
