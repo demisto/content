@@ -10,7 +10,7 @@ The user should be assigned to a role with the relevant devices in scope, and th
 - Basic functionality - Read
 - Management of administration groups - Modify
 
-    <img height="350" width="700" src="./../../doc_imgs/role.png" />
+    <img height="350" width="700" src="./../../doc_files/role.png" />
 
 ## Configure Kaspersky Security Center in Cortex
 
