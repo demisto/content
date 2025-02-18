@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import itertools
 import time
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from base64 import b64encode
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional, Callable
 
@@ -10,7 +12,7 @@ from urllib3 import disable_warnings
 disable_warnings()
 
 CONTEXT_INTEGRATION_NAME = 'McAfeeESM.'
-
+KEY_AND_IV = "31323334353637383132333435363738"
 
 class EmptyFile(Exception):
     pass
@@ -60,8 +62,8 @@ class McAfeeESMClient(BaseClient):
 
     def __login(self):
         params = {
-            'username': base64.b64encode(self.__user_name.encode('ascii')).decode(),
-            'password': base64.b64encode(self.__password.encode('ascii')).decode(),
+            'username': encrypt_and_encode(self.__user_name),
+            'password': encrypt_and_encode(self.__password),
             'locale': 'en_US'
         }
         res = self._http_request('POST', 'login', data=json.dumps(params), resp_type='response', timeout=20)
@@ -819,6 +821,25 @@ class McAfeeESMClient(BaseClient):
 
             if not more_data_exist:
                 break
+
+
+def encrypt_and_encode(username_or_password: str) -> str:
+
+    key = bytes.fromhex(KEY_AND_IV)
+    iv = bytes.fromhex(KEY_AND_IV)
+    username_or_password_as_bytes = username_or_password.encode("ascii")
+
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+    encryptor = cipher.encryptor()
+
+    pad_len = 16 - (len(username_or_password_as_bytes) % 16)
+    padded_plaintext = username_or_password_as_bytes + bytes([pad_len] * pad_len)
+
+    ciphertext = encryptor.update(padded_plaintext) + encryptor.finalize()
+
+    encoded_ciphertext = b64encode(ciphertext).decode()
+
+    return encoded_ciphertext
 
 
 def filtering_incidents(incidents_list: List, start_id: int, limit: int = 1):
