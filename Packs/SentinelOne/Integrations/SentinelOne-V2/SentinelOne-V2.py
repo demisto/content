@@ -1039,6 +1039,10 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {}).get("download_links", [])
 
+    def list_installed_applications_request(self, params: dict):
+        response = self._http_request(method='GET', url_suffix='singularity-marketplace/applications', params=params)
+        return response.get('data', []), response.get('pagination', {})
+
     def remove_empty_fields(self, json_payload):
         """
         Removes empty fields from a JSON payload and returns a new JSON object with non-empty fields.
@@ -3433,6 +3437,80 @@ def get_power_query_results(client: Client, args: dict):
     return poll_power_query_results(client=client, cmd="sentinelone-get-power-query-results", args=args)
 
 
+def list_installed_applications_command(client: Client, args: dict) -> CommandResults:
+    """
+    List all agents matching the input filter
+    """
+    # Get arguments
+    query_params = assign_params(
+        accountIds=args.get('account_ids'),
+        applicationCatalogId=args.get('application_catalog_id'),
+        creator__contains=args.get('creator_contains'),
+        cursor=args.get('cursor'),
+        id=args.get('id'),
+        limit=int(args.get('limit', 1000)),
+        name__contains=args.get('name_contains'),
+        siteIds=args.get('site_ids')
+    )
+
+    # Make request and get raw response
+    installed_applications, pagination = client.list_installed_applications_request(query_params)
+
+    if pagination and pagination.get("nextCursor") is not None:
+        demisto.results("Use the below cursor value to get the next page installed applications \n {}".format(
+            pagination['nextCursor']))
+    all_scopes = []
+    if installed_applications:
+        for each_app in installed_applications:
+            scopes = each_app.get("scopes")
+            if scopes is not None and len(scopes) > 0:
+                for scope in scopes:
+                    scope["applicationCatalogId"] = each_app["applicationCatalogId"]
+                    scope["applicationCatalogName"] = each_app["name"]
+                    all_scopes.append(scope)
+        meta = "Provides summary information and details for all the installed applications that matched your search criteria."
+    else:
+        meta = "The search filters provided are returning no results. Please review and adjust them accordingly."
+
+    context_entries = []
+    for each_scope in all_scopes:
+        entry = {
+            'ID': each_scope.get('id'),
+            'Account': each_scope.get('account'),
+            'AccountId': each_scope.get('accountId'),
+            'ApplicationCatalogId': each_scope.get('applicationCatalogId'),
+            'applicationCatalogName': each_scope.get('applicationCatalogName'),
+            'AlertMessage': each_scope.get('alertMessage'),
+            'CreatedAt': each_scope.get('createdAt'),
+            'Creator': each_scope.get('creator'),
+            'CreatorId': each_scope.get('creatorId'),
+            'DesiredStatus': each_scope.get('desiredStatus'),
+            'HasAlert': each_scope.get('hasAlert'),
+            'LastEntityCreatedAt': each_scope.get('lastEntityCreatedAt'),
+            'Modifier': each_scope.get('modifier'),
+            'ModifierId': each_scope.get('modifierId'),
+            'ScopeId': each_scope.get('scopeId'),
+            'ScopeLevel': each_scope.get('scopeLevel'),
+            'Status': each_scope.get('status'),
+            'UpdatedAt': each_scope.get('updatedAt'),
+            'ApplicationInstanceName': each_scope.get('applicationInstanceName'),
+        }
+        context_entries.append(entry)
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'Sentinel One - List of Installed Applications',
+            context_entries,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=meta
+        ),
+        outputs_prefix='SentinelOne.InstalledApps',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=installed_applications)
+
+
 def get_mapping_fields_command():
     """
     Returns the list of fields to map in outgoing mirroring, for incidents.
@@ -3872,6 +3950,7 @@ def main():
             'sentinelone-get-remote-script-task-results': get_remote_script_results,
             'sentinelone-remote-script-automate-results': remote_script_automate_results,
             'sentinelone-get-power-query-results': get_power_query_results,
+            'sentinelone-list-installed-applications': list_installed_applications_command,
         },
         'commands_with_params': {
             'get-remote-data': get_remote_data_command,

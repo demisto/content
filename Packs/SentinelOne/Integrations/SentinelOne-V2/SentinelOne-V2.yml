@@ -2632,6 +2632,87 @@ script:
       description: The account name.
       type: string
   - arguments:
+    - name: account_ids
+      description: A comma-separated list of account IDs.
+      isArray: true
+    - name: application_catalog_id
+      description: Filter results by application catalog id. 
+    - name: creator_contains
+      description: Free-text filter by application creator.
+    - name: cursor
+      description: Cursor position returned by the last request. 
+    - defaultValue: "1000"
+      description: The maximum number of results to return (1-1000).
+      name: limit
+    - name: id
+      description: A comma-separated list of applications IDs.
+      isArray: true
+    - name: name_contains
+      description: Free-text filter by application name
+    - name: site_ids
+      description: A comma-separated list of site IDs.
+      isArray: true
+    description: Returns all installed applications that match the specified criteria.
+    name: sentinelone-list-installed-applications
+    outputs:
+    - contextPath: SentinelOne.InstalledApps.ID
+      description: The application ID.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.Account
+      description: The account name.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.AccountId
+      description: The account ID.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.ApplicationCatalogId
+      description: The application Catalog ID.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.applicationCatalogName
+      description: The application Catalog name.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.AlertMessage
+      description: The alert message.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.CreatedAt
+      description: Application created at.
+      type: date
+    - contextPath: SentinelOne.InstalledApps.Creator
+      description: Application creator.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.CreatorId
+      description: Application creator ID.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.DesiredStatus
+      description: Application desired status.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.HasAlert
+      description: Application has alert.
+      type: boolean
+    - contextPath: SentinelOne.InstalledApps.LastEntityCreatedAt
+      description: Application last entity created at.
+      type: date
+    - contextPath: SentinelOne.InstalledApps.Modifier
+      description: Modifier.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.ModifierId
+      description: Modifier ID.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.ScopeId
+      description: The scope ID.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.ScopeLevel
+      description: The scope level.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.Status
+      description: Status of application.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.UpdatedAt
+      description: Application updated at.
+      type: string
+    - contextPath: SentinelOne.InstalledApps.ApplicationInstanceName
+      description: Application instance name.
+      type: string
+  - arguments:
     - description: The ID of the threat.
       name: threat_id
       required: true
