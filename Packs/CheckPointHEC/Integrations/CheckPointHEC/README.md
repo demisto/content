@@ -1221,3 +1221,22 @@ Delete Avanan DLP exceptions.
 #### Context Output
 
 There is no context output for this command.
+### checkpointhec-download-email
+
+***
+Download email file.
+
+#### Base Command
+
+`checkpointhec-download-email`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity | Email entity id. | Required | 
+| original | Download original email. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

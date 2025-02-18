@@ -1,4 +1,7 @@
 category: Email
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CheckPointHEC
   version: -1
@@ -702,15 +705,6 @@ script:
       - Not so sure
       - Medium Confidence
       - High Confidence
-  - name: checkpointhec-download-email
-    description: Download email file.
-    arguments:
-    - name: entity
-      description: Email entity id.
-      required: true
-    - name: original
-      description: Download original email.
-      required: false
   - name: checkpointhec-get-ap-exceptions
     description: Get Anti-Phishing and Anti-Spam exceptions or exception.
     arguments:
@@ -1856,6 +1850,15 @@ script:
       required: false
     - name: entity_id
       description: Entity id.
+      required: false
+  - name: checkpointhec-download-email
+    description: Download email file.
+    arguments:
+    - name: entity
+      description: Email entity id.
+      required: true
+    - name: original
+      description: Download original email.
       required: false
   isfetch: true
   runonce: false
