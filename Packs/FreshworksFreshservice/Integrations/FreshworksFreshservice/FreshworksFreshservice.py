@@ -3528,7 +3528,7 @@ def fetch_incidents(client: Client, params: dict):
         request_args = {
             'updated_since': convert_datetime_to_iso(last_run_datetime_str),
             'order_type': 'asc',
-            'per_page': 100
+            'page_size': 100
         }
         demisto.debug(f"Request arguments: {request_args}")
         tickets = []
