@@ -1,3 +1,4 @@
+from pathlib import Path
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import logging
@@ -287,12 +288,12 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
     for attempt in range(DEFAULT_RETRIES_COUNT):
         running_chromes_count = count_running_chromes(port)
         if running_chromes_count < 1:
+            demisto.debug(f"Process did not start yet in iteration {attempt + 1}/{DEFAULT_RETRIES_COUNT}, sleeping...")
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + attempt * 2)
         else:
             break
     else:
-        raise DemistoException(
-            f"Failed to find any running Chrome processes on port {port} after {DEFAULT_RETRIES_COUNT} attempts")
+        demisto.debug("Although the process did not start, moving on to try to connect.")
 
     # connect to the Chrome browser instance
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
@@ -556,7 +557,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         }
         for key, value in chrome_instances_contents.items()
     }
-    if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
+    if not chrome_instances_contents or instance_id not in instance_id_dict:
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ''):
@@ -1027,7 +1028,7 @@ def rasterize_email_command():  # pragma: no cover
             tf.flush()
             real_path = os.path.realpath(tf.name)
             path = f'file://{real_path}'
-            file_stat = os.stat(real_path)
+            file_stat = Path.stat(Path(real_path))
             demisto.debug(f'rasterize-email, {file_stat=}')
             demisto.debug(f'rasterize-email, rasterizing {path=}')
             rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
