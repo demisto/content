@@ -4,6 +4,7 @@ microsoft-atp-get- health_status=Active risk_score=Medium
 microsoft-atp-get-file-related- file_hash=36c5d12033b2eaf251bae61c00690ffb17fddc87
 microsoft-atp-get-machine-details machine_id=f70f9fe6b29cd9511652434919c6530618f06606
 microsoft-atp-get-machine-software machine_id=f70f9fe6b29cd9511652434919c6530618f06606
+microsoft-atp-get-machine-missing-kbs machine_id=f70f9fe6b29cd9511652434919c6530618f06606
 microsoft-atp-run-antivirus-scan machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="testing anti virus" scan_type=Quick
 microsoft-atp-list-alerts severity=Low
 microsoft-atp-update-alert alert_id=da637200417169017725_183736971 status=InProgress
