@@ -1,0 +1,6 @@
+fromversion: 8.4.0  # Will be updated with XSIAM version updates
+id: omer_demo_imperva_waf_ModelingRule
+name: omer_demo_imperva_waf Modeling Rule
+rules: ''
+schema: ''
+tags: ''

@@ -1,0 +1,18 @@
+  //omer-demo pack
+[MODEL:dataset = "omer_demo_imperva_waf_raw"]
+alter 
+    dest_user = if(duser = "${Alert.username}", null , duser), 
+    source_port = arrayindex(regextract(spt,"(\d+?)\."),0), 
+    destination_port = arrayindex(regextract(dpt,"(\d+?)\."),0)
+| alter 
+    xdm.observer.vendor = cefDeviceVendor,
+    xdm.observer.product = cefDeviceProduct,
+    xdm.alert.category = cat,
+    xdm.source.ipv4 = src,
+    xdm.source.port = to_integer(source_port),
+    xdm.target.ipv4 = dst,
+    xdm.target.port = to_integer(destination_port),
+    xdm.event.outcome = act,
+    xdm.target.user.username = dest_user,
+    xdm.alert.severity = cefSeverity,
+    xdm.event.description = cs5;

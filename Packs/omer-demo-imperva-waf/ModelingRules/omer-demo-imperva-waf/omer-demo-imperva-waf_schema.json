@@ -1,0 +1,48 @@
+{
+    "omer_demo_imperva_waf_raw": {
+        "cat": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefSeverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "dpt": {
+            "type": "int",
+            "is_array": false
+        },
+        "spt": {
+            "type": "int",
+            "is_array": false
+        },
+        "act": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs5": {
+            "type": "string",
+            "is_array": false
+        },
+        "src": {
+            "type": "string",
+            "is_array": false
+        },
+        "dst": {
+            "type": "string",
+            "is_array": false
+        },
+        "duser": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceVendor": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceProduct": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
