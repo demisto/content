@@ -1,0 +1,80 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: OktaASA
+  version: -1
+configuration:
+- defaultvalue: https://app.scaleft.com
+  display: Server URL (e.g., https://app.scaleft.com)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key ID
+  display: API Key Secret
+  additionalinfo: The API Key ID to use for connection.
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+- display: Team Name
+  additionalinfo: A named group of users who can authenticate with Okta.
+  name: team_name
+  type: 0
+  section: Connect
+  required: true
+- defaultvalue: 5000
+  section: Collect
+  display: The maximum number of audit events per fetch.
+  name: max_audit_events_per_fetch
+  required: false
+  type: 0
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: Okta Advanced Server Access integration for Cortex XSIAM allows you to fetch logs of a wide range of configuration, enrollment, authentication, and authorization events that occur within the product and on your servers.
+display: Okta ASA
+name: OktaASA
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - defaultValue: 50
+      description: Maximum results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets events from Okta ASA.
+    execution: false
+    name: okta-asa-get-events
+  dockerimage: demisto/python3:3.12.8.1983910
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.3.0
+tests:
+- No tests (auto formatted)
