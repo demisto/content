@@ -710,7 +710,12 @@ class MatiCve:
             return "0.0"
 
     def build_exploitation_vectors(self):
-        return ", ".join(self.cve_data.get("exploitation_vectors", ""))
+        exploitation_vectors = self.cve_data.get("exploitation_vectors", [])
+
+        if not exploitation_vectors:
+            return ""
+
+        return ", ".join(exploitation_vectors)
 
     def build_markdown(self) -> str:
         details_table_dict = {
@@ -730,10 +735,10 @@ class MatiCve:
         return "\n\n".join(markdown_sections)
 
     def get_cvss_score(self):
-        return str(self.cvss_data.get(self.cvss_version).get("base_score", "0.0"))
+        return str(self.cvss_data.get(self.cvss_version, {}).get("base_score", "0.0"))
 
     def get_cvss_vector(self) -> str:
-        return self.cvss_data.get(self.cvss_version).get("vector_string", "")
+        return self.cvss_data.get(self.cvss_version, {}).get("vector_string", "")
 
     def build_publications(self) -> List:
         publications = []
