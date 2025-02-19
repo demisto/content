@@ -1236,7 +1236,6 @@ def get_artifacts_by_alert_command(
 
     # Preparing header
     headers = {
-        'Content-Type': CONTENT_TYPE_ZIP,
         'X-FeApi-Token': client.get_api_token(),
     }
 
