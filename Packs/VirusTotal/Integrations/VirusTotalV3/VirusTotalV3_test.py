@@ -312,7 +312,7 @@ def test_not_found_domain_command(mocker, requests_mock):
         args=demisto.args(), relationships=domain_relationships)
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == 'Domain "testing.com" was not found in VirusTotal'
+    assert results[0].readable_output == 'Domain "testing.com" was not found in VirusTotal.'
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -469,7 +469,7 @@ def test_not_found_ip_command(mocker, requests_mock):
         disable_private_ip_lookup=False)
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == 'IP "192.168.0.1" was not found in VirusTotal'
+    assert results[0].readable_output == 'IP "192.168.0.1" was not found in VirusTotal.'
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -548,7 +548,7 @@ def test_not_found_url_command(mocker, requests_mock):
         args=demisto.args(), relationships=url_relationships)
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == f'URL "{testing_url}" was not found in VirusTotal'
+    assert results[0].readable_output == f'URL "{testing_url}" was not found in VirusTotal.'
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -619,7 +619,7 @@ def test_not_found_private_file_command(mocker, requests_mock):
     results = private_file_command(client=client, args=demisto.args())
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'
+    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal.'
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -758,4 +758,4 @@ def test_not_found_file_sandbox_report_command(mocker, requests_mock):
     results = file_sandbox_report_command(client=client, args=demisto.args())
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'
+    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal.'
