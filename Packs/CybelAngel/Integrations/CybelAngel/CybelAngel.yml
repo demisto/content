@@ -7,7 +7,6 @@ configuration:
   name: credentials
   required: true
   type: 9
-
 - additionalinfo: CybelAngel Tenant ID to create comments on reports
   display: CybelAngel Tenant ID
   name: tenant_id

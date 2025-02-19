@@ -316,3 +316,107 @@ def test_fetch_incidents_with_invalid_response(client, requests_mock):
 def test_get_report_pdf_command_missing_id(client):
     result = get_report_pdf_command(client, {})
     assert result.readable_output == "Report ID not provided."
+
+
+def test_client_initialization():
+    """Test Client initialization with various parameter combinations"""
+    # Test with minimum required parameters
+    client1 = Client(client_id="test_id", client_secret="test_secret")
+    assert client1.client_id == "test_id"
+    assert client1.client_secret == "test_secret"
+    assert client1.token is None
+
+    # Test with all parameters
+    client2 = Client(
+        client_id="test_id",
+        client_secret="test_secret",
+        auth_token="existing_token",
+        token_time="2024-02-19T12:00:00Z"
+    )
+    assert client2.token == "existing_token"
+    assert client2.token_time == "2024-02-19T12:00:00Z"
+
+
+def test_fetch_token_success(requests_mock):
+    """Test successful token fetch"""
+    client = Client(client_id="test_id", client_secret="test_secret")
+    mock_response = {"access_token": "new_token"}
+    requests_mock.post("https://auth.cybelangel.com/oauth/token", json=mock_response)
+
+    client.fetch_token()
+    assert client.token == "Bearer new_token"
+    assert client.new_token_fetched is True
+
+
+def test_get_reports_success(client, requests_mock):
+    """Test successful retrieval of reports"""
+    mock_response = {
+        "reports": [
+            {"id": "1", "title": "Report 1"},
+            {"id": "2", "title": "Report 2"}
+        ]
+    }
+    requests_mock.get(f"{BASE_URL}api/v2/reports", json=mock_response)
+
+    reports = client.get_reports(interval=60)
+    assert len(reports) == 2
+    assert reports[0]["id"] == "1"
+    assert reports[1]["title"] == "Report 2"
+
+
+def test_get_all_reports_success(client, requests_mock):
+    """Test successful retrieval of all reports"""
+    mock_response = {
+        "reports": [
+            {"id": "1", "title": "Old Report"},
+            {"id": "2", "title": "Recent Report"}
+        ]
+    }
+    requests_mock.get(f"{BASE_URL}api/v2/reports", json=mock_response)
+
+    reports = client.get_all_reports()
+    assert len(reports) == 2
+    assert all(isinstance(report, dict) for report in reports)
+
+
+def test_get_all_reports_error(client, requests_mock):
+    """Test error handling in get_all_reports"""
+    requests_mock.get(f"{BASE_URL}api/v2/reports", status_code=500)
+
+    reports = client.get_all_reports()
+    assert len(reports) == 1
+    assert "Error getting reports" in reports[0]["msg"]
+
+
+def test_fetch_incidents_command_complete(client, requests_mock):
+    """Test the complete fetch_incidents command flow"""
+    # Mock successful token refresh
+    mock_token_response = {"access_token": "new_token"}
+    requests_mock.post("https://auth.cybelangel.com/oauth/token", json=mock_token_response)
+
+    # Mock reports response
+    mock_reports_response = {
+        "reports": [
+            {
+                "incident_id": "test-1",
+                "created_at": "2024-02-19T10:00:00",
+                "severity": 3,
+                "category": "test",
+                "abstract": "Test incident"
+            }
+        ]
+    }
+    requests_mock.get(f"{BASE_URL}api/v2/reports", json=mock_reports_response)
+
+    # Test first fetch
+    incidents = fetch_incidents(
+        client,
+        first_fetch=True,
+        last_run=None,
+        first_fetch_interval=1
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "CybelAngel Report - test-1"
+    assert incidents[0]["severity"] == 3
+    assert incidents[0]["category"] == "test"

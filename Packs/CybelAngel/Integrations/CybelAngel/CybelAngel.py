@@ -28,7 +28,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client(BaseClient):
 
-    def __init__(self, client_id: str, client_secret: str, auth_token=None, token_time=None):
+    def __init__(self, client_id: str, client_secret: str, auth_token:str=None, token_time=None):
         self.base_url = "https://platform.cybelangel.com/"
         self.auth_url = "https://auth.cybelangel.com/oauth/token"
         self.client_id = client_id
@@ -141,7 +141,7 @@ class Client(BaseClient):
 
         return response.content
 
-    def remediate(self, report_id: str, email: str, requester_fullname):
+    def remediate(self, report_id: str, email: str, requester_fullname:str):
         """ Create remediation request """
         self.check_token()
         url = f"{self.base_url}api/v1/reports/remediation-request"
