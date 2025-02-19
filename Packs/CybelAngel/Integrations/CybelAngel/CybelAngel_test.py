@@ -1,6 +1,5 @@
 import json
-from datetime import datetime, timedelta
-
+from datetime import datetime, timedelta, UTC
 import pytest
 from CommonServerPython import *
 from CybelAngel import (
@@ -33,7 +32,7 @@ def test_fetch_incidents(client, requests_mock):
     mock_response = load_mock_response("fetch_incidents.json")
     requests_mock.get(f"{BASE_URL}api/v2/reports", json=json.loads(mock_response))
 
-    last_run = {"start_time": (datetime.utcnow() - timedelta(days=1)).strftime(DATE_FORMAT)}
+    last_run = {"start_time": (datetime.now(UTC) - timedelta(days=1)).strftime(DATE_FORMAT)}
     incidents = fetch_incidents(client, first_fetch=True, last_run=last_run, first_fetch_interval=1440)
 
     assert len(incidents) == 4
@@ -65,7 +64,7 @@ def test_fetch_incidents_empty_response(client, requests_mock):
     mock_response = load_mock_response("empty_response.json")
     requests_mock.get(f"{BASE_URL}api/v2/reports", json=json.loads(mock_response))
 
-    last_run = {"start_time": (datetime.utcnow() - timedelta(days=1)).strftime(DATE_FORMAT)}
+    last_run = {"start_time": (datetime.now(UTC) - timedelta(days=1)).strftime(DATE_FORMAT)}
     incidents = fetch_incidents(client, first_fetch=True, last_run=last_run, first_fetch_interval=1440)
 
     assert len(incidents) == 0
@@ -244,7 +243,7 @@ def test_test_module_error(client, requests_mock):
 
 def test_datetime_helper():
     """Test the datetime helper function"""
-    past_date = (datetime.utcnow() - timedelta(minutes=30)).strftime(DATE_FORMAT)
+    past_date = (datetime.now(UTC) - timedelta(minutes=30)).strftime(DATE_FORMAT)
     minutes = _datetime_helper(past_date)
     assert 29 <= minutes <= 31  # Allow small timing differences
 

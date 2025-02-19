@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import datetime as dt
+from datetime import datetime, timedelta, UTC
 import requests
 import json
 
@@ -56,26 +56,29 @@ class Client(BaseClient):
     def check_token(self):
         if self.token_time is None:
             self.fetch_token()
-            self.token_time = dt.datetime.utcnow()
+            self.token_time = datetime.now(UTC)
+            return
 
-        else:
-            token_time = dt.datetime.strptime(self.token_time, "%Y-%m-%d %H:%M:%S.%f")
-
-            timeDiff = (dt.datetime.utcnow() - token_time).total_seconds()
-            if timeDiff >= 3600:
+        try:
+            token_time = datetime.fromisoformat(self.token_time.replace('Z', '+00:00'))
+            time_diff = (datetime.now(UTC) - token_time).total_seconds()
+            if time_diff >= 3600:
                 self.fetch_token()
-                self.token_time = dt.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
+                self.token_time = datetime.now(UTC).strftime(DATE_FORMAT)
+        except (ValueError, TypeError):
+            self.fetch_token()
+            self.token_time = datetime.now(UTC).strftime(DATE_FORMAT)
 
     def get_reports(self, interval: int):
         self.check_token()
         headers = {'Content-Type': "application/json",
                    'Authorization': self.token}
 
-        difference = dt.datetime.utcnow() - dt.timedelta(minutes=interval)
+        difference = datetime.now(UTC) - timedelta(minutes=interval)
 
         params = {
-            'end-date': dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M"),
-            'start-date': difference.strftime("%Y-%m-%dT%H:%M")
+            'end-date': datetime.now(UTC).strftime(DATE_FORMAT),
+            'start-date': difference.strftime(DATE_FORMAT)
         }
         try:
             demisto.info(f'Fetching incidents at interval :{interval}')
@@ -96,7 +99,7 @@ class Client(BaseClient):
         headers = {'Content-Type': "application/json",
                    'Authorization': self.token}
         params = {
-            'end-date': dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M"),
+            'end-date': datetime.now(UTC).strftime(DATE_FORMAT),
             'start-date': "2000-01-02T01:01:01"}
         try:
             response = json.loads(requests.get(f'{self.base_url}api/v2/reports',
@@ -120,7 +123,7 @@ class Client(BaseClient):
                 "GET", url, headers=headers).json()
 
             result = response
-            demisto.info(type(result))
+            # demisto.debug(f"RAW RESULT: {result}")
             return result
         except Exception as e:
             return [{"msg": f"Error getting report {report_id} : {e}"}]
@@ -245,7 +248,7 @@ def _set_context(client: Client):
     if client.new_token_fetched:
         new_context = {
             'token': str(client.token),
-            'expiry': str(client.token_time),
+            'expiry': datetime.now(UTC).strftime(DATE_FORMAT),
             'first_pull': str(False)
         }
         demisto.setIntegrationContext(new_context)
@@ -254,7 +257,12 @@ def _set_context(client: Client):
 
 def _datetime_helper(last_run_date):
 
-    delta = dt.datetime.utcnow() - dt.datetime.strptime(last_run_date, '%Y-%m-%dT%H:%M:%SZ')
+    try:
+        last_run = datetime.fromisoformat(last_run_date.replace('Z', '+00:00'))
+    except (ValueError, TypeError):
+        last_run = datetime.now(UTC) - timedelta(minutes=5)
+
+    delta = datetime.now(UTC) - last_run
     total_minutes = int(delta.total_seconds() / 60)
     return total_minutes
 
@@ -264,10 +272,13 @@ def _datetime_helper(last_run_date):
 
 def fetch_incidents(client: Client, first_fetch: bool,
                     last_run, first_fetch_interval: int):
+
     if first_fetch:
         fetch_interval = first_fetch_interval * 1140
-    else:
+    elif last_run:
         fetch_interval = _datetime_helper(last_run)
+    else:
+        fetch_interval = first_fetch_interval * 1140
 
     incident_reports = client.get_reports(fetch_interval)  # interval in minutes
     # Modify alerts into Demisto Alerts
@@ -289,36 +300,45 @@ def fetch_incidents(client: Client, first_fetch: bool,
 
     # Set the integration context
     _set_context(client)
-    demisto.setLastRun({'start_time': dt.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"})
+    demisto.setLastRun({'start_time': datetime.now(UTC).strftime(DATE_FORMAT)})
     return incidents
 
 
-def get_report_by_id_command(client: Client, args):
+def get_report_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     report_id = args.get('report_id')
-    demisto.debug(f"Fetching report with ID: {report_id}")
+    demisto.info(f"get_report_by_id_command called with report_id: {report_id}")
 
     try:
-        result = client.get_report_by_id(report_id)
+        result = client.get_report_by_id(str(report_id))
+
+        # Log the raw result received from the client
+        demisto.debug(f"Raw response from get_report_by_id: {json.dumps(result, indent=4)}")
 
         if not result:
+            demisto.info(f"No report found for report_id: {report_id}")
             return_results('No report found with the given ID')
-            return None
+            return CommandResults(
+                readable_output="No result found"
+            )
 
-        command_results = CommandResults(
+        _set_context(client)
+
+        # Log the output before returning
+        demisto.info(f"Returning CommandResults for report_id: {report_id}")
+
+        return CommandResults(
             outputs_prefix='CybelAngel.Report',
             outputs_key_field='id',
             outputs=result,
             readable_output=tableToMarkdown('CybelAngel Report', result),
             raw_response=result
         )
-        _set_context(client)
-        return command_results
+
     except Exception as e:
-        error_message = f"Unexpected error: {str(e)}"
-        demisto.error(error_message)
+        demisto.error(f"Error in get_report_by_id_command: {str(e)}")
         _set_context(client)
         return CommandResults(
-            readable_output=error_message
+            readable_output=f"Error: {str(e)}"
         )
 
 
@@ -438,6 +458,7 @@ def test_module(client: Client) -> str:
         result = client.get_reports(500)
         if result:
             return 'ok'
+        return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
@@ -453,8 +474,9 @@ def test_module(client: Client) -> str:
 def main() -> None:
 
    # Get Cybelangel credentials
-    client_id = demisto.params().get('client_id')
-    client_secret = demisto.params().get('client_secret')
+
+    client_id = demisto.params().get("credentials", {}).get('identifier')
+    client_secret = demisto.params().get("credentials", {}).get('password')
     tenant_id = demisto.params().get('tenant_id')
 
     # Get last run
@@ -462,7 +484,7 @@ def main() -> None:
 
     # Manage first fetch from client
     first_fetch_interval = arg_to_number(demisto.params().get('first_fetch')) or 0
-    first_fetch = "first_pull" not in demisto.getIntegrationContext().keys()
+    first_fetch = "first_pull" not in demisto.getIntegrationContext()
 
     # Get token and token time if it exists
     auth_token = demisto.getIntegrationContext().get('token')
