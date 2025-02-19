@@ -3,8 +3,6 @@ import hashlib
 import hmac
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-demisto.debug('pack name = Duo Auth, pack version = 1.0.0')
-#
 
 
 class Client(BaseClient):

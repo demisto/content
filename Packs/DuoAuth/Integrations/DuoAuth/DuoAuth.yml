@@ -35,7 +35,7 @@ configuration:
   required: true
   type: 9
   section: Connect
-description: Sends a Duo push notification with additional context via the pushinfo parameter. Must have access to the auth api in order to use this.
+description: The Duo Auth API lets developers integrate with Duo Security's platform at a low level.
 display: DuoAuth
 name: DuoAuth
 script:

@@ -1,23 +1,19 @@
-Sends a Duo push notification with additional context via the pushinfo parameter. Must have access to the auth api in order to use this.
-## Configure DuoAuth (Community Contribution) on Cortex XSOAR
+The Duo Auth API lets developers integrate with Duo Security's platform at a low level.
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DuoAuth (Community Contribution).
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure DuoAuth in Cortex
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | API Hostname | True |
-    | Integration Key | True |
-    | Secret Key | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Required** |
+| --- | --- |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| API Hostname | True |
+| Integration Key | True |
+| Secret Key | True |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### duoauth-push-notification
@@ -41,6 +37,6 @@ Send push message to Duo user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DuoAuth.Status | String | Status of a Push message | 
-| DuoAuth.Message | String | E.g. if approved, "Success. Logging you in…" | 
-| DuoAuth.User | String | Username receiving Push message | 
+| DuoAuth.PushNotification.Status | String | Status of a Push message. | 
+| DuoAuth.PushNotification.Message | String | E.g. if approved, "Success. Logging you in…". | 
+| DuoAuth.PushNotification.User | String | Username receiving Push message. | 
