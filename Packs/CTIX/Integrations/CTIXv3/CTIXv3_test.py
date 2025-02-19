@@ -613,8 +613,7 @@ def test_remove_tag_indicator_updation_command(requests_mock):
         json=mock_response_get,
     )
     requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/action/add_tag/", json=mock_response
-    )
+        f"{BASE_URL}ingestion/threat-data/action/remove_tag/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
