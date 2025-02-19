@@ -575,8 +575,10 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
         hash_type = 'md5'
     elif len(hash) == 64:
         hash_type = 'sha256'
-    else:
+    elif params.get('should_error', True):
         return_error('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
+    else:
+        return_warning('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types', exit=True)
 
     file_information = query_payload_information(hash_type, params.get('api_url'), params.get('use_ssl'),
                                                  hash).json()
@@ -744,6 +746,7 @@ def main():
         elif command == 'domain':
             domain_command(params)
         elif command == 'file':
+            params['should_error'] = argToBoolean(demisto.params().get('should_error', True))
             file_command(params)
         elif command == 'urlhaus-download-sample':
             urlhaus_download_sample_command(**params)
