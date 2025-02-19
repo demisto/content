@@ -8,6 +8,7 @@ from CommonServerUserPython import *  # noqa
 import urllib3
 from typing import Any
 from enum import Enum
+from requests import Response
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -33,7 +34,15 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
 
-    def http_request(self, method: str, url_suffix: str, data: dict | None = None, params: dict[str, Any] | None = None, pdf: bool = False, cve: bool = False) -> dict[str, Any]:
+    def http_request(
+        self,
+        method: str,
+        url_suffix: str,
+        data: dict | None = None,
+        params: dict[str, Any] | None = None,
+        pdf: bool = False,
+        cve: bool = False,
+    ) -> dict[str, Any] | Response:
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
         """
@@ -51,15 +60,21 @@ class Client(BaseClient):
         demisto.debug(f'Running http-request with URL {url_suffix} and {params=}')
 
         response = self._http_request(
-            method, url_suffix=url_suffix, headers=headers, params=params, json_data=data, resp_type="response", ok_codes=(401, 403, 200, 201, 302)
+            method,
+            url_suffix=url_suffix,
+            headers=headers,
+            params=params,
+            json_data=data,
+            resp_type="response",
+            ok_codes=(401, 403, 200, 201, 302),
         )
         if response.status_code == 200 or response.status_code == 201:
             return response.json() if not pdf else response
-        
+
         if response.status_code == 302 and cve:
             cve_response = requests.get(url=response.text)
             return cve_response
-        
+
         else:
             demisto.debug('Access token has expired, retrieving new access token')
 
@@ -326,10 +341,10 @@ def cybelangel_archive_report_by_id_get_command(client: Client, args):
     response = client.http_request("GET", endpoint, cve=True)
 
     return fileResult(
-            f"cybelangel_archive_report_{report_id}.zip",
-            response.content,
-            file_type=EntryType.ENTRY_INFO_FILE,
-        )
+        f"cybelangel_archive_report_{report_id}.zip",
+        response.content,
+        file_type=EntryType.ENTRY_INFO_FILE,
+    )
 
 
 def cybelangel_report_status_update_command(client: Client, args):
