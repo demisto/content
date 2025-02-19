@@ -3322,7 +3322,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         vulnerabilities, new_last_run = fetch_vulnerabilities(client, last_run)
         demisto.debug(f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM.')
         send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
- 
+
     demisto.setAssetsLastRun(new_last_run)
     demisto.debug(f'Finished fetch assets and vulnerabilities run (by date). Last assets run object: {new_last_run}')
 
