@@ -356,8 +356,6 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Op
     """
     tags = indicator_obj['rawJSON']['value'].get('Tag', [])
     galaxy_indicators = []
-    tag = None
-    tag_name = None
     for tag in tags:
         tag_name = tag.get('name', None)
         type_ = get_galaxy_indicator_type(tag_name)
