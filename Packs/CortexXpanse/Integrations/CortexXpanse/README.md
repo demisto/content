@@ -2088,7 +2088,7 @@ Updates the state of one or more alerts.
 ### ip
 
 ***
-(Deprecated as of version 1.2.7) Returns reputation lookup for an IP address found in Xpanse.
+(Deprecated as of version 1.2.7) Returns reputation lookup for an IP address found in Cortex Xpanse.
 
 #### Base Command
 
