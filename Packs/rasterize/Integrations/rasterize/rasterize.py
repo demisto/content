@@ -1030,8 +1030,7 @@ def rasterize_email_command():  # pragma: no cover
             real_path = os.path.realpath(tf.name)
             path = f'file://{real_path}'
             file_stat = Path.stat(Path(real_path))
-            demisto.debug(f'rasterize-email, {file_stat=}')
-            demisto.debug(f'rasterize-email, rasterizing {path=}')
+            demisto.debug(f'rasterize-email, rasterizing {path=}, {file_stat=}')
             rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
                                                  offline_mode=offline, navigation_timeout=navigation_timeout,
                                                  full_screen=full_screen)
