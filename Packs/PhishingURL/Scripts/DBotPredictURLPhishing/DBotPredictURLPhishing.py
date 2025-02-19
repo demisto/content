@@ -638,7 +638,7 @@ def get_final_urls(urls: list[str], max_urls: int, model: Model) -> list[str]:
 
 
 def extract_embedded_urls_from_html(html: str) -> list[str]:
-    return [a.get('href') for a in BeautifulSoup(html).find_all('a') if a.get('href')]
+    return [a.get('href') for a in BeautifulSoup(html).find_all('a') if a.get('href')]  # type: ignore
 
 
 def get_urls_to_run(
