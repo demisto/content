@@ -288,12 +288,12 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
     for attempt in range(DEFAULT_RETRIES_COUNT):
         running_chromes_count = count_running_chromes(port)
         if running_chromes_count < 1:
-            demisto.debug(f"Process did not start yet in iteration {attempt + 1}/{DEFAULT_RETRIES_COUNT}, sleeping...")
+            demisto.debug(f"Attempt {attempt + 1}/{DEFAULT_RETRIES_COUNT}: Process not started yet, sleeping...")
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + attempt * 2)
         else:
             break
     else:
-        demisto.debug("Although the process did not start, moving on to try to connect.")
+        demisto.debug(f"Process did not start after {DEFAULT_RETRIES_COUNT} attempts. Moving on to try to connect.")
 
     # connect to the Chrome browser instance
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
