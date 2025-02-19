@@ -3315,16 +3315,15 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
                                snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
                                should_update_health_module=False)
 
-        demisto.setAssetsLastRun(new_last_run)
-        demisto.updateModuleHealth({'assetsPulled': cumulative_assets_count})
+            demisto.updateModuleHealth({'assetsPulled': cumulative_assets_count})
 
     elif fetch_stage == 'vulnerabilities':
 
         vulnerabilities, new_last_run = fetch_vulnerabilities(client, last_run)
         demisto.debug(f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM.')
         send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
-        demisto.setAssetsLastRun(new_last_run)
-
+ 
+    demisto.setAssetsLastRun(new_last_run)
     demisto.debug(f'Finished fetch assets and vulnerabilities run (by date). Last assets run object: {new_last_run}')
 
 
