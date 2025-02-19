@@ -1,4 +1,3 @@
-from elastic_transport import RequestsHttpNode
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
@@ -170,7 +169,7 @@ def elasticsearch_builder(proxies):
     else:
         # Adding the proxy related parameter to the Elasticsearch client v8
         # Reference- https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214
-        class CustomHttpNode(RequestsHttpNode):
+        class CustomHttpNode(RequestsHttpNode):  # pylint: disable=E0601
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self.session.proxies = proxies
