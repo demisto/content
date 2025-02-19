@@ -9,11 +9,11 @@
             "is_array": false
         },
         "dpt": {
-            "type": "int",
+            "type": "string",
             "is_array": false
         },
         "spt": {
-            "type": "int",
+            "type": "string",
             "is_array": false
         },
         "act": {
