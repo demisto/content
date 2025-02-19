@@ -446,13 +446,13 @@ def perform_long_running_loop(client: Client):
             set_integration_context(integration_context)
 
         except EmptyResponse:
-            demisto.debug(
+            demisto.info(
                 "Didn't receive any response from streaming endpoint."
             )
 
         except NoEventsReceived:
             next_fetch_param = integration_context.get("next_fetch", {})
-            demisto.debug(
+            demisto.info(
                 f"No Events stream for {next_fetch_param=}"
             )
 
