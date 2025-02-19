@@ -2916,6 +2916,85 @@ def test_get_machine_missing_kbs_command(mocker, args, return_value_get_machine_
     assert result_get_machine_missing_kbs.outputs == expected_outputs
 
 
+@pytest.mark.parametrize('args, return_value_get_machine_vulnerabilities_command,expected_human_readable,expected_outputs', [
+    (
+        {'machine_id': 'some_machine'},
+        {
+            '@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicProductFixDto)',
+            '@odata.count': 1,
+            "value": [
+                {
+                    "@odata.type": "#microsoft.windowsDefenderATP.api.PublicVulnerabilityDto",
+                    "cveSupportability": "Supported",
+                    "cvssV3": 3.7,
+                    "cvssVector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C",
+                    "description": "Summary: Foo is vulnerable to a denial of service due to improper server configuration validation.",  # noqa: E501
+                    "epss": 0,
+                    "exploitInKit": False,
+                    "exploitTypes": [
+                        "Remote"
+                    ],
+                    "exploitUris": [],
+                    "exploitVerified": False,
+                    "exposedMachines": 1,
+                    "firstDetected": "20XX-MM-DDThh:mm:ssZ",
+                    "id": "CVE-20XX-1234",
+                    "name": "CVE-20XX-1234",
+                    "publicExploit": False,
+                    "publishedOn": "20XX-MM-DDThh:mm:ssZ",
+                    "severity": "Low",
+                    "tags": [],
+                    "updatedOn": "20XX-MM-DDThh:mm:ssZ"
+                }
+            ]
+        },
+        '### Microsoft Defender ATP Vulnerabilities for machine: some_machine\n|id|name|cveSupportability|cvssV3|cvssVector|description|epss|exploitInKit|exploitTypes|exploitVerified|exposedMachines|firstDetected|publicExploit|publishedOn|severity|updatedOn|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| CVE-20XX-1234 | CVE-20XX-1234 | Supported | 3.7 | CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C | Summary: Foo is vulnerable to a denial of service due to improper server configuration validation. | 0 | false | Remote | false | 1 | 20XX-MM-DDThh:mm:ssZ | false | 20XX-MM-DDThh:mm:ssZ | Low | 20XX-MM-DDThh:mm:ssZ |\n',  # noqa: E501
+        [
+            {
+                "@odata.type": "#microsoft.windowsDefenderATP.api.PublicVulnerabilityDto",
+                "cveSupportability": "Supported",
+                "cvssV3": 3.7,
+                "cvssVector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C",
+                "description": "Summary: Foo is vulnerable to a denial of service due to improper server configuration validation.",  # noqa: E501
+                "epss": 0,
+                "exploitInKit": False,
+                "exploitTypes": [
+                    "Remote"
+                ],
+                "exploitUris": [],
+                "exploitVerified": False,
+                "exposedMachines": 1,
+                "firstDetected": "20XX-MM-DDThh:mm:ssZ",
+                "id": "CVE-20XX-1234",
+                "name": "CVE-20XX-1234",
+                "publicExploit": False,
+                "publishedOn": "20XX-MM-DDThh:mm:ssZ",
+                "severity": "Low",
+                "tags": [],
+                "updatedOn": "20XX-MM-DDThh:mm:ssZ"
+            }
+        ]
+    )
+])
+def test_get_machine_vulnerabilities_command(mocker, args, return_value_get_machine_vulnerabilities_command, expected_human_readable, expected_outputs):  # noqa: E501
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing get_machine_vulnerabilities_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import get_machine_vulnerabilities_command
+    mocker.patch.object(client_mocker, 'get_vulnerabilities_by_machine_id',
+                        return_value=return_value_get_machine_vulnerabilities_command)
+    result_get_machine_vulnerabilities = get_machine_vulnerabilities_command(client_mocker, args)
+    assert result_get_machine_vulnerabilities.readable_output == expected_human_readable
+    assert result_get_machine_vulnerabilities.outputs == expected_outputs
+
+
 @pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
     ({'cve_id': 'CVE-3333-33333'},
      {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetVulnerabilityDto)',  # noqa: E501
