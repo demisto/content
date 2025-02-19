@@ -2574,3 +2574,67 @@ Note that the field will not automatically appear in the indicator's layout. To 
 1. Navigate to `Settings > Objects Setup > Indicators > Layouts`.
 2. Select the desired layout (e.g., `File Indicator`).
 3. Click `Detach` if needed, and then edit the layout to include the new field.
+
+
+### vt-privatescanning-url-scan
+
+***
+Submits an URL for private scanning. Use the vt-privatescanning-analysis-get command to get the scan results.
+
+#### Base Command
+
+`vt-privatescanning-url-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | The private URL to scan. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VirusTotal.Submission.Type | String | The type of the submission \(private_analysis\). | 
+| VirusTotal.Submission.id | String | The ID of the submission. | 
+
+### vt-privatescanning-url
+
+***
+Checks the reputation of a private URL.
+
+#### Base Command
+
+`vt-privatescanning-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Private URL to check. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VirusTotal.URL.attributes.favicon.raw_md5 | String | The MD5 hash of the URL. | 
+| VirusTotal.URL.attributes.favicon.dhash | String | Difference hash. | 
+| VirusTotal.URL.attributes.last_http_response_content_length | Number | The last HTTPS response length. | 
+| VirusTotal.URL.attributes.last_http_response_headers.date | Date | The last response header date. | 
+| VirusTotal.URL.attributes.last_http_response_headers.x-sinkhole | String | DNS sinkhole from last response. | 
+| VirusTotal.URL.attributes.last_http_response_headers.content-length | String | The content length of the last response. | 
+| VirusTotal.URL.attributes.last_http_response_headers.content-type | String | The content type of the last response. | 
+| VirusTotal.URL.attributes.last_http_response_content_sha256 | String | The SHA-256 hash of the content of the last response. | 
+| VirusTotal.URL.attributes.last_http_response_code | Number | Last response status code. | 
+| VirusTotal.URL.attributes.last_final_url | String | Last final URL. | 
+| VirusTotal.URL.attributes.url | String | The URL itself. | 
+| VirusTotal.URL.attributes.title | String | Title of the page. | 
+| VirusTotal.URL.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. | 
+| VirusTotal.URL.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| VirusTotal.URL.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| VirusTotal.URL.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| VirusTotal.URL.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| VirusTotal.URL.attributes.outgoing_links | String | Outgoing links of the URL page. | 
+| VirusTotal.URL.type | String | Type of the indicator \(private_url\). | 
+| VirusTotal.URL.id | String | ID of the indicator. | 
+| VirusTotal.URL.links.self | String | Link to the response. | 
