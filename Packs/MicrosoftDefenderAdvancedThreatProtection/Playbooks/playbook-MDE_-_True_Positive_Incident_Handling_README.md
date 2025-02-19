@@ -2,32 +2,38 @@ This playbook is part of the 'Malware Investigation And Response' pack. For more
 This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Threat Hunting - Generic
+
 * Microsoft Defender For Endpoint - Isolate Endpoint
+* Threat Hunting - Generic
 
 ### Integrations
+
 * MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
-* SearchIncidentsV2
+
 * AddEvidence
 * IsIntegrationAvailable
+* SearchIncidentsV2
 * ServiceNowCreateIncident
 
 ### Commands
-* microsoft-atp-stop-and-quarantine-file
-* jira-create-issue
-* setIncident
+
 * closeInvestigation
-* setIndicators
-* microsoft-atp-update-alert
-* microsoft-atp-sc-indicator-create
+* jira-create-issue
 * microsoft-atp-get-file-related-machines
+* microsoft-atp-sc-indicator-create
+* microsoft-atp-stop-and-quarantine-file
+* msg-update-alert
+* setIncident
+* setIndicators
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -46,14 +52,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | FileSha256 | Enter the File SHA256 you want to block. | ${incident.filesha256} | Optional |
 | FileSha1 | Enter the File SHA1 you want to remove from your protected endpoints. | ${incident.filesha1} | Optional |
 | ManuallyChooseIOCForHunting | This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.<br/>If false, it will hunt for all IOCs detected in the incident.<br/>Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage. | True | Optional |
-| IP | IP value to be hunt on | IP | Optional |
+| IP | IP value to be hunt on. | IP | Optional |
 | MD5 | MD5 file value to be hunt upon. | File.MD5 | Optional |
 | URL_or_Domain | URL or domain to be hunt upon. | Domain.Name | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![MDE - True Positive Incident Handling](../doc_files/MDE_-_True_Positive_Incident_Handling.png)
