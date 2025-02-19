@@ -551,12 +551,11 @@ class Client(BaseClient):
         if operation == "add_tag_indicator":
             url_suffix = "ingestion/threat-data/action/add_tag/"
             tags.extend([_.strip() for _ in tag_id.split(",")])
-            data = {'tag_id':list(set(tags))}
+            data = {'tag_id': list(set(tags))}
         elif operation == "remove_tag_from_indicator":
             url_suffix = "ingestion/threat-data/action/remove_tag/"
             tags = [_.strip() for _ in tag_id.split(",")]
             data = {"tag_ids": list(set(tags))}
-       
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size, "q": q}
         payload = {
