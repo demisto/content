@@ -59,14 +59,148 @@ script:
     description: 'Send events from CybelAngel to XSIAM. Used mainly for debugging.'
     name: cybelangel-get-events
     outputs: []
+  - name: cybelangel-report-list
+    description: 'Retrieve reports from CybelAngel.'
+    arguments:
+    - name: start_date
+      description: 'Get reports from a specific start date formatted with ISO 8601.'
+      required: true
+    - name: end_date
+      description: 'Get reports until a specific end date formatted with ISO 8601.'
+      required: true
+    outputs:
+    - contextPath: CybelAngel.Report
+      description: 'The retrieved report(s).'
+    - contextPath: File.EntryID
+      description: 'Entry ID of the saved PDF file.'
+      type: String
+  - name: cybelangel-report-get
+    description: 'Retrieve reports from CybelAngel.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report to retrieve.'
+      required: true
+    - name: pdf
+      description: 'If true, retrieves the report as a PDF file.'
+      defaultValue: false
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    outputs:
+    - contextPath: CybelAngel.Report
+      description: 'The retrieved report(s).'
+    - contextPath: File.EntryID
+      description: 'Entry ID of the saved PDF file.'
+      type: String
+  - name: cybelangel-mirror-report-get
+    description: 'Retrieve mirror details for a report.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report.'
+      required: true
+    - name: csv
+      description: 'If true, retrieves the mirror report in CSV format.'
+      defaultValue: False
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    outputs:
+    - contextPath: CybelAngel.ReportMirror
+      description: 'Mirror details of the report.'
+    - contextPath: CybelAngel.ReportMirror.CSV
+      description: 'CSV file with mirror details.'
+  - name: cybelangel-archive-report-by-id-get
+    description: 'Retrieve an archived report by ID.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the archived report.'
+      required: true
+    outputs:
+    - contextPath: CybelAngel.ArchiveReport
+      description: 'The archived report details.'
+  - name: cybelangel-report-status-update
+    description: 'Update the status of one or multiple reports.'
+    arguments:
+    - name: report_ids
+      description: 'List of report IDs to update.'
+      isArray: true
+      required: true
+    - auto: PREDEFINED
+      name: status
+      description: 'New status of the reports.'
+      required: true
+      defaultValue: 'False'
+      predefined:
+      - 'draft'
+      - 'open'
+      - 'in_progress'
+      - 'resolved'
+      - 'discarded'
+  - name: cybelangel-report-comments-get
+    description: 'Retrieve comments from a report.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report.'
+      required: true
+    outputs:
+    - contextPath: CybelAngel.Report.Comments
+      description: 'The list of comments for the report.'
+  - name: cybelangel-report-comment-create
+    description: 'Create a new comment on a report.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report.'
+      required: true
+    - name: content
+      description: 'The content of the comment.'
+      required: true
+    - name: parent_id
+      description: 'The ID of the parent comment (for replies).'
+      required: false
+    - name: assigned
+      description: 'Whether the comment is assigned to analysts.'
+      defaultValue: false
+      required: false
+    outputs:
+    - contextPath: CybelAngel.Report.Comments
+      description: 'Updated comment list with the new comment included.'
+  - name: cybelangel-report-attachment-get
+    description: 'Retrieve an attachment from a report.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report.'
+      required: true
+    - name: attachment_id
+      description: 'The ID of the attachment.'
+      required: true
+    outputs:
+    - contextPath: File.EntryID
+      description: 'Entry ID of the retrieved file.'
+  - name: cybelangel-report-remediation-request-create
+    description: 'Create a remediation request for a report.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report.'
+      required: true
+    - name: requestor_email
+      description: 'Email of the requestor.'
+      required: true
+    - name: requestor_fullname
+      description: 'Full name of the requestor.'
+      required: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
-fromversion: 8.0.0
+fromversion: 6.5.0
 marketplaces:
+  - xsoar
   - marketplacev2
 tests:
 - No tests (auto formatted)
