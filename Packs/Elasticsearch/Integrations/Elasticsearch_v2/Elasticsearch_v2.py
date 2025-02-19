@@ -19,6 +19,7 @@ warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=
 ELASTICSEARCH_V8 = 'Elasticsearch_v8'
 OPEN_SEARCH = 'OpenSearch'
 ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
+from elastic_transport import RequestsHttpNode
 if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection, NotFoundError
     from opensearch_dsl import Search
