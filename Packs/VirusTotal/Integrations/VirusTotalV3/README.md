@@ -2484,7 +2484,7 @@ Submits a file for private scanning. Use the vt-privatescanning-analysis-get com
 ### vt-privatescanning-analysis-get
 
 ***
-Get analysis of a private file submitted to VirusTotal.
+Get analysis of a private file or URL submitted to VirusTotal.
 
 #### Base Command
 
@@ -2502,15 +2502,22 @@ Get analysis of a private file submitted to VirusTotal.
 | --- | --- | --- |
 | VirusTotal.Analysis.data.attributes.date | Number | Date of the analysis in epoch format. |
 | VirusTotal.Analysis.data.attributes.status | String | Status of the analysis. |
-| VirusTotal.Analysis.data.attributes.threat_severity_level | String | Threat severity level of the private file. |
-| VirusTotal.Analysis.data.attributes.popular_threat_category | String | Popular threat category of the private file. |
-| VirusTotal.Analysis.data.attributes.threat_verdict | String | Threat verdict of the private file. |
+| VirusTotal.Analysis.data.attributes.sha256 | String | SHA-256 hash of the private file. |
+| VirusTotal.Analysis.data.attributes.threat_severity_level | String | Threat severity level of the private file \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.popular_threat_category | String | Popular threat category of the private file \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.threat_verdict | String | Threat verdict of the private file \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.url | String | URL submitted. |
+| VirusTotal.Analysis.data.attributes.title | String | Title of the private URL \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.last_http_response_content_sha256 | String | Last HTTP response content SHA-256 hash of the private URL \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.positives | String | Ratio of malicious detections to the total number of engines that scanned the private URL \(if analysis is completed\). |
 | VirusTotal.Analysis.data.id | String | ID of the analysis. |
-| VirusTotal.Analysis.data.type | String | Type of object (analysis). |
-| VirusTotal.Analysis.meta.file_info.sha256 | String | SHA-256 hash of the file (if it is a file). |
-| VirusTotal.Analysis.meta.file_info.sha1 | String | SHA-1 hash of the file (if it is a file). |
-| VirusTotal.Analysis.meta.file_info.md5 | String | MD5 hash of the file (if it is a file). |
-| VirusTotal.Analysis.meta.file_info.size | Number | Size of the file (if it is a file). |
+| VirusTotal.Analysis.data.type | String | Type of object \(private_analysis\). |
+| VirusTotal.Analysis.meta.file_info.sha256 | String | SHA-256 hash of the file. |
+| VirusTotal.Analysis.meta.file_info.sha1 | String | SHA-1 hash of the file. |
+| VirusTotal.Analysis.meta.file_info.md5 | String | MD5 hash of the file. |
+| VirusTotal.Analysis.meta.file_info.size | Number | Size of the file. |
+| VirusTotal.Analysis.meta.url_info.id | String | ID of the URL. |
+| VirusTotal.Analysis.meta.url_info.url | String | URL submitted. |
 | VirusTotal.Analysis.id | String | The analysis ID. |
 
 #### Command Example

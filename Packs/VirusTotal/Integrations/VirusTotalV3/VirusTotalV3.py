@@ -2876,7 +2876,7 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
     raw_response = client.get_private_analysis(analysis_id)
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
-    
+
     if sha256 := raw_response.get('meta', {}).get('file_info', {}).get('sha256'):
         attributes['sha256'] = sha256
 
