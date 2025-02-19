@@ -837,7 +837,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
 
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
         search = Search(using=es, index=requested_index).query(body.get('query'))
-        if page and size:
+        if size and isinstance(page, int):
             search = search[page:page + size]
         response = search.execute().to_dict()
 
