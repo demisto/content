@@ -508,10 +508,8 @@ def test_build_indicators_from_galaxies_tool_type():
     """
     Given:
         - An indicator object containing a MISP tag for a MITRE tool.
-    
     When:
         - The build_indicators_from_galaxies function is called with the indicator object and a high reputation level.
-    
     Then:
         - The extracted indicator should have the correct 'value' corresponding to the tool name.
         - The 'type' should be 'Tool'.
@@ -540,10 +538,8 @@ def test_build_indicators_from_galaxies_attack_type():
     """
     Given:
         - An indicator object containing a MISP tag for a MITRE attack pattern.
-    
     When:
         - The build_indicators_from_galaxies function is called with the indicator object and a high reputation level.
-    
     Then:
         - The extracted indicator should have the correct 'value' corresponding to the attack pattern name.
         - The 'type' should be 'Attack Pattern'.

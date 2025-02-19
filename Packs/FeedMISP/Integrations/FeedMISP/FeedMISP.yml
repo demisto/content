@@ -1,35 +1,43 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: MISP Feed
+  id: MISP Feed1
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - defaultvalue: https://example.com/
   display: Server URL
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Token
   name: credentials
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - display: Max. indicators per fetch
   name: max_indicator_to_fetch
   type: 0
   additionalinfo: In case of performance issues leading to timeouts, try limiting the number of indicators retrieved in a fetch run.```
   required: false
   advanced: true
+  section: Collect
 - display: Timeout
   name: timeout
   defaultvalue: "60"
   type: 0
   additionalinfo: The timeout of the HTTP requests sent to the MISP API (in seconds). If no value is provided, the timeout will be set to 60 seconds.
   required: false
+  section: Connect
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side and only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
@@ -37,6 +45,7 @@ configuration:
   type: 8
   hidden: true
   required: false
+  section: Collect
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: Suspicious
@@ -48,12 +57,14 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation.
   required: false
+  section: Collect
 - additionalinfo: 'Should be used in case of performance issues leading to timeouts. Note: When selecting this checkbox, indicator mapping cannot be performed.'
   display: Remove rawJSON from indicators
   name: performance
   defaultvalue: "false"
   type: 8
   required: false
+  section: Collect
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
@@ -67,6 +78,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -76,36 +88,43 @@ configuration:
   - interval
   - indicatorType
   required: false
+  section: Collect
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
   required: false
+  section: Collect
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: "240"
   type: 19
   required: false
+  section: Collect
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
+  section: Connect
 - display: MISP Attribute Tags
   additionalinfo: Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1>,<tag2>,<tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags'.
   name: attribute_tags
   type: 0
   required: false
+  section: Collect
 - display: MISP Attribute Types
   additionalinfo: Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example <type1>,<type2>,<type3>. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list'.
   name: attribute_types
   type: 0
   required: false
+  section: Collect
 - display: Query
   additionalinfo: JSON query to filter MISP attributes. When the query parameter is used Attribute Types and Attribute Tags parameters are not used. You can find the query syntax in the link provided in the integration documentation.
   name: query
   type: 12
   required: false
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -116,22 +135,26 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - name: feedTags
   display: Tags
   type: 0
   additionalinfo: Supports CSV values.
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 description: 'Indicators feed from MISP.'
-display: MISP Feed
-name: MISP Feed
+display: MISP Feed1
+name: MISP Feed1
 script:
   commands:
   - arguments:
