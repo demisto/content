@@ -11166,8 +11166,11 @@ class UniversalCommand:
         result_data = []
         for device in topology.all(filter_string=device_filter_str, target=target):
             command = UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
-            response = run_op_command(device, command)
-
+            try:
+                response = run_op_command(device, command)
+            except panos.errors.PanDeviceXapiError:
+                demisto.debug(f'Could not find The given ID {id} in the specific device {device}.')
+                continue
             for job in response.findall("./result/job"):
                 result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData, job)
 
@@ -11177,11 +11180,14 @@ class UniversalCommand:
                     and (result_data_obj.type == job_type or not job_type)
                 ):
                     result_data.append(result_data_obj)
-
+            break
         # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
         # being returned, return it as a dict instead of a list.
         if len(result_data) == 1:
             return result_data[0]  # type: ignore
+
+        if not result_data and id:  # in case of an empty list and a specific ID, it means ID not found in all devices
+            raise DemistoException(f"The given ID {id} is not found in all devices of the topology.")
 
         return result_data
 
