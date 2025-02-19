@@ -1,0 +1,9 @@
+!cybelangel-report-list start_date="3 month ago" end_date="2 month ago"
+!cybelangel-report-get report_id=1111111aa-222b-3333-444444-5555cc pdf=true
+!cybelangel-mirror-report-get report_id=1111111aa-222b-3333-444444-5555cc csv=true
+!cybelangel-archive-report-by-id-get report_id=1111111aa-222b-3333-444444-5555cc
+!cybelangel-report-status-update report_ids=1111111aa-222b-3333-444444-5555cc,1111111aa-222b-3333-444444-5555cc status=resolved
+!cybelangel-report-comments-get report_id=1111111aa-222b-3333-444444-5555cc
+!cybelangel-report-comment-create report_id=1111111aa-222b-3333-444444-5555cc content="Demo Test"
+!cybelangel-report-attachment-get report_id=1111111aa-222b-3333-444444-5555cc attachment_id=1111111aa-222b-3333-444444-5555cc
+!cybelangel-report-remediation-request-create report_id=1111111aa-222b-3333-444444-5555cc requestor_email=<your email> requestor_fullname="<your full name>"
