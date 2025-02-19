@@ -4,7 +4,7 @@ import base64
 import re
 import ipaddress
 import json
-from typing import Any
+from typing import Any, Callable
 
 
 def check_for_obfuscation(command_line: str) -> tuple[dict[str, bool], str]:
@@ -330,51 +330,42 @@ def check_suspicious_macos_applescript_commands(
 
 def check_malicious_commands(command_line: str) -> list[str]:
     patterns = [
-        r"\bmimikatz\b",
-        r"\bLaZagne\.exe\b",
-        r"\bprocdump\.exe\b",
-        r"\bcobaltstrike_beacon\.exe\b",
-        r"\bbloodhound\.exe\b",
-        r"\bsharphound\.exe\b",
-        r"\bcme\.exe\b",
-        r"\bresponder\.py\b",
-        r"\bsmbexec\.py\b",
-        r"\bInvoke\-PSRemoting\b",
-        r"\bInvoke\-TheHash\b",
-        r"\bGetUserSPNs\.py\b",
-        r"\beternalblue\.exe\b",
-        r"\beternalromance\.exe\b",
-        r"\bmeterpreter\.exe\b",
-        r"\bmsfconsole\b",
-        r"\bsharpview\.exe\b",
-        r"\bInvoke\-SMBExec\b",
-        r"\bInvoke\-Obfuscation\b",
-        r"\bInvoke\-CradleCrafter\b",
-        r"\bcovenant\.exe\b",
-        r"\bkoadic\b",
-        r"\bquasar\.exe\b",
-        r"\bnjRAT\.exe\b",
-        r"\bdarkcomet\.exe\b",
-        r"\bnanocore\.exe\b",
-        r"\bpowercat\.ps1\b",
-        r"\brubeus\.exe\b",
-        r"\bc99\.php\b",
-        r"\bchopper\.php\b",
-        r"\bwso\.php\b",
         r"\bb374k\.php\b",
         r"\bbeacon\.exe\b",
-        r"\bwinrm\.vbs\b",
-        r"\bmsfvenom\b",
-        r"\bPowGoop\.ps1\b",
+        r"\bbloodhound\.exe\b",
+        r"\bc99\.php\b",
+        r"\bchopper\.php\b",
+        r"\bcme\.exe\b",
+        r"\bcobaltstrike_beacon\.exe\b",
+        r"\bcovenant\.exe\b",
+        r"\bdarkcomet\.exe\b",
+        r"\beternalblue\.exe\b",
+        r"\beternalromance\.exe\b",
+        r"\bGetUserSPNs\.py\b",
         r"\bimpacket\-scripts\b",
-        r"\bPowerUp\.ps1\b",
-        r"\bseatbelt\.exe\b",
+        r"\bInvoke\-(?:ReflectivePEInjection|Shellcode|Expression|WmiMethod|KickoffAtomicRunner|SMBExec|Obfuscation|CradleCrafter|PSRemoting|TheHash)\b",
+        r"\bkoadic\b",
+        r"\bLaZagne\.exe\b",
         r"\blsassdump\.py\b",
-        r"\bInvoke\-ReflectivePEInjection\b",
-        r"\bInvoke\-Shellcode\b",
-        r"\bInvoke\-Expression\b",
-        r"\bInvoke\-WmiMethod\b",
-        r"\bInvoke\-KickoffAtomicRunner\b",
+        r"\bmeterpreter\.exe\b",
+        r"\bmimikatz\b",
+        r"\bmsfconsole\b",
+        r"\bmsfvenom\b",
+        r"\bnanocore\.exe\b",
+        r"\bnjRAT\.exe\b",
+        r"\bPowerUp\.ps1\b",
+        r"\bpowercat\.ps1\b",
+        r"\bPowGoop\.ps1\b",
+        r"\bprocdump\.exe\b",
+        r"\bquasar\.exe\b",
+        r"\bresponder\.py\b",
+        r"\brubeus\.exe\b",
+        r"\bseatbelt\.exe\b",
+        r"\bsharphound\.exe\b",
+        r"\bsharpview\.exe\b",
+        r"\bsmbexec\.py\b",
+        r"\bwinrm\.vbs\b",
+        r"\bwso\.php\b",
     ]
 
     matches: list[str] = []
@@ -386,29 +377,26 @@ def check_malicious_commands(command_line: str) -> list[str]:
 
 def check_reconnaissance_temp(command_line: str) -> list[str]:
     patterns = [
+        r"\barp\b",
+        r"\battrib\b",
+        r"\bdir\b",
+        r"\bfsutil\b",
+        r"\bhostname\b",
         r"\bipconfig\b",
+        r"\bnet\s+(?:group|localgroup|user)\b",
         r"\bnetstat\b",
         r"\bnslookup\b",
-        r"\barp\b",
-        r"\broute\s+print\b",
-        r"\bhostname\b",
         r"\bping\b",
-        r"\btracert\b",
-        r"\bwhoami\b",
-        r"\bnet\s+user\b",
-        r"\bnet\s+group\b",
-        r"\bnet\s+localgroup\b",
         r"\bquery\s+user\b",
+        r"\breg\s+query\b",
+        r"\broute\s+print\b",
+        r"\bsc\s+query\b",
         r"\bsysteminfo\b",
         r"\btasklist\b",
-        r"\bsc\s+query\b",
-        r"\bwmic\s+process\s+list\b",
-        r"\bfsutil\b",
-        r"\bdir\b",
-        r"\battrib\b",
+        r"\btracert\b",
         r"\btree\b",
-        r"\bnetstat\s+\-ano\b",
-        r"\breg\s+query\b",
+        r"\bwhoami\b",
+        r"\bwmic\s+process\s+list\b",
     ]
 
     matches: list[str] = []
@@ -423,17 +411,15 @@ def check_windows_temp_paths(command_line: str) -> list[str]:
     Identifies all occurrences of temporary paths in the given command line.
     """
     patterns = [
-        r"\bC:\\Temp\b",
-        r"\bC:\\Windows\\System32\\Temp\b",
         r"%TEMP%",
         r"%TMP%",
-        r"\\Users\\Public\\Public\s+Downloads\b",
+        r"\bC:\\Temp\b",
+        r"\bC:\\Windows\\System32\\Temp\b",
         r"\\AppData\\Local\\Temp\b",
         r"\\ProgramData\\Microsoft\\Windows\\Caches\b",
+        r"\\Users\\Public\\Public\s+Downloads\b",
+        r"\\Windows\\(?:Tasks|debug|Temp)\b",
         r"\\Windows\\System32\\spool\b",
-        r"\\Windows\\Tasks\b",
-        r"\\Windows\\debug\b",
-        r"\\Windows\\Temp\b",
     ]
 
     matches: list[str] = []
@@ -445,29 +431,25 @@ def check_windows_temp_paths(command_line: str) -> list[str]:
 
 def check_suspicious_content(command_line: str) -> list[str]:
     patterns = [
-        r"\-w\s+hidden\b",
-        r"\-WindowStyle\s+Hidden\b",
-        r"\-window\s+hidden\b",
-        r"\-noni\b",
-        r"\-enc\b",
-        r"\-NonInteractive\b",
-        r"\-nop\b",
-        r"\-noprofile\b",
-        r"\-ExecutionPolicy\s+Bypass\b",
+        r"\-(?:EncodedCommand|enc|e)\b",
+        r"\-(?:ExecutionPolicy|exec)\s+Bypass\b",
+        r"\-(?:NonInteractive|noi)\b",
+        r"\-(?:noprofile|nop)\b",
+        r"\-(?:WindowStyle|window|w)\s+hidden\b",
+        r"\bbcedit\b",
         r"\bBypass\b",
+        r"\bcertutil.*\-encodehex\b",
         r"\bClipboardContents\b",
         r"\bGet\-GPPPassword\b",
         r"\bGet\-LSASecret\b",
-        r"\bnet\s+user\s+\/\s+add\b",
-        r"\btaskkill\b",
-        r"\brundll32\b",
         r"\blsass\b",
-        r"\breg\s+add\b",
-        r"\bbcedit\b",
-        r"\bschtasks\b",
+        r"\bnet\s+user\s+\/\s+add\b",
         r"\bnetsh\s+firewall\s+set\b",
+        r"\breg\s+add\b",
+        r"\brundll32\b",
+        r"\bschtasks\b",
+        r"\btaskkill\b",
         r"\s*\<NUL\b",
-        r"\bcertutil.*\-encodehex\b",
         r"wevtutil\s+cl\b",
     ]
 
@@ -914,6 +896,22 @@ def analyze_command_line(
       - "score", "findings", "risk"
     """
 
+    checks: dict[str, Callable[[str]]] = {
+        "malicious_commands": check_malicious_commands,
+        "windows_temp_path": check_windows_temp_paths,
+        "suspicious_parameters": check_suspicious_content,
+        "mixed_case_powershell": check_mixed_case_powershell,
+        "powershell_suspicious_patterns": check_powershell_suspicious_patterns,
+        "credential_dumping": check_credential_dumping,
+        "suspicious_mshta": check_suspicious_mshta,
+        "reconnaissance": check_reconnaissance_temp,
+        "lateral_movement": check_lateral_movement,
+        "data_exfiltration": check_data_exfiltration,
+        "amsi_techniques": check_amsi,
+        "indicators": extract_indicators,
+        "social_engineering": check_social_engineering,
+    }
+
     results: dict[str, Any] = {
         "original_command": command_line,
         "analysis": {"original": {}},
@@ -925,42 +923,26 @@ def analyze_command_line(
         results["parsed_command"] = parsed_command_line
 
     # Perform checks on the original command line
-    original_analysis = {
-        "malicious_commands": check_malicious_commands(parsed_command_line),
-        "windows_temp_path": check_windows_temp_paths(parsed_command_line),
-        "suspicious_parameters": check_suspicious_content(parsed_command_line),
-        "mixed_case_powershell": check_mixed_case_powershell(command_line),
-        "powershell_suspicious_patterns": check_powershell_suspicious_patterns(
-            parsed_command_line
-        ),
-        "credential_dumping": check_credential_dumping(parsed_command_line),
-        "suspicious_mshta": check_suspicious_mshta(parsed_command_line),
-        "custom_patterns": (
-            check_custom_patterns(parsed_command_line, custom_patterns)
-            if custom_patterns
-            else []
-        ),
-        "reconnaissance": check_reconnaissance_temp(parsed_command_line),
-        "lateral_movement": check_lateral_movement(parsed_command_line),
-        "data_exfiltration": check_data_exfiltration(parsed_command_line),
-        "amsi_techniques": check_amsi(parsed_command_line),
-        "indicators": extract_indicators(parsed_command_line),
-        "social_engineering": check_social_engineering(parsed_command_line),
-    }
+    for check_name, check in checks.items():
+        results["analysis"]["original"][check_name] = check(parsed_command_line)
 
+
+    results["analysis"]["custom_patterns"] = check_custom_patterns(parsed_command_line, 
+                                                                   custom_patterns) if custom_patterns else []
+    
     # Only set "base64_encoding" if we actually decoded something
 
     for flag, value in flags.items():
         if value:
-            original_analysis[flag] = value
+            results["analysis"]["original"][flag] = value
 
     # Handle macOS
     if "osascript" in parsed_command_line.lower():
-        original_analysis["macOS_suspicious_commands"] = (
+        results["analysis"]["original"]["macOS_suspicious_commands"] = (
             check_suspicious_macos_applescript_commands(parsed_command_line)
         )
 
-    results["analysis"]["original"] = original_analysis
+    #results["analysis"]["original"] = original_analysis
     score_details = calculate_score(results)
     results.update(score_details)
 
@@ -988,8 +970,10 @@ def main():
     # Prepare readable output for the results
 
     for result in results:
-        if parsed_command := result.get("parsed_command", None):
-            parsed_command = f"**Decoded Command**: {parsed_command}\n"
+        if result.get("parsed_command", None) != result["original_command"]: 
+            parsed_command = f"**Decoded Command**: {result['parsed_command']}\n"
+        else:
+            parsed_command = None
 
         readable_output += (
             f"**Command Line**: {result['original_command']}\n"
