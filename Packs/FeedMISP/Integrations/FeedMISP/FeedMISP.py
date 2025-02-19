@@ -371,6 +371,7 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Op
                 else:
                     raise e
             galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
+
     return galaxy_indicators
 
 
