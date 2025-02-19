@@ -10,7 +10,7 @@ comment: Displays the phishing campaign senders' email addresses and the number 
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.84405
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

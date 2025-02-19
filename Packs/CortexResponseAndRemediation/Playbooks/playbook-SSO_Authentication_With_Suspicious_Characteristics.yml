@@ -1,0 +1,1266 @@
+id: SSO Authentication With Suspicious Characteristics
+version: -1
+name: SSO Authentication With Suspicious Characteristics
+description: |-
+  **This playbook addresses the following alerts**:
+  - SSO authentication attempt with suspicious characteristics.
+  - Successful SSO authentication with suspicious characteristics.
+
+  **Playbook Stages**:
+
+  **Triage**:
+  - Collect initial information about the user and the SSO authentication event.
+  - Validate whether the authentication proxy is linked to iCloud Relay.
+
+  **Investigation**:
+  - **Check IOCs Reputation**:
+    - Analyze the reputation of IP addresses associated with the alert.
+  - **Search Related Alerts**:
+    - Look for alerts related to the same user within the system to identify suspicious activity trends.
+  - **Check If User Is Risky**:
+    - Retrieve the user's risk score and evaluate high-risk indicators for suspicious activities.
+  - **Check User Agent**:
+    - Identify suspicious user agents used during the authentication attempts.
+  - **Check Okta Logs**:
+    - Retrieve Okta authentication logs for failed login attempts and suspicious authentication activities within the last day.
+
+  **Containment**:
+  - **Automatic Actions**:
+    - Clear user sessions if any suspicious evidence is found during the investigation.
+  - **Analyst Review**:
+    - Provide an analyst with findings for review and determine the appropriate action:
+      - No action required.
+      - Suspend the user in Okta.
+    - If the analyst chooses to suspend the user, their active sessions are cleared in Okta.
+
+  **Requirements**:
+  For the best results, it's recommended to ensure these integrations are configured and working:
+  - **Core** integration for user risk evaluation and suspicious activity checks.
+  - **Okta v2** integration for analyzing authentication logs, clearing sessions, and user suspension.
+  - Any IP reputation integration that supports the `!ip` command for checking IP address reputation.
+tags:
+- TA0001 - Initial Access
+- T1078 - Valid Accounts
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8bd29f9d-77ae-4ae9-86f7-77b429390af6
+    type: start
+    task:
+      id: 8bd29f9d-77ae-4ae9-86f7-77b429390af6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3ace4f94-cff7-49ea-8267-0eff392840ab
+    type: regular
+    task:
+      id: 3ace4f94-cff7-49ea-8267-0eff392840ab
+      version: -1
+      name: Collect authentication information
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c0ea2a44-413f-44ef-85b7-a2664bf9148f
+    type: title
+    task:
+      id: c0ea2a44-413f-44ef-85b7-a2664bf9148f
+      version: -1
+      name: 'Triage '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 10fbb0a2-eed8-485a-8809-8bbee09975b7
+    type: regular
+    task:
+      id: 10fbb0a2-eed8-485a-8809-8bbee09975b7
+      version: -1
+      name: Get IP reputation
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      ip:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: action_local_ip
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b7c04990-1c58-4572-83e5-be31d44fe88a
+    type: title
+    task:
+      id: b7c04990-1c58-4572-83e5-be31d44fe88a
+      version: -1
+      name: Check IOCs Reputation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: eec90eed-fe16-4f75-8f44-60e27270f03e
+    type: title
+    task:
+      id: eec90eed-fe16-4f75-8f44-60e27270f03e
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "24"
+      - "19"
+      - "35"
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 538168f1-8287-431d-83bd-86eb4ed96eec
+    type: condition
+    task:
+      id: 538168f1-8287-431d-83bd-86eb4ed96eec
+      description: ""
+      version: -1
+      name: Check if auth proxy is iCloud
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      yes - close alert:
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: yes - close alert
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert.raw_abioc.event.sso_debug_data
+                accessor: tunnels
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: ICLOUD_RELAY_PROXY
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b77a453e-6a23-4585-8044-fc2f8918c4c9
+    type: regular
+    task:
+      id: b77a453e-6a23-4585-8044-fc2f8918c4c9
+      version: -1
+      name: Close Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ed5c95fb-afe7-4912-8a11-b467acfaddba
+    type: title
+    task:
+      id: ed5c95fb-afe7-4912-8a11-b467acfaddba
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b0feadde-e88c-4393-8c46-569ebc9141ac
+    type: title
+    task:
+      id: b0feadde-e88c-4393-8c46-569ebc9141ac
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 615f55bb-76d6-481a-86cd-06196dbf65aa
+    type: playbook
+    task:
+      id: 615f55bb-76d6-481a-86cd-06196dbf65aa
+      version: -1
+      name: Containment Plan - Clear User Sessions
+      description: |-
+        ## Containment Plan - Clear User Sessions
+
+        This playbook is a sub-playbook within the containment plan playbook.
+        The playbook uses the 'Okta v2' and 'MSGraph User' integrations to clear user sessions.
+      playbookName: Containment Plan - Clear User Sessions
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      ClearUserSessions:
+        simple: "True"
+      Username:
+        simple: ${Core.OriginalAlert.event.auth_normalized_user.upn}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9e0cca91-c3e9-429c-8036-b7b89c3b5202
+    type: title
+    task:
+      id: 9e0cca91-c3e9-429c-8036-b7b89c3b5202
+      version: -1
+      name: Check If User Is Risky
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4476bd38-fefa-4180-8f32-afc58b6cd7b9
+    type: regular
+    task:
+      id: 4476bd38-fefa-4180-8f32-afc58b6cd7b9
+      version: -1
+      name: Get core user risk score
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      user_id:
+        simple: ${alert.username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: f8a044d0-204a-4078-8b6a-7af93fda9194
+    type: regular
+    task:
+      id: f8a044d0-204a-4078-8b6a-7af93fda9194
+      version: -1
+      name: Get risky user activity
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automationsscript
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      key:
+        simple: UserRiskyCoreReason
+      value:
+        complex:
+          root: Core.RiskyUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: reasons.description
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 10882af2-70d1-4918-8486-8add87c9ba58
+    type: title
+    task:
+      id: 10882af2-70d1-4918-8486-8add87c9ba58
+      version: -1
+      name: Search Related Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: c94c6f69-9012-4ed2-8893-4b7cced387d0
+    type: condition
+    task:
+      id: c94c6f69-9012-4ed2-8893-4b7cced387d0
+      description: ""
+      version: -1
+      name: Evaluate Analyst Response for Next Action
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      No Action:
+      - "14"
+      Suspend User:
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: No Action
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: No Action
+          ignorecase: true
+    - label: Suspend User
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Suspend User
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: ebb75b74-3580-4d8f-82af-238299139250
+    type: regular
+    task:
+      id: ebb75b74-3580-4d8f-82af-238299139250
+      version: -1
+      name: Suspend user in Okta
+      description: Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
+      script: '|||okta-suspend-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      username:
+        simple: ${Core.OriginalAlert.event.auth_normalized_user.upn}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: c19cb304-bab7-42d2-8249-03ffb9bccb45
+    type: title
+    task:
+      id: c19cb304-bab7-42d2-8249-03ffb9bccb45
+      version: -1
+      name: Check Okta Logs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 1c995d99-d73a-4635-840c-0cae9c8941b6
+    type: title
+    task:
+      id: 1c995d99-d73a-4635-840c-0cae9c8941b6
+      version: -1
+      name: Check User Agent
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 452c9c63-44ef-4552-8ea7-55538f5a67a8
+    type: regular
+    task:
+      id: 452c9c63-44ef-4552-8ea7-55538f5a67a8
+      version: -1
+      name: Search for suspicious authentication activity
+      description: Gets logs by providing optional filters.
+      script: '|||okta-get-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      extend-context:
+        simple: OktaLogs=.
+      filter:
+        simple: (outcome.result eq "SUCCESS" AND (eventType eq "app.oauth2.client_id_rate_limit_warning" OR eventType eq "user.mfa.attempt_bypass")) OR (outcome.result eq "FAILURE" AND ( eventType eq "user.authentication.auth_via_mfa" OR eventType eq "user.authentication.auth_via_IDP" OR eventType eq "user.account.lock" OR eventType eq "user.authentication.auth_via_social" OR eventType eq "user.account.unlock" OR eventType eq "user.account.use_token" OR eventType eq "app.oauth2.token.grant" OR eventType eq "app.oauth2.as.evaluate.claim" OR eventType eq "app.oauth2.as.token.revoke")) AND actor.alternateId eq "${Core.OriginalAlert.event.auth_normalized_user.upn}"
+      ignore-outputs:
+        simple: "true"
+      since:
+        simple: ${TimeNow}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 6ef61263-52ea-4fd5-8979-c9a56a6f75af
+    type: regular
+    task:
+      id: 6ef61263-52ea-4fd5-8979-c9a56a6f75af
+      version: -1
+      name: Get timestamp for Okta logs
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+      - "42"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 8d12f625-ee04-4af9-8495-3bfb4a0c9997
+    type: regular
+    task:
+      id: 8d12f625-ee04-4af9-8495-3bfb4a0c9997
+      version: -1
+      name: Get Okta failed logins in last day
+      description: Returns failed login events.
+      script: '|||okta-get-failed-logins'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      extend-context:
+        simple: FailedLogins=.
+      ignore-outputs:
+        simple: "true"
+      since:
+        simple: ${TimeNow}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 10ecbe66-7ca4-4080-89bb-d5af2ae0c4d0
+    type: condition
+    task:
+      id: 10ecbe66-7ca4-4080-89bb-d5af2ae0c4d0
+      description: ""
+      version: -1
+      name: Check for suspicious evidence
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: OktaLogs
+            iscontext: true
+          right:
+            value:
+              simple: No logs found
+          ignorecase: true
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: FailedLogins
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FailedLogins.actor.alternateId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.auth_normalized_user.upn
+                      iscontext: true
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+          ignorecase: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.id
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                accessor: Indicator
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: UserAgent
+            iscontext: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert.raw_abioc.event.sso_debug_data
+                accessor: tunnels
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: '"TOR_PROXY"'
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: fe290ade-179c-411b-818a-20eb58f6d94f
+    type: regular
+    task:
+      id: fe290ade-179c-411b-818a-20eb58f6d94f
+      version: -1
+      name: Check for a suspicious User Agent
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      key:
+        simple: UserAgent
+      value:
+        complex:
+          root: Core.OriginalAlert.event.normalized_user_agent
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: Core.OriginalAlert.event.normalized_user_agent
+                iscontext: true
+              right:
+                value:
+                  simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium|python-requests|node-fetch|PostmanRuntime|GuzzleHttp)\b
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: b62483ff-7b2a-40dc-8eed-7cca09b538a2
+    type: playbook
+    task:
+      id: b62483ff-7b2a-40dc-8eed-7cca09b538a2
+      version: -1
+      name: Containment Plan - Clear User Sessions
+      description: |-
+        ## Containment Plan - Clear User Sessions
+
+        This playbook is a sub-playbook within the containment plan playbook.
+        The playbook uses the 'Okta v2' and 'MSGraph User' integrations to clear user sessions.
+      playbookName: Containment Plan - Clear User Sessions
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ClearUserSessions:
+        simple: "True"
+      Username:
+        simple: ${Core.OriginalAlert.event.auth_normalized_user.upn}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 29b64812-1e6f-4477-84f1-a657139dcf1e
+    type: regular
+    task:
+      id: 29b64812-1e6f-4477-84f1-a657139dcf1e
+      version: -1
+      name: Search for related alerts
+      description: |-
+        Searches Cortex alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      fromdate:
+        simple: 2 hours ago
+      query:
+        complex:
+          root: alert.username
+          accessor: '[0]'
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \\
+              toReplace:
+                value:
+                  simple: \
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: username:*
+              suffix:
+                value:
+                  simple: '* AND (name:"A successful SSO sign-in from TOR" or name:"A user connected from a new country using an anonymized proxy" or name:"Abnormal first access to a resource by a user via SSO")'
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 5f4c7dba-a5ad-4f41-8487-1f5d4d981f62
+    type: collection
+    task:
+      id: 5f4c7dba-a5ad-4f41-8487-1f5d4d981f62
+      description: ""
+      version: -1
+      name: Manual Task - User Action Decision
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            #### Username:
+            `${Core.OriginalAlert.event.auth_normalized_user.upn}`
+
+            ---
+
+            #### Malicious IP Found:
+            `${.=val.DBotScore && val.DBotScore.filter(d => d.Type === "ip" && d.Score === 3).length > 0 ? val.DBotScore.filter(d => d.Type === "ip" && d.Score === 3)[0].Indicator : "None"}`
+
+            ---
+
+            #### Core User Risk Analysis:
+            - **User is risky**: `${.=val.UserRiskyCoreReason ? "Yes, Reason: " + val.UserRiskyCoreReason : "N/A"}`
+
+            ---
+
+            #### Related Alerts:
+            ${.=val.foundIncidents && val.foundIncidents.length > 0 ? Array.from(new Set(val.foundIncidents.map(incident => "  - " + incident.name))).join("\n\n") : "N/A"}
+
+            ---
+
+            #### User Agent Analysis:
+            - **Suspicious User Agent**: `${.=val.UserAgent ? val.UserAgent : "N/A"}`
+
+            ---
+
+            #### Okta Logs Analysis:
+            - **Last Day Failed Login Attempts**: `${.=val.FailedLogins && val.FailedLogins !== "No logs found" ? val.FailedLogins.filter(f => f.actor.alternateId === val.Core.OriginalAlert.event.auth_normalized_user.upn).length : "N/A"}`
+            - **Number of Suspicious Okta System Logs from Last Day**:
+            `${.=val.OktaLogs !== "No logs found" ? val.OktaLogs.length : "N/A"}`
+
+            #### Action Required:
+            Please choose the action you want to perform:
+
+            - **No Action**
+            - **Suspend User**: Suspend the user in Okta.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: No Action
+        - simple: Suspend User
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Action
+      description: Analyst review
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_14_yes - close alert": 0.16,
+      "12_9_#default#": 0.36,
+      "30_14_No Action": 0.29,
+      "30_32_Suspend User": 0.63,
+      "43_14_#default#": 0.11,
+      "43_17_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2735,
+        "width": 2270,
+        "x": -360,
+        "y": 20
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

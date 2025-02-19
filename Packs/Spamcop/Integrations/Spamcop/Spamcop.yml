@@ -72,7 +72,7 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: string
     description: Get IP details from Spamcop service.
-  dockerimage: demisto/python3:3.10.14.99865
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   subtype: python3
 fromversion: 5.0.0

@@ -414,3 +414,9 @@ ignore=GR107
 
 [file:reputation-cidr.json]
 ignore=GR107
+
+[file:3_5_23.md]
+ignore=RN115
+
+[file:layoutscontainer-Tactic.json]
+ignore=LO107

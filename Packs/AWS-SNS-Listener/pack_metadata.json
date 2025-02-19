@@ -2,7 +2,7 @@
     "name": "AWS-SNS-Listener",
     "description": "A long running AWS SNS Listener service that can subscribe to an SNS topic and create incidents from the messages received.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

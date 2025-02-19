@@ -14,18 +14,18 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use."
-  display: Listen Port
-  name: longRunningPort
-  type: 0
-  required: true
-  section: Connect
 - additionalinfo: "The username and password is required in XSOAR 8.5 and above. Using the `_header:` feature without using an engine will not work."
   display: Username
   name: credentials
   type: 9
   section: Connect
   required: false
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the **Test** button more than once, a failure may occur mistakenly indicating that the port is already in use."
+  display: Listen Port
+  name: longRunningPort
+  type: 0
+  required: true
+  section: Connect
 - display: Certificate (Required for HTTPS)
   additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   name: certificate
@@ -57,7 +57,7 @@ display: Generic Webhook
 name: Generic Webhook
 script:
   commands: []
-  dockerimage: demisto/fastapi:0.110.3.93571
+  dockerimage: demisto/fastapi:0.115.5.117397
   longRunning: true
   longRunningPort: true
   script: '-'

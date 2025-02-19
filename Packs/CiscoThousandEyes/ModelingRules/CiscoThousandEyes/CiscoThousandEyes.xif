@@ -1,0 +1,31 @@
+[MODEL: dataset = cisco_thousandeyes_raw]
+
+/* Activity Audit logs (https://developer.cisco.com/docs/thousandeyes/list-activity-log-events/)  */
+filter SOURCE_LOG_TYPE = "AuditEvents"
+| alter 
+    affected_resources_count = array_length(resources -> []), 
+    user_ipv4 = if(ipAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddress),
+    user_ipv6 = if(ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", ipAddress)
+| alter 
+    xdm.event.original_event_type = event,
+    xdm.event.type = SOURCE_LOG_TYPE,
+    xdm.source.host.ipv4_public_addresses = if(user_ipv4 != null and not incidr(user_ipv4, "10.0.0.0/8") and not incidr(user_ipv4, "172.16.0.0/12") and not incidr(user_ipv4, "192.168.0.0/16") and not incidr(user_ipv4, "127.0.0.0/8") and not incidr(user_ipv4, "169.254.0.0/16") and not incidr(user_ipv4, "100.64.0.0/10"), arraycreate(user_ipv4)),
+    xdm.source.ipv4 = user_ipv4,
+    xdm.source.ipv6 = user_ipv6,
+    xdm.source.user.groups = arrayfilter(arraycreate(accountGroupName, aid), "@element" != null),
+    xdm.source.user.identifier = uid,
+    xdm.source.user.username = coalesce(arrayindex(regextract(user, "\(([^\)]+)\)"), 0), user), // extract user email from within parentheses, e.g., "API Sandbox User (noreply@thousandeyes.com)"
+    xdm.target.resource.name = if(affected_resources_count > 0, arraystring(arraydistinct(arraymap(resources -> [], "@element" -> name)), ",")),
+    xdm.target.resource.type = if(affected_resources_count > 0, arraystring(arraydistinct(arraymap(resources -> [], "@element" -> type)), ","));
+
+/* Alerts (https://developer.cisco.com/docs/thousandeyes/alert/)  */
+filter SOURCE_LOG_TYPE = "Alerts"  
+| alter 
+    xdm.alert.original_alert_id = id,
+    xdm.alert.severity = alertSeverity,
+    xdm.alert.category = alertType,
+    xdm.event.duration = to_integer(duration),
+    xdm.event.is_completed = if(alertState = "clear"),
+    xdm.event.original_event_type = alertType,
+    xdm.event.type = SOURCE_LOG_TYPE,
+    xdm.network.rule = alertRuleId;

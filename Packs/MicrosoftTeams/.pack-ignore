@@ -4,6 +4,9 @@ ignore=RM106
 [file:MicrosoftTeams.yml]
 ignore=DS107
 
+[file:MicrosoftTeams_description.md]
+ignore=DS107
+
 [known_words]
 aad
 membershiptype

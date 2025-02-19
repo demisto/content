@@ -2,7 +2,7 @@
     "name": "ReversingLabs Ransomware and Related Tools Feed",
     "description": "A timely and curated threat intel list containing recent indicators extracted from ransomware and the tools used to deploy ransomware which are suitable for threat hunting or deployment to security controls.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "ReversingLabs",
     "url": "https://www.reversinglabs.com",
     "email": "support@reversinglabs.com",

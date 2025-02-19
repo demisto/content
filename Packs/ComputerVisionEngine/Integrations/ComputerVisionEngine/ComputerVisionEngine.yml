@@ -28,7 +28,7 @@ script:
     - contextPath: ComputerVision
       description: The key holds down the information about detected objects in the picture.
       type: Unknown
-  dockerimage: demisto/yolo-coco:1.0.0.113048
+  dockerimage: demisto/yolo-coco:1.0.0.115114
   runonce: false
   script: '-'
   subtype: python3

@@ -1,6 +1,9 @@
 [file:CortexCoreIR.yml]
 ignore=IN139
 
+[file:playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace.yml]
+ignore=PB106
+
 [file:README.md]
 ignore=RM104,RM106
 
@@ -12,6 +15,14 @@ ignore=BA101
 
 [file:playbook-XCloud_Cryptomining.yml]
 ignore=BA101
+
+# See CIAC-7711, CIAC-11954
+[file:playbook-Suspicious_Hidden_User_Created.yml]
+ignore=GR103
+
+# See CIAC-7711, CIAC-11954
+[file:playbook-Excessive_User_Account_Lockouts.yml]
+ignore=GR103
 
 # GR103 is temporary, see CIAC-11705
 [file:layoutscontainer-Default.json]

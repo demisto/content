@@ -1,0 +1,35 @@
+{
+    "id": "incident_microsoftsentinelclassificationreason",
+    "version": -1,
+    "modified": "2024-11-06T08:33:57.789743118Z",
+    "name": "Microsoft Sentinel Classification Reason",
+    "ownerOnly": false,
+    "cliName": "microsoftsentinelclassificationreason",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "Inaccurate Data",
+        "Incorrect Alert Logic"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Microsoft Sentinel Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

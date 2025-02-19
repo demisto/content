@@ -1,24 +1,20 @@
 This is a simple web-server that as of now, supports handling configurable user responses (like Yes/No/Maybe) and data collection tasks that can be used to fetch key value pairs. What makes it different from Data collection tasks is that the URL to perform a certain action is predictable and written to the incident context when an action is setup. This URL can be inserted to for example: an HTML email.  User clicks are recorded in the integration context and can be polled by Scheduled Commands/ Generic Polling.
 This integration was integrated and tested with version 1.0 of XSOAR-Web-Server
 
-## Configure XSOAR-Web-Server on Cortex XSOAR
+## Configure XSOAR-Web-Server in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for XSOAR-Web-Server.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Incident type |  | False |
-    | Long running instance |  | False |
-    | Server Listening Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If using an engine, you must enter a Listen Port. If not using an engine, do not enter a Listen Port and an unused port will automatically be generated when the instance is saved.             | True |
-    | XSOAR external URL | The URL on which the user should send the response to. | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Incident type |  | False |
+| Long running instance |  | False |
+| Server Listening Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If using an engine, you must enter a Listen Port. If not using an engine, do not enter a Listen Port and an unused port will automatically be generated when the instance is saved.             | True |
+| XSOAR external URL | The URL on which the user should send the response to. | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### xsoar-ws-setup-simple-action

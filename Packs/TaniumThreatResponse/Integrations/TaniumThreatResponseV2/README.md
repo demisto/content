@@ -3,29 +3,25 @@ This integration was integrated and tested with versions 3.5.284 and 4.x of Tani
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Tanium Threat Response v2 on Cortex XSOAR
+## Configure Tanium Threat Response v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Tanium Threat Response v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Hostname, IP address, or server URL | True |
-    | Username | False |
-    | Password | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Maximum number of incidents to fetch each time | False |
-    | Alert states to filter by in fetch incidents command. Empty list won't filter the incidents by state. | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | API Version | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Hostname, IP address, or server URL | True |
+| Username | False |
+| Password | False |
+| Fetch incidents | False |
+| Incident type | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+| Maximum number of incidents to fetch each time | False |
+| Alert states to filter by in fetch incidents command. Empty list won't filter the incidents by state. | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| API Version | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### tanium-tr-get-intel-doc-by-id
 ***

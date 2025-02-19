@@ -8,9 +8,9 @@ commonfields:
 configuration:
 - display: Server URL
   name: url
-  required: true
+  required: false
   type: 0
-  additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200.
+  additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
   section: Connect
 - additionalinfo: Provide Username + Password instead of API key + API ID
   display: Username for server login
@@ -37,6 +37,7 @@ configuration:
   options:
   - Elasticsearch
   - OpenSearch
+  - Elasticsearch_v8
   type: 15
   section: Connect
   advanced: true
@@ -49,21 +50,28 @@ configuration:
 - display: Query String
   name: fetch_query
   type: 0
-  additionalinfo: The query will be used when fetching incidents. Index time field will be used as a filter in the query.
+  additionalinfo: |-
+    The query will be used when fetching incidents. Index time field will be used as a filter in the query.
+
+    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
-  advanced: true
   required: false
 - display: Index time field (for sorting sort and limiting data)
   name: fetch_time_field
   type: 0
   section: Collect
-  advanced: true
   required: false
-  additionalinfo: The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
+  additionalinfo: |-
+    The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
+
+    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
 - display: Raw Query
   name: raw_query
   type: 12
-  additionalinfo: Will override the 'Query String' Lucene syntax string. Results will not be filtered.
+  additionalinfo: |-
+    Will override the 'Query String' Lucene syntax string. Results will not be filtered.
+
+    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   advanced: true
   required: false
@@ -289,6 +297,40 @@ script:
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
   - name: es-integration-health-check
     description: Returns the health status of the integration. This commmand should be used for debugging purposes.
+  - name: es-get-indices-statistics
+    description: Returns Elasticsearch indices statistics and information. This command is not supported for client type OpenSearch.
+    arguments:
+    - description: The maximum number of indices to return.
+      name: limit
+      required: false
+      defaultValue: '50'
+    - description: Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored.
+      name: all_results
+      required: false
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: Elasticsearch.IndexStatistics.Name
+      description: The name of the index.
+      type: String
+    - contextPath: Elasticsearch.IndexStatistics.Status
+      description: The status of the index.
+      type: String
+    - contextPath: Elasticsearch.IndexStatistics.Health
+      description: The health status of the index.
+      type: String
+    - contextPath: Elasticsearch.IndexStatistics.UUID
+      description: The UUID of the index.
+      type: String
+    - contextPath: Elasticsearch.IndexStatistics.DocumentsCount
+      description: The number of documents that are indexed in the index.
+      type: Number
+    - contextPath: Elasticsearch.IndexStatistics.DocumentsDeleted
+      description: The number of documents that were deleted from the index.
+      type: Number
   - description: Search using EQL query.
     name: es-eql-search
     arguments:
@@ -382,7 +424,7 @@ script:
       description: The result of the index operation.
       type: string
     description: Indexes a document into an Elasticsearch index.
-  dockerimage: demisto/elasticsearch:1.0.0.87483
+  dockerimage: demisto/elasticsearch:1.0.0.117175
   isfetch: true
   runonce: false
   script: '-'
@@ -393,4 +435,7 @@ autoUpdateDockerImage: false
 fromversion: 5.0.0
 defaultmapperin: Elasticsearch - Incoming Mapper
 tests:
-- No tests (auto formatted)
+- Elasticsearch_v2_test
+- Elasticsearch_v2_test-v6
+- Elasticsearch_v2_test-v7-v8
+- Elasticsearch_v2_test-v8

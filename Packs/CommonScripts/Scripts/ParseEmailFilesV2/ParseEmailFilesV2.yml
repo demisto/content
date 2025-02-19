@@ -5,7 +5,7 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: "false"
-  description: Will parse only the headers and return headers table.
+  description: Will parse only the headers and return them as a table. Regardless of the `nesting_level_to_return` parameter, only the headers of the outermost email file will be included.
   name: parse_only_headers
   predefined:
   - "true"
@@ -16,6 +16,7 @@ args:
 - defaultValue: "All files"
   description: In case of nested email files (for instance, an EML file inside an EML file), determines which of the email files to return as an output. "All files" - will return all nested email files as output, "Outer file" - will return only the "outer" email file as output, "Inner file" - will return only the most "inner" email file as output. In case "Inner file" was chosen together with the 'max_depth' argument, the inner email will be considered as the email in the depth of the `max_size` argument.
   name: nesting_level_to_return
+  auto: PREDEFINED
   predefined:
   - "All files"
   - "Outer file"
@@ -116,4 +117,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFilesV2-test
-dockerimage: demisto/parse-emails:1.0.0.113216
+dockerimage: demisto/parse-emails:1.0.0.2147169

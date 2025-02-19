@@ -1183,7 +1183,7 @@ script:
     - contextPath: OpenSSL.GetCertificate.version
       description: The version number of the certificate
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.113405
+  dockerimage: demisto/ansible-runner:1.0.0.2024530
   script: ''
   subtype: python3
   type: python

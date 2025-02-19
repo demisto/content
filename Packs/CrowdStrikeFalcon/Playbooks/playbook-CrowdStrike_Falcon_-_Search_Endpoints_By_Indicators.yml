@@ -1,0 +1,1064 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: CrowdStrike Falcon - Search Endpoints By Indicators
+inputSections:
+- description: Generic group for inputs.
+  inputs:
+  - FileSha256
+  - HostId
+  - SHA1
+  - MD5
+  - IP
+  - Domain
+  - IPV6
+  name: General (Inputs group)
+inputs:
+- description: The SHA256 file hash to search for.
+  key: FileSha256
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The host ID which will be excluded from the results.
+  key: HostId
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The SHA1 file hash to search for.
+  key: SHA1
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The MD5 file hash to search for.
+  key: MD5
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The IPV4 indicator to search for.
+  key: IP
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The domain indicator to search for.
+  key: Domain
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The IPv6 indicator to search for.
+  key: IPV6
+  playbookInputQuery:
+  required: false
+  value: {}
+name: CrowdStrike Falcon - Search Endpoints By Indicators
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs:
+  - Endpoint
+  - CrowdStrike.IOC.DeviceCount
+  - Endpoint.Hostname
+  - CrowdStrike.IOC.Type
+  - Endpoint.IPAddress
+  - CrowdStrike.IOC.Value
+  - Endpoint.OS
+  - Endpoint.Status
+  - Endpoint.IsIsolated
+  - CrowdStrike.DeviceID
+outputs:
+- contextPath: Endpoint
+  description: Additional hosts that have the hash present.
+  type: string
+- contextPath: CrowdStrike.IOC.DeviceCount
+  description: The number of devices the IOC ran on.
+  type: number
+- contextPath: Endpoint.Hostname
+  description: The endpoint's hostname.
+- contextPath: CrowdStrike.IOC.Type
+  description: The type of the IOC.
+- contextPath: Endpoint.IPAddress
+  description: The endpoint's IP address.
+- contextPath: CrowdStrike.IOC.Value
+  description: The string representation of the indicator.
+- contextPath: Endpoint.OS
+  description: The endpoint operation system.
+- contextPath: Endpoint.Status
+  description: The endpoint status.
+- contextPath: Endpoint.IsIsolated
+  description: The endpoint isolation status.
+- contextPath: CrowdStrike.DeviceID
+  description: Device IDs an indicator ran on.
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fdebf4c2-18fa-45ad-8931-a1df035a26d8
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: fdebf4c2-18fa-45ad-8931-a1df035a26d8
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": -90
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: ipv6
+      value:
+        complex:
+          root: inputs.IPV6
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns a list of device IDs that the indicator ran on.
+      id: 356a79b4-71c3-4d9b-8e02-84e0b8a308b5
+      iscommand: true
+      name: Get device ID list by IPv6
+      script: '|||cs-falcon-device-ran-on'
+      type: regular
+      version: -1
+    taskid: 356a79b4-71c3-4d9b-8e02-84e0b8a308b5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 950
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: domain
+      value:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: The number of hosts that observed the provided IOC.
+      id: b676297a-78a5-452a-8bef-ab48df93ecbe
+      iscommand: true
+      name: Count devices in the environment by Domain
+      script: '|||cs-falcon-device-count-ioc'
+      type: regular
+      version: -1
+    taskid: b676297a-78a5-452a-8bef-ab48df93ecbe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 580
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0204bfc2-fc2d-483c-869b-8f85d0580b31
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 0204bfc2-fc2d-483c-869b-8f85d0580b31
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1290
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+          operator: lessThanOrEqual
+          right:
+            value:
+              simple: "1"
+        - left:
+            iscontext: true
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+          operator: isNotExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.HostId
+                transformers:
+                - args:
+                    condition:
+                      value:
+                        simple: lhs==rhs
+                    conditionB: {}
+                    conditionInBetween: {}
+                    else:
+                      iscontext: true
+                      value:
+                        simple: inputs.HostId
+                    equals: {}
+                    lhs:
+                      iscontext: true
+                      value:
+                        simple: CrowdStrike.IOC.DeviceCount
+                    lhsB: {}
+                    options: {}
+                    optionsB: {}
+                    rhs: {}
+                    rhsB: {}
+                    then:
+                      value:
+                        simple: return empty string
+                  operator: If-Then-Else
+          operator: isNotEmpty
+      label: "no"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "no":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        If the hash was found on additional hosts the playbook will enrich the endpoint details.
+        In case we provided a host ID and there is no additional endpoints that were found, the playbook will stop and finish without the enrichment.
+      id: 9b555544-59aa-45db-81b2-a12eb98fc56e
+      iscommand: false
+      name: Should enrich the returned results?
+      type: condition
+      version: -1
+    taskid: 9b555544-59aa-45db-81b2-a12eb98fc56e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 760
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: CrowdStrike.DeviceID
+              operator: notInList
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.HostId
+          root: CrowdStrike.DeviceID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CrowdstrikeFalcon
+      description: Returns information about an endpoint. Does not support regex.
+      id: 08a3bbe2-93b6-4bc5-8f50-8b2f3e9cdd9d
+      iscommand: true
+      name: Enrich endpoint details for non-original host
+      script: CrowdstrikeFalcon|||endpoint
+      type: regular
+      version: -1
+    taskid: 08a3bbe2-93b6-4bc5-8f50-8b2f3e9cdd9d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1120
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "10"
+      - "9"
+      - "8"
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: CrowdstrikeFalcon
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
+      id: 13169d17-92b3-4cbf-8930-86e9b5d6f265
+      iscommand: false
+      name: Is CrowdStrike Falcon enabled?
+      scriptName: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 13169d17-92b3-4cbf-8930-86e9b5d6f265
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 50
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7a763ee5-b65c-46c3-85e9-41611d8d19c8
+      iscommand: false
+      name: Domain
+      type: title
+      version: -1
+      description: ''
+    taskid: 7a763ee5-b65c-46c3-85e9-41611d8d19c8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 250
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 241f5911-0490-410b-82df-e4b1e4ccaab5
+      iscommand: false
+      name: IPv6
+      type: title
+      version: -1
+      description: ''
+    taskid: 241f5911-0490-410b-82df-e4b1e4ccaab5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 250
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1bac08d1-e57a-4fa9-84ed-d50fc504eed4
+      iscommand: false
+      name: IP
+      type: title
+      version: -1
+      description: ''
+    taskid: 1bac08d1-e57a-4fa9-84ed-d50fc504eed4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 250
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: ipv6
+      value:
+        complex:
+          root: inputs.IPV6
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: The number of hosts that observed the provided IOC.
+      id: 60f0efcc-0d06-4ddc-8d36-1c3fb03f4b96
+      iscommand: true
+      name: Count devices in the environment by IPV6
+      script: '|||cs-falcon-device-count-ioc'
+      type: regular
+      version: -1
+    taskid: 60f0efcc-0d06-4ddc-8d36-1c3fb03f4b96
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 580
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: ipv4
+      value:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: The number of hosts that observed the provided IOC.
+      id: 94e6ed7d-3aed-40aa-855e-b79340d8b87b
+      iscommand: true
+      name: Count devices in the environment by IP
+      script: '|||cs-falcon-device-count-ioc'
+      type: regular
+      version: -1
+    taskid: 94e6ed7d-3aed-40aa-855e-b79340d8b87b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 580
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.IP
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Are there any MD5 files provided?
+      id: ed0ee4a1-37e9-4c0d-8b83-0737bc1c2e52
+      iscommand: false
+      name: Is there any IP?
+      type: condition
+      version: -1
+    taskid: ed0ee4a1-37e9-4c0d-8b83-0737bc1c2e52
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 390
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.IPV6
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Are there any SHA1 files provided?
+      id: 5e693dcb-ae0a-4871-87de-95f456ce072c
+      iscommand: false
+      name: Is there any IPV6?
+      type: condition
+      version: -1
+    taskid: 5e693dcb-ae0a-4871-87de-95f456ce072c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 390
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Domain
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Are there any SHA256 files provided?
+      id: 1bd17b6b-4847-4f38-8d4a-51cb86c69892
+      iscommand: false
+      name: Is there any Domain?
+      type: condition
+      version: -1
+    taskid: 1bd17b6b-4847-4f38-8d4a-51cb86c69892
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 390
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: ipv4
+      value:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns a list of device IDs that the indicator ran on.
+      id: 5ab63abd-adf6-4b65-8324-31348720f4a2
+      iscommand: true
+      name: Get device ID list by IP
+      script: '|||cs-falcon-device-ran-on'
+      type: regular
+      version: -1
+    taskid: 5ab63abd-adf6-4b65-8324-31348720f4a2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 950
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: domain
+      value:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns a list of device IDs that the indicator ran on.
+      id: 334db2c7-c5f9-451f-8565-ab0a5495c664
+      iscommand: true
+      name: Get device ID list by Domain
+      script: '|||cs-falcon-device-ran-on'
+      type: regular
+      version: -1
+    taskid: 334db2c7-c5f9-451f-8565-ab0a5495c664
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 950
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+          operator: lessThanOrEqual
+          right:
+            value:
+              simple: "1"
+        - left:
+            iscontext: true
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+          operator: isNotExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.HostId
+                transformers:
+                - args:
+                    condition:
+                      value:
+                        simple: lhs==rhs
+                    conditionB: {}
+                    conditionInBetween: {}
+                    else:
+                      iscontext: true
+                      value:
+                        simple: inputs.HostId
+                    equals: {}
+                    lhs:
+                      iscontext: true
+                      value:
+                        simple: CrowdStrike.IOC.DeviceCount
+                    lhsB: {}
+                    options: {}
+                    optionsB: {}
+                    rhs: {}
+                    rhsB: {}
+                    then:
+                      value:
+                        simple: return empty string
+                  operator: If-Then-Else
+          operator: isNotEmpty
+      label: "no"
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "1"
+      "no":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        If the hash was found on additional hosts the playbook will enrich the endpoint details.
+        In case we provided a host ID and there is no additional endpoints that were found, the playbook will stop and finish without the enrichment.
+      id: a69c0320-8da4-4f7d-8c06-e1b3733e544f
+      iscommand: false
+      name: Should enrich the returned results?
+      type: condition
+      version: -1
+    taskid: a69c0320-8da4-4f7d-8c06-e1b3733e544f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 760
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+          operator: lessThanOrEqual
+          right:
+            value:
+              simple: "1"
+        - left:
+            iscontext: true
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+          operator: isNotExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.HostId
+                transformers:
+                - args:
+                    condition:
+                      value:
+                        simple: lhs==rhs
+                    conditionB: {}
+                    conditionInBetween: {}
+                    else:
+                      iscontext: true
+                      value:
+                        simple: inputs.HostId
+                    equals: {}
+                    lhs:
+                      iscontext: true
+                      value:
+                        simple: CrowdStrike.IOC.DeviceCount
+                    lhsB: {}
+                    options: {}
+                    optionsB: {}
+                    rhs: {}
+                    rhsB: {}
+                    then:
+                      value:
+                        simple: return empty string
+                  operator: If-Then-Else
+          operator: isNotEmpty
+      label: "no"
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "no":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided a host ID and there is no additional endpoints that were found, the playbook will stop and finish without the enrichment. "
+      id: d61e2bb3-62ba-4eaa-850f-e4c4e0ab3342
+      iscommand: false
+      name: Should enrich the returned results?
+      type: condition
+      version: -1
+    taskid: d61e2bb3-62ba-4eaa-850f-e4c4e0ab3342
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 760
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      FileSha256:
+        simple: ${inputs.FileSha256}
+      HostId:
+        simple: ${inputs.HostId}
+      MD5:
+        simple: ${inputs.MD5}
+      SHA1:
+        simple: ${inputs.SHA1}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. \nThis playbook searches across the organization for other endpoints associated with a specific SHA256/MD5/SHA1 hash."
+      id: e58490bd-bf66-4153-8181-ba7267d07c25
+      iscommand: false
+      name: CrowdStrike Falcon - Search Endpoints By Hash
+      playbookId: CrowdStrike Falcon - Search Endpoints By Hash
+      type: playbook
+      version: -1
+    taskid: e58490bd-bf66-4153-8181-ba7267d07c25
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 950
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5b3d3782-289a-4741-8414-0d6519a1bdde
+      iscommand: false
+      name: File Hashes
+      type: title
+      version: -1
+      description: ''
+    taskid: 5b3d3782-289a-4741-8414-0d6519a1bdde
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 250
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_12_yes": 0.54,
+      "13_3_#default#": 0.2,
+      "14_11_yes": 0.54,
+      "14_3_#default#": 0.14,
+      "15_2_yes": 0.5,
+      "15_3_#default#": 0.11,
+      "18_3_no": 0.2,
+      "19_3_no": 0.14,
+      "4_3_no": 0.34,
+      "6_10_yes": 0.48,
+      "6_3_#default#": 0.14,
+      "6_8_yes": 0.78,
+      "6_9_yes": 0.68
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1445,
+        "width": 1900,
+        "x": 170,
+        "y": -90
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: This playbooks searches for different indicators (IP,IPV6,File hashes,Domain) in the crowdstrike falcon console. The output will be all the endpoints found associated with provided indicators. Provided agent id as an input will be excluded from the returned list.
+marketplaces:
+- xsoar
+# Should not appear in marketplacev2

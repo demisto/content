@@ -1,23 +1,19 @@
 FullHunt is the attack surface database of the entire Internet. FullHunt enables companies to discover all of their attack surfaces, monitor them for exposure, and continuously scan them for the latest security vulnerabilities. All, in a single platform, and more.
 
-## Configure FullHunt on Cortex XSOAR
+## Configure FullHunt in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for FullHunt.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | API Key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| API Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, API key, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### fullhunt-get-account-status
@@ -168,4 +164,3 @@ Notice: Submitting indicators using this command might make the indicator data p
 | FullHunt.Subdomain.metadata.timestamp | number | Epoch timestamp of the API request |  
 | FullHunt.Subdomain.metadata.user_plan | string | Fullhunt plan |  
 | FullHunt.Subdomain.status | number | HTTP status code |   
-

@@ -9,25 +9,21 @@ The Gigamon ThreatINSIGHT Cortex XSOAR integration enables security teams to uti
 The Gigamon ThreatINSIGHT Cortex XSOAR integration enables security teams to utilize the features and functionality of the Insight solution with their existing Cortex XSOAR deployment. The integration leverages Insight’s fully RESTful APIs to interact with the Insight backend to introduce specific data sets into Cortex XSOAR. This document contains all the necessary information to configure, install, and use the integration.
 For more information about the Cortex XSOAR integration visit the Insight help documentation here: https://insight.gigamon.com/help/api/apidocs-demisto
 
-## Configure Gigamon ThreatINSIGHT on Cortex XSOAR
+## Configure Gigamon ThreatINSIGHT in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Gigamon ThreatINSIGHT.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Token | True |
-    | First Fetch Time (Amount of day before current date) | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Incident Filter: Account UUID (Optional) | False |
-    | Maximum incidents in each fetch each run | False |
-    | Incidents Fetch Interval | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| API Token | True |
+| First Fetch Time (Amount of day before current date) | False |
+| Fetch incidents | False |
+| Incident type | False |
+| Incident Filter: Account UUID (Optional) | False |
+| Maximum incidents in each fetch each run | False |
+| Incidents Fetch Interval | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### insight-get-sensors
 ***

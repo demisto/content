@@ -294,7 +294,7 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
 
     execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock_include_informational)
 
-    if expected_result == ValueError:
+    if expected_result is ValueError:
         with pytest.raises(ValueError):
             SearchIncidentsV2.search_incidents(args)
     else:
@@ -302,15 +302,6 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
         assert [incident['id'] for incident in res] == expected_result
         assert execute_mock.call_count == 1
         assert execute_mock.call_args[0][1] == expected_filtered_args
-
-
-def test_includeinformational_raises_error_in_xsoar(mocker):
-    import SearchIncidentsV2
-    mocker.patch.object(SearchIncidentsV2, 'is_xsiam', return_value=False)
-    mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock_include_informational)
-
-    with pytest.raises(ValueError):
-        SearchIncidentsV2.search_incidents({'includeinformational': 'true'})
 
 
 @pytest.mark.parametrize('platform, version, link_type, expected_result', [

@@ -122,6 +122,12 @@ configuration:
   type: 8
   advanced: true
   defaultvalue: 'false'
+- display: Skip unparsable emails during fetch incidents
+  name: skip_unparsable_emails
+  section: Collect
+  type: 8
+  advanced: true
+  required: false
 description: Exchange Web Services and Office 365 (mail).
 display: EWS v2
 name: EWS v2
@@ -318,7 +324,7 @@ script:
       required: true
     - description: The mailbox on which to run the command.
       name: target-mailbox
-    description: Delete items from mailbox.
+    description: Delete items from mailbox. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
     name: ews-delete-items
     outputs:
     - contextPath: EWS.Items.itemId
@@ -992,6 +998,13 @@ script:
       name: raw_message
     - description: The email address from which to send mail.
       name: from
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML body and will be attached to the email as an inline attachment object.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Sends an email using EWS.
     name: send-mail
   - arguments:
@@ -1001,10 +1014,13 @@ script:
     - name: to
       required: true
       description: A CSV list of email addresses for the 'to' field.
+      isArray: true
     - name: cc
       description: A CSV list of email addresses for the 'cc' field.
+      isArray: true
     - name: bcc
       description: A CSV list of email addresses for the 'bcc' field.
+      isArray: true
     - name: subject
       description: Subject for the email to be sent.
     - name: body
@@ -1030,7 +1046,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.4.3.112114
+  dockerimage: demisto/py-ews:5.5.0.118073
   isfetch: true
   runonce: false
   script: '-'

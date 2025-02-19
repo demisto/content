@@ -1,28 +1,24 @@
 Versa Director is a virtualization and service creation platform that simplifies the design, automation, and delivery of SASE services. Versa Director provides the essential management, monitoring and orchestration capabilities needed to deliver all of the networking and security capabilities within Versa SASE.
 This integration was integrated and tested with version 1.0.0 of VersaDirector
 
-## Configure Versa Director on Cortex XSOAR
+## Configure Versa Director in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Versa Director.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL |  | True |
-    | Organization Name | Used by any command that requires organization argument. should be passed as parameter in configuration or as command argument. | False |
-    | Username | Username parameter is used for Basic Authentication. | False |
-    | Password | Password parameter is used for Basic Authentication. | False |
-    | Use Basic Authentication | Check this checkbox to use the basic authentication method. Auth Token authentication will be used by default. To use basic authentication method, please enter Username and Password parameters. | False |
-    | Client ID | The Client ID parameter is used for Auth authentication. Used together with Client Secret parameter. | False |
-    | Client Secret | The Client Secret parameter is used for Auth authentication. Used together with Client ID parameter. | False |
-    | Auth Token | The Auth Token parameter is used for Auth authentication.<br/>An Auth Token passed as a parameter take priority over an Auth Token saved in the integration context by default.<br/>If a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL |  | True |
+| Organization Name | Used by any command that requires organization argument. should be passed as parameter in configuration or as command argument. | False |
+| Username | Username parameter is used for Basic Authentication. | False |
+| Password | Password parameter is used for Basic Authentication. | False |
+| Use Basic Authentication | Check this checkbox to use the basic authentication method. Auth Token authentication will be used by default. To use basic authentication method, please enter Username and Password parameters. | False |
+| Client ID | The Client ID parameter is used for Auth authentication. Used together with Client Secret parameter. | False |
+| Client Secret | The Client Secret parameter is used for Auth authentication. Used together with Client ID parameter. | False |
+| Auth Token | The Auth Token parameter is used for Auth authentication.<br/>An Auth Token passed as a parameter take priority over an Auth Token saved in the integration context by default.<br/>If a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### vd-auth-start
@@ -3262,4 +3258,3 @@ List all available appliances for all organizations/tenants, with a limit of max
 >|Name|Uuid|Ip Address|App Type|Branch Id|
 >|---|---|---|---|---|
 >| EXAMPLE_BRANCH | UUID | EXAMPLE_URL | branch | ID |
-

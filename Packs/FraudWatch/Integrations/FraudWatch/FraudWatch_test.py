@@ -3,7 +3,7 @@
 """
 import io
 import json
-from datetime import timezone, timedelta
+from datetime import timedelta, UTC
 from typing import *
 from unittest.mock import Mock
 
@@ -286,7 +286,7 @@ def test_fetch_incidents_command():
      - Ensure on another calls to fetch_incidents, only relevant incidents are fetched.
      - Ensure that the incidents returned are as expected.
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     five_minutes_before = now - timedelta(minutes=5)
     one_hour_before = now - timedelta(hours=1)
     two_hours_before = now - timedelta(hours=2)

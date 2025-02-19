@@ -1,6 +1,9 @@
 [file:Akamai_SIEM.yml]
 ignore=IN126,BA108,BA109,IN150,IN161
 
+[file:README.md]
+ignore=RM100
+
 [known_words]
 akamai
 waf

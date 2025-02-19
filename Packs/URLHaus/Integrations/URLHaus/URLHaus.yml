@@ -2,12 +2,15 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: URLhaus
   version: -1
+sectionorder:
+- Connect
 configuration:
 - defaultvalue: https://urlhaus-api.abuse.ch/v1/
   display: Server URL (e.g. https://192.168.0.1)
   name: url
   type: 0
   required: false
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -22,42 +25,57 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Maximal value is 1000.
   defaultvalue: '10'
   display: Maximum number of relationships to fetch per indicator
   name: max_num_of_relationships
   type: 0
   required: false
+  section: Connect
 - defaultvalue: '1'
   hidden: true
   display: Blacklists appearances threshold
   name: threshold
   type: 0
   required: false
+  section: Connect
 - display: Compromised (is malicious)
   hidden: true
   name: compromised_is_malicious
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Determines how many times a command should be retried before raising an error.
   defaultvalue: '3'
   display: Number of retries
   name: retry
   type: 0
   required: false
+  section: Connect
+- name: should_error
+  additionalinfo: Does the file command should error when using unsupported hash.
+  display: Return Error
+  type: 8
+  required: false
+  defaultvalue: 'true'
+  section: Connect
 description: URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
 display: URLhaus
 name: URLhaus
@@ -342,7 +360,7 @@ script:
     - contextPath: File.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.10.14.99865
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3

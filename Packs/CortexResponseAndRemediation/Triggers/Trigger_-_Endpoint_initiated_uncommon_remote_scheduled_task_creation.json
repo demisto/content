@@ -1,0 +1,19 @@
+{
+  "trigger_id": "a7ca7229e794c8345cea0ec9827ac9f9",
+  "playbook_id": "Endpoint initiated uncommon remote scheduled task creation",
+  "suggestion_reason": "Recommended for the 'Uncommon remote scheduled task creation' alert",
+  "description": "This trigger is responsible for handling 'Uncommon remote scheduled task creation' alerts",
+  "trigger_name": "Endpoint initiated uncommon remote scheduled task creation",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Uncommon remote scheduled task creation"
+        }
+      ]
+    }
+  }
+}

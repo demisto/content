@@ -2,24 +2,20 @@
 
 Provide enrichment for domains, IPs, emails, usernames, and passwords using the SpyCloud Enterprise Protection API.
 
-## Configure SpyCloud Enterprise Protection Enrichment on Cortex XSOAR
+## Configure SpyCloud Enterprise Protection Enrichment in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SpyCloud Enterprise Protection Enrichment.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API URL | True |
-    | API Key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| API URL | True |
+| API Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### spycloud-breach-catalog-list
@@ -1310,4 +1306,3 @@ Get Compass application data for a specific application.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 41985 | 345 | greythr.com | dummy.greythr.com | Tron99***018 | Tron99***018 | plaintext | dummy.greythr.com | Chrome (v109.0.5414.120-64, Profile: Profile 1) | 4.4.4.4 | 72aaaec1-afa1-4d9e-838f-abfcbbf3ff82 |  |  |  | Windows 10 Pro |  | 2023-03-02T00:00:00Z | c8a11837-808a-4b1e-b9d8-cfba0739c7f5 | 25 |
 >| 40883 | 369 | greythr.com | dummy.greythr.com | welcome@123 | welcome@123 | plaintext | dummy.greythr.com | Mozilla Firefox | 4.4.4.4 | eb36d8f4-b802-416a-9e94-cdb419782b10 | C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe | 2022-12-29T11:01:47Z | LAPPY | Windows 10 Pro [x64] | Home | 2023-01-06T00:00:00Z | f746b0ba-c765-4a04-b09e-1c42d35ee426 | 25 |
-

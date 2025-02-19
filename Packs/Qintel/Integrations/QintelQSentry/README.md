@@ -1,22 +1,18 @@
 QSentry queries help measure the likelihood that a user is masking their identity using publicly or privately available proxy or VPN services.  The returns also flag any known fraud associations.  QSentry aggregates data from Qintel’s proprietary Deep and DarkWeb research, as well as from commercially available anonymization services.
 This integration was integrated and tested with version 4.0 of Qintel QSentry
 
-## Configure QintelQSentry on Cortex XSOAR
+## Configure QintelQSentry in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for QintelQSentry.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | QSentry API URL (optional) | False |
-    | Qintel Token | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| QSentry API URL (optional) | False |
+| Qintel Token | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -100,4 +96,3 @@ Queries Qintel for IP reputation data
 >|ASN|AS Owner|Tags|Description|Last Observed|
 >|---|---|---|---|---|
 >| 65000 | Some Service Provider | <br/>Proxy,<br/>Vpn | This ip address has been associated with a vpn network that offers paid access to users. it is advertised in online underground spaces.,<br/>This ip address has been associated with a proxy network that offers paid access to users and is advertised within the online underground. it is commonly utilized by criminal actors to conduct compromised credential checking and the proxy network is hosted on a botnet infrastructure. ip address is likely an infected machine. | 2021-08-31 11:00:00 |
-

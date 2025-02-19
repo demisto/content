@@ -185,7 +185,7 @@ def setup_last_run(last_run_dict: dict, event_types_to_fetch: list[str]) -> dict
 
 
 def handle_data_export_single_event_type(client: Client, event_type: str, operation: str, limit: int,
-                                         execution_start_time: datetime) -> tuple[list, bool]:
+                                         execution_start_time: datetime, all_event_types: list) -> bool:
     """
     Pulls events per each given event type. Each event type receives a dedicated index name that is constructed using the event
     type and the integration instance name. The function keeps pulling events as long as the limit was not exceeded.
@@ -216,12 +216,12 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
 
         # If the execution exceeded the timeout we will break
         if is_execution_time_exceeded(start_time=execution_start_time):
-            return events, True
+            return True
 
         # Wait time between queries
         if wait_time:
             demisto.debug(f'Going to sleep between queries, wait_time is {wait_time} seconds')
-            time.sleep(wait_time)   # pylint: disable=E9003
+            time.sleep(wait_time)  # pylint: disable=E9003
         else:
             demisto.debug('No wait time received, going to sleep for 1 second')
             time.sleep(1)
@@ -239,16 +239,18 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
 
         events.extend(results)
 
+        all_event_types.extend(prepare_events(results, event_type))
+
         if not results or len(results) < MAX_EVENTS_PAGE_SIZE:
             break
 
     print_event_statistics_logs(events=events, event_type=event_type)
     # We mark this event type as successfully fetched
     client.fetch_status[event_type] = True
-    return events, False
+    return False
 
 
-def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_SIZE) -> tuple[list, dict]:
+def get_all_events(client: Client, last_run: dict, all_event_types: list, limit: int = MAX_EVENTS_PAGE_SIZE) -> dict:
     """
     Iterates over all supported event types and call the handle data export logic. Once each event type is done the operation for
     next run is set to 'next'.
@@ -263,35 +265,34 @@ def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_
         dict: The updated last_run object.
     """
 
-    all_types_events_result = []
     execution_start_time = datetime.utcnow()
     for event_type in client.event_types_to_fetch:
         event_type_operation = last_run.get(event_type, {}).get('operation')
 
-        events, time_out = handle_data_export_single_event_type(client=client, event_type=event_type,
-                                                                operation=event_type_operation, limit=limit,
-                                                                execution_start_time=execution_start_time)
-        all_types_events_result.extend(prepare_events(events, event_type))
+        time_out = handle_data_export_single_event_type(client=client, event_type=event_type,
+                                                        operation=event_type_operation, limit=limit,
+                                                        execution_start_time=execution_start_time,
+                                                        all_event_types=all_event_types)
         last_run[event_type] = {'operation': 'next'}
 
         if time_out:
             demisto.info('Timeout reached, stopped pulling events')
             break
 
-    return all_types_events_result, last_run
+    return last_run
 
 
 ''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client, last_run: dict, max_fetch: int) -> str:
-    get_all_events(client, last_run, limit=max_fetch, )
+    get_all_events(client, last_run, limit=max_fetch, all_event_types=[])
     return 'ok'
 
 
-def get_events_command(client: Client, args: dict[str, Any], last_run: dict) -> tuple[CommandResults, list]:
+def get_events_command(client: Client, args: dict[str, Any], last_run: dict, events: list) -> tuple[CommandResults, list]:
     limit = arg_to_number(args.get('limit')) or MAX_EVENTS_PAGE_SIZE
-    events, _ = get_all_events(client=client, last_run=last_run, limit=limit)
+    _ = get_all_events(client=client, last_run=last_run, limit=limit, all_event_types=events)
 
     for event in events:
         event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
@@ -357,7 +358,7 @@ def main() -> None:  # pragma: no cover
         last_run = setup_last_run(demisto.getLastRun(), event_types_to_fetch)
         demisto.debug(f'Running with the following last_run - {last_run}')
 
-        events: list[dict] = []
+        all_event_types: list[dict] = []
         new_last_run: dict = {}
         if command_name == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -365,9 +366,10 @@ def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command_name == 'netskope-get-events':
-            results, events = get_events_command(client, demisto.args(), last_run)
+            results, events = get_events_command(client, demisto.args(), last_run, events=[])
             if argToBoolean(demisto.args().get('should_push_events', 'true')):
-                send_events_to_xsiam(events=events, vendor=vendor, product=product)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=vendor, product=product,
+                                     chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT)  # type: ignore
             return_results(results)
 
         elif command_name == 'fetch-events':
@@ -375,10 +377,12 @@ def main() -> None:  # pragma: no cover
             start = datetime.utcnow()
             try:
                 demisto.debug(f'Sending request with last run {last_run}')
-                events, new_last_run = get_all_events(client, last_run, max_fetch)
+                new_last_run = get_all_events(client=client, last_run=last_run, limit=max_fetch,
+                                              all_event_types=all_event_types)
             finally:
-                demisto.debug(f'sending {len(events)} to xsiam')
-                send_events_to_xsiam(events=events, vendor=vendor, product=product)
+                demisto.debug(f'sending {len(all_event_types)} to xsiam')
+                send_events_to_xsiam(events=all_event_types, vendor=vendor, product=product,
+                                     chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT)
 
                 for event_type, status, in client.fetch_status.items():
                     if not status:
@@ -386,8 +390,8 @@ def main() -> None:  # pragma: no cover
 
                 end = datetime.utcnow()
 
-                demisto.debug(f'Handled {len(events)} total events in {(end - start).seconds} seconds')
-                next_trigger_time(len(events), max_fetch, new_last_run)
+                demisto.debug(f'Handled {len(all_event_types)} total events in {(end - start).seconds} seconds')
+                next_trigger_time(len(all_event_types), max_fetch, new_last_run)
                 demisto.debug(f'Setting the last_run to: {new_last_run}')
                 demisto.setLastRun(new_last_run)
 

@@ -2,7 +2,7 @@
     "name": "Tenable Vulnerability Management (formerly Tenable.io)",
     "description": "A comprehensive asset centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers and web applications.",
     "support": "xsoar",
-    "currentVersion": "2.2.5",
+    "currentVersion": "2.3.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

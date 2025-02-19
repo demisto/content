@@ -34,7 +34,7 @@ Follow the steps bellow for configuring an [XDR Collector](https://docs-cortex.p
 2. Install the XDR Collector installation package for Linux on the requested Linux servers as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Install-the-XDR-Collector-installation-package-for-Linux). 
 3. Configure an [XDR Collector Filebeat profile](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/XDR-Collector-profiles) for the requested linux servers as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Add-an-XDR-Collector-profile-for-Linux).
       - When configuring the Filebeat YAML configuration file, use the *LinuxEventCollection* template as a reference:
- ![LinuxEventCollection Filebeat Template](https://raw.githubusercontent.com/demisto/content/435111554ddbc4b737b48688314aa466e4a4b8a2/Packs/LinuxEventsCollection/doc_files/LinuxFilebeatTemplate.png)
+ ![LinuxEventCollection Filebeat Template](doc_files/LinuxFilebeatTemplate.png)
     - Customize the *[paths](https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-input-filestream.html#filestream-input-paths)* parameter in accordance to the requested log files for collection: 
          ```yaml
             filebeat.inputs:
@@ -62,19 +62,22 @@ Follow the steps bellow for configuring an [XDR Collector](https://docs-cortex.p
   ```bash 
   sudo timedatectl set-timezone UTC
   ```
-- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) compatible like timestamps. 
+- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) and ISO 8601 compatible like timestamps. 
   **Examples**: 
    - *`2024-10-28T14:30:55Z`*
    - *`2024-10-28T14:30:55-0300`*
-   - *`2024-10-28T14:30:55.123+02:00`*
+   - *`2024-10-28T14:30:55-03:00`*
+   - *`2024-10-28 14:30:55.123+0300`*  
+   - *`2024-10-28 14:30:55.123+03:00`*
   
-
 ##### Filebeat XDR Collector
-- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) compatible like timestamps. 
+- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) and ISO 8601 compatible like timestamps. 
 **Examples**: 
    - *`2024-10-28T14:30:55Z`*
    - *`2024-10-28T14:30:55-0300`*
-   - *`2024-10-28T14:30:55.123+02:00`*  
+   - *`2024-10-28T14:30:55-03:00`*
+   - *`2024-10-28 14:30:55.123+0300`*  
+   - *`2024-10-28 14:30:55.123+03:00`*
 
 **Note**: 
 Event logs collected via Filebeat with timestamp formats other than those listed above are assigned the agent collection time.

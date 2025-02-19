@@ -1,0 +1,28 @@
+args:
+- name: new
+  description: field new value.
+- name: old
+  description: field old value.
+comment: When an action is requested in the documents grid field, executes the requested action (Embed or Delete) on a document in the LLM. "Delete" removes the document from the LLM's document catalog, and "Embed" adds the vector embedding of the document to the current workspace.
+commonfields:
+  id: AnyLlmDocumentsUpdate
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmDocumentsUpdate
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+timeout: 600ns
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

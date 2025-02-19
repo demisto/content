@@ -18,7 +18,7 @@ The sections below describe the necessary configurations required on Cortex XSIA
    | `Compression`  | Select *gzip*.                                                   | 
    | `Log Format`   | Select *JSON*.                                                   | 
    | `Vendor`       | Enter *zscaler*.                                                 |
-   | `Product`      | Enter *cloudnss*.                                                     | 
+   | `Product`      | Enter *cloudnss*.                                                | 
 
 3. Click **Save & Generate Token**.
    1. Click the **Copy** icon and record the copied generated token somewhere safe. You will need to provide this token when you configure the ZIA Cloud NSS feed on Zscaler. 
@@ -31,6 +31,7 @@ You will need to [add a Cloud NSS Feed](https://help.zscaler.com/zia/adding-clou
 - [Adding Cloud NSS Feeds for Web Logs](https://help.zscaler.com/zia/adding-cloud-nss-feeds-web-logs)
 - [Adding Cloud NSS Feeds for DNS Logs](https://help.zscaler.com/zia/adding-cloud-nss-feeds-dns-logs)
 - [Adding Cloud NSS Feeds for Admin Audit Logs](https://help.zscaler.com/zia/adding-cloud-nss-feeds-admin-audit-logs)
+- [Adding Cloud NSS Feeds for Firewall Logs](https://help.zscaler.com/zia/adding-cloud-nss-feeds-for-firewall-logs)
 
 #### Remarks 
 For each Cloud NSS Feed you configure: 
@@ -43,6 +44,7 @@ For each Cloud NSS Feed you configure:
     - [NSS Feed Output Format: Web Logs](https://help.zscaler.com/zia/nss-feed-output-format-web-logs).
     - [NSS Feed Output Format: DNS Logs](https://help.zscaler.com/zia/nss-feed-output-format-dns-logs).
     - [NSS Feed Output Format: Admin Audit Logs](https://help.zscaler.com/zia/nss-feed-output-format-admin-audit-logs).
+    - [NSS Feed Output Format: Firewall Logs](https://help.zscaler.com/zia/nss-feed-output-format-firewall-logs)
 
 For additional details, see [About Cloud NSS Feeds](https://help.zscaler.com/zia/about-cloud-nss-feeds).
 

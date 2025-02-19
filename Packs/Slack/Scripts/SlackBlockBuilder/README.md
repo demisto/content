@@ -143,3 +143,8 @@ Verify your Slack blocks payload is valid. Try simplifying the payload. Test wit
 
 ## 3. Integrate the `GetSlackBlockBuilderResponse` Script
 - After receiving the response and closing the conditional task, initiate a new task that runs the `ParseSlackResponse` script.
+
+---
+**Issue**: Running the script using the playbook debugger results with an error: "invalid_blocks_format".
+
+**Troubleshooting**: `SlackBlockBuilder` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response. The workaround for this is running the playbook from an existing incident.

@@ -1345,7 +1345,7 @@ script:
     - contextPath: additional_info
       description: Additional info about feed.
       type: String
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.11.10.116949
   feed: false
   isfetch: true
   longRunning: false

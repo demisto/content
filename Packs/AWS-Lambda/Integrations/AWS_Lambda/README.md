@@ -6,34 +6,30 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 Required AWS IAM Permissions and Roles for Lambda are documented [here](https://docs.aws.amazon.com/lambda/latest/dg/access-control-identity-based.html).
 
-## Configure AWS - Lambda on Cortex XSOAR
+## Configure AWS - Lambda in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS - Lambda.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | AWS Default Region |  | True |
-    | Role Arn |  | False |
-    | Role Session Name |  | False |
-    | Role Session Duration |  | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
-    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. You may also override the value at the aws-lambda-invoke command. | False |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. You may also override the value when executing the aws-lambda-invoke command. | False |
-    | PrivateLink service URL. |  | False |
-    | STS PrivateLink URL |  | False |
-    | AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| AWS Default Region |  | True |
+| Role Arn |  | False |
+| Role Session Name |  | False |
+| Role Session Duration |  | False |
+| Access Key |  | False |
+| Secret Key |  | False |
+| Access Key |  | False |
+| Secret Key |  | False |
+| Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. You may also override the value at the aws-lambda-invoke command. | False |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. You may also override the value when executing the aws-lambda-invoke command. | False |
+| PrivateLink service URL. |  | False |
+| STS PrivateLink URL |  | False |
+| AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aws-lambda-get-function
 ***

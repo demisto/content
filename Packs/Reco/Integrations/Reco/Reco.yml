@@ -65,7 +65,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetch: true
   runonce: false
   script: "-"

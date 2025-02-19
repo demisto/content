@@ -25,6 +25,6 @@ timeout: 0s
 tests:
 - No test - old script
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.14.91134
+dockerimage: demisto/python3:3.11.10.115186
 marketplaces:
 - xsoar

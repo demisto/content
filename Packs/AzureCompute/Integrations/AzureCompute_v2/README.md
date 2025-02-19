@@ -15,36 +15,32 @@ For more details about the authentication used in this integration, see [Microso
     - Microsoft.Resources/subscriptions/resourceGroups/read 
   - Select the Azure Compute application. By default, Azure AD applications aren't displayed in the available options. To find your application, search for the name and select it.
 
-## Configure Azure Compute v2 on Cortex XSOAR
+## Configure Azure Compute v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Compute v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Host URL (e.g. https://management.azure.com) |  | True |
-    | ID (received from the admin consent - see Detailed Instructions (?) |  | True |
-    | Token (received from the admin consent - see Detailed Instructions (?) section) |  | True |
-    | Key (received from the admin consent - see Detailed Instructions (?) |  | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
-    | ID (received from the admin consent - see Detailed Instructions (?) |  | False |
-    | Token (received from the admin consent - see Detailed Instructions (?) section) |  | False |
-    | Key (received from the admin consent - see Detailed Instructions (?) |  | True |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Default Subscription ID |  | False |
-    | Default Subscription ID |  | False |
-    | Default Resource Group Name | This parameter can be overridden by the resource_group argument in any command. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Host URL (e.g. https://management.azure.com) |  | True |
+| ID (received from the admin consent - see Detailed Instructions (?) |  | True |
+| Token (received from the admin consent - see Detailed Instructions (?) section) |  | True |
+| Key (received from the admin consent - see Detailed Instructions (?) |  | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
+| ID (received from the admin consent - see Detailed Instructions (?) |  | False |
+| Token (received from the admin consent - see Detailed Instructions (?) section) |  | False |
+| Key (received from the admin consent - see Detailed Instructions (?) |  | True |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Default Subscription ID |  | False |
+| Default Subscription ID |  | False |
+| Default Resource Group Name | This parameter can be overridden by the resource_group argument in any command. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-vm-list-instances

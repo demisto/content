@@ -1,0 +1,3 @@
+<response status="success">
+    <result>Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 1234</result>
+</response>

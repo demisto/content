@@ -2,7 +2,7 @@
     "name": "PhishLabs",
     "description": "IOC information from PhishLabs.",
     "support": "xsoar",
-    "currentVersion": "1.1.21",
+    "currentVersion": "1.1.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

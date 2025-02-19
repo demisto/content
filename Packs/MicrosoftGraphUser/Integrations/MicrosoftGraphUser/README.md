@@ -21,47 +21,43 @@ In order to use the msgraph-user-change-password command, you must configure wit
 
 Note: When using the Authorization Code flow, make sure the user you authenticate with has the correct roles in Azure AD in order to use the command.
 
-## Configure Azure Active Directory Users on Cortex XSOAR
+## Configure Azure Active Directory Users in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Active Directory Users.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                          | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
-    |------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | Azure Cloud                        | See option table below.
-    | Host URL (e.g., https://graph.microsoft.com)                           |                                                                                                                                                                                                                                                                                                                                                        | True         |
-    | ID / client ID                                                         |                                                                                                                                                                                                                                                                                                                                                        | False        |
-    | Token / Tenant ID                                                      |                                                                                                                                                                                                                                                                                                                                                        | False        |
-    | Key / Client Secret                                                    |                                                                                                                                                                                                                                                                                                                                                        | False        |
-    | Certificate Thumbprint                                                 | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app.                                                                                                                                                                                                                                               | False        |
-    | Private Key                                                            | Used for certificate authentication. The private key of the registered certificate.                                                                                                                                                                                                                                                                    | False        |
-    | Use a self-deployed Azure application                                  |                                                                                                                                                                                                                                                                                                                                                        | False        |
-    | Application redirect URI (for Self Deployed - Authorization Code Flow) |                                                                                                                                                                                                                                                                                                                                                        | False        |
-    | Authorization code (for Self Deployed - Authorization Code Flow)       |                                                                                                                                                                                                                                                                                                                                                        | False        |
-    | Use Azure Managed Identities                                           | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False        |
-    | Azure Managed Identities Client ID                                     | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                                                                                                                                                                                                                                         | False        |
-    | Trust any certificate (not secure)                                     |                                                                                                                                                                                                                                                                                                                                                        | False        |
-    | Use system proxy settings                                              |                                                                                                                                                                                                                                                                                                                                                        | False        |
-    | Suppress Errors for Non Found Users                                    |                                                                                                                                                                                                                                                                                                                                                        | False        |
-    
-    
-    Azure cloud options
+| **Parameter**                                                          | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
+|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| Azure Cloud                        | See option table below.
+| Host URL (e.g., https://graph.microsoft.com)                           |                                                                                                                                                                                                                                                                                                                                                        | True         |
+| ID / client ID                                                         |                                                                                                                                                                                                                                                                                                                                                        | False        |
+| Token / Tenant ID                                                      |                                                                                                                                                                                                                                                                                                                                                        | False        |
+| Key / Client Secret                                                    |                                                                                                                                                                                                                                                                                                                                                        | False        |
+| Certificate Thumbprint                                                 | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app.                                                                                                                                                                                                                                               | False        |
+| Private Key                                                            | Used for certificate authentication. The private key of the registered certificate.                                                                                                                                                                                                                                                                    | False        |
+| Use a self-deployed Azure application                                  |                                                                                                                                                                                                                                                                                                                                                        | False        |
+| Application redirect URI (for Self Deployed - Authorization Code Flow) |                                                                                                                                                                                                                                                                                                                                                        | False        |
+| Authorization code (for Self Deployed - Authorization Code Flow)       |                                                                                                                                                                                                                                                                                                                                                        | False        |
+| Use Azure Managed Identities                                           | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False        |
+| Azure Managed Identities Client ID                                     | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                                                                                                                                                                                                                                         | False        |
+| Trust any certificate (not secure)                                     |                                                                                                                                                                                                                                                                                                                                                        | False        |
+| Use system proxy settings                                              |                                                                                                                                                                                                                                                                                                                                                        | False        |
+| Suppress Errors for Non Found Users                                    |                                                                                                                                                                                                                                                                                                                                                        | False        |
 
-    | Azure Cloud | Description                                                         |
-    |-------------|---------------------------------------------------------------------|
-    | Worldwide   | The publicly accessible Azure Cloud                                 |
-    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)            |
-    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)  |
-    | DoD         | Azure cloud for the USA Department of Defense (DoD)                 |
-    | Germany     | Azure cloud for the German Government                               |
-    | China       | Azure cloud for the Chinese Government                              |
-    | Custom      | Custom endpoint configuration to the Azure cloud. See note below.   |
 
-4. Click **Test** to validate the URLs, token, and connection.
+Azure cloud options
+
+| Azure Cloud | Description                                                         |
+|-------------|---------------------------------------------------------------------|
+| Worldwide   | The publicly accessible Azure Cloud                                 |
+| US GCC      | Azure cloud for the USA Government Cloud Community (GCC)            |
+| US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)  |
+| DoD         | Azure cloud for the USA Department of Defense (DoD)                 |
+| Germany     | Azure cloud for the German Government                               |
+| China       | Azure cloud for the Chinese Government                              |
+| Custom      | Custom endpoint configuration to the Azure cloud. See note below.   |
+
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### msgraph-user-account-disable
 ***
@@ -645,22 +641,28 @@ There is no context output for this command.
 >ok
 
 ### msgraph-user-session-revoke
-***
-Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
-Permission: Directory.AccessAsUser.All(Delegated)
 
+***
+Revoke a user session by invalidating all refresh tokens issued to applications for a user. 
+This command requires an administrator role.
+Permission required: Directory.AccessAsUser.All (Delegated).
 
 #### Base Command
 
 `msgraph-user-session-revoke`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user | User ID or userPrincipalName. | Required | 
 
+#### Context Output
+
+There is no context output for this command.
 
 ### msgraph-user-generate-login-url
+
 ***
 Generate the login url used for Authorization code flow.
 

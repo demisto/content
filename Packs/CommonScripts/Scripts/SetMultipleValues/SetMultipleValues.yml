@@ -13,15 +13,15 @@ args:
 - name: parent
   required: true
   default: true
-  description: The parent key to which we append all the other keys
+  description: The parent key to which we append all the other keys.
 - name: keys
   required: true
-  description: Comma separated list of keys
+  description: Comma separated list of keys.
 - name: values
   required: true
-  description: Comma separated list of values
+  description: Comma separated list of values.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No tests (auto formatted)

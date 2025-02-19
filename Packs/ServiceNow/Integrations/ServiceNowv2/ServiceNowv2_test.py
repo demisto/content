@@ -1,4 +1,5 @@
 import re
+from unittest.mock import MagicMock
 
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
@@ -19,7 +20,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
-    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field, delete_attachment_command
+    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field, delete_attachment_command, \
+    get_attachment_command, is_new_incident
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -629,7 +631,7 @@ def test_fetch_incidents(mocker):
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
     assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
-    assert ["sys_id1", "sys_id2"] == demisto.getIntegrationContext()["last_fetched_incident_ids"]
+    assert demisto.getIntegrationContext()["last_fetched_incident_ids"] == ["sys_id1", "sys_id2"]
 
 
 @freeze_time('2022-05-01 12:52:29')
@@ -1802,10 +1804,10 @@ TICKET_FIELDS = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19
 
 def ticket_fields(*args, **kwargs):
     state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
-    assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
-            'work_start': '0001-01-01T00:00:00Z'} == args[0]
+    assert args[0] == {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                       'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+                       'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+                       'work_start': '0001-01-01T00:00:00Z'}
 
     return {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
             'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
@@ -2474,3 +2476,75 @@ def test_is_time_field(input_string, expected):
         It should return True if string contains valid datetime, False otherwise
     """
     assert is_time_field(input_string) is expected
+
+
+def test_get_attachment_command_success():
+    client = MagicMock()
+    args = {'sys_id': '12345'}
+    mock_attachments = [
+        {'file_name': 'file1.txt', 'content': 'file1 content'},
+        {'file_name': 'file2.txt', 'content': 'file2 content'}
+    ]
+    client.get_ticket_attachment_entries = MagicMock(return_value=mock_attachments)
+    result = get_attachment_command(client, args)
+    client.get_ticket_attachment_entries.assert_called_once_with('12345')
+    assert isinstance(result, list)
+    assert isinstance(result[0], CommandResults)
+    assert result[0].readable_output == 'Successfully retrieved attachments for ticket with sys id 12345.'
+    assert result[1] == mock_attachments
+
+
+def test_get_attachment_command_missing_sys_id():
+    client = MagicMock()
+    args = {'sys_id': '12345'}
+    mock_attachments = []
+    client.get_ticket_attachment_entries = MagicMock(return_value=mock_attachments)
+    result = get_attachment_command(client, args)
+    client.get_ticket_attachment_entries.assert_called_once_with('12345')
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == 'Ticket with sys id 12345 has no attachments to retrieve.'
+
+
+def test_incident_id_in_last_fetched_updates_correctly(mocker):
+    """
+    Given:
+        Ticket ID to remove
+    When:
+        is_new_incident is called
+    Then:
+        It should remove the id without modifying the existing integration context keys
+    """
+    mocker.patch.object(ServiceNowv2, 'get_integration_context',
+                        return_value={"access_token": "token", "last_fetched_incident_ids": ['ABC123', 'XYZ789']})
+    res = mocker.patch.object(ServiceNowv2, 'set_integration_context')
+
+    # Executing the function with the incident id to be checked
+    is_new_incident("XYZ789")
+
+    # Setup verification context with wrapper to cover the whole integration context if necessary
+    expected_context = {"access_token": "token", "last_fetched_incident_ids": ['ABC123']}
+
+    # Verifying that set_integration_context was called with the correct new context
+    res.assert_called_once_with(expected_context)
+
+
+def test_incident_id_not_in_last_fetched(mocker):
+    """
+    Given:
+        Ticket ID that should not be removed
+    When:
+        is_new_incident is called
+    Then:
+        It should not modify the integration context
+    """
+    # Mock the get_integration_context to return some incident IDs which does not include the tested ID
+    mocker.patch.object(ServiceNowv2, 'get_integration_context',
+                        return_value={"access_token": "token", "last_fetched_incident_ids": ['ABC123', 'XYZ789']})
+    # Mock the set_integration_context to check it is not called
+    res = mocker.patch.object(ServiceNowv2, 'set_integration_context')
+
+    # Executing the function with an incident id that is not in the context's list
+    is_new_incident("DEF456")
+
+    # Assert that set_integration_context was never called because no incident ID was removed
+    res.assert_not_called()

@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerUserPython import *
 from CommonServerPython import *
 
-from typing import Any, Dict
+from typing import Any
 import urllib3
 import urllib.parse
 
@@ -41,7 +41,7 @@ class Client(BaseClient):   # type: ignore
         )
 
     def run_query(self, query: str, connection_params: str = None, workflow_params: str = None, time_text: str = None,
-                  alias: str = None) -> Dict[str, Any]:
+                  alias: str = None) -> dict[str, Any]:
         """Gets result from QueryAI for the given query
 
         :type query: ``str``
@@ -69,7 +69,7 @@ class Client(BaseClient):   # type: ignore
         if connection_params:
             connection_params = safe_load_json(connection_params)
         else:
-            connection_params = self.connection_params
+            connection_params = self.connection_params  # type: ignore[assignment]
 
         if not alias:
             alias = self.alias
@@ -103,7 +103,7 @@ def generate_drilldown_url(query, alias, time_text=None, workflow_params=None):
     return drilldown_url
 
 
-def queryai_run_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # type: ignore
+def queryai_run_query_command(client: Client, args: dict[str, Any]) -> CommandResults:  # type: ignore
     """queryai-run-query command: Returns response for the query being run on QueryAI
 
     :type client: ``Client``

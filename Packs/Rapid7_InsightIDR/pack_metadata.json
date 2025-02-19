@@ -2,7 +2,7 @@
     "name": "Rapid7 InsightIDR",
     "description": "Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.",
     "support": "xsoar",
-    "currentVersion": "2.0.1",
+    "currentVersion": "2.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

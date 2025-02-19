@@ -1,20 +1,20 @@
 id: KafkaV3 Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 fromversion: 5.0.0
 name: KafkaV3 Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0430acc0-a855-4e3b-807e-020ea5eab109
+    taskid: cd38dd48-d8b9-414b-8d76-14eb12c8b607
     type: start
     task:
-      id: 0430acc0-a855-4e3b-807e-020ea5eab109
+      id: cd38dd48-d8b9-414b-8d76-14eb12c8b607
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -33,12 +33,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 4c25e55d-dfca-41e4-8301-2d75ec224bd5
+    taskid: cfcba92c-2ab9-4b1d-84c2-fb5fd917ae0f
     type: regular
     task:
-      id: 4c25e55d-dfca-41e4-8301-2d75ec224bd5
+      id: cfcba92c-2ab9-4b1d-84c2-fb5fd917ae0f
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -66,18 +67,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 83e2a6b6-f2d6-4965-8bf8-5c42835b4591
+    taskid: 834e6a32-efca-4dc4-8957-a3020a7dbcdc
     type: regular
     task:
-      id: 83e2a6b6-f2d6-4965-8bf8-5c42835b4591
+      id: 834e6a32-efca-4dc4-8957-a3020a7dbcdc
       version: -1
       name: kafka-print-topics
-      script: Kafka v3|||kafka-print-topics
+      script: KafkaV3|||kafka-print-topics
       type: regular
       iscommand: true
-      brand: ""
+      brand: "KafkaV3"
+      description: Prints all topics and their partitions.
     nexttasks:
       '#none#':
       - "3"
@@ -96,12 +99,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: e1f7c776-a112-472d-82e1-54b691c9f425
+    taskid: 03755113-3fd8-4572-84ad-a086b1b0a419
     type: condition
     task:
-      id: e1f7c776-a112-472d-82e1-54b691c9f425
+      id: 03755113-3fd8-4572-84ad-a086b1b0a419
       version: -1
       name: Verify Outputs
       type: condition
@@ -119,6 +123,8 @@ tasks:
             value:
               simple: Kafka.Topic.[0].Name
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -138,18 +144,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 994659d3-dccf-49e0-859b-78be52dae0ae
+    taskid: 1a68f8c2-e15d-4a4c-86f4-88d1a4ab8013
     type: regular
     task:
-      id: 994659d3-dccf-49e0-859b-78be52dae0ae
+      id: 1a68f8c2-e15d-4a4c-86f4-88d1a4ab8013
       version: -1
       name: kafka-publish-msg
-      script: Kafka v3|||kafka-publish-msg
+      script: KafkaV3|||kafka-publish-msg
       type: regular
       iscommand: true
-      brand: Kafka v3
+      brand: KafkaV3
+      description: Publishes a message to Kafka.
     nexttasks:
       '#none#':
       - "5"
@@ -157,9 +165,9 @@ tasks:
       partitioning_key:
         simple: "0"
       topic:
-        simple: playbook-test-topic
+        simple: testsa17
       value:
-        simple: the_value
+        simple: the_value1
     separatecontext: false
     view: |-
       {
@@ -175,18 +183,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 4b1daeb0-bfb3-4a3a-83d4-8475c0995a8b
+    taskid: a6c71c31-478e-4ce8-8ea0-9b6dd36f6b12
     type: regular
     task:
-      id: 4b1daeb0-bfb3-4a3a-83d4-8475c0995a8b
+      id: a6c71c31-478e-4ce8-8ea0-9b6dd36f6b12
       version: -1
       name: kafka-consume-msg
-      script: Kafka v3|||kafka-consume-msg
+      script: KafkaV3|||kafka-consume-msg
       type: regular
       iscommand: true
-      brand: Kafka v3
+      brand: KafkaV3
+      description: Consumes a single Kafka message.
     nexttasks:
       '#none#':
       - "6"
@@ -196,7 +206,9 @@ tasks:
       partition:
         simple: "0"
       topic:
-        simple: playbook-test-topic
+        simple: testsa17
+      poll_timeout:
+        simple: "10.0"
     separatecontext: false
     view: |-
       {
@@ -212,12 +224,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: c54a75e0-0500-467c-818b-921eb2b6fd59
+    taskid: 62692a8e-9df0-4a67-8a3c-35f73183ebb8
     type: condition
     task:
-      id: c54a75e0-0500-467c-818b-921eb2b6fd59
+      id: 62692a8e-9df0-4a67-8a3c-35f73183ebb8
       version: -1
       name: Verify Outputs
       type: condition
@@ -237,7 +250,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: playbook-test-topic
+              simple: testsa17
       - - operator: isEqualString
           left:
             value:
@@ -245,7 +258,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: the_value
+              simple: the_value1
       - - operator: isNotEmpty
           left:
             value:
@@ -265,24 +278,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: 65d8a5cb-18a1-4d47-8ec3-728c1c85c4e9
+    taskid: c61080d3-92ac-4c9c-8c37-df7bf86fc0f9
     type: regular
     task:
-      id: 65d8a5cb-18a1-4d47-8ec3-728c1c85c4e9
+      id: c61080d3-92ac-4c9c-8c37-df7bf86fc0f9
       version: -1
       name: kafka-fetch-partitions
-      script: Kafka v3|||kafka-fetch-partitions
+      script: KafkaV3|||kafka-fetch-partitions
       type: regular
       iscommand: true
-      brand: Kafka v3
+      brand: KafkaV3
+      description: Fetch partitions for a topic.
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
       topic:
-        simple: playbook-test-topic
+        simple: testsa17
     separatecontext: false
     view: |-
       {
@@ -298,12 +313,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: de2380aa-1e4d-4efd-83c2-4ebcd2fef4ac
+    taskid: 47e4d692-2c02-4f0f-8fb4-226d795cdd6e
     type: condition
     task:
-      id: de2380aa-1e4d-4efd-83c2-4ebcd2fef4ac
+      id: 47e4d692-2c02-4f0f-8fb4-226d795cdd6e
       version: -1
       name: Verify Outputs
       type: condition
@@ -323,7 +339,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: playbook-test-topic
+              simple: testsa17
       - - operator: isNotEmpty
           left:
             value:
@@ -343,17 +359,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: f4c3b6cd-ad3f-4808-8692-93bb9f7c8a55
+    taskid: 82fea5e2-4ea1-4059-829d-6737f04370ba
     type: title
     task:
-      id: f4c3b6cd-ad3f-4808-8692-93bb9f7c8a55
+      id: 82fea5e2-4ea1-4059-829d-6737f04370ba
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -369,6 +387,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
@@ -383,3 +402,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''

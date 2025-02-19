@@ -2527,7 +2527,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.99865
+  dockerimage: demisto/python3:3.11.11.1940698
 fromversion: 5.0.0
 tests:
 - nexpose_test

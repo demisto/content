@@ -13,7 +13,7 @@ tags:
 - dynamic-indicator-section
 timeout: 300ns
 type: python
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)

@@ -6,7 +6,7 @@ comment: Determine AWS account hierarchy by looking up parent objects until the 
 commonfields:
   id: AWSAccountHierarchy
   version: -1
-dockerimage: demisto/python3:3.10.13.84405
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 engineinfo: {}
 name: AWSAccountHierarchy

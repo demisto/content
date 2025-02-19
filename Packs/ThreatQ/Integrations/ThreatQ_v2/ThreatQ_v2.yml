@@ -163,7 +163,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: URL to check
+      description: URL to check.
       isArray: true
       name: url
       required: true
@@ -232,7 +232,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: File MD5, SHA-1 or SHA-256
+      description: File MD5, SHA-1 or SHA-256.
       isArray: true
       name: file
       required: true
@@ -385,7 +385,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Domain or FQDN
+      description: Domain or FQDN.
       isArray: true
       name: domain
       required: true
@@ -686,7 +686,7 @@ script:
       - Login Compromise
       - Incident
       required: true
-    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
+    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd.'
       name: date
       required: true
     - description: List of sources names, separated by commas.
@@ -1614,7 +1614,7 @@ script:
       required: true
     - description: The title of the new event.
       name: title
-    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
+    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd.'
       name: date
     - auto: PREDEFINED
       description: Type of the event, such as DoS Attack, Malware, Watchlist, and so on.
@@ -1882,13 +1882,13 @@ script:
     - defaultValue: '10'
       description: The maximum number of results to return. Default is 10.
       name: limit
-    - description: 'The indicator type for which to search. Can be either the name or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password, Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer'
+    - description: 'The indicator type for which to search. Can be either the name or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password, Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer.'
       name: indicator_type
       required: true
     deprecated: true
     description: Runs an advanced indicator search.
     name: threatq-advanced-search
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.116949
   script: ''
   subtype: python3
   type: python

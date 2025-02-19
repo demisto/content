@@ -10,7 +10,7 @@ comment: Entry widget that returns the resource type involved in the alert.
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.8.0
 tests:

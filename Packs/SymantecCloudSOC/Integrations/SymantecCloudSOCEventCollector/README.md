@@ -1,21 +1,17 @@
 Gets Events from Symantec CloudSOC.
 This integration was integrated and tested with version 3.157 of Symantec CloudSOC.
 
-## Configure Symantec Cloud SOC Event Collector on Cortex XSOAR
+## Configure Symantec Cloud SOC Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for Symantec Cloud SOC Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g., <https://api.elastica.net/casb/>) | True |
-    | Key ID | True |
-    | Key Secret | True |
-    | First fetch time | False |
-    | Maximum number of incidents per fetch | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g., <https://api.elastica.net/casb/>) | True |
+| Key ID | True |
+| Key Secret | True |
+| First fetch time | False |
+| Maximum number of incidents per fetch | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 Symantec CloudSOC Event Collector collects the following event types:
@@ -27,7 +23,7 @@ Symantec CloudSOC Event Collector collects the following event types:
 
 ## Commands
 
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### symantec-cloudsoc-get-events

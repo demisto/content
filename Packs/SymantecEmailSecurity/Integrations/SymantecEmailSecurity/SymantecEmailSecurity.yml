@@ -1,0 +1,1157 @@
+category: Email
+commonfields:
+  id: Symantec Email Security Cloud
+  version: -1
+configuration:
+- name: url_ioc
+  display: Server URL - IOC
+  type: 0
+  defaultvalue: "https://iocapi.emailsecurity.symantec.com"
+  section: Connect
+- name: url_data_feeds
+  display: Server URL - Data Feeds
+  type: 0
+  defaultvalue: "https://datafeeds.emailsecurity.symantec.com"
+  section: Connect
+- name: url_email_queue
+  display: Server URL - Email Queue
+  type: 0
+  defaultvalue: "https://emailqueue.emailsecurity.symantec.com"
+  section: Connect
+- name: url_quarantine
+  display: Server URL - Quarantine
+  additionalinfo: The Quarantine API is available for the United States (us) and European Union (eu).
+  type: 0
+  defaultvalue: "https://api.eu.quarantine.symantec.com"
+  section: Connect
+- name: credentials
+  display: Username
+  additionalinfo: 'Relevant to: Server URL - IOC, Server URL - Email Queue, Server URL - Quarantine'
+  type: 9
+  required: false
+  section: Connect
+- name: quarantine_credentials
+  display: Quarantine Username
+  additionalinfo: 'Relevant to: Server URL - Quarantine'
+  type: 9
+  required: false
+  section: Connect
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  section: Connect
+- name: isFetch
+  display: Fetch incidents
+  type: 8
+  section: Collect
+- name: incidentType
+  display: Incident type
+  type: 13
+- name: max_fetch
+  display: Maximum number of incidents per fetch
+  additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 200.
+  type: 0
+  section: Collect
+  defaultvalue: 50
+- name: first_fetch
+  display: First Fetch Time
+  type: 0
+  section: Collect
+  defaultvalue: 3 days
+- name: fetch_type
+  display: Fetch Type
+  additionalinfo: 'The API to fetch incidents from: Data Feeds, Quarantine or both.'
+  type: 15
+  defaultvalue: both
+  section: Collect
+  options:
+  - both
+  - email_data_feed
+  - email_quarantine
+- name: severity
+  display: Severity - Email Data Feed
+  additionalinfo: Filter the incidents by their severity. When left empty will fetch all.
+  type: 16
+  section: Collect
+  options:
+  - unknown
+  - low
+  - medium
+  - high
+  - critical
+- name: type
+  display: Type - Email Data Feed
+  type: 15
+  section: Collect
+  defaultvalue: all
+  options:
+  - all
+  - malware
+  - threat-isolation
+  - clicktime
+  - anti-spam
+  - ec-reports
+- name: include_delivery
+  display: Include Delivery - Email Data Feed
+  additionalinfo: Only relevant to `all` feed. Contains metadata that describes both inbound and outbound email delivery to provide visibility into email tracing, TLS compliance, and routing.
+  type: 8
+  section: Collect
+- name: query_quarantine
+  display: Query - Email Quarantine
+  additionalinfo: A search criterion that can be used to filter emails that match only certain conditions based on email metadata.
+  type: 0
+  section: Collect
+- name: type_quarantine
+  display: Type - Email Quarantine
+  additionalinfo: A string used to filter emails based on the quarantine type.
+  type: 15
+  section: Collect
+  options:
+  - SPAM
+  - NEWSLETTER
+  - CI
+  - CO
+  - II
+  - IO
+  - COMPLIANCE
+  - DLP
+- name: admin_domain_quarantine
+  display: Admin Domain - mail Quarantine
+  additionalinfo: 'Returns the emails quarantined for users in a particular domain. If this parameter is present and has a valid domain name, then items from only that domain are returned. If it has a value of `ALL`, then all domains administered by the user are searched and emails quarantined for users in those domains are returned. Note: Can only be used by an administrator user.'
+  type: 0
+  section: Collect
+description: Symantec Email Security.cloud is a hosted service that filters email messages and helps protect organizations from malware (including targeted attacks and phishing), spam, and unwanted bulk email. The service offers encryption and data protection options to help control sensitive information sent by email and supports multiple mailbox types from various vendors.
+display: Symantec Email Security Cloud
+name: Symantec Email Security Cloud
+script:
+  commands:
+  - name: symantec-email-security-ioc-list
+    description: List the IOCs that apply to a specific domain or to all domains.
+    arguments:
+    - name: domain
+      description: Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains.
+      defaultValue: global
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: '50'
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: SymantecEmailSecurity.IOC.iocBlackListId
+      description: ID of the IOC.
+      type: String
+    - contextPath: SymantecEmailSecurity.IOC.iocType
+      description: Type of the IOC value.
+      type: String
+    - contextPath: SymantecEmailSecurity.IOC.iocValue
+      description: Value of the IOC.
+      type: String
+    - contextPath: SymantecEmailSecurity.IOC.status
+      description: Whether the IOC is active.
+      type: String
+    - contextPath: SymantecEmailSecurity.IOC.description
+      description: Description of the IOC.
+      type: String
+    - contextPath: SymantecEmailSecurity.IOC.emailDirection
+      description: 'Email direction. Can be one of: I=Inbound, O=Outbound or B=Both.'
+      type: String
+    - contextPath: SymantecEmailSecurity.IOC.remediationAction
+      description: 'Remediation Action. Can be one of: B=Block and delete, Q=Quarantine, M=Redirect, T=Tag subject or H=Append header.'
+      type: String
+    - contextPath: SymantecEmailSecurity.IOC.expiryDate
+      description: Retention period for an IOC until it is removed from the system.
+      type: String
+  - name: symantec-email-security-ioc-action
+    description: Add, update, delete, and renew multiple IOCs through the `entry_id` or a single IOC through the rest of the parameters.
+    arguments:
+    - name: domain
+      description: Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains.
+      defaultValue: global
+    - name: action
+      description: 'Defines the action for IOCs: ''merge'' to merge or update IOCs in the database by their type and value without inputting `ioc_id`; ''replace'' to delete and replace all IOCs in the database without inputting `upload_ioc_json`; ''ioc'' to add, update, delete, or renew multiple IOCs each with their own action, use this only when entering an `entry_id`; ''add'' to add an IOC without inputting `ioc_id`.'
+      auto: PREDEFINED
+      predefined:
+      - merge
+      - replace
+      - upload_ioc_json
+      - add
+      - update
+      - delete
+      - renew
+      required: true
+      default: true
+    - name: entry_id
+      description: 'Entry ID of a JSON file to pass multiple IOCs. Only accepts `action=merge/replace/ioc`. Example value: [{"APIRowAction": "U", "IocBlacklistId": xxxx, "IocType": "url", "IocValue": "https://www.example.com", "Description": "Hello World!"}]. More about IOCs can be found in: https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/symantec-security-software/email-security/email-security-cloud/content/Indicators-of-Compromise-(IOC)-Blacklist-API-Guide.pdf'
+    - name: ioc_id
+      description: ID of the IOC. Can't be used with action=`merge`\replace\`add`.
+    - name: ioc_type
+      description: Type of the IOC.
+      auto: PREDEFINED
+      predefined:
+      - attachmentname
+      - md5attachment
+      - sha2attachment
+      - bodysenderdomain
+      - bodysenderemail
+      - bodysendertopleveldomain
+      - envelopesenderdomain
+      - envelopesenderemail
+      - envelopesendertopleveldomain
+      - senderipaddress
+      - senderiprange
+      - recipientdomain
+      - recipientemail
+      - subject
+      - url
+    - name: ioc_value
+      description: Value of the IOC.
+    - name: description
+      description: Description of the IOC.
+    - name: email_direction
+      description: Email direction to filter IOCs.
+      auto: PREDEFINED
+      predefined:
+      - inbound
+      - outbound
+      - both
+    - name: remediation_action
+      description: Remediation action to be done on an IOC.
+      auto: PREDEFINED
+      predefined:
+      - block_and_delete
+      - quarantine
+      - redirect
+      - tag_subject
+      - append_header
+  - name: symantec-email-security-ioc-renew
+    description: Renew all IOCs previously uploaded and still in the database, whether active or inactive, for a specific domain or all domains. The default retention period for IOCs is 7 days and the maximum is 30 days. After 30 days IOCs are retained in an inactive state for another 14 days. If an organization receives new email containing previously block listed IOCs, then the IOCs can renewed in the block list within this grace period. Thereafter, IOCs are removed from the system and must be uploaded again to remain in the block list.
+    arguments:
+    - name: domain
+      description: Run the command for a specific domain, for all domains use 'global'. Run `symantec-email-security-email-queue-list` to get a list of available domains.
+      defaultValue: global
+      default: true
+  - name: symantec-email-security-data-list
+    description: 'Retrieves data feeds from Symantec Email Security.cloud. Available feeds: ''all'' (metadata for all scanned email), ''malware'' (malware-containing email data), ''threat-isolation'' (events from URL and Attachment Isolation), ''clicktime'' (metadata from end-user clicks on rewritten URLs), ''anti-spam'' (spam detection metadata), and ''ec-reports'' (contextual information about emails blocked by Anti-Malware service).'
+    arguments:
+    - name: feed_type
+      description: The type of the email data feed to retrieve.
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - all
+      - malware
+      - threat-isolation
+      - clicktime
+      - anti-spam
+      - ec-reports
+      default: true
+    - name: start_from
+      description: 'Start time for reading metadata. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute. Max start time is 1095 days before current date.'
+      defaultValue: 3 days
+    - name: include_delivery
+      description: Only relevant to `all` feed. Contains metadata that describes both inbound and outbound email delivery to provide visibility into email tracing, TLS compliance, and routing.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    - name: fetch_only_incidents
+      description: Whether to fetch only incident fields.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: '50'
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.xMsgRef
+      description: Unique message reference identifier.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.longMsgRef
+      description: Detailed message reference path.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.messageId
+      description: Email's unique message identifier.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.isOutbound
+      description: Indicates if the email is outbound.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.messageSize
+      description: Size of the email message in bytes.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.mailProcessingStartTime
+      description: Start time of email processing.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.subject
+      description: Subject line of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.envFrom
+      description: Envelope sender of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.envTo
+      description: Envelope receiver of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.headerFrom
+      description: Header sender of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.rawHeaderFrom
+      description: Raw header sender information.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.headerReplyTo
+      description: Reply-to address in email header.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.senderIp
+      description: IP address of the email sender.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.senderMailserver
+      description: Mail server of the email sender.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.country
+      description: Country of the email sender.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.HELOString
+      description: HELO string from the mail server.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.avQuarantinePenId
+      description: Quarantine pen ID for antivirus.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.authResults
+      description: Authentication results of the email.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.nodeType
+      description: Type of node for files and links.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.fileNameOrURL
+      description: File name or URL in the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.fileSize
+      description: Size of the file in the email.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.fileType
+      description: Type of the file in the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.md5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.sha256
+      description: SHA-256 hash of the file.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.urlCategories
+      description: Categories of URLs in the email.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.urlRiskScore
+      description: Risk score of URLs in the email.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.index
+      description: Index of the file/link in email.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.parentIndex
+      description: Parent index of the file/link in email.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.filesAndLinks.linkSource
+      description: Source of the link in the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.tlsInfo.tlsAdvertised
+      description: Indicates if TLS was advertised.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.tlsInfo.tlsUsed
+      description: Indicates if TLS was used.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.tlsInfo.tlsPolicy
+      description: Policy for using TLS.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.tlsInfo.tlsProtocol
+      description: Protocol used for TLS.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.tlsInfo.tlsCipher
+      description: Cipher used for TLS.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.tlsInfo.tlsKeyLength
+      description: Key length used for TLS.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.tlsInfo.tlsFallbackReason
+      description: Reason for TLS fallback.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.tlsInfo.tlsForwardSecrecy
+      description: Indicates if forward secrecy was used.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.tlsInfo.tlsNegotiationFailed
+      description: Indicates if TLS negotiation failed.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.newDomainAge
+      description: Age of the new domain.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.timeInCynicSandboxMs
+      description: Time spent in Cynic sandbox in ms.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.incidents
+      description: Associated incidents.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.clicktimeInfo.xMsgRef
+      description: Unique click message reference.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.clicktimeInfo.squrlClickerIp
+      description: IP address of the URL clicker.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.clicktimeInfo.squrlRecipient
+      description: Recipient of the clicked URL.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.clicktimeInfo.url
+      description: Clicked URL.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.clicktimeInfo.dateUrlAccess
+      description: Timestamp of URL access.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.clicktimeInfo.risk
+      description: Risk level of the URL.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.incident
+      description: Associated incident details.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.timestamp
+      description: Timestamp of the event.
+      type: Date
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.event
+      description: Type of event logged.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.source_ip
+      description: Source IP address of the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.url
+      description: URL involved in the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.referer_url
+      description: Referer URL of the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.request_method
+      description: HTTP request method used.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.user_agent
+      description: User agent string of the request.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.destination_ip
+      description: Destination IP address of the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.action
+      description: Action taken for the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.action_reason
+      description: Reason for the action taken.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.text
+      description: Text description of the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.rule_id
+      description: ID of the rule applied.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.rule_name
+      description: Name of the rule applied.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.service
+      description: Service involved in the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.mime_type
+      description: MIME type of the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.password_supplied
+      description: Indicates if a password was supplied.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.file_type
+      description: Type of file involved.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.content_type
+      description: Content type of the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.host
+      description: Host involved in the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.geoip_country_name
+      description: Country name from GeoIP lookup.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.top_level_url
+      description: Top-level URL involved.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.response_status_code
+      description: HTTP response status code.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.resource_type
+      description: Type of resource involved.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.total_bytes
+      description: Total bytes transferred.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.total_bytes_sent
+      description: Total bytes sent.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.md5
+      description: MD5 hash of the content.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.sha256
+      description: SHA-256 hash of the content.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.file_path
+      description: File path of the content.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.file_name
+      description: File name of the content.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.details
+      description: Details of the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.url_risk
+      description: Risk score of the URL.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.tenant_id
+      description: Tenant ID associated with the event.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.fireglass_log.xMsgRef
+      description: Unique Fireglass message reference.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.authResults.raw_header
+      description: Raw authentication results header.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.authResults.dkim
+      description: DKIM verification result.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.authResults.dkim_signing_domain
+      description: Domain used for DKIM signing.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.authResults.spf
+      description: SPF verification result.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.authResults.dmarc
+      description: DMARC verification result.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.authResults.dmarc_policy
+      description: DMARC policy applied.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.emailInfo.authResults.dmarc_override_action
+      description: Action overridden by DMARC policy.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.xMsgRef
+      description: Unique incident message reference.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.addressContexts.name
+      description: Name in incident address context.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.addressContexts.domain
+      description: Domain in incident address context.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.addressContexts.isSender
+      description: Indicates if address is sender.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.incidents.severity
+      description: Severity level of the incident.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.securityService
+      description: Security service involved.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.detectionMethod
+      description: Method used for detection.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.verdict
+      description: Verdict of the incident.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.action
+      description: Action taken for the incident.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.reason
+      description: Reason for the action.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.nodeType
+      description: Type of node in incident.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.fileNameOrURL
+      description: File name or URL in incident.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.fileSize
+      description: Size of the file in incident.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.fileType
+      description: Type of file in incident.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.md5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.sha256
+      description: SHA-256 hash of the file.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.malwareName
+      description: Name of the detected malware.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.malwareCategory
+      description: Category of the detected malware.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.urlCategories
+      description: Categories of URLs in the incident.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.urlRiskScore
+      description: Risk score of URLs in the incident.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.index
+      description: Index of the file/link in incident.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.parentIndex
+      description: Parent index of the file/link in incident.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.xMsgRef
+      description: Unique incident file message reference.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.filesAndLinks.linkSource
+      description: Source of the link in incident.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.incidents.dmasDelivered
+      description: Indicates if DMAS was delivered.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.incidents.dmasInfo
+      description: DMAS information related to the incident.
+      type: Unknown
+    - contextPath: SymantecEmailSecurity.Data.attacks.affectedUsers.key
+      description: Affected user email address.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.affectedUsers.value
+      description: Number of affected users.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.affectedUsers.type
+      description: Type of affected users.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.affectedUsersByDomain.key
+      description: Domain of affected users.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.affectedUsersByDomain.value
+      description: Number of affected users by domain.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.affectedUsersByDomain.type
+      description: Type of affected users by domain.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.geoIpSources.key
+      description: GeoIP source country code.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.geoIpSources.value
+      description: Percentage of attacks from GeoIP source.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.geoIpSources.type
+      description: Type of GeoIP source data.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.globalTimeline.key
+      description: Date in global attack timeline.
+      type: Date
+    - contextPath: SymantecEmailSecurity.Data.attacks.globalTimeline.value
+      description: Number of global attacks on date.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.globalTimeline.type
+      description: Type of global timeline data.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.ipSources.key
+      description: IP address of attack source.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.ipSources.value
+      description: Percentage of attacks from IP source.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.ipSources.type
+      description: Type of IP source data.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.localTimeline.key
+      description: Date in local attack timeline.
+      type: Date
+    - contextPath: SymantecEmailSecurity.Data.attacks.localTimeline.value
+      description: Number of local attacks on date.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.localTimeline.type
+      description: Type of local timeline data.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.threatNames.key
+      description: Name of the detected threat.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.threatNames.value
+      description: Percentage of attacks with this threat.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.threatNames.type
+      description: Type of threat data.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.traitImportance.ioc
+      description: Indicator of compromise.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.traitImportance.value
+      description: Value of the trait.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.traitImportance.weight
+      description: Weight of the trait.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.traitImportance.type
+      description: Type of trait data.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.avgMailboxesGlobal
+      description: Average global mailboxes affected.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.attackVolumeGlobal
+      description: Global volume of attacks.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.attackVolumeLocal
+      description: Local volume of attacks.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.attackedMailboxesGlobal
+      description: Number of globally attacked mailboxes.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.attackedMailboxesLocal
+      description: Number of locally attacked mailboxes.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.attackedOrgsGlobal
+      description: Number of globally attacked organizations.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.attacks.attackDescription
+      description: Description of the attack.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.attackType
+      description: Type of attack.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.attacks.cluster
+      description: Cluster identifier for the attack.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.topAttacked.key
+      description: Email address of top attacked user.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.topAttacked.value
+      description: Number of attacks on top user.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.topAttacked.type
+      description: Type of attack count data.
+      type: String
+    - contextPath: SymantecEmailSecurity.Data.reportWindowStartTime
+      description: Start time of the report window.
+      type: Number
+    - contextPath: SymantecEmailSecurity.Data.reportWindowEndTime
+      description: End time of the report window.
+      type: Number
+  - name: symantec-email-security-email-queue-list
+    description: Returns a list of domains owned by the customer, with queue statistics for each domain.
+    arguments:
+    - name: domains
+      description: Comma-separated list of domains to retrieve. Leave empty to retrieve all domains.
+      isArray: true
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: '50'
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: SymantecEmailSecurity.EmailQueue.TotalMessagesInbound
+      description: Total number of inbound messages in the queue, for all domains.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.TotalMessagesOutbound
+      description: Total number of outbound messages in the queue, for all domains.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.MeanTimeInQueueInbound
+      description: Average (mean) queue wait for inbound messages, for all domains. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.MeanTimeInQueueOutbound
+      description: Average (mean) queue wait for outbound messages, for all domains. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.LongestTimeInInbound
+      description: How long the oldest message in the inbound queue has been queued, across all domains. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.LongestTimeInOutbound
+      description: How long the oldest message in the outbound queue has been queued, across all domains. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.Name
+      description: Name of the domain.
+      type: String
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.ReceiveQueueCountInbound
+      description: Number of inbound messages waiting to be processed.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.ReceiveQueueCountOutbound
+      description: Number of outbound messages waiting to be processed.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.DeliveryQueueCountInbound
+      description: Number of inbound messages that have been processed and are waiting to be delivered.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.DeliveryQueueCountOutbound
+      description: Number of outbound messages that have been processed and are waiting to be delivered.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueInbound
+      description: Oldest inbound message in the queue waiting to be processed. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueOutbound
+      description: Oldest outbound message in the queue waiting to be processed. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInDeliveryQueueInbound
+      description: Oldest inbound message waiting to be delivered after processing. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInDeliveryQueueOutbound
+      description: Oldest outbound message waiting to be delivered after processing. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInReceiveQueueInbound
+      description: Average (mean) wait time for inbound messages waiting to be processed. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInReceiveQueueOutbound
+      description: Average (mean) wait time for outbound messages waiting to be processed. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInDeliveryQueueInbound
+      description: Average (mean) wait time for inbound messages waiting to be delivered after processing. Measured in seconds.
+      type: Number
+    - contextPath: SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInDeliveryQueueOutbound
+      description: Average (mean) wait time for outbound messages waiting to be delivered after processing. Measured in seconds.
+      type: Number
+  - name: symantec-email-security-quarantine-email-list
+    description: Retrieves the metadata for quarantined emails belonging to the authenticated user. If the user is an administrator, the API provides options to retrieve the metadata for emails quarantined for another user under his administration.
+    arguments:
+    - name: query
+      description: 'A search criterion that can be used to filter emails that match only certain conditions based on email metadata. The search syntax is built by a field name and search value enclosed by parenthesis and the operators: ''OR'', ''AND'' to combine multiple search criteria''s or values, example: (email_subject:test). Acceptable field names are: ''dlp_message_id'', ''email_envelope_sender'', ''email_envelope_sender.raw'', ''email_sender'', ''email_envelope_recipient'', ''email_envelope_recipient.raw'', ''email_subject'', ''email_subject.raw''. See the section called “Search String Syntax” on page 16 in: https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/symantec-security-software/email-security/email-security-cloud/content/EmailQuarantineAPIGuide.pdf.'
+    - name: sort_column
+      description: Specifies the column to use for sorting. Defaults to `email_date_received`.
+    - name: sort_order
+      description: Specifies the order in which to sort.
+      defaultValue: desc
+      auto: PREDEFINED
+      predefined:
+      - desc
+      - asc
+    - name: after
+      description: 'A time stamp value used to select only SUDULS items that were created after this time. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: before
+      description: 'A time stamp value used to select only SUDULS items that were created before this time. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: filter_type
+      description: 'A string used to filter emails based on the quarantine type. By default includes the emails quarantined for all types. COMPLIANCE: Includes Content control, DLP and Image control emails. DLP: Includes only DLP emails.'
+      auto: PREDEFINED
+      predefined:
+      - SPAM
+      - NEWSLETTER
+      - CI
+      - CO
+      - II
+      - IO
+      - COMPLIANCE
+      - DLP
+    - name: include_deleted
+      description: Specifies whether to include items marked as deleted in the search results.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: user_email
+      description: 'Return only the quarantined emails of the user whose email address is specified. Note: Can only be used by an administrator user.'
+    - name: admin_domain
+      description: 'Returns the emails quarantined for users in a particular domain. If this parameter is present and has a valid domain name, then items from only that domain are returned. If it has a value of `ALL`, then all domains administered by the user are searched and emails quarantined for users in those domains are returned. Note: Can only be used by an administrator user.'
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page
+      description: The page number to retrieve records from.
+    - name: page_size
+      description: The maximum number of records to return per page. Default is 50. Max is 10,000.
+    outputs:
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.id
+      description: ID of the item.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_date_received
+      description: Date the email was received.
+      type: Date
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.quarantine_info.direction
+      description: Direction of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.quarantine_info.quarantine_type
+      description: 'Quarantine type of the email, can be one of: SPAM, NEWSLETTER, CI, CO, II, IO, COMPLIANCE, DLP.'
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_is_viewed
+      description: Whether the email was viewed.
+      type: Bool
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_is_released
+      description: Whether the email was released.
+      type: Bool
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.quarantine_reason
+      description: Reason why the email was quarantined.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_sender
+      description: Sender of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.service_type
+      description: Service type used for the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.master_recipient
+      description: Recipient of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.user_id
+      description: ID of the user.
+      type: Number
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_envelope_sender
+      description: Address to respond to in case of bounce messages or errors.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_subject
+      description: Subject of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_size
+      description: Size of the email.
+      type: Number
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.metadata.email_envelope_recipient
+      description: The RCPT TO address.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.actions.view_subject
+      description: Whether the subject can be viewed.
+      type: Bool
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.actions.delete_message
+      description: Whether the email can be deleted.
+      type: Bool
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.actions.preview_message
+      description: Whether the email can be previewed.
+      type: Bool
+    - contextPath: SymantecEmailSecurity.QuarantineEmail.actions.release_message
+      description: Whether the email can be released.
+      type: Bool
+  - name: symantec-email-security-quarantine-email-preview
+    description: Retrieves the contents of the email specified in the request. To preview an email the compliance policy must allow it.
+    arguments:
+    - name: message_id
+      description: The message ID of the email to preview. Run `symantec-email-security-email-queue-list` to get a list of message IDs.
+      required: true
+      default: true
+    outputs:
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.message_id
+      description: ID of the message.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.authentication-results
+      description: Authentication status of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.content-type
+      description: The MIME type of the email content, defining how the content is structured.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.date
+      description: The date and time when the email was sent.
+      type: Date
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.dkim-signature
+      description: The DKIM signature used to verify the authenticity of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.feedback-id
+      description: A unique identifier used for tracking feedback and reporting issues related to the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.from
+      description: The sender's email address and name.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.mailfrom
+      description: The envelope sender email address.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.message-id
+      description: Unique identifier for the email message.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.mime-version
+      description: The MIME version used for the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.received
+      description: Information about the servers the email passed through.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.reply-to
+      description: The email address where replies to the message should be sent.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.subject
+      description: The subject line of the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.to
+      description: The recipient's email address.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.x-brightmail-tracker
+      description: Tracking data for Brightmail filtering.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.headers.x-originating-ip
+      description: IP address of the original sender.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.attachments.name
+      description: The name of the file attached to the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.attachments.type
+      description: The type of the file attached to the email.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.bodypart.type
+      description: The type of the email's body part.
+      type: String
+    - contextPath: SymantecEmailSecurity.QuarantineEmailPreview.bodypart.content
+      description: The content of the email's body part.
+      type: String
+  - name: symantec-email-security-quarantine-email-release
+    description: Releases the set of quarantined emails specified in the request.
+    arguments:
+    - name: message_ids
+      description: Comma-separated list of emails message IDs to release. Run `symantec-email-security-quarantine-email-list` to get a list of message IDs.
+      required: true
+      isArray: true
+      default: true
+    - name: recipient
+      description: An email address to which the mails have to be released instead of the recipient user's address.
+    - name: headers
+      description: Comma-separated list of x-headers that will be added to the message on release.
+      isArray: true
+    - name: encrypt
+      description: 'If true adds an ''x-encrypted-quarantine-release: true'' to the released email. Customers have to configure a corresponding DP rule that triggers encryption.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+  - name: symantec-email-security-quarantine-email-delete
+    description: Deletes the set of quarantined emails specified in the request. The items are marked as deleted in the backend data store, but are not physically deleted.
+    arguments:
+    - name: message_ids
+      description: Comma-separated list of quarantined emails message IDs to delete. Run `symantec-email-security-quarantine-email-list` to get a list of message IDs.
+      required: true
+      isArray: true
+      default: true
+  - name: symantec-email-security-item-allow-list
+    description: Retrieve the allow list items.
+    arguments:
+    - name: query
+      description: A string that at least some part of the allow list item must contain.
+    - name: sort_column
+      description: Specifies the column to use for sorting.
+      defaultValue: date
+      auto: PREDEFINED
+      predefined:
+      - date
+      - type
+      - description
+    - name: sort_order
+      description: Specifies the order in which to sort.
+      defaultValue: desc
+      auto: PREDEFINED
+      predefined:
+      - desc
+      - asc
+    - name: after
+      description: 'A time stamp value used to select only SUDULS items that were created after this time. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: before
+      description: 'A time stamp value used to select only SUDULS items that were created before this time. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page
+      description: The page number to retrieve records from.
+    - name: page_size
+      description: The maximum number of records to return per page. Default is 50.
+    outputs:
+    - contextPath: SymantecEmailSecurity.AllowList.id
+      description: ID of the item.
+      type: String
+    - contextPath: SymantecEmailSecurity.AllowList.value
+      description: An email address or a domain name.
+      type: String
+    - contextPath: SymantecEmailSecurity.AllowList.description
+      description: Description of the item.
+      type: String
+    - contextPath: SymantecEmailSecurity.AllowList.type
+      description: Email or domain.
+      type: String
+    - contextPath: SymantecEmailSecurity.AllowList.date_created
+      description: Date at which the item was created.
+      type: Date
+    - contextPath: SymantecEmailSecurity.AllowList.date_amended
+      description: Date at which the item was amended.
+      type: Date
+  - name: symantec-email-security-item-allow-list-update
+    description: Allows a SUDULS (allow quarantine users to maintain their own lists of email addresses or domains) user to add or update an item to the allow list.
+    arguments:
+    - name: suduls_user
+      description: Email address of the user for whom the entry should be added in the allow list.
+      required: true
+      default: true
+    - name: item_id
+      description: ID of SUDULS item to be added/updated. Only required when updating an existing item. Run `symantec-email-security-item-allow-list` to get a list of items.
+    - name: email_or_domain
+      description: Email address or domain to be added in the allow list.
+      required: true
+    - name: description
+      description: Description of the item to be added to the allow list.
+      required: true
+  - name: symantec-email-security-item-allow-list-delete
+    description: Allows a SUDULS (allow quarantine users to maintain their own lists of email addresses or domains) user to delete an item from the allow list.
+    arguments:
+    - name: item_id
+      description: ID of SUDULS item to be deleted. Run `symantec-email-security-item-allow-list` to get a list of items.
+      required: true
+      default: true
+  - name: symantec-email-security-item-block-list
+    description: Retrieve the block list items.
+    arguments:
+    - name: query
+      description: A string that at least some part of the block list item must contain.
+    - name: sort_column
+      description: Specifies the column to use for sorting.
+      defaultValue: date
+    - name: sort_order
+      description: Specifies the order in which to sort.
+      defaultValue: desc
+    - name: after
+      description: 'A time stamp value used to select only SUDULS items that were created after this time. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: before
+      description: 'A time stamp value used to select only SUDULS items that were created before this time. Accepted formats: any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page
+      description: The page number to retrieve records from.
+    - name: page_size
+      description: The maximum number of records to return per page. Default is 50.
+    outputs:
+    - contextPath: SymantecEmailSecurity.BlockList.id
+      description: ID of the item.
+      type: String
+    - contextPath: SymantecEmailSecurity.BlockList.value
+      description: An email address or a domain name.
+      type: String
+    - contextPath: SymantecEmailSecurity.BlockList.description
+      description: Description of the item.
+      type: String
+    - contextPath: SymantecEmailSecurity.BlockList.type
+      description: Email or domain.
+      type: String
+    - contextPath: SymantecEmailSecurity.BlockList.date_created
+      description: Date at which the item was created.
+      type: Date
+    - contextPath: SymantecEmailSecurity.BlockList.date_amended
+      description: Date at which the item was amended.
+      type: Date
+  - name: symantec-email-security-item-block-list-update
+    description: Allows a SUDULS (allow quarantine users to maintain their own lists of email addresses or domains) user to add or update an item to the block list.
+    arguments:
+    - name: suduls_user
+      description: Email address of the user for whom the entry should be added in the block list.
+      required: true
+      default: true
+    - name: item_id
+      description: ID of SUDULS item to be added/updated. Only required when updating an existing item. Run `symantec-email-security-item-block-list` to get a list of items.
+    - name: email_or_domain
+      required: true
+      description: Email address or domain to be added to the block list.
+    - name: description
+      description: Description of the item to be added to the block list.
+      required: true
+  - name: symantec-email-security-item-block-list-delete
+    description: Allows a SUDULS (allow quarantine users to maintain their own lists of email addresses or domains) user to delete an item from the block list.
+    arguments:
+    - name: item_id
+      description: ID of SUDULS item to be deleted. Run `symantec-email-security-item-block-list` to get a list of items.
+      required: true
+      default: true
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.11.1940698
+  isfetch: true
+  script: ''
+fromversion: 5.0.0
+tests:
+- SymantecEmailSecurity_TestPlaybook

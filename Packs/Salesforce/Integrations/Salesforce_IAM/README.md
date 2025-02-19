@@ -3,11 +3,8 @@
 Integrate with Salesforce's services to perform Identity Lifecycle Management operations.
 For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
-## Configure Salesforce IAM on Cortex XSOAR
+## Configure Salesforce IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Salesforce IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
 ## Required Fields in Create User Command
 When creating a user in Salesforce there are mandatory fields that need to be set. Some of them are set with default values in the integration parameters:
@@ -35,9 +32,8 @@ This configuration ensures that the user being created is created with the right
 | emailencodingkey | Default Email Encoding Key | True |
 | languagelocalekey | Default Language Locale Key | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***
@@ -221,4 +217,3 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-

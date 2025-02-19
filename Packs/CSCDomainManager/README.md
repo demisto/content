@@ -1,4 +1,6 @@
-Note: Support for this Pack will be moved to the Partner on November 7, 2024.
+Note: Support for this Pack moved to the Partner on November 7, 2024.
+
+Please contact the partner directly via the support link on the right.
 
 CSCDomainManager is a web-based portfolio management platform consolidating domains alongside social media usernames, SSL digital certificates, and DNS.
 

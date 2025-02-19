@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, UTC
 import json
 import pytest
 import FireEyeETPEventCollector
@@ -149,31 +149,31 @@ def test_fetch_alerts(
 FAKE_ISO_DATE_CASES = [
     (
         "2023-08-01T14:15:26.123456+0000Z",  # 6 digit milliseconds + tz+ Z
-        datetime(2023, 8, 1, 14, 15, 26, 123456, tzinfo=timezone.utc),
+        datetime(2023, 8, 1, 14, 15, 26, 123456, tzinfo=UTC),
     ),
     (
         "2023-08-01T14:15:26+0000Z",  # No milliseconds + tz+ Z
-        datetime(2023, 8, 1, 14, 15, 26, tzinfo=timezone.utc),
+        datetime(2023, 8, 1, 14, 15, 26, tzinfo=UTC),
     ),
     (
         "2023-08-01T14:15:26+0000",  # 6 digit milliseconds + tz , No Z
-        datetime(2023, 8, 1, 14, 15, 26, tzinfo=timezone.utc),
+        datetime(2023, 8, 1, 14, 15, 26, tzinfo=UTC),
     ),
     (
         "2023-08-01 14:15:26+0000Z",  # missing 'T'
-        datetime(2023, 8, 1, 14, 15, 26, tzinfo=timezone.utc),
+        datetime(2023, 8, 1, 14, 15, 26, tzinfo=UTC),
     ),
     (
         "2023-08-01T14:15:26Z",  # No milliseconds + tz+ Z
-        datetime(2023, 8, 1, 14, 15, 26, tzinfo=timezone.utc),
+        datetime(2023, 8, 1, 14, 15, 26, tzinfo=UTC),
     ),
     (
         "2023-08-01T14:15:26.123Z",  # 3 digit milliseconds + Z
-        datetime(2023, 8, 1, 14, 15, 26, 123000, tzinfo=timezone.utc),
+        datetime(2023, 8, 1, 14, 15, 26, 123000, tzinfo=UTC),
     ),
     (
         "2023-08-01T14:15:26.123+0000Z",  # 3 digit milliseconds + tz+ Z
-        datetime(2023, 8, 1, 14, 15, 26, 123, tzinfo=timezone.utc),
+        datetime(2023, 8, 1, 14, 15, 26, 123, tzinfo=UTC),
     ),
     ("2023-11-07T09:00", datetime(2023, 11, 7, 9, 0)),  # No seconds
 ]

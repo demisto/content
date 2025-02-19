@@ -1,358 +1,409 @@
 {
-    "description": "Classifies Microsoft 365 Defender's events",
-    "feed": false,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Classifies Microsoft 365 Defender's events",
+	"feed": false,
     "fromVersion": "6.0.0",
     "id": "Microsoft 365 Defender - Incoming Mapper",
-    "mapping": {
-        "Microsoft 365 Defender Incident": {
-            "dontMapEventToLabels": true,
-            "internalMapping": {
-                "Assigned User": {
-                    "complex": null,
-                    "simple": "assignedTo"
+	"mapping": {
+		"Microsoft 365 Defender Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Assigned User": {
+					"simple": "assignedTo"
+				},
+				"Event Type": {
+					"simple": "determination"
+				},
+				"Microsoft 365 Defender Comments": {
+					"complex": {
+						"filters": [],
+						"root": "comments",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Microsoft 365 Defender Active": {
+					"simple": "Active alerts"
+				},
+				"Microsoft 365 Defender A": {
+					"complex": {
+						"filters": [],
+						"root": "alerts",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Microsoft 365 Defender Categories count": {
+					"complex": {
+						"filters": [],
+						"root": "Categories",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							},
+							{
+								"operator": "MS365DefenderCountIncidentCategories"
+							}
+						]
+					}
+				},
+				"Microsoft 365 Defender Classification": {
+					"complex": {
+						"filters": [],
+						"root": "classification",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"simple": " - "
+										}
+									}
+								},
+								"operator": "concat"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false
+									},
+									"suffix": {
+										"isContext": true,
+										"value": {
+											"simple": "determination"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"Microsoft 365 Defender Devices": {
+					"complex": {
+						"filters": [],
+						"root": "Devices",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Microsoft 365 Defender Display Name": {
+					"simple": "incidentName"
+				},
+				"Microsoft 365 Defender First activity": {
+					"simple": "First activity"
+				},
+				"Microsoft 365 Defender ID": {
+					"simple": "incidentId"
+				},
+				"Microsoft 365 Defender Last activity": {
+					"simple": "Last activity"
+				},
+				"Microsoft 365 Defender Mailboxes": {
+					"complex": {
+						"filters": [],
+						"root": "Mailboxes",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Microsoft 365 Defender Status": {
+					"simple": "status"
+				},
+				"Microsoft 365 Defender Tags": {
+					"complex": {
+						"filters": [],
+						"root": "tags",
+						"transformers": []
+					}
+				},
+				"Microsoft 365 Defender Users": {
+					"complex": {
+						"filters": [],
+						"root": "Impacted entities",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							},
+							{
+								"operator": "MS365DefenderUserListToTable"
+							},
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"category": {
+					"complex": {
+						"accessor": "[2].category",
+						"filters": [],
+						"root": "alerts",
+						"transformers": []
+					}
+				},
+				"impacted devices": {
+					"complex": {
+						"filters": [],
+						"root": "Devices",
+						"transformers": [
+							{
+								"operator": "uniq"
+							},
+							{
+								"operator": "count"
+							}
+						]
+					}
+				},
+				"impacted entities": {
+					"complex": {
+						"filters": [],
+						"root": "Impacted entities",
+						"transformers": [
+							{
+								"operator": "uniq"
+							},
+							{
+								"operator": "count"
+							}
+						]
+					}
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Assigned User": {
+					"simple": "assignedTo"
+				},
+				"Classification": {
+					"complex": {
+						"filters": [],
+						"root": "classification",
+						"transformers": []
+					}
+				},
+				"Event Type": {
+					"simple": "determination"
+				},
+				"File Name": {
+					"complex": {
+						"accessor": "[4].entities.[1].fileName",
+						"filters": [],
+						"root": "alerts",
+						"transformers": []
+					}
+				},
+				"Incident Link": {
+					"simple": "incidentUri"
+				},
+				"Microsoft 365 Defender Classification": {
+					"simple": "classification"
+				},
+				"Microsoft 365 Defender Display Name": {
+					"simple": "incidentName"
+				},
+				"Microsoft 365 Defender Status": {
+					"simple": "status"
+				},
+				"Microsoft 365 Defender Tags": {
+					"complex": {
+						"filters": null,
+						"root": "tags",
+						"transformers": null
+					}
+				},
+				"State": {
+					"complex": {
+						"accessor": "[0].investigationState",
+						"filters": [],
+						"root": "alerts",
+						"transformers": []
+					}
+				},
+				"Verdict": {
+					"complex": {
+						"accessor": "[0].entities.[0].verdict",
+						"filters": [],
+						"root": "alerts",
+						"transformers": []
+					}
+				},
+				"category": {
+					"complex": {
+						"accessor": "[2].category",
+						"filters": null,
+						"root": "alerts",
+						"transformers": null
+					}
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "incidentId"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+                 "dbotMirrorTags": {
+                    "simple": "mirror_tags"
                 },
-                "Event Type": {
-                    "complex": null,
-                    "simple": "determination"
-                },
-                "Microsoft 365 Defender A": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "alerts",
-                        "transformers": [
-                            {
-                                "args": {},
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Microsoft 365 Defender Active": {
-                    "complex": null,
-                    "simple": "Active alerts"
-                },
-                "Microsoft 365 Defender Categories count": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "Categories",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "separator": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            },
-                            {
-                                "args": {},
-                                "operator": "MS365DefenderCountIncidentCategories"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Microsoft 365 Defender Classification": {
-                    "complex": null,
-                    "simple": "classification"
-                },
-                "Microsoft 365 Defender Devices": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "Devices",
-                        "transformers": [
-                            {
-                                "args": {},
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Microsoft 365 Defender Display Name": {
-                    "complex": null,
-                    "simple": "incidentName"
-                },
-                "Microsoft 365 Defender First activity": {
-                    "complex": null,
-                    "simple": "First activity"
-                },
-                "Microsoft 365 Defender ID": {
-                    "complex": null,
-                    "simple": "incidentId"
-                },
-                "Microsoft 365 Defender Last activity": {
-                    "complex": null,
-                    "simple": "Last activity"
-                },
-                "Microsoft 365 Defender Status": {
-                    "complex": null,
-                    "simple": "status"
-                },
-                "Microsoft 365 Defender Tags": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "tags",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Microsoft 365 Defender Users": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "Impacted entities",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "separator": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            },
-                            {
-                                "args": {},
-                                "operator": "MS365DefenderUserListToTable"
-                            },
-                            {
-                                "args": {},
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                },
-                "category": {
-                    "complex": {
-                        "accessor": "[2].category",
-                        "filters": [],
-                        "root": "alerts",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "impacted devices": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "Devices",
-                        "transformers": [
-                            {
-                                "args": {},
-                                "operator": "uniq"
-                            },
-                            {
-                                "args": {},
-                                "operator": "count"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                },
-                "impacted entities": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "Impacted entities",
-                        "transformers": [
-                            {
-                                "args": {},
-                                "operator": "uniq"
-                            },
-                            {
-                                "args": {},
-                                "operator": "count"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                }
-            }
-        },
-        "dbot_classification_incident_type_all": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Assigned User": {
-                    "complex": null,
-                    "simple": "assignedTo"
-                },
-                "Event Type": {
-                    "complex": null,
-                    "simple": "determination"
-                },
-                "Microsoft 365 Defender Classification": {
-                    "complex": null,
-                    "simple": "classification"
-                },
-                "Microsoft 365 Defender Display Name": {
-                    "complex": null,
-                    "simple": "incidentName"
-                },
-                "Microsoft 365 Defender Status": {
-                    "complex": null,
-                    "simple": "status"
-                },
-                "Microsoft 365 Defender Tags": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "tags",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "category": {
-                    "complex": {
-                        "accessor": "[2].category",
-                        "filters": [],
-                        "root": "alerts",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "severity": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "severity",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "Medium"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "Low"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "High"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "0"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "Informational"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "0"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "UnSpecified"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                }
-            }
-        }
-    },
-    "name": "Microsoft 365 Defender - Incoming Mapper",
-    "type": "mapping-incoming",
-    "version": -1
+				"details": {
+					"complex": {
+						"accessor": "[4].description",
+						"filters": [],
+						"root": "alerts",
+						"transformers": []
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "Medium"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "Low"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "High"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "0.5"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "Informational"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "0"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "UnSpecified"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	"name": "Microsoft 365 Defender - Incoming Mapper",
+	"type": "mapping-incoming",
+	"version": -1
 }

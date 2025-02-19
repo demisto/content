@@ -1,16 +1,26 @@
 [INGEST:vendor="linux", product="linux", target_dataset="linux_linux_raw", no_hit=keep]
-// Filter applies to log records which contain a full RFC 3339 style timestamp with an explicit timezone offset or Zulu time suffix (UTC)
-filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:?\d{2}|Z)"
-| alter tmp_timestamp = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\S+"), 0)
-| alter _time = if(
-    tmp_timestamp ~= "[+-]\d{4}", parse_timestamp("%FT%H:%M:%E*S%z", tmp_timestamp), // timezone offset without a separating colon, e.g., 2024-10-28T14:30:55+0300
-    tmp_timestamp ~= "[+-]\d{2}:\d{2}", parse_timestamp("%FT%H:%M:%E*S%Ez", tmp_timestamp), // RFC 3339 compatible timestamp offset, e.g., 2024-10-28T14:30:55+03:00
-    parse_timestamp("%FT%H:%M:%E*SZ", tmp_timestamp)) // RFC 3339 compatible timestamp with zulu time notation, e.g., 2024-10-28T14:30:55Z
+// Filter applies to log records which contain a full RFC 3339 / ISO 8601 style timestamp with an explicit timezone offset or Zulu time suffix (UTC)
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)" and _raw_log not contains "kubelet-serving: Certificate expiration"
+| alter tmp_json_payload = arrayindex(regextract(_raw_log, "({.+})"), 0) // extract inner json payload from _raw_log if such exists
+| alter tmp_timestamp = coalesce( // extract timestamp field from json payload if it exists or the raw text if it does not
+    tmp_json_payload -> time,
+    tmp_json_payload -> Data.Client.CurrentDateTime, 
+    arrayindex(regextract(_raw_log, "(\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z))"), 0))
+| alter // extract the different timestamp components: date, time & timezone offset from UTC 
+    tmp_date = arrayindex(regextract(tmp_timestamp, "(\d{4}\-\d{2}\-\d{2})"), 0), 
+    tmp_time = arrayindex(regextract(tmp_timestamp, "(\d{2}:\d{2}:\d{2}(?:\.\d+)?)"), 0), 
+    tmp_timezone_offset = arrayindex(regextract(tmp_timestamp, "((?:[+-]\d{2}:?\d{2}|Z$))"), 0) 
+// format the components to an RFC3339 compatible-like timestamp notation: <date>T<time><timezone_offset>
+| alter tmp_formatted_timestamp = format_string("%sT%s%s", tmp_date, tmp_time, tmp_timezone_offset)
+| alter _time = if( // initialize _time according to timezone offset format 
+    tmp_timezone_offset = "Z", parse_timestamp("%FT%H:%M:%E*SZ", tmp_formatted_timestamp), // Zulu time notation (UTC) e.g., 2024-10-28T14:30:55.123Z
+    tmp_timezone_offset ~= "[+-]\d{4}", parse_timestamp("%FT%H:%M:%E*S%z", tmp_formatted_timestamp), // [+-HHMM], e.g, 2024-10-28T14:30:55.123+0200
+    tmp_timezone_offset ~= "[+-]\d{2}:\d{2}", parse_timestamp("%FT%H:%M:%E*S%Ez", tmp_formatted_timestamp)) // [+-HH:MM], e.g, 2024-10-28T14:30:55.123+02:00
 | fields - tmp*;
 
 /* Filter applies to RFC 3164 style syslog records (logs timestamp does not contain an explicit timezone nor year), which are ingested via the Broker VM syslog applet 
    Log records which are ingested via the XDR Filebeat collector or excluded since their timestamp assignment is handled in the backend within the XDRC based on the Filebeat @timestamp entity. */
-filter _collector_type != "XDR Collector" and _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}" and _raw_log !~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:?\d{2}|Z)"
+filter _collector_type != "XDR Collector" and _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}" and _raw_log !~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)"
 | alter // construct timestamp basted on log timestamp and current year, assuming timestamp is given in UTC 
     tmp_current_year = format_timestamp("%Y", _insert_time), 
     tmp_rfc_3164_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0) // RFC 3164 compatible timestamp, e.g., Oct 28 14:30:55

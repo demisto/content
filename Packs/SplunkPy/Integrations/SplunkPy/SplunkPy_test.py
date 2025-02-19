@@ -4,13 +4,14 @@ from CommonServerPython import *
 import pytest
 from copy import deepcopy
 from collections import namedtuple
-from datetime import timedelta, datetime
 
 from splunklib.binding import AuthenticationError
 from splunklib import client
 from splunklib import results
 import SplunkPy as splunk
 from pytest_mock import MockerFixture
+from unittest.mock import MagicMock, patch
+
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -98,57 +99,152 @@ RAW_WITH_MESSAGE = '{"@timestamp":"2019-10-15T13:30:08.578-04:00","message":"{"T
 SAMPLE_RESPONSE = [
     results.Message("INFO-TEST", "test message"),
     {
-        '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
-        '_cd': '668:17198',
-        '_indextime': '1596545116',
-        '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
-                'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
-                'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
-                'signature="Trojan.Gen.2"',
-        '_serial': '50',
-        '_si': ['ip-172-31-44-193', 'notable'],
-        '_sourcetype': 'stash',
-        '_time': '2020-08-04T05:45:16.000-07:00',
-        'dest': 'ACME-workstation-012',
-        'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
-        'dest_asset_tag': ['cardholder', 'pci', 'americas'],
-        'dest_bunit': 'americas',
-        'dest_category': ['cardholder', 'pci'],
-        'dest_city': 'Pleasanton',
-        'dest_country': 'USA',
-        'dest_ip': '192.168.3.12',
-        'dest_is_expected': 'TRUE',
-        'dest_lat': '37.694452',
-        'dest_long': '-121.894461',
-        'dest_nt_host': 'ACME-workstation-012',
-        'dest_pci_domain': ['trust', 'cardholder'],
-        'dest_priority': 'medium',
-        'dest_requires_av': 'TRUE',
-        'dest_risk_object_type': 'system',
-        'dest_risk_score': '15680',
-        'dest_should_timesync': 'TRUE',
-        'dest_should_update': 'TRUE',
-        'host': 'ip-172-31-44-193',
-        'host_risk_object_type': 'system',
-        'host_risk_score': '0',
-        'index': 'notable',
-        'linecount': '1',
-        'priorities': 'medium',
-        'priority': 'medium',
-        'risk_score': '15680',
-        'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
-        'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
-        'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
-        'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
-        'severity': 'unknown',
-        'signature': 'Trojan.Gen.2',
-        'source': 'Endpoint - Recurring Malware Infection - Rule',
-        'sourcetype': 'stash',
-        'splunk_server': 'ip-172-31-44-193',
-        'urgency': 'low',
-        'owner': 'unassigned',
-        'event_id': '66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@5aa44496ec8e5cf45c78ab230189a4ca',
-    }]
+        "_bkt": "notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "_cd": "668:17198",
+        "_indextime": "1596545116",
+        "_raw": '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+        'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+        'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+        'signature="Trojan.Gen.2"',
+        "_serial": "50",
+        "_si": ["ip-172-31-44-193", "notable"],
+        "_sourcetype": "stash",
+        "_time": "2020-08-04T05:45:16.000-07:00",
+        "dest": "ACME-workstation-012",
+        "dest_asset_id": "028877d3c80cb9d87900eb4f9c9601ea993d9b63",
+        "dest_asset_tag": ["cardholder", "pci", "americas"],
+        "dest_bunit": "americas",
+        "dest_category": ["cardholder", "pci"],
+        "dest_city": "Pleasanton",
+        "dest_country": "USA",
+        "dest_ip": "192.168.3.12",
+        "dest_is_expected": "TRUE",
+        "dest_lat": "37.694452",
+        "dest_long": "-121.894461",
+        "dest_nt_host": "ACME-workstation-012",
+        "dest_pci_domain": ["trust", "cardholder"],
+        "dest_priority": "medium",
+        "dest_requires_av": "TRUE",
+        "dest_risk_object_type": "system",
+        "dest_risk_score": "15680",
+        "dest_should_timesync": "TRUE",
+        "dest_should_update": "TRUE",
+        "host": "ip-172-31-44-193",
+        "host_risk_object_type": "system",
+        "host_risk_score": "0",
+        "index": "notable",
+        "linecount": "1",
+        "priorities": "medium",
+        "priority": "medium",
+        "risk_score": "15680",
+        "rule_description": "Endpoint - Recurring Malware Infection - Rule",
+        "rule_name": "Endpoint - Recurring Malware Infection - Rule",
+        "rule_title": "Endpoint - Recurring Malware Infection - Rule",
+        "security_domain": "Endpoint - Recurring Malware Infection - Rule",
+        "severity": "unknown",
+        "signature": "Trojan.Gen.2",
+        "source": "Endpoint - Recurring Malware Infection - Rule",
+        "sourcetype": "stash",
+        "splunk_server": "ip-172-31-44-193",
+        "urgency": "low",
+        "owner": "unassigned",
+        "event_id": "66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@5aa44496ec8e5cf45c78ab230189a4ca",
+    },
+    {
+        "_bkt": "notable~3252~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "_cd": "3252:4913",
+        "_eventtype_color": "none",
+        "_indextime": "1737544322",
+        "_raw": '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+        'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+        'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+        'signature="Trojan.Gen.2"',
+        "_serial": "12",
+        "_si": ["ip-1-1-1-1", "notable"],
+        "_sourcetype": "stash",
+        "_time": "2025-01-22T11:12:02.000+00:00",
+        "comment": [
+            "change all fields",
+            "changed to in progress",
+            "changed to pending",
+        ],
+        "count": "1",
+        "drilldown_earliest": "0.000",
+        "drilldown_earliest_offset": "0.000",
+        "drilldown_latest": "+Infinity",
+        "drilldown_latest_offset": "+Infinity",
+        "drilldown_name": "View infections on ACME-code-001",
+        "drilldown_search": '| from datamodel:"Malware"."Malware_Attacks" | search dest="ACME-code-001"',
+        "event_hash": "734b6c7bcd700ccd0449575164772230",
+        "event_id": "test_id",
+        "eventtype": "modnotable_results notable modnotable_results notable",
+        "extract_assets": '["src", "dest", "dvc", "orig_host"]',
+        "extract_identities": '["src_user", "user"]',
+        "host": "ip-172-31-44-193",
+        "host_risk_object_type": "system",
+        "host_risk_score": "0",
+        "index": "notable",
+        "indexer_guid": "66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "info_max_time": "+Infinity",
+        "info_min_time": "0.000",
+        "info_search_time": "1737504174.093091000",
+        "investigation_profiles": "{}",
+        "lastTime": "1737544072",
+        "linecount": "2",
+        "orig_action_name": "notable",
+        "orig_rid": "0.6979",
+        "owner": "test_owner",
+        "owner_realname": "test_owner",
+        "priorities": "critical",
+        "priority": "critical",
+        "review_time": ["1737547610.488234", "1737545623.764639", "1737545033.187136"],
+        "reviewer": ["test_owner", "test_owner", "test_owner"],
+        "risk_score": "24160",
+        "rule_description": "A high or critical priority host (ACME-code-001) was detected with malware.",
+        "rule_id": "test_id",
+        "rule_name": "High Or Critical Priority Host With Malware Detected",
+        "rule_title": "High Or Critical Priority Host With Malware Detected",
+        "savedsearch_description": "Alerts when an infection is noted on a host with high or critical priority.",
+        "search_name": "Endpoint - High Or Critical Priority Host With Malware - Rule",
+        "security_domain": "endpoint",
+        "severity": "high",
+        "signature": "127",
+        "source": "Endpoint - High Or Critical Priority Host With Malware - Rule",
+        "sourcetype": "stash",
+        "splunk_server": "ip-1-1-1-1",
+        "status": "3",
+        "status_default": "false",
+        "status_description": "Closure is pending some action.",
+        "status_end": "false",
+        "status_group": "Open",
+        "status_label": "Pending",
+        "tag": ["modaction_result", "test_user"],
+        "tag::eventtype": "modaction_result",
+        "timestamp": "none",
+        "urgency": "informational",
+    },
+]
+
+SAMPLE_INCIDENT_REVIEW_RESPONSE = [
+    {
+        "_key": "test_id_1737547610.49",
+        "comment": "test comment",
+        "last_modified_timestamp": "1737547610.488234",
+        "owner": "test_owner",
+        "owner_realname": "test_owner",
+        "reviewer": "test_owner",
+        "reviewer_realname": "test_owner",
+        "rule_id": "test_id",
+        "rule_name": "High Or Critical Priority Host With Malware Detected",
+        "status": "3",
+        "status_default": "false",
+        "status_description": "Closure is pending some action.",
+        "status_end": "false",
+        "status_group": "Open",
+        "status_label": "Pending",
+        "urgency": "informational",
+    }
+]
 
 EXPECTED = {
     "action": "allowed",
@@ -248,7 +344,7 @@ def test_raw_to_dict():
 
     assert response == EXPECTED
     assert response_with_message == EXPECTED_WITH_MESSAGE_ID
-    assert {} == list_response
+    assert list_response == {}
     assert raw_message.get('SCOPE[29]') == 'autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags' \
                                            '.modify'
     assert isinstance(raw_message, dict)
@@ -358,7 +454,7 @@ def test_splunk_submit_event_hec_command(mocker):
 
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=MockRes(text))
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={})
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={"entry_id": "some_entry"}, service=Service)
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg == f"Could not send event to Splunk {text}"
 
@@ -390,13 +486,13 @@ def test_splunk_submit_event_hec_command_request_channel(mocker):
     Then
     - The return result object contains the correct message.
     """
-    args = {"request_channel": "11111111-1111-1111-1111-111111111111"}
+    args = {"request_channel": "11111111-1111-1111-1111-111111111111", "entry_id": "some_entry"}
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
     moc = mocker.patch.object(demisto, 'results')
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
-                                           args=args)
+                                           args=args, service=Service)
     readable_output = moc.call_args[0][0]
-    assert readable_output == "The event was sent successfully to Splunk. AckID: 1"
+    assert readable_output == "The events were sent successfully to Splunk. AckID: 1"
 
 
 def test_splunk_submit_event_hec_command_without_request_channel(mocker):
@@ -408,12 +504,12 @@ def test_splunk_submit_event_hec_command_without_request_channel(mocker):
     Then
     - The return result object contains the correct message.
     """
-    args = {}
+    args = {"entry_id": "some_entry"}
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
 
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
-                                           args=args)
+                                           args=args, service=Service)
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg == 'Could not send event to Splunk {"text":"Data channel is missing","code":10}'
 
@@ -557,8 +653,7 @@ data_test_build_kv_store_query_with_key_val = [
 def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
     mocker.patch('SplunkPy.get_key_type', return_value=_type)
     output = splunk.build_kv_store_query(None, args)
-    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
-                                                                                                     expected_query)
+    assert output == expected_query, f'build_kv_store_query({args})\n\treturns: {output}\n\tinstead: {expected_query}'
 
     test_test_get_key_type = [
         ({'field.key': 'number'}, float),
@@ -574,8 +669,7 @@ def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
         mocker.patch('SplunkPy.get_keys_and_types', return_value=keys_and_types)
 
         output = splunk.get_key_type(None, 'key')
-        assert output == expected_type, 'get_key_type(kv_store, key)\n\treturns: {}\n\tinstead: {}'.format(output,
-                                                                                                           expected_type)
+        assert output == expected_type, f'get_key_type(kv_store, key)\n\treturns: {output}\n\tinstead: {expected_type}'
 
 
 EMPTY_CASE = {}
@@ -838,12 +932,12 @@ def test_fetch_incidents(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=deepcopy(SAMPLE_RESPONSE))
     mapper = UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
-    assert len(incidents) == 1
+    assert len(incidents) == 2
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
     assert not incidents[0].get('owner')
@@ -902,7 +996,7 @@ def test_fetch_notables(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = Service('DONE')
-    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=deepcopy(SAMPLE_RESPONSE))
     mapper = splunk.UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper=mapper, comment_tag_to_splunk='comment_tag_to_splunk',
                            comment_tag_from_splunk='comment_tag_from_splunk')
@@ -921,7 +1015,7 @@ def test_fetch_notables(mocker):
     splunk.fetch_incidents(service, mapper=mapper, comment_tag_to_splunk='comment_tag_to_splunk',
                            comment_tag_from_splunk='comment_tag_from_splunk')
     incidents = demisto.incidents.call_args[0][0]
-    assert len(incidents) == 1
+    assert len(incidents) == 2
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
     assert not incidents[0].get('owner')
@@ -1022,11 +1116,11 @@ INCIDENT_1 = {'name': 'incident1', 'rawJSON': json.dumps({})}
 INCIDENT_2 = {'name': 'incident2', 'rawJSON': json.dumps({})}
 
 
-@pytest.mark.parametrize('integration_context, incidents, output', [
-    ({}, [], []),
-    ({}, [INCIDENT_1, INCIDENT_2], [INCIDENT_1, INCIDENT_2])
+@pytest.mark.parametrize('incidents, output', [
+    ([], []),
+    ([INCIDENT_1, INCIDENT_2], [INCIDENT_1, INCIDENT_2])
 ])
-def test_store_incidents_for_mapping(integration_context, incidents, output):
+def test_store_incidents_for_mapping(incidents, output):
     """
     Scenario: Store ready incidents in integration context, to be retrieved by a user configuring a mapper
      and selecting "Fetch from instance" when the enrichment mechanism is working.
@@ -1041,8 +1135,9 @@ def test_store_incidents_for_mapping(integration_context, incidents, output):
     Then:
     - Return the expected result
     """
-    splunk.store_incidents_for_mapping(incidents, integration_context)
-    assert integration_context.get(splunk.INCIDENTS, []) == output
+    splunk.set_integration_context({})
+    splunk.store_incidents_for_mapping(incidents)
+    assert splunk.get_integration_context().get(splunk.INCIDENTS, []) == output
 
 
 @pytest.mark.parametrize('notable_data, raw, earliest, latest', [
@@ -1685,7 +1780,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Closed", "event_id": "id", "status_end": "true"},
+                {"status_label": "Closed", "event_id": "id", "rule_id": "id", "status_end": "true"},
             ],
             {
                 "close_incident": True,
@@ -1693,6 +1788,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                 "close_extra_labels": [],
             },
             {
+                "EntryContext": {"mirrorRemoteId": "id"},
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
@@ -1705,7 +1801,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "New", "event_id": "id", "status_end": "false"},
+                {"status_label": "New", "event_id": "id", "rule_id": "id", "status_end": "false"},
             ],
             {
                 "close_incident": True,
@@ -1718,7 +1814,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "status_end": "false"},
+                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "false"},
             ],
             {
                 "close_incident": True,
@@ -1726,6 +1822,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                 "close_extra_labels": ["Custom"],
             },
             {
+                "EntryContext": {"mirrorRemoteId": "id"},
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
@@ -1738,7 +1835,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "status_end": "false"},
+                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "false"},
             ],
             {
                 "close_incident": True,
@@ -1751,7 +1848,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "status_end": "true"},
+                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "true"},
             ],
             {
                 "close_incident": True,
@@ -1759,6 +1856,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                 "close_extra_labels": [],
             },
             {
+                "EntryContext": {"mirrorRemoteId": "id"},
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
@@ -1771,7 +1869,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "status_end": "true"},
+                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "true"},
             ],
             {
                 "close_incident": True,
@@ -1785,7 +1883,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "status_end": "true"},
+                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "true"},
             ],
             {
                 "close_incident": True,
@@ -1793,6 +1891,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                 "close_extra_labels": ["Custom"],
             },
             {
+                "EntryContext": {"mirrorRemoteId": "id"},
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
@@ -1803,17 +1902,17 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         ),
     ],
 )
-def test_get_remote_data_command_close_incident(mocker, notable_data: list[results.Message | dict],
-                                                func_call_kwargs: dict, expected_closure_data: dict):
+def test_get_modified_remote_data_command_close_incident(mocker, notable_data: list[results.Message | dict],
+                                                         func_call_kwargs: dict, expected_closure_data: dict):
     class Jobs:
-        def oneshot(self, _, output_mode: str):
-            assert output_mode == splunk.OUTPUT_MODE_JSON
+        def oneshot(self, **kwargs):
+            assert kwargs['output_mode'] == splunk.OUTPUT_MODE_JSON
             return notable_data
 
     class Service:
         def __init__(self):
             self.jobs = Jobs()
-
+    expected_entries = {'EntryContext': {'mirrorRemoteId': 'id'}, 'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON}
     args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
@@ -1821,11 +1920,12 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: list[resul
     mocker.patch('SplunkPy.results.JSONResultsReader', return_value=notable_data)
     mocker.patch.object(demisto, 'results')
     service = Service()
-    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
-                                   comment_tag_from_splunk='comment_tag_from_splunk', **func_call_kwargs)
+    splunk.get_modified_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
+                                            comment_tag_from_splunk='comment_tag_from_splunk', **func_call_kwargs)
     results = demisto.results.call_args[0][0]
 
-    expected_results = [notable_data[1]]
+    expected_entries['Contents'] = notable_data[1]
+    expected_results = [expected_entries]
 
     if expected_closure_data:
         expected_results.append(expected_closure_data)
@@ -1847,33 +1947,24 @@ def test_get_remote_data_command_with_message(mocker):
     Returns:
         None
     """
-
-    class Jobs:
-        def oneshot(self, _, output_mode: str):
-            assert output_mode == splunk.OUTPUT_MODE_JSON
-            return results.Message("INFO-test", "test message")
-
-    class Service:
-        def __init__(self):
-            self.jobs = Jobs()
-
+    service = mocker.patch.object(client, 'Service')
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
     func_call_kwargs = {
         "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
         "close_incident": True,
         "close_end_statuses": True,
         "close_extra_labels": ["Custom"],
-        "mapper": splunk.UserMappingObject(Service(), False),
+        "mapper": splunk.UserMappingObject(service, False),
+        "comment_tag_from_splunk": 'from_splunk'
     }
-    info_mock = mocker.patch.object(demisto, "info")
-    mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
+
     mocker.patch(
         "SplunkPy.results.JSONResultsReader", return_value=[results.Message("INFO-test", "test message")]
     )
-    mocker.patch("SplunkPy.isinstance", return_value=True)
 
-    splunk.get_remote_data_command(Service(), comment_tag_from_splunk='from_splunk', **func_call_kwargs)
-    (info_message,) = info_mock.call_args_list[0][0]
-    assert info_message == "Splunk-SDK message: test message"
+    splunk.get_modified_remote_data_command(service, **func_call_kwargs)
+    assert demisto.info.call_args[0][0] == "Splunk-SDK message: test message"
 
 
 def test_fetch_with_error_in_message(mocker):
@@ -1895,17 +1986,9 @@ def test_fetch_with_error_in_message(mocker):
     assert 'Failed to fetch incidents, check the provided query in Splunk web search' in e.value.message
 
 
-@pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
-                         [({'status_label': 'New', 'event_id': 'id', 'status_end': 'false',
-                            'comment': 'new comment from splunk', 'reviewer': 'admin',
-                            'review_time': '1612881691.589575'},
-                           {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
-                           None,
-                           )])
-def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
-                                             func_call_kwargs: dict, expected_closure_data: dict):
+def test_get_modified_remote_data_command_add_comment(mocker):
     """
-    Test case for get_remote_data_command with comment addition.
+    Test case for get_modified_remote_data_command with comment addition.
     Given:
         - notable data with new comment
     When:
@@ -1915,59 +1998,66 @@ def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
         - ensure the event was updated
 
     """
+    test_id = 'test_event_id'
+    notable_data = {'status_label': 'New', 'rule_id': test_id, 'event_id': test_id, 'status_end': 'false',
+                    'comment': 'new comment from splunk', 'reviewer': 'admin',
+                    'review_time': '1612881691.589575'}
+    entry_tempale = {
+        'EntryContext': {'mirrorRemoteId': test_id},
+        'Type': 1
+    }
+    expected_comment_entry = entry_tempale | {
+        'Contents': 'new comment from splunk',
+        'ContentsFormat': 'text',
+        'Tags': ['from_splunk'],
+        'Note': True
+    }
+    expected_notable_entry = entry_tempale | {
+        'Contents': notable_data,
+        'ContentsFormat': 'json'
+    }
 
-    class Jobs:
-        def oneshot(self, _, output_mode: str):
-            assert output_mode == splunk.OUTPUT_MODE_JSON
-            return notable_data
-
-    class Service:
-        def __init__(self):
-            self.jobs = Jobs()
-
-    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
-    mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(demisto, 'info')
     mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[notable_data])
     mocker.patch.object(demisto, 'results')
-    service = Service()
+    service = mocker.patch.object(client, 'Service')
 
-    expected_comment_note = {'Type': 1, 'Contents': 'new comment from splunk',
-                             'ContentsFormat': 'text', 'Tags': ['from_splunk'], 'Note': True}
-    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
-                                   comment_tag_from_splunk='from_splunk', **func_call_kwargs)
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": True,
+        "close_end_statuses": True,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(service, False),
+        "comment_tag_from_splunk": 'from_splunk'
+    }
+    splunk.get_modified_remote_data_command(service, **func_call_kwargs)
     results = demisto.results.call_args[0][0][0]
     notable_data.update({'SplunkComments': [{'Comment': 'new comment from splunk'}]})
     note_results = demisto.results.call_args[0][0][1]
 
-    expected_results = [notable_data][0]
-
     assert demisto.results.call_count == 1
-    assert results == expected_results
-    assert note_results == expected_comment_note
+    assert results == expected_notable_entry
+    assert note_results == expected_comment_entry
 
 
 def test_get_modified_remote_data_command(mocker):
-    updated_incidet_review = {'rule_id': 'id'}
-
-    class Jobs:
-        def __init__(self):
-            self.oneshot = lambda x, count, output_mode: [updated_incidet_review]
-
-    class Service:
-        def __init__(self):
-            self.jobs = Jobs()
-
-    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00'}
+    updated_incidet_review = {'rule_id': 'id', 'event_id': 'id'}
+    service = mocker.patch.object(client, 'Service')
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": True,
+        "close_end_statuses": True,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(service, False),
+        "comment_tag_from_splunk": 'from_splunk'
+    }
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
-    mocker.patch.object(demisto, 'debug')
     mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[updated_incidet_review])
     mocker.patch.object(demisto, 'results')
-    splunk.get_modified_remote_data_command(Service(), args)
-    results = demisto.results.call_args[0][0]['Contents']
+    splunk.get_modified_remote_data_command(service, **func_call_kwargs)
+    results = demisto.results.call_args[0][0][0]['Contents']
     assert demisto.results.call_count == 1
-    assert results == [updated_incidet_review['rule_id']]
+    assert results == updated_incidet_review
 
 
 def test_edit_notable_event__failed_to_update(mocker, requests_mock):
@@ -2488,7 +2578,7 @@ def test_labels_with_non_str_values(mocker):
         "bool_val": False,
         "float_val": 100.0
     }
-    mocked_response: list[results.Message | dict] = SAMPLE_RESPONSE.copy()
+    mocked_response: list[results.Message | dict] = deepcopy(SAMPLE_RESPONSE)
     mocked_response[1]['_raw'] = json.dumps(raw)
     mock_last_run = {'time': '2018-10-24T14:13:20'}
     mock_params = {'fetchQuery': "something", "parseNotableEventsRaw": True}
@@ -2507,7 +2597,7 @@ def test_labels_with_non_str_values(mocker):
 
     # validate
     assert demisto.incidents.call_count == 1
-    assert len(incidents) == 1
+    assert len(incidents) == 2
     labels = incidents[0]["labels"]
     assert len(labels) >= 7
     assert all(isinstance(label['value'], str) for label in labels)
@@ -2534,15 +2624,38 @@ def test_empty_string_as_app_param_value(mocker):
     assert connection_args.get('app') == '-'
 
 
+@pytest.mark.parametrize(argnames='host, expected_host', argvalues=[
+    ('8.8.8.8', '8.8.8.8'),
+    ('8.8.8.8/', '8.8.8.8'),
+    ('https://www.test.com', 'www.test.com'),
+    ('https://www.test.com/', 'www.test.com'),
+])
+def test_host_param(host, expected_host):
+    """
+    Given:
+        - Different host values
+    When:
+        - Run get_connection_args() function
+    Then:
+        - Ensure the host is as expected
+    """
+    params = {'host': host, 'port': '111'}
+
+    actuall_host = splunk.get_connection_args(params)['host']
+
+    assert actuall_host == expected_host
+
+
 OWNER_MAPPING = [{'xsoar_user': 'test_xsoar', 'splunk_user': 'test_splunk', 'wait': True},
                  {'xsoar_user': 'test_not_full', 'splunk_user': '', 'wait': True},
                  {'xsoar_user': '', 'splunk_user': 'test_not_full', 'wait': True}, ]
 
 MAPPER_CASES_XSOAR_TO_SPLUNK = [
     ('', 'unassigned',
-     'Could not find splunk user matching xsoar\'s . Consider adding it to the splunk_xsoar_users lookup.'),
+     'UserMapping: Could not find splunk user matching xsoar\'s . Consider adding it to the splunk_xsoar_users lookup.'),
     ('not_in_table', 'unassigned',
-     'Could not find splunk user matching xsoar\'s not_in_table. Consider adding it to the splunk_xsoar_users lookup.')
+     'UserMapping: Could not find splunk user matching xsoar\'s not_in_table. '
+     'Consider adding it to the splunk_xsoar_users lookup.')
 
 ]
 
@@ -2578,11 +2691,12 @@ def test_owner_mapping_mechanism_xsoar_to_splunk(mocker, xsoar_name, expected_sp
 MAPPER_CASES_SPLUNK_TO_XSOAR = [
     ('test_splunk', 'test_xsoar', None),
     ('test_not_full', '',
-     "Xsoar user matching splunk's test_not_full is empty. Fix the record in splunk_xsoar_users lookup."),
+     "UserMapping: Xsoar user matching splunk's test_not_full is empty. Fix the record in splunk_xsoar_users lookup."),
     ('unassigned', '',
-     "Could not find xsoar user matching splunk's unassigned. Consider adding it to the splunk_xsoar_users lookup."),
+     "UserMapping: Could not find xsoar user matching splunk's unassigned. Consider adding it to the splunk_xsoar_users lookup."),
     ('not_in_table', '',
-     "Could not find xsoar user matching splunk's not_in_table. Consider adding it to the splunk_xsoar_users lookup.")
+     "UserMapping: Could not find xsoar user matching splunk's not_in_table. "
+     "Consider adding it to the splunk_xsoar_users lookup.")
 
 ]
 
@@ -2788,3 +2902,312 @@ def test_get_drilldown_searches(drilldown_data, expected):
     """
 
     assert splunk.get_drilldown_searches(drilldown_data) == expected
+
+
+@pytest.mark.parametrize('drilldown_search, expected_res',
+                         [('{"name":"test", "query":"|key="the value""}', 'key="the value"'),
+                          ('{"name":"test", "query":"|key in (line_1\nline_2)"}', 'key in (line_1,line_2)'),
+                          ('{"name":"test", "query":"search a=$a|s$ c=$c$ suffix"}', 'search a=$a|s$ c=$c$ suffix')])
+def test_escape_invalid_chars_in_drilldown_json(drilldown_search, expected_res):
+    """
+    Scenario: When extracting the drilldown search query which are a json string,
+    we should escape unescaped JSON special characters.
+
+    Given:
+    - A raw search query with text like 'key="a value"'.
+    - A raw search query with text like where 'key in (a\nb)' which it should be 'key in (a,b)'.
+    - A raw search query with normal json string, should not be changed by this function.
+
+    When:
+    - escape_invalid_chars_in_drilldown_json is called
+
+    Then:
+    - Return the expected result
+    """
+    import json
+
+    res = splunk.escape_invalid_chars_in_drilldown_json(drilldown_search)
+
+    assert expected_res in json.loads(res)['query']
+
+
+# Define minimal classes to simulate the service and index behavior
+class Index:
+    def __init__(self, name):
+        self.name = name
+
+
+class ServiceIndex:
+    def __init__(self, indexes):
+        self.indexes = [Index(name) for name in indexes]
+
+
+@pytest.mark.parametrize(
+    "given_indexes, service_indexes, expected",
+    [
+        # Test case: All indexes exist in the service
+        (["index1", "index2"], ["index1", "index2", "index3"], True),
+
+        # Test case: Some indexes do not exist in the service
+        (["index1", "index4"], ["index1", "index2", "index3"], False),
+
+        # Test case: Empty input indexes list
+        ([], ["index1", "index2", "index3"], True),
+    ]
+)
+def test_validate_indexes(given_indexes, service_indexes, expected):
+    """
+    Given: A list of indexes' names.
+    When: Calling validate_indexes function.
+    Then: The function returns `True` if all the given index names exist within the Splunk service instance;
+          otherwise, it returns `False`.
+    """
+    from SplunkPy import validate_indexes
+    service = ServiceIndex(service_indexes)
+    # Assert that the function returns the expected result
+    assert validate_indexes(given_indexes, service) == expected
+
+
+@pytest.mark.parametrize(
+    "fields, expected",
+    [
+        # Valid JSON input
+        ('{"key": "value"}', {"key": "value"}),
+
+        # Valid JSON with multiple key-value pairs
+        ('{"key1": "value1", "key2": 2}', {"key1": "value1", "key2": 2}),
+
+        # Invalid JSON input (non-JSON string)
+        ("not a json string", {"fields": "not a json string"}),
+
+        # Another invalid JSON input (partially structured JSON)
+        ("{'key': 'value'}", {"fields": "{'key': 'value'}"}),
+    ]
+)
+def test_parse_fields(fields, expected):
+    """
+    Given: A string representing fields, which may be a valid JSON string or a regular string.
+    When: The parse_fields function is called with the given string.
+    Then: If the string is valid JSON, the function returns a dictionary of the parsed fields. If the string is not valid JSON,
+    the function returns a dictionary with a single key-value pair, where the entire input string is the key.
+    """
+    from SplunkPy import parse_fields
+    result = parse_fields(fields)
+    assert result == expected
+
+
+@pytest.mark.parametrize("event, batch_event_data, entry_id, expected_data", [
+    ("Somthing happened", None, None, '{"event": "Somthing happened", "fields": {"field1": "value1"}, "index": "main"}'),
+    (None, "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}", None,
+     "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),  # Batch event data
+    (None, None, "some entry_id",
+     "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"),
+    (None, """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}""", None,
+     """{'event': "some event's", 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"""),  # with '
+    (None, None, "some entry_id", "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}")
+])
+@patch("requests.post")
+@patch("SplunkPy.get_events_from_file")
+@patch("SplunkPy.extract_indexes")
+@patch("SplunkPy.validate_indexes")
+@patch("SplunkPy.parse_fields")
+def test_splunk_submit_event_hec(
+    mock_parse_fields,
+    mock_validate_indexes,
+    mock_extract_indexes,
+    mock_get_events_from_file,
+    mock_post,
+    event,
+    batch_event_data,
+    entry_id,
+    expected_data
+):
+    """
+    Given: Different types of event submission (single event, batch event, entry_id).
+    When: Calling splunk_submit_event_hec.
+    Then: Ensure a POST request is sent with the correct data and headers.
+    """
+    from SplunkPy import splunk_submit_event_hec
+    # Arrange
+    hec_token = "valid_token"
+    baseurl = "https://splunk.example.com"
+    fields = '{"field1": "value1"}'
+    parsed_fields = {"field1": "value1"}
+
+    # Mocks
+    mock_parse_fields.return_value = parsed_fields
+    mock_validate_indexes.return_value = True
+
+    if event:
+        # Single event
+        mock_extract_indexes.return_value = ['some index']
+    elif batch_event_data:
+        # Batch event data
+        mock_extract_indexes.return_value = ['some index1', 'some index2']
+    elif entry_id:
+        # Entry ID
+        mock_get_events_from_file.return_value =\
+            "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
+        mock_extract_indexes.return_value = ['some index1', 'some index2']
+
+    # Act
+    splunk_submit_event_hec(
+        hec_token=hec_token,
+        baseurl=baseurl,
+        event=event,
+        fields=fields,
+        host=None,
+        index="main",
+        source_type=None,
+        source=None,
+        time_=None,
+        request_channel="test_channel",
+        batch_event_data=batch_event_data,
+        entry_id=entry_id,
+        service=MagicMock(),
+    )
+
+    mock_post.assert_called_once_with(
+        f"{baseurl}/services/collector/event",
+        data=expected_data,
+        headers={
+            "Authorization": f"Splunk {hec_token}",
+            "Content-Type": "application/json",
+            "X-Splunk-Request-Channel": "test_channel",
+        },
+        verify=True,
+    )
+
+
+def test_splunk_submit_event_hec_command_no_required_arguments():
+    """ Given: none of these arguments: 'entry_id', 'event', 'batch_event_data'
+        When: Runing splunk-submit-event-hec command
+        Then: An exception is thrown
+    """
+    from SplunkPy import splunk_submit_event_hec_command
+    with pytest.raises(DemistoException,
+                       match=r"Invalid input: Please specify one of the following arguments: `event`, "
+                       r"`batch_event_data`, or `entry_id`."):
+        splunk_submit_event_hec_command({'hec_url': 'hec_url'}, None, {})
+
+
+@pytest.mark.parametrize("events, expected_result", [
+    ("{'index': 'index1', 'event': 'Something happend '} {'index': 'index 2', 'event': 'Something's happend'}",
+     ['index1', 'index 2']),
+    ({'index': 'index1', 'value': '123'}, ['index1']),
+    ("{'event': 'value'}", []),
+    ('{"index": "index: 3", "event": "Something happend"}, {"index": "index: 3", "event": "Something happend"}',
+     ['index: 3', 'index: 3']),
+    ("{'key': 'value'}, {'key': 'value'}", []),
+    ("""{"index": "index_3", "event": "Something` happend"}, {"index": "index-4", "event": "Something' happend"}""",
+     ['index_3', 'index-4']),
+])
+def test_extract_indexes(events, expected_result):
+    from SplunkPy import extract_indexes
+    assert extract_indexes(events) == expected_result
+
+
+@pytest.mark.parametrize(argnames='should_map_user', argvalues=[True, False])
+def test_get_modified_remote_data_command_with_user_mapping(mocker, should_map_user):
+    """ Given:
+        - Different values for the splunk.UserMappingObject.should_map arguments
+        and `notable` query response without 'owner' key
+        When:
+        - Runing test_get_modified_remote_data_command
+        Then:
+        - Verify the correct owner are returned.
+    """
+    notable_without_owner = deepcopy(SAMPLE_RESPONSE[2])
+    del notable_without_owner['owner']
+
+    mapped_user = 'mapped_splunk_user'
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(splunk.UserMappingObject, 'get_xsoar_user_by_splunk', return_value=mapped_user)
+    mocker.patch('SplunkPy.results.JSONResultsReader', side_effect=lambda res: res)
+    mocked_service = mocker.patch('SplunkPy.client.Service')
+    mocked_service.jobs.oneshot = \
+        lambda query, **kwargs: [SAMPLE_INCIDENT_REVIEW_RESPONSE[0]] if '`incident_review`' in query else [notable_without_owner]
+
+    splunk.get_modified_remote_data_command(
+        mocked_service,
+        args={'lastUpdate': '2021-02-09T16:41:30.589575+02:00'},
+        mapper=splunk.UserMappingObject(mocked_service, should_map_user),
+        comment_tag_from_splunk='comment_tag_from_splunk',
+        close_incident=True,
+        close_end_statuses=False,
+        close_extra_labels=[]
+    )
+
+    contents = demisto.results.call_args[0][0][0]['Contents']
+    expected_owner = mapped_user if should_map_user else SAMPLE_INCIDENT_REVIEW_RESPONSE[0]['owner']
+    assert len(contents['SplunkComments']) == 3
+    assert contents['owner'] == expected_owner
+
+
+def test_mirror_in_with_enrichment_enabled(mocker):
+    """
+    Given:
+    - Drilldown Enrichmnet enabled in the instance configuration
+    When:
+    - Mirror in run (get-modified-remote-data)
+    Then:
+    - Validate the integration context stored the "delta" for the incident which sent to enrichment but not yet created
+    in order to create the incident with the updated fields.
+    """
+    # create an integration context in order to simulate the context in a normal run.
+    integration_context = {
+        splunk.CACHE: json.dumps(
+            {splunk.SUBMITTED_NOTABLES: [splunk.Notable(SAMPLE_RESPONSE[2])]}, default=lambda obj: obj.__dict__),
+    }
+    mocker.patch('SplunkPy.set_integration_context')
+    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', new=[splunk.DRILLDOWN_ENRICHMENT])
+    mocker.patch('SplunkPy.results.JSONResultsReader', side_effect=lambda res: res)
+    mocker.patch.object(splunk.UserMappingObject, 'get_xsoar_user_by_splunk', return_value='after_mirror_owner')
+    mocked_service = mocker.patch('SplunkPy.client.Service')
+    # the get_modified_remote_data send two queries to Splunk,
+    # the first one used the  `incident_review` macro and the second used the `notable`
+    notable_delta = {'status_label': 'after_mirror_status', 'urgency': 'after_mirror_urgency'}
+    updated_notable = SAMPLE_RESPONSE[2] | notable_delta
+    mocked_service.jobs.oneshot = \
+        lambda query, **kwargs: [SAMPLE_INCIDENT_REVIEW_RESPONSE[0]] if '`incident_review`' in query else [updated_notable]
+
+    splunk.get_modified_remote_data_command(
+        mocked_service,
+        args={'lastUpdate': '2021-02-09T16:41:30.589575+02:00'},
+        mapper=splunk.UserMappingObject(mocked_service, True),
+        comment_tag_from_splunk='comment_tag_from_splunk',
+        close_incident=True,
+        close_end_statuses=False,
+        close_extra_labels=[]
+    )
+
+    notable_id = SAMPLE_RESPONSE[2]['event_id']
+    mirrored_enriching_natables = splunk.set_integration_context.call_args[0][0][splunk.MIRRORED_ENRICHING_NOTABLES]
+    actual_mirrored_notable_delta = mirrored_enriching_natables[notable_id]
+
+    # 'SplunkComments' is calculated and added in the mirror process and not returned from Splunk
+    assert 'SplunkComments' not in updated_notable
+    assert len(actual_mirrored_notable_delta['SplunkComments']) == 3
+    assert actual_mirrored_notable_delta['owner'] == 'after_mirror_owner'
+    assert all(actual_mirrored_notable_delta[k] == v for k, v in notable_delta.items())
+
+
+def test_user_mapping_used_cache(mocker):
+    """
+    Given:
+    - A KVStore table exist in SPlunk to map the Splunk user to the XSOAR user.
+    When:
+    - Call to the function to map the user.
+    Then:
+    - Validate that the function use cache to store the mapped values and called only once.
+    """
+    mocker.patch.object(demisto, 'error')
+    mocked_service = mocker.patch('SplunkPy.client.Service')
+    mapper = splunk.UserMappingObject(mocked_service, True)
+    for _ in range(5):
+        mapper.get_xsoar_user_by_splunk('test_splunk_user')
+    assert mocked_service.kvstore.__getitem__().data.query.call_count == 1

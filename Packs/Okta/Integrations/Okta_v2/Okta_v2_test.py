@@ -1,11 +1,11 @@
+from unittest.mock import MagicMock, patch
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
     get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command, \
-    create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param, set_password_command
+    create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param, set_password_command, apply_zone_updates
 import pytest
 import json
 import requests_mock
-
 
 client = Client(base_url="demisto.com", api_token="XXX")
 
@@ -989,3 +989,202 @@ def test_get_logs_command_with_limit(mocker, requests_mock, limit, logs_amount):
     args = {'limit': limit}
     readable, outputs, raw_response = get_logs_command(client=client, args=args)
     assert len(outputs.get('Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)')) == logs_amount
+
+
+def test_expire_password_with_revoke_session():
+    """
+    Given:
+        - A client object with mocked methods for getting user ID, revoking a session, and formatting the user context.
+        - Arguments for expire_password_command with username, hide_password set to False, and revoke_session set to True.
+    When:
+        - Calling expire_password_command with revoke_session set to True.
+    Then:
+        - Ensure the revoke_session method is called.
+        - Ensure the response includes the correct tempPassword and user context.
+        - Ensure the readable output is formatted as expected.
+    """
+    from Okta_v2 import expire_password_command
+    client = MagicMock()
+    args = {
+        'username': 'test_user',
+        'hide_password': 'False',
+        'revoke_session': 'True'
+    }
+
+    client.get_user_id.return_value = 'user123'
+    client.revoke_session.return_value = {'tempPassword': 'test_password'}
+    client.get_users_context.return_value = {'ID': 'user123'}
+
+    readable_output, outputs, raw_response = expire_password_command(client, args)
+
+    client.revoke_session.assert_called_once_with('user123')
+    assert 'Account(val.ID && val.ID === obj.ID)' in outputs
+    assert outputs['Account(val.ID && val.ID === obj.ID)']['ID'] == 'user123'
+    assert 'test_password' in raw_response['tempPassword']
+    assert readable_output == '### Okta Expired Password\n|tempPassword|\n|---|\n| test_password |\n'
+
+
+def test_expire_password_without_revoke_session():
+    """
+    Given:
+        - Arguments for expire_password_command with username, hide_password set to False, and revoke_session set to False.
+    When:
+        - Calling expire_password_command.
+    Then:
+        - Ensure the expire_password method is called.
+        - Ensure the response includes the correct tempPassword and user context.
+        - Ensure the readable output is formatted as expected.
+    """
+    from Okta_v2 import expire_password_command
+    client = MagicMock()
+    args = {
+        'username': 'test_user',
+        'hide_password': 'False',
+        'revoke_session': 'False'
+    }
+
+    client.get_user_id.return_value = 'user123'
+    client.expire_password.return_value = {'tempPassword': 'test_password'}
+    client.get_users_context.return_value = {'ID': 'user123'}
+
+    readable_output, outputs, raw_response = expire_password_command(client, args)
+
+    client.expire_password.assert_called_once_with('user123', args)
+    assert 'Account(val.ID && val.ID === obj.ID)' in outputs
+    assert outputs['Account(val.ID && val.ID === obj.ID)']['ID'] == 'user123'
+    assert 'test_password' in raw_response['tempPassword']
+    assert readable_output == '### Okta Expired Password\n|tempPassword|\n|---|\n| test_password |\n'
+
+
+def test_hide_password():
+    """
+    Given:
+        - Arguments for expire_password_command with username, hide_password set to True, and revoke_session set to False.
+    When:
+        - Calling expire_password_command.
+    Then:
+        - Ensure the tempPassword in the response is hidden.
+        - Ensure the readable output is formatted to indicate the password is hidden.
+    """
+    from Okta_v2 import expire_password_command
+    client = MagicMock()
+    args = {
+        'username': 'test_user',
+        'hide_password': 'True',
+        'revoke_session': 'False'
+    }
+
+    client.get_user_id.return_value = 'user123'
+    client.expire_password.return_value = {'tempPassword': 'test_password'}
+    client.get_users_context.return_value = {'ID': 'user123'}
+
+    readable_output, outputs, raw_response = expire_password_command(client, args)
+
+    assert raw_response['tempPassword'] == 'Output removed by user. hide_password argument set to True'
+    assert readable_output == ('### Okta Expired Password\n|tempPassword|\n|---|\n| Output removed by user. '
+                               'hide_password argument set to True |\n')
+
+
+def test_show_password():
+    """
+    Given:
+        - Arguments for expire_password_command with username, hide_password set to False, and revoke_session set to False.
+    When:
+        - Calling expire_password_command.
+    Then:
+        - Ensure the tempPassword in the response is shown.
+        - Ensure the readable output displays the tempPassword.
+    """
+    from Okta_v2 import expire_password_command
+    client = MagicMock()
+    args = {
+        'username': 'test_user',
+        'hide_password': 'False',
+        'revoke_session': 'False'
+    }
+
+    client.get_user_id.return_value = 'user123'
+    client.expire_password.return_value = {'tempPassword': 'test_password'}
+    client.get_users_context.return_value = {'ID': 'user123'}
+
+    readable_output, outputs, raw_response = expire_password_command(client, args)
+
+    assert raw_response['tempPassword'] == 'test_password'
+    assert readable_output == '### Okta Expired Password\n|tempPassword|\n|---|\n| test_password |\n'
+
+
+def test_missing_username_and_user_id():
+    """
+    Given:
+        - Arguments for expire_password_command with hide_password and revoke_session but no username or user ID.
+    When:
+        - Calling expire_password_command without providing a username or user ID.
+    Then:
+        - Ensure an exception is raised indicating that either a username or user ID must be provided.
+    """
+    from Okta_v2 import expire_password_command
+    client = MagicMock()
+    args = {
+        'hide_password': 'False',
+        'revoke_session': 'False'
+    }
+
+    client.get_user_id.return_value = None
+
+    try:
+        expire_password_command(client, args)
+    except Exception as e:
+        assert "You must supply either 'Username' or 'userId" in str(e)
+
+
+@patch.object(Client, 'http_request')
+def test_revoke_session(mock_http_request):
+    """
+    Given:
+        - A valid user ID.
+    When:
+        - Calling revoke_session with a user ID.
+    Then:
+        - Ensure http_request is called with the correct method, URL, and parameters.
+    """
+    user_id = "12345"
+    expected_uri = f'/api/v1/users/{user_id}/lifecycle/expire_password_with_temp_password'
+    expected_params = {"revokeSessions": 'true'}
+    client.revoke_session(user_id)
+    mock_http_request.assert_called_once_with(
+        method="POST",
+        url_suffix=expected_uri,
+        params=expected_params
+    )
+
+
+def test_apply_zone_update_override():
+    """
+    Given: empty ZoneObeject
+    When: apply_zone_updates is called with "OVERRIDE" update type and specific gatewayIPs and proxyIPs,
+    Then: the zoneObject should be updated with the provided data.
+    """
+    zoneObject = {}
+    updated_zone = apply_zone_updates(zoneObject, "TestZone", ["192.168.1.1", "10.0.0.0-10.0.0.10"],
+                                      ["10.0.0.1", "192.168.1.0-192.168.1.5"], "OVERRIDE")
+    assert updated_zone == {
+        "name": "TestZone",
+        "gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}, {"type": "RANGE", "value": "10.0.0.0-10.0.0.10"}],
+        "proxies": [{"type": "CIDR", "value": "10.0.0.1/32"}, {"type": "RANGE", "value": "192.168.1.0-192.168.1.5"}]
+    }
+
+
+def test_apply_zone_update_append_with_range():
+    """
+    Given: zoneObject already with some gateways,
+    When: apply_zone_updates is called with "APPEND" update type and IP ranges,
+    Then: the new gateways with IP ranges should be appended to the existing ones in the zoneObject.
+    """
+    zoneObject = {"gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}]}
+    updated_zone = apply_zone_updates(zoneObject, "NewZone", ["192.168.1.2-192.168.1.10"], ["10.0.0.1", "10.0.0.2-10.0.0.5"],
+                                      "APPEND")
+    assert updated_zone == {
+        "name": "NewZone",
+        "gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}, {"type": "RANGE", "value": "192.168.1.2-192.168.1.10"}],
+        "proxies": [{"type": "CIDR", "value": "10.0.0.1/32"}, {"type": "RANGE", "value": "10.0.0.2-10.0.0.5"}]
+    }

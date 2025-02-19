@@ -28,10 +28,11 @@ class TestGetHeaders:
         """
         params = {
             "apikey_id": "7",
-            "apikey": "t3PkfrEhaRAD9a3r6Lq5cVPyqdMqtLd8cOJlSWUtbslkbERUgb2BTkSNRtDr3C6CWAgYqxvyzwDFJ83BLBgu1V2cxQY7rsoo2ks2u3W2aBL2BlteF8C8u75lCVUrNbv1"    # noqa: E501
+            "apikey": "aaaaaaa"
+            # noqa: E501
         }
         headers = {
-            'Authorization': 'da94963b561e3c95899d843b1284cecf410606e9e809be528ec1cf03880c6e9e',
+            'Authorization': 'e9a63fb06148bd3a73ce93c8b44c083a147cafb0fe607e706abcac25759b3c43',  # it's a dummy Authorization
             'x-iocs-source': 'xsoar',
             'x-xdr-auth-id': '7',
             'x-xdr-nonce': '1111111111111111111111111111111111111111111111111111111111111111',
@@ -428,43 +429,58 @@ class TestDemistoIOCToXDR:
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
             {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
-             'type': 'IP'}
+             'type': 'IP', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 100, 'score': 2},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO', 'type': '100'}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS',
+             'severity': 'INFO', 'type': '100', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP'},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP'}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN',
+             'severity': 'INFO', 'type': 'IP', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'expiration': '2020-06-03T00:00:00Z'},
-            {'expiration_date': 1591142400000, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP'}    # noqa: E501
+            {'expiration_date': 1591142400000, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO',
+             'type': 'IP', "comment": [""]}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentTimeLine', 'content': 'test'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP'}
+            {'value': '11.11.11.11', 'indicator_type': 'IP',
+             'comments': [{'type': 'IndicatorCommentTimeLine', 'content': 'test'}]},  # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN',
+             'severity': 'INFO', 'type': 'IP', "comment": [""]}
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['test']}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP',
+             'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},  # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'comment': ['test']}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}, {'type': 'IndicatorCommentRegular', 'content': 'this is the comment'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['this is the comment']}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'},
+                                                                          {'type': 'IndicatorCommentRegular',
+                                                                           'content': 'this is the comment'}]},  # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'comment': ['this is the comment']}  # noqa: E501
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'aggregatedReliability': 'A - Completely reliable'},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'reliability': 'A'}    # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'reliability': 'A', "comment": [""]}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'CustomFields': {'threattypes': {'threatcategory': 'Malware'}}},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'class': 'Malware'}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'CustomFields': {'threattypes': {'threatcategory': 'Malware'}}},
+            # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'class': 'Malware', "comment": [""]}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'moduleToFeedMap': {'module': {'sourceBrand': 'test', 'score': 2}}},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'vendors': [{'vendor_name': 'test', 'reputation': 'SUSPICIOUS', 'reliability': 'F'}]}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'moduleToFeedMap': {'module': {'sourceBrand': 'test', 'score': 2}}},
+            # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'vendors': [{'vendor_name': 'test', 'reputation': 'SUSPICIOUS', 'reliability': 'F'}], "comment": [""]}  # noqa: E501
         )
     ]
 
@@ -878,7 +894,7 @@ def test_parse_demisto_comments__default_empty():
         ioc={},
         comment_field_name=Client.xsoar_comments_field,
         comments_as_tags=False
-    ) is None
+    ) == ['']
 
 
 def test_parse_demisto_comments__default_as_tag():
@@ -912,7 +928,7 @@ def test_parse_demisto_comments__custom_field(comment_value: str, comments_as_ta
     """
     from XDR_iocs import _parse_demisto_comments
     comment_field = 'comment_field'
-
+    Client.xsoar_comments_field = 'comment_field'
     assert _parse_demisto_comments(
         ioc={'CustomFields': {comment_field: comment_value}},
         comment_field_name=comment_field,
@@ -934,7 +950,7 @@ def test_parse_demisto_comments__custom_field_empty_value(comments_as_tags: bool
         ioc={'CustomFields': {comment_field: ''}},
         comment_field_name=comment_field,
         comments_as_tags=comments_as_tags
-    ) is None
+    ) == ['']
 
 
 @pytest.mark.parametrize('comments_as_tags', (True, False))
@@ -950,7 +966,7 @@ def test_parse_demisto_comments__custom_field_missing(comments_as_tags: bool):
         ioc={'CustomFields': {}},
         comment_field_name='comment_field',
         comments_as_tags=comments_as_tags
-    ) is None
+    ) == ['']
 
 
 @pytest.mark.parametrize(
@@ -1007,9 +1023,10 @@ def test_parse_demisto_comments_url_xsoar_6_default(mocker):
     from XDR_iocs import _parse_demisto_comments
     inc_id = '111111'
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    Client.add_link_as_a_comment = True
     assert _parse_demisto_comments(
         ioc={'id': inc_id},
-        comment_field_name='indicator_link',
+        comment_field_name='',
         comments_as_tags=False
     ) == [f'url/#/indicator/{inc_id}']
 
@@ -1028,9 +1045,10 @@ def test_parse_demisto_comments_url_xsoar_8_default(mocker):
     inc_id = '111111'
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
     mocker.patch.object(XDR_iocs, 'is_xsoar_saas', return_value=True)
+    Client.add_link_as_a_comment = True
     assert XDR_iocs._parse_demisto_comments(
         ioc={'id': inc_id},
-        comment_field_name='indicator_link',
+        comment_field_name='',
         comments_as_tags=False
     ) == [f'url/indicator/{inc_id}']
 
@@ -1045,12 +1063,12 @@ def test_parse_demisto_list_of_comments_default(mocker):
     inc_id = '111111'
     comment_value = 'here be comment'
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    Client.xsoar_comments_field, Client.add_link_as_a_comment = "comments", True
     assert _parse_demisto_comments(
         ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}],
              'id': inc_id},
-        comment_field_name=['indicator_link', Client.xsoar_comments_field],
-        comments_as_tags=False
-    ) == [f'url/#/indicator/{inc_id}, {comment_value}']
+        comment_field_name=Client.xsoar_comments_field,
+        comments_as_tags=False) == [f'{comment_value}, url/#/indicator/{inc_id}']
 
 
 @patch('XDR_iocs.demisto.params', return_value={'feed': True, 'feedFetchInterval': '14'})
@@ -1268,3 +1286,60 @@ def test_get_indicators(mock_IndicatorsSearcher,
         mock_info.assert_called_with(expected_info)
     else:
         mock_info.assert_not_called()
+
+
+@pytest.mark.parametrize('is_xsoar_saas, expected_link', ((True, ['url/indicator/111']), (False, ['url/#/indicator/111'])))
+def test_create_an_indicator_link(mocker, is_xsoar_saas: bool, expected_link: str):
+    """
+    Given:
+        -  indicator id and a bool argument is_xsoar_saas which presents if xsaor is a saas version or not
+    When:
+        -  creating an indicator link
+    Then:
+        - verify the link according to the XSAOR version
+    """
+    import XDR_iocs
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    mocker.patch.object(XDR_iocs, 'is_xsoar_saas', return_value=is_xsoar_saas)
+    assert XDR_iocs.create_an_indicator_link(ioc={'id': '111'}) == expected_link
+
+
+@pytest.mark.parametrize('xsoar_comment_field, expected_result',
+                         ((["indicator_link"], ("comments", True)),
+                          (["comments"], ("comments", False)),
+                          (["comments", "indicator_link"], ("comments", True)),
+                          ))
+def test_parse_xsoar_field_name_and_link(xsoar_comment_field: list[str], expected_result: tuple[str, bool]):
+    """
+    Given:
+        -  xsoar_comment_field
+    When:
+        -  parsing xsoar_comment_field by our logic
+    Then:
+        - verify the function parses the xsoar_comment_field as expected
+    """
+    import XDR_iocs
+    result = XDR_iocs.parse_xsoar_field_name_and_link(xsoar_comment_field)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('xsoar_comment_field, informative_message',
+                         ((["comments", "not_indicator_link"],
+                           "The parameter xsoar_comment_field=['comments', 'not_indicator_link'] "
+                           "should only contain the field name,"
+                           " or the field name with the phrase indicator_link, separated by a comma."),
+                          (["a", "b", "c"], ("The parameter xsoar_comment_field=['a', 'b', 'c'] cannot contain more than "
+                                             'two values'))))
+def test_parse_xsoar_field_name_and_link_exceptions(xsoar_comment_field: list[str], informative_message: str):
+    """
+    Given:
+        -  invalid xsoar_comment_field and the expected_result
+    When:
+        -  parsing xsoar_comment_field by our logic
+    Then:
+        - verify the function throws a DemistoException with informative message
+    """
+    import XDR_iocs
+    with pytest.raises(DemistoException) as de:
+        XDR_iocs.parse_xsoar_field_name_and_link(xsoar_comment_field)
+        assert de.message == informative_message

@@ -1392,7 +1392,7 @@ script:
     - contextPath: OpsGenie.AddAlertDetails.success
       description: Whether the request was successful.
       type: Boolean
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   script: '-'
   type: python

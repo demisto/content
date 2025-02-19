@@ -90,8 +90,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Microsoft 365 Defender Event Collector integration.
-display: Microsoft Defender for Endpoint Alerts
+description: Deprecated. Use 'Office 365' in the XSIAM Data Sources instead.
+display: Microsoft Defender for Endpoint Alerts (Deprecated)
 name: Microsoft 365 Defender Event Collector
 script:
   commands:
@@ -114,16 +114,19 @@ script:
       predefined:
       - 'false'
       - 'true'
+    deprecated: true
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: microsoft-365-defender-auth-reset
     arguments: []
+    deprecated: true
   isfetchevents: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.112336
+  dockerimage: demisto/auth-utils:1.0.0.116752
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true

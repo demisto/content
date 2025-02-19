@@ -3333,7 +3333,7 @@ script:
     - contextPath: VMware.VcenterLicense.licenses
       description: list of license keys after module executed
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.113405
+  dockerimage: demisto/ansible-runner:1.0.0.2024530
   script: ''
   subtype: python3
   type: python

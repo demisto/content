@@ -3,33 +3,30 @@ Malware information sharing platform and threat sharing.
 Some changes have been made that might affect your existing content.
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---misp-v3).
 
-## Configure MISP V3 on Cortex XSOAR
+## Configure MISP V3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MISP V3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | MISP server URL (e.g., <https://192.168.0.1>) |  | True |
-    | API Key |  | False |
-    | Client Certificate |  | False |
-    | Private Key |  | False |
-    | Use IDS flag | This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not. | False |
-    | ORG names to use for reputation checks | Comma-separated list of allowed TI providers (orgc in MISP events). | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Malicious tag IDs | Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
-    | Suspicious tag IDs | Comma-separated list of event's or attribute's suspicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
-    | Benign tag IDs | Comma-separated list of event's or attribute's benign tag IDs. Malicious and suspicious tags are stronger than benign tags. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Maximum attributes to be returned | This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| MISP server URL (e.g., <https://192.168.0.1>) |  | True |
+| API Key |  | False |
+| Client Certificate |  | False |
+| Private Key |  | False |
+| Use IDS flag | This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not. | False |
+| ORG names to use for reputation checks | Comma-separated list of allowed TI providers (orgc in MISP events). | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Malicious tag IDs | Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
+| Suspicious tag IDs | Comma-separated list of event's or attribute's suspicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
+| Benign tag IDs | Comma-separated list of event's or attribute's benign tag IDs. Malicious and suspicious tags are stronger than benign tags. | False |
+| Search warninglists | Should the warninglists be considered when searching for an attribute.` | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Maximum attributes to be returned | This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### misp-search-events

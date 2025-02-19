@@ -57,7 +57,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/keepercommander:1.0.0.112259
+  dockerimage: demisto/keepercommander:1.0.0.117491
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2

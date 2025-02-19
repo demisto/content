@@ -13,7 +13,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
-from typing import Tuple
 import tldextract
 import pytz
 
@@ -331,7 +330,7 @@ def cosine_sim(a, b):
 
 
 def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keywords_weight=1.5):
-    corpus = sent_tokenize(body)
+    corpus: list[str] = sent_tokenize(body)
     cv = CountVectorizer(stop_words=list(stopwords.words('english')))
     body_arr = cv.fit_transform(corpus).toarray()
     subject_arr = cv.transform(sent_tokenize(subject)).toarray()
@@ -359,9 +358,9 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
             if word.lower() in word_frequency:
                 sentence_rank[i] += word_frequency[word.lower()]
         sentence_rank[i] = sentence_rank[i] / len(word_tokenize(sent))  # type: ignore
-    top_sentences_indices = np.argsort(sentence_rank)[::-1][:nb_sentences].tolist()
+    top_sentences_indices: np.ndarray = np.argsort(sentence_rank)[::-1][:nb_sentences].tolist()  # type: ignore[assignment]
     summary = []
-    for sent_i in sorted(top_sentences_indices):
+    for sent_i in sorted(top_sentences_indices):  # type: ignore
         sent = corpus[sent_i].strip().replace('\n', ' ')
         if sent_i == 0 and sent_i + 1 not in top_sentences_indices:
             sent = sent + ' ...'
@@ -552,7 +551,7 @@ def analyze_incidents_campaign(incidents, fields_to_display):
         draw_canvas(incidents, indicators_df.head(MAX_INDICATORS_FOR_CANVAS_PLOTTING).to_dict(orient='records'))
 
 
-def split_non_content_entries(response: list) -> Tuple[dict, list]:
+def split_non_content_entries(response: list) -> tuple[dict, list]:
     """
     Args:
         response: A response list from executeCommand.

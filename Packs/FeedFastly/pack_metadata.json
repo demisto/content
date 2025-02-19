@@ -2,7 +2,7 @@
     "name": "Fastly Feed",
     "description": "Indicators feed from Fastly",
     "support": "xsoar",
-    "currentVersion": "1.1.29",
+    "currentVersion": "1.1.32",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

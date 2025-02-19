@@ -207,7 +207,7 @@
    }   12   items cache:0   destIp:null   file:   https:   //demisto.com md5:   xxx messageId:   sha1:   sha256:   size:19   srcIp:   submitType:1   taskId:388   url:   https:   //demisto.com subId:385   success:true
 }</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37335599/40610544-7cbb0438-627b-11e8-9842-77cec02258c9.png" width="657" height="336"></p>
+<p><img src="../../doc_files/40610544-7cbb0438-627b-11e8-9842-77cec02258c9.png" width="657" height="336"></p>
 <p> </p>
 <h3 id="h_302118921961535891441834">2. Retrieve taskIds</h3>
 <hr>
@@ -273,7 +273,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37335599/40295195-22d87fb2-5ce1-11e8-970a-6cf5056b56de.png" width="652" height="173"></p>
+<p><img src="../../doc_files/40295195-22d87fb2-5ce1-11e8-970a-6cf5056b56de.png" width="652" height="173"></p>
 <p> </p>
 <h3 id="h_5983918091841535891447978">3. Download an analysis report</h3>
 <hr>
@@ -545,7 +545,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37335599/40611388-ce82cef6-627e-11e8-97d5-c41379e1e6b4.png" width="658" height="293"></p>
+<p><img src="../../doc_files/40611388-ce82cef6-627e-11e8-97d5-c41379e1e6b4.png" width="658" height="293"></p>
 <p> </p>
 <h3 id="h_7996401532701535891458065">4. Get a list of analyzer profiles</h3>
 <hr>
@@ -611,7 +611,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37335599/40305260-6b07b0f2-5d02-11e8-8c6a-1ade6c796ef4.png" width="707" height="258"></p>
+<p><img src="../../doc_files/40305260-6b07b0f2-5d02-11e8-8c6a-1ade6c796ef4.png" width="707" height="258"></p>
 <p> </p>
 <h3 id="h_4045512523551535891464726">5. Get a list of all users</h3>
 <hr>
@@ -687,7 +687,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37335599/40305663-1b4031a0-5d04-11e8-8860-dcb5ddfb2654.png" width="706" height="227"></p>
+<p><img src="../../doc_files/40305663-1b4031a0-5d04-11e8-8860-dcb5ddfb2654.png" width="706" height="227"></p>
 <p> </p>
 <h3 id="h_880142004391535891472428">6. Retrieve session details.</h3>
 <hr>
@@ -738,7 +738,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37335599/40306682-4b9ef512-5d08-11e8-900e-088899639569.png" width="709" height="222"></p>
+<p><img src="../../doc_files/40306682-4b9ef512-5d08-11e8-900e-088899639569.png" width="709" height="222"></p>
 <p> </p>
 <h3 id="h_8231456545221535891479906">7. Detonate a file (deprecated)</h3>
 <hr>
@@ -945,7 +945,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37335599/40612912-138722f8-6285-11e8-81d8-f912aefc07d7.png" width="712" height="544"></p>
+<p><img src="../../doc_files/40612912-138722f8-6285-11e8-81d8-f912aefc07d7.png" width="712" height="544"></p>
 <p> </p>
 <h3 id="h_5978331416041535891488436">8. Detonate a URL (deprecated)</h3>
 <hr>
@@ -1218,7 +1218,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37335599/40611388-ce82cef6-627e-11e8-97d5-c41379e1e6b4.png" width="722" height="322"></p>
+<p><img src="../../doc_files/40611388-ce82cef6-627e-11e8-97d5-c41379e1e6b4.png" width="722" height="322"></p>
 <h3 id="h_2528097436861535891496998">9. Check a task's status</h3>
 <hr>
 <p>Checks the analysis status of up to 100 jobIDs/taskIDs</p>
@@ -1312,5 +1312,5 @@
 <p><code></code></p>
 <h5>Human Readable Output</h5>
 <p><code></code></p>
-<p><img src="https://user-images.githubusercontent.com/37335599/40072030-28d30712-587b-11e8-812a-4fedbf7c1001.png" width="712" height="183"></p>
+<p><img src="../../doc_files/40072030-28d30712-587b-11e8-812a-4fedbf7c1001.png" width="712" height="183"></p>
 <p><code></code></p>

@@ -1,30 +1,26 @@
 DDoS protection and network visibility.
 This integration was integrated and tested with version 9.3 of Netscout Arbor Sightline.
 
-## Configure NetscoutArborSightline on Cortex XSOAR
+## Configure NetscoutArborSightline in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for NetscoutArborSightline.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Incident type |  | False |
-    | Server URL (e.g., https://....) |  | True |
-    | API Key | If using 6.0.2 or lower version, put your API Key in the **Password** field, leave the **User** field empty. | False |
-    | Fetch incidents |  | False |
-    | First fetch time | First fetch query \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days or ISO format 2020-01-01T10:00:00\). Maximal number of past events to fetch is 10,000. | False |
-    | Fetch Limit | Maximum number of alerts per fetch. Default is 50, maximum is 100. | False |
-    | Alert Class | Alert class to filter by. Only one class can be configured at a time. If none is chosen, all classes will be fetched. | False |
-    | Alert Type | Alert type to filter by. Only one type can be configured at a time. If none is chosen, all types will be fetched. | False |
-    | Minimal importance to fetch | Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched. | False |
-    | Event Status | Alert status to filter by. If none is chosen, all statuses will be fetched. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Incident type |  | False |
+| Server URL (e.g., https://....) |  | True |
+| API Key | If using 6.0.2 or lower version, put your API Key in the **Password** field, leave the **User** field empty. | False |
+| Fetch incidents |  | False |
+| First fetch time | First fetch query \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days or ISO format 2020-01-01T10:00:00\). Maximal number of past events to fetch is 10,000. | False |
+| Fetch Limit | Maximum number of alerts per fetch. Default is 50, maximum is 100. | False |
+| Alert Class | Alert class to filter by. Only one class can be configured at a time. If none is chosen, all classes will be fetched. | False |
+| Alert Type | Alert type to filter by. Only one type can be configured at a time. If none is chosen, all types will be fetched. | False |
+| Minimal importance to fetch | Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched. | False |
+| Event Status | Alert status to filter by. If none is chosen, all statuses will be fetched. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### na-sightline-alert-annotation-list
 ***
@@ -899,4 +895,3 @@ Get a list of available TMS groups.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| true | true | true | true | Default all mitigation group. Mitigations will use all ports on all configured TMS devices. | false |  |  | 3 | self: https://xsoar-example:57585/api/sp/v7/tms_groups/3 | false | bandwidth_threshold_percent: 85<br/>enabled: false | All | true | tms_group |
 >| true | true | true | false |  | true | route_target | route_target | 192 | self: https://xsoar-example:57585/api/sp/v7/tms_groups/192 | false | bandwidth_threshold_percent: 85<br/>enabled: false | anar_test | false | tms_group |
-

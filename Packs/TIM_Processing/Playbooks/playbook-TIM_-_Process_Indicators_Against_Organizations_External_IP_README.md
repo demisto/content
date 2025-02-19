@@ -21,4 +21,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![TIM - Process Indicators Against Organizations External IP List](https://raw.githubusercontent.com/demisto/content/cccd5a9429521a24db91a981e7d2157df187a4df/Packs/TIM_Processing/doc_files/TIM_-_Process_Indicators_Against_Organizations_External_IP_List.png)
+![TIM - Process Indicators Against Organizations External IP List](../doc_files/TIM_-_Process_Indicators_Against_Organizations_External_IP_List.png)

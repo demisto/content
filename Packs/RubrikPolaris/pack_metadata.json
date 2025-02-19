@@ -2,7 +2,7 @@
     "name": "Rubrik Security Cloud",
     "description": "Rubrik Security Cloud revolutionizes the data management market, specifically backup/recovery, archival, and DR, by providing a global policy framework, workflow orchestration, and deep data intelligence as cloud-delivered applications. The content pack fetches Rubrik Anomaly Event and provides playbooks to analyze, discover and recover -- to mention a few -- organizational data. The content pack is rich with commands to perform on-demand scans, backups, recoveries and many more features exposed by the RSC API.",
     "support": "partner",
-    "currentVersion": "1.3.4",
+    "currentVersion": "1.4.3",
     "author": "Rubrik",
     "url": "https://www.rubrik.com/support/",
     "email": "support@rubrik.com",
