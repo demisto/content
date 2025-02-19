@@ -455,51 +455,6 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 6,
-                                "fieldId": "gibparsedlogindomain",
-                                "height": 22,
-                                "id": "53db3ea0-71a3-11ef-8c49-f9d8b5e80cf6",
-                                "index": 12,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "gibparsedloginip",
-                                "height": 22,
-                                "id": "5b8dc3c0-71a3-11ef-8c49-f9d8b5e80cf6",
-                                "index": 12,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "gibservicedomain",
-                                "height": 22,
-                                "id": "6fc2f3b0-71a3-11ef-8c49-f9d8b5e80cf6",
-                                "index": 12,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "gibserviceip",
-                                "height": 22,
-                                "id": "761dd810-71a3-11ef-8c49-f9d8b5e80cf6",
-                                "index": 12,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "gibserviceurl",
-                                "height": 22,
-                                "id": "ab7ebf30-8236-11ef-9517-e9064fff04ea",
-                                "index": 12,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 4,
                                 "fieldId": "gibdrpscorestable",
                                 "height": 106,
@@ -517,48 +472,48 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
-							{
-								"args": {
-									"id": {
-										"simple": "{incident.gibdrpid}"
-									},
-									"status": {
-										"simple": "reject"
-									}
-								},
-								"buttonClass": "error",
-								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "",
-								"height": 44,
-								"id": "4ad2d5d0-edcb-11ef-b8bb-2182ba34affd",
-								"index": 0,
-								"listId": "caseinfoid-96ff2940-71a2-11ef-8c49-f9d8b5e80cf6",
-								"name": "Reject Violation",
-								"scriptId": "Group-IB Digital Risk Protection|||gibdrp-change-violation-status",
-								"sectionItemType": "button",
-								"startCol": 4
-							},
-							{
-								"args": {
-									"id": {
-										"simple": "{incident.gibdrpid}"
-									},
-									"status": {
-										"simple": "approve"
-									}
-								},
-								"buttonClass": "success",
-								"endCol": 6,
-								"fieldId": "",
-								"height": 44,
-								"id": "ad1d0940-edcb-11ef-b8bb-2182ba34affd",
-								"index": 1,
-								"name": "Approve Violation",
-								"scriptId": "Group-IB Digital Risk Protection|||gibdrp-change-violation-status",
-								"sectionItemType": "button",
-								"startCol": 4
-							}
+                            {
+                                "args": {
+                                    "id": {
+                                        "simple": "{incident.gibdrpid}"
+                                    },
+                                    "status": {
+                                        "simple": "reject"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "4ad2d5d0-edcb-11ef-b8bb-2182ba34affd",
+                                "index": 0,
+                                "listId": "caseinfoid-96ff2940-71a2-11ef-8c49-f9d8b5e80cf6",
+                                "name": "Reject Violation",
+                                "scriptId": "Group-IB Digital Risk Protection|||gibdrp-change-violation-status",
+                                "sectionItemType": "button",
+                                "startCol": 4
+                            },
+                            {
+                                "args": {
+                                    "id": {
+                                        "simple": "{incident.gibdrpid}"
+                                    },
+                                    "status": {
+                                        "simple": "approve"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "ad1d0940-edcb-11ef-b8bb-2182ba34affd",
+                                "index": 1,
+                                "name": "Approve Violation",
+                                "scriptId": "Group-IB Digital Risk Protection|||gibdrp-change-violation-status",
+                                "sectionItemType": "button",
+                                "startCol": 4
+                            }
                         ],
                         "maxW": 3,
                         "minH": 1,
@@ -646,42 +601,6 @@
                                 "height": 22,
                                 "id": "f7778190-ed22-11ef-bdfd-773f20036f06",
                                 "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibdatefirstcompromised",
-                                "height": 22,
-                                "id": "dd8d4b80-71a2-11ef-8c49-f9d8b5e80cf6",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibdatelastcompromised",
-                                "height": 22,
-                                "id": "e3d6cac0-71a2-11ef-8c49-f9d8b5e80cf6",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibdatefirstseen",
-                                "height": 22,
-                                "id": "e9f1bff0-71a2-11ef-8c49-f9d8b5e80cf6",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibdatelastseen",
-                                "height": 22,
-                                "id": "f04fd8a0-71a2-11ef-8c49-f9d8b5e80cf6",
-                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

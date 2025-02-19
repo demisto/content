@@ -1,6 +1,5 @@
-id: 530e6c07-ea9c-47a2-8e2a-9ebdc61722a2
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+id: Violation Incident Postprocessing - Group-IB Digital Risk Protection
+version: -1
 name: Violation Incident Postprocessing - Group-IB Digital Risk Protection
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -185,14 +185,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Do you want to “Approve” this incident?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -202,7 +202,6 @@ tasks:
       replyOptions:
       - Yes, i want
       - "No"
-    externalFormUseAuth: true
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -325,3 +324,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
