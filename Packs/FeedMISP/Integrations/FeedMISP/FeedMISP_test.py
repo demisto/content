@@ -502,3 +502,67 @@ def test_set_last_run_pagination(mocker):
                          'last_indicator_value': last_run_value,
                          'candidate_value': latest_indicator_value}
     assert last_run == expected_last_run
+
+
+def test_build_indicators_from_galaxies_tool_type():
+    """
+    Given:
+        - An indicator object containing a MISP tag for a MITRE tool.
+    
+    When:
+        - The build_indicators_from_galaxies function is called with the indicator object and a high reputation level.
+    
+    Then:
+        - The extracted indicator should have the correct 'value' corresponding to the tool name.
+        - The 'type' should be 'Tool'.
+        - The 'service' should be 'MISP'.
+        - The 'Reputation' should be 'High'.
+    """
+    from FeedMISP import build_indicators_from_galaxies
+
+    indicator_obj = {
+        'rawJSON': {
+            'value': {
+                'Tag': [{'name': 'misp-galaxy:mitre-tool="aaa aaa"'}]
+            }
+        }
+    }
+
+    galaxy_indicators = build_indicators_from_galaxies(indicator_obj, 'High')[0]
+
+    assert galaxy_indicators['value'] == 'aaa aaa'
+    assert galaxy_indicators['type'] == 'Tool'
+    assert galaxy_indicators['service'] == 'MISP'
+    assert galaxy_indicators['Reputation'] == 'High'
+
+
+def test_build_indicators_from_galaxies_attack_type():
+    """
+    Given:
+        - An indicator object containing a MISP tag for a MITRE attack pattern.
+    
+    When:
+        - The build_indicators_from_galaxies function is called with the indicator object and a high reputation level.
+    
+    Then:
+        - The extracted indicator should have the correct 'value' corresponding to the attack pattern name.
+        - The 'type' should be 'Attack Pattern'.
+        - The 'service' should be 'MISP'.
+        - The 'Reputation' should be 'High'.
+    """
+    from FeedMISP import build_indicators_from_galaxies
+
+    indicator_obj = {
+        'rawJSON': {
+            'value': {
+                'Tag': [{'name': 'misp-galaxy:mitre-attack-pattern="aaa aaa - 1111"'}]
+            }
+        }
+    }
+
+    galaxy_indicators = build_indicators_from_galaxies(indicator_obj, 'High')[0]
+
+    assert galaxy_indicators['value'] == 'aaa aaa'
+    assert galaxy_indicators['type'] == 'Attack Pattern'
+    assert galaxy_indicators['service'] == 'MISP'
+    assert galaxy_indicators['Reputation'] == 'High'

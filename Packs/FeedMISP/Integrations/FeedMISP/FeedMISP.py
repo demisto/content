@@ -364,7 +364,7 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Op
                 value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
             except ValueError as e:
                 demisto.debug(f"A ValueError was raised on {tag_name=}, of type {type_}")
-                if type_ == ThreatIntel.ObjectsNames.TOOL: # mitre-tool type sometimes does not have an id so " -" fail
+                if type_ == ThreatIntel.ObjectsNames.TOOL:  # mitre-tool type sometimes does not have an id so " -" fail
                     value_ = tag_name[tag_name.index('=') + 2: tag_name.rindex('"')]
                     galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
                     continue
