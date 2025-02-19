@@ -1,88 +1,115 @@
-from HelloWorldEventCollector import Client, fetch_events, get_events
+import pytest
 
+import demistomock as demisto
+from GoogleApigeeEventCollector import (
+    Client,
+    fetch_events,
+    get_events
+)
 
-def test_fetch_detection_events_command():
+def mock_client():
+    return Client(base_url='https://test.com',verify=False, proxy=False,org_name='org', username='user',
+                  password='password', zone='zone')
+
+def test_get_events(requests_mock, mocker):
+    """Tests get-events command function.
+
+    Checks the output of the command function with the expected output.
     """
-    Given:
-    - fetch events command (fetches detections)
+    client = mock_client()
+    mock_response = {
+        'auditRecord': [generate_mocked_event(13), generate_mocked_event(15)],
+        'total_count': 2,
+    }
+    args = {
+        'from_date': 3,
+        'limit': 2,
+    }
+    mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
+    requests_mock.get(f'https://test.com/v1/audits/organizations/{client.org_name}', json=mock_response)
+    events, _ = get_events(client, args)
 
-    When:
-    - Running fetch-events command
+    assert len(events) == mock_response.get('total_count')
+    assert events == mock_response.get('auditRecord')
+    
+def generate_mocked_event(event_time: int):
+    return {
+        'operation': 'OPER',
+        'requestUri': 'some/uri',
+        'responseCode': '200',
+        'timeStamp': event_time,
+        'user': 'user'
+    }
+    
 
-    Then:
-    - Ensure number of events fetched, and next run fields
-    """
-    first_fetch_str = '2022-12-21T03:42:05Z'
-    base_url = 'https://server_url/'
-    client = Client(
-        base_url=base_url,
-        verify=True,
-        proxy=False,
-    )
-    last_run = {'prev_id': 1}
+@pytest.mark.parametrize(
+    'scenario, last_fetch, limit, events_amount, events_per_time, new_events_amount',
+    [
+        (
+            'get all events between the timespan',  # scenario
+            1,  # last_fetch
+            7, # limit
+            0, #events_amount
+            [2,5,6,7,8,9,9], # events_per_time,
+            0, # new_events_amount
+        ),
+        (
+            'testing starting from a timestamp where we already have existing events in the last fetch (dedup)',  # scenario
+            2,  # last_fetch
+            3, # limit
+            2, #events_amount
+            [2,2,2,7,8,55], # events_per_time
+            0, # new_events_amount
+        ),
+        (
+            'all events were already fetched',  # scenario
+            9,  # last_fetch
+            3, # limit
+            3, #events_amount
+            [9,9,9], # events_per_time
+            0, # new_events_amount
+        ),
+        (
+            'fetch more than limit',  # scenario
+            1,  # last_fetch
+            3, # limit
+            0, #events_amount
+            [2,5,6,7,8,9], # events_per_time
+            0, # new_events_amount
+        ),
+        (
+            'fetch multiple events at the same time',  # scenario
+            1,  # last_fetch
+            5, # limit
+            0, #events_amount
+            [2,5,8,8,8,8], # events_per_time
+            3, # new_events_amount
+        ),
+    ]
+)
+
+def test_fetch_events(mocker, scenario, last_fetch, limit, events_amount, events_per_time, new_events_amount):
+
+    def mock_get_events(from_date, to_time):
+        events = [generate_mocked_event(event_time) for event_time in events_per_time]
+        return {
+            'auditRecord': events[:limit],
+            'total_count': len(events),
+        }
+
+    mocked_client = mocker.Mock()
+    mocked_client.get_logs.side_effect = mock_get_events
+    mocked_client.limit = limit
+
+    last_run = {'events_amount': new_events_amount}
+
+    mocked_demisto_get_last_run = mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+
     next_run, events = fetch_events(
-        client=client,
+        client=mocked_client,
         last_run=last_run,
-        first_fetch_time=first_fetch_str,
-        alert_status="Status",
-        max_events_per_fetch=1,
     )
 
-    assert len(events) == 1
-    assert next_run.get('prev_id') == 2
-    assert events[0].get('id') == 2
-
-
-def test_test_module_command():
-    """
-    Given:
-    - test module command (fetches detections)
-
-    When:
-    - Pressing test button
-
-    Then:
-    - Test module passed
-    """
-    from HelloWorldEventCollector import test_module
-    first_fetch_str = '2022-12-21T03:42:05Z'
-    base_url = 'https://server_url/'
-    client = Client(
-        base_url=base_url,
-        verify=True,
-        proxy=False,
-    )
-    res = test_module(
-        client=client,
-        params={},
-        first_fetch_time=first_fetch_str,
-    )
-
-    assert res == 'ok'
-
-
-def test_get_events_command():
-    """
-    Given:
-    - get_events command (fetches detections)
-
-    When:
-    - running get events command
-
-    Then:
-    - events and human readable as expected
-    """
-    base_url = 'https://server_url/'
-    client = Client(
-        base_url=base_url,
-        verify=True,
-        proxy=False,
-    )
-    events, hr = get_events(
-        client=client,
-        alert_status="Some Status",
-        args={},
-    )
-
-    assert events[0].get('id') == 1
-    assert 'Test Event' in hr.readable_output
+    assert len(events) == limit
+    assert mocked_demisto_get_last_run.return_value.get('events_amount') == next_run.get('events_amount'), f'{scenario} - set last run does not match expected value'
+    assert events[-1].get('timeStamp') == events_per_time[limit-1]

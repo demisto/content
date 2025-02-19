@@ -30,11 +30,11 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool,
-                 org_name: str, zone: str, api_limit=DEFAULT_LIMIT, **kwargs):
+                 org_name: str, zone: str, limit=DEFAULT_LIMIT, **kwargs):
         self.username = username
         self.password = password
         self.org_name = org_name
-        self.api_limit = api_limit
+        self.limit = limit
         self.zone = zone
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
@@ -99,8 +99,11 @@ class Client(BaseClient):
             'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
             'Accept': 'application/json;charset=utf-8',
             'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0'
+
         }
-        url = f'https://{self.zone}.login.apigee.com/oauth/token'
+        zone = f'{self.zone}.' if self.zone else ''
+        url = f'https://{zone}login.apigee.com/oauth/token'
+        # TODO: differ between refresh and new?
         token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
         return token_response.get('access_token'), token_response.get('expires_in')
 
@@ -131,39 +134,43 @@ class Client(BaseClient):
         )
         return res
 
-    def search_events(self, max_fetch: int, last_fetch_time: float = 0) -> tuple[List[Dict[str, Any]], Dict[str, float]]:
-        """
-        Searches for logs using the '/<url_suffix>' API endpoint.
-        Args:
-            last_time: datetime, The datetime of the last event fetched.
-            limit: int, the limit of the results to return. (is received only in zoom-get-events command)
-        Returns:
-            Tuple:
-                str: The time of the latest event fetched.
-                List: A list containing the events.
-        """
-        # add comment - timestamp is id
-        # last_fetch, last_timestamp and how many
-        from_time = last_fetch_time
-        to_time = int(time.time())
-        events = []
-        logs_response = self.get_logs(from_time, to_time)
-        logs = logs_response.get('auditRecord', [])
-        events = logs[:max_fetch + 1]
-        if not events:
-            return events, {'last_run': to_time}
+def search_events(client, last_run: Dict[str, float]) -> tuple[List[Dict[str, Any]], Dict[str, float]]:
+    """
+    Searches for logs using the '/<url_suffix>' API endpoint.
+    Args:
+        last_time: datetime, The datetime of the last event fetched.
+        limit: int, the limit of the results to return. (is received only in zoom-get-events command)
+    Returns:
+        Tuple:
+            str: The time of the latest event fetched.
+            List: A list containing the events.
+    """
+    # add comment - timestamp is id
+    last_fetch = last_run.get('last_fetch')
+    to_time = int(time.time())
+    events = []
+    events_count = 0
+    logs_response = client.get_logs(last_fetch, to_time)
+    logs = logs_response.get('auditRecord', [])
+    if not logs:
+        return events, {'last_fetch': to_time, 'events_amount': events_count}
 
-        if len(logs) >= max_fetch:
-            next_fetch_time = logs[max_fetch].get('timeStamp')
-            for i in range(max_fetch, 0, -1):
-                if events[i].get('timeStamp') == next_fetch_time:
-                    events.pop()
-                else:
-                    break
+    events_amount = last_run.get('events_amount', 0)
+    for event in logs:
+        if event.get('timeStamp') == last_fetch and events_amount >= 1:
+            events_amount -= 1
+            logs.pop(0)
         else:
-            next_fetch_time = to_time
-
-        return events, {'last_run': next_fetch_time}
+            break
+    
+    events = logs[:client.limit + 1]
+    time_stamp = events[-1].get('timeStamp')
+    if len(events) == client.limit:
+        to_time = time_stamp
+    # could be less than limit and still same
+    if time_stamp == to_time:
+        events_count = sum(1 for event in events if event.get('timeStamp') == time_stamp)
+    return events, {'last_fetch': to_time, 'events_amount': events_count}
 
 
 def test_module(client: Client) -> str:
@@ -183,7 +190,7 @@ def test_module(client: Client) -> str:
 
     try:
         from_time = time.time() - 10000
-        client.search_events(max_fetch=DEFAULT_LIMIT, last_fetch_time=from_time)
+        search_events(client, last_run={'last_fetch': from_time})
 
     except Exception as e:
         if 'Forbidden' in str(e):
@@ -195,15 +202,13 @@ def test_module(client: Client) -> str:
 
 
 def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
-    limit = args.get('limit', DEFAULT_LIMIT)
     from_date = arg_to_number(args.get('from_date')) or time.time()
-    events, _ = client.search_events(limit, int(from_date))
+    events, _ = search_events(client, {'last_fetch': from_date})
     hr = tableToMarkdown(name='Audit Logs', t=events)
     return events, CommandResults(readable_output=hr, raw_response=events)
 
 
-def fetch_events(client: Client, last_run: Dict[str, float], max_events_per_fetch: int
-                 ) -> tuple[Dict[str, float], List[Dict]]:
+def fetch_events(client: Client, last_run: Dict[str, float]) -> tuple[Dict[str, float], List[Dict]]:
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -213,11 +218,8 @@ def fetch_events(client: Client, last_run: Dict[str, float], max_events_per_fetc
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    from_time = last_run.get('last_run', 0)
-    demisto.info(f"looking for backward events from:{from_time}")
-    events, next_fetch_time = client.search_events(max_events_per_fetch, from_time)
-
-    return next_fetch_time, events
+    events, next_fetch = search_events(client, last_run)
+    return next_fetch, events
 
 
 ''' MAIN FUNCTION '''
@@ -255,10 +257,10 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f'Command being called is {command}')
     try:
-        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_LIMIT
+        limit = arg_to_number(params.get('limit')) or DEFAULT_LIMIT
 
         client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy,
-                        org_name=org_name, zone=zone, username=username, password=password)
+                        org_name=org_name, zone=zone, username=username, password=password, limit=limit)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -276,7 +278,6 @@ def main() -> None:  # pragma: no cover
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
-                max_events_per_fetch=max_fetch,
             )
 
             call_send_events_to_xsiam(events)
