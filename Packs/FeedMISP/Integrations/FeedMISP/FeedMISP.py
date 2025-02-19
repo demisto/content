@@ -354,23 +354,25 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Op
         reputation: string representing reputation of the indicator
     Returns: List of indicators created from the galaxies
     """
-    try:
-        tags = indicator_obj['rawJSON']['value'].get('Tag', [])
-        galaxy_indicators = []
-        tag = None
-        tag_name = None
-        for tag in tags:
-            tag_name = tag.get('name', None)
-            type_ = get_galaxy_indicator_type(tag_name)
-            if tag_name and type_:
-                demisto.debug(f"{tag_name=}, {type_=}")
+    tags = indicator_obj['rawJSON']['value'].get('Tag', [])
+    galaxy_indicators = []
+    tag = None
+    tag_name = None
+    for tag in tags:
+        tag_name = tag.get('name', None)
+        type_ = get_galaxy_indicator_type(tag_name)
+        if tag_name and type_:
+            try:
                 value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
-                galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
-    except ValueError as e:
-        if tag and tag_name:
-            demisto.debug(f"A ValueError was raised on {tag=}, specifically with {tag_name=}")
-        demisto.debug(f"{e}")
-        raise e
+            except ValueError as e:
+                demisto.debug(f"A ValueError was raised on {tag_name=}, with type {type_}")
+                if type_ == ThreatIntel.ObjectsNames.TOOL: # mitre-tool type sometimes does not have an id so " -" fail
+                    value_ = tag_name[tag_name.index('=') + 2: tag_name.rindex('"')]
+                    galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
+                    continue
+                else:
+                    raise e
+            galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
     return galaxy_indicators
 
 
