@@ -1,0 +1,86 @@
+args:
+- name: file_hash
+  description: 'Hash of the file. Supported types are: MD5, SHA1, SHA256, and SHA512.'
+- name: brands
+  description: |-
+    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
+    For multi-select, provide a comma-separated list. For example: "WildFire-v2,Cortex XDR - IR".
+  auto: PREDEFINED
+  predefined:
+  - 'WildFire-v2'
+  - 'Cortex XDR - IR'
+  - 'Cortex Core - IR'
+- name: verbose
+  description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- name: external_enrichment
+  description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+comment: This script gathers user data from multiple integrations and returns an File entity with consolidated information to the context.
+commonfields:
+  id: file-enrichment
+  version: -1
+name: file-enrichment
+outputs:
+  - contextPath: File.Name
+    description: The name of the associated file.
+    type: String
+  - contextPath: File.Extension
+    description: The file extension.
+    type: String
+  - contextPath: File.Type
+    description: The file type.
+    type: String
+  - contextPath: File.MD5
+    description: The MD5 hash of the file.
+    type: String
+  - contextPath: File.SHA1
+    description: The SHA1 hash of the file.
+    type: String
+  - contextPath: File.SHA256
+    description: The SHA256 hash of the file.
+    type: String
+  - contextPath: File.SHA512
+    description: The SHA512 hash of the file.
+    type: String
+  - contextPath: File.Size
+    description: The file size in bytes.
+    type: String
+  - contextPath: File.Signature.Authentihash
+    description: The authentihash of the file signature.
+    type: String
+  - contextPath: File.Signature.Copyright
+    description: The copyright information in the file signature.
+    type: String
+  - contextPath: File.Signature.Description
+    description: The description provided in the file signature.
+    type: String
+  - contextPath: File.Signature.FileVersion
+    description: The file version from the file signature.
+    type: String
+  - contextPath: File.Signature.InternalName
+    description: The internal name from the file signature.
+    type: String
+  - contextPath: File.Signature.OriginalName
+    description: The original name of the file from the file signature.
+    type: String
+  - contextPath: File.SSDeep
+    description: The SSDeep fuzzy hash of the file.
+    type: String
+  - contextPath: File.Tags
+    description: The tags associated with the file.
+    type: Array
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
