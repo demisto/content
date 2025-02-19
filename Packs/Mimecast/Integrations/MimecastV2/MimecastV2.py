@@ -2111,7 +2111,7 @@ def fetch_incidents():
         }
         held_messages, _ = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
                                                    data=[search_params],
-                                                   limit=MAX_FETCH)
+                                                   limit=MAX_FETCH+len(dedup_held_messages))
         current_held_message_count = 0
         for held_message in held_messages:
             incident = held_to_incident(held_message)
