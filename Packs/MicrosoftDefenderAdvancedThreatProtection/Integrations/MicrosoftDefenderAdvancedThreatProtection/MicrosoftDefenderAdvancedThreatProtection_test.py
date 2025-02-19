@@ -2858,6 +2858,64 @@ def test_get_software_by_machine_id(mocker, args, return_value_get_software_by_m
     assert result_get_software_by_machine_id.outputs == expected_outputs
 
 
+@pytest.mark.parametrize('args, return_value_get_machine_missing_kbs_command,expected_human_readable,expected_outputs', [
+    (
+        {'machine_id': 'some_machine'},
+        {
+            '@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicProductFixDto)',
+            '@odata.count': 1,
+            "value": [
+                {
+                    "id": "1234567",
+                    "name": "March 20XX Security Updates",
+                    "productsNames": [
+                        "windows_10",
+                        "edge",
+                        "internet_explorer"
+                    ],
+                    "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567",
+                    "machineMissedOn": 1,
+                    "cveAddressed": 97,
+                    "osBuild": 12345
+                }
+            ]
+        },
+        '### Missing Security Updates (KBs) for machine: some_machine\n|id|name|osBuild|url|machineMissedOn|cveAddressed|\n|---|---|---|---|---|---|\n| 1234567 | March 20XX Security Updates | 12345 | https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567 | 1 | 97 |\n',  # noqa: E501
+        [
+            {
+                "id": "1234567",
+                "name": "March 20XX Security Updates",
+                "productsNames": [
+                    "windows_10",
+                    "edge",
+                    "internet_explorer"
+                ],
+                "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567",
+                "machineMissedOn": 1,
+                "cveAddressed": 97,
+                "osBuild": 12345
+            }
+        ]
+    )
+])
+def test_get_machine_missing_kbs_command(mocker, args, return_value_get_machine_missing_kbs_command, expected_human_readable, expected_outputs):  # noqa: E501
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing get_machine_missing_kbs_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import get_machine_missing_kbs_command
+    mocker.patch.object(client_mocker, 'get_missing_kbs_by_machine_id', return_value=return_value_get_machine_missing_kbs_command)
+    result_get_machine_missing_kbs = get_machine_missing_kbs_command(client_mocker, args)
+    assert result_get_machine_missing_kbs.readable_output == expected_human_readable
+    assert result_get_machine_missing_kbs.outputs == expected_outputs
+
+
 @pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
     ({'cve_id': 'CVE-3333-33333'},
      {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetVulnerabilityDto)',  # noqa: E501
