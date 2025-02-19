@@ -1,6 +1,8 @@
 id: Violation Incident Postprocessing - Group-IB Digital Risk Protection
 version: -1
 name: Violation Incident Postprocessing - Group-IB Digital Risk Protection
+description: Handles postprocessing of violation incidents detected by Group-IB Digital Risk Protection.
+fromversion: "6.10.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -10,29 +12,14 @@ tasks:
     task:
       id: dd2a29df-d880-4607-86a0-343151471f19
       version: -1
-      name: ""
+      name: Start
       iscommand: false
       brand: ""
-      description: ''
+      description: Start of the playbook.
     nexttasks:
       '#none#':
       - "1"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    view: "{\"position\": {\"x\": 50, \"y\": 50}}"
   "1":
     id: "1"
     taskid: 547b290a-cd52-43c6-81ee-708c0b3833c9
@@ -44,46 +31,13 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Determines if the incident requires further action.
     nexttasks:
       '#none#':
       - "2"
       "yes":
       - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.gibdrpstatus
-            iscontext: true
-          right:
-            value:
-              simple: detected
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.gibdrpapprovestate
-            iscontext: true
-          right:
-            value:
-              simple: under_review
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    view: "{\"position\": {\"x\": 50, \"y\": 220}}"
   "2":
     id: "2"
     taskid: 10df369a-8b31-4bf2-8e2e-123e0dc9c5d7
@@ -91,28 +45,13 @@ tasks:
     task:
       id: 10df369a-8b31-4bf2-8e2e-123e0dc9c5d7
       version: -1
-      name: closeInvestigation
-      description: Close the current incident
+      name: Close Investigation
+      description: Close the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
       brand: Builtin
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    view: "{\"position\": {\"x\": 50, \"y\": 480}}"
   "3":
     id: "3"
     taskid: 115174e9-015b-4d4a-8f64-d66eee88a54c
@@ -120,16 +59,8 @@ tasks:
     task:
       id: 115174e9-015b-4d4a-8f64-d66eee88a54c
       version: -1
-      name: AssignAnalystToIncident
-      description: |-
-        Assign analyst to incident.
-        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
-        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
-        machine-learning: DBot will calculated and decide who is the best analyst for the job.
-        top-user: The user that is most commonly owns this type of incident
-        less-busy-user: The less busy analyst will be picked to be the incident owner.
-        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
-        current: The user that executed the command.
+      name: Assign Analyst to Incident
+      description: Assign an analyst to investigate the incident.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -140,22 +71,7 @@ tasks:
     scriptarguments:
       assignBy:
         simple: random
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    view: "{\"position\": {\"x\": 470, \"y\": 480}}"
   "4":
     id: "4"
     taskid: 28170cd5-5006-49fc-8558-1f054d607acf
@@ -167,45 +83,13 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Determines if the incident should be approved or rejected.
     nexttasks:
       "No":
       - "6"
       Yes, i want:
       - "5"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-        simple: Do you want to “Approve” this incident?
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-      replyOptions:
-      - Yes, i want
-      - "No"
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    view: "{\"position\": {\"x\": 470, \"y\": 660}}"
   "5":
     id: "5"
     taskid: 31ee2b04-5c14-4f26-83db-4c589d9db86f
@@ -214,7 +98,7 @@ tasks:
       id: 31ee2b04-5c14-4f26-83db-4c589d9db86f
       version: -1
       name: Launching a violation approval
-      description: Changing the status of a single violation.
+      description: Change the status of the violation to approved.
       script: '|||gibdrp-change-violation-status'
       type: regular
       iscommand: true
@@ -224,25 +108,10 @@ tasks:
       - "7"
     scriptarguments:
       id:
-        simple: incident.gibdrpid
+        simple: ${incident.gibdrpid}
       status:
         simple: approve
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    view: "{\"position\": {\"x\": 470, \"y\": 945}}"
   "6":
     id: "6"
     taskid: 2f0a4e3d-0078-4213-8eb8-ee093fb0fc62
@@ -251,7 +120,7 @@ tasks:
       id: 2f0a4e3d-0078-4213-8eb8-ee093fb0fc62
       version: -1
       name: Reject Violation
-      description: Changing the status of a single violation.
+      description: Change the status of the violation to rejected.
       script: '|||gibdrp-change-violation-status'
       type: regular
       iscommand: true
@@ -261,25 +130,10 @@ tasks:
       - "7"
     scriptarguments:
       id:
-        simple: incident.gibdrpid
+        simple: ${incident.gibdrpid}
       status:
         simple: reject
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    view: "{\"position\": {\"x\": 890, \"y\": 945}}"
   "7":
     id: "7"
     taskid: dbb43028-c9d7-4609-89e0-908e87190560
@@ -288,41 +142,12 @@ tasks:
       id: dbb43028-c9d7-4609-89e0-908e87190560
       version: -1
       name: Done
-      description: commands.local.cmd.close.inv
+      description: Close the investigation after processing the violation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
       brand: Builtin
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 680,
-          "y": 1170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1215,
-        "width": 1220,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
-quiet: true
+    view: "{\"position\": {\"x\": 680, \"y\": 1170}}"
+view: "{\"paper\": {\"dimensions\": {\"height\": 1215, \"width\": 1220, \"x\": 50, \"y\": 50}}}"
 tests:
 - No tests (auto formatted)
