@@ -1,4 +1,4 @@
-This playbook fetch a malcore alert from a GCenter, retrieve the associated suspicious file and checks the SHA256 reputation using VirusTotal integration.
+This playbook fetch a malcore alert from a GCenter and retrieves the associated suspicious file.
 
 ## Dependencies
 
@@ -11,7 +11,6 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * GCenter 103
-* VirusTotal
 
 ### Scripts
 
@@ -19,7 +18,6 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* file
 * gcenter103-alerts-list
 * gcenter103-raw-alerts-file-get
 
@@ -34,7 +32,5 @@ There are no inputs for this playbook.
 There are no outputs for this playbook.
 
 ## Playbook Image
-
 ---
-
-![malcore file hash check reputation](../doc_files/malcore_file_hash_check_reputation.png)
+![Gatewatcher-AionIQ](../doc_files/playbook-Malcore_alert_related_file.png)

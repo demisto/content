@@ -1,7 +1,10 @@
+import GCenter103
 from CommonServerPython import *
 import demistomock as demisto  # noqa: F401
 import pytest
-from unittest.mock import patch, MagicMock
+import yaml
+from unittest.mock import patch, MagicMock, Mock
+from pytest_mock import MockerFixture
 from datetime import datetime
 
 
@@ -218,7 +221,7 @@ def test_gw_client_auth_token_only():
     with patch.object(GwClient, 'auth', return_value=None) as mock_auth:
         params = {
             "ip": "1.2.3.4",
-            "token": "testtoken",
+            "token": {"password": "testtoken"},
             "credentials": {"identifier": "", "password": ""}
         }
         client = gw_client_auth(params=params)
@@ -565,7 +568,7 @@ def test_gw_client_auth(mocker):
     mocker.patch('GCenter103.GwClient.auth', return_value=None)
     params = {
         "ip": "1.1.1.1",
-        "token": None,
+        "token": {"password": ""},
         "credentials": {"identifier": "admin", "password": "admin"},
         "check_cert": False
     }
@@ -624,7 +627,7 @@ def test_main_test_module(mocker):
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'params', return_value={
         "ip": "1.1.1.1",
-        "token": None,
+        "token": {"password": ""},
         "credentials": {"identifier": "admin", "password": "admin"}
     })
     mocker.patch.object(demisto, 'args', return_value={})
@@ -900,17 +903,63 @@ def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_
     # If we get no alerts or metadata, results is empty
 
 
-def test_gcenter103_alerts_get(mocker):
-    """
-    When:
-        gcenter103-alerts-get is called with an alert UUID.
-    Returns:
-        The alert found.
-    """
-    from GCenter103 import(
-        gcenter103_alerts_get_command
+with open("test_data/test_commands_data.yml") as yaml_file:
+    _data_as_dict = cast(dict[str, list[dict]], yaml.Loader(yaml_file).get_data())
+
+TEST_COMMANDS_DATA = []
+for func_name, func_data in _data_as_dict.items():
+    for scenario in func_data:
+        TEST_COMMANDS_DATA.append((func_name, scenario))
+
+IP = "10.10.10.10"
+USERNAME = "username"
+PASSWORD = "password"
+
+
+def mock_login(requests_mock, code: int = 200) -> None:
+    """Setup the mock for a login."""
+    requests_mock.post(
+        f"https://{IP}/api/v1/auth/login",
+        json={
+            "token": "hdkxo7ybuzpfenkmlioo2parm196yyvg",
+            "expiration_date": "2022-04-23T15:11:30.297457",
+        },
+        status_code=code,
     )
-    raw_alerts_get_response = util_load_json('test_data/raw_alerts_get_response.json')
-    client = mock_gw_client(mocker)
-    res = gcenter103_alerts_get_command(client=client, args={'uuid': "1be3530b-2e94-4a89-b57f-6fb9f39e1b54"})
-    assert res.get('dest_ip') == "27.0.0.118"
+
+
+@pytest.fixture
+def client(requests_mock) -> GCenter103.GwClient:
+    """Gcenter client used in this test module."""
+    mock_login(requests_mock)
+    client = GCenter103.GwClient(ip=IP)
+    client.auth(user=USERNAME, password=PASSWORD)
+    return client
+
+
+@pytest.mark.parametrize(
+    "func_name, func_test", TEST_COMMANDS_DATA
+)
+def test_gcenter103_command(
+    mocker: MockerFixture, func_name: str, func_test: dict, client: GCenter103.GwClient
+) -> None:
+    """This generic function can be used to test any gcenter function, by defining a test in the json file associated.
+
+    The fields defining a test are the following:
+    - comment: Comment about this particular test.
+    - command_args: Arguments to be used for the command test.
+    - command_kwargs: Keyword arguments to be used for the command test.
+    - exec_data: Returned data of the gcap low-level query.
+    - output_data: Value of the gcap command result.
+    """
+
+    mocker.patch("requests.api.request", Mock())
+
+    command_args: list = func_test.get("command_args")
+    command_kwargs: dict = func_test.get("command_kwargs")
+    requests.api.request.side_effect = func_test.get("exec_data")
+    output_data = func_test.get("output_data")
+    command_result = getattr(GCenter103, func_name)(*command_args, **command_kwargs)
+
+    assert command_result.__dict__
+    assert command_result.__dict__.get("outputs_prefix") == output_data.__dict__.get("outputs_prefix")

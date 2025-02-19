@@ -1,7 +1,9 @@
-id: malcore file hash check reputation
+id: Malcore alert related file
 version: -1
-name: malcore file hash check reputation
-fromversion: "6.5.0"
+contentitemexportablefields:
+  contentitemfields: {}
+name: Malcore alert related file
+description: This playbook fetch a malcore alert from a GCenter, retrieve the associated suspicious file and checks the SHA256 reputation using VirusTotal integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -35,12 +37,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3ec2596a-ae34-4416-82f3-a4fa1da3665b
+    taskid: 88701c28-1168-47b3-8b60-a5a1e7b7c791
     type: regular
     task:
-      id: 3ec2596a-ae34-4416-82f3-a4fa1da3665b
+      id: 88701c28-1168-47b3-8b60-a5a1e7b7c791
       version: -1
-      name: get a GCenter Malcore alert
+      name: get a Malcore alert
       description: List all alerts
       script: GCenter 103|||gcenter103-alerts-list
       type: regular
@@ -73,20 +75,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c672dfea-8f4d-409e-8348-5d7c7b6b8a42
+    taskid: 7fdbf579-7d77-4f91-8e93-e35af762ff7e
     type: regular
     task:
-      id: c672dfea-8f4d-409e-8348-5d7c7b6b8a42
+      id: 7fdbf579-7d77-4f91-8e93-e35af762ff7e
       version: -1
-      name: gcenter103-raw-alerts-file-get
+      name: get a Malcore alert related file
       description: Get a file attached to an alert with its UUID
       script: GCenter 103|||gcenter103-raw-alerts-file-get
       type: regular
       iscommand: true
       brand: GCenter 103
-    nexttasks:
-      '#none#':
-      - "3"
     scriptarguments:
       uuid:
         simple: ${Gatewatcher.Alerts.List.uuid}
@@ -105,43 +104,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 64bde2c7-fffd-4276-8235-5645292c415b
-    type: regular
-    task:
-      id: 64bde2c7-fffd-4276-8235-5645292c415b
-      version: -1
-      name: Check Malcore SHA256 reputation
-      description: Checks the file reputation of the specified hash.
-      script: VirusTotal|||file
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    scriptarguments:
-      file:
-        simple: ${File.SHA256}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 635,
+        "height": 455,
         "width": 380,
         "x": 450,
         "y": 50
@@ -152,4 +120,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-description: This playbook fetch a malcore alert from a GCenter, retrieve the associated suspicious file and checks the SHA256 reputation using VirusTotal integration.
+fromversion: 6.5.0

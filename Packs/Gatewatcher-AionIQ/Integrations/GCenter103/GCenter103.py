@@ -12,12 +12,14 @@ from datetime import datetime
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
+
 class GwAPIException(Exception):
     """A base class from which all other exceptions inherit.
 
     If you want to catch all errors that the gwapi_benedictine package might raise,
     catch this base exception.
     """
+
 
 class GwRequests:
     """Allows to easily interact with HTTP server.
@@ -58,7 +60,7 @@ class GwRequests:
         self.ip = ip
         self.headers = headers
         self.check_cert = check_cert
-        
+
         if proxy:
 
             d = handle_proxy(proxy_param_name='proxy')
@@ -349,31 +351,31 @@ def gcenter103_alerts_list_command(client: GwClient, args: dict[str, Any]) -> Co
         req = client._get(endpoint="/api/v1/alerts/", params=params)
     except requests.exceptions.HTTPError as e:
         raise Exception(str(e))
-    
+
     res: dict[Any, Any] = req.json()
 
     if "results" not in res:
 
         return CommandResults(
-           readable_output="# gcenter103-alerts-list - Empty alerts list",
-           outputs_prefix="Gatewatcher.Alerts.List"
-           )
+            readable_output="# gcenter103-alerts-list - Empty alerts list",
+            outputs_prefix="Gatewatcher.Alerts.List"
+        )
 
     res_keys: list[dict[Any, Any]] = []
-    
+
     for i in range(0, len(res['results'])):
-    
+
         res_keys.append({
             "uuid": res.get('results', [{}])[i].get('uuid', ""),
         })
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-alerts-list", res.get('results', [{}])),
-       outputs_prefix="Gatewatcher.Alerts.List",
-       outputs_key_field="uuid",
-       outputs=res_keys,
-       raw_response=res
-       )
+        readable_output=tableToMarkdown("gcenter103-alerts-list", res.get('results', [{}])),
+        outputs_prefix="Gatewatcher.Alerts.List",
+        outputs_key_field="uuid",
+        outputs=res_keys,
+        raw_response=res
+    )
 
 
 def gcenter103_alerts_get_command(client: GwClient, args: dict[str, str]) -> CommandResults:
@@ -383,25 +385,25 @@ def gcenter103_alerts_get_command(client: GwClient, args: dict[str, str]) -> Com
     }
 
     try:
-        req = client._get(endpoint="/api/v1/alerts/"+params.get('uuid', ""))
+        req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', ""))
         if req.status_code != 200:
             raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
- 
+
     res = req.json()
 
     res_keys: dict[Any, Any] = {
-            "uuid": res.get('uuid', "")
-            }
+        "uuid": res.get('uuid', "")
+    }
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-alerts-get", res),
-       outputs_prefix="Gatewatcher.Alerts.Get",
-       outputs_key_field="uuid",
-       outputs=res_keys,
-       raw_response=res
-   )
+        readable_output=tableToMarkdown("gcenter103-alerts-get", res),
+        outputs_prefix="Gatewatcher.Alerts.Get",
+        outputs_key_field="uuid",
+        outputs=res_keys,
+        raw_response=res
+    )
 
 
 def gcenter103_alerts_note_add_command(client: GwClient, args: dict[str, str]) -> CommandResults:
@@ -417,65 +419,65 @@ def gcenter103_alerts_note_add_command(client: GwClient, args: dict[str, str]) -
         data = {
             "note": params.get('note', "")
         }
-        
+
         try:
-            req = client._put(endpoint="/api/v1/alerts/"+params.get('uuid', "")+"/note",data=data)
+            req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/note", data=data)
             if req.status_code != 200:
                 raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
         except Exception as e:
             raise Exception(f"Exception: {str(e)}")
-      
+
         res = req.json()
 
         res_keys: dict[Any, Any] = {
-                "note": res.get('note', "")
+            "note": res.get('note', "")
         }
 
         return CommandResults(
-           readable_output=tableToMarkdown("gcenter103-alerts-note-add", res),
-           outputs_prefix="Gatewatcher.Alerts.Note.Add",
-           outputs_key_field="note",
-           outputs=res_keys,
-           raw_response=res
-       )
+            readable_output=tableToMarkdown("gcenter103-alerts-note-add", res),
+            outputs_prefix="Gatewatcher.Alerts.Note.Add",
+            outputs_key_field="note",
+            outputs=res_keys,
+            raw_response=res
+        )
 
     else:
 
         try:
-            req = client._get(endpoint="/api/v1/alerts/"+params.get('uuid', ""))
+            req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', ""))
             if req.status_code != 200:
                 raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
         except Exception as e:
             raise Exception(f"Exception: {str(e)}")
-     
+
         res = req.json()
         old_note = res.get('note', "")
         if old_note is None:
             old_note = ""
         data = {
-            "note": old_note+"\n"+params.get('note', "")
+            "note": old_note + "\n" + params.get('note', "")
         }
-        
+
         try:
-            req = client._put(endpoint="/api/v1/alerts/"+params.get('uuid', "")+"/note", json_data=data)
+            req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/note", json_data=data)
             if req.status_code != 200:
                 raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
         except Exception as e:
             raise Exception(f"Exception: {str(e)}")
-      
+
         res = req.json()
         res_keys: dict[Any, Any] = {
-                "note": res.get('note', "")
+            "note": res.get('note', "")
         }
 
         return CommandResults(
-           readable_output=tableToMarkdown("gcenter103-alerts-note-add", res),
-           outputs_prefix="Gatewatcher.Alerts.Note.Add",
-           outputs_key_field="note",
-           outputs=res_keys,
-           raw_response=res
+            readable_output=tableToMarkdown("gcenter103-alerts-note-add", res),
+            outputs_prefix="Gatewatcher.Alerts.Note.Add",
+            outputs_key_field="note",
+            outputs=res_keys,
+            raw_response=res
 
-       )
+        )
 
 
 def gcenter103_alerts_note_remove_command(client: GwClient, args: dict[str, str]) -> CommandResults:
@@ -485,18 +487,18 @@ def gcenter103_alerts_note_remove_command(client: GwClient, args: dict[str, str]
     }
 
     try:
-        req = client._delete(endpoint="/api/v1/alerts/"+params.get('uuid', "")+"/note")
+        req = client._delete(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/note")
         if req.status_code != 204:
             raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
-  
+
     return CommandResults(
-       readable_output="# gcenter103-alerts-note-remove - Note removed of the alert: "+params.get('uuid', ""),
-       outputs_prefix="Gatewatcher.Alerts.Note.Remove",
-       outputs_key_field="uuid",
-       outputs=params.get('uuid', "")
-   )
+        readable_output="# gcenter103-alerts-note-remove - Note removed of the alert: " + params.get('uuid', ""),
+        outputs_prefix="Gatewatcher.Alerts.Note.Remove",
+        outputs_key_field="uuid",
+        outputs=params.get('uuid', "")
+    )
 
 
 def gcenter103_alerts_tags_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -506,12 +508,12 @@ def gcenter103_alerts_tags_get_command(client: GwClient, args: dict[str, Any]) -
     }
 
     try:
-        req = client._get(endpoint="/api/v1/alerts/"+params['uuid']+"/tags")
+        req = client._get(endpoint="/api/v1/alerts/" + params['uuid'] + "/tags")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
-  
+
     res = req.json()
 
     res_keys: dict[Any, Any] = {}
@@ -524,38 +526,38 @@ def gcenter103_alerts_tags_get_command(client: GwClient, args: dict[str, Any]) -
         res_keys.get('tags').append({'label': res.get('tags', [{}])[i].get('label', "")})
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-alerts-tags-get", res.get('tags', [{}])),
-       outputs_prefix="Gatewatcher.Alerts.Tags.Get",
-       outputs_key_field="tags",
-       outputs=res_keys,
-       raw_response=res
-   )
+        readable_output=tableToMarkdown("gcenter103-alerts-tags-get", res.get('tags', [{}])),
+        outputs_prefix="Gatewatcher.Alerts.Tags.Get",
+        outputs_key_field="tags",
+        outputs=res_keys,
+        raw_response=res
+    )
 
 
 def get_tags(client: GwClient) -> list[dict[str, Any]]:
-    
+
     try:
         req = client._get(endpoint="/api/v1/tags/")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
-   
+
     res = req.json()
-    tags =[]
+    tags = []
 
     for i in range(0, len(res['results'])):
         tags.append({"id": res.get('results', [{}])[i].get('id', ""), "label": res.get('results', [{}])[i].get('label', "")})
-    
+
     return tags
 
 
 def check_tags(client: GwClient, tags_args: list[str]) -> list[dict[str, Any]]:
-    
+
     tags = get_tags(client=client)
     tags_l = ""
     for i in range(0, len(tags)):
-        tags_l += tags[i].get('label', "")+","
+        tags_l += tags[i].get('label', "") + ","
 
     for tag in tags_args:
         if tag not in str(tags_l):
@@ -563,16 +565,18 @@ def check_tags(client: GwClient, tags_args: list[str]) -> list[dict[str, Any]]:
 
     return tags
 
+
 def match_tags(arg_tags: list[str], gcenter_tags: list[dict[str, Any]]) -> list[dict[Any, Any]]:
-   
+
     tags: list[dict[Any, Any]] = []
-     
+
     for tag in arg_tags:
         for i in range(0, len(gcenter_tags)):
             if tag == gcenter_tags[i].get('label', ""):
                 tags.append({"id": int(gcenter_tags[i].get('id', ""))})
-                
+
     return tags
+
 
 def gcenter103_alerts_tags_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
 
@@ -589,38 +593,38 @@ def gcenter103_alerts_tags_add_command(client: GwClient, args: dict[str, Any]) -
     data['tags'] = tags
 
     try:
-        req = client._get(endpoint="/api/v1/alerts/"+params.get('uuid', "")+"/tags")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
-  
-    res = req.json()
-    
-    for i in range(0,len(res['tags'])):
-    
-        data.get('tags', [{}]).append(res.get('tags', {})[i])
-    
-    try:
-        req = client._put(endpoint="/api/v1/alerts/"+params.get('uuid', "")+"/tags", json_data=data)
+        req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
 
     res = req.json()
-    res_keys: dict[Any, Any] ={
-            "tags": res.get('tags', {}),
-            "uuid": params.get('uuid', ""),
+
+    for i in range(0, len(res['tags'])):
+
+        data.get('tags', [{}]).append(res.get('tags', {})[i])
+
+    try:
+        req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags", json_data=data)
+        if req.status_code != 200:
+            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
+    except Exception as e:
+        raise Exception(f"Exception: {str(e)}")
+
+    res = req.json()
+    res_keys: dict[Any, Any] = {
+        "tags": res.get('tags', {}),
+        "uuid": params.get('uuid', ""),
     }
-    
+
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-alerts-tags-add", res.get('tags', {})),
-       outputs_prefix="Gatewatcher.Alerts.Tags.Add",
-       outputs_key_field="tags",
-       outputs=res_keys,
-       raw_response=res.get('tags', {})
-   )
+        readable_output=tableToMarkdown("gcenter103-alerts-tags-add", res.get('tags', {})),
+        outputs_prefix="Gatewatcher.Alerts.Tags.Add",
+        outputs_key_field="tags",
+        outputs=res_keys,
+        raw_response=res.get('tags', {})
+    )
 
 
 def gcenter103_alerts_tags_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -638,15 +642,15 @@ def gcenter103_alerts_tags_remove_command(client: GwClient, args: dict[str, Any]
     data['tags'] = tags
 
     try:
-        req = client._get(endpoint="/api/v1/alerts/"+params.get('uuid', "")+"/tags")
+        req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
-  
+
     res = req.json()
     data2 = {"tags": []}
-    
+
     r = []
     b = []
     for i in range(0, len(data['tags'])):
@@ -664,22 +668,22 @@ def gcenter103_alerts_tags_remove_command(client: GwClient, args: dict[str, Any]
         if i not in r:
             li.append(i)
 
-    for i in range(0,len(li)):
+    for i in range(0, len(li)):
         data2.get('tags', [{}]).append({'id': int(li[i])})
-    
+
     try:
-        req = client._put(endpoint="/api/v1/alerts/"+params.get('uuid', "")+"/tags", json_data=data2)
+        req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags", json_data=data2)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
 
     res = req.json()
-    
+
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-alerts-tags-remove", res.get('tags', {})),
-       outputs_prefix="Gatewatcher.Alerts.Tags.Remove"
-   )
+        readable_output=tableToMarkdown("gcenter103-alerts-tags-remove", res.get('tags', {})),
+        outputs_prefix="Gatewatcher.Alerts.Tags.Remove"
+    )
 
 
 def gcenter103_alerts_status_update_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -727,42 +731,42 @@ def gcenter103_alerts_status_update_command(client: GwClient, args: dict[str, An
             data['tag'].append(int(tags[i]))
 
     try:
-        req = client._get(endpoint="/api/v1/alerts/"+params.get('uuid', ""))
+        req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', ""))
         if req.status_code != 200:
             raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
- 
+
     res = req.json()
     params['ids'] = res.get('id', "")
-    
+
     action = params.get('action', "")
     del params['action']
     del params['note_u']
     del params['tag_u']
     del params['uuid']
-    
+
     try:
-        req = client._put(endpoint="/api/v1/alerts/action/"+action, json_data=data, params=params)
+        req = client._put(endpoint="/api/v1/alerts/action/" + action, json_data=data, params=params)
         if req.status_code != 204:
             raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
-         
+
     return CommandResults(
-       readable_output=f"# gcenter103-alerts-status-update {req.status_code}: OK",
-       outputs_prefix="Gatewatcher.Alerts.Status.Update"
-   )
-    
+        readable_output=f"# gcenter103-alerts-status-update {req.status_code}: OK",
+        outputs_prefix="Gatewatcher.Alerts.Status.Update"
+    )
+
 
 def gcenter103_raw_alerts_get_command(client: GwClient, args: dict[str, str]) -> CommandResults:
 
     params = {
         "id": args.get("uuid")
     }
-    
+
     try:
-        req = client._get(endpoint="/api/v1/raw-alerts/"+params.get('id'))
+        req = client._get(endpoint="/api/v1/raw-alerts/" + params.get('id'))
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.json()}")
     except Exception as e:
@@ -771,9 +775,9 @@ def gcenter103_raw_alerts_get_command(client: GwClient, args: dict[str, str]) ->
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-raw-alerts-get", res),
-       outputs_prefix="Gatewatcher.Raw.Alerts.Get"
-   )
+        readable_output=tableToMarkdown("gcenter103-raw-alerts-get", res),
+        outputs_prefix="Gatewatcher.Raw.Alerts.Get"
+    )
 
 
 def gcenter103_raw_alerts_file_get_command(client: GwClient, args: dict[str, str]) -> CommandResults:
@@ -783,22 +787,22 @@ def gcenter103_raw_alerts_file_get_command(client: GwClient, args: dict[str, str
     }
 
     try:
-        req = client._get(endpoint="/api/v1/raw-alerts/"+params.get('id', "")+"/file")
+        req = client._get(endpoint="/api/v1/raw-alerts/" + params.get('id', "") + "/file")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
 
     res = req.content
-    filename = str(params.get('id', ""))+"-file.zip"
+    filename = str(params.get('id', "")) + "-file.zip"
     file_content = res
 
     return_results(fileResult(filename, file_content))
 
     return CommandResults(
-       readable_output="# gcenter103-raw-alerts-file-get: Dumped zip file",
-       outputs_prefix="Gatewatcher.Raw.Alerts.File.Get",
-   )
+        readable_output="# gcenter103-raw-alerts-file-get: Dumped zip file",
+        outputs_prefix="Gatewatcher.Raw.Alerts.File.Get",
+    )
 
 
 def gcenter103_file_scan_command(client: GwClient, args: dict[str, str]) -> CommandResults:
@@ -807,12 +811,12 @@ def gcenter103_file_scan_command(client: GwClient, args: dict[str, str]) -> Comm
         "engine": args.get("engine"),
         "entryID": args.get("entryID")
     }
-       
+
     fp_d = demisto.getFilePath(params.get('entryID', ""))
-    files = {"file": open(fp_d['path'],'rb')}
+    files = {"file": open(fp_d['path'], 'rb')}
 
     try:
-        req = client._post(endpoint="/api/v1/gscan/"+params.get('engine', ""), files=files)
+        req = client._post(endpoint="/api/v1/gscan/" + params.get('engine', ""), files=files)
         if req.status_code != 201:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -822,9 +826,9 @@ def gcenter103_file_scan_command(client: GwClient, args: dict[str, str]) -> Comm
     res.update({"file_name": str(fp_d.get('name', ""))})
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-file-scan results of "+str(params.get('engine', "")),res),
-       outputs_prefix="Gatewatcher.File.Scan",
-   )
+        readable_output=tableToMarkdown("gcenter103-file-scan results of " + str(params.get('engine', "")), res),
+        outputs_prefix="Gatewatcher.File.Scan",
+    )
 
 
 def gcenter103_file_scan_result_get_command(client: GwClient, args: dict[str, str]) -> CommandResults:
@@ -834,7 +838,7 @@ def gcenter103_file_scan_result_get_command(client: GwClient, args: dict[str, st
     }
 
     try:
-        req = client._get(endpoint="/api/v1/gscan/histories/"+params.get('id', ""))
+        req = client._get(endpoint="/api/v1/gscan/histories/" + params.get('id', ""))
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -843,9 +847,9 @@ def gcenter103_file_scan_result_get_command(client: GwClient, args: dict[str, st
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-file-scan-result-get",res),
-       outputs_prefix="Gatewatcher.File.Scan.Result.Get",
-   )
+        readable_output=tableToMarkdown("gcenter103-file-scan-result-get", res),
+        outputs_prefix="Gatewatcher.File.Scan.Result.Get",
+    )
 
 
 def gcenter103_assets_list_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -882,9 +886,9 @@ def gcenter103_assets_list_command(client: GwClient, args: dict[str, Any]) -> Co
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-assets-list",res['results']),
-       outputs_prefix="Gatewatcher.Assets.List",
-   )
+        readable_output=tableToMarkdown("gcenter103-assets-list", res['results']),
+        outputs_prefix="Gatewatcher.Assets.List",
+    )
 
 
 def gcenter103_assets_alerts_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -925,7 +929,7 @@ def gcenter103_assets_alerts_get_command(client: GwClient, args: dict[str, Any])
     del params['asset_name']
 
     try:
-        req = client._get(endpoint="/api/v1/assets/"+asset_name+"/alerts", params=params)
+        req = client._get(endpoint="/api/v1/assets/" + asset_name + "/alerts", params=params)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -934,9 +938,9 @@ def gcenter103_assets_alerts_get_command(client: GwClient, args: dict[str, Any])
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-assets-alerts-get",res.get('results', "")),
-       outputs_prefix="Gatewatcher.Assets.Alerts.Get",
-   )
+        readable_output=tableToMarkdown("gcenter103-assets-alerts-get", res.get('results', "")),
+        outputs_prefix="Gatewatcher.Assets.Alerts.Get",
+    )
 
 
 def gcenter103_assets_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -953,7 +957,7 @@ def gcenter103_assets_get_command(client: GwClient, args: dict[str, Any]) -> Com
     del params['asset_name']
 
     try:
-        req = client._get(endpoint="/api/v1/assets/"+asset_name, params=params)
+        req = client._get(endpoint="/api/v1/assets/" + asset_name, params=params)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -962,9 +966,9 @@ def gcenter103_assets_get_command(client: GwClient, args: dict[str, Any]) -> Com
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-assets-alerts-get",res),
-       outputs_prefix="Gatewatcher.Assets.Get",
-   )
+        readable_output=tableToMarkdown("gcenter103-assets-alerts-get", res),
+        outputs_prefix="Gatewatcher.Assets.Get",
+    )
 
 
 def gcenter103_assets_note_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -980,7 +984,7 @@ def gcenter103_assets_note_add_command(client: GwClient, args: dict[str, Any]) -
         data = {"note": params.get('note', "")}
 
         try:
-            req = client._put(endpoint="/api/v1/assets/"+params.get('asset_name', "")+"/note", json_data=data)
+            req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/note", json_data=data)
             if req.status_code != 200:
                 raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
         except Exception as e:
@@ -989,14 +993,14 @@ def gcenter103_assets_note_add_command(client: GwClient, args: dict[str, Any]) -
         res = req.json()
 
         return CommandResults(
-           readable_output=tableToMarkdown("gcenter103-assets-note-add",res),
-           outputs_prefix="Gatewatcher.Assets.Note.Add",
-       )
+            readable_output=tableToMarkdown("gcenter103-assets-note-add", res),
+            outputs_prefix="Gatewatcher.Assets.Note.Add",
+        )
 
     else:
 
         try:
-            req = client._get(endpoint="/api/v1/assets/"+params.get('asset_name', ""))
+            req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', ""))
             if req.status_code != 200:
                 raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
         except Exception as e:
@@ -1006,21 +1010,21 @@ def gcenter103_assets_note_add_command(client: GwClient, args: dict[str, Any]) -
         old_note = res.get('note', "")
         if old_note is None:
             old_note = ""
-        data = {"note": old_note+"\n"+params.get('note', "")}
-        
+        data = {"note": old_note + "\n" + params.get('note', "")}
+
         try:
-            req = client._put(endpoint="/api/v1/assets/"+params.get('asset_name')+"/note", json_data=data)
+            req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name') + "/note", json_data=data)
             if req.status_code != 200:
                 raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
         except Exception as e:
             raise Exception(f"Exception: {str(e)}")
-      
+
         res = req.json()
 
         return CommandResults(
-           readable_output=tableToMarkdown("gcenter103-assets-note-add", res),
-           outputs_prefix="Gatewatcher.Assets.Note.Add"
-       )
+            readable_output=tableToMarkdown("gcenter103-assets-note-add", res),
+            outputs_prefix="Gatewatcher.Assets.Note.Add"
+        )
 
 
 def gcenter103_assets_note_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1030,16 +1034,16 @@ def gcenter103_assets_note_remove_command(client: GwClient, args: dict[str, Any]
     }
 
     try:
-        req = client._delete(endpoint="/api/v1/assets/"+params.get('asset_name', "")+"/note")
+        req = client._delete(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/note")
         if req.status_code != 204:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
 
     return CommandResults(
-       readable_output="# gcenter103-assets-note-remove - Note removed of asset: "+params.get('asset_name', ""),
-       outputs_prefix="Gatewatcher.Assets.Note.Remove"
-   )
+        readable_output="# gcenter103-assets-note-remove - Note removed of asset: " + params.get('asset_name', ""),
+        outputs_prefix="Gatewatcher.Assets.Note.Remove"
+    )
 
 
 def gcenter103_assets_tags_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1049,7 +1053,7 @@ def gcenter103_assets_tags_get_command(client: GwClient, args: dict[str, Any]) -
     }
 
     try:
-        req = client._get(endpoint="/api/v1/assets/"+params.get('asset_name', "")+"/tags")
+        req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1059,14 +1063,14 @@ def gcenter103_assets_tags_get_command(client: GwClient, args: dict[str, Any]) -
 
     if len(res['tags']) == 0:
         return CommandResults(
-           readable_output="# gcenter103-assets-tags-get - This asset has no associated tags",
-           outputs_prefix="Gatewatcher.Assets.Tags.Get",
-       )
+            readable_output="# gcenter103-assets-tags-get - This asset has no associated tags",
+            outputs_prefix="Gatewatcher.Assets.Tags.Get",
+        )
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-assets-tags-get",res.get('tags', [{}])),
-       outputs_prefix="Gatewatcher.Assets.Tags.Get",
-   )
+        readable_output=tableToMarkdown("gcenter103-assets-tags-get", res.get('tags', [{}])),
+        outputs_prefix="Gatewatcher.Assets.Tags.Get",
+    )
 
 
 def gcenter103_assets_tags_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1084,20 +1088,20 @@ def gcenter103_assets_tags_add_command(client: GwClient, args: dict[str, Any]) -
     data['tags'] = tags
 
     try:
-        req = client._get(endpoint="/api/v1/assets/"+params.get('asset_name', "")+"/tags")
+        req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
-  
+
     res = req.json()
-    
-    for i in range(0,len(res['tags'])):
-    
+
+    for i in range(0, len(res['tags'])):
+
         data.get('tags', [{}]).append(res.get('tags', [{}])[i])
-    
+
     try:
-        req = client._put(endpoint="/api/v1/assets/"+params.get('asset_name', "")+"/tags", json_data=data)
+        req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags", json_data=data)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1106,9 +1110,9 @@ def gcenter103_assets_tags_add_command(client: GwClient, args: dict[str, Any]) -
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-assets-tags-add",res.get('tags', [{}])),
-       outputs_prefix="Gatewatcher.Assets.Tags.Add",
-   )
+        readable_output=tableToMarkdown("gcenter103-assets-tags-add", res.get('tags', [{}])),
+        outputs_prefix="Gatewatcher.Assets.Tags.Add",
+    )
 
 
 def gcenter103_assets_tags_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1126,7 +1130,7 @@ def gcenter103_assets_tags_remove_command(client: GwClient, args: dict[str, Any]
     data['tags'] = tags
 
     try:
-        req = client._get(endpoint="/api/v1/assets/"+params.get('asset_name', "")+"/tags", json_data=data)
+        req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags", json_data=data)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1134,7 +1138,7 @@ def gcenter103_assets_tags_remove_command(client: GwClient, args: dict[str, Any]
 
     res = req.json()
     data2 = {"tags": []}
-    
+
     r = []
     b = []
     for i in range(0, len(data['tags'])):
@@ -1152,11 +1156,11 @@ def gcenter103_assets_tags_remove_command(client: GwClient, args: dict[str, Any]
         if i not in r:
             li.append(i)
 
-    for i in range(0,len(li)):
+    for i in range(0, len(li)):
         data2['tags'].append({'id': int(li[i])})
-    
+
     try:
-        req = client._put(endpoint="/api/v1/assets/"+params.get('asset_name', "")+"/tags", json_data=data2)
+        req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags", json_data=data2)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1165,9 +1169,9 @@ def gcenter103_assets_tags_remove_command(client: GwClient, args: dict[str, Any]
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-assets-tags-remove",res.get('tags', [{}])),
-       outputs_prefix="Gatewatcher.Assets.Tags.Remove",
-   )
+        readable_output=tableToMarkdown("gcenter103-assets-tags-remove", res.get('tags', [{}])),
+        outputs_prefix="Gatewatcher.Assets.Tags.Remove",
+    )
 
 
 def gcenter103_users_list_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1202,9 +1206,9 @@ def gcenter103_users_list_command(client: GwClient, args: dict[str, Any]) -> Com
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-users-list",res.get('results', [{}])),
-       outputs_prefix="Gatewatcher.Users.List",
-   )
+        readable_output=tableToMarkdown("gcenter103-users-list", res.get('results', [{}])),
+        outputs_prefix="Gatewatcher.Users.List",
+    )
 
 
 def gcenter103_users_alerts_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1243,9 +1247,9 @@ def gcenter103_users_alerts_get_command(client: GwClient, args: dict[str, Any]) 
 
     kuser_name = params.get('kuser_name', "")
     del params['kuser_name']
-    
+
     try:
-        req = client._get(endpoint="/api/v1/kusers/"+kuser_name+"/alerts", params=params)
+        req = client._get(endpoint="/api/v1/kusers/" + kuser_name + "/alerts", params=params)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1254,9 +1258,9 @@ def gcenter103_users_alerts_get_command(client: GwClient, args: dict[str, Any]) 
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-users-alerts-get",res.get('results', [{}])),
-       outputs_prefix="Gatewatcher.Users.Alerts.Get",
-   )
+        readable_output=tableToMarkdown("gcenter103-users-alerts-get", res.get('results', [{}])),
+        outputs_prefix="Gatewatcher.Users.Alerts.Get",
+    )
 
 
 def gcenter103_users_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1271,9 +1275,9 @@ def gcenter103_users_get_command(client: GwClient, args: dict[str, Any]) -> Comm
 
     kuser_name = params.get('kuser_name', "")
     del params['kuser_name']
-    
+
     try:
-        req = client._get(endpoint="/api/v1/kusers/"+kuser_name, params=params)
+        req = client._get(endpoint="/api/v1/kusers/" + kuser_name, params=params)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1282,9 +1286,9 @@ def gcenter103_users_get_command(client: GwClient, args: dict[str, Any]) -> Comm
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-users-get",res),
-       outputs_prefix="Gatewatcher.Users.Get",
-   )
+        readable_output=tableToMarkdown("gcenter103-users-get", res),
+        outputs_prefix="Gatewatcher.Users.Get",
+    )
 
 
 def gcenter103_users_note_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1296,11 +1300,11 @@ def gcenter103_users_note_add_command(client: GwClient, args: dict[str, Any]) ->
     }
 
     if params.get('overwrite', "") == "true":
-        
+
         data = {"note": params.get('note', "")}
-        
+
         try:
-            req = client._put(endpoint="/api/v1/kusers/"+params.get('kuser_name', "")+"/note", json_data=data)
+            req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/note", json_data=data)
             if req.status_code != 200:
                 raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
         except Exception as e:
@@ -1309,14 +1313,14 @@ def gcenter103_users_note_add_command(client: GwClient, args: dict[str, Any]) ->
         res = req.json()
 
         return CommandResults(
-           readable_output=tableToMarkdown("gcenter103-users-note-add",res),
-           outputs_prefix="Gatewatcher.Users.Note.Add",
-       )
+            readable_output=tableToMarkdown("gcenter103-users-note-add", res),
+            outputs_prefix="Gatewatcher.Users.Note.Add",
+        )
 
     else:
-        
+
         try:
-            req = client._get(endpoint="/api/v1/kusers/"+params.get('kuser_name', ""))
+            req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', ""))
             if req.status_code != 200:
                 raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
         except Exception as e:
@@ -1326,10 +1330,10 @@ def gcenter103_users_note_add_command(client: GwClient, args: dict[str, Any]) ->
         old_note = res.get('note', "")
         if old_note is None:
             old_note = ""
-        data = {"note": old_note+"\n"+params.get('note', "")}
-        
+        data = {"note": old_note + "\n" + params.get('note', "")}
+
         try:
-            req = client._put(endpoint="/api/v1/kusers/"+params.get('kuser_name', "")+"/note", json_data=data)
+            req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/note", json_data=data)
             if req.status_code != 200:
                 raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
         except Exception as e:
@@ -1338,9 +1342,9 @@ def gcenter103_users_note_add_command(client: GwClient, args: dict[str, Any]) ->
         res = req.json()
 
         return CommandResults(
-           readable_output=tableToMarkdown("gcenter103-users-note-add",res),
-           outputs_prefix="Gatewatcher.Users.Note.Add",
-       )
+            readable_output=tableToMarkdown("gcenter103-users-note-add", res),
+            outputs_prefix="Gatewatcher.Users.Note.Add",
+        )
 
 
 def gcenter103_users_note_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1350,16 +1354,16 @@ def gcenter103_users_note_remove_command(client: GwClient, args: dict[str, Any])
     }
 
     try:
-        req = client._delete(endpoint="/api/v1/kusers/"+params.get('kuser_name', "")+"/note")
+        req = client._delete(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/note")
         if req.status_code != 204:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
 
     return CommandResults(
-       readable_output="# gcenter103-users-note-remove - Note of: "+params.get('kuser_name', "")+" deleted",
-       outputs_prefix="Gatewatcher.Users.Note.Remove",
-   )
+        readable_output="# gcenter103-users-note-remove - Note of: " + params.get('kuser_name', "") + " deleted",
+        outputs_prefix="Gatewatcher.Users.Note.Remove",
+    )
 
 
 def gcenter103_users_tags_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1369,7 +1373,7 @@ def gcenter103_users_tags_get_command(client: GwClient, args: dict[str, Any]) ->
     }
 
     try:
-        req = client._get(endpoint="/api/v1/kusers/"+params.get('kuser_name', "")+"/tags")
+        req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1384,9 +1388,9 @@ def gcenter103_users_tags_get_command(client: GwClient, args: dict[str, Any]) ->
         )
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-users-tags-get",res.get('tags', [{}])),
-       outputs_prefix="Gatewatcher.Users.Tags.Get",
-   )
+        readable_output=tableToMarkdown("gcenter103-users-tags-get", res.get('tags', [{}])),
+        outputs_prefix="Gatewatcher.Users.Tags.Get",
+    )
 
 
 def gcenter103_users_tags_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1404,7 +1408,7 @@ def gcenter103_users_tags_add_command(client: GwClient, args: dict[str, Any]) ->
     data['tags'] = tags
 
     try:
-        req = client._get(endpoint="/api/v1/kusers/"+params.get('kuser_name', "")+"/tags")
+        req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1412,11 +1416,11 @@ def gcenter103_users_tags_add_command(client: GwClient, args: dict[str, Any]) ->
 
     res = req.json()
 
-    for i in range(0,len(res['tags'])):
+    for i in range(0, len(res['tags'])):
         data.get('tags', [{}]).append(res.get('tags', [{}])[i])
 
     try:
-        req = client._put(endpoint="/api/v1/kusers/"+params.get('kuser_name', "")+"/tags", json_data=data)
+        req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags", json_data=data)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1425,9 +1429,9 @@ def gcenter103_users_tags_add_command(client: GwClient, args: dict[str, Any]) ->
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-users-tags-add",res.get('tags', [{}])),
-       outputs_prefix="Gatewatcher.Users.Tags.Add",
-   )
+        readable_output=tableToMarkdown("gcenter103-users-tags-add", res.get('tags', [{}])),
+        outputs_prefix="Gatewatcher.Users.Tags.Add",
+    )
 
 
 def gcenter103_users_tags_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1445,15 +1449,15 @@ def gcenter103_users_tags_remove_command(client: GwClient, args: dict[str, Any])
     data['tags'] = tags
 
     try:
-        req = client._get(endpoint="/api/v1/kusers/"+params.get('kuser_name', "")+"/tags")
+        req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags")
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
-  
+
     res = req.json()
     data2 = {"tags": []}
-    
+
     r = []
     b = []
     for i in range(0, len(data['tags'])):
@@ -1471,22 +1475,22 @@ def gcenter103_users_tags_remove_command(client: GwClient, args: dict[str, Any])
         if i not in r:
             li.append(i)
 
-    for i in range(0,len(li)):
+    for i in range(0, len(li)):
         data2.get('tags', [{}]).append({'id': int(li[i])})
-    
+
     try:
-        req = client._put(endpoint="/api/v1/kusers/"+params.get('kuser_name', "")+"/tags", json_data=data2)
+        req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags", json_data=data2)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
 
     res = req.json()
-    
+
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-users-tags-remove", res.get('tags', [{}])),
-       outputs_prefix="Gatewatcher.Users.Tags.Remove"
-   )
+        readable_output=tableToMarkdown("gcenter103-users-tags-remove", res.get('tags', [{}])),
+        outputs_prefix="Gatewatcher.Users.Tags.Remove"
+    )
 
 
 def gcenter103_yara_rules_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1505,9 +1509,9 @@ def gcenter103_yara_rules_get_command(client: GwClient, args: dict[str, Any]) ->
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-yara-rules-get",res),
-       outputs_prefix="Gatewatcher.Yara.Rules.Get",
-   )
+        readable_output=tableToMarkdown("gcenter103-yara-rules-get", res),
+        outputs_prefix="Gatewatcher.Yara.Rules.Get",
+    )
 
 
 def gcenter103_yara_rules_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1537,9 +1541,9 @@ def gcenter103_yara_rules_add_command(client: GwClient, args: dict[str, Any]) ->
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-yara-rules-add",res),
-       outputs_prefix="Gatewatcher.Yara.Rules.Add",
-   )
+        readable_output=tableToMarkdown("gcenter103-yara-rules-add", res),
+        outputs_prefix="Gatewatcher.Yara.Rules.Add",
+    )
 
 
 def gcenter103_malcore_fingerprints_get_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1552,9 +1556,9 @@ def gcenter103_malcore_fingerprints_get_command(client: GwClient, args: dict[str
 
     list_type = params.get('list_type', "")
     del params['list_type']
-    
+
     try:
-        req = client._get(endpoint="/api/v1/malcore/hash-"+list_type+"-list", params=params)
+        req = client._get(endpoint="/api/v1/malcore/hash-" + list_type + "-list", params=params)
         if req.status_code != 200:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1563,9 +1567,9 @@ def gcenter103_malcore_fingerprints_get_command(client: GwClient, args: dict[str
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-malcore-fingerprints-get",res.get('results', [{}])),
-       outputs_prefix="Gatewatcher.Malcore.Fingerprints.Get",
-   )
+        readable_output=tableToMarkdown("gcenter103-malcore-fingerprints-get", res.get('results', [{}])),
+        outputs_prefix="Gatewatcher.Malcore.Fingerprints.Get",
+    )
 
 
 def gcenter103_malcore_fingerprints_add_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1578,13 +1582,13 @@ def gcenter103_malcore_fingerprints_add_command(client: GwClient, args: dict[str
     }
 
     data: dict[Any, Any] = {
-            "sha256": params.get('sha256', ""),
-            "comment": params.get('comment', ""),
-            "threat": params.get('threat', "")
+        "sha256": params.get('sha256', ""),
+        "comment": params.get('comment', ""),
+        "threat": params.get('threat', "")
     }
-     
+
     try:
-        req = client._post(endpoint="/api/v1/malcore/hash-"+params.get('list_type', "")+"-list/", json_data=data)
+        req = client._post(endpoint="/api/v1/malcore/hash-" + params.get('list_type', "") + "-list/", json_data=data)
         if req.status_code != 201:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
@@ -1593,9 +1597,9 @@ def gcenter103_malcore_fingerprints_add_command(client: GwClient, args: dict[str
     res = req.json()
 
     return CommandResults(
-       readable_output=tableToMarkdown("gcenter103-malcore-fingerprints-add",res),
-       outputs_prefix="Gatewatcher.Malcore.Fingerprints.Add",
-   )
+        readable_output=tableToMarkdown("gcenter103-malcore-fingerprints-add", res),
+        outputs_prefix="Gatewatcher.Malcore.Fingerprints.Add",
+    )
 
 
 def gcenter103_malcore_fingerprints_remove_command(client: GwClient, args: dict[str, Any]) -> CommandResults:
@@ -1606,20 +1610,20 @@ def gcenter103_malcore_fingerprints_remove_command(client: GwClient, args: dict[
     }
 
     try:
-        req = client._delete(endpoint="/api/v1/malcore/hash-"+params.get('list_type', "")+"-list/"+params.get('sha256', ""))
+        req = client._delete(endpoint="/api/v1/malcore/hash-" + params.get('list_type', "") + "-list/" + params.get('sha256', ""))
         if req.status_code != 204:
             raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
 
     return CommandResults(
-       readable_output="# gcenter103-malcore-fingerprints-remove\n"\
-           "## Hash: "+params.get('sha256', "")+"\n"+
-           "## Sucessfully deleted from "+
-       params.get('list_type', "")+
-       " list",
-       outputs_prefix="Gatewatcher.Malcore.Fingerprints.Remove",
-   )
+        readable_output="# gcenter103-malcore-fingerprints-remove\n"
+        "## Hash: " + params.get('sha256', "") + "\n"
+        + "## Sucessfully deleted from "
+        + params.get('list_type', "")
+        + " list",
+        outputs_prefix="Gatewatcher.Malcore.Fingerprints.Remove",
+    )
 
 
 def convert_event_severity(gw_sev: int) -> float:
@@ -1631,6 +1635,7 @@ def convert_event_severity(gw_sev: int) -> float:
         3: 1
     }
     return severity_map.get(gw_sev, 0)
+
 
 def gw_client_auth(params: dict) -> GwClient:
 
@@ -1840,12 +1845,12 @@ def handle_little_fetch_alerts(client: GwClient,
 
 def handle_little_fetch_empty_selected_engines(client: GwClient,
                                                fetch_type: str,
-                                               query: dict[str, Any]) -> list[dict[Any,Any]]:
-    gw_alerts: list[dict[Any,Any]] = []
+                                               query: dict[str, Any]) -> list[dict[Any, Any]]:
+    gw_alerts: list[dict[Any, Any]] = []
     if fetch_type in ("Alerts", "Both"):
 
-        res_a: list[dict[Any,Any]] = query_es_alerts(client=client, query=query)
-        gw_alerts: list[dict[Any,Any]] = res_a
+        res_a: list[dict[Any, Any]] = query_es_alerts(client=client, query=query)
+        gw_alerts: list[dict[Any, Any]] = res_a
 
     return gw_alerts
 
@@ -1865,7 +1870,7 @@ def handle_little_fetch_metadata(client: GwClient,
 
 
 def index_alerts_incidents(to_index: list[list[dict[Any, Any]]],
-                           incidents: list[dict[Any,Any]],
+                           incidents: list[dict[Any, Any]],
                            params: dict[str, Any]) -> list[dict[Any, Any]]:
 
     webui_link: str = "https://" + str(params.get('ip', "")) + "/ui/alerts?drawer=alert&drawer_uuid="
@@ -1922,14 +1927,14 @@ def index_alerts_incidents(to_index: list[list[dict[Any, Any]]],
 
 
 def index_metadata_incidents(to_index: list[list[dict[Any, Any]]],
-                             incidents: list[dict[Any,Any]]) -> list[dict[Any,Any]]:
+                             incidents: list[dict[Any, Any]]) -> list[dict[Any, Any]]:
 
     for i in range(0, len(to_index)):
 
         if to_index[i].get('_source', {}) == {}:
             return []
 
-        incident: dict[Any,Any] = {
+        incident: dict[Any, Any] = {
             'name': "Gatewatcher Metadata: " + to_index[i].get('_source', {}).get('event', {}).get('module', ""),
             'occurred': to_index[i].get('_source', {}).get('@timestamp', ""),
             'dbotMirrorId': to_index[i].get('_source', {}).get('event', {}).get('id', ""),
@@ -2019,7 +2024,7 @@ def fetch_selected_engines(client: GwClient,
                            params: dict[str, Any],
                            max_fetch: int,
                            fetch_type: str,
-                           incidents: list[dict[Any,Any]]) -> list[dict[Any, Any]]:
+                           incidents: list[dict[Any, Any]]) -> list[dict[Any, Any]]:
 
     from_to: list[str] = last_run_range(params=params)
     query: dict[str, Any] = query_selected_engines_builder(max_fetch=max_fetch,
@@ -2083,10 +2088,10 @@ def fetch_empty_selected_engines(client: GwClient,
 
     else:
 
-        gw_alerts: list[dict[Any,Any]] = handle_little_fetch_empty_selected_engines(
-                client=client,
-                query=query,
-                fetch_type=fetch_type
+        gw_alerts: list[dict[Any, Any]] = handle_little_fetch_empty_selected_engines(
+            client=client,
+            query=query,
+            fetch_type=fetch_type
         )
         incidents_a = []
         if len(gw_alerts) > 0:
@@ -2137,7 +2142,7 @@ def fetch_incidents():
 
     client: GwClient = gw_client_auth(params=params)
 
-    incidents: list[dict[Any,Any]] = []
+    incidents: list[dict[Any, Any]] = []
 
     if len(engine_selection) > 0:
 
@@ -2184,249 +2189,217 @@ def main() -> None:
             token=token
         )
         if command == "test-module":
-            return_results( # noqa: F405
-                test_module(client=client,user=user,password=password,token=token)
+            return_results(  # noqa: F405
+                test_module(client=client, user=user, password=password, token=token)
             )
         elif command == "fetch-incidents":
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 fetch_incidents()
             )
         elif command == "gcenter103-alerts-list":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_alerts_list_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-note-add":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_alerts_note_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-note-remove":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_alerts_note_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-tags-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_alerts_tags_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-tags-add":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_alerts_tags_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-tags-remove":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_alerts_tags_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-status-update":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_alerts_status_update_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-raw-alerts-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_raw_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-raw-alerts-file-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_raw_alerts_file_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-file-scan":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_file_scan_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-file-scan-result-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_file_scan_result_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-list":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_assets_list_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-alerts-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_assets_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_assets_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-note-add":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_assets_note_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-note-remove":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_assets_note_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-tags-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_assets_tags_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-tags-add":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_assets_tags_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-tags-remove":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_assets_tags_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-list":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_users_list_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-alerts-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_users_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_users_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-note-add":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_users_note_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-note-remove":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_users_note_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-tags-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_users_tags_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-tags-add":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_users_tags_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-tags-remove":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_users_tags_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-yara-rules-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_yara_rules_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-yara-rules-add":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_yara_rules_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-malcore-fingerprints-get":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_malcore_fingerprints_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-malcore-fingerprints-add":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_malcore_fingerprints_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-malcore-fingerprints-remove":
-            client: GwClient = gw_client_auth(params=params)
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 gcenter103_malcore_fingerprints_remove_command(
                     client=client,
                     args=args)
             )
-            
+
     except Exception as e:
-        return_error( # noqa: F405
+        return_error(  # noqa: F405
             f"Failed to execute {command} command.\nError: {str(e)}"
         )
+
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
