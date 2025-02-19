@@ -1,0 +1,97 @@
+args:
+- description: List of IPs to block
+  isArray: true
+  name: ip_list
+  required: true
+- defaultvalue: 'XSIAM - Block IP'
+  description: The name of the rule which will be created in the relevant products.
+  isArray: false
+  name: rule_name
+  required: false
+- description: Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
+  isArray: false
+  name: log_forwarding_name
+  required: false
+- description: This input determines whether PANW Panorama or Firewall or Prisma SASE Address Groups are used. Specify the Address Group name for IPs list handling.
+  isArray: false
+  name: address_group
+  required: false
+  defaultvalue: 'Blocked IPs - XSIAM'
+- description: Whether to creates a custom block policy rule.
+  isArray: false
+  name: custom_block_rule
+  required: false
+  defaultvalue: 'false'
+  auto: PREDEFINED
+  predefined:
+    - 'true'
+    - 'false'
+- description: Whether to commit the new rule.
+  isArray: false
+  name: auto_commit
+  required: false
+  defaultvalue: 'true'
+  auto: PREDEFINED
+  predefined:
+    - 'true'
+    - 'false'
+- description: The designated tag name for the IP.
+  isArray: false
+  name: tag
+  required: false
+  defaultvalue: 'xsiam-blocked-external-ip'
+- description: |-
+    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
+    For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2"
+  isArray: true
+  defaultvalue: 'Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2,FortiGate,F5Silverline,Cisco ASA,Zscaler'
+  name: brands
+  required: false
+  auto: PREDEFINED
+  predefined:
+    - 'Palo Alto Networks - Prisma SASE'
+    - 'Panorama'
+    - 'CheckPointFirewall_v2'
+    - 'FortiGate'
+    - 'F5Silverline'
+    - 'Cisco ASA'
+    - 'Zscaler'
+- description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+  name: verbose
+  defaultvalue: 'false'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+comment: The scrip blocks a list of IPs in supported integrations.
+commonfields:
+  id: block-external-ip
+  version: -1
+enabled: false
+name: block-external-ip
+outputs:
+- contextPath: BlockExternalIPResults.Message
+  description: A message concerning the result of the action.
+  type: String
+- contextPath: BlockExternalIPResults.Result
+  description: The result of the action Success or Failed.
+  type: String
+- contextPath: BlockExternalIPResults.Source
+  description: The name of the brand that was executed.
+  type: String
+- contextPath: BlockExternalIPResults.created_rule_name
+  description: The name of the created rule.
+  type: String
+- contextPath: BlockExternalIPResults.address_group
+  description: The address group.
+  type: String
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
