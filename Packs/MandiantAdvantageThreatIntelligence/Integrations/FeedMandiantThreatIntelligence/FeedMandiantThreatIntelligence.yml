@@ -150,7 +150,7 @@ script:
     - description: The maximum number of indicators to fetch.
       name: limit
     description: Fetch indicators.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'
