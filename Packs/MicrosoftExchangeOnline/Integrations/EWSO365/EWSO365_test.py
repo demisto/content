@@ -87,6 +87,7 @@ class TestNormalCommands:
             self.protocol = ""
             self.mark_as_read = False
             self.folder_name = ""
+            self.version = 'O365'
 
         def get_account(self, target_mailbox=None, access_type=None):
             return self.account

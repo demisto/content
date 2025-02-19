@@ -917,7 +917,7 @@ def switch_hr_headers(obj, hr_header_changes: dict):
 
 
 def get_entry_for_object(title: str, context_key: str, obj, headers: Optional[list] = None,
-                         hr_header_changes: dict = {}) -> CommandResults:
+                         hr_header_changes: dict = {}, filter_null_values=True) -> CommandResults:
     """
     Create an entry for a given object
     :param title: Title of the human readable
@@ -925,14 +925,19 @@ def get_entry_for_object(title: str, context_key: str, obj, headers: Optional[li
     :param obj: Object to create entry for
     :param headers: (Optional) headers used in the tableToMarkDown
     :param hr_header_changes: (Optional) a dict to map the header names used in the human readable output
+    :param filter_null_values: (Optional) Whether to filter null values from the object or not (O365 backwards compatibility)
     :return: Entry object to be used with demisto.results()
     """
     if is_empty_object(obj):
         return CommandResults(readable_output='There is no output results')
-    obj = filter_dict_null(obj)
+
+    if filter_null_values:
+        obj = filter_dict_null(obj)
     hr_obj = switch_hr_headers(obj, hr_header_changes)
+
     if isinstance(obj, list):
-        obj = [filter_dict_null(k) for k in obj]
+        if filter_null_values:
+            obj = [filter_dict_null(k) for k in obj]
         hr_obj = [switch_hr_headers(k, hr_header_changes) for k in obj]
 
     if headers and isinstance(obj, dict):
@@ -975,13 +980,15 @@ def delete_attachments_for_message(client: EWSClient, item_id: str, target_mailb
     if len(deleted_file_attachments) > 0:
         entry = get_entry_for_object("Deleted file attachments",
                                      "EWS.Items" + CONTEXT_UPDATE_FILE_ATTACHMENT,
-                                     deleted_file_attachments)
+                                     deleted_file_attachments,
+                                     filter_null_values=(client.version != 'O365'))
         entries.append(entry)
 
     if len(deleted_item_attachments) > 0:
         entry = get_entry_for_object("Deleted item attachments",
                                      "EWS.Items" + CONTEXT_UPDATE_ITEM_ATTACHMENT,
-                                     deleted_item_attachments)
+                                     deleted_item_attachments,
+                                     filter_null_values=(client.version != 'O365'))
         entries.append(entry)
 
     return entries
@@ -995,7 +1002,8 @@ def get_searchable_mailboxes(client: EWSClient) -> CommandResults:
     """
     searchable_mailboxes = GetSearchableMailboxes(protocol=client.get_protocol()).call()
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes',
-                                searchable_mailboxes, ['displayName', 'mailbox'])
+                                searchable_mailboxes, ['displayName', 'mailbox'],
+                                filter_null_values=(client.version != 'O365'))
 
 
 def move_item_between_mailboxes(src_client: EWSClient, item_id, destination_mailbox: str, destination_folder_path: str,
@@ -1065,7 +1073,8 @@ def move_item(client: EWSClient, item_id: str, target_folder_path: str, target_m
         ACTION: 'moved',
     }
 
-    return get_entry_for_object('Moved items', CONTEXT_UPDATE_EWS_ITEM, move_result)
+    return get_entry_for_object('Moved items', CONTEXT_UPDATE_EWS_ITEM, move_result,
+                                filter_null_values=(client.version != 'O365'))
 
 
 def delete_items(client: EWSClient, item_ids, delete_type: str, target_mailbox: Optional[str] = None) -> CommandResults:
@@ -1100,7 +1109,8 @@ def delete_items(client: EWSClient, item_ids, delete_type: str, target_mailbox: 
         }
         )
 
-    return get_entry_for_object(f'Deleted items ({delete_type} delete type)', CONTEXT_UPDATE_EWS_ITEM, deleted_items)
+    return get_entry_for_object(f'Deleted items ({delete_type} delete type)', CONTEXT_UPDATE_EWS_ITEM, deleted_items,
+                                filter_null_values=(client.version != 'O365'))
 
 
 def get_out_of_office_state(client: EWSClient, target_mailbox: Optional[str] = None) -> CommandResults:
@@ -1127,7 +1137,8 @@ def get_out_of_office_state(client: EWSClient, target_mailbox: Optional[str] = N
 
     return get_entry_for_object(f'Out of office state for {account.primary_smtp_address}',
                                 f'Account.Email(val.Address == obj.{MAILBOX}).OutOfOffice',
-                                oof_dict)
+                                oof_dict,
+                                filter_null_values=(client.version != 'O365'))
 
 
 def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path: str = 'Inbox',
@@ -1161,7 +1172,8 @@ def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path:
         item.move(target_folder)
         recovered_messages.append({ITEM_ID: item.id, MESSAGE_ID: item.message_id, ACTION: 'recovered'})
 
-    return get_entry_for_object('Recovered messages', CONTEXT_UPDATE_EWS_ITEM, recovered_messages)
+    return get_entry_for_object('Recovered messages', CONTEXT_UPDATE_EWS_ITEM, recovered_messages,
+                                filter_null_values=(client.version != 'O365'))
 
 
 def create_folder(client: EWSClient, new_folder_name: str, folder_path: str,
@@ -1213,7 +1225,8 @@ def mark_item_as_junk(client: EWSClient, item_id, move_items: str, target_mailbo
     else:
         raise Exception(f'Failed mark-item-as-junk with error: {ews_result}')
 
-    return get_entry_for_object('Mark item as junk', CONTEXT_UPDATE_EWS_ITEM, mark_as_junk_result)
+    return get_entry_for_object('Mark item as junk', CONTEXT_UPDATE_EWS_ITEM, mark_as_junk_result,
+                                filter_null_values=(client.version != 'O365'))
 
 
 def folder_to_context_entry(f) -> dict:
@@ -1265,7 +1278,8 @@ def get_folder(client: EWSClient, folder_path: str, target_mailbox:
         client.get_folder_by_path(folder_path, account=account, is_public=is_public)
     )
 
-    return get_entry_for_object(f'Folder {folder_path}', CONTEXT_UPDATE_FOLDER, folder)
+    return get_entry_for_object(f'Folder {folder_path}', CONTEXT_UPDATE_FOLDER, folder,
+                                filter_null_values=(client.version != 'O365'))
 
 
 def get_expanded_group(client: EWSClient, email_address, recursive_expansion: bool = False) -> CommandResults:
@@ -1281,7 +1295,8 @@ def get_expanded_group(client: EWSClient, email_address, recursive_expansion: bo
         'name': email_address,
         'members': group_members
     }
-    entry_for_object = get_entry_for_object('Expanded group', 'EWS.ExpandGroup', group_details)
+    entry_for_object = get_entry_for_object('Expanded group', 'EWS.ExpandGroup', group_details,
+                                            filter_null_values=(client.version != 'O365'))
     entry_for_object.readable_output = tableToMarkdown('Group Members', group_members)
     return entry_for_object
 
@@ -1311,4 +1326,5 @@ def mark_item_as_read(client: EWSClient, item_ids, operation: str = 'read',
             ACTION: f'marked-as-{operation}',
         })
 
-    return get_entry_for_object(f'Marked items ({operation} marked operation)', CONTEXT_UPDATE_EWS_ITEM, marked_items)
+    return get_entry_for_object(f'Marked items ({operation} marked operation)', CONTEXT_UPDATE_EWS_ITEM, marked_items,
+                                filter_null_values=(client.version != 'O365'))
