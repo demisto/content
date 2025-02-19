@@ -2194,6 +2194,19 @@ class MsClient:
 
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
+    def get_missing_kbs_by_machine_id(self, machine_id):
+        """Retrieves a list of missing security updates (KBs) by machine id.
+        https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-missing-kbs-machine?view=o365-worldwide
+
+        Args:
+            machine_id (str): Machine ID
+
+        Returns:
+            dict. Machine's info
+        """
+        cmd_url = f"/machines/{machine_id}/getmissingkbs"
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+
     def get_software_by_machine_id(self, machine_id: str) -> dict:
         """Retrieve a list of the installed software from the defined machine_id .
             Args:
@@ -2688,6 +2701,39 @@ def get_machine_software_command(client: MsClient, args: dict) -> CommandResults
         outputs=software_outputs,
         readable_output=human_readable,
         raw_response=raw_response)
+
+
+def get_machine_missing_kbs_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of missing security updates on a specific device.
+
+     Args:
+        machine_id (str): Machine ID
+
+    Returns:
+        CommandResults.
+    """
+
+    headers = ['id', 'name', 'osBuild', 'url', 'machineMissedOn', 'cveAddressed', 'productNames']
+    machine_id = args.get("machine_id")
+
+    raw_response = client.get_missing_kbs_by_machine_id(machine_id)
+
+    missing_kbs_output = raw_response.get('value')
+
+    human_readable = tableToMarkdown(
+        f"Missing Security Updates (KBs) for machine: {machine_id}",
+        missing_kbs_output, headers=headers, removeNull=True,
+    )
+
+    # assert 0
+
+    return CommandResults(
+        outputs_prefix="MicrosoftATP.Machine",
+        outputs=missing_kbs_output,
+        outputs_key_field='id',
+        readable_output=human_readable,
+        raw_response=raw_response,
+    )
 
 
 def run_antivirus_scan_command(client: MsClient, args: dict):
@@ -5751,6 +5797,9 @@ def main():  # pragma: no cover
 
         elif command == "microsoft-atp-get-machine-software":
             return_results(get_machine_software_command(client, args))
+
+        elif command == "microsoft-atp-get-machine-missing-kbs":
+            return_results(get_machine_missing_kbs_command(client, args))
 
         elif command == 'microsoft-atp-run-antivirus-scan':
             return_outputs(*run_antivirus_scan_command(client, args))
