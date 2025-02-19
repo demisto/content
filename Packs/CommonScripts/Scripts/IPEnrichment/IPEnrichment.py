@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Tuple, Dict
 
 import demistomock as demisto  # noqa: F401
@@ -7,6 +8,15 @@ from ipaddress import ip_network, ip_address
 import traceback
 import re
 from collections.abc import Callable
+
+UnmergedIPDataDict = dict[str, list[dict]]
+MergedIPDataDict = dict[str, dict]
+EnrichmentRawResults = list[dict]
+EnrichmentFullOutputsDict = MergedIPDataDict
+EnrichmentCommonIPsDict = dict[str, list[dict]]
+EnrichmentContextOutputs = tuple[UnmergedIPDataDict, EnrichmentCommonIPsDict]
+EnrichmentSubCommandOutput = Tuple[
+    EnrichmentRawResults, EnrichmentFullOutputsDict, EnrichmentCommonIPsDict]
 
 PRIVATE_SUBNETS = [
     '172.16.0.0/12',
@@ -24,233 +34,19 @@ PRIVATE_SUBNETS = [
 ]
 
 
-class Command:
-    def __init__(
-        self,
-        name: str,
-        output_keys: List[str],
-        output_mapping: dict | Callable,
-        post_processing: Callable = None,
-    ):
-        """
-        Initialize a MappedCommand object.
-
-        Args:
-            brand (str): The brand associated with the command.
-            name (str): The name of the command.
-            args_mapping (dict): A dictionary containing the command arguments
-        """
-        self.name = name
-        self.output_keys = output_keys
-        self.output_mapping = output_mapping
-        self.post_processing = post_processing
-
-    def __repr__(self):
-        return f'{{ name: {self.name} }}'
-
-
-def hr_to_command_results(command_name: str, args: dict[str, Any], human_readable: str, is_error: bool = False
-                          ) -> CommandResults | None:
-    """
-    Prepares human-readable output for a command execution.
-
-    This function creates a formatted message containing the command details and its output.
-    It can handle both successful executions and errors.
-
-    Args:
-        command_name (str): The name of the executed command.
-        args (dict[str, Any]): A dictionary of command arguments and their values.
-        human_readable (str): The human-readable output of the command.
-        is_error (bool, optional): Flag indicating if the result is an error. Defaults to False.
-
-    Returns:
-        CommandResults: A list containing a CommandResults object with the formatted output.
-    """
-    result = None
-    if human_readable:
-        command = f'!{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
-        result_type = EntryType.ERROR if is_error else None
-        result_message = f"#### {'Error' if is_error else 'Result'} for {command}\n{human_readable}"
-        result = CommandResults(readable_output=result_message, entry_type=result_type, mark_as_note=True)
-    return result
-
-
-def run_execute_command(command: Command, args: dict[str, Any]) -> list[dict[str, Any]]:
-    """
-    Executes a command if the brand is available and returns the results.
-
-    Args:
-        command (Command): An instance of MappedCommand that contains the command information.
-        args (Dict[str, Any]): A dictionary containing the specific arguments for the command.
-    Returns:
-        Dict[str, Any]: A dictionary containing the command and its results.
-    """
-
-    return demisto.executeCommand(command.name, args)
-
-
-def get_command_results(command: Command, results: list[dict[str, Any]], args: dict[str, Any], verbose) -> tuple[
-    list, list, list, list]:
-    """
-    Processes the results of a previously executed command and extracts relevant outputs.
-
-    Args:
-        command (Command): An instance of MappedCommand that contains the command information.
-        results (Dict[str, Any]): A dictionary containing the command results.
-        args (Dict[str, Any]): A dictionary containing the specific arguments for the command.
-
-    Returns:
-        Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]:
-            A tuple containing:
-            - A list of command context outputs.
-            - A human-readable string of the results.
-            - A list of command error outputs.
-    """
-
-    command_error_outputs = []
-    command_context_outputs = []
-    command_contents = []
-    command_human_readable_outputs = []
-    demisto.debug(f'get_commands_outputs for command "{command}" with {len(results)} entry results')
-    for entry in results:
-        if is_error(entry):
-            print("ERROR")
-            command_error_outputs.append(hr_to_command_results(command.name, args, get_error(entry), is_error=True))
-        if entry.get("EntryContext"):
-            command_context_outputs.append(entry.get("EntryContext", {}))
-        else:
-            contents = entry.get("Contents")
-            if isinstance(contents, list):
-                command_contents.extend(contents)
-            else:
-                command_contents.append(contents)
-
-        if verbose:
-            command_human_readable_outputs.append(entry.get("HumanReadable") or "")
-    return command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs
-
-
-class IPCommandRunner:
-    def __init__(self, verbose: bool) -> None:
-        """
-        Initializes the instance of EndpointCommandRunner.
-
-        Args:
-            module_manager (ModuleManager): An instance of ModuleManager used to manage the modules.
-
-        Attributes:
-            module_manager (ModuleManager): Stores the provided ModuleManager instance.
-        """
-
-        self.enabled_brands = {
-            module.get("brand")
-            for module in demisto.getModules().values()
-            if module.get("state") == "active"
-        }
-        self.commands_context_outputs: list[dict[str, Any]] = []
-        self.commands_results_list: list[CommandResults] = []
-        self.ips_not_found_list: list[dict] = []
-        self.verbose = verbose
-
-    def is_brand_available(self, brand: str) -> bool:
-        """Check if a brand is active and available."""
-        return brand in self.enabled_brands
-
-    def run_command(self, command: Command, args: dict[str, list[str] | str]):
-        """
-            Runs the given command with the provided arguments and returns the results.
-            Args:
-                command (Command): An instance of the Command class containing the command details.
-                args (dict[str, list[str] | str]): A dictionary containing the arguments for the endpoint script.
-
-            Returns:
-                tuple[list[CommandResults], list[dict[str, dict]]]:
-                    - A list of CommandResults objects, which contain the results of the command execution.
-                    - A list of dictionaries, where each dictionary represents an endpoint and contains the raw output.
-            """
-        demisto.debug(f'run command {command.name} with args={args}')
-
-        raw_outputs = run_execute_command(command, args)
-        command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = get_command_results(
-            command, raw_outputs, args, self.verbose)
-        if self.verbose:
-            human_readable = "\n".join(command_human_readable_outputs)
-            human_readable = [hr] if (hr := hr_to_command_results(command.name, args, human_readable)) else []
-            self.commands_results_list.extend(human_readable)
-            self.commands_results_list.extend(command_error_outputs)
-
-        return command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs
-
-
-def to_list(var):
-    """
-    Converts the input variable to a list if it is not already a list.
-    """
-    if not var:
-        return []
-    return [var] if not isinstance(var, list) else var
+def is_brand_available(brand: str) -> bool:
+    """Check if a brand is active and available."""
+    return brand in {
+        module.get("brand")
+        for module in demisto.getModules().values()
+        if module.get("state") == "active"
+    }
 
 
 ######################## OUTPUT PROCESSING FUNCTIONS ########################
 
-def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
-    """
-    Retrieves the full output key from the raw context based on the given output key.
 
-    This function searches for the output key in the raw context. If an exact match is not found,
-    it looks for keys that start with the given output key followed by parentheses.
-
-    Args:
-        output_key (str): The base output key to search for.
-        raw_context (dict[str, Any]): The raw context dictionary to search in.
-
-    Returns:
-        str: The full output key if found, otherwise an empty string.
-
-    Note:
-        If the full output key is not found, a debug message is logged.
-    """
-
-    full_output_key = ""
-    if raw_context:
-        if output_key in raw_context:
-            full_output_key = output_key
-        else:
-            for key in raw_context:
-                if not key:
-                    continue
-                if key.startswith(f"{output_key}("):
-                    full_output_key = key
-                    break
-        if not full_output_key:
-            demisto.debug(
-                f"Output key {output_key} not found in entry context keys: {list(raw_context.keys())}"
-            )
-    return full_output_key
-
-
-def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
-    """
-    Extracts and processes the outputs from the raw context based on the given output key.
-
-    This function retrieves the context from the raw_context using the output_key.
-    If the context is a list, it takes the first element (if available).
-
-    Args:
-        output_key (str): The key to look up in the raw_context.
-        raw_context (dict[str, Any]): The raw context containing the outputs.
-
-    Returns:
-        dict[str, Any]: The processed context, or an empty dictionary if not found.
-    """
-    full_output_key = get_output_key(output_key, raw_context)
-    if not (raw_context and full_output_key):
-        return {}
-    context = raw_context.get(full_output_key, {})
-    return context
-
-
-def enrich_data_with_source(data: dict, source: str):
+def enrich_data_with_source(data: dict, source: str) -> dict:
     """
     Enrich the provided data with source information.
 
@@ -281,13 +77,13 @@ def enrich_data_with_source(data: dict, source: str):
     return result
 
 
-def merge_lists_for_dict_same_key(target, key, value):
+def append_to_dict_list(target: dict[str, list[dict]], key: str, value: dict):
     if key not in target:
         target[key] = []
     target[key].append(value)
 
 
-def merge_ip(ip_objects: list[dict[str, str]]) -> dict[str, Any]:
+def merge_ip(ip_objects: list[dict]) -> dict[str, Any]:
     """
     Merge multiple ip dictionaries into a single ip.
 
@@ -307,7 +103,7 @@ def merge_ip(ip_objects: list[dict[str, str]]) -> dict[str, Any]:
         for key, value in source.items():
             # Check if the value is a dictionary and has specific keys 'Value' and 'Source'
             if isinstance(value, dict) and "Value" in value and "Source" in value:
-                merge_lists_for_dict_same_key(target, key, value)
+                append_to_dict_list(target, key, value)
             elif isinstance(value, dict):
                 if key not in target:
                     target[key] = {}
@@ -320,27 +116,45 @@ def merge_ip(ip_objects: list[dict[str, str]]) -> dict[str, Any]:
         recursive_merge(merged_ip, ip)
     return merged_ip
 
-    # return (
-    #     Common.IP(**merged_ip).to_context()[Common.IP.CONTEXT_PATH]
-    #     if merged_ip
-    #     else {}
-    # )
 
-def merge_ips(ips: list[dict[str , list[dict]]]) -> dict[str , dict]:
+def group_values_by_keys(data: List[Dict[str, dict]]) -> Dict[str, List[Dict[str, dict]]]:
     """
-    list of dicts, each holds outputs from different sources for various ips.
-    for all dicts, merge the lists
+    Transforms a list of dictionaries by grouping values under the same keys into lists.
+
+    Args:
+        data (List[Dict[str, Any]]): A list of dictionaries with common keys.
+
+    Returns:
+        Dict[str, List[Any]]: A dictionary where each key contains a list of corresponding values.
     """
+    result = defaultdict(list)
+    for entry in data:
+        for key, value in entry.items():
+            result[key].append(value)
+    return dict(result)
 
 
+def merge_ips(ips: list[dict[str, dict]]) -> dict[str, dict]:
+    """
+    list of dicts, each holds outputs for various ips.
+    across all dicts, merge the lists recursively for matching ip keys.
+    """
+    merged_result: Dict[str, Dict[str, Any]] = {}
+    grouped_ip_objects: Dict[str, List[Dict[str, dict]]] = group_values_by_keys(ips)
 
+    for ip_address, ip_outputs in grouped_ip_objects.items():
+        if ip_address not in merged_result:
+            merged_result[ip_address] = {}
+        merged_result[ip_address] = merge_ip(ip_outputs)
+
+    return merged_result
 
 
 ######### IP ENRICHMENT HELPER FUNCTIONS #########
 
 def get_private_ips() -> list[str]:
     """Retrieve the list of private IP subnets."""
-    #todo: error handeling
+    # todo: error handeling
     private_ips_list = demisto.executeCommand("getList", {"listName": "PrivateIPs"})[0]["Contents"]
     private_ips = re.findall(r"(\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})", private_ips_list)
     return private_ips if private_ips else PRIVATE_SUBNETS
@@ -387,7 +201,7 @@ def generate_common_ip_from_ip_indicator(ip_address: str, ip_type: str, score: i
     geo_latitude, geo_longitude = geolocation if len(geolocation) == 2 else (None, None)
     return Common.IP(
         dbot_score=Common.DBotScore(indicator=ip_address, indicator_type=DBotScoreType.IP, score=score),
-        #todo - which dbot score should I put?
+        # todo - which dbot score should I put?
         ip=ip_address,
         ip_type=ip_type,
         asn=custom_fields.get('asn'),
@@ -399,7 +213,7 @@ def generate_common_ip_from_ip_indicator(ip_address: str, ip_type: str, score: i
         ) for indicator in custom_fields.get("feedrelatedindicators", [])],
         geo_country=custom_fields.get("geocountry"),
         geo_latitude=geo_latitude,
-        geo_longitude=geo_longitude,  #todo confirm order
+        geo_longitude=geo_longitude,  # todo confirm order
         organization_name=custom_fields.get("organization"),
         organization_type=custom_fields.get("organizationtype"),
         positive_engines=custom_fields.get("positivedetections"),
@@ -411,48 +225,45 @@ def generate_common_ip_from_ip_indicator(ip_address: str, ip_type: str, score: i
 
 def map_search_indicator_to_context(ip_indicator):
     print("map_search_indicator_to_context")
-    #todo: which fields should be excluded? what about module to feed map? insightcache?
+    # todo: which fields should be excluded? what about module to feed map? insightcache?
     filtered_ip_indicator = {key: value for key, value in ip_indicator.items() if key not in ["CustomFields", "insightCache"]}
     return enrich_data_with_source(data=filtered_ip_indicator, source="searchIndicators")
 
 
-def get_search_indicators_outputs(iocs: list[dict]) -> List[dict]:
+def get_search_indicators_context_outputs(iocs: list[dict]) -> EnrichmentContextOutputs:
     """
     todo: describe the ioc stricture
     """
-    print("get_search_indicators_outputs")
-    outputs = []
+    print("get_search_indicators_context_outputs")
+    full_outputs: UnmergedIPDataDict = {}
+    common_ip_outputs: EnrichmentCommonIPsDict = {}
     for ip_indicator in iocs:
-        #todo - which fields should be excluded?
-        common_ip = generate_common_ip_from_ip_indicator(ip_address=ip_indicator.get('value'),
+        # todo - which fields should be excluded?
+        ip_address = ip_indicator.get('value')
+        common_ip = generate_common_ip_from_ip_indicator(ip_address=ip_address,
                                                          ip_type=ip_indicator.get('indicator_type'),
                                                          score=ip_indicator.get('score'),
                                                          custom_fields=ip_indicator.get('CustomFields', {}))
+        append_to_dict_list(common_ip_outputs, ip_address, common_ip.to_context())
         ip_indicator_mapped_context = map_search_indicator_to_context(ip_indicator)
         print(ip_indicator_mapped_context)
-        common_ip_mapped_context = common_ip.to_context()
-        print(common_ip_mapped_context)
-        common_keys = set(ip_indicator_mapped_context.keys()) & set(common_ip_mapped_context.keys())
+        append_to_dict_list(full_outputs, ip_address, ip_indicator_mapped_context)
 
-        if common_keys:
-            raise DemistoException(f"get_search_indicators_outputs - Common keys found: {common_keys}")
-
-        outputs.append(common_ip_mapped_context | ip_indicator_mapped_context)
-    return outputs
+    return full_outputs, common_ip_outputs
 
 
-def search_indicators(ips: list[str]):
+def search_indicators(ips: list[str]) -> EnrichmentSubCommandOutput:
     """Retrieve TIM data for IP indicators."""
     print("search_indicators")
-
     ips_value_query = " or ".join([f"value:{ip}" for ip in ips])
     query = f"(type:IPv6 or type:IPv6CIDR or type:IP) and ({ips_value_query})"
-    #todo: describe the raw results structure
-    raw_results = demisto.searchIndicators(query=query)
-    #todo: wrap in command_results
-    outputs = get_search_indicators_outputs(raw_results.get('iocs', []))
-    print(outputs)
-    return raw_results, outputs
+    # todo: describe the raw results structure
+    raw_results: dict = demisto.searchIndicators(query=query)  # todo: reffer to batch search
+    iocs: list[dict] = raw_results.get('iocs', [])
+    # todo: wrap in command_results
+    outputs, common_ips = get_search_indicators_context_outputs(iocs)
+    merged_search_indicators_outputs = merge_ips_outputs(outputs)
+    return iocs, merged_search_indicators_outputs, common_ips
 
 
 ######################################## internal flow #######################################
@@ -465,30 +276,30 @@ def map_endpoint_data_to_context(endpoint_data):
     return endpoint_data
 
 
-def get_endpoint_data_outputs(endpoints_data: List) -> List[dict]:
+def get_endpoint_data_outputs(endpoints_data: List) -> EnrichmentContextOutputs:
     print("get_endpoint_data_outputs")
-    #todo: transform to dicts grouping by the IPAddress
-    outputs = []
-    common_ips = []
-    for endpoint_data in endpoints_data:  #todo: do all the endpoints returned in a list in the entry context?
+    # todo: transform to dicts grouping by the IPAddress
+    full_outputs = {}
+    common_ip_outputs = {}
+    for endpoint_data in endpoints_data:  # todo: do all the endpoints returned in a list in the entry context?
         common_ip = generate_common_ip_from_endpoint_data()
         endpoint_data_mapped_context = map_endpoint_data_to_context(endpoint_data)
         print(endpoint_data_mapped_context)
-        common_ip_mapped_context = {}  #common_ip.to_context()
+        common_ip_mapped_context = {}  # common_ip.to_context()
         # print(common_ip_mapped_context)
         outputs.append(endpoint_data_mapped_context)
         common_ips.append(common_ip_mapped_context)
     return outputs, common_ips
 
 
-def get_endpoint_data(ips: str, verbose: bool):
-    #running with 192.168.1.143
-    #todo: check what happens when verbose is false
+def get_endpoint_data(ips: str, verbose: bool) -> EnrichmentSubCommandOutput:
+    # running with 192.168.1.143
+    # todo: check what happens when verbose is false
     raw_results = demisto.executeCommand("get-endpoint-data", {"agent_ip": ips, "verbose": str(verbose)})
-    #todo: how is data returned for a list?
+    # todo: how is data returned for a list?
     outputs, common_ips = get_endpoint_data_outputs(raw_results.get('EntryContext', {}).get('Endpoint(val.Hostname.Value && '
                                                                                             'val.Hostname.Value == obj.Hostname.Value)',
-                                                                                            []))  #todo: can I access the key in this way?
+                                                                                            []))  # todo: can I access the key in this way? does it return a list for all the ips under the list of entry contetx?
     return raw_results, outputs, common_ips
 
 
@@ -497,69 +308,110 @@ def generate_common_ip_from_reputations_data(dict):
     pass
 
 
-def map_reputation_data_to_context(reputation_data: dict):
+def map_reputation_data_to_context(reputation_data: dict) -> dict:
+    """
+    extracts the objects under <integration_name>.IP returned by the reputation command and enriches them with the value and source new convention.
+    """
     mapped_reputation_data = []
-    for key, value in reputation_data.items():
+    for key, value in reputation_data.items():  # usually there is only one since the structure of reputation is IP, DBoyrScore
+        # and the Integration name,from observation, but just adding to make sure.
         source_name = key.split(".")[0]
         mapped_reputation_data.append(enrich_data_with_source(value, source_name))
-    return mapped_reputation_data
+    if len(mapped_reputation_data) > 1:
+        return merge_ip(mapped_reputation_data)
+
+    return mapped_reputation_data[0] if mapped_reputation_data else {}
 
 
-def get_reputation_outputs(reputations_data: List) -> tuple[dict[str, list], dict[str, list]]:
+def merge_ips_outputs(outputs: UnmergedIPDataDict) -> MergedIPDataDict:
+    """
+    given a dict with list of data objects per ip, merged the list to a single object and sets it for the ip
+    """
+    merged_outputs = {}
+    for ip_address, outputs_list in outputs.items():
+        merged_outputs[ip_address] = merge_ip(outputs_list)
+    return merged_outputs
+
+
+def get_reputation_context_outputs(reputations_data: List) -> EnrichmentContextOutputs:
     """
     for a single end point, the reputations data is a list of objects , each is a command result, contains entry context which consists of:
     dbotscore, ip, and the brand.ip objects. I can identify the ip in question using the address if various ip are returned in one list
     """
-    print("get_reputation_outputs")
+    print("get_reputation_context_outputs")
     excluded_keys = {
         "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)",
         "IP(val.Address && val.Address == obj.Address)"
     }
-    outputs: dict[str, list] = {}  #dict that maps the outputs for each ip address
-    common_ips: dict[str, list] = {}  #dict that maps the ip object generated by each brand
+    full_outputs: UnmergedIPDataDict = {}  # dict that maps the outputs for each ip address
+    common_ip_outputs: EnrichmentCommonIPsDict = {}  # dict that maps the ip object generated by each brand
     for reputation_data in reputations_data:
         entry_context: Optional[dict] = reputation_data.get(
-            'EntryContext')  #todo: if no entry context, and type is 4, should we report this? only if verbose?
+            'EntryContext')  # todo: if no entry context, and type is 4, should we report this? only if verbose?
         if entry_context:
             common_ip = entry_context.get("IP(val.Address && val.Address == obj.Address)", {})
             address = common_ip.get("Address")
             reputation_data_mapped_context = map_reputation_data_to_context(
                 {key: value for key, value in entry_context.items() if key not in excluded_keys})
-            merge_lists_for_dict_same_key(outputs,address,reputation_data_mapped_context)
-            merge_lists_for_dict_same_key(common_ips, address, common_ip)
-            #todo - dbot score handle
+            append_to_dict_list(full_outputs, address, reputation_data_mapped_context)
+            append_to_dict_list(common_ip_outputs, address, common_ip)
+            # todo - dbot score handle
             print(reputation_data_mapped_context)
             print(common_ip)
-    return outputs, common_ips
+    return full_outputs, common_ip_outputs
 
 
-def check_reputation(ips: str):
+def check_reputation(ips: str) -> EnrichmentSubCommandOutput:
     """Check the reputation of an IP address.
     """
     print("REPUTATION")
-    raw_results: list = demisto.executeCommand("ip", {"ip": ips})
+    raw_results: list = demisto.executeCommand("ip", {"ip": ips})  # todo format of raw result upon failure etc
     print(raw_results)
-    outputs, common_ips = get_reputation_outputs(raw_results)
-    return raw_results, outputs, common_ips
+    outputs, common_ips = get_reputation_context_outputs(raw_results)
+    merged_reputation_outputs = merge_ips_outputs(outputs)
+    return raw_results, merged_reputation_outputs, common_ips
 
 
-def get_analytics_prevalence(ip_command_runner: IPCommandRunner, ips: str) -> dict:
+def get_analytics_prevalence_context_outputs(prevalences_data: List) -> EnrichmentContextOutputs:
+    """
+    for a single end point, the reputations data is a list of objects , each is a command result, contains entry context which consists of:
+    dbotscore, ip, and the brand.ip objects. I can identify the ip in question using the address if various ip are returned in one list
+    """
+    print("get_analytics_prevalence_context_outputs")
+    # excluded_keys = {
+    #     "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)",
+    #     "IP(val.Address && val.Address == obj.Address)"
+    # }
+    full_outputs: UnmergedIPDataDict = {}  # dict that maps the outputs for each ip address
+    common_ip_outputs: EnrichmentCommonIPsDict = {}  # dict that maps the ip object generated by each brand
+    # for prevalence_data in prevalences_data:
+    #     entry_context: Optional[dict] = prevalence_data.get(
+    #         'EntryContext')  #todo: if no entry context, and type is 4, should we report this? only if verbose?
+    #     if entry_context:
+    #         common_ip = entry_context.get("IP(val.Address && val.Address == obj.Address)", {})
+    #         address = common_ip.get("Address")
+    #         reputation_data_mapped_context = map_reputation_data_to_context(
+    #             {key: value for key, value in entry_context.items() if key not in excluded_keys})
+    #         append_to_dict_list(full_outputs, address, reputation_data_mapped_context)
+    #         append_to_dict_list(common_ip_outputs, address, common_ip)
+    #         #todo - dbot score handle
+    #         print(reputation_data_mapped_context)
+    #         print(common_ip)
+    return full_outputs, common_ip_outputs
+
+
+def get_analytics_prevalence(ips: str) -> EnrichmentSubCommandOutput:
     """Retrieve analytics prevalence data for IP indicators."""
     print("ANALYTICS PREVALENCE")
-    if not ip_command_runner.is_brand_available("Cortex Core - IR"):
-        demisto.debug(f'Skipping get_analytics_prevalence since the brand Cortex Core - IR is not available.')
-        print(f'Skipping get_analytics_prevalence since the brand Cortex Core - IR is not available.')
-    prevalence_command = Command(
-        name="core-get-IP-analytics-prevalence",
-        output_keys=["Contents"],
-        output_mapping=lambda x: x.get("Contents", [])
-    )
-    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(
-        prevalence_command, {"ip_address": ips})
+    raw_results = demisto.executeCommand("core-get-IP-analytics-prevalence", {"ip_address": ips})
+    print(raw_results)
+    outputs, common_ips = get_analytics_prevalence_context_outputs(raw_results)
+    merged_prevalence_outputs = merge_ips_outputs(outputs)
+    return raw_results, merged_prevalence_outputs, common_ips
 
 
 ######################################### general flow #######################################
-def enrich_internal_ip_address(ips: list[str], verbose: bool):
+def enrich_internal_ip_address(ips: list[str], verbose: bool) -> EnrichmentSubCommandOutput:
     """Handle internal IP enrichment."""
     demisto.debug(f"Internal IP detected: {ips}")
     joined_ips = ",".join(ips)
@@ -568,46 +420,45 @@ def enrich_internal_ip_address(ips: list[str], verbose: bool):
     return get_endpoint_data_raw_results, get_endpoint_data_outputs, get_endpoint_data_common_ips
 
 
-def enrich_external_ip_address(ips: list[str]):
+def enrich_external_ip_address(ips: list[str]) -> EnrichmentSubCommandOutput:
     """Handle external IP enrichment."""
-    raw_results = []
+    raw_results: EnrichmentRawResults = []
     outputs, common_ips = {}, {}
     demisto.debug(f"External IPs detected: {ips}")
     joined_ips = ",".join(ips)
     check_reputation_raw_results, check_reputation_outputs, check_reputation_common_ips = check_reputation(joined_ips)
     raw_results.extend(check_reputation_raw_results)
-    outputs.append(check_reputation_outputs)  #todo merge the two dictineries.
-    # if is_xsiam():
-    #     get_analytics_prevalence(joined_ips)
-    return raw_results, outputs
+    outputs = check_reputation_outputs
+    common_ips = check_reputation_common_ips
+    if is_xsiam():
+        if is_brand_available("Cortex Core - IR"):
+            get_analytics_prevalence_raw_results, get_analytics_prevalence_outputs, get_analytics_prevalence_common_ips = get_analytics_prevalence(
+                joined_ips)
+        else:
+            demisto.debug(f'Skipping get_analytics_prevalence since the brand Cortex Core - IR is not available.')
+            print(f'Skipping get_analytics_prevalence since the brand Cortex Core - IR is not available.')
 
-
-def gather_enrichment_data(ips: list[str], external_enrichment: bool, verbose: bool):
-    print("gather_enrichment_data")
-    search_indicators_raw_results, search_indicators_outputs = search_indicators(ips)
-    if not external_enrichment and search_indicators_outputs:
-        return
-    internal_ips, external_ips = separate_ips(ips)
-    print(f"Internal IPs: {internal_ips}")
-    print(f"External IPs: {external_ips}")
-    if internal_ips:
-        enriched_internal_ip_address_raw_results, enriched_internal_ip_address_outputs = enrich_internal_ip_address(internal_ips,
-                                                                                                                    verbose)
-    if external_ips:
-        enriched_external_ip_address_raw_results, enriched_external_ip_address_outputs = enrich_external_ip_address(external_ips)
-
-
-def merge_enrichment_data():
-    pass
+    return raw_results, outputs, common_ips
 
 
 def ip_enrichment(ips, external_enrichment, verbose):
     """Perform IP enrichment with validation."""
     try:
-        gather_enrichment_data(ips, external_enrichment, verbose)
-        merge_enrichment_data()
-
-
+        print("gather_enrichment_data")
+        search_indicators_raw_results, search_indicators_outputs, search_indicators_common_ips = search_indicators(ips)
+        print(search_indicators_outputs)
+        if not external_enrichment and search_indicators_outputs:
+            return
+        internal_ips, external_ips = separate_ips(ips)
+        print(f"Internal IPs: {internal_ips}")
+        print(f"External IPs: {external_ips}")
+        if internal_ips:
+            enriched_internal_ip_address_raw_results, enriched_internal_ip_address_outputs, enriched_internal_ip_address_common_ips = enrich_internal_ip_address(
+                internal_ips,
+                verbose)
+        if external_ips:
+            enriched_external_ip_address_raw_results, enriched_external_ip_address_outputs, enriched_external_ip_address_common_ips = enrich_external_ip_address(
+                external_ips)
 
     except Exception as e:
         demisto.error(f"Failed to enrich IP: {e}")
@@ -620,7 +471,6 @@ def main():
         ips = argToList(args.get("ip", ""))
         external_enrichment = argToBoolean(args.get("external_enrichment", False))
         verbose = argToBoolean(args.get("verbose", False))
-        # ip_command_runner = IPCommandRunner(verbose)
 
         if not ips:
             raise ValueError("No IPs provided for enrichment.")
@@ -630,7 +480,7 @@ def main():
 
         except Exception as e:
             print(f"Failed to enrich IP: {e}")
-            #ips_not_found_list.append({"ip": ip, "error": str(e)})
+            # ips_not_found_list.append({"ip": ip, "error": str(e)})
 
         # return_results(ip_command_runner.commands_results_list)
 
