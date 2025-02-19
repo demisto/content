@@ -46,7 +46,7 @@ script:
       required: true
     - description: "A set of URL-encoded key/value pairs with additional contextual information associated with this authentication attempt. The Duo Mobile app will display this information to the user. For example: from=login%20portal&domain=example.com, The URL-encoded string's total length must be less than 20,000 bytes."
       name: pushinfo
-    - defaultvalue: "Activities"
+    - defaultValue: "Activities"
       description: This string is displayed in the Duo Mobile app push notification and UI.
       name: type
     description: Send push message to Duo user.
