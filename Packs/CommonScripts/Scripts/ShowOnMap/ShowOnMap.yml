@@ -22,3 +22,5 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
+tests:
+- No test
