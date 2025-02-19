@@ -293,6 +293,7 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
         else:
             break
     else:
+        # Even if the process hasn't started, attempt connection in case it starts meanwhile.
         demisto.debug(f"Process did not start after {DEFAULT_RETRIES_COUNT} attempts. Moving on to try to connect.")
 
     # connect to the Chrome browser instance
