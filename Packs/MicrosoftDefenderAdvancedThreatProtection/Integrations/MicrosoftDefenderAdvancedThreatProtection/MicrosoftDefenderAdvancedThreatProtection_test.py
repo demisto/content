@@ -2770,6 +2770,94 @@ def test_list_software_command(mocker, args, return_value_get_list_software, exp
     assert result_list_software.outputs == expected_outputs
 
 
+@pytest.mark.parametrize('args, return_value_get_software_by_machine_id,expected_human_readable,expected_outputs', [
+    (
+        {'machine_id': 'some_machine'},
+        {
+            '@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Software',
+            '@odata.count': 2,
+            'value': [
+                {
+                    'id': 'some_id',
+                    'name': 'some_name',
+                    'vendor': 'some_vendor',
+                    'weaknesses': 0,
+                    'publicExploit': False,
+                    'activeAlert': False,
+                    'exposedMachines': 0,
+                    'installedMachines': 1,
+                    'impactScore': 0,
+                    'isNormalized': False,
+                    'category': '',
+                    'distributions': []
+                },
+                {
+                    'id': 'another_id',
+                    'name': 'another_name',
+                    'vendor': 'another_vendor',
+                    'weaknesses': 42,
+                    'publicExploit': True,
+                    'activeAlert': True,
+                    'exposedMachines': 0,
+                    'installedMachines': 1,
+                    'impactScore': 0,
+                    'isNormalized': False,
+                    'category': '',
+                    'distributions': []
+                }
+            ]
+        },
+        '### Microsoft Defender ATP software on machine: some_machine\n|id|name|vendor|publicExploit|activeAlert|exposedMachines|installedMachines|impactScore|isNormalized|\n|---|---|---|---|---|---|---|---|---|\n| some_id | some_name | some_vendor | false | false | 0 | 1 | 0 | false |\n| another_id | another_name | another_vendor | true | true | 0 | 1 | 0 | false |\n',  # noqa: E501
+        [
+            {
+                'id': 'some_id',
+                'name': 'some_name',
+                'vendor': 'some_vendor',
+                'weaknesses': 0,
+                'publicExploit': False,
+                'activeAlert': False,
+                'exposedMachines': 0,
+                'installedMachines': 1,
+                'impactScore': 0,
+                'isNormalized': False,
+                'category': '',
+                'distributions': []
+            },
+            {
+                'id': 'another_id',
+                'name': 'another_name',
+                'vendor': 'another_vendor',
+                'weaknesses': 42,
+                'publicExploit': True,
+                'activeAlert': True,
+                'exposedMachines': 0,
+                'installedMachines': 1,
+                'impactScore': 0,
+                'isNormalized': False,
+                'category': '',
+                'distributions': []
+            }
+        ]
+    )
+])
+def test_get_software_by_machine_id(mocker, args, return_value_get_software_by_machine_id, expected_human_readable, expected_outputs):  # noqa: E501
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing get_software_by_machine_id.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import get_machine_software_command
+    mocker.patch.object(client_mocker, 'get_software_by_machine_id', return_value=return_value_get_software_by_machine_id)
+    result_get_software_by_machine_id = get_machine_software_command(client_mocker, args)
+    assert result_get_software_by_machine_id.readable_output == expected_human_readable
+    assert result_get_software_by_machine_id.outputs == expected_outputs
+
+
 @pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
     ({'cve_id': 'CVE-3333-33333'},
      {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetVulnerabilityDto)',  # noqa: E501
