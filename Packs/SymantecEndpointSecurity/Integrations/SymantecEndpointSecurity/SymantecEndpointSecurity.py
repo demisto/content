@@ -329,7 +329,7 @@ def extract_events(res: Response) -> tuple[list[dict], str]:
 
     if res is None:
         raise EmptyResponse
-    
+
     if res.status_code == 204:
         raise NoEventsReceived
 
@@ -457,7 +457,7 @@ def perform_long_running_loop(client: Client):
             )
 
         except Exception as e:
-            raise DemistoException("Failed to fetch logs from API") from e
+            raise DemistoException(f"Failed to fetch logs from API {e}")
 
         # Used to calculate the duration of the fetch run.
         end_timestamp = time.time()
