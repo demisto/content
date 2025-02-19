@@ -33,4 +33,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Gatewatcher-AionIQ](../doc_files/playbook-Malcore_alert_related_file.png)
+![Gatewatcher-AionIQ](../doc_files/Malcore_alert_related_file.png)
