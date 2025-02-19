@@ -94,7 +94,8 @@ class Client(BaseClient):
             "start-date": start_date,
             "end-date": end_date
         }
-        reports = self.http_request(method='GET', url_suffix="/api/v2/reports", params=params).get("reports") or []
+        reports = self.http_request(method='GET', url_suffix="/api/v2/reports",
+                                    params=params).get("reports") or []  # type: ignore
         for report in reports:
             if updated_at := report.get("updated_at"):
                 _time_field = updated_at
@@ -299,7 +300,7 @@ def cybelangel_report_get_command(client: Client, args):
         if pdf_response:
             return fileResult(
                 f"cybelangel_report_{report_id}.pdf",
-                pdf_response.content,
+                pdf_response.content,  # type: ignore
                 file_type=EntryType.ENTRY_INFO_FILE,
             )
     return CommandResults(
@@ -323,7 +324,7 @@ def cybelangel_mirror_report_get_command(client: Client, args):
     if csv:
         return fileResult(
             f"cybelangel_mirror_report_{report_id}.csv",
-            response.content,
+            response.content,  # type: ignore
             file_type=EntryType.ENTRY_INFO_FILE,
         )
 
@@ -342,7 +343,7 @@ def cybelangel_archive_report_by_id_get_command(client: Client, args):
 
     return fileResult(
         f"cybelangel_archive_report_{report_id}.zip",
-        response.content,
+        response.content,  # type: ignore
         file_type=EntryType.ENTRY_INFO_FILE,
     )
 
@@ -387,7 +388,7 @@ def cybelangel_report_comment_create_command(client: Client, args):
     comments_response = client.http_request(
         "GET", f"/api/v1/reports/{report_id}/comments"
     )
-    discussion_id = comments_response.get("comments", [])[0].get("discussion_id")
+    discussion_id = comments_response.get("comments", [])[0].get("discussion_id")  # type: ignore
     if not discussion_id:
         raise ValueError("Unable to retrieve tenant ID")
 
@@ -420,7 +421,7 @@ def cybelangel_report_attachment_get_command(client: Client, args):
 
     return fileResult(
         f"cybelangel_report_{report_id}_attachment_{attachment_id}.csv",
-        response.text,
+        response.text,  # type: ignore
         file_type=EntryType.ENTRY_INFO_FILE,
     )
     # return CommandResults(
