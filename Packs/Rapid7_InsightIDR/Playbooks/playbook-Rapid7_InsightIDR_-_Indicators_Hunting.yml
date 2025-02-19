@@ -1,20 +1,7 @@
-id: b6af6583-64a7-48b7-8285-bd2820d331b5
-version: 5
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Rapid7 InsightIDR
-    itemVersion: 2.0.3
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
-name: Rapid7 InsightIDR - File Indicators Hunting
-description: |-
-  This playbook queries Rapid7 InsightIDR SIEM for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, file types, and file paths.
-
-  Note that multiple search values should be separated by commas only (without spaces or any special characters).
+id: Rapid7 InsightIDR - Indicators Hunting
+version: -1
+name: Rapid7 InsightIDR - Indicators Hunting
+description: "This playbook facilitates threat hunting and detection of IOCs within Rapid7 InsightIDR SIEM logs utilizing four sub-playbooks. The sub-playbooks query Rapid7 InsightIDR SIEM for different indicators including files, traffic, HTTP requests, and execution flows indicators.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). \n\nSupported IOCs for this playbook:\n- MD5\n- SHA1\n- SHA256\n- IP Address\n- URLDomain\n- Registry Value\n- Registry Key\n- Registry Hives\n- Command Line\n- File Name\n- Process Name\n- HTTP Request Methods\n- User Agent\n- Port Number\n- File Path\n- Geolocation\n- Email Address\n- CIDR\n- URI\n- Ja3\n- FileType"
 starttaskid: "0"
 tasks:
   "0":
@@ -27,16 +14,20 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "56"
+      - "60"
+      - "59"
+      - "61"
+      - "58"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4860,
-          "y": -1170
+          "x": 695,
+          "y": 50
         }
       }
     note: false
@@ -46,113 +37,174 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 78f8e5c7-6fc4-4f94-839c-d32b7a4c7e12
+  "58":
+    id: "58"
+    taskid: 7652dd58-24f8-49fc-89b1-7c0e029e856e
     type: title
     task:
-      id: 78f8e5c7-6fc4-4f94-839c-d32b7a4c7e12
+      id: 7652dd58-24f8-49fc-89b1-7c0e029e856e
       version: -1
-      name: File Type Indicators
+      name: Traffic Indicators
       type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: fa774f82-2fe7-4479-879c-b295d8b4093a
+    type: title
+    task:
+      id: fa774f82-2fe7-4479-879c-b295d8b4093a
+      version: -1
+      name: File Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 61f9fdd3-9b61-48b7-86d3-b327936a3218
+    type: title
+    task:
+      id: 61f9fdd3-9b61-48b7-86d3-b327936a3218
+      version: -1
+      name: HTTP Requests Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "62"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: f54af5c7-aecb-454d-8323-ee76f2f9f842
+    type: title
+    task:
+      id: f54af5c7-aecb-454d-8323-ee76f2f9f842
+      version: -1
+      name: Execution Flow Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: b73107ea-ba31-46f9-8cf3-2f8642208024
+    type: playbook
+    task:
+      id: b73107ea-ba31-46f9-8cf3-2f8642208024
+      version: -1
+      name: Rapid7 InsightIDR - HTTP Requests Indicators Hunting
+      description: "This playbook queries Rapid7 InsightIDR SIEM for indicators associated with HTTP requests, including HTTP request methods, user agents, URIs, and Ja3.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). "
+      playbookName: Rapid7 InsightIDR - HTTP Requests Indicators Hunting
+      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "138"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2960,
-          "y": -870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 17350a20-1b2a-4a63-897b-ba6ceec0a3ed
-    type: title
-    task:
-      id: 17350a20-1b2a-4a63-897b-ba6ceec0a3ed
-      version: -1
-      name: File Name Indicators
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "137"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2540,
-          "y": -870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: ec8e5a6e-ede9-4c5c-8666-4a971e12e025
-    type: title
-    task:
-      id: ec8e5a6e-ede9-4c5c-8666-4a971e12e025
-      version: -1
-      name: MD5 Indicators
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "142"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4630,
-          "y": -870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: e2471789-ff8c-4729-8e11-4500f5f0f3b7
-    type: regular
-    task:
-      id: e2471789-ff8c-4729-8e11-4500f5f0f3b7
-      version: -1
-      name: Rapid7 InsightIDR query - file name
-      description: Queries within a log set for certain values.
-      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
-      type: regular
-      iscommand: true
-      brand: Rapid7 InsightIDR
-    nexttasks:
-      '#none#':
-      - "121"
+      - "65"
     scriptarguments:
+      HTTPRequestMethods:
+        complex:
+          root: inputs.HTTPRequestMethods
+      InsightIDRHttpMethodsField:
+        complex:
+          root: inputs.InsightIDRHttpMethodsField
+      InsightIDRJa3Field:
+        complex:
+          root: inputs.InsightIDRJa3Field
+      InsightIDRURIField:
+        complex:
+          root: inputs.InsightIDRURIField
+      InsightIDRUserAgentField:
+        complex:
+          root: inputs.InsightIDRUserAgentField
+      Ja3:
+        complex:
+          root: inputs.Ja3
+      LogSetId:
+        complex:
+          root: inputs.LogSetId
+      URI:
+        complex:
+          root: inputs.URI
+      UserAgent:
+        complex:
+          root: inputs.UserAgent
       end_time:
         complex:
           root: inputs
@@ -173,9 +225,6 @@ tasks:
                   simple: inputs.time_range
                 iscontext: true
           accessor: end_time
-      log_set_id:
-        complex:
-          root: inputs.LogSetId
       logs_per_page:
         complex:
           root: inputs.logs_per_page
@@ -193,8 +242,6 @@ tasks:
               right:
                 value:
                   simple: "500"
-      query:
-        simple: where(${inputs.InsightIDRFileNameField} CONTAINS-ANY [${FileNameParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -220,8 +267,13 @@ tasks:
           accessor: start_time
       time_range:
         complex:
-          root: inputs.time_range
+          root: inputs
           filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
           - - operator: isEmpty
               left:
                 value:
@@ -232,18 +284,19 @@ tasks:
                 value:
                   simple: inputs.start_time
                 iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-    separatecontext: false
+          accessor: time_range
+    separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": -2540,
-          "y": -370
+          "x": 480,
+          "y": 340
         }
       }
     note: false
@@ -253,1507 +306,157 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 2c86b368-e7ae-4a07-8dc0-45a948dd8dff
-    type: regular
+  "63":
+    id: "63"
+    taskid: 2f3ba7ea-52a6-4341-8806-3d44270ca1c9
+    type: playbook
     task:
-      id: 2c86b368-e7ae-4a07-8dc0-45a948dd8dff
+      id: 2f3ba7ea-52a6-4341-8806-3d44270ca1c9
       version: -1
-      name: Rapid7 InsightIDR query - file type
-      description: Queries within a log set for certain values.
-      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
-      type: regular
-      iscommand: true
-      brand: Rapid7 InsightIDR
+      name: Rapid7 InsightIDR - File Indicators Hunting
+      description: |-
+        This playbook queries Rapid7 InsightIDR SIEM for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, file types, and file paths.
+
+        Note that multiple search values should be separated by commas only (without spaces or any special characters).
+      playbookName: Rapid7 InsightIDR - File Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "122"
+      - "65"
     scriptarguments:
-      end_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: end_time
-      log_set_id:
-        complex:
-          root: inputs.LogSetId
-      logs_per_page:
-        complex:
-          root: inputs.logs_per_page
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-          - - operator: lessThanOrEqual
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-              right:
-                value:
-                  simple: "500"
-      query:
-        simple: where(${inputs.InsightIDRFileTypeField} CONTAINS-ANY [${FileTypeParsed}])
-      sequence_number:
-        complex:
-          root: inputs.sequence_number
-      start_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: start_time
-      time_range:
-        complex:
-          root: inputs.time_range
-          filters:
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2960,
-          "y": -360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 10c1beb1-9d60-4c44-8d1c-e352e14e0078
-    type: regular
-    task:
-      id: 10c1beb1-9d60-4c44-8d1c-e352e14e0078
-      version: -1
-      name: Rapid7 InsightIDR query - MD5
-      description: Queries within a log set for certain values.
-      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
-      type: regular
-      iscommand: true
-      brand: Rapid7 InsightIDR
-    nexttasks:
-      '#none#':
-      - "126"
-    scriptarguments:
-      end_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: end_time
-      log_set_id:
-        complex:
-          root: inputs.LogSetId
-      logs_per_page:
-        complex:
-          root: inputs.logs_per_page
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-          - - operator: lessThanOrEqual
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-              right:
-                value:
-                  simple: "500"
-      query:
-        simple: where(${inputs.InsightIDRMD5Field} CONTAINS-ANY [${MD5Parsed}])
-      sequence_number:
-        complex:
-          root: inputs.sequence_number
-      start_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: start_time
-      time_range:
-        complex:
-          root: inputs.time_range
-          filters:
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4630,
-          "y": -370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
-    taskid: fb5cd1e8-9f1f-4324-8ad1-20611359bdea
-    type: condition
-    task:
-      id: fb5cd1e8-9f1f-4324-8ad1-20611359bdea
-      version: -1
-      name: Is Rapid7 InsightIDR enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "175"
-      "yes":
-      - "69"
-      - "74"
-      - "13"
-      - "77"
-      - "8"
-      - "11"
-    scriptarguments:
-      brandname:
-        simple: Rapid7 InsightIDR
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4860,
-          "y": -1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
-    taskid: 4584614c-ba99-40d8-8079-32fa03c6018d
-    type: title
-    task:
-      id: 4584614c-ba99-40d8-8079-32fa03c6018d
-      version: -1
-      name: SHA256 Indicators
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "140"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3790,
-          "y": -870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "70":
-    id: "70"
-    taskid: 745d7d10-e6f8-4552-842f-cf61848aaac1
-    type: regular
-    task:
-      id: 745d7d10-e6f8-4552-842f-cf61848aaac1
-      version: -1
-      name: Rapid7 InsightIDR query - SHA256
-      description: Queries within a log set for certain values.
-      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
-      type: regular
-      iscommand: true
-      brand: Rapid7 InsightIDR
-    nexttasks:
-      '#none#':
-      - "124"
-    scriptarguments:
-      end_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: end_time
-      log_set_id:
-        complex:
-          root: inputs.LogSetId
-      logs_per_page:
-        complex:
-          root: inputs.logs_per_page
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-          - - operator: lessThanOrEqual
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-              right:
-                value:
-                  simple: "500"
-      query:
-        simple: where(${inputs.InsightIDRSHA256Field} CONTAINS-ANY [${SHA256Parsed}])
-      sequence_number:
-        complex:
-          root: inputs.sequence_number
-      start_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: start_time
-      time_range:
-        complex:
-          root: inputs.time_range
-          filters:
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3790,
-          "y": -370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "73":
-    id: "73"
-    taskid: 863111f4-d353-49a1-8410-49849f638ff2
-    type: regular
-    task:
-      id: 863111f4-d353-49a1-8410-49849f638ff2
-      version: -1
-      name: Rapid7 InsightIDR query - SHA1
-      description: Queries within a log set for certain values.
-      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
-      type: regular
-      iscommand: true
-      brand: Rapid7 InsightIDR
-    nexttasks:
-      '#none#':
-      - "125"
-    scriptarguments:
-      end_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: end_time
-      log_set_id:
-        complex:
-          root: inputs.LogSetId
-      logs_per_page:
-        complex:
-          root: inputs.logs_per_page
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-          - - operator: lessThanOrEqual
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-              right:
-                value:
-                  simple: "500"
-      query:
-        simple: where(${inputs.InsightIDSHA1Field} CONTAINS-ANY [${SHA1Parsed}])
-      sequence_number:
-        complex:
-          root: inputs.sequence_number
-      start_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: start_time
-      time_range:
-        complex:
-          root: inputs.time_range
-          filters:
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4200,
-          "y": -370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "74":
-    id: "74"
-    taskid: 44d97b92-4fe5-4f94-8fde-5ca7d7e47df4
-    type: title
-    task:
-      id: 44d97b92-4fe5-4f94-8fde-5ca7d7e47df4
-      version: -1
-      name: SHA1 Indicators
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "141"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4200,
-          "y": -870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "76":
-    id: "76"
-    taskid: cb51b3d4-9383-49fc-899e-7bb313e1c1b1
-    type: regular
-    task:
-      id: cb51b3d4-9383-49fc-899e-7bb313e1c1b1
-      version: -1
-      name: Rapid7 InsightIDR query - file path
-      description: Queries within a log set for certain values.
-      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
-      type: regular
-      iscommand: true
-      brand: Rapid7 InsightIDR
-    nexttasks:
-      '#none#':
-      - "123"
-    scriptarguments:
-      end_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: end_time
-      log_set_id:
-        complex:
-          root: inputs.LogSetId
-      logs_per_page:
-        complex:
-          root: inputs.logs_per_page
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-          - - operator: lessThanOrEqual
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-              right:
-                value:
-                  simple: "500"
-      query:
-        simple: where(${inputs.InsightIDRFilePathField} CONTAINS-ANY [${FilePathParsed}])
-      sequence_number:
-        complex:
-          root: inputs.sequence_number
-      start_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: start_time
-      time_range:
-        complex:
-          root: inputs.time_range
-          filters:
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3370,
-          "y": -370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "77":
-    id: "77"
-    taskid: e402b951-3b9a-430a-80d0-335b73a1ec39
-    type: title
-    task:
-      id: e402b951-3b9a-430a-80d0-335b73a1ec39
-      version: -1
-      name: File Path Indicators
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "139"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3370,
-          "y": -870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "121":
-    id: "121"
-    taskid: c3ff1d3f-6f45-4ec5-8e9e-75cce24a341b
-    type: title
-    task:
-      id: c3ff1d3f-6f45-4ec5-8e9e-75cce24a341b
-      version: -1
-      name: File Name Hunting Done
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "176"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2540,
-          "y": -205
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "122":
-    id: "122"
-    taskid: 778b9cd3-7d6b-4ee4-83b6-c2d6dadfa264
-    type: title
-    task:
-      id: 778b9cd3-7d6b-4ee4-83b6-c2d6dadfa264
-      version: -1
-      name: File Type Hunting Done
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "176"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2960,
-          "y": -205
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "123":
-    id: "123"
-    taskid: 7a23b7a5-9427-47af-8880-4e0ffc935503
-    type: title
-    task:
-      id: 7a23b7a5-9427-47af-8880-4e0ffc935503
-      version: -1
-      name: File Path Hunting Done
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "176"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3370,
-          "y": -205
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "124":
-    id: "124"
-    taskid: de5d1e4d-bcb4-4f85-8be8-6c6dac3ecfa9
-    type: title
-    task:
-      id: de5d1e4d-bcb4-4f85-8be8-6c6dac3ecfa9
-      version: -1
-      name: SHA256 Hunting Done
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "176"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3790,
-          "y": -205
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "125":
-    id: "125"
-    taskid: 00d908e0-ab8c-405d-8621-c55852dac07b
-    type: title
-    task:
-      id: 00d908e0-ab8c-405d-8621-c55852dac07b
-      version: -1
-      name: SHA1 Hunting Done
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "176"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4200,
-          "y": -205
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "126":
-    id: "126"
-    taskid: 8a93b48b-dcfb-4a34-8072-5bf59232e897
-    type: title
-    task:
-      id: 8a93b48b-dcfb-4a34-8072-5bf59232e897
-      version: -1
-      name: MD5 Hunting Done
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "176"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4630,
-          "y": -205
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "137":
-    id: "137"
-    taskid: 176f4dd2-e927-42be-8eb6-859774ed6d65
-    type: condition
-    task:
-      id: 176f4dd2-e927-42be-8eb6-859774ed6d65
-      version: -1
-      name: Any file name to hunt for?
-      description: |
-        Checks whether any file names are available for threat hunting.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "175"
-      "yes":
-      - "163"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.FileName
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2540,
-          "y": -740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "138":
-    id: "138"
-    taskid: 6a35fd76-57db-4913-866e-fde04d94981e
-    type: condition
-    task:
-      id: 6a35fd76-57db-4913-866e-fde04d94981e
-      version: -1
-      name: Any file type to hunt for?
-      description: |
-        Checks whether any file types are available for threat hunting.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "175"
-      "yes":
-      - "164"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.FileType
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2960,
-          "y": -740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "139":
-    id: "139"
-    taskid: 7eda9b97-06c3-41f5-89c1-d15e29a824d4
-    type: condition
-    task:
-      id: 7eda9b97-06c3-41f5-89c1-d15e29a824d4
-      version: -1
-      name: Any file path to hunt for?
-      description: |
-        Checks whether any file paths are available for threat hunting.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "175"
-      "yes":
-      - "165"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.FilePath
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3370,
-          "y": -740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "140":
-    id: "140"
-    taskid: 61c8d7fa-52ba-4eaf-8349-25dbd76c86f3
-    type: condition
-    task:
-      id: 61c8d7fa-52ba-4eaf-8349-25dbd76c86f3
-      version: -1
-      name: Any SHA256 to hunt for?
-      description: |
-        Checks whether any SHA256 hashes are available for threat hunting.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "175"
-      "yes":
-      - "166"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.SHA256
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3790,
-          "y": -740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "141":
-    id: "141"
-    taskid: 6ef9ec3d-5668-4410-8ad4-3428516e3de5
-    type: condition
-    task:
-      id: 6ef9ec3d-5668-4410-8ad4-3428516e3de5
-      version: -1
-      name: Any SHA1 to hunt for?
-      description: |
-        Checks whether any SHA1 hashes are available for threat hunting.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "175"
-      "yes":
-      - "167"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.SHA1
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4200,
-          "y": -740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "142":
-    id: "142"
-    taskid: e84d41e2-5aca-404f-87bc-80d2b1bb0616
-    type: condition
-    task:
-      id: e84d41e2-5aca-404f-87bc-80d2b1bb0616
-      version: -1
-      name: Any MD5 to hunt for?
-      description: |
-        Checks whether any MD5 hashes are available for threat hunting.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "175"
-      "yes":
-      - "168"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.MD5
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4630,
-          "y": -740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "163":
-    id: "163"
-    taskid: 2e55fc2f-cc17-4563-8fe8-b9167f91c898
-    type: regular
-    task:
-      id: 2e55fc2f-cc17-4563-8fe8-b9167f91c898
-      version: -1
-      name: Set file name search argument
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      key:
-        simple: FileNameParsed
-      value:
+      FileName:
         complex:
           root: inputs.FileName
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.FileName
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2540,
-          "y": -530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "164":
-    id: "164"
-    taskid: 8844d0a8-d4a3-4f0d-81a6-e7185935143a
-    type: regular
-    task:
-      id: 8844d0a8-d4a3-4f0d-81a6-e7185935143a
-      version: -1
-      name: Set file type search argument
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      key:
-        simple: FileTypeParsed
-      value:
-        complex:
-          root: inputs.FileType
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.FileType
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2960,
-          "y": -520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "165":
-    id: "165"
-    taskid: f44bf473-5f4c-4420-8bc2-1d181e77bd90
-    type: regular
-    task:
-      id: f44bf473-5f4c-4420-8bc2-1d181e77bd90
-      version: -1
-      name: Set file path search argument
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "76"
-    scriptarguments:
-      key:
-        simple: FilePathParsed
-      value:
+      FilePath:
         complex:
           root: inputs.FilePath
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.FilePath
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3370,
-          "y": -530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "166":
-    id: "166"
-    taskid: 00bd98bf-128c-45e9-8d71-7708d2a3d177
-    type: regular
-    task:
-      id: 00bd98bf-128c-45e9-8d71-7708d2a3d177
-      version: -1
-      name: Set SHA256 search argument
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "70"
-    scriptarguments:
-      key:
-        simple: SHA256Parsed
-      value:
+      FileType:
         complex:
-          root: inputs.SHA256
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.SHA256
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3790,
-          "y": -530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "167":
-    id: "167"
-    taskid: 54511478-cf76-4c13-883d-11a3f5f9cd31
-    type: regular
-    task:
-      id: 54511478-cf76-4c13-883d-11a3f5f9cd31
-      version: -1
-      name: Set SHA1 search argument
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "73"
-    scriptarguments:
-      key:
-        simple: SHA1Parsed
-      value:
+          root: inputs.FileType
+      InsightIDRFileNameField:
         complex:
-          root: inputs.SHA1
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.SHA1
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4200,
-          "y": -530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "168":
-    id: "168"
-    taskid: 3bce8727-58b1-406c-8742-d264d3e82af5
-    type: regular
-    task:
-      id: 3bce8727-58b1-406c-8742-d264d3e82af5
-      version: -1
-      name: Set MD5 search argument
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      key:
-        simple: MD5Parsed
-      value:
+          root: inputs.InsightIDRFileNameField
+      InsightIDRFilePathField:
+        complex:
+          root: inputs.InsightIDRFilePathField
+      InsightIDRFileTypeField:
+        complex:
+          root: inputs.InsightIDRFileTypeField
+      InsightIDRMD5Field:
+        complex:
+          root: inputs.InsightIDRMD5Field
+      InsightIDRSHA1Field:
+        complex:
+          root: inputs.InsightIDRSHA1Field
+      InsightIDRSHA256Field:
+        complex:
+          root: inputs.InsightIDRSHA256Field
+      LogSetId:
+        complex:
+          root: inputs.LogSetId
+      MD5:
         complex:
           root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+      end_time:
+        complex:
+          root: inputs
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.MD5
+                  simple: inputs.end_time
                 iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
+          - - operator: isNotEmpty
+              left:
                 value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": -4630,
-          "y": -530
+          "x": 910,
+          "y": 340
         }
       }
     note: false
@@ -1763,24 +466,182 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "175":
-    id: "175"
-    taskid: 426e4bed-833f-49fb-8f12-08453c5fc526
+  "64":
+    id: "64"
+    taskid: 1591aa93-06af-4ff0-8916-e362dd92808b
+    type: playbook
+    task:
+      id: 1591aa93-06af-4ff0-8916-e362dd92808b
+      version: -1
+      name: 'Rapid7 InsightIDR - Execution Flow Indicators Hunting'
+      description: "This playbook queries Rapid7 InsightIDR SIEM for execution flow indicators, including registry values, registry keys, registry hives, commands, processes name, and applications. \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+      playbookName: Rapid7 InsightIDR - Execution Flow Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      Application:
+        complex:
+          root: inputs.Application
+      CommandLine:
+        complex:
+          root: inputs.CommandLine
+      InsightIDRAppField:
+        complex:
+          root: inputs.InsightIDRAppField
+      InsightIDRCommandLineField:
+        complex:
+          root: inputs.InsightIDRCommandLineField
+      InsightIDRProcessNameField:
+        complex:
+          root: inputs.InsightIDRProcessNameField
+      InsightIDRRegistryHivesField:
+        complex:
+          root: inputs.InsightIDRRegistryHivesField
+      InsightIDRRegistryKeyField:
+        complex:
+          root: inputs.InsightIDRRegistryKeyField
+      InsightIDRRegistryValueField:
+        complex:
+          root: inputs.InsightIDRRegistryValueField
+      LogSetId:
+        complex:
+          root: inputs.LogSetId
+      ProcessName:
+        complex:
+          root: inputs.ProcessName
+      RegistryHives:
+        complex:
+          root: inputs.RegistryHives
+      RegistryKey:
+        complex:
+          root: inputs.RegistryKey
+      RegistryValue:
+        complex:
+          root: inputs.RegistryValue
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: f95e23db-156b-48d5-8071-546400ecd52e
     type: title
     task:
-      id: 426e4bed-833f-49fb-8f12-08453c5fc526
+      id: f95e23db-156b-48d5-8071-546400ecd52e
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4860,
-          "y": 110
+          "x": 695,
+          "y": 515
         }
       }
     note: false
@@ -1790,52 +651,163 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "176":
-    id: "176"
-    taskid: b3efcda8-a91c-4467-8c2c-61cf7fcfb33d
-    type: regular
+  "66":
+    id: "66"
+    taskid: da4d566b-a15a-4a7e-8bcb-bf98aed13699
+    type: playbook
     task:
-      id: b3efcda8-a91c-4467-8c2c-61cf7fcfb33d
+      id: da4d566b-a15a-4a7e-8bcb-bf98aed13699
       version: -1
-      name: Save Queries Results
-      description: Loads a json from string input, and returns a json object result
-      scriptName: LoadJSON
-      type: regular
+      name: Rapid7 InsightIDR - Traffic Indicators Hunting
+      description: "This playbook queries Rapid7 InsightIDR SIEM for traffic indicators, including URLs, domains, ports, IP addresses, IP ranges (CIDR), email addresses, geolocations, \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+      playbookName: Rapid7 InsightIDR - Traffic Indicators Hunting
+      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "175"
+      - "65"
     scriptarguments:
-      extend-context:
-        simple: Rapid7InsightIDR.HuntingResults=
-      ignore-outputs:
-        simple: "true"
-      input:
+      CIDR:
         complex:
-          root: Rapid7InsightIDR.Event
+          root: inputs.CIDR
+      EmailAddress:
+        complex:
+          root: inputs.EmailAddress
+      Geolocation:
+        complex:
+          root: inputs.Geolocation
+      IPAddress:
+        complex:
+          root: inputs.IPAddress
+      InsightIDRRecipientField:
+        complex:
+          root: inputs.InsightIDRRecipientField
+      InsightIDRSdstGeolocationField:
+        complex:
+          root: inputs.InsightIDRSdstGeolocationField
+      InsightIDRSenderField:
+        complex:
+          root: inputs.InsightIDRSenderField
+      InsightIDRURLDomainField:
+        complex:
+          root: inputs.InsightIDRURLDomainField
+      InsightIDRdstIPField:
+        complex:
+          root: inputs.InsightIDRdstIPField
+      InsightIDRdstPortField:
+        complex:
+          root: inputs.InsightIDRdstPortField
+      InsightIDRsrcGeolocationField:
+        complex:
+          root: inputs.InsightIDRsrcGeolocationField
+      InsightIDRsrcIPField:
+        complex:
+          root: inputs.InsightIDRsrcIPField
+      InsightIDRsrcPortField:
+        complex:
+          root: inputs.InsightIDRsrcPortField
+      LogSetId:
+        complex:
+          root: inputs.LogSetId
+      PortNumber:
+        complex:
+          root: inputs.PortNumber
+      URLDomain:
+        complex:
+          root: inputs.URLDomain
+      end_time:
+        complex:
+          root: inputs
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: Rapid7InsightIDR.Event
+                  simple: inputs.end_time
                 iscontext: true
-          accessor: message
-          transformers:
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith: {}
-              toReplace:
+          - - operator: isNotEmpty
+              left:
                 value:
-                  simple: \
-    separatecontext: false
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": -3570,
-          "y": -60
+          "x": 50,
+          "y": 340
         }
       }
     note: false
@@ -1847,27 +819,13 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "137_175_#default#": 0.1,
-      "138_175_#default#": 0.1,
-      "139_175_#default#": 0.1,
-      "140_175_#default#": 0.1,
-      "141_175_#default#": 0.16,
-      "142_168_yes": 0.43,
-      "142_175_#default#": 0.18,
-      "56_11_yes": 0.9,
-      "56_13_yes": 0.39,
-      "56_175_#default#": 0.13,
-      "56_74_yes": 0.65,
-      "56_77_yes": 0.83,
-      "56_8_yes": 0.87
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1345,
-        "width": 2700,
-        "x": -4860,
-        "y": -1170
+        "height": 530,
+        "width": 1670,
+        "x": 50,
+        "y": 50
       }
     }
   }
