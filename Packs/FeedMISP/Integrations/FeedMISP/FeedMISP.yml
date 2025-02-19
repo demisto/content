@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: MISP Feed1
+  id: MISP Feed
   version: -1
 sectionorder:
 - Connect
@@ -153,8 +153,8 @@ configuration:
   required: false
   section: Connect
 description: 'Indicators feed from MISP.'
-display: MISP Feed1
-name: MISP Feed1
+display: MISP Feed
+name: MISP Feed
 script:
   commands:
   - arguments:
