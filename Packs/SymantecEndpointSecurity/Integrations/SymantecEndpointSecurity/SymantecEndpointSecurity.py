@@ -13,7 +13,7 @@ PRODUCT = "endpoint_security"
 DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-DELIMITER = "\n"
+DELIMITER = b"\n"
 
 """
 Sleep time between fetch attempts when an error occurs in the retrieval process,
