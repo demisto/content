@@ -1969,6 +1969,92 @@ Returns threat notes.
 | SentinelOne.Notes.Text | string | The note text. | 
 | SentinelOne.Notes.UpdatedAt | string | The note updated time. | 
 
+### sentinelone-list-installed-singularity-marketplace-applications
+
+***
+Returns all installed singularity marketplace applications that match the specified filter values.
+
+#### Base Command
+
+`sentinelone-list-installed-singularity-marketplace-applications`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_ids | A comma-separated list of account IDs. | Optional | 
+| application_catalog_id | Filter results by application catalog id. | Optional |
+| creator_contains | Free-text filter by application creator. | Optional |
+| id | A comma-separated list of applications IDs. | Optional |
+| name_contains | Free-text filter by application name | Optional |
+| site_ids | A comma-separated list of site IDs. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.InstalledApps.ID | string | The application ID. | 
+| SentinelOne.InstalledApps.Account | string | The account name. | 
+| SentinelOne.InstalledApps.AccountId | string | The account ID. | 
+| SentinelOne.InstalledApps.ApplicationCatalogId | string | The application Catalog ID. | 
+| SentinelOne.InstalledApps.ApplicationCatalogName | string | The application Catalog name. | 
+| SentinelOne.InstalledApps.AlertMessage | string | The alert message. | 
+| SentinelOne.InstalledApps.CreatedAt | date | Application created at. |
+| SentinelOne.InstalledApps.Creator | string | Application creator. |
+| SentinelOne.InstalledApps.CreatorId | string | Application creator ID. |
+| SentinelOne.InstalledApps.DesiredStatus | string | Application desired status. |
+| SentinelOne.InstalledApps.HasAlert | boolean | Application has alert. |
+| SentinelOne.InstalledApps.LastEntityCreatedAt | date | Application last entity created at. |
+| SentinelOne.InstalledApps.Modifier | string | Modifier. |
+| SentinelOne.InstalledApps.ModifierId | string | Modifier ID. |
+| SentinelOne.InstalledApps.ScopeId | string | The scope ID. |
+| SentinelOne.InstalledApps.ScopeLevel | string | The scope level. |
+| SentinelOne.InstalledApps.Status | string | Status of application. |
+| SentinelOne.InstalledApps.UpdatedAt | string | Application updated at. |
+| SentinelOne.InstalledApps.ApplicationInstanceName | string | Application instance name. |
+
+
+### sentinelone-get-service-users
+
+***
+Returns all service users that match the specified filter values.
+
+#### Base Command
+
+`sentinelone-get-service-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_ids | A comma-separated list of account IDs. | Optional | 
+| role_ids | A comma-separated list of rbac roles to filter by. | Optional |
+| ids | A comma-separated list of service user IDs to filter by. | Optional |
+| site_ids | A comma-separated list of site IDs. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.ServiceUsers.ID | string | The service user ID. | 
+| SentinelOne.ServiceUsers.ApiTokenCreatedAt | date | Api token created at. | 
+| SentinelOne.ServiceUsers.ApiTokenExpiresAt | date | Api token expires at. | 
+| SentinelOne.ServiceUsers.CreatedAt | date | Service user created at. | 
+| SentinelOne.ServiceUsers.CreatedById | string | The service user created by Id. | 
+| SentinelOne.ServiceUsers.CreatedByName | string | The service user created by name. |
+| SentinelOne.ServiceUsers.Description | string |  Service user description. |
+| SentinelOne.ServiceUsers.LastActivation | date | Last activation date. |
+| SentinelOne.ServiceUsers.Name | string | Service user name. |
+| SentinelOne.ServiceUsers.Scope | string | Service user scope. |
+| SentinelOne.ServiceUsers.UpdatedAt | date | Service user updated at. |
+| SentinelOne.ServiceUsers.UpdatedById | string | Service user updated by Id. |
+| SentinelOne.ServiceUsers.UpdatedByName | string | Service user updated by name. |
+| SentinelOne.ServiceUsers.ScopeRolesRoleId | string | Scope roles role Id. |
+| SentinelOne.ServiceUsers.ScopeRolesRoleName | string | Scope roles role name. |
+| SentinelOne.ServiceUsers.ScopeRolesAccountName | string | Scope roles account name. |
+| SentinelOne.ServiceUsers.ScopeRolesId | string | Scope roles Id. |
+
+
 ### Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and SentinelOne v2 corresponding events (available from Cortex XSOAR version 6.0.0).
