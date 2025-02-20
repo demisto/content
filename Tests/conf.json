@@ -1946,6 +1946,7 @@
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
             "instance_names": "ewv2_regular",
+            "timeout": 300,
             "memory_threshold": 100
         },
         {
