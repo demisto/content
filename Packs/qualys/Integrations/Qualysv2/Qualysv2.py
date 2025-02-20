@@ -3315,8 +3315,9 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
                                snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
                                should_update_health_module=False)
 
+            demisto.updateModuleHealth({'assetsPulled': cumulative_assets_count})
+
         demisto.setAssetsLastRun(new_last_run)
-        demisto.updateModuleHealth({'assetsPulled': cumulative_assets_count})
 
     elif fetch_stage == 'vulnerabilities':
 
