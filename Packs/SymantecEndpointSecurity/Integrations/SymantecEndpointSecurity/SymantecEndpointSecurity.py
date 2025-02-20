@@ -13,7 +13,7 @@ PRODUCT = "endpoint_security"
 DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-DELIMITER = "\n"
+DELIMITER = b"\n"
 
 """
 Sleep time between fetch attempts when an error occurs in the retrieval process,
@@ -332,6 +332,12 @@ def extract_events(res: Response) -> tuple[list[dict], str]:
 
     if res.status_code == 204:
         raise NoEventsReceived
+
+    # For debugging
+    try:
+        demisto.debug(f"Start of the response: {res.text[:50]}")
+    except Exception as e:
+        demisto.debug(f"Printing the beginning of the response failed, Error: {e}")
 
     for line in res.iter_lines(chunk_size=MAX_CHUNK_SIZE_TO_READ, delimiter=DELIMITER):
         if not line:
