@@ -31,6 +31,7 @@ requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
 freezegun = ">=1.1.0"
 dateparser = ">=1.2.0"
+types-requests = "*"
 ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
 
 [tool.poetry.group.typing.dependencies]

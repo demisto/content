@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from datetime import datetime, timedelta, UTC
 import requests
 import json
+from typing import Any
 
 
 ''' IMPORTS '''
@@ -28,7 +29,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client(BaseClient):
 
-    def __init__(self, client_id: str, client_secret: str, auth_token:str=None, token_time=None):
+    def __init__(self, client_id: str, client_secret: str, auth_token: str = None, token_time=None):
         self.base_url = "https://platform.cybelangel.com/"
         self.auth_url = "https://auth.cybelangel.com/oauth/token"
         self.client_id = client_id
@@ -72,7 +73,7 @@ class Client(BaseClient):
     def get_reports(self, interval: int):
         self.check_token()
         headers = {'Content-Type': "application/json",
-                   'Authorization': self.token}
+                   'Authorization': str(self.token)}
 
         difference = datetime.now(UTC) - timedelta(minutes=interval)
 
@@ -97,12 +98,12 @@ class Client(BaseClient):
         """ Get all reports from CybelAngel -- Only run once on Configuration """
         self.check_token()
         headers = {'Content-Type': "application/json",
-                   'Authorization': self.token}
+                   'Authorization': str(self.token)}
         params = {
             'end-date': datetime.now(UTC).strftime(DATE_FORMAT),
             'start-date': "2000-01-02T01:01:01"}
         try:
-            response = json.loads(requests.get(f'{self.base_url}api/v2/reports',
+            response = json.loads(requests.get(f"{self.base_url}api/v2/reports",
                                                headers=headers, params=params).text)
             reports = []
             for report in response['reports']:
@@ -115,7 +116,7 @@ class Client(BaseClient):
     def get_report_by_id(self, report_id: str):
         self.check_token()
         headers = {'Content-Type': "application/json",
-                   'Authorization': self.token}
+                   'Authorization': str(self.token)}
 
         url = f'{self.base_url}api/v2/reports/{report_id}'
         try:
@@ -134,21 +135,21 @@ class Client(BaseClient):
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": self.token
+            "Authorization": str(self.token)
         }
 
         response = requests.request("GET", url, headers=headers)
 
         return response.content
 
-    def remediate(self, report_id: str, email: str, requester_fullname:str):
+    def remediate(self, report_id: str, email: str, requester_fullname: str):
         """ Create remediation request """
         self.check_token()
         url = f"{self.base_url}api/v1/reports/remediation-request"
 
         headers = {"Content-Type": "application/json",
                    "Accept": "application/json",
-                   "Authorization": self.token}
+                   "Authorization": str(self.token)}
 
         payload = {"report_id": report_id,
                    "requester_email": email,
@@ -167,7 +168,7 @@ class Client(BaseClient):
         self.check_token()
         url = f"{self.base_url}api/v1/reports/{report_id}/comments"
         headers = {'Content-Type': "application/json",
-                   'Authorization': self.token}
+                   'Authorization': str(self.token)}
 
         try:
             response = json.loads(requests.request(
@@ -201,7 +202,7 @@ class Client(BaseClient):
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": self.token
+            "Authorization": str(self.token)
         }
 
         response = requests.request("POST", url, json=payload, headers=headers)
@@ -214,7 +215,7 @@ class Client(BaseClient):
         self.check_token()
         url = f"{self.base_url}api/v1/reports/{report_id}/status"
         headers = {'Content-Type': "application/json",
-                   'Authorization': self.token}
+                   'Authorization': str(self.token)}
 
         payload = {'status': status}
 
@@ -232,7 +233,7 @@ class Client(BaseClient):
         url = url = f"{self.base_url}api/v1/reports/{report_id}/pdf"
         headers = {
             "Accept": "application/pdf, application/json",
-            "Authorization": self.token
+            "Authorization": str(self.token)
         }
         try:
             response = requests.get(url, headers=headers)
@@ -255,7 +256,7 @@ def _set_context(client: Client):
         demisto.info('New auth token stored')
 
 
-def _datetime_helper(last_run_date):
+def _datetime_helper(last_run_date: str) -> int:
 
     try:
         last_run = datetime.fromisoformat(last_run_date.replace('Z', '+00:00'))
@@ -271,7 +272,7 @@ def _datetime_helper(last_run_date):
 
 
 def fetch_incidents(client: Client, first_fetch: bool,
-                    last_run, first_fetch_interval: int):
+                    last_run: str | None, first_fetch_interval: int) -> list[dict[str, Any]]:
 
     if first_fetch:
         fetch_interval = first_fetch_interval * 1140
@@ -304,7 +305,7 @@ def fetch_incidents(client: Client, first_fetch: bool,
     return incidents
 
 
-def get_report_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_report_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
     report_id = args.get('report_id')
     demisto.info(f"get_report_by_id_command called with report_id: {report_id}")
 
@@ -342,12 +343,12 @@ def get_report_by_id_command(client: Client, args: Dict[str, Any]) -> CommandRes
         )
 
 
-def get_report_attachment_command(client: Client, args):
+def get_report_attachment_command(client: Client, args: dict[str, Any]) -> CommandResults | dict[str, Any]:
     report_id = args.get('report_id')
     attachment_id = args.get('attachment_id')
     filename = args.get('filename')
     try:
-        attachment = client.get_report_attachment(report_id, attachment_id)
+        attachment = client.get_report_attachment(str(report_id), str(attachment_id))
 
         return fileResult(filename=filename, data=attachment)
 
@@ -357,13 +358,13 @@ def get_report_attachment_command(client: Client, args):
         )
 
 
-def remediate_command(client: Client, args):
+def remediate_command(client: Client, args: dict[str, Any]) -> CommandResults:
     report_id = args.get('report_id')
     email = args.get('email')
     requester_name = args.get('requester_fullname')
     try:
-        response, status_code = client.remediate(report_id, email=email,
-                                                 requester_fullname=requester_name)
+        response, status_code = client.remediate(str(report_id), email=str(email),
+                                                 requester_fullname=str(requester_name))
         _set_context(client)
         return CommandResults(
             outputs_prefix='CybelAngel.Remediation',
@@ -377,10 +378,10 @@ def remediate_command(client: Client, args):
         )
 
 
-def get_comments_command(client: Client, args):
+def get_comments_command(client: Client, args: dict[str, Any]) -> CommandResults:
     report_id = args.get('report_id')
     try:
-        comments = client.get_comments(report_id)
+        comments = client.get_comments(str(report_id))
         _set_context(client)
         return CommandResults(
             outputs_prefix='CybelAngel.Comments',
@@ -395,11 +396,11 @@ def get_comments_command(client: Client, args):
         )
 
 
-def post_comment_command(client: Client, tenant_id: str, args):
+def post_comment_command(client: Client, tenant_id: str, args: dict[str, Any]) -> CommandResults:
     report_id = args.get('report_id')
     comment = args.get('comment')
     try:
-        response, status_code = client.post_comment(comment=comment, report_id=report_id, tenant_id=tenant_id)
+        response, status_code = client.post_comment(comment=str(comment), report_id=str(report_id), tenant_id=str(tenant_id))
         _set_context(client)
         return CommandResults(
             readable_output=f'Comment added to report {report_id}: {comment} : STATUS: {status_code}'
@@ -411,11 +412,11 @@ def post_comment_command(client: Client, tenant_id: str, args):
         )
 
 
-def update_status_command(client: Client, args):
+def update_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     report_id = args.get('report_id')
     status = args.get('status')
     try:
-        response = client.update_status(status=status, report_id=report_id)
+        response = client.update_status(status=str(status), report_id=str(report_id))
         _set_context(client)
         return CommandResults(
             outputs_prefix='CybelAngel.StatusUpdate',
@@ -429,13 +430,13 @@ def update_status_command(client: Client, args):
         )
 
 
-def get_report_pdf_command(client: Client, args: Dict):
+def get_report_pdf_command(client: Client, args: dict[str, Any]) -> CommandResults | dict[str, Any]:
     report_id = args.get('report_id')
     if not report_id:
         return CommandResults(readable_output="Report ID not provided.")
 
     try:
-        report_pdf = client.get_report_pdf(report_id=report_id)
+        report_pdf = client.get_report_pdf(report_id=str(report_id))
         if not report_pdf:
             return CommandResults(
                 readable_output=f"No report found with ID: {report_id}."
