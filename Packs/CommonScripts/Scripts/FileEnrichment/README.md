@@ -7,7 +7,6 @@ This script gathers user data from multiple integrations and returns an File ent
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Cortex XSOAR Version | 6.10.0 |
 
 ## Inputs
 
@@ -16,9 +15,9 @@ This script gathers user data from multiple integrations and returns an File ent
 | **Argument Name** | **Description** |
 | --- | --- |
 | file_hash | Hash of the file. Supported types are: MD5, SHA1, SHA256, and SHA512. |
-| brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select, provide a comma-separated list. For example: "WildFire-v2,Cortex XDR - IR". |
-| verbose | Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result. |
-| external_enrichment | Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result. |
+| brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select, provide a comma-separated list. For example: "VirusTotal (API v3),Cortex Core - IR". |
+| verbose | Whether to retrieve human readable entry for every command or only the final result. Set to true to get a human-readable entry for every command. Set to false to human-readable summary of the final result. |
+| external_enrichment | Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. Set to false to only query for existing indicators in the Threat Intelligence Module (TIM). |
 
 ## Outputs
 

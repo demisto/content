@@ -4,20 +4,20 @@ args:
 - name: brands
   description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
-    For multi-select, provide a comma-separated list. For example: "WildFire-v2,Cortex XDR - IR".
+    For multi-select, provide a comma-separated list. For example: "VirusTotal (API v3),Cortex Core - IR".
   auto: PREDEFINED
   predefined:
+  - 'VirusTotal (API v3)'
   - 'WildFire-v2'
-  - 'Cortex XDR - IR'
   - 'Cortex Core - IR'
 - name: verbose
-  description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+  description: Whether to retrieve human readable entry for every command or only the final result. Set to true to get a human-readable entry for every command. Set to false to human-readable summary of the final result.
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
 - name: external_enrichment
-  description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+  description: Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. Set to false to only query for existing indicators in the Threat Intelligence Module (TIM).
   auto: PREDEFINED
   predefined:
   - 'true'
