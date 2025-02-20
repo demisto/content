@@ -2675,7 +2675,7 @@ script:
     - name: site_ids
       description: A comma-separated list of site IDs.
       isArray: true
-    description: Returns all installed singularity marketplace applications that match the specified criteria.
+    description: Returns all installed singularity marketplace applications that match the specified filter values.
     name: sentinelone-list-installed-singularity-marketplace-applications
     outputs:
     - contextPath: SentinelOne.InstalledApps.ID
@@ -2753,7 +2753,7 @@ script:
     - name: site_ids
       description: A comma-separated list of site IDs.
       isArray: true
-    description: Returns all service users that match the specified criteria.
+    description: Returns all service users that match the specified filter values.
     name: sentinelone-get-service-users
     outputs:
     - contextPath: SentinelOne.ServiceUsers.ID
@@ -2778,7 +2778,7 @@ script:
       description: Service user description.
       type: string
     - contextPath: SentinelOne.ServiceUsers.LastActivation
-      description: Last activation.
+      description: Last activation date.
       type: date
     - contextPath: SentinelOne.ServiceUsers.Name
       description: Service user name.

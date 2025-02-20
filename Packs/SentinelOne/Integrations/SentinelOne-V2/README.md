@@ -1972,7 +1972,7 @@ Returns threat notes.
 ### sentinelone-list-installed-singularity-marketplace-applications
 
 ***
-Returns all installed singularity marketplace applications that match the specified criteria.
+Returns all installed singularity marketplace applications that match the specified filter values.
 
 #### Base Command
 
@@ -2019,7 +2019,7 @@ Returns all installed singularity marketplace applications that match the specif
 ### sentinelone-get-service-users
 
 ***
-Returns all service users that match the specified criteria.
+Returns all service users that match the specified filter values.
 
 #### Base Command
 
@@ -2043,11 +2043,11 @@ Returns all service users that match the specified criteria.
 | SentinelOne.ServiceUsers.ID | string | The service user ID. | 
 | SentinelOne.ServiceUsers.ApiTokenCreatedAt | date | Api token created at. | 
 | SentinelOne.ServiceUsers.ApiTokenExpiresAt | date | Api token expires at. | 
-| SentinelOne.ServiceUsers.CreatedAt | date | TService user created at. | 
+| SentinelOne.ServiceUsers.CreatedAt | date | Service user created at. | 
 | SentinelOne.ServiceUsers.CreatedById | string | The service user created by Id. | 
 | SentinelOne.ServiceUsers.CreatedByName | string | The service user created by name. |
 | SentinelOne.ServiceUsers.Description | string |  Service user description. |
-| SentinelOne.ServiceUsers.LastActivation | date | Last activation. |
+| SentinelOne.ServiceUsers.LastActivation | date | Last activation date. |
 | SentinelOne.ServiceUsers.Name | string | Service user name. |
 | SentinelOne.ServiceUsers.Scope | string | Service user scope. |
 | SentinelOne.ServiceUsers.UpdatedAt | date | Service user updated at. |

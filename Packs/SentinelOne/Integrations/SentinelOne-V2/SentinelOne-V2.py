@@ -3503,7 +3503,7 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            'Sentinel One - List of Installed Applications',
+            'SentinelOne - List of Installed Applications',
             context_entries,
             headerTransform=pascalToSpace,
             removeNull=True,
@@ -3567,7 +3567,7 @@ def get_service_users_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            'Sentinel One - Get Service Users',
+            'SentinelOne - Get Service Users',
             context_entries,
             headerTransform=pascalToSpace,
             removeNull=True,
