@@ -740,6 +740,7 @@ async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
                     "latest event time is: 2020-06-04T20:43:42Z")
     ])
 
+
 def test_test_fetch_events_long_running_command_flow(mocker, client, caplog):
     async def test_fetch_events_long_running_command_flow(mocker, client):
         """
@@ -753,7 +754,7 @@ def test_test_fetch_events_long_running_command_flow(mocker, client, caplog):
             The execution went into sleep after the second request as there were less the limit events to fetch.
             The right log was printed.
         """
-        
+
         from Akamai_SIEM import Client
         requestHeaders = "Content-Type%3A%20application/json%3Bcharset%3DUTF-8%0Auser%3A%20test%40test.com%0Aclient%3A%20"
         "test_client%0AX-Kong-Upstream-Latency%3A%2066%0AX-Kong-Proxy-Latency%3A%202%0AX-Kong-Request-Id%3A%20X_request_id%"
@@ -781,7 +782,7 @@ def test_test_fetch_events_long_running_command_flow(mocker, client, caplog):
             return 2
         demisto_debug = mocker.patch.object(demisto, 'debug')
         send_events_to_xsiam_akamai = mocker.patch("Akamai_SIEM.send_events_to_xsiam_akamai",
-                                                side_effect=asyncio.create_task(mock_func()))  # to break endless loop.
+                                                   side_effect=asyncio.create_task(mock_func()))  # to break endless loop.
         mocker.patch.object(asyncio, "sleep", side_effect=Exception("Interrupted execution"))  # to break endless loop.
         with pytest.raises(Exception) as e:
             await Akamai_SIEM.fetch_events_long_running_command(client, "5 minutes", 2, "50170", {}, True, 5)
