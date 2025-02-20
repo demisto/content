@@ -2662,11 +2662,6 @@ script:
       description: Filter results by application catalog id. 
     - name: creator_contains
       description: Free-text filter by application creator.
-    - name: cursor
-      description: Cursor position returned by the last request. 
-    - defaultValue: "1000"
-      description: The maximum number of results to return (1-1000).
-      name: limit
     - name: id
       description: A comma-separated list of applications IDs.
       isArray: true
@@ -2742,11 +2737,6 @@ script:
     - name: role_ids
       description: A comma-separated list of rbac roles to filter by.
       isArray: true
-    - name: cursor
-      description: Cursor position returned by the last request. 
-    - defaultValue: "1000"
-      description: The maximum number of results to return (1-1000).
-      name: limit
     - name: ids
       description: A comma-separated list of service user IDs to filter by.
       isArray: true

@@ -3451,9 +3451,8 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
         accountIds=args.get('account_ids'),
         applicationCatalogId=args.get('application_catalog_id'),
         creator__contains=args.get('creator_contains'),
-        cursor=args.get('cursor'),
         id=args.get('id'),
-        limit=int(args.get('limit', 1000)),
+        limit=1000,
         name__contains=args.get('name_contains'),
         siteIds=args.get('site_ids')
     )
@@ -3465,6 +3464,9 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
     while pagination and pagination.get("nextCursor"):
         demisto.debug("Got the next page for installed applications \n {}".format(pagination['nextCursor']))
         query_params['cursor'] = pagination['nextCursor']
+        # The SentinelOne API does not accept other pagination parameters if the cursor is provided in the query.
+        # Including additional pagination parameters alongside the cursor will result in a 400 error.
+        # So removing the limit from the query params
         if query_params.get('limit'):
             del query_params['limit']
         installed_applications_page, pagination = client.list_installed_applications_request(query_params)
@@ -3479,7 +3481,7 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
                     scope["applicationCatalogId"] = each_app["applicationCatalogId"]
                     scope["applicationCatalogName"] = each_app["name"]
                     all_scopes.append(scope)
-        meta = "Provides summary information and details for all the installed applications that matched your search criteria."
+        meta = "Provides summary information and details for all the installed applications that matched specified filter values"
     else:
         meta = "The search filters provided are returning no results. Please review and adjust them accordingly."
 
@@ -3490,7 +3492,7 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
             'Account': each_scope.get('account'),
             'AccountId': each_scope.get('accountId'),
             'ApplicationCatalogId': each_scope.get('applicationCatalogId'),
-            'applicationCatalogName': each_scope.get('applicationCatalogName'),
+            'ApplicationCatalogName': each_scope.get('applicationCatalogName'),
             'AlertMessage': each_scope.get('alertMessage'),
             'CreatedAt': each_scope.get('createdAt'),
             'Creator': each_scope.get('creator'),
@@ -3531,9 +3533,8 @@ def get_service_users_command(client: Client, args: dict) -> CommandResults:
     query_params = assign_params(
         accountIds=args.get('account_ids'),
         roleIds=args.get('role_ids'),
-        cursor=args.get('cursor'),
         ids=args.get('ids'),
-        limit=int(args.get('limit', 1000)),
+        limit=1000,
         siteIds=args.get('site_ids')
     )
     # Make request and get raw response
@@ -3542,6 +3543,9 @@ def get_service_users_command(client: Client, args: dict) -> CommandResults:
     while pagination and pagination.get("nextCursor"):
         demisto.debug("Got the next page for service users \n {}".format(pagination['nextCursor']))
         query_params['cursor'] = pagination['nextCursor']
+        # The SentinelOne API does not accept other pagination parameters if the cursor is provided in the query.
+        # Including additional pagination parameters alongside the cursor will result in a 400 error.
+        # So removing the limit from the query params
         if query_params.get('limit'):
             del query_params['limit']
         service_users_page, pagination = client.get_service_users_request(query_params)
@@ -3573,7 +3577,7 @@ def get_service_users_command(client: Client, args: dict) -> CommandResults:
                     entry['ScopeRolesAccountName'] = scope_role_items.get('accountName')
                     entry['ScopeRolesId'] = scope_role_items.get('id')
             context_entries.append(entry)
-        meta = "Provides summary information and details for all the service users that matched your search criteria."
+        meta = "Provides summary information and details for all the service users that matched specified filter values"
     else:
         meta = "The search filters provided are returning no results. Please review and adjust them accordingly."
 

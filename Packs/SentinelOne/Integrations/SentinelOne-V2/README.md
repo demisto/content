@@ -1985,8 +1985,6 @@ Returns all installed singularity marketplace applications that match the specif
 | account_ids | A comma-separated list of account IDs. | Optional | 
 | application_catalog_id | Filter results by application catalog id. | Optional |
 | creator_contains | Free-text filter by application creator. | Optional |
-| cursor | Cursor position returned by the last request. | Optional |
-| limit | The maximum number of results to return (1-1000). | Optional |
 | id | A comma-separated list of applications IDs. | Optional |
 | name_contains | Free-text filter by application name | Optional |
 | site_ids | A comma-separated list of site IDs. | Optional |
@@ -2031,8 +2029,6 @@ Returns all service users that match the specified filter values.
 | --- | --- | --- |
 | account_ids | A comma-separated list of account IDs. | Optional | 
 | role_ids | A comma-separated list of rbac roles to filter by. | Optional |
-| cursor | Cursor position returned by the last request. | Optional |
-| limit | The maximum number of results to return (1-1000). | Optional |
 | ids | A comma-separated list of service user IDs to filter by. | Optional |
 | site_ids | A comma-separated list of site IDs. | Optional |
 
