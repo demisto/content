@@ -3506,7 +3506,7 @@ def fetch_incidents(client: Client, params: dict):
 
     ticket_types, alert_properties = get_alert_properties(params)
     fetch_ticket_task = argToBoolean(params['fetch_ticket_task'])
-    demisto.debug(f'fetch_incidents {ticket_types=} {alert_properties=} {fetch_ticket_task=}')
+    demisto.debug(f'Starting fetch_incidents {ticket_types=} {alert_properties=} {fetch_ticket_task=}')
 
     # use condition statement to avoid mypy error
     if (max_fetch := arg_to_number(params['max_fetch'])) is not None:
@@ -3539,17 +3539,13 @@ def fetch_incidents(client: Client, params: dict):
             json_response = response.json()
             new_tickets = json_response.get(f'{ticket_type}s', [])
             tickets.extend(new_tickets)
-            demisto.debug(f"Fetched additional {len(new_tickets)} tickets")
+            demisto.debug(f"Fetched additional: {len(new_tickets)}")
 
             if not (next_link := get_next_link(response)):
                 break
 
-        demisto.debug(f"Total fetched: {len(tickets)}")
-        alert_list = convert_response_properties(
-            tickets,
-            TICKET_PROPERTIES_BY_TYPE[ticket_type],
-        )
-
+        demisto.debug(f'Total fetched before filtering: {len(tickets)} for {ticket_type=}')
+        alert_list = convert_response_properties(tickets, TICKET_PROPERTIES_BY_TYPE[ticket_type])
         if not isinstance(alert_list, list):
             alert_list = [alert_list]
 
@@ -3565,6 +3561,7 @@ def fetch_incidents(client: Client, params: dict):
             mirror_direction=mirror_direction,
         )
 
+        demisto.debug(f'Total fetched after filtering: {len(relevant_incidents)} for {ticket_type=}')
         incidents += relevant_incidents
 
         if relevant_alerts:
@@ -3580,6 +3577,8 @@ def fetch_incidents(client: Client, params: dict):
                 'id': last_run_id,
                 'time': last_run_datetime_str
             }
+    if not incidents:
+        demisto.debug('No new incidents fetched in this run.')
     demisto.debug(f'setting last run {last_run=}')
     demisto.setLastRun(last_run)
     demisto.debug(f'{len(incidents)=}')
