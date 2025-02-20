@@ -36,7 +36,7 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> CommandResul
     Returns:
 
     """
-    demisto.debug(f"Executing command: {command_name}")
+    demisto.debug(f"BEI: Executing command: {command_name}")
     res = demisto.executeCommand(command_name, args)
     demisto.debug(f"The response {res}")
     return CommandResults()
