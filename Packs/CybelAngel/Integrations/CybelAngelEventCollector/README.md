@@ -1,6 +1,6 @@
-CybelAngel Event Collector receives reports from the CybelAngel platform, which specializes in external attack surface protection and management
+CybelAngel receives reports from the CybelAngel platform, which specializes in external attack surface protection and management
 
-## Configure CybelAngel Event Collector in XSIAM
+## Configure CybelAngel in XSOAR / XSIAM
 
 
 | **Parameter**                                                     | **Required** |

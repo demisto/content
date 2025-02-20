@@ -17,6 +17,7 @@ configuration:
   name: credentials
   type: 9
   required: true
+  section: Connect
 - display: The maximum number of events per fetch
   name: max_fetch
   defaultvalue: "5000"
@@ -43,8 +44,8 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: 'CybelAngel Event Collector collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
-display: CybelAngel Event Collector
+description: 'CybelAngel collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
+display: CybelAngel
 name: CybelAngel Event Collector
 script:
   commands:

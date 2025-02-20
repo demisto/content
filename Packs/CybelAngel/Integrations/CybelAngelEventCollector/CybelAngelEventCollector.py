@@ -68,7 +68,7 @@ class Client(BaseClient):
             resp_type="response",
             ok_codes=(401, 403, 200, 201, 302),
         )
-        if response.status_code == 200 or response.status_code == 201:
+        if response.status_code in (200, 201):
             return response.json() if not pdf else response
 
         if response.status_code == 302 and cve:
@@ -270,7 +270,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-def cybelangel_report_list_command(client: Client, args):
+def cybelangel_report_list_command(client: Client, args) -> CommandResults:
 
     start_date = arg_to_datetime(args.get("start_date"))
     end_date = arg_to_datetime(args.get("end_date"))
@@ -287,7 +287,7 @@ def cybelangel_report_list_command(client: Client, args):
     )
 
 
-def cybelangel_report_get_command(client: Client, args):
+def cybelangel_report_get_command(client: Client, args) -> CommandResults:
 
     report_id = args.get("report_id")
     pdf = argToBoolean(args.get("pdf", "false"))
