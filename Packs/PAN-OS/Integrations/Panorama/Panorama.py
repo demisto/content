@@ -11180,7 +11180,10 @@ class UniversalCommand:
                     and (result_data_obj.type == job_type or not job_type)
                 ):
                     result_data.append(result_data_obj)
-            break
+
+            # Avoiding iterating over all devices when an ID is provided. 
+            if id is not None:
+                break
         # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
         # being returned, return it as a dict instead of a list.
         if len(result_data) == 1:
