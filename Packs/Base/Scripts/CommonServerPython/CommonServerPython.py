@@ -60,25 +60,6 @@ HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
-    """
-        Register a module in the line mapping for the traceback line correction algorithm.
-
-        :type module_name: ``str``
-        :param module_name: The name of the module. (required)
-
-        :type start_end: ``str``
-        :param start_end: Whether to register the line as the start or the end of the module.
-            Possible values: start, end. (required)
-
-        :type line: ``int``
-        :param line: the line number to record. (required)
-
-        :type wrapper: ``int``
-        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
-
-        :return: None
-        :rtype: ``None``
-    """
     global _MODULES_LINE_MAPPING
     default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
     try:
@@ -98,15 +79,6 @@ def register_module_line(module_name, start_end, line, wrapper=0):
 
 
 def _find_relevant_module(line):
-    """
-    Find which module contains the given line number.
-
-    :type line: ``int``
-    :param trace_str: Line number to search. (required)
-
-    :return: The name of the module.
-    :rtype: ``str``
-    """
     global _MODULES_LINE_MAPPING
 
     relevant_module = ''
@@ -121,15 +93,6 @@ def _find_relevant_module(line):
 
 
 def fix_traceback_line_numbers(trace_str):
-    """
-    Fixes the given traceback line numbers.
-
-    :type trace_str: ``str``
-    :param trace_str: The traceback string to edit. (required)
-
-    :return: The new formated traceback.
-    :rtype: ``str``
-    """
 
     def is_adjusted_block(start, end, adjusted_lines):
         return any(
@@ -179,15 +142,13 @@ elif sys.platform.startswith('win32'):
 
 class WarningsHandler(object):
     #    Wrapper to handle warnings. We use a class to cleanup after execution
-
     @staticmethod
     def handle_warning(message, category, filename, lineno, file=None, line=None):
         try:
             msg = warnings.formatwarning(message, category, filename, lineno, line)
             demisto.info("python warning: " + msg)
         except Exception:
-            # ignore the warning if it can't be handled for some reason
-            pass
+            pass  # ignore the warning if it can't be handled for some reason
 
     def __init__(self):
         self.org_handler = warnings.showwarning
@@ -198,11 +159,9 @@ class WarningsHandler(object):
 
 
 _warnings_handler = WarningsHandler()
-# ignore warnings from logging as a result of not being setup
-logging.raiseExceptions = False
+logging.raiseExceptions = False  # ignore warnings from logging as a result of not being setup
 
-# imports something that can be missed from docker image
-try:
+try:  # imports something that can be missed from docker image
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
@@ -226,25 +185,21 @@ IS_PY3 = sys.version_info[0] == 3
 PY_VER_MINOR = sys.version_info[1]
 STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
-
 ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
-
-# The max number of profiling related rows to print to the log on memory dump
-PROFILING_DUMP_ROWS_LIMIT = 20
-
+PROFILING_DUMP_ROWS_LIMIT = 20# The max number of profiling related rows to print to the log on memory dump
+CONTEXT_UPDATE_RETRY_TIMES = 3
+MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
     import concurrent.futures
-
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
-# DEPRECATED - use EntryType enum instead
-entryTypes = {
+entryTypes = {  # DEPRECATED - use EntryType enum instead
     'note': 1,
     'downloadAgent': 2,
     'file': 3,
@@ -323,8 +278,7 @@ class IncidentSeverity(object):
     CRITICAL = 4
 
 
-# DEPRECATED - use EntryFormat enum instead
-formats = {
+formats = {  # DEPRECATED - use EntryFormat enum instead
     'html': 'html',
     'table': 'table',
     'json': 'json',
@@ -360,15 +314,11 @@ class EntryFormat(object):
 
 class FileAttachmentType(object):
     """
-    Enum: contains the file attachment types,
-          Used to add metadata to the description of the attachment
-          whether the file content is expected to be inline or attached as a file
-
+    Enum: contains the file attachment types
     :return:: The file attachment type
     :rtype: ``str``
     """
     ATTACHED = "attached_file"
-
 
 brands = {
     'xfe': 'xfe',
@@ -394,17 +344,6 @@ thresholds = {
 class DBotScoreType(object):
     """
     Enum: contains all the indicator types
-    DBotScoreType.IP
-    DBotScoreType.FILE
-    DBotScoreType.DOMAIN
-    DBotScoreType.URL
-    DBotScoreType.CVE
-    DBotScoreType.ACCOUNT
-    DBotScoreType.CRYPTOCURRENCY
-    DBotScoreType.EMAIL
-    DBotScoreType.ATTACKPATTERN
-    DBotScoreType.CUSTOM
-
     :return: None
     :rtype: ``None``
     """
@@ -423,13 +362,11 @@ class DBotScoreType(object):
     CUSTOM = 'custom'
 
     def __init__(self):
-        # required to create __init__ for create_server_docs.py purpose
-        pass
+        pass  # required to create __init__ for create_server_docs.py purpose
 
     @classmethod
     def is_valid_type(cls, _type):
         # type: (str) -> bool
-
         return _type in (
             DBotScoreType.IP,
             DBotScoreType.FILE,
@@ -450,8 +387,7 @@ class DBotScoreType(object):
 class DBotScoreReliability(object):
     """
     Enum: Source reliability levels
-    Values are case sensitive
-
+    Values are case-sensitive
     :return: None
     :rtype: ``None``
     """
@@ -465,13 +401,11 @@ class DBotScoreReliability(object):
     F = 'F - Reliability cannot be judged'
 
     def __init__(self):
-        # required to create __init__ for create_server_docs.py purpose
-        pass
+        pass  # required to create __init__ for create_server_docs.py purpose
 
     @staticmethod
     def is_valid_type(_type):
         # type: (str) -> bool
-
         return _type in (
             DBotScoreReliability.A_PLUS,
             DBotScoreReliability.A,
@@ -484,20 +418,17 @@ class DBotScoreReliability(object):
 
     @staticmethod
     def get_dbot_score_reliability_from_str(reliability_str):  # pragma: no cover
-        if reliability_str == DBotScoreReliability.A_PLUS:
-            return DBotScoreReliability.A_PLUS
-        elif reliability_str == DBotScoreReliability.A:
-            return DBotScoreReliability.A
-        elif reliability_str == DBotScoreReliability.B:
-            return DBotScoreReliability.B
-        elif reliability_str == DBotScoreReliability.C:
-            return DBotScoreReliability.C
-        elif reliability_str == DBotScoreReliability.D:
-            return DBotScoreReliability.D
-        elif reliability_str == DBotScoreReliability.E:
-            return DBotScoreReliability.E
-        elif reliability_str == DBotScoreReliability.F:
-            return DBotScoreReliability.F
+        valid_reliabilities = {
+            DBotScoreReliability.A_PLUS,
+            DBotScoreReliability.A,
+            DBotScoreReliability.B,
+            DBotScoreReliability.C,
+            DBotScoreReliability.D,
+            DBotScoreReliability.E,
+            DBotScoreReliability.F
+        }
+        if reliability_str in valid_reliabilities:
+            return reliability_str
         raise Exception("Please use supported reliability only.")
 
 
@@ -596,28 +527,22 @@ class FeedIndicatorType(object):
 
     @staticmethod
     def ip_to_indicator_type(ip):
-        """Returns the indicator type of the input IP.
-
+        """
+        Returns the indicator type of the input IP.
         :type ip: ``str``
-        :param ip: IP address to get it's indicator type.
-
+        :param ip: IP address to get its indicator type.
         :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
         :rtype: ``str``
         """
         if re.match(ipv4cidrRegex, ip):
             return FeedIndicatorType.CIDR
-
-        elif re.match(ipv4Regex, ip):
+        if re.match(ipv4Regex, ip):
             return FeedIndicatorType.IP
-
-        elif re.match(ipv6cidrRegex, ip):
+        if re.match(ipv6cidrRegex, ip):
             return FeedIndicatorType.IPv6CIDR
-
-        elif re.match(ipv6Regex, ip):
+        if re.match(ipv6Regex, ip):
             return FeedIndicatorType.IPv6
-
-        else:
-            return None
+        return None
 
     @staticmethod
     def indicator_type_by_server_version(indicator_type):
@@ -638,18 +563,9 @@ class FeedIndicatorType(object):
 # -------------------------------- Threat Intel Objects ----------------------------------- #
 
 class ThreatIntel:
-    """
-    XSOAR Threat Intel Objects
-    :return: None
-    :rtype: ``None``
-    """
-
+    """XSOAR Threat Intel Objects"""
     class ObjectsNames(object):
-        """
-        Enum: Threat Intel Objects names.
-        :return: None
-        :rtype: ``None``
-        """
+        """Enum: Threat Intel Objects names."""
         CAMPAIGN = 'Campaign'
         ATTACK_PATTERN = 'Attack Pattern'
         REPORT = 'Report'
@@ -662,11 +578,7 @@ class ThreatIntel:
         TACTIC = 'Tactic'
 
     class ObjectsScore(object):
-        """
-        Enum: Threat Intel Objects Score.
-        :return: None
-        :rtype: ``None``
-        """
+        """Enum: Threat Intel Objects Score."""
         CAMPAIGN = 3
         ATTACK_PATTERN = 2
         REPORT = 3
@@ -679,11 +591,7 @@ class ThreatIntel:
         TACTIC = 0
 
     class KillChainPhases(object):
-        """
-        Enum: Kill Chain Phases names.
-        :return: None
-        :rtype: ``None``
-        """
+        """Enum: Kill Chain Phases names."""
         BUILD_CAPABILITIES = "Build Capabilities"
         PRIVILEGE_ESCALATION = "Privilege Escalation"
         ADVERSARY_OPSEC = "Adversary Opsec"
@@ -710,7 +618,6 @@ def is_debug_mode():
     :return: true if debug-mode is enabled
     :rtype: ``bool``
     """
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
     return hasattr(demisto, 'is_debug') and demisto.is_debug
 
 
@@ -764,71 +671,52 @@ def detect_file_indicator_type(indicator_value):
 
 def auto_detect_indicator_type(indicator_value):
     """
-      Infer the type of the indicator.
+    Infer the type of the indicator.
 
-      :type indicator_value: ``str``
-      :param indicator_value: The indicator whose type we want to check. (required)
+    :type indicator_value: ``str``
+    :param indicator_value: The indicator whose type we want to check. (required)
 
-      :return: The type of the indicator.
-      :rtype: ``str``
+    :return: The type of the indicator.
+    :rtype: ``str``
     """
     try:
         import tldextract
-    except Exception:
-        raise Exception("Missing tldextract module, In order to use the auto detect function please use a docker"
-                        " image with it installed such as: demisto/jmespath")
-
-    indicator_value = indicator_value.replace('[.]', '.').replace('[@]', '@')  # Refang indicator prior to checking
-
-    if re.match(ipv4cidrRegex, indicator_value):
-        return FeedIndicatorType.CIDR
-
-    if re.match(ipv6cidrRegex, indicator_value):
-        return FeedIndicatorType.IPv6CIDR
-
-    if re.match(ipv4Regex, indicator_value):
-        return FeedIndicatorType.IP
-
-    if re.match(ipv6Regex, indicator_value):
-        return FeedIndicatorType.IPv6
-
-    if re.match(cveRegex, indicator_value):
-        return FeedIndicatorType.CVE
-
-    if re.match(md5Regex, indicator_value):
-        return FeedIndicatorType.File
-
-    if re.match(sha1Regex, indicator_value):
-        return FeedIndicatorType.File
-
-    if re.match(sha256Regex, indicator_value):
-        return FeedIndicatorType.File
-
-    if re.match(sha512Regex, indicator_value):
-        return FeedIndicatorType.File
-
-    if re.match(emailRegex, indicator_value):
-        return FeedIndicatorType.Email
-
-    if re.match(urlRegex, indicator_value):
-        return FeedIndicatorType.URL
-
-    try:
         tldextract_version = tldextract.__version__
         if LooseVersion(tldextract_version) < '3.0.0':
             no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
         else:
             no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)
+    except Exception:
+        raise Exception("Missing tldextract module. Use a docker image with it installed, such as: demisto/jmespath")
 
+    indicator_value = indicator_value.replace('[.]', '.').replace('[@]', '@')  # Refang indicator prior to checking
+
+    if re.match(ipv4cidrRegex, indicator_value):
+        return FeedIndicatorType.CIDR
+    if re.match(ipv6cidrRegex, indicator_value):
+        return FeedIndicatorType.IPv6CIDR
+    if re.match(ipv4Regex, indicator_value):
+        return FeedIndicatorType.IP
+    if re.match(ipv6Regex, indicator_value):
+        return FeedIndicatorType.IPv6
+    if re.match(cveRegex, indicator_value):
+        return FeedIndicatorType.CVE
+    if re.match(md5Regex, indicator_value) or re.match(sha1Regex, indicator_value) or re.match(sha256Regex, indicator_value) or re.match(sha512Regex, indicator_value):
+        return FeedIndicatorType.File
+    if re.match(emailRegex, indicator_value):
+        return FeedIndicatorType.Email
+    if re.match(urlRegex, indicator_value):
+        return FeedIndicatorType.URL
+
+    try:
         if no_cache_extract(indicator_value).suffix:
             if '*' in indicator_value:
                 return FeedIndicatorType.DomainGlob
             return FeedIndicatorType.Domain
-
     except Exception:
-        demisto.debug('tldextract failed to detect indicator type. indicator value: {}'.format(indicator_value))
+        demisto.debug(f'tldextract failed to detect indicator type. Indicator value: {indicator_value}')
 
-    demisto.debug('Failed to detect indicator type. Indicator value: {}'.format(indicator_value))
+    demisto.debug(f'Failed to detect indicator type. Indicator value: {indicator_value}')
     return None
 
 
@@ -936,40 +824,37 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
 
 def skip_proxy():
     """
-    The function deletes the proxy environment vars in order to http requests to skip routing through proxy
+    Deletes the proxy environment variables to allow HTTP requests to skip routing through the proxy.
 
     :return: None
     :rtype: ``None``
     """
     for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-        if k in os.environ:
-            del os.environ[k]
+        os.environ.pop(k, None)
 
 
 def ensure_proxy_has_http_prefix():
     """
-    The function checks if proxy environment vars are missing http/https prefixes, and adds http if so.
+    Checks if proxy environment vars are missing http/https prefixes, and adds http if so.
 
     :return: None
     :rtype: ``None``
     """
     for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-        if k in os.environ:
-            proxy_env_var = os.getenv(k)
-            if proxy_env_var:
-                os.environ[k] = add_http_prefix_if_missing(os.environ[k])
+        proxy_env_var = os.getenv(k)
+        if proxy_env_var:
+            os.environ[k] = add_http_prefix_if_missing(proxy_env_var)
 
 
 def skip_cert_verification():
     """
-    The function deletes the self signed certificate env vars in order to http requests to skip certificate validation.
+    Deletes the self-signed certificate environment variables to allow HTTP requests to skip certificate validation.
 
     :return: None
     :rtype: ``None``
     """
     for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
-        if k in os.environ:
-            del os.environ[k]
+        os.environ.pop(k, None)
 
 
 def urljoin(url, suffix=""):
@@ -1342,7 +1227,7 @@ def PrettifyCompactedTimestamp(x):
        :type x: ``str``
        :param x: The timestamp to be formatted (required)
 
-       :return: A string represeting the time
+       :return: A string representing the time
        :rtype: ``str``
     """
     return '%s-%s-%sT%s:%s:%s' % (x[:4], x[4:6], x[6:8], x[8:10], x[10:12], x[12:])
@@ -1556,6 +1441,7 @@ def aws_table_to_markdown(response, table_header):
     """
     Converts a raw response from AWS into a markdown formatted table. This function checks to see if
     there is only one nested dict in the top level of the dictionary and will use the nested data.
+
     :param response: Raw response from AWS
     :type response: dict
     :param table_header: The header string to use for the table.
@@ -1563,30 +1449,18 @@ def aws_table_to_markdown(response, table_header):
     :return: Markdown formatted table as a string.
     :rtype: str
     """
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(response[list(response.keys())[0]], dict) or isinstance(
-                    response[list(response.keys())[0]], list):
-                if isinstance(response[list(response.keys())[0]], list):
-                    list_response = response[list(response.keys())[0]]
-                    if not list_response:
-                        human_readable = tableToMarkdown(table_header, list_response)
-                    elif isinstance(list_response[0], str):
-                        human_readable = tableToMarkdown(
-                            table_header, response)
-                    else:
-                        human_readable = tableToMarkdown(
-                            table_header, response[list(response.keys())[0]])
-                else:
-                    human_readable = tableToMarkdown(
-                        table_header, response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown(table_header, response)
-        else:
-            human_readable = tableToMarkdown(table_header, response)
-    else:
-        human_readable = tableToMarkdown(table_header, response)
-    return human_readable
+
+    def table_for_response(resp):
+        return tableToMarkdown(table_header, resp)
+
+    if isinstance(response, dict) and len(response) == 1:
+        nested_value = list(response.values())[0]
+        if isinstance(nested_value, (dict, list)):
+            if isinstance(nested_value, list) and nested_value and isinstance(nested_value[0], str):
+                return table_for_response(response)
+            return table_for_response(nested_value)
+
+    return table_for_response(response)
 
 
 def stringEscape(st):
@@ -1685,10 +1559,9 @@ class IntegrationLogger(object):
         return text
 
     def add_replace_strs(self, *args):
-        '''
-            Add strings which will be replaced when logging.
+        """Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
-        '''
+        """
         to_add = []
         for a in args:
             if a:
@@ -1870,8 +1743,7 @@ def logger(func):
 
 def formatCell(data, is_pretty=True, json_transform=None):
     """
-       Convert a given object to md while decending multiple levels
-
+       Convert a given object to md while descending multiple levels
 
        :type data: ``str`` or ``list`` or ``dict``
        :param data: The cell content (required)
@@ -1880,7 +1752,7 @@ def formatCell(data, is_pretty=True, json_transform=None):
        :param is_pretty: Should cell content be prettified (default is True)
 
        :type json_transform: ``JsonTransformer``
-       :param json_transform: The Json transform object to transform the data
+       :param json_transform: The JSON transform object to transform the data
 
        :return: The formatted cell content as a string
        :rtype: ``str``
@@ -1899,7 +1771,7 @@ def flattenCell(data, is_pretty=True):
        :param data: The cell content (required)
 
        :type is_pretty: ``bool``
-       :param is_pretty: Should cell content be pretified (default is True)
+       :param is_pretty: Should cell content be prettified (default is True)
 
        :return: A sting representation of the cell content
        :rtype: ``str``
@@ -2224,12 +2096,12 @@ class JsonTransformer:
                     if not isinstance(v, dict) and not isinstance(v, list):
                         yield path, k, v
                     else:
-                        for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                        for res in self.json_to_path_generator(v, path + [k]):  # this is yielded from for python2 BC
                             yield res
 
                 elif self.is_nested:
                     # recurse all the json_input to find the relevant data
-                    for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                    for res in self.json_to_path_generator(v, path + [k]):  # this is yielded from for python2 BC
                         yield res
 
         if isinstance(json_input, list):
@@ -2238,7 +2110,7 @@ class JsonTransformer:
                 yield path, 'values', ', '.join(json_input)
             else:
                 for i, item in enumerate(json_input):
-                    for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC
+                    for res in self.json_to_path_generator(item, path + [i]):  # this is yielded from for python2 BC
                         yield res
 
 
@@ -2371,10 +2243,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                 vals = [str(v) for v in vals]
                 mdResult += ' | '.join(vals)
             mdResult += ' |\n'
-
     else:
         mdResult += '**No entries.**\n'
-
     return mdResult
 
 
@@ -2461,7 +2331,6 @@ def sectionsToMarkdown(root):
                 data = [data]
             data = [{k: formatCell(row[k]) for k in row} for row in data]
             mdResult += tblToMd(section, data)
-
     return mdResult
 
 
@@ -2664,7 +2533,6 @@ def strip_tag(tag):
 
 def elem_to_internal(elem, strip_ns=1, strip=1):
     """Convert an Element into an internal dictionary (not JSON!)."""
-
     d = OrderedDict()  # type: dict
     elem_tag = elem.tag
     if strip_ns:
@@ -2672,7 +2540,7 @@ def elem_to_internal(elem, strip_ns=1, strip=1):
     for key, value in list(elem.attrib.items()):
         d['@' + key] = value
 
-    # loop over subelements to merge them
+    # loop over sub-elements to merge them
     for subelem in elem:
         v = elem_to_internal(subelem, strip_ns=strip_ns, strip=strip)
 
@@ -2682,7 +2550,7 @@ def elem_to_internal(elem, strip_ns=1, strip=1):
 
         value = v[tag]
         try:
-            # add to existing list for this tag
+            # add to an existing list for this tag
             d[tag].append(value)
         except AttributeError:
             # turn existing entry into a list
@@ -2770,7 +2638,6 @@ def json2elem(json_data, factory=ET.Element):
     default; if you want to use something else, pass the Element class
     as the factory parameter.
     """
-
     return internal_to_elem(json.loads(json_data), factory)
 
 
@@ -2799,10 +2666,8 @@ def json2xml(json_data, factory=ET.Element):
     default; if you want to use something else, pass the Element class
     as the factory parameter.
     """
-
     if not isinstance(json_data, dict):
         json_data = json.loads(json_data)
-
     elem = internal_to_elem(json_data, factory)
     return ET.tostring(elem, encoding='utf-8')
 
@@ -2933,7 +2798,7 @@ class Common(object):
         @staticmethod
         def create_context_table(data):
             """
-            Gets a list of items of a specific class (such as CommunityNotes, Publications etc) and returns a context
+            Gets a list of items of a specific class (such as CommunityNotes, Publications, etc) and returns a context
             list.
             """
             table = []
@@ -3120,327 +2985,122 @@ class Common(object):
     class IP(Indicator):
         """
         IP indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#ip
-
-        :type ip: ``str``
-        :param ip: IP address
-
-        :type asn: ``str``
-        :param asn: The autonomous system name for the IP address, for example: "AS8948".
-
-        :type as_owner: ``str``
-        :param as_owner: The autonomous system owner of the IP.
-
-        :type region: ``str``
-        :param region: The region in which the IP is located.
-
-        :type port: ``str``
-        :param port: Ports that are associated with the IP.
-
-        :type internal: ``bool``
-        :param internal: Whether or not the IP is internal or external.
-
-        :type updated_date: ``date``
-        :param updated_date: The date that the IP was last updated.
-
-        :type registrar_abuse_name: ``str``
-        :param registrar_abuse_name: The name of the contact for reporting abuse.
-
-        :type registrar_abuse_address: ``str``
-        :param registrar_abuse_address: The address of the contact for reporting abuse.
-
-        :type registrar_abuse_country: ``str``
-        :param registrar_abuse_country: The country of the contact for reporting abuse.
-
-        :type registrar_abuse_network: ``str``
-        :param registrar_abuse_network: The network of the contact for reporting abuse.
-
-        :type registrar_abuse_phone: ``str``
-        :param registrar_abuse_phone: The phone number of the contact for reporting abuse.
-
-        :type registrar_abuse_email: ``str``
-        :param registrar_abuse_email: The email address of the contact for reporting abuse.
-
-        :type campaign: ``str``
-        :param campaign: The campaign associated with the IP.
-
-        :type traffic_light_protocol: ``str``
-        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the IP.
-
-        :type community_notes: ``CommunityNotes``
-        :param community_notes: Notes on the IP that were given by the community.
-
-        :type publications: ``Publications``
-        :param publications: Publications on the ip that was published.
-
-        :type threat_types: ``ThreatTypes``
-        :param threat_types: Threat types that are associated with the file.
-
-        :type hostname: ``str``
-        :param hostname: The hostname that is mapped to this IP address.
-
-        :type geo_latitude: ``str``
-        :param geo_latitude: The geolocation where the IP address is located, in the format: latitude
-
-        :type geo_longitude: ``str``
-        :param geo_longitude: The geolocation where the IP address is located, in the format: longitude.
-
-        :type geo_country: ``str``
-        :param geo_country: The country in which the IP address is located.
-
-        :type geo_description: ``str``
-        :param geo_description: Additional information about the location.
-
-        :type detection_engines: ``int``
-        :param detection_engines: The total number of engines that checked the indicator.
-
-        :type positive_engines: ``int``
-        :param positive_engines: The number of engines that positively detected the indicator as malicious.
-
-        :type organization_name: ``str``
-        :param organization_name: The organization of the IP
-
-        :type organization_type: ``str``
-        :param organization_type:The organization type of the IP
-
-        :type tags: ``str``
-        :param tags: Tags of the IP.
-
-        :type malware_family: ``str``
-        :param malware_family: The malware family associated with the IP.
-
-        :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: List of indicators that are associated with the IP.
-
-        :type relationships: ``list of EntityRelationship``
-        :param relationships: List of relationships of the indicator.
-
-        :type blocked: ``boolean``
-        :param blocked: Is the indicator blocked.
-
-        :type description: ``str``
-        :param description: A general description of the indicator
-
-        :type stix_id: ``str``
-        :param stix_id: The STIX id representing the indicator
-
-        :type whois_records: ``WhoisRecord``
-        :param whois_records: List of whois records
-
-        :type dbot_score: ``DBotScore``
-        :param dbot_score: If IP has a score then create and set a DBotScore object.
-
-        :type organization_prevalence: ``int``
-        :param organization_prevalence: The number of times the indicator is detected in the organization.
-
-        :type global_prevalence: ``int``
-        :param global_prevalence: The number of times the indicator is detected across all organizations.
-
-        :type organization_first_seen: ``str``
-        :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
-
-        :type organization_last_seen: ``str``
-        :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
-
-        :type first_seen_by_source: ``str``
-        :param first_seen_by_source: ISO 8601 date time string; when the indicator was first seen by the source vendor.
-
-        :type last_seen_by_source: ``str``
-        :param last_seen_by_source: ISO 8601 date time string; when the indicator was last seen by the source vendor.
-
-        :return: None
-        :rtype: ``None``
         """
 
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, ip, dbot_score, asn=None, as_owner=None, region=None, port=None, internal=None,
-                     updated_date=None, registrar_abuse_name=None, registrar_abuse_address=None,
-                     registrar_abuse_country=None, registrar_abuse_network=None, registrar_abuse_phone=None,
-                     registrar_abuse_email=None, campaign=None, traffic_light_protocol=None,
-                     community_notes=None, publications=None, threat_types=None,
-                     hostname=None, geo_latitude=None, geo_longitude=None,
-                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
-                     organization_name=None, organization_type=None, feed_related_indicators=None, tags=None,
-                     malware_family=None, relationships=None, blocked=None, description=None, stix_id=None,
-                     whois_records=None, organization_prevalence=None,
-                     global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     first_seen_by_source=None, last_seen_by_source=None, ip_type="IP"):
+        def __init__(self, ip, dbot_score, **kwargs):
+            self.ip = ip
+            self.ip_type = kwargs.get('ip_type', 'IP')
 
             # Main value of the indicator
-            self.ip = ip
-            self.ip_type = ip_type
-
-            # Core custom fields - IP
-            self.blocked = blocked
-            self.community_notes = community_notes
-            self.description = description
-            self.tags = tags
-            self.geo_country = geo_country
-            self.geo_latitude = geo_latitude
-            self.geo_longitude = geo_longitude
-            self.internal = internal
-            self.stix_id = stix_id
-            self.traffic_light_protocol = traffic_light_protocol
-            self.whois_records = whois_records
+            self.dbot_score = self.validate_dbot_score(dbot_score)
+            self.blocked = kwargs.get('blocked')
+            self.community_notes = kwargs.get('community_notes')
+            self.description = kwargs.get('description')
+            self.tags = kwargs.get('tags')
+            self.geo_country = kwargs.get('geo_country')
+            self.geo_latitude = kwargs.get('geo_latitude')
+            self.geo_longitude = kwargs.get('geo_longitude')
+            self.internal = kwargs.get('internal')
+            self.stix_id = kwargs.get('stix_id')
+            self.traffic_light_protocol = kwargs.get('traffic_light_protocol')
+            self.whois_records = kwargs.get('whois_records')
 
             # Other custom fields
-            self.asn = asn
-            self.as_owner = as_owner
-            self.region = region
-            self.port = port
-            self.updated_date = updated_date
-            self.registrar_abuse_name = registrar_abuse_name
-            self.registrar_abuse_address = registrar_abuse_address
-            self.registrar_abuse_country = registrar_abuse_country
-            self.registrar_abuse_network = registrar_abuse_network
-            self.registrar_abuse_phone = registrar_abuse_phone
-            self.registrar_abuse_email = registrar_abuse_email
-            self.campaign = campaign
-            self.publications = publications
-            self.threat_types = threat_types
-            self.hostname = hostname
-            self.geo_description = geo_description
-            self.detection_engines = detection_engines
-            self.positive_engines = positive_engines
-            self.organization_name = organization_name
-            self.organization_type = organization_type
-            self.feed_related_indicators = feed_related_indicators
-            self.malware_family = malware_family
-            self.relationships = relationships
-            self.organization_prevalence = organization_prevalence
-            self.global_prevalence = global_prevalence
-            self.organization_first_seen = organization_first_seen
-            self.organization_last_seen = organization_last_seen
-            self.first_seen_by_source = first_seen_by_source
-            self.last_seen_by_source = last_seen_by_source
+            self.__dict__.update(kwargs)
 
+        def validate_dbot_score(self, dbot_score):
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
+            return dbot_score
 
-            self.dbot_score = dbot_score
+        def create_geo_context(self):
+            geo_context = {}
+            if self.geo_latitude and self.geo_longitude:
+                geo_context['Location'] = f'{self.geo_latitude}:{self.geo_longitude}'
+            if self.geo_country:
+                geo_context['Country'] = self.geo_country
+            if self.geo_description:
+                geo_context['Description'] = self.geo_description
+            return geo_context
+
+        def create_registrar_context(self):
+            return {
+                'Abuse': {
+                    'Name': self.registrar_abuse_name,
+                    'Address': self.registrar_abuse_address,
+                    'Country': self.registrar_abuse_country,
+                    'Network': self.registrar_abuse_network,
+                    'Phone': self.registrar_abuse_phone,
+                    'Email': self.registrar_abuse_email
+                }
+            } if any([self.registrar_abuse_name, self.registrar_abuse_address, self.registrar_abuse_country,
+                      self.registrar_abuse_network, self.registrar_abuse_phone, self.registrar_abuse_email]) else {}
+
+        def create_organization_context(self):
+            org_context = {}
+            if self.organization_name:
+                org_context['Name'] = self.organization_name
+            if self.organization_type:
+                org_context['Type'] = self.organization_type
+            return org_context
 
         def to_context(self):
-            ip_context = {
-                'Address': self.ip
-            }
+            ip_context = {'Address': self.ip}
 
             if self.blocked:
                 ip_context['Blocked'] = self.blocked
-
-            if self.asn:
-                ip_context['ASN'] = self.asn
-
-            if self.as_owner:
-                ip_context['ASOwner'] = self.as_owner
-
-            if self.region:
-                ip_context['Region'] = self.region
-
-            if self.port:
-                ip_context['Port'] = self.port
-
-            if self.internal:
-                ip_context['Internal'] = self.internal
-
-            if self.stix_id:
-                ip_context['STIXID'] = self.stix_id
-
-            if self.updated_date:
-                ip_context['UpdatedDate'] = self.updated_date
-
-            if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or \
-                    self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
-                ip_context['Registrar'] = {'Abuse': {}}
-                if self.registrar_abuse_name:
-                    ip_context['Registrar']['Abuse']['Name'] = self.registrar_abuse_name
-                if self.registrar_abuse_address:
-                    ip_context['Registrar']['Abuse']['Address'] = self.registrar_abuse_address
-                if self.registrar_abuse_country:
-                    ip_context['Registrar']['Abuse']['Country'] = self.registrar_abuse_country
-                if self.registrar_abuse_network:
-                    ip_context['Registrar']['Abuse']['Network'] = self.registrar_abuse_network
-                if self.registrar_abuse_phone:
-                    ip_context['Registrar']['Abuse']['Phone'] = self.registrar_abuse_phone
-                if self.registrar_abuse_email:
-                    ip_context['Registrar']['Abuse']['Email'] = self.registrar_abuse_email
-
-            if self.campaign:
-                ip_context['Campaign'] = self.campaign
-
             if self.description:
                 ip_context['Description'] = self.description
-
-            if self.traffic_light_protocol:
-                ip_context['TrafficLightProtocol'] = self.traffic_light_protocol
-
-            if self.community_notes:
-                ip_context['CommunityNotes'] = self.create_context_table(self.community_notes)
-
-            if self.publications:
-                ip_context['Publications'] = self.create_context_table(self.publications)
-
-            if self.threat_types:
-                ip_context['ThreatTypes'] = self.create_context_table(self.threat_types)
-
-            if self.whois_records:
-                ip_context['WhoisRecords'] = self.create_context_table(self.whois_records)
-
-            if self.hostname:
-                ip_context['Hostname'] = self.hostname
-
-            if self.geo_latitude or self.geo_country or self.geo_description:
-                ip_context['Geo'] = {}
-
-                if self.geo_latitude and self.geo_longitude:
-                    ip_context['Geo']['Location'] = '{}:{}'.format(self.geo_latitude, self.geo_longitude)
-
-                if self.geo_country:
-                    ip_context['Geo']['Country'] = self.geo_country
-
-                if self.geo_description:
-                    ip_context['Geo']['Description'] = self.geo_description
-
-            if self.organization_name or self.organization_type:
-                ip_context['Organization'] = {}
-
-                if self.organization_name:
-                    ip_context['Organization']['Name'] = self.organization_name
-
-                if self.organization_type:
-                    ip_context['Organization']['Type'] = self.organization_type
-
+            if self.tags:
+                ip_context['Tags'] = self.tags
+            if self.stix_id:
+                ip_context['STIXID'] = self.stix_id
+            if self.updated_date:
+                ip_context['UpdatedDate'] = self.updated_date
             if self.detection_engines is not None:
                 ip_context['DetectionEngines'] = self.detection_engines
-
             if self.positive_engines is not None:
                 ip_context['PositiveDetections'] = self.positive_engines
 
+            ip_context.update({
+                k: v for k, v in {
+                    'ASN': self.asn,
+                    'ASOwner': self.as_owner,
+                    'Region': self.region,
+                    'Port': self.port,
+                    'Internal': self.internal,
+                    'Campaign': self.campaign,
+                    'TrafficLightProtocol': self.traffic_light_protocol,
+                    'Hostname': self.hostname,
+                    'OrganizationPrevalence': self.organization_prevalence,
+                    'GlobalPrevalence': self.global_prevalence,
+                    'OrganizationFirstSeen': self.organization_first_seen,
+                    'OrganizationLastSeen': self.organization_last_seen,
+                    'FirstSeenBySource': self.first_seen_by_source,
+                    'LastSeenBySource': self.last_seen_by_source,
+                    'MalwareFamily': self.malware_family
+                }.items() if v is not None
+            })
+
+            if self.whois_records:
+                ip_context['WhoisRecords'] = self.create_context_table(self.whois_records)
+            if self.community_notes:
+                ip_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+            if self.publications:
+                ip_context['Publications'] = self.create_context_table(self.publications)
+            if self.threat_types:
+                ip_context['ThreatTypes'] = self.create_context_table(self.threat_types)
             if self.feed_related_indicators:
                 ip_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
-
-            if self.tags:
-                ip_context['Tags'] = self.tags
-
-            if self.malware_family:
-                ip_context['MalwareFamily'] = self.malware_family
-
-            if self.organization_prevalence is not None:  # checking for `is not None` to allow `0`-value
-                ip_context['OrganizationPrevalence'] = self.organization_prevalence
-
-            if self.global_prevalence is not None:  # checking for `is not None` to allow `0`-value
-                ip_context['GlobalPrevalence'] = self.global_prevalence
-
-            if self.organization_first_seen:
-                ip_context['OrganizationFirstSeen'] = self.organization_first_seen
-
-            if self.organization_last_seen:
-                ip_context['OrganizationLastSeen'] = self.organization_last_seen
-
-            if self.first_seen_by_source:
-                ip_context['FirstSeenBySource'] = self.first_seen_by_source
-
-            if self.last_seen_by_source:
-                ip_context['LastSeenBySource'] = self.last_seen_by_source
+            if self.geo_latitude or self.geo_country or self.geo_description:
+                ip_context['Geo'] = self.create_geo_context()
+            if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or \
+                self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
+                ip_context['Registrar'] = self.create_registrar_context()
+            if self.organization_name or self.organization_type:
+                ip_context['Organization'] = self.create_organization_context()
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 ip_context['Malicious'] = {
@@ -3449,15 +3109,12 @@ class Common(object):
                 }
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if
-                                         relationship.to_context()]
+                relationships_context = [
+                    relationship.to_context() for relationship in self.relationships if relationship.to_context()
+                ]
                 ip_context['Relationships'] = relationships_context
 
-            if self.ip_type == "IP":
-                context_path = Common.IP.CONTEXT_PATH
-
-            elif self.ip_type == "IPv6":
-                context_path = Common.IP.CONTEXT_PATH.replace("IP", "IPv6")
+            context_path = Common.IP.CONTEXT_PATH if self.ip_type == "IP" else Common.IP.CONTEXT_PATH.replace("IP", "IPv6")
 
             ret_value = {
                 context_path: ip_context
@@ -3838,327 +3495,120 @@ class Common(object):
     class File(Indicator):
         """
         File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
-        :type name: ``str``
-        :param name: The full file name (including file extension).
-
-        :type entry_id: ``str``
-        :param entry_id: The ID for locating the file in the War Room.
-
-        :type size: ``int``
-        :param size: The size of the file in bytes.
-
-        :type md5: ``str``
-        :param md5: The MD5 hash of the file.
-
-        :type sha1: ``str``
-        :param sha1: The SHA1 hash of the file.
-
-        :type sha256: ``str``
-        :param sha256: The SHA256 hash of the file.
-
-        :type sha512: ``str``
-        :param sha512: The SHA512 hash of the file.
-
-        :type ssdeep: ``str``
-        :param ssdeep: The ssdeep hash of the file (same as displayed in file entries).
-
-        :type extension: ``str``
-        :param extension: The file extension, for example: "xls".
-
-        :type file_type: ``str``
-        :param file_type: The file type, as determined by libmagic (same as displayed in file entries).
-
-        :type hostname: ``str``
-        :param hostname: The name of the host where the file was found. Should match Path.
-
-        :type path: ``str``
-        :param path: The path where the file is located.
-
-        :type company: ``str``
-        :param company: The name of the company that released a binary.
-
-        :type product_name: ``str``
-        :param product_name: The name of the product to which this file belongs.
-
-        :type digital_signature__publisher: ``str``
-        :param digital_signature__publisher: The publisher of the digital signature for the file.
-
-        :type signature: ``FileSignature``
-        :param signature: File signature class
-
-        :type actor: ``str``
-        :param actor: The actor reference.
-
-        :type tags: ``str``
-        :param tags: Tags of the file.
-
-        :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: List of indicators that are associated with the file.
-
-        :type malware_family: ``str``
-        :param malware_family: The malware family associated with the File.
-
-        :type campaign: ``str``
-        :param campaign:
-
-        :type traffic_light_protocol: ``str``
-        :param traffic_light_protocol:
-
-        :type community_notes: ``CommunityNotes``
-        :param community_notes:  Notes on the file that were given by the community.
-
-        :type publications: ``Publications``
-        :param publications: Publications on the file that was published.
-
-        :type threat_types: ``ThreatTypes``
-        :param threat_types: Threat types that are associated with the file.
-
-        :type imphash: ``str``
-        :param imphash: The Imphash hash of the file.
-
-        :type quarantined: ``bool``
-        :param quarantined: Is the file quarantined or not.
-
-        :type organization: ``str``
-        :param organization: The organization of the file.
-
-        :type associated_file_names: ``str``
-        :param associated_file_names: File names that are known as associated to the file.
-
-        :type behaviors: ``Behaviors``
-        :param behaviors: list of behaviors associated with the file.
-
-        :type relationships: ``list of EntityRelationship``
-        :param relationships: List of relationships of the indicator.
-
-        :type dbot_score: ``DBotScore``
-        :param dbot_score: If file has a score then create and set a DBotScore object
-
-        :type creation_date: ``str``
-        :param creation_date: The date the file was created.
-
-        :type description: ``str``
-        :param description: File description.
-
-        :type hashes: ``Hash``
-        :param hashes: List of hashes associated with the file.
-
-        :type stix_id: ``str``
-        :param stix_id: File assigned STIX ID.
-
-        :type organization_prevalence: ``int``
-        :param organization_prevalence: The number of times the indicator is detected in the organization.
-
-        :type global_prevalence: ``int``
-        :param global_prevalence: The number of times the indicator is detected across all organizations.
-
-        :type organization_first_seen: ``str``
-        :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
-
-        :type organization_last_seen: ``str``
-        :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
-
-        :type first_seen_by_source: ``str``
-        :param first_seen_by_source: ISO 8601 date time string; when the indicator was first seen by the source vendor.
-
-        :type last_seen_by_source: ``str``
-        :param last_seen_by_source: ISO 8601 date time string; when the indicator was last seen by the source vendor.
-
-        :rtype: ``None``
-        :return: None
         """
+
         CONTEXT_PATH = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
                        'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
                        'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
                        'val.SSDeep && val.SSDeep == obj.SSDeep)'
 
-        def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
-                     sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
-                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
-                     feed_related_indicators=None, malware_family=None, imphash=None, quarantined=None, campaign=None,
-                     associated_file_names=None, traffic_light_protocol=None, organization=None, community_notes=None,
-                     publications=None, threat_types=None, behaviors=None, relationships=None,
-                     creation_date=None, description=None, hashes=None, stix_id=None, organization_prevalence=None,
-                     global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     first_seen_by_source=None, last_seen_by_source=None):
-
+        def __init__(self, dbot_score, **kwargs):
             # Main value of a file (Hashes)
-            self.md5 = md5
-            self.imphash = imphash
-            self.sha1 = sha1
-            self.sha256 = sha256
-            self.sha512 = sha512
-            self.ssdeep = ssdeep
-            self.hashes = hashes
+            self.md5 = kwargs.get('md5')
+            self.imphash = kwargs.get('imphash')
+            self.sha1 = kwargs.get('sha1')
+            self.sha256 = kwargs.get('sha256')
+            self.sha512 = kwargs.get('sha512')
+            self.ssdeep = kwargs.get('ssdeep')
+            self.hashes = kwargs.get('hashes')
 
             # Core custom fields for File type
-            self.associated_file_names = associated_file_names
-            self.community_notes = community_notes
-            self.creation_date = creation_date
-            self.description = description
-            self.extension = extension
-            self.file_type = file_type
-            self.path = path
-            self.quarantined = quarantined
-            self.size = size
-            self.stix_id = stix_id
-            self.tags = tags
-            self.traffic_light_protocol = traffic_light_protocol
+            self.associated_file_names = kwargs.get('associated_file_names')
+            self.community_notes = kwargs.get('community_notes')
+            self.creation_date = kwargs.get('creation_date')
+            self.description = kwargs.get('description')
+            self.extension = kwargs.get('extension')
+            self.file_type = kwargs.get('file_type')
+            self.path = kwargs.get('path')
+            self.quarantined = kwargs.get('quarantined')
+            self.size = kwargs.get('size')
+            self.stix_id = kwargs.get('stix_id')
+            self.tags = kwargs.get('tags')
+            self.traffic_light_protocol = kwargs.get('traffic_light_protocol')
 
             # Other custom fields
-            self.name = name
-            self.entry_id = entry_id
-            self.hostname = hostname
-            self.company = company
-            self.product_name = product_name
-            self.digital_signature__publisher = digital_signature__publisher
-            self.signature = signature
-            self.actor = actor
-            self.organization = organization
-            self.feed_related_indicators = feed_related_indicators
-            self.malware_family = malware_family
-            self.campaign = campaign
-            self.publications = publications
-            self.threat_types = threat_types
-            self.behaviors = behaviors
-            self.organization_prevalence = organization_prevalence
-            self.global_prevalence = global_prevalence
-            self.organization_first_seen = organization_first_seen
-            self.organization_last_seen = organization_last_seen
-            self.first_seen_by_source = first_seen_by_source
-            self.last_seen_by_source = last_seen_by_source
+            self.name = kwargs.get('name')
+            self.entry_id = kwargs.get('entry_id')
+            self.hostname = kwargs.get('hostname')
+            self.company = kwargs.get('company')
+            self.product_name = kwargs.get('product_name')
+            self.digital_signature__publisher = kwargs.get('digital_signature__publisher')
+            self.signature = kwargs.get('signature')
+            self.actor = kwargs.get('actor')
+            self.organization = kwargs.get('organization')
+            self.feed_related_indicators = kwargs.get('feed_related_indicators')
+            self.malware_family = kwargs.get('malware_family')
+            self.campaign = kwargs.get('campaign')
+            self.publications = kwargs.get('publications')
+            self.threat_types = kwargs.get('threat_types')
+            self.behaviors = kwargs.get('behaviors')
+            self.organization_prevalence = kwargs.get('organization_prevalence')
+            self.global_prevalence = kwargs.get('global_prevalence')
+            self.organization_first_seen = kwargs.get('organization_first_seen')
+            self.organization_last_seen = kwargs.get('organization_last_seen')
+            self.first_seen_by_source = kwargs.get('first_seen_by_source')
+            self.last_seen_by_source = kwargs.get('last_seen_by_source')
 
-            # XSOAR Fields
-            self.relationships = relationships
-            self.dbot_score = dbot_score
+            # Relationships and score
+            self.relationships = kwargs.get('relationships')
+            self.dbot_score = self.validate_dbot_score(dbot_score)
+
+        def validate_dbot_score(self, dbot_score):
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+            return dbot_score
 
         def to_context(self):
-            file_context = {'Hashes': []}  # type: dict
-
-            if self.name:
-                file_context['Name'] = self.name
+            file_context = {k: v for k, v in {
+                'Name': self.name,
+                'EntryID': self.entry_id,
+                'Size': self.size,
+                'MD5': self.md5,
+                'SHA1': self.sha1,
+                'SHA256': self.sha256,
+                'SHA512': self.sha512,
+                'SSDeep': self.ssdeep,
+                'Extension': self.extension,
+                'Type': self.file_type,
+                'Hostname': self.hostname,
+                'Path': self.path,
+                'Company': self.company,
+                'ProductName': self.product_name,
+                'Actor': self.actor,
+                'Organization': self.organization,
+                'MalwareFamily': self.malware_family,
+                'Campaign': self.campaign,
+                'TrafficLightProtocol': self.traffic_light_protocol,
+                'Quarantined': self.quarantined,
+                'AssociatedFileNames': self.associated_file_names,
+                'OrganizationPrevalence': self.organization_prevalence,
+                'GlobalPrevalence': self.global_prevalence,
+                'OrganizationFirstSeen': self.organization_first_seen,
+                'OrganizationLastSeen': self.organization_last_seen,
+                'FirstSeenBySource': self.first_seen_by_source,
+                'LastSeenBySource': self.last_seen_by_source,
+                'Description': self.description,
+                'Imphash': self.imphash,
+                'Tags': self.tags,
+            }.items() if v is not None}
 
             if self.hashes:
                 file_context['Hashes'] = self.create_context_table(self.hashes)
 
-            if self.entry_id:
-                file_context['EntryID'] = self.entry_id
-
-            if self.size:
-                file_context['Size'] = self.size
-
-            if self.md5:
-                file_context['MD5'] = self.md5
-                file_context['Hashes'].append({'type': 'MD5',
-                                               'value': self.md5})
-
-            if self.sha1:
-                file_context['SHA1'] = self.sha1
-                file_context['Hashes'].append({'type': 'SHA1',
-                                               'value': self.sha1})
-
-            if self.sha256:
-                file_context['SHA256'] = self.sha256
-                file_context['Hashes'].append({'type': 'SHA256',
-                                               'value': self.sha256})
-
-            if self.sha512:
-                file_context['SHA512'] = self.sha512
-                file_context['Hashes'].append({'type': 'SHA512',
-                                               'value': self.sha512})
-
-            if self.ssdeep:
-                file_context['SSDeep'] = self.ssdeep
-                file_context['Hashes'].append({'type': 'SSDeep',
-                                               'value': self.ssdeep})
-
-            if self.extension:
-                file_context['Extension'] = self.extension
-
-            if self.file_type:
-                file_context['Type'] = self.file_type
-
-            if self.hostname:
-                file_context['Hostname'] = self.hostname
-
-            if self.path:
-                file_context['Path'] = self.path
-
-            if self.company:
-                file_context['Company'] = self.company
-
-            if self.product_name:
-                file_context['ProductName'] = self.product_name
+            for hash_type in ['md5', 'sha1', 'sha256', 'sha512', 'ssdeep', 'imphash']:
+                hash_value = getattr(self, hash_type, None)
+                if hash_value:
+                    file_context.setdefault('Hashes', []).append({'type': hash_type.upper(), 'value': hash_value})
 
             if self.digital_signature__publisher:
-                file_context['DigitalSignature'] = {
-                    'Published': self.digital_signature__publisher
-                }
+                file_context['DigitalSignature'] = {'Published': self.digital_signature__publisher}
 
             if self.signature:
                 file_context['Signature'] = self.signature.to_context()
 
-            if self.actor:
-                file_context['Actor'] = self.actor
-
-            if self.tags:
-                file_context['Tags'] = self.tags
-
-            if self.feed_related_indicators:
-                file_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
-
-            if self.malware_family:
-                file_context['MalwareFamily'] = self.malware_family
-
-            if self.campaign:
-                file_context['Campaign'] = self.campaign
-
-            if self.traffic_light_protocol:
-                file_context['TrafficLightProtocol'] = self.traffic_light_protocol
-
-            if self.community_notes:
-                file_context['CommunityNotes'] = self.create_context_table(self.community_notes)
-
-            if self.publications:
-                file_context['Publications'] = self.create_context_table(self.publications)
-
-            if self.threat_types:
-                file_context['ThreatTypes'] = self.create_context_table(self.threat_types)
-
-            if self.imphash:
-                file_context['Imphash'] = self.imphash
-                file_context['Hashes'].append({'type': 'Imphash',
-                                               'value': self.imphash})
-
-            if self.quarantined:
-                file_context['Quarantined'] = self.quarantined
-
-            if self.organization:
-                file_context['Organization'] = self.organization
-
-            if self.associated_file_names:
-                file_context['AssociatedFileNames'] = self.associated_file_names
-
-            if self.behaviors:
-                file_context['Behavior'] = self.create_context_table(self.behaviors)
-
-            if self.organization_prevalence is not None:  # checking for `is not None` to allow `0`-value
-                file_context['OrganizationPrevalence'] = self.organization_prevalence
-
-            if self.global_prevalence is not None:  # checking for `is not None` to allow `0`-value
-                file_context['GlobalPrevalence'] = self.global_prevalence
-
-            if self.organization_first_seen:
-                file_context['OrganizationFirstSeen'] = self.organization_first_seen
-
-            if self.organization_last_seen:
-                file_context['OrganizationLastSeen'] = self.organization_last_seen
-
-            if self.first_seen_by_source:
-                file_context['FirstSeenBySource'] = self.first_seen_by_source
-
-            if self.last_seen_by_source:
-                file_context['LastSeenBySource'] = self.last_seen_by_source
+            for attr in ['community_notes', 'feed_related_indicators', 'publications', 'threat_types', 'behaviors']:
+                if value := getattr(self, attr, None):
+                    file_context[attr.replace('_', ' ').title().replace(' ', '')] = self.create_context_table(value)
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {
@@ -4167,14 +3617,10 @@ class Common(object):
                 }
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if
-                                         relationship.to_context()]
+                relationships_context = [rel.to_context() for rel in self.relationships if rel.to_context()]
                 file_context['Relationships'] = relationships_context
 
-            ret_value = {
-                Common.File.CONTEXT_PATH: file_context
-            }
-
+            ret_value = {Common.File.CONTEXT_PATH: file_context}
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
 
@@ -4183,161 +3629,70 @@ class Common(object):
     class CVE(Indicator):
         """
         CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
-        :type id: ``str``
-        :param id: The ID of the CVE, for example: "CVE-2015-1653".
-
-        :type cvss: ``str``
-        :param cvss: The CVSS of the CVE, for example: "10.0".
-
-        :type published: ``str``
-        :param published: The timestamp of when the CVE was published.
-
-        :type modified: ``str``
-        :param modified: The timestamp of when the CVE was last modified.
-
-        :type description: ``str``
-        :param description: A description of the CVE.
-
-        :type relationships: ``list of EntityRelationship``
-        :param relationships: List of relationships of the indicator.
-
-        :type stix_id: ``str``
-        :param stix_id: CVE sitx id.
-
-        :type cvss_version: ``str``
-        :param cvss_version: The CVE CVSS version used.
-
-        :type cvss_score: ``str``
-        :param cvss_score: The CVE CVSS Score.
-
-        :type cvss_vector: ``str``
-        :param cvss_vector: CVE full cvss vector.
-
-        :type cvss_table: ``str``
-        :param cvss_table: CVE CVSS Table used to fill the different parts of the vector.
-
-        :type community_notes: ``str``
-        :param community_notes: Community notes about the CVE.
-
-        :type tags: ``str``
-        :param tags: Tags attached to the CVE.
-
-        :type traffic_light_protocol: ``str``
-        :param traffic_light_protocol: The CVE tlp color.
-
-        :type publications: ``str``
-        :param publications: Unique system-assigned ID of the vulnerability evaluation logic
-
-        :type dbot_score: ``DBotScore``
-        :param dbot_score: If file has a score then create and set a DBotScore object
-
-        :type vulnerable_products: ``CPE``
-        :param vulnerable_products: A list of CPE objects
-
-        :type vulnerable_configurations: ``CPE``
-        :param vulnerable_configurations: A list of CPE objects
-
-        :return: None
-        :rtype: ``None``
         """
+
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
-                     cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None, dbot_score=None, publications=None,
-                     vulnerable_products=None, vulnerable_configurations=None):
-
-            # Main indicator value
+        def __init__(self, id, dbot_score=None, **kwargs):
             self.id = id
 
             # Core custom fields
-            self.community_notes = community_notes
-            self.cvss = cvss
-            self.cvss_version = cvss_version
-            self.cvss_score = cvss_score
-            self.cvss_vector = cvss_vector
-            self.cvss_table = cvss_table
-            self.description = description
-            self.modified = modified
-            self.published = published
-            self.stix_id = stix_id
-            self.tags = tags
-            self.traffic_light_protocol = traffic_light_protocol
-            self.publications = publications
+            self.cvss = kwargs.get('cvss')
+            self.cvss_version = kwargs.get('cvss_version')
+            self.cvss_score = kwargs.get('cvss_score')
+            self.cvss_vector = kwargs.get('cvss_vector')
+            self.cvss_table = kwargs.get('cvss_table')
+            self.published = kwargs.get('published')
+            self.modified = kwargs.get('modified')
+            self.description = kwargs.get('description')
+            self.stix_id = kwargs.get('stix_id')
+            self.community_notes = kwargs.get('community_notes')
+            self.tags = kwargs.get('tags')
+            self.traffic_light_protocol = kwargs.get('traffic_light_protocol')
+            self.publications = kwargs.get('publications')
 
             # XSOAR Fields
-            self.relationships = relationships
-            self.dbot_score = dbot_score if dbot_score else Common.DBotScore(indicator=id,
-                                                                             indicator_type=DBotScoreType.CVE,
-                                                                             integration_name=None,
-                                                                             score=Common.DBotScore.NONE)
+            self.relationships = kwargs.get('relationships')
+            self.dbot_score = dbot_score if dbot_score else Common.DBotScore(
+                indicator=id, indicator_type=DBotScoreType.CVE, integration_name=None, score=Common.DBotScore.NONE)
 
             # Core custom fields for CVE type
-            self.vulnerable_products = vulnerable_products
-            self.vulnerable_configurations = vulnerable_configurations
+            self.vulnerable_products = kwargs.get('vulnerable_products')
+            self.vulnerable_configurations = kwargs.get('vulnerable_configurations')
 
         def to_context(self):
-            cve_context = {
+            cve_context = {k: v for k, v in {
                 'ID': self.id,
-                'CVSS': {},
-            }
+                'Published': self.published,
+                'Modified': self.modified,
+                'Description': self.description,
+                'STIXID': self.stix_id,
+                'Tags': self.tags,
+                'TrafficLightProtocol': self.traffic_light_protocol
+            }.items() if v is not None}
 
-            if self.cvss:
-                cve_context['CVSS']['Score'] = self.cvss
+            cvss_context = {k: v for k, v in {
+                'Score': self.cvss or self.cvss_score,
+                'Version': self.cvss_version,
+                'Vector': self.cvss_vector,
+                'Table': self.cvss_table
+            }.items() if v is not None}
 
-            elif self.cvss_score:
-                cve_context['CVSS']['Score'] = self.cvss_score
-
-            if self.cvss_version:
-                cve_context['CVSS']['Version'] = self.cvss_version
-
-            if self.cvss_vector:
-                cve_context['CVSS']['Vector'] = self.cvss_vector
-
-            if self.cvss_table:
-                cve_context['CVSS']['Table'] = self.cvss_table
-
-            if self.published:
-                cve_context['Published'] = self.published
-
-            if self.modified:
-                cve_context['Modified'] = self.modified
-
-            if self.description:
-                cve_context['Description'] = self.description
-
-            if self.stix_id:
-                cve_context['STIXID'] = self.stix_id
+            if cvss_context:
+                cve_context['CVSS'] = cvss_context
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if
-                                         relationship.to_context()]
+                relationships_context = [rel.to_context() for rel in self.relationships if rel.to_context()]
                 cve_context['Relationships'] = relationships_context
 
-            if self.community_notes:
-                cve_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+            for attr in ['community_notes', 'publications', 'vulnerable_products', 'vulnerable_configurations']:
+                if value := getattr(self, attr, None):
+                    cve_context[attr.replace('_', ' ').title().replace(' ', '')] = self.create_context_table(value)
 
-            if self.tags:
-                cve_context['Tags'] = self.tags
-
-            if self.traffic_light_protocol:
-                cve_context['TrafficLightProtocol'] = self.traffic_light_protocol
-
-            ret_value = {
-                Common.CVE.CONTEXT_PATH: cve_context
-            }
+            ret_value = {Common.CVE.CONTEXT_PATH: cve_context}
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
-
-            if self.publications:
-                cve_context['Publications'] = self.create_context_table(self.publications)
-
-            if self.vulnerable_products:
-                cve_context['VulnerableProducts'] = self.create_context_table(self.vulnerable_products)
-
-            if self.vulnerable_configurations:
-                cve_context['VulnerableConfigurations'] = self.create_context_table(self.vulnerable_configurations)
 
             return ret_value
 
@@ -4440,232 +3795,83 @@ class Common(object):
     class URL(Indicator):
         """
         URL indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#url
-        :type url: ``str``
-        :param url: The URL
-
-        :type detection_engines: ``int``
-        :param detection_engines: The total number of engines that checked the indicator.
-
-        :type positive_detections: ``int``
-        :param positive_detections: The number of engines that positively detected the indicator as malicious.
-
-        :type category: ``str``
-        :param category: The category associated with the indicator.
-
-        :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: List of indicators that are associated with the URL.
-
-        :type malware_family: ``str``
-        :param malware_family: The malware family associated with the URL.
-
-        :type tags: ``str``
-        :param tags: Tags of the URL.
-
-        :type port: ``str``
-        :param port: Ports that are associated with the URL.
-
-        :type internal: ``bool``
-        :param internal: Whether or not the URL is internal or external.
-
-        :type campaign: ``str``
-        :param campaign: The campaign associated with the URL.
-
-        :type traffic_light_protocol: ``str``
-        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the URL.
-
-        :type threat_types: ``ThreatTypes``
-        :param threat_types: Threat types that are associated with the file.
-
-        :type asn: ``str``
-        :param asn: The autonomous system name for the URL, for example: 'AS8948'.
-
-        :type as_owner: ``str``
-        :param as_owner: The autonomous system owner of the URL.
-
-        :type geo_country: ``str``
-        :param geo_country: The country in which the URL is located.
-
-        :type organization: ``str``
-        :param organization: The organization of the URL.
-
-        :type community_notes: ``CommunityNotes``
-        :param community_notes:  List of notes on the URL that were given by the community.
-
-        :type publications: ``Publications``
-        :param publications: List of publications on the URL that was published.
-
-        :type relationships: ``list of EntityRelationship``
-        :param relationships: List of relationships of the indicator.
-
-        :type dbot_score: ``DBotScore``
-        :param dbot_score: If URL has reputation then create DBotScore object
-
-        :type blocked: ``bool``
-        :param blocked: Is the URL blocked.
-
-        :type certificates: ``Certificates``
-        :param certificates: A list of certificates associated with the url.
-
-        :type description: ``str``
-        :param description: A description of the URL.
-
-        :type stix_id: ``str``
-        :param stix_id: The URL STIX ID.
-
-        :type organization_prevalence: ``int``
-        :param organization_prevalence: The number of times the indicator is detected in the organization.
-
-        :type global_prevalence: ``int``
-        :param global_prevalence: The number of times the indicator is detected across all organizations.
-
-        :type organization_first_seen: ``str``
-        :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
-
-        :type organization_last_seen: ``str``
-        :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
-
-        :type first_seen_by_source: ``str``
-        :param first_seen_by_source: ISO 8601 date time string; when the indicator was first seen by the source vendor.
-
-        :type last_seen_by_source: ``str``
-        :param last_seen_by_source: ISO 8601 date time string; when the indicator was last seen by the source vendor.
-
-        :return: None
-        :rtype: ``None``
         """
+
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
-                     feed_related_indicators=None, tags=None, malware_family=None, port=None, internal=None,
-                     campaign=None, traffic_light_protocol=None, threat_types=None, asn=None, as_owner=None,
-                     geo_country=None, organization=None, community_notes=None, publications=None, relationships=None,
-                     blocked=None, certificates=None, description=None, stix_id=None, organization_prevalence=None,
-                     global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     first_seen_by_source=None, last_seen_by_source=None):
-
-            # Main indicator value
+        def __init__(self, url, dbot_score, **kwargs):
             self.url = url
-
-            # Core custom fields
-            self.blocked = blocked
-            self.certificates = certificates
-            self.community_notes = community_notes
-            self.description = description
-            self.internal = internal
-            self.stix_id = stix_id
-            self.tags = tags
-            self.traffic_light_protocol = traffic_light_protocol
-
-            # Additional custom fields
-            self.detection_engines = detection_engines
-            self.positive_detections = positive_detections
-            self.category = category
-            self.feed_related_indicators = feed_related_indicators
-            self.malware_family = malware_family
-            self.port = port
-            self.campaign = campaign
-            self.threat_types = threat_types
-            self.asn = asn
-            self.as_owner = as_owner
-            self.geo_country = geo_country
-            self.organization = organization
-            self.publications = publications
-            self.organization_prevalence = organization_prevalence
-            self.global_prevalence = global_prevalence
-            self.organization_first_seen = organization_first_seen
-            self.organization_last_seen = organization_last_seen
-            self.first_seen_by_source = first_seen_by_source
-            self.last_seen_by_source = last_seen_by_source
-
-            # XSOAR Fields
-            self.relationships = relationships
             self.dbot_score = dbot_score
 
+            self.blocked = kwargs.get('blocked')
+            self.certificates = kwargs.get('certificates')
+            self.community_notes = kwargs.get('community_notes')
+            self.description = kwargs.get('description')
+            self.internal = kwargs.get('internal')
+            self.stix_id = kwargs.get('stix_id')
+            self.tags = kwargs.get('tags')
+            self.traffic_light_protocol = kwargs.get('traffic_light_protocol')
+
+            self.detection_engines = kwargs.get('detection_engines')
+            self.positive_detections = kwargs.get('positive_detections')
+            self.category = kwargs.get('category')
+            self.feed_related_indicators = kwargs.get('feed_related_indicators')
+            self.malware_family = kwargs.get('malware_family')
+            self.port = kwargs.get('port')
+            self.campaign = kwargs.get('campaign')
+            self.threat_types = kwargs.get('threat_types')
+            self.asn = kwargs.get('asn')
+            self.as_owner = kwargs.get('as_owner')
+            self.geo_country = kwargs.get('geo_country')
+            self.organization = kwargs.get('organization')
+            self.publications = kwargs.get('publications')
+            self.organization_prevalence = kwargs.get('organization_prevalence')
+            self.global_prevalence = kwargs.get('global_prevalence')
+            self.organization_first_seen = kwargs.get('organization_first_seen')
+            self.organization_last_seen = kwargs.get('organization_last_seen')
+            self.first_seen_by_source = kwargs.get('first_seen_by_source')
+            self.last_seen_by_source = kwargs.get('last_seen_by_source')
+
+            self.relationships = kwargs.get('relationships')
+
         def to_context(self):
-            url_context = {
-                'Data': self.url
-            }
-
-            if self.blocked:
-                url_context['Blocked'] = self.blocked
-
-            if self.certificates:
-                url_context['Certificates'] = self.create_context_table(self.certificates)
-
-            if self.description:
-                url_context['Description'] = self.description
-
-            if self.stix_id:
-                url_context['STIXID'] = self.stix_id
-
-            if self.detection_engines is not None:
-                url_context['DetectionEngines'] = self.detection_engines
-
-            if self.positive_detections is not None:
-                url_context['PositiveDetections'] = self.positive_detections
-
-            if self.category:
-                url_context['Category'] = self.category
-
-            if self.feed_related_indicators:
-                url_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
-
-            if self.tags:
-                url_context['Tags'] = self.tags
-
-            if self.malware_family:
-                url_context['MalwareFamily'] = self.malware_family
-
-            if self.port:
-                url_context['Port'] = self.port
-
-            if self.internal:
-                url_context['Internal'] = self.internal
-
-            if self.campaign:
-                url_context['Campaign'] = self.campaign
-
-            if self.traffic_light_protocol:
-                url_context['TrafficLightProtocol'] = self.traffic_light_protocol
-
-            if self.threat_types:
-                url_context['ThreatTypes'] = self.create_context_table(self.threat_types)
-
-            if self.asn:
-                url_context['ASN'] = self.asn
-
-            if self.as_owner:
-                url_context['ASOwner'] = self.as_owner
+            url_context = {k: v for k, v in {
+                'Data': self.url,
+                'Blocked': self.blocked,
+                'Description': self.description,
+                'STIXID': self.stix_id,
+                'DetectionEngines': self.detection_engines,
+                'PositiveDetections': self.positive_detections,
+                'Category': self.category,
+                'Tags': self.tags,
+                'MalwareFamily': self.malware_family,
+                'Port': self.port,
+                'Internal': self.internal,
+                'Campaign': self.campaign,
+                'TrafficLightProtocol': self.traffic_light_protocol,
+                'ASN': self.asn,
+                'ASOwner': self.as_owner,
+                'Organization': self.organization,
+                'OrganizationPrevalence': self.organization_prevalence,
+                'GlobalPrevalence': self.global_prevalence,
+                'OrganizationFirstSeen': self.organization_first_seen,
+                'OrganizationLastSeen': self.organization_last_seen,
+                'FirstSeenBySource': self.first_seen_by_source,
+                'LastSeenBySource': self.last_seen_by_source
+            }.items() if v is not None}
 
             if self.geo_country:
                 url_context['Geo'] = {'Country': self.geo_country}
 
-            if self.organization:
-                url_context['Organization'] = self.organization
+            def add_context_table(attr_name, context_key):
+                attr_value = getattr(self, attr_name, None)
+                if attr_value:
+                    url_context[context_key] = self.create_context_table(attr_value)
 
-            if self.community_notes:
-                url_context['CommunityNotes'] = self.create_context_table(self.community_notes)
-
-            if self.publications:
-                url_context['Publications'] = self.create_context_table(self.publications)
-
-            if self.organization_prevalence is not None:  # checking for `is not None` to allow `0`-value
-                url_context['OrganizationPrevalence'] = self.organization_prevalence
-
-            if self.global_prevalence is not None:  # checking for `is not None` to allow `0`-value
-                url_context['GlobalPrevalence'] = self.global_prevalence
-
-            if self.organization_first_seen:
-                url_context['OrganizationFirstSeen'] = self.organization_first_seen
-
-            if self.organization_last_seen:
-                url_context['OrganizationLastSeen'] = self.organization_last_seen
-
-            if self.first_seen_by_source:
-                url_context['FirstSeenBySource'] = self.first_seen_by_source
-
-            if self.last_seen_by_source:
-                url_context['LastSeenBySource'] = self.last_seen_by_source
+            for attr, key in [('certificates', 'Certificates'), ('feed_related_indicators', 'FeedRelatedIndicators'),
+                              ('community_notes', 'CommunityNotes'), ('publications', 'Publications'),
+                              ('threat_types', 'ThreatTypes')]:
+                add_context_table(attr, key)
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
@@ -4674,8 +3880,7 @@ class Common(object):
                 }
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if
-                                         relationship.to_context()]
+                relationships_context = [rel.to_context() for rel in self.relationships if rel.to_context()]
                 url_context['Relationships'] = relationships_context
 
             ret_value = {
@@ -4690,228 +3895,88 @@ class Common(object):
     class Domain(Indicator):
         """ ignore docstring
         Domain indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#domain
-
-        :type whois_records: ``WhoisRecord``
-        :param whois_records: List of whois records
-
-        :type description: ``str``
-        :param description: A description of the Domain.
-
-        :type stix_id: ``str``
-        :param stix_id: The domain STIX ID.
-
-        :type blocked: ``bool``
-        :param blocked: Is the domain blocked.
-
-        :type certificates: ``Certificates``
-        :param certificates: The certificates belonging to the domain.
-
-        :type dns_records: ``DNSRecord``
-        :param dns_records: A list of DNS records for the domain.
-
-        :type organization_prevalence: ``int``
-        :param organization_prevalence: The number of times the indicator is detected in the organization.
-
-        :type global_prevalence: ``int``
-        :param global_prevalence: The number of times the indicator is detected across all organizations.
-
-        :type organization_first_seen: ``str``
-        :param organization_first_seen: ISO 8601 date time string; when the indicator was first seen in the organization.
-
-        :type organization_last_seen: ``str``
-        :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
-
-        :type first_seen_by_source: ``str``
-        :param first_seen_by_source: ISO 8601 date time string; when the indicator was first seen by the source vendor.
-
-        :type last_seen_by_source: ``str``
-        :param last_seen_by_source: ISO 8601 date time string; when the indicator was last seen by the source vendor.
         """
+
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
-        def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None,
-                     organization=None, sub_domains=None, creation_date=None, updated_date=None, expiration_date=None,
-                     domain_status=None, name_servers=None, feed_related_indicators=None, malware_family=None,
-                     registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
-                     registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None,
-                     domain_idn_name=None, port=None,
-                     internal=None, category=None, campaign=None, traffic_light_protocol=None, threat_types=None,
-                     community_notes=None, publications=None, geo_location=None, geo_country=None, geo_description=None,
-                     tech_country=None, tech_name=None, tech_email=None, tech_organization=None, billing=None,
-                     whois_records=None, relationships=None, description=None, stix_id=None, blocked=None,
-                     certificates=None, dns_records=None, rank=None, organization_prevalence=None,
-                     global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
-                     first_seen_by_source=None, last_seen_by_source=None):
-
-            # Main indicator value
+        def __init__(self, domain, dbot_score, **kwargs):
             self.domain = domain
-
-            # Core custom fields
-            self.blocked = blocked
-            self.certificates = certificates
-            self.community_notes = community_notes
-            self.creation_date = creation_date
-            self.description = description
-            self.dns_records = dns_records
-            self.expiration_date = expiration_date
-            self.internal = internal
-            self.stix_id = stix_id
-            self.tags = tags
-            self.traffic_light_protocol = traffic_light_protocol
-            self.whois_records = whois_records
-
-            # Additional custom fields
-            self.dns = dns
-            self.detection_engines = detection_engines
-            self.positive_detections = positive_detections
-            self.organization = organization
-            self.sub_domains = sub_domains
-            self.updated_date = updated_date
-            self.rank = rank
-
-            # Whois related records - Registrar
-            self.registrar_name = registrar_name
-            self.registrar_abuse_email = registrar_abuse_email
-            self.registrar_abuse_phone = registrar_abuse_phone
-
-            self.registrant_name = registrant_name
-            self.registrant_email = registrant_email
-            self.registrant_phone = registrant_phone
-            self.registrant_country = registrant_country
-
-            self.admin_name = admin_name
-            self.admin_email = admin_email
-            self.admin_phone = admin_phone
-            self.admin_country = admin_country
-
-            self.tech_country = tech_country
-            self.tech_name = tech_name
-            self.tech_organization = tech_organization
-            self.tech_email = tech_email
-            self.billing = billing
-
-            # Additional custom records (non core)
-            self.domain_status = domain_status
-            self.name_servers = name_servers
-            self.feed_related_indicators = feed_related_indicators
-            self.malware_family = malware_family
-            self.domain_idn_name = domain_idn_name
-            self.port = port
-            self.category = category
-            self.campaign = campaign
-            self.threat_types = threat_types
-            self.publications = publications
-            self.geo_location = geo_location
-            self.geo_country = geo_country
-            self.geo_description = geo_description
-            self.organization_prevalence = organization_prevalence
-            self.global_prevalence = global_prevalence
-            self.organization_first_seen = organization_first_seen
-            self.organization_last_seen = organization_last_seen
-            self.first_seen_by_source = first_seen_by_source
-            self.last_seen_by_source = last_seen_by_source
-
-            # XSOAR Fields
-            self.relationships = relationships
             self.dbot_score = dbot_score
 
+            # Main custom fields
+            core_fields = [
+                'blocked', 'certificates', 'community_notes', 'creation_date', 'description', 'dns_records',
+                'expiration_date', 'internal', 'stix_id', 'tags', 'traffic_light_protocol', 'whois_records'
+            ]
+            self.update_attributes(core_fields, kwargs)
+
+            # Additional custom fields
+            additional_fields = [
+                'dns', 'detection_engines', 'positive_detections', 'organization', 'sub_domains', 'updated_date', 'rank',
+                'registrar_name', 'registrar_abuse_email', 'registrar_abuse_phone', 'registrant_name', 'registrant_email',
+                'registrant_phone', 'registrant_country', 'admin_name', 'admin_email', 'admin_phone', 'admin_country',
+                'tech_country', 'tech_name', 'tech_organization', 'tech_email', 'billing', 'domain_status', 'name_servers',
+                'feed_related_indicators', 'malware_family', 'domain_idn_name', 'port', 'category', 'campaign', 'threat_types',
+                'publications', 'geo_location', 'geo_country', 'geo_description', 'organization_prevalence', 'global_prevalence',
+                'organization_first_seen', 'organization_last_seen', 'first_seen_by_source', 'last_seen_by_source'
+            ]
+            self.update_attributes(additional_fields, kwargs)
+
+            # XSOAR fields
+            self.relationships = kwargs.get('relationships')
+
+        def update_attributes(self, fields, values):
+            for field in fields:
+                setattr(self, field, values.get(field))
+
+        def add_to_context(self, data, fields, context):
+            for field in fields:
+                value = getattr(self, field, None)
+                if value:
+                    context[data][field] = value
+
         def to_context(self):
-            domain_context = {
-                'Name': self.domain
-            }
+            domain_context = {'Name': self.domain}
             whois_context = {}
 
-            if self.dns:
-                domain_context['DNS'] = self.dns
+            self.add_to_context('domain', [
+                'dns', 'detection_engines', 'positive_detections', 'organization', 'sub_domains', 'updated_date', 'rank',
+                'domain_status', 'name_servers', 'tags', 'feed_related_indicators', 'whois_records', 'malware_family',
+                'organization_prevalence', 'global_prevalence', 'organization_first_seen', 'organization_last_seen',
+                'first_seen_by_source', 'last_seen_by_source', 'domain_idn_name', 'port', 'internal', 'category',
+                'campaign', 'traffic_light_protocol', 'threat_types', 'community_notes', 'publications', 'geo_location',
+                'geo_country', 'geo_description', 'billing', 'stix_id', 'description', 'blocked'
+            ], domain_context)
 
-            if self.detection_engines is not None:
-                domain_context['DetectionEngines'] = self.detection_engines
+            self.add_to_context('domain', {
+                'certificates': self.create_context_table(self.certificates),
+                'dns_records': self.create_context_table(self.dns_records),
+                'feed_related_indicators': self.create_context_table(self.feed_related_indicators),
+                'whois_records': self.create_context_table(self.whois_records),
+                'community_notes': self.create_context_table(self.community_notes),
+                'publications': self.create_context_table(self.publications),
+                'threat_types': self.create_context_table(self.threat_types),
+                'rank': self.create_context_table(self.rank)
+            }, domain_context)
 
-            if self.positive_detections is not None:
-                domain_context['PositiveDetections'] = self.positive_detections
-
-            if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
-                domain_context['Registrar'] = {
-                    'Name': self.registrar_name,
-                    'AbuseEmail': self.registrar_abuse_email,
-                    'AbusePhone': self.registrar_abuse_phone
+            if self.geo_location or self.geo_country or self.geo_description:
+                domain_context['Geo'] = {
+                    'Location': self.geo_location,
+                    'Country': self.geo_country,
+                    'Description': self.geo_description,
                 }
-                whois_context['Registrar'] = domain_context['Registrar']
 
-            if self.registrant_name or self.registrant_phone or self.registrant_email or self.registrant_country:
-                domain_context['Registrant'] = {
-                    'Name': self.registrant_name,
-                    'Email': self.registrant_email,
-                    'Phone': self.registrant_phone,
-                    'Country': self.registrant_country
-                }
-                whois_context['Registrant'] = domain_context['Registrant']
+            whois_fields = ['registrar_name', 'registrar_abuse_email', 'registrar_abuse_phone',
+                            'registrant_name', 'registrant_email', 'registrant_phone', 'registrant_country',
+                            'admin_name', 'admin_email', 'admin_phone', 'admin_country',
+                            'tech_country', 'tech_name', 'tech_organization', 'tech_email',
+                            'domain_status', 'creation_date', 'updated_date', 'expiration_date', 'name_servers'
+                            ]
 
-            if self.admin_name or self.admin_email or self.admin_phone or self.admin_country:
-                domain_context['Admin'] = {
-                    'Name': self.admin_name,
-                    'Email': self.admin_email,
-                    'Phone': self.admin_phone,
-                    'Country': self.admin_country
-                }
-                whois_context['Admin'] = domain_context['Admin']
+            self.add_to_context(whois_context, whois_fields, domain_context)
 
-            if self.organization:
-                domain_context['Organization'] = self.organization
-
-            if self.sub_domains:
-                domain_context['Subdomains'] = self.sub_domains
-
-            if self.domain_status:
-                domain_context['DomainStatus'] = self.domain_status
-                whois_context['DomainStatus'] = domain_context['DomainStatus']
-
-            if self.creation_date:
-                domain_context['CreationDate'] = self.creation_date
-                whois_context['CreationDate'] = domain_context['CreationDate']
-
-            if self.updated_date:
-                domain_context['UpdatedDate'] = self.updated_date
-                whois_context['UpdatedDate'] = domain_context['UpdatedDate']
-
-            if self.expiration_date:
-                domain_context['ExpirationDate'] = self.expiration_date
-                whois_context['ExpirationDate'] = domain_context['ExpirationDate']
-
-            if self.name_servers:
-                domain_context['NameServers'] = self.name_servers
-                whois_context['NameServers'] = domain_context['NameServers']
-
-            if self.tags:
-                domain_context['Tags'] = self.tags
-
-            if self.feed_related_indicators:
-                domain_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
-
-            if self.whois_records:
-                domain_context['WhoisRecords'] = self.create_context_table(self.whois_records)
-
-            if self.malware_family:
-                domain_context['MalwareFamily'] = self.malware_family
-
-            if self.organization_prevalence is not None:  # checking for `is not None` to allow `0`-value
-                domain_context['OrganizationPrevalence'] = self.organization_prevalence
-
-            if self.global_prevalence is not None:  # checking for `is not None` to allow `0`-value
-                domain_context['GlobalPrevalence'] = self.global_prevalence
-
-            if self.organization_first_seen:
-                domain_context['OrganizationFirstSeen'] = self.organization_first_seen
-
-            if self.organization_last_seen:
-                domain_context['OrganizationLastSeen'] = self.organization_last_seen
-
-            if self.first_seen_by_source:
-                domain_context['FirstSeenBySource'] = self.first_seen_by_source
-
-            if self.last_seen_by_source:
-                domain_context['LastSeenBySource'] = self.last_seen_by_source
+            if whois_context:
+                domain_context['WHOIS'] = whois_context
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
@@ -4919,88 +3984,15 @@ class Common(object):
                     'Description': self.dbot_score.malicious_description
                 }
 
-            if self.domain_idn_name:
-                domain_context['DomainIDNName'] = self.domain_idn_name
-
-            if self.port:
-                domain_context['Port'] = self.port
-
-            if self.internal:
-                domain_context['Internal'] = self.internal
-
-            if self.category:
-                domain_context['Category'] = self.category
-
-            if self.campaign:
-                domain_context['Campaign'] = self.campaign
-
-            if self.traffic_light_protocol:
-                domain_context['TrafficLightProtocol'] = self.traffic_light_protocol
-
-            if self.threat_types:
-                domain_context['ThreatTypes'] = self.create_context_table(self.threat_types)
-
-            if self.community_notes:
-                domain_context['CommunityNotes'] = self.create_context_table(self.community_notes)
-
-            if self.publications:
-                domain_context['Publications'] = self.create_context_table(self.publications)
-
-            if self.geo_location or self.geo_country or self.geo_description:
-                domain_context['Geo'] = {}
-                if self.geo_location:
-                    domain_context['Geo']['Location'] = self.geo_location
-                if self.geo_country:
-                    domain_context['Geo']['Country'] = self.geo_country
-                if self.geo_description:
-                    domain_context['Geo']['Description'] = self.geo_description
-
-            if self.tech_country or self.tech_name or self.tech_organization or self.tech_email:
-                domain_context['Tech'] = {}
-                if self.tech_country:
-                    domain_context['Tech']['Country'] = self.tech_country
-                if self.tech_name:
-                    domain_context['Tech']['Name'] = self.tech_name
-                if self.tech_organization:
-                    domain_context['Tech']['Organization'] = self.tech_organization
-                if self.tech_email:
-                    domain_context['Tech']['Email'] = self.tech_email
-
-            if self.billing:
-                domain_context['Billing'] = self.billing
-
-            if whois_context:
-                domain_context['WHOIS'] = whois_context
-
             if self.relationships:
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 domain_context['Relationships'] = relationships_context
 
-            ret_value = {
-                Common.Domain.CONTEXT_PATH: domain_context
-            }
+            ret_value = {Common.Domain.CONTEXT_PATH: domain_context}
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
-
-            if self.dns_records:
-                domain_context['DNSRecords'] = self.create_context_table(self.dns_records)
-
-            if self.stix_id:
-                domain_context['STIXID'] = self.stix_id
-
-            if self.description:
-                domain_context['Description'] = self.description
-
-            if self.stix_id:
-                domain_context['Blocked'] = self.blocked
-
-            if self.certificates:
-                domain_context['Certificates'] = self.create_context_table(self.certificates)
-
-            if self.rank:
-                domain_context['Rank'] = self.create_context_table(self.rank)
 
             return ret_value
 
@@ -5102,115 +4094,58 @@ class Common(object):
     class Account(Indicator):
         """
         Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#account
-
-        :type blocked: ``boolean``
-        :param blocked: Is the indicator blocked.
-
-        :type community_notes: ``CommunityNotes``
-        :param community_notes: Notes on the Account that were given by the community.
-
-        :type dbot_score: ``DBotScore``
-        :param dbot_score: If account has reputation then create DBotScore object
-
-        :type creation_date: ``str``
-        :param creation_date: The date the account was created
-
-        :type description: ``str``
-        :param description: Description of the account
-
-        :type stix_id: ``str``
-        :param stix_id: STIX ID for the account
-
-        :type tags: ``str``
-        :param tags: List of tags related to the account.
-
-        :type traffic_light_protocol: ``str``
-        :param traffic_light_protocol: The account indicator tlp color
-
-        :type user_id: ``str``
-        :param user_id: The account associated user id.
-
-        :return: None
-        :rtype: ``None``
         """
         CONTEXT_PATH = 'Account(val.id && val.id == obj.id)'
 
-        def __init__(self, id=None, type=None, username=None, display_name=None, groups=None,
-                     domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
-                     department=None, country=None, state=None, city=None, street=None, is_enabled=None,
-                     dbot_score=None, relationships=None, blocked=None, community_notes=None, creation_date=None,
-                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None,
-                     manager_email=None, manager_display_name=None, risk_level=None, **kwargs):
-
+        def __init__(self, id=None, dbot_score=None, **kwargs):
             self.id = id
-            self.type = type
-            self.blocked = blocked
-            self.community_notes = community_notes
-            self.creation_date = creation_date
-            self.description = description
-            self.stix_id = stix_id
-            self.username = username
-            self.display_name = display_name
-            self.groups = groups
-            self.domain = domain
-            self.email_address = email_address
-            self.telephone_number = telephone_number
-            self.office = office
-            self.job_title = job_title
-            self.department = department
-            self.country = country
-            self.state = state
-            self.city = city
-            self.street = street
-            self.is_enabled = is_enabled
-            self.tags = tags
-            self.traffic_light_protocol = traffic_light_protocol
-            self.user_id = user_id
-            self.relationships = relationships
-            self.manager_email_address = manager_email
-            self.manager_display_name = manager_display_name
-            self.risk_level = risk_level
-            self.kwargs = kwargs
+            self.dbot_score = self.validate_dbot_score(dbot_score)
+            self.manager = {
+                'Email': kwargs.get('manager_email'),
+                'DisplayName': kwargs.get('manager_display_name')
+            } if kwargs.get('manager_email') or kwargs.get('manager_display_name') else None
 
+            for field in [
+                'type', 'blocked', 'community_notes', 'creation_date', 'description', 'stix_id', 'username',
+                'display_name', 'groups', 'domain', 'email_address', 'telephone_number', 'office', 'job_title',
+                'department', 'country', 'state', 'city', 'street', 'is_enabled', 'tags', 'traffic_light_protocol',
+                'user_id', 'risk_level'
+            ]:
+                setattr(self, field, kwargs.get(field))
+
+        def validate_dbot_score(self, dbot_score):
             if dbot_score and not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
-
-            self.dbot_score = dbot_score
+            return dbot_score
 
         def to_context(self):
-            account_context = {}
-
-            if self.id:
-                account_context['ID'] = self.id
-
-            if self.type:
-                account_context['Type'] = self.type
-
-            if self.blocked:
-                account_context['Blocked'] = self.blocked
-
-            if self.creation_date:
-                account_context['CreationDate'] = self.creation_date
-
-            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table', 'kwargs']
-            details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
-
-            for detail in details:
-                if self.__getattribute__(detail) is not None:
-                    if detail == 'email_address':
-                        account_context['Email'] = {
-                            'Address': self.email_address
-                        }
-                    elif detail in ('manager_email_address', 'manager_display_name'):
-                        if 'Manager' not in account_context:
-                            account_context['Manager'] = {}
-                        if detail == 'manager_email_address':
-                            account_context['Manager']['Email'] = self.manager_email_address
-                        elif detail == 'manager_display_name':
-                            account_context['Manager']['DisplayName'] = self.manager_display_name
-                    else:
-                        Detail = camelize_string(detail, '_')
-                        account_context[Detail] = self.__getattribute__(detail)
+            account_context = {k: v for k, v in {
+                'ID': self.id,
+                'Type': self.type,
+                'Blocked': self.blocked,
+                'CreationDate': self.creation_date,
+                'Description': self.description,
+                'STIXID': self.stix_id,
+                'Username': self.username,
+                'DisplayName': self.display_name,
+                'Groups': self.groups,
+                'Domain': self.domain,
+                'EmailAddress': self.email_address,
+                'TelephoneNumber': self.telephone_number,
+                'Office': self.office,
+                'JobTitle': self.job_title,
+                'Department': self.department,
+                'Country': self.country,
+                'State': self.state,
+                'City': self.city,
+                'Street': self.street,
+                'IsEnabled': self.is_enabled,
+                'Tags': self.tags,
+                'TrafficLightProtocol': self.traffic_light_protocol,
+                'UserID': self.user_id,
+                'RiskLevel': self.risk_level,
+                'Manager': self.manager
+            }.items() if v is not None}
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 account_context['Malicious'] = {
@@ -5219,22 +4154,18 @@ class Common(object):
                 }
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if
-                                         relationship.to_context()]
+                relationships_context = [rel.to_context() for rel in self.relationships if rel.to_context()]
                 account_context['Relationships'] = relationships_context
 
             if self.community_notes:
                 account_context['CommunityNotes'] = self.create_context_table(self.community_notes)
 
-            if self.kwargs:
-                for key, value in self.kwargs.items():
-                    if key not in account_context:
-                        account_context[key] = value
-                    else:
-                        demisto.debug(
-                            'Skipping the addition of the "{key}" key to the account context as it already exists.'.format(
-                                key=key)
-                        )
+            # Update the context with any additional kwargs
+            for key, value in self.kwargs.items():
+                if key not in account_context:
+                    account_context[camelize_string(key)] = value
+                else:
+                    demisto.debug(f'Skipping the addition of the "{key}" key to the account context as it already exists.')
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
@@ -5244,6 +4175,10 @@ class Common(object):
                 ret_value.update(self.dbot_score.to_context())
 
             return ret_value
+
+    def camelize_string(s, separator='_'):
+        parts = s.split(separator)
+        return parts[0] + ''.join(word.capitalize() for word in parts[1:])
 
     class Cryptocurrency(Indicator):
         """
@@ -7663,13 +6598,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
 
 
 class ExecutionMetrics(object):
-    """
-        ExecutionMetrics is used to collect and format metric data to be reported to the XSOAR server.
-
-        :return: None
-        :rtype: ``None``
-    """
-
+    """ExecutionMetrics is used to collect and format metric data to be reported to the XSOAR server."""
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
                  proxy_error=0, ssl_error=0, timeout_error=0, retry_error=0):
         self._metrics = []
@@ -8312,7 +7241,7 @@ def pascalToSpace(s):
     # double space to handle capital words like IP/URL/DNS that not included in the regex
     s = re.sub(pascalRegex, lambda match: r' {} '.format(match.group(1).title()), s)
 
-    # split and join: to remove double spacing caused by previous workaround
+    # split and join: to remove double-spacing caused by previous workaround
     s = ' '.join(s.split())
     return s
 
@@ -8354,7 +7283,7 @@ def string_to_context_key(string):
 def response_to_context(reponse_obj, user_predefiend_keys=None):
     """
     Recursively creates a data dictionary where all key starts with capital letters.
-    If a key include underscores,  removes underscores, capitalize every word.
+    If a key includes underscores, removes underscores, capitalize every word.
     Example: "one_two" to "OneTwo
 
     :type reponse_obj: ``Any``
@@ -8393,27 +7322,6 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
         THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
-
-      Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
-      Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
-
-      :type date_range: ``str``
-      :param date_range: The date range to be parsed (required)
-
-      :type date_format: ``str``
-      :param date_format: Date format to convert the date_range to. (optional)
-
-      :type to_timestamp: ``bool``
-      :param to_timestamp: If set to True, then will return time stamp rather than a datetime.datetime. (optional)
-
-      :type timezone: ``int``
-      :param timezone: timezone should be passed in hours (e.g if +0300 then pass 3, if -0200 then pass -2).
-
-      :type utc: ``bool``
-      :param utc: If set to True, utc time will be used, otherwise local time.
-
-      :return: The parsed date range.
-      :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
     """
     range_split = date_range.strip().split(' ')
     if len(range_split) != 2:
@@ -8506,9 +7414,7 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
     """
     if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
         return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
-
-    # otherwise datetime.datetime
-    return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
+    return int(time.mktime(date_str_or_dt.timetuple()) * 1000)  # otherwise datetime.datetime
 
 
 def remove_nulls_from_dictionary(data):
@@ -8566,10 +7472,7 @@ def assign_params(keys_to_ignore=None, values_to_ignore=None, **kwargs):
 
 
 class GetDemistoVersion:
-    """
-    Callable class to replace get_demisto_version function
-    """
-
+    """Callable class to replace get_demisto_version function"""
     def __init__(self):
         self._version = None
 
@@ -8663,61 +7566,61 @@ def is_demisto_version_ge(version, build_number=''):
 
 
 def is_xsiam_or_xsoar_saas():
-    """Determines whether or not the platform is XSIAM or XSOAR SAAS.
+    """Determines whether the platform is XSIAM or XSOAR SAAS.
 
-    :return: True iff the platform is XSIAM or XSOAR SAAS.
+    :return: True if the platform is XSIAM or XSOAR SAAS.
     :rtype: ``bool``
     """
     return is_demisto_version_ge('8.0.0')
 
 
 def is_xsoar():
-    """Determines whether or not the platform is XSOAR.
+    """Determines whether the platform is XSOAR.
 
-    :return: True iff the platform is XSOAR.
+    :return: True if the platform is XSOAR.
     :rtype: ``bool``
     """
     return "xsoar" in demisto.demistoVersion().get("platform")
 
 
 def is_xsoar_on_prem():
-    """Determines whether or not the platform is a XSOAR on-prem.
+    """Determines whether the platform is a XSOAR on-prem.
 
-    :return: True iff the platform is XSOAR on-prem.
+    :return: True if the platform is XSOAR on-prem.
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "xsoar" and not is_demisto_version_ge('8.0.0')
 
 
 def is_xsoar_hosted():
-    """Determines whether or not the platform is XSOAR hosted.
+    """Determines whether the platform is XSOAR hosted.
 
-    :return: True iff the platform is XSOAR hosted.
+    :return: True if the platform is XSOAR hosted.
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "xsoar_hosted"
 
 
 def is_xsoar_saas():
-    """Determines whether or not the platform is XSOAR SAAS.
+    """Determines whether the platform is XSOAR SAAS.
 
-    :return: True iff the platform is XSOAR SAAS.
+    :return: True if the platform is XSOAR SAAS.
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
 
 
 def is_xsiam():
-    """Determines whether or not the platform is XSIAM.
+    """Determines whether the platform is XSIAM.
 
-    :return: True iff the platform is XSIAM.
+    :return: True if the platform is XSIAM.
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "x2"
 
 
 def is_using_engine():
-    """Determines whether or not the platform is using engine.
+    """Determines whether the platform is using engine.
     NOTE: 
      - This method works only for system integrations (not custom).
      - On xsoar 8, this method works only for integrations that runs on the xsoar pod - not on the engine-0 (mainly long running
@@ -8725,17 +7628,17 @@ def is_using_engine():
        Publish List, Simple API Proxy, Syslog v2, TAXII Server, TAXII2 Server, Web File Repository, Workday_IAM_Event_Generator, 
        XSOAR-Web-Server, Microsoft Teams, AWS-SNS-Listener.
 
-    :return: True iff the platform is using engine.
+    :return: True if the platform is using engine.
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("engine")
 
 
 def is_integration_instance_running_on_engine():
-    """Determines whether the current integration instance runs on an xsoar engine.
+    """Determines whether the current integration instance runs on an XSOAR engine.
     If yes - returns the engine id.
 
-    :return: The engine id iff the instance is running on an xsaor engine.
+    :return: The engine ID if the instance is running on an XSOAR engine.
     :rtype: ``str``
     """
     engine_id = ''
@@ -8766,11 +7669,11 @@ def is_integration_instance_running_on_engine():
 
 
 def get_engine_base_url(engine_id):
-    """Gets the xsoar engine id and returns it's base url. 
+    """Gets the XSOAR engine id and returns its base url.
     For example: for engine_id = '4ccccccc-5aaa-4000-b666-dummy_id', base url = '11.180.111.111:1443'.
 
     :type engine_id: ``str``
-    :param engine_id: The xsoar engine id.
+    :param engine_id: The XSOAR engine id.
 
     :return: The base URL of the engine.
     :rtype: ``str`
@@ -8800,10 +7703,7 @@ def get_engine_base_url(engine_id):
 
 
 class DemistoHandler(logging.Handler):
-    """
-        Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
-    """
-
+    """Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied"""
     def __init__(self, int_logger=None):
         logging.Handler.__init__(self)
         self.int_logger = int_logger
@@ -8838,7 +7738,7 @@ def censor_request_logs(request_log):
     request_log_lst = request_log_with_spaces.split()
 
     for i, word in enumerate(request_log_lst):
-        # Check if the word is a keyword or contains a keyword (e.g "Cookies" containes "Cookie")
+        # Check if the word is a keyword or contains a keyword (e.g "Cookies" contains "Cookie")
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
@@ -8910,9 +7810,7 @@ class DebugLogger(object):
                     demisto.info('cURL:\n' + curl)
 
     def log_start_debug(self):
-        """
-        Utility function to log start of debug mode logging
-        """
+        """Utility function to log start of debug mode logging"""
         msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(self.http_client_print is not None,
                                                                                             os.environ)
         if hasattr(demisto, 'params'):
@@ -9890,10 +8788,6 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
     return return_value
 
 
-CONTEXT_UPDATE_RETRY_TIMES = 3
-MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
-
-
 def merge_lists(original_list, updated_list, key):
     """
     Replace values in a list with those in an updated list.
@@ -9969,7 +8863,6 @@ def get_integration_context(sync=True, with_version=False):
     """
     if is_versioned_context_available():
         integration_context = demisto.getIntegrationContextVersioned(sync)
-
         if with_version:
             return integration_context
         else:
@@ -10012,8 +8905,6 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
     :return: None
     """
     attempt = 0
-
-    # do while...
     while True:
         if attempt == max_retry_times:
             raise Exception('Failed updating integration context. Max retry attempts exceeded.')
@@ -10504,9 +9395,9 @@ class TableOrListWidget(BaseWidget):
 
 
 class IndicatorsSearcher:
-    """Used in order to search indicators by the paging or serachAfter param
+    """Used to search indicators by the paging or searchAfter param
     :type page: ``int``
-    :param page: the number of page from which we start search indicators from.
+    :param page: the number of pages from which we start search indicators from.
 
     :type filter_fields: ``Optional[str]``
     :param filter_fields: comma separated fields to filter (e.g. "value,type")
@@ -10759,9 +9650,6 @@ def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
 
 def support_multithreading():  # pragma: no cover
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
-
-    :return: No data returned
-    :rtype: ``None``
     """
     global HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE
     if HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
@@ -10788,7 +9676,6 @@ def get_tenant_account_name():
 
     :return: The account name.
     :rtype: ``str``
-
     """
     urls = demisto.demistoUrls()
     server_url = urls.get('server', '')
@@ -10809,7 +9696,6 @@ def indicators_value_to_clickable(indicators):
 
     :rtype: ``dict``
     :return: Key is the indicator, and the value is it's url in the server
-
     """
     if not isinstance(indicators, (list, dict)):
         return {}
@@ -10953,7 +9839,7 @@ def get_message_local_vars():
 
 def get_size_of_object(input_object):
     """
-    A function that recursively iterate to sum size of object & members.
+    A function that recursively iterates to sum size of object & members.
 
     :type input_object: ``Any``
     :param input_object: The object to calculate its memory footprint
@@ -11184,7 +10070,6 @@ class PollResult:
 
     :return: PollResult
     :rtype: ``PollResult``
-
     """
 
     def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
@@ -11203,7 +10088,6 @@ class PollResult:
 
         :type partial_result: ``CommandResults``
         :param partial_result: CommandResults to return, even though we will poll again
-
         """
         self.response = response
         self.continue_to_poll = continue_to_poll
@@ -11214,11 +10098,11 @@ class PollResult:
 def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
                      requires_polling_arg=True):  # pragma: no cover
     """
-    To use on a function that should rerun itself
-    Commands that use this decorator must have a Polling argument, polling: true in yaml,
+    To use on a function that should rerun itself,
+    Commands that use this decorator must have a Polling argument, polling: true in YAML,
     and a hidden hide_polling_output argument.
     Commands that use this decorator should return a PollResult.
-    Will raise an DemistoException if the server version doesn't support Scheduled Commands (< 6.2.0)
+    It Will raise a DemistoException if the server version doesn't support Scheduled Commands (< 6.2.0)
 
     :type name: ``str``
     :param name: The name of the command
@@ -11266,9 +10150,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 return poll_response
             else:
                 return func(args, *arguments, **kwargs).response
-
         return inner
-
     return dec
 
 
@@ -11367,7 +10249,7 @@ def get_pack_version(pack_name=''):
 
 def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
                                                    context_prefix=None, address_type=None, relationships=None):
-    '''
+    """
     Used for cases where the api response to an indicator is not found,
     returns CommandResults with readable_output generic in this case, and indicator with DBotScore unknown
 
@@ -11391,12 +10273,12 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
 
     :rtype: ``CommandResults``
     :return: CommandResults
-    '''
+    """
     if not context_prefix and (indicator_type is DBotScoreType.CUSTOM or not DBotScoreType.is_valid_type(indicator_type)):
         raise ValueError('Indicator type is invalid')
 
     if indicator_type in [DBotScoreType.CVE, DBotScoreType.ATTACKPATTERN]:
-        #  not supportted, because they have a fixed dbotscore
+        #  not supported, because they have a fixed dbotscore
         msg_error = 'DBotScoreType.{} is unsupported'.format(indicator_type.upper())
         raise ValueError(msg_error)
 
@@ -11468,7 +10350,7 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
 
 def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
     """
-    Calculates the time range for fetch depending the look_back argument and the previous fetch start time
+    Calculates the time range for fetch depending on the look_back argument and the previous fetch start time
     given from the last_run object.
 
     :type last_run: ``dict``
@@ -11481,7 +10363,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :param look_back: The time to look back in fetch in minutes
 
     :type timezone: ``int``
-    :param timezone: The time zone offset in hours
+    :param timezone: The timezone offset (in hours).
 
     :type date_format: ``str``
     :param date_format: The date format
@@ -11509,7 +10391,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
 
 def get_current_time(time_zone=0):
     """
-    Gets the current time in a given timezone, as time awared datetime.
+    Gets the current time in a given timezone, as time-aware datetime.
 
     :type time_zone: ``int``
     :param time_zone: The time zone offset in hours.
@@ -11552,7 +10434,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     """
     Removes duplicate incidents from response and returns the incidents till limit.
     The function should be called after getting the get-incidents API response,
-    and by passing the id_field it will filter out the incidents that were already fetched
+    and by passing the id_field it will filter out the incidents already fetched
     by checking the incident IDs that are saved from the previous fetch in the last run object
 
     :type incidents_res: ``list``
