@@ -1,10 +1,10 @@
 category: Analytics & SIEM
 commonfields:
-  id: Orca Event Collector
+  id: Orca Event Collector DEV
   version: -1
 description: Orca Security event collector integration for Cortex XSIAM.
-display: Orca Event Collector
-name: Orca Event Collector
+display: Orca Event Collector DEV
+name: Orca Event Collector DEV
 configuration:
 - display: 'Server URL (for example: https://app.eu.orcasecurity.io)'
   name: server_url
