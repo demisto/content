@@ -1997,7 +1997,7 @@ Returns all installed singularity marketplace applications that match the specif
 | SentinelOne.InstalledApps.Account | string | The account name. | 
 | SentinelOne.InstalledApps.AccountId | string | The account ID. | 
 | SentinelOne.InstalledApps.ApplicationCatalogId | string | The application Catalog ID. | 
-| SentinelOne.InstalledApps.applicationCatalogName | string | The application Catalog name. | 
+| SentinelOne.InstalledApps.ApplicationCatalogName | string | The application Catalog name. | 
 | SentinelOne.InstalledApps.AlertMessage | string | The alert message. | 
 | SentinelOne.InstalledApps.CreatedAt | date | Application created at. |
 | SentinelOne.InstalledApps.Creator | string | Application creator. |
