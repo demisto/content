@@ -34,7 +34,7 @@ def main() -> None:
 
         # Extract zip file to the temp directory
         with zipfile.ZipFile(file_path, 'r') as zip_ref:
-            demisto.debug(f'Attempting to unzip {file_path} and extract files')
+            demisto.debug(f'SGM: Attempting to unzip {file_path} and extract files')
             zip_ref.extractall(temp_dir)
             total_files = len(zip_ref.namelist())
 
@@ -43,20 +43,21 @@ def main() -> None:
             for file_name in files:
                 # Skip files that are not .yml or start with '__' or '.'
                 if not file_name.endswith('.yml') or file_name.startswith(('__', '.')):
-                    demisto.debug(f'Skipping file "{file_name}" as it is not a Sigma file')
+                    demisto.debug(f'SGM: Skipping file "{file_name}" as it is not a Sigma file')
                     continue
 
                 num_of_rules += 1
                 file_path = os.path.join(root, file_name)
 
-                demisto.debug(f'Opening file "{file_name} ({num_of_rules}/{len(files)})"')
+                demisto.debug(f'SGM: Opening file "{file_name} ({num_of_rules}/{len(files)})"')
 
                 # Read file contents
                 with open(file_path) as file:
                     file_contents = file.read()
-
+ 
                 try:
                     # Execute command to create Sigma rule indicator
+                    demisto.debug(f'SGM: creating sigma rule for {file_name}')
                     demisto.executeCommand('CreateSigmaRuleIndicator', {"sigma_rule_str": file_contents})
 
                 except Exception as e:

@@ -12,7 +12,7 @@ args:
   description: The entry ID of the zip file.
 scripttarget: 0
 subtype: python3
-timeout: 10m0s
+timeout: 20m0s
 runonce: false
 dockerimage: demisto/python3:3.11.10.111526
 runas: DBotWeakRole
