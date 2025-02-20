@@ -2685,7 +2685,7 @@ script:
     - contextPath: SentinelOne.InstalledApps.ApplicationCatalogId
       description: The application Catalog ID.
       type: string
-    - contextPath: SentinelOne.InstalledApps.applicationCatalogName
+    - contextPath: SentinelOne.InstalledApps.ApplicationCatalogName
       description: The application Catalog name.
       type: string
     - contextPath: SentinelOne.InstalledApps.AlertMessage
