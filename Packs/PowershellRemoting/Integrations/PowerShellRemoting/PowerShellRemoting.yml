@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: PowerShell Remoting
   version: -1
@@ -8,21 +11,25 @@ configuration:
   name: domain
   type: 0
   required: false
+  section: Connect
 - display: DNS
   additionalinfo: Optional IP address of a DNS server the integration will use to resolve your hosts. Use this setting when the host linux machine uses a different DNS from the Windows machines you are targeting.
   name: dns
   type: 0
   required: false
+  section: Connect
 - additionalinfo: Username in the target machine. This can be a local or domain user with administrative privileges
   display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - additionalinfo: Hostname or IP address to use as a test for the integration connectivity.
   display: Test Host
   name: host
   type: 0
   required: false
+  section: Connect
 - defaultvalue: Negotiate
   display: Authentication Method
   name: auth_method
@@ -31,14 +38,17 @@ configuration:
   - Basic
   required: true
   type: 15
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use SSL (HTTPS)
   name: ssl
   type: 8
   required: false
+  section: Connect
 description: "PowerShell Remoting is a comprehensive built-in remoting subsystem that is a part of Microsoft's native Windows management framework (WMF) and Windows remote management (WinRM).\nThis feature allows you to handle most remoting tasks in any configuration you might encounter by creating a remote PowerShell session to Windows hosts and executing commands in the created session.\nThe integration includes out-of-the-box commands which supports agentless forensics for remote hosts."
 display: PowerShell Remoting (Beta)
 name: PowerShell Remoting
