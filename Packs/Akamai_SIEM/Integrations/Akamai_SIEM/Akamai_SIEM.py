@@ -146,7 +146,7 @@ class Client(BaseClient):
             demisto.error(f"couldn't decode offset with {offset_context=}, reason {e}")
         return events, offset
 
-    async def get_events_with_offset_concurrently(
+    async def get_events_concurrently(
         self,
         config_ids: str,
         offset: str | None = '',
@@ -754,7 +754,7 @@ async def get_events_from_akamai(client: Client,
             demisto.info(f"Running in interval = {counter}. Testing for possible tasks qt overflow.")
             await wait_until_tasks_load_decrease(counter, max_concurrent_tasks)
             demisto.info(f"Running in interval = {counter}. Finished testing for possible tasks qt overflow.")
-            get_events_task = client.get_events_with_offset_concurrently(
+            get_events_task = client.get_events_concurrently(
                 config_ids, offset, page_size, from_epoch, counter=counter)
             events, offset = None, None
             events, offset = await get_events_task

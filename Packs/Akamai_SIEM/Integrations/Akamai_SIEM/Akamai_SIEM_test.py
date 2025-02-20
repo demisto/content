@@ -546,35 +546,35 @@ def test_is_last_request_smaller_than_page_size(num_events_from_previous_request
         ("test_offset", "50170?limit=100&offset=test_offset")
     ],
 )
-async def test_get_events_with_offset_concurrently_success(client, offset, request_query, requests_mock):
+async def test_get_events_concurrently_success(client, offset, request_query, requests_mock):
     """
         Given:
         - A successful mock http call response with 2 events and offset context.
         When:
-        - Calling get_events_with_offset_concurrently().
+        - Calling get_events_concurrently().
         Then:
         - Ensure the right log type and text returned. And the right length of events, and offset returned.
     """
     response_mock = '{"id": 1, "httpMessage": {"start": 1}}\n{"id": 2, "httpMessage": {"start": 2}}\n{"offset": "a"}'
     requests_mock.get(f"{BASE_URL}/{request_query}", text=response_mock)
-    events, response_offset = await client.get_events_with_offset_concurrently("50170", offset, 100, "1691303422", 2)
+    events, response_offset = await client.get_events_concurrently("50170", offset, 100, "1691303422", 2)
     assert len(events) == 2
     assert response_offset == "a"
 
 
 @pytest.mark.asyncio
-async def test_get_events_with_offset_concurrently_failure(client, requests_mock):
+async def test_get_events_concurrently_failure(client, requests_mock):
     """
         Given:
         - An error mock http response.
         When:
-        - Calling get_events_with_offset_concurrently().
+        - Calling get_events_concurrently().
         Then:
         - Ensure the right log type and text returned.
     """
     requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=offset", status_code=416, text="Requested Range Not Satisfiable")
     with pytest.raises(DemistoException) as e:
-        await client.get_events_with_offset_concurrently("50170", "offset", 100, "1691303422", 2)
+        await client.get_events_concurrently("50170", "offset", 100, "1691303422", 2)
     assert 'Error in API call [416]' in str(e.value)
     assert "Requested Range Not Satisfiable" in str(e.value)
 
