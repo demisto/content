@@ -112,6 +112,19 @@ class Client(BaseClient):
         demisto.info(f"{prefix_msg}Finished executing request to Akamai, processing")
         return raw_response
 
+    def prepare_params(self, limit, offset, from_epoch, prefix_msg: str = "") -> dict[str, int | str]:
+        params: dict[str, int | str] = {
+            'limit': limit
+        }
+        if offset:
+            demisto.info(f"{prefix_msg}received {offset=} will run an offset based request.")
+            params["offset"] = offset
+        else:
+            from_param = int(from_epoch)
+            params["from"] = from_param
+            demisto.info(f"{prefix_msg}didn't receive offset. will run a time based request with {from_param=}.")
+        return params
+
     def get_events_with_offset(
         self,
         config_ids: str,
@@ -119,7 +132,7 @@ class Client(BaseClient):
         limit: int = 20,
         from_epoch: str = '',
     ) -> tuple[list[str], str | None]:
-        params = prepare_params(offset=offset, limit=limit, from_epoch=from_epoch)
+        params = self.prepare_params(offset=offset, limit=limit, from_epoch=from_epoch)
         raw_response = self.execute_get_events_request(params, config_ids)
         events: list[str] = raw_response.split('\n')
         offset = None
@@ -153,8 +166,8 @@ class Client(BaseClient):
         Returns:
             tuple[list[str], str | None]: The events and offset obtained from last request.
         """
-        params = prepare_params(offset=offset, limit=limit, from_epoch=from_epoch,
-                                prefix_msg=f"Running in interval = {counter}. ")
+        params = self.prepare_params(offset=offset, limit=limit, from_epoch=from_epoch,
+                                     prefix_msg=f"Running in interval = {counter}. ")
         loop = asyncio.get_event_loop()
         raw_response = await loop.run_in_executor(None, functools.partial(self.execute_get_events_request,
                                                                           config_ids=config_ids,
@@ -594,20 +607,6 @@ def decode_url(headers: str) -> dict:
     return decoded_dict
 
 
-def prepare_params(limit, offset, from_epoch, prefix_msg: str = "") -> dict[str, int | str]:
-    params: dict[str, int | str] = {
-        'limit': limit
-    }
-    if offset:
-        demisto.info(f"{prefix_msg}received {offset=} will run an offset based request.")
-        params["offset"] = offset
-    else:
-        from_param = int(from_epoch)
-        params["from"] = from_param
-        demisto.info(f"{prefix_msg}didn't receive offset. will run a time based request with {from_param=}.")
-    return params
-
-
 def post_latest_event_time(latest_event, base_msg):
     try:
         if isinstance(latest_event, str):
@@ -710,13 +709,12 @@ async def process_and_send_events_to_xsiam(events: list[str], should_skip_decode
         latest_event=processed_events[-1],
         base_msg=f"Running in interval = {counter}. Sending {len(processed_events)} events to xsiam."
     )
-    demisto.info("skipping sending events to xsiam due to custom content item.")
-    # tasks = send_events_to_xsiam_akamai(processed_events, VENDOR, PRODUCT, should_update_health_module=False,
-    #                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True,
-    #                                     url_key="host", data_format="json", data_size_expected_to_split_evenly=True,
-    #                                     counter=counter)
+    tasks = send_events_to_xsiam_akamai(processed_events, VENDOR, PRODUCT, should_update_health_module=False,
+                                        chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True,
+                                        url_key="host", data_format="json", data_size_expected_to_split_evenly=True,
+                                        counter=counter)
     demisto.info(f"Running in interval = {counter}. Finished executing send_events_to_xsiam, waiting for tasks to end.")
-    # await asyncio.gather(*tasks)
+    await asyncio.gather(*tasks)
     demisto.info(f"Running in interval = {counter}. Finished gathering all tasks.")
     demisto.info(f"Running in interval = {counter}. Updating module health.")
     set_integration_context({"offset": offset})
@@ -765,10 +763,10 @@ async def get_events_from_akamai(client: Client,
             demisto.error(f"{e.message}")
             err = str(e)
             if "Requested Range Not Satisfiable" in err:
-                err = f"Running in interval = {counter}. Got offset out of range error when attempting to fetch events from" \
-                    "Akamai. \nThis occurred due to offset pointing to events older than 12 hours which isn't supported by " \
+                err = f"Running in interval = {counter}. Got offset out of range error when attempting to fetch events from " \
+                    "Akamai.\nThis occurred due to offset pointing to events older than 12 hours which isn't supported by " \
                     f"akamai.\nRestarting fetching events to start from {from_time} ago." \
-                    'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
+                    ' For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{err}]'
                 offset = None
             demisto.updateModuleHealth(err, is_error=True)

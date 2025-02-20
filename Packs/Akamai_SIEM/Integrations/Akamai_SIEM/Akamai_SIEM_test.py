@@ -4,9 +4,7 @@ import asyncio
 from datetime import datetime
 import time
 import json
-from unittest.mock import MagicMock
 
-import aiohttp
 import demistomock as demisto
 
 # 3-rd party packages
@@ -42,9 +40,8 @@ def load_params_from_json(json_path, type=''):
 @pytest.fixture(scope='module')
 def client():
     from Akamai_SIEM import Client
-    from akamai.edgegrid import EdgeGridAuth
 
-    return Client(base_url=BASE_URL, auth=EdgeGridAuth("bla", "bla", "bla"))
+    return Client(base_url=BASE_URL)
 
 
 '''Tests'''
@@ -543,73 +540,58 @@ def test_is_last_request_smaller_than_page_size(num_events_from_previous_request
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "offset",
+    "offset, request_query",
     [
-        (None),
-        ("test_offset")
+        (None, "50170?limit=100&from=1691303422"),
+        ("test_offset", "50170?limit=100&offset=test_offset")
     ],
 )
-async def test_get_events_with_offset_aiohttp_success(client, offset):
+async def test_get_events_with_offset_concurrently_success(client, offset, request_query, requests_mock):
     """
         Given:
-        - A successful mock AIOHTTP response with 2 events and offset context.
+        - A successful mock http call response with 2 events and offset context.
         When:
-        - Calling get_events_with_offset_aiohttp().
+        - Calling get_events_with_offset_concurrently().
         Then:
         - Ensure the right log type and text returned. And the right length of events, and offset returned.
     """
     response_mock = '{"id": 1, "httpMessage": {"start": 1}}\n{"id": 2, "httpMessage": {"start": 2}}\n{"offset": "a"}'
-    mock = aiohttp.ClientSession
-    mock.get = MagicMock()
-    mock.get.return_value.__aenter__.return_value.status = 200
-    mock.get.return_value.__aenter__.return_value.text.return_value = response_mock
-    events, response_offset = await Akamai_SIEM.get_events_with_offset_aiohttp(client, "50170", offset, 100, "1691303422", 2)
-    get_args = mock.get.call_args_list[0][1]
+    requests_mock.get(f"{BASE_URL}/{request_query}", text=response_mock)
+    events, response_offset = await client.get_events_with_offset_concurrently("50170", offset, 100, "1691303422", 2)
     assert len(events) == 2
     assert response_offset == "a"
-    assert get_args['params'].get('from') == (1691303422 if not offset else None)
-    assert get_args['params'].get('offset') == offset
 
 
 @pytest.mark.asyncio
-async def test_get_events_with_offset_aiohttp_failure(client):
+async def test_get_events_with_offset_concurrently_failure(client, requests_mock):
     """
         Given:
-        - An error mock AIOHTTP response..
+        - An error mock http response.
         When:
-        - Calling get_events_with_offset_aiohttp().
+        - Calling get_events_with_offset_concurrently().
         Then:
         - Ensure the right log type and text returned.
     """
-    mock = aiohttp.ClientSession
-    mock.get = MagicMock()
-    mock.get.return_value.__aenter__.return_value.raise_for_status = MagicMock(side_effect=aiohttp.ClientResponseError(
-        mock.get.return_value.__aenter__.return_value.request_info,
-        "Mocked raise_for_status",
-        status=416,
-        message="Requested Range Not Satisfiable"
-    ))
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=offset", status_code=416, text="Requested Range Not Satisfiable")
     with pytest.raises(DemistoException) as e:
-        await Akamai_SIEM.get_events_with_offset_aiohttp(client, "50170", "offset", 100, "1691303422", 2)
-    assert 'Running in interval = 2. Error occurred when fetching from Akamai: Requested Range Not Satisfiable' == str(e.value)
+        await client.get_events_with_offset_concurrently("50170", "offset", 100, "1691303422", 2)
+    assert 'Error in API call [416]' in str(e.value)
+    assert "Requested Range Not Satisfiable" in str(e.value)
 
 
 @pytest.mark.asyncio
-async def test_get_events_from_akamai_success(mocker, client):
+async def test_get_events_from_akamai_success(mocker, client, requests_mock):
     """
         Given:
-        - A successful mock AIOHTTP response with 2 events and offset context.
+        - A successful mock http request response with 2 events and offset context.
         When:
         - Calling get_events_from_akamai().
         Then:
         - Ensure the right log type and text returned. And the right length of events, offset, and counter returned.
     """
     response_mock = '{"id": 1, "httpMessage": {"start": 1}}\n{"id": 2, "httpMessage": {"start": 2}}\n{"offset": "a"}'
-    mock = aiohttp.ClientSession
-    mock.get = MagicMock()
-    mock.get.return_value.__aenter__.return_value.status = 200
-    mock.get.return_value.__aenter__.return_value.text.return_value = response_mock
     demisto_info = mocker.patch.object(demisto, 'info')
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=test_offset", text=response_mock)
     async for events, counter, response_offset in Akamai_SIEM.get_events_from_akamai(client=client,
                                                                                      config_ids="50170",
                                                                                      from_time="1 day",
@@ -624,26 +606,19 @@ async def test_get_events_from_akamai_success(mocker, client):
 
 
 @pytest.mark.asyncio
-async def test_get_events_from_akamai_failure(mocker, client):
+async def test_get_events_from_akamai_failure(mocker, client, requests_mock):
     """
         Given:
-        - An error mock AIOHTTP response..
+        - An error mock http response.
         When:
         - Calling get_events_from_akamai().
         Then:
         - Ensure the right log type and text returned.
     """
-    mock = aiohttp.ClientSession
-    mock.get = MagicMock()
-    mock.get.return_value.__aenter__.return_value.raise_for_status = MagicMock(side_effect=aiohttp.ClientResponseError(
-        mock.get.return_value.__aenter__.return_value.request_info,
-        "Mocked raise_for_status",
-        status=416,
-        message="Requested Range Not Satisfiable"
-    ))
-    demisto_error = mocker.patch.object(demisto, 'error')
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=test_offset", status_code=416, text="Requested Range Not Satisfiable")
+    mocker.patch.object(demisto, 'error')
     # cause an exception to break endless loop.
-    mocker.patch.object(demisto, 'updateModuleHealth', side_effect=Exception("Interrupted execution"))
+    update_module_health = mocker.patch.object(demisto, 'updateModuleHealth', side_effect=Exception("Interrupted execution"))
     with pytest.raises(Exception) as e:
         async for _, _, _ in Akamai_SIEM.get_events_from_akamai(client=client,
                                                                 config_ids="50170",
@@ -653,25 +628,27 @@ async def test_get_events_from_akamai_failure(mocker, client):
                                                                 max_concurrent_tasks=300):
             pass
     assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
-    demisto_error.assert_called_with('Running in interval = 1. Error occurred when fetching from '
-                                     'Akamai: Requested Range Not Satisfiable')
+    expected_error_msg = "Running in interval = 1. Got offset out of range error when attempting to fetch events from Akamai.\n" \
+        "This occurred due to offset pointing to events older than 12 hours which isn't supported by akamai.\nRestarting" \
+        " fetching events to start from 1 day ago. For more information, please refer to the Troubleshooting section in the" \
+        " integration documentation.\noriginal error: [Error in API call [416] - None\nRequested Range Not Satisfiable]"
+
+    assert expected_error_msg in update_module_health.mock_calls[0][1]
+    assert {'is_error': True} in update_module_health.mock_calls[0]
 
 
 @pytest.mark.asyncio
-async def test_get_events_from_akamai_no_events(mocker, client):
+async def test_get_events_from_akamai_no_events(mocker, client, requests_mock):
     """
         Given:
-        - A successful mock AIOHTTP response with no events.
+        - A successful mock http response with no events.
         When:
         - Calling get_events_from_akamai().
         Then:
         - Ensure the right log type and text returned.
     """
     response_mock = '{"offset": "a"}'
-    mock = aiohttp.ClientSession
-    mock.get = MagicMock()
-    mock.get.return_value.__aenter__.return_value.status = 200
-    mock.get.return_value.__aenter__.return_value.text.return_value = response_mock
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=test_offset", text=response_mock)
     demisto_debug = mocker.patch.object(demisto, 'debug')
     # cause an exception to break endless loop.
     mocker.patch.object(asyncio, 'sleep', side_effect=Exception("Interrupted execution"))
@@ -778,6 +755,7 @@ async def test_fetch_events_long_running_command_flow(mocker, client):
         The execution went into sleep after the second request as there were less the limit events to fetch.
         The right log was printed.
     """
+    from Akamai_SIEM import Client
     requestHeaders = "Content-Type%3A%20application/json%3Bcharset%3DUTF-8%0Auser%3A%20test%40test.com%0Aclient%3A%20"
     "test_client%0AX-Kong-Upstream-Latency%3A%2066%0AX-Kong-Proxy-Latency%3A%202%0AX-Kong-Request-Id%3A%20X_request_id%"
     "0AEPM-Request-ID%3A%20EPM_request_id%0AContent-Length%3A%20157%0ADate%3A%20Mon%2C%2025%20Mar%202024%2013%3A52%3A11"
@@ -789,9 +767,6 @@ async def test_fetch_events_long_running_command_flow(mocker, client):
     event_3 = f'{{"id": 3, "httpMessage": {{"start": 3, "requestHeaders": "{requestHeaders}"}}}}'
     response_mock_1 = f'{event_1}\n{event_2}\n{{"offset": "a"}}'
     response_mock_2 = f'{event_3}\n{{"offset": "b"}}'
-    mock = aiohttp.ClientSession
-    mock.get = MagicMock()
-    mock.get.return_value.__aenter__.return_value.status = 200
     execution_count = 0
 
     def count_execution(*args, **kwargs):
@@ -801,14 +776,13 @@ async def test_fetch_events_long_running_command_flow(mocker, client):
             return response_mock_1
         else:
             return response_mock_2
-    mock.get.return_value.__aenter__.return_value.text.side_effect = count_execution
+    mocker.patch.object(Client, '_http_request', side_effect=count_execution)
 
     async def mock_func():
         return 2
     demisto_debug = mocker.patch.object(demisto, 'debug')
     send_events_to_xsiam_akamai = mocker.patch("Akamai_SIEM.send_events_to_xsiam_akamai",
                                                side_effect=asyncio.create_task(mock_func()))  # to break endless loop.
-    # set_integration_context = mocker.patch("Akamai_SIEM.set_integration_context")  # to break endless loop.
     mocker.patch.object(asyncio, "sleep", side_effect=Exception("Interrupted execution"))  # to break endless loop.
     with pytest.raises(Exception) as e:
         await Akamai_SIEM.fetch_events_long_running_command(client, "5 minutes", 2, "50170", {}, True, 5)
@@ -818,4 +792,3 @@ async def test_fetch_events_long_running_command_flow(mocker, client):
     assert send_events_to_xsiam_akamai.call_args_list[0][0][0] == [event_1, event_2]
     demisto_debug.assert_called_with(
         'Running in interval = 2. got 1 events which is less than 0.95 % of the page_size=2, going to sleep for 60 seconds.')
-    yield
