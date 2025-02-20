@@ -15,7 +15,9 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "PhishLabs IOC"
+    "defaultDataSource": "PhishLabs IOC",
+    "supportedModules": []
 }

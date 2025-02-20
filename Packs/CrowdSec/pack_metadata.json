@@ -23,10 +23,12 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "support@crowdsec.net"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

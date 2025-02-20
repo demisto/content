@@ -894,10 +894,7 @@ tasks:
       id: a374d6fc-7d50-4b69-81d1-d26498ece1e3
       version: -1
       name: Ticket Management - Generic
-      description: "`Ticket Management - Generic` allows you to open new tickets or
-        update comments to the existing ticket in the following ticketing systems:\n-ServiceNow
-        \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk
-        - Ticket Management`\n"
+      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
@@ -1461,5 +1458,5 @@ outputSections:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", platform]
 fromversion: 6.6.0
