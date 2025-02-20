@@ -1969,14 +1969,14 @@ Returns threat notes.
 | SentinelOne.Notes.Text | string | The note text. | 
 | SentinelOne.Notes.UpdatedAt | string | The note updated time. | 
 
-### sentinelone-list-installed-applications
+### sentinelone-list-installed-singularity-marketplace-applications
 
 ***
-Returns all installed applications that match the specified criteria.
+Returns all installed singularity marketplace applications that match the specified criteria.
 
 #### Base Command
 
-`sentinelone-list-installed-applications`
+`sentinelone-list-installed-singularity-marketplace-applications`
 
 #### Input
 
