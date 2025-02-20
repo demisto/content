@@ -50,13 +50,13 @@ def remove_existing_entity_b_indicators(entity_b_list: list, entity_b_query: str
 
     # Split entity_b_list into batches to prevent query length issues
     entity_b_list_to_remove = set(entity_b_list)
-    existing_indicators = set()
+    existing_indicators: set[str] = set()
 
     for i in range(0, len(entity_b_list), MAX_BATCH_SIZE):
         batch = entity_b_list[i:i + MAX_BATCH_SIZE]
         query = ' OR '.join(f'value:"{entity}"' for entity in batch)
         batch_results = find_indicators_by_query(query)
-        existing_indicators.update(indicator.get('entity_b') for indicator in batch_results)
+        existing_indicators.update(indicator.get('entity_b', '') for indicator in batch_results)
 
     entity_b_list_to_remove.difference_update(existing_indicators)
     return list(entity_b_list_to_remove)
