@@ -3441,7 +3441,7 @@ def get_power_query_results(client: Client, args: dict):
     return poll_power_query_results(client=client, cmd="sentinelone-get-power-query-results", args=args)
 
 
-def list_installed_applications_command(client: Client, args: dict) -> CommandResults:
+def list_installed_singu_mark_apps_command(client: Client, args: dict) -> CommandResults:
     """
     List all installed applications matching the input filter
     """
@@ -4018,7 +4018,7 @@ def main():
             'sentinelone-get-remote-script-task-results': get_remote_script_results,
             'sentinelone-remote-script-automate-results': remote_script_automate_results,
             'sentinelone-get-power-query-results': get_power_query_results,
-            'sentinelone-list-installed-applications': list_installed_applications_command,
+            'sentinelone-list-installed-singularity-marketplace-applications': list_installed_singu_mark_apps_command,
             'sentinelone-get-service-users': get_service_users_command,
         },
         'commands_with_params': {

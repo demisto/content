@@ -2648,12 +2648,12 @@ script:
       description: A comma-separated list of applications IDs.
       isArray: true
     - name: name_contains
-      description: Free-text filter by application name
+      description: Free-text filter by application name.
     - name: site_ids
       description: A comma-separated list of site IDs.
       isArray: true
-    description: Returns all installed applications that match the specified criteria.
-    name: sentinelone-list-installed-applications
+    description: Returns all installed singularity marketplace applications that match the specified criteria.
+    name: sentinelone-list-installed-singularity-marketplace-applications
     outputs:
     - contextPath: SentinelOne.InstalledApps.ID
       description: The application ID.
@@ -2812,7 +2812,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   ismappable: true
   isremotesyncin: true
