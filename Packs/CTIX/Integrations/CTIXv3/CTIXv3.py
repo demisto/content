@@ -548,6 +548,8 @@ class Client(BaseClient):
             object_type, object_id, {"page": page, "page_size": page_size}
         )["data"]
         tags = [_["id"] for _ in tags_data["tags"]]
+        data = dict()
+        url_suffix = str()
         if operation == "add_tag_indicator":
             url_suffix = "ingestion/threat-data/action/add_tag/"
             tags.extend([_.strip() for _ in tag_id.split(",")])
