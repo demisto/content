@@ -333,6 +333,12 @@ def extract_events(res: Response) -> tuple[list[dict], str]:
     if res.status_code == 204:
         raise NoEventsReceived
 
+    # For debugging
+    try:
+        demisto.debug(f"Start of the response: {res.text[:50]}")
+    except Exception as e:
+        demisto.debug(f"Printing the beginning of the response failed, Error: {e}")
+
     for line in res.iter_lines(chunk_size=MAX_CHUNK_SIZE_TO_READ, delimiter=DELIMITER):
         if not line:
             # Consecutive delimeter can cause empty line.
