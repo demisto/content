@@ -413,8 +413,8 @@ class Cache:
         val: str
     ) -> dict[Hashable, str]:
         return {
-            'type': 'gz+b85',
-            'data': base64.b85encode(gzip.compress(val.encode())).decode()
+            'type': 'gz+b85x',
+            'data': base64.b85encode(gzip.compress(val.encode())).decode().replace('$', ':')
         }
 
     @staticmethod
@@ -442,17 +442,23 @@ class Cache:
 
         _data = demisto.get(cache, f'{cache_node}.data')
         _type = demisto.get(cache, f'{cache_node}.type')
-        if _type == 'gz+b85':
-            try:
+        try:
+            if _type == 'gz+b85':
                 return json.loads(
                     gzip.decompress(
                         base64.b85decode(_data.encode())
                     ).decode()
                 )
-            except Exception as e:
-                demisto.debug(f'Failed to load cache data [{cache_node}] - {e}')
+            elif _type == 'gz+b85x':
+                return json.loads(
+                    gzip.decompress(
+                        base64.b85decode(_data.replace(':', '$').encode())
+                    ).decode()
+                )
+            else:
                 return None
-        else:
+        except Exception as e:
+            demisto.debug(f'Failed to load cache data [{cache_node}] - {e}')
             return None
 
     def __save_data(
@@ -1780,8 +1786,13 @@ class Main:
         :return: The template name and template.
         """
         templates_type = args.get('templates_type') or 'raw'
-        if templates_type == 'raw':
+        if templates_type in ('raw', 'base64'):
             templates = args.get('templates')
+            if templates_type == 'base64':
+                assert isinstance(templates, str), (
+                    f"'templates' must be of type str in templates_type = 'base64' - {type(templates)}"
+                )
+                templates = base64.b64decode(templates.encode()).decode()
         elif templates_type == 'list':
             templates = execute_command('getList', {
                 'listName': args.get('templates')
@@ -2109,13 +2120,15 @@ class Main:
         fields = dict(fields, **(fields.get('CustomFields') or {}))
         fields.pop('CustomFields', None)
 
-        context = args.get('context_data') or demisto.context()
+        context = args.get('context_data')
         if isinstance(context, str):
             context = json.loads(context)
 
         assert context is None or isinstance(context, dict), (
             f'Context data must be of type str, dict, or null - {type(context)}'
         )
+        context = dict(demisto.context(), **(context or {}))
+
         self.__context: ContextData = ContextData(
             context=context,
             alert=fields if is_xsiam() else None,

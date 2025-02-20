@@ -142,6 +142,12 @@ def test_response_with_error():
     assert ack_unack_alerts(ids=[1, 2, 3], status=True, client=client) is None
 
 
+def test_ack_unack_alerts_no_call_for_empty_data():
+    client = MagicMock()
+    ack_unack_alerts([], True, client)
+    client.http_post_request.assert_not_called()
+
+
 def test_incidents_filtered(requests_mock):
     fi, lr = incidents(
         '1392048082000',
@@ -465,6 +471,14 @@ def test_sign_in_exception_handling(requests_mock):
     assert client.use_basic_auth
 
 
+def test_request_auth_failure():
+    __run_request_test(401, "Authentication failure or resource forbidden.")
+
+
+def test_request_forbidden_failure():
+    __run_request_test(403, "Authentication failure or resource forbidden.")
+
+
 @patch('NozomiNetworks.handle_proxy')
 def test_build_proxies_with_proxy_enabled(mock_handle_proxy):
     mock_handle_proxy.return_value = {'http': 'pippoebasta'}
@@ -566,6 +580,21 @@ def __get_client(dummy_responses, requests_mock):
     client.sign_in()
 
     return client
+
+
+def __run_request_test(status_code, expected_exception_message):
+    client = Client(base_url=NOZOMIGUARDIAN_URL)
+    client.bearer_token = "mock_token"
+
+    with patch('NozomiNetworks.requests.request') as mock_request:
+        mock_response = MagicMock()
+        mock_response.status_code = status_code
+        mock_request.return_value = mock_response
+
+        with pytest.raises(Exception) as exc_info:
+            client._make_request('GET', '/test/path')
+
+        assert str(exc_info.value) == expected_exception_message
 
 
 def __load_test_data(json_path):
