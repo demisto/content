@@ -191,6 +191,8 @@ def remove_null_bytes(decoded_str: str) -> str:
 def handle_powershell_base64(command_line: str) -> tuple[str, bool, bool]:
 
     double_encoded_detected = False
+    encoded = False
+    num_of_encodings = 0
     result = command_line
     powershell_encoded_base64 = re.compile(
         r'-(?:encodedCommand|e)\s+["\']?([A-Za-z0-9+/]{4,}(?:={0,2}))["\']?',
@@ -222,7 +224,10 @@ def handle_powershell_base64(command_line: str) -> tuple[str, bool, bool]:
         if num_of_encodings > 1:
             double_encoded_detected = True
 
-    return result, True, double_encoded_detected
+    if num_of_encodings != 0:
+        encoded = True
+        
+    return result, encoded, double_encoded_detected
 
 
 def handle_general_base64(command_line: str) -> tuple[str, bool, bool]:
@@ -435,7 +440,7 @@ def check_suspicious_content(command_line: str) -> list[str]:
         r"\-(?:ExecutionPolicy|exec)\s+Bypass\b",
         r"\-(?:NonInteractive|noi)\b",
         r"\-(?:noprofile|nop)\b",
-        r"\-(?:WindowStyle|window|w)\s+hidden\b",
+        r"\-(?:WindowStyle|window|w)\s+(?:hidden|h)\b",
         r"\bbcedit\b",
         r"\bBypass\b",
         r"\bcertutil.*\-encodehex\b",
@@ -847,16 +852,16 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
     scores["original"], findings["original"] = process_context(original_results)
 
     # Process decoded
-    decoded_results = results.get("analysis", {}).get("decoded", {})
-    scores["decoded"], findings["decoded"] = process_context(decoded_results)
+    #decoded_results = results.get("analysis", {}).get("decoded", {})
+    #scores["decoded"], findings["decoded"] = process_context(decoded_results)
 
     # Check global combinations (like double encoding globally)
-    if results.get("Double Encoding Detected"):
-        scores["decoded"] += weights["double_encoding"]
-        findings["decoded"].append("Double Encoding Detected")
+    #if results.get("Double Encoding Detected"):
+    #    scores["decoded"] += weights["double_encoding"]
+    #    findings["decoded"].append("Double Encoding Detected")
 
     # Calculate total raw score
-    total_raw_score = scores["original"] + scores["decoded"]
+    total_raw_score = scores["original"]# + scores["decoded"]
 
     # Normalize the score to fit within 0-100 based on the fixed theoretical max
     normalized_score = (total_raw_score / theoretical_max) * 100
