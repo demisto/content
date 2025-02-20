@@ -3445,6 +3445,7 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
     """
     List all installed applications matching the input filter
     """
+    installed_applications = []
     # Get arguments
     query_params = assign_params(
         accountIds=args.get('account_ids'),
@@ -3458,11 +3459,17 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
     )
 
     # Make request and get raw response
-    installed_applications, pagination = client.list_installed_applications_request(query_params)
+    installed_applications_page, pagination = client.list_installed_applications_request(query_params)
+    installed_applications.extend(installed_applications_page)
 
-    if pagination and pagination.get("nextCursor") is not None:
-        demisto.results("Use the below cursor value to get the next page installed applications \n {}".format(
-            pagination['nextCursor']))
+    while pagination and pagination.get("nextCursor"):
+        demisto.debug("Got the next page for installed applications \n {}".format(pagination['nextCursor']))
+        query_params['cursor'] = pagination['nextCursor']
+        if query_params.get('limit'):
+            del query_params['limit']
+        installed_applications_page, pagination = client.list_installed_applications_request(query_params)
+        installed_applications.extend(installed_applications_page)
+
     all_scopes = []
     if installed_applications:
         for each_app in installed_applications:
@@ -3519,6 +3526,7 @@ def get_service_users_command(client: Client, args: dict) -> CommandResults:
     """
     Get all service users matching the input filter
     """
+    service_users = []
     # Get arguments
     query_params = assign_params(
         accountIds=args.get('account_ids'),
@@ -3529,11 +3537,15 @@ def get_service_users_command(client: Client, args: dict) -> CommandResults:
         siteIds=args.get('site_ids')
     )
     # Make request and get raw response
-    service_users, pagination = client.get_service_users_request(query_params)
-
-    if pagination and pagination.get("nextCursor") is not None:
-        demisto.results("Use the below cursor value to get the next page service users \n {}".format(
-            pagination['nextCursor']))
+    service_users_page, pagination = client.get_service_users_request(query_params)
+    service_users.extend(service_users_page)
+    while pagination and pagination.get("nextCursor"):
+        demisto.debug("Got the next page for service users \n {}".format(pagination['nextCursor']))
+        query_params['cursor'] = pagination['nextCursor']
+        if query_params.get('limit'):
+            del query_params['limit']
+        service_users_page, pagination = client.get_service_users_request(query_params)
+        service_users.extend(service_users_page)
 
     context_entries = []
     if service_users:
