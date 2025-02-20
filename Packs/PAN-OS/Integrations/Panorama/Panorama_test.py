@@ -6628,9 +6628,7 @@ class TestFetchIncidentsHelperFunctions:
          """
         from Panorama import get_query_entries_by_id_request
         mocker.patch('Panorama.http_request', return_value=response)
-        debug = mocker.patch('demistomock.debug')
         assert get_query_entries_by_id_request('000', 1) == expected_result
-        assert debug.called_with(debug_msg)
 
 
 class TestFetchIncidentsFlows:
