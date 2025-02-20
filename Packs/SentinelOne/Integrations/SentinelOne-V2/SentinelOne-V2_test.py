@@ -832,7 +832,7 @@ def test_list_installed_singularity_mark_apps(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{'ID': '123456', 'Account': 'SentinelOne', 'AccountId': '1234567890', 'ApplicationCatalogId': '90909090909090', 'applicationCatalogName': 'SentinelOne Threat Intelligence IOC Ingestion', 'AlertMessage': '', 'CreatedAt': '2025-01-23T13:11:23.12758', 'Creator': 'admin@user.sentinelone.net', 'CreatorId': '212212121211212', 'DesiredStatus': 'active', 'HasAlert': False, 'LastEntityCreatedAt': '2025-01-23T13:11:23.127579', 'Modifier': 'admin@user.sentinelone.net', 'ModifierId': '212212121211212', 'ScopeId': '1230123012301230', 'ScopeLevel': 'account', 'Status': 'active', 'UpdatedAt': '2025-01-23T13:11:25.96604', 'ApplicationInstanceName': 'SentinelOne Threat Intelligence IOC Ingestion'}]  # noqa
+    assert command_results.outputs == [{'ID': '123456', 'Account': 'SentinelOne', 'AccountId': '1234567890', 'ApplicationCatalogId': '90909090909090', 'ApplicationCatalogName': 'SentinelOne Threat Intelligence IOC Ingestion', 'AlertMessage': '', 'CreatedAt': '2025-01-23T13:11:23.12758', 'Creator': 'admin@user.sentinelone.net', 'CreatorId': '212212121211212', 'DesiredStatus': 'active', 'HasAlert': False, 'LastEntityCreatedAt': '2025-01-23T13:11:23.127579', 'Modifier': 'admin@user.sentinelone.net', 'ModifierId': '212212121211212', 'ScopeId': '1230123012301230', 'ScopeLevel': 'account', 'Status': 'active', 'UpdatedAt': '2025-01-23T13:11:25.96604', 'ApplicationInstanceName': 'SentinelOne Threat Intelligence IOC Ingestion'}]  # noqa
 
 
 def test_get_service_users(mocker, requests_mock):
