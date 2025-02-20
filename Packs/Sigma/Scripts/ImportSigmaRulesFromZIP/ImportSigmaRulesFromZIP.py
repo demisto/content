@@ -54,7 +54,7 @@ def main() -> None:
                 # Read file contents
                 with open(file_path) as file:
                     file_contents = file.read()
- 
+
                 try:
                     # Execute command to create Sigma rule indicator
                     demisto.debug(f'SGM: creating sigma rule for {file_name}')
