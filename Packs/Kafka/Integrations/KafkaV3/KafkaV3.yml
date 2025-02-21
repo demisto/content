@@ -1,7 +1,4 @@
 category: Messaging and Conferencing
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: KafkaV3
   version: -1
@@ -210,3 +207,6 @@ script:
 fromversion: 6.1.0
 tests:
 - KafkaV3 Test
+sectionOrder:
+- Connect
+- Collect
