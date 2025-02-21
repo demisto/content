@@ -645,7 +645,7 @@ def dict_to_xml(_dictionary, contains_xml_chars=False):
     Returns:
         str: the dict representation in XML.
     """
-    xml = re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
+    xml = re.sub(r'<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
     if contains_xml_chars:
         return xml.replace('&gt;', '>').replace('&lt;', '<')
     return xml
