@@ -658,7 +658,7 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     partition_arg = demisto_args.get('partitioning_key')
 
     partition = None
-    if str(partition_arg).isdigit():
+    if partition_arg is not None and str(partition_arg).isdigit():
         partition = int(partition_arg)
 
     try:
