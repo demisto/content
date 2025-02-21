@@ -1,11 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import urllib.parse
+import urllib3
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = VulnDB, pack version = 1.0.12')
+
 
 ''' IMPORTS '''
 
-import urllib3
-import urllib.parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -48,6 +49,14 @@ class Client(BaseClient):
                 raise DemistoException(res[error_attribute])
         return res
 
+    def http_file_request(self, url_suffix, size=None):
+        params = {'size': size} if size else None
+        res = self._http_request("GET",
+                                 url_suffix=url_suffix,
+                                 params=params,
+                                 resp_type='bytes')
+        return res
+
 
 def vulndb_vulnerability_to_entry(vuln):
     vulnerability_details = {
@@ -60,6 +69,7 @@ def vulndb_vulnerability_to_entry(vuln):
         'SolutionDate': vuln.get('solution_date', '').rstrip('Z'),
         'DiscoveryDate': vuln.get('disclosure_date', '').rstrip('Z'),
         'ExploitPublishDate': vuln.get('exploit_publish_date', '').rstrip('Z'),
+        'TechnicalDescription': vuln.get('t_description', '')
     }
 
     cve_ext_reference_values = [ext_reference['value'] for ext_reference in
@@ -95,7 +105,16 @@ def vulndb_vulnerability_to_entry(vuln):
                                'Description': classification.get('classification', default_classification)[
                                    'description']}
                               for classification in vuln['classifications']]
-
+    timeline_details = {
+        'DiscoveryDate': vuln.get('discovery_date', '').rstrip('Z'),
+        'DisclosureDate': vuln.get('disclosure_date', '').rstrip('Z'),
+        'VendorInformedDate': vuln.get('vendor_informed_date', '').rstrip('Z'),
+        'VendorAckDate': vuln.get('vendor_ack_date', '').rstrip('Z'),
+        'ExploitPublishDate': vuln.get('exploit_publish_date', '').rstrip('Z'),
+        'ExploitWildDate': vuln.get('exploited_in_the_wild_date', '').rstrip('Z'),
+        'SolutionDate': vuln.get('solution_date', '').rstrip('Z'),
+        'ThirdPartySolutionDate': vuln.get('third_party_solution_date', '').rstrip('Z'),
+    }
     return {
         'Vulnerability': vulnerability_details,
         'CVE-ExtReference': {
@@ -104,7 +123,8 @@ def vulndb_vulnerability_to_entry(vuln):
         'CvssMetrics': cvss_metrics_details,
         'Vendor': vendor_details,
         'Products': product_details,
-        'Classification': classification_details
+        'Classification': classification_details,
+        'Timeline': timeline_details
     }
 
 
@@ -124,7 +144,8 @@ def vulndb_vulnerability_results_to_demisto_results(res):
             'Title': ec['VulnDB']['Vulnerability']['Title'],
             'Description': ec['VulnDB']['Vulnerability']['Description'],
             'Publish Date': ec['VulnDB']['Vulnerability']['PublishedDate'],
-            'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate']
+            'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate'],
+
         })
 
         return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
@@ -412,6 +433,21 @@ def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: D
     return_results(command_results)
 
 
+def vulndb_get_vuln_report_command(args: dict, client: Client):
+    vulndb_id = args['vuln_id']
+    res = client.http_file_request(f'/vulnerabilities/{vulndb_id}.pdf')
+
+    # Byte data of the result file
+    report_file = res.content
+
+    # 'content-disposition' comes back in the following format:
+    # attachment; filename="VulnDB ID 389586.pdf"; filename*=UTF-8''VulnDB%20ID%20389586.pdf
+    # Parse out the filename from this return
+    report_file_name = res.headers.get('content-disposition').split(';')[1].split('"')[1]
+
+    return_results(fileResult(report_file_name, report_file))
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -457,6 +493,10 @@ def main():
             vulndb_get_updates_by_dates_or_hours_command(args, client)
         elif command == 'cve':
             vulndb_get_cve_command(args, client, dbot_score_reliability)
+        elif command == 'vulndb-get-vuln-report-by-vuln-id':
+            vulndb_get_vuln_report_command(args, client)
+        else:
+            return_error(f'{command} is not a supported command.')
     except Exception as e:
         error_message = f'Failed to execute {command} command. Error: {str(e)}'
         return_error(error_message)
