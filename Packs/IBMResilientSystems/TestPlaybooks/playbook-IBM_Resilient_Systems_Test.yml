@@ -1391,3 +1391,4 @@ inputs: []
 outputs: []
 fromversion: 6.10.0
 description: Tests IBM Security QRadar SOAR integration.
+tags: ["test-playbooks", "SOAR"]
