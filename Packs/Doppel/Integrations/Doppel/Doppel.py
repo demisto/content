@@ -504,7 +504,6 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
                 break
 
             last_fetch = last_fetch_datetime.timestamp()
-            new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
             for alert in alerts:
                 # Building the incident structure
                 created_at_str = alert.get("created_at")
@@ -691,7 +690,7 @@ def main() -> None:
     supported_commands = {
         'test-module': test_module,
         'fetch-incidents': fetch_incidents_command,
-        'get-modified-remote-data': get_modified_remote_data_command,
+        # 'get-modified-remote-data': get_modified_remote_data_command,
         'get-remote-data': get_remote_data_command,
         'update-remote-system': update_remote_system_command,
         'get-mapping-fields': get_mapping_fields_command,
