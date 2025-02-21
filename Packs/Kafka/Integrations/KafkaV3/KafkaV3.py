@@ -188,7 +188,7 @@ class KafkaCommunicator:
 
     def get_kafka_schema_registry(self) -> Optional[KSchemaRegistryClient]:
         if self.conf_schema_registry:
-            return KSchemaRegistryClient(self.conf_schema_registry)
+            return KSchemaRegistryClient(self.conf_schema_registry, logger=self.kafka_logger)
         return None
 
     def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None):
