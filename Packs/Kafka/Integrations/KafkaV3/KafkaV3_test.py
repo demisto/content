@@ -1251,7 +1251,8 @@ invalid_params_cases = [
             'use_ssl': True, 'use_sasl': None, 'trust_any_cert': False, 'plain_username': None, 'plain_password': None,
             'brokers': 'broker1,broker2', 'ca_cert': None, 'client_cert': None, 'client_cert_key': None
         },
-        'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate (.cer), Client certificate key (.key). Please provide them.'
+        'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate (.cer), \
+Client certificate key (.key). Please provide them.'
     ),
     (
         {
