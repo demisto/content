@@ -448,6 +448,26 @@ def vulndb_get_vuln_report_command(args: dict, client: Client):
     return_results(fileResult(report_file_name, report_file))
 
 
+def vulndb_get_cpe_command(args: dict, client: Client):
+    vulndb_id = args['vuln_id']
+
+    res = client.http_request(f'/vulnerabilities/{vulndb_id}?show_cpe=true')
+    all_cpes = []
+    for product in res['vulnerability']['products']:
+        for version in product['versions']:
+            for cpe in version['cpe']:
+                all_cpes.append(cpe['cpe'])
+    # Convert to set to deduplicate, then back to list to be sorted
+    deduplicated_set = set(all_cpes)
+    output = sorted(deduplicated_set)
+
+    return_results(CommandResults(
+        outputs_prefix='VulnDB.CPE',
+        outputs=all_cpes,
+        readable_output=str(output)
+    ))
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -495,6 +515,8 @@ def main():
             vulndb_get_cve_command(args, client, dbot_score_reliability)
         elif command == 'vulndb-get-vuln-report-by-vuln-id':
             vulndb_get_vuln_report_command(args, client)
+        elif command == 'vulndb-get-cpe-by-vuln-id':
+            vulndb_get_cpe_command(args, client)
         else:
             return_error(f'{command} is not a supported command.')
     except Exception as e:

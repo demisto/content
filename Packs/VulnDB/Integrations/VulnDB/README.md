@@ -1573,6 +1573,27 @@
 <h5>
 <a id="Command_Example_486"></a>Command Example</h5>
 <pre>!vulndb-get-vuln-by-cve-id cve="2013-1228" max_size="20"</pre>
+### vulndb-get-cpe-by-vuln-id
+
+***
+Returns the CPE(s) for a vulnerability, by VulnDB ID
+
+#### Base Command
+
+`vulndb-get-cpe-by-vuln-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| vuln_id | VulnDB vulnerability ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VulnDB.CPE | unknown |  | 
+
 ### vulndb-get-vuln-report-by-vuln-id
 
 ***
