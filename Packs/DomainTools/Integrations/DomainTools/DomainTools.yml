@@ -5,8 +5,9 @@ commonfields:
 name: DomainTools
 fromversion: 5.0.0
 display: DomainTools
+deprecated: true
 category: Data Enrichment & Threat Intelligence
-description: Domain name, DNS and Internet OSINT-based cyber threat intelligence and cybercrime forensics products and data.
+description: Use DomainTools Iris Pack instead.
 configuration:
 - display: DomainTools API URL
   name: server
