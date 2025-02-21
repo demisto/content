@@ -481,14 +481,14 @@ def validate_params(use_ssl, use_sasl, plain_username, plain_password, brokers, 
     missing: List[str] = []
 
     # Check SSL requirements
-    if use_ssl and not use_sasl:
+    if use_ssl:
         ssl_params = [(ca_cert, 'CA certificate of Kafka server (.cer)'),
                       (client_cert, 'Client certificate (.cer)'),
                       (client_cert_key, 'Client certificate key (.key)')]
         check_missing_params(ssl_params, missing)
 
     # Check SASL_PLAIN requirements
-    elif use_sasl:
+    if use_sasl:
         sasl_params = [(plain_username, 'SASL PLAIN Username'),
                        (plain_password, 'SASL PLAIN Password')]
         check_missing_params(sasl_params, missing)
