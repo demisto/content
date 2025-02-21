@@ -563,4 +563,5 @@ inputs:
 outputs: []
 tests:
 - No test.
+tags: ["A", "B", "C"]
 fromversion: 6.0.0
