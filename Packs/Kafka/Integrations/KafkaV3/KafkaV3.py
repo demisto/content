@@ -155,12 +155,16 @@ class KafkaCommunicator:
 
         # SASL with SSL
         elif use_sasl:
-            client_dict.update({'security.protocol': 'SASL_SSL',
-                                'sasl.mechanism': 'PLAIN',
+            client_dict.update({'sasl.mechanism': 'PLAIN',
                                 'sasl.username': plain_username,
                                 'sasl.password': plain_password})
-            # ca_cert
-            if not trust_any_cert:
+
+            if trust_any_cert:
+                client_dict.update({'security.protocol': 'SASL_PLAINTEXT',
+                                    'ssl.endpoint.identification.algorithm': 'none',
+                                    'enable.ssl.certificate.verification': False})
+            else:  # ca_cert
+                client_dict.update({'security.protocol': 'SASL_SSL'})
                 if self.ca_path:
                     client_dict.update({'ssl.ca.location': self.ca_path})
                 else:
@@ -171,10 +175,6 @@ class KafkaCommunicator:
 
                 if ssl_password:
                     client_dict.update({'ssl.key.password': ssl_password})
-
-        if trust_any_cert:
-            client_dict.update({'ssl.endpoint.identification.algorithm': 'none',
-                                'enable.ssl.certificate.verification': False})
 
     def get_kafka_consumer(self) -> KConsumer:
         if self.kafka_logger:
@@ -454,15 +454,24 @@ class KafkaCommunicator:
 ''' HELPER FUNCTIONS '''
 
 
-def validate_params(use_ssl, use_sasl, plain_username, plain_password, brokers, ca_cert, client_cert, client_cert_key):
+def validate_params(
+    use_ssl,
+    use_sasl,
+    trust_any_cert,
+    plain_username,
+    plain_password,
+    brokers,
+    ca_cert,
+    client_cert,
+    client_cert_key
+):
     """
         The function validates parameters for SSL and SASL_SSL authentication methods and raises an error if any invalid
         configurations are detected.
 
         For SSL authentication, it checks if use_ssl is True and requires ca_cert, client_cert, and client_cert_key parameters.
 
-        For SASL_SSL authentication, it checks if use_sasl is True and requires plain_username, plain_password, and ca_cert
-        parameters.
+        For SASL_SSL authentication, it checks if use_sasl is True and requires plain_username, plain_password
 
         The brokers parameter is mandatory for both authentication methods.
     """
@@ -491,6 +500,9 @@ def validate_params(use_ssl, use_sasl, plain_username, plain_password, brokers, 
     if use_sasl:
         sasl_params = [(plain_username, 'SASL PLAIN Username'),
                        (plain_password, 'SASL PLAIN Password')]
+        if not trust_any_cert:
+            sasl_params.append((ca_cert, 'CA certificate of Kafka server (.cer)'))
+
         check_missing_params(sasl_params, missing)
 
     if missing:
@@ -1002,8 +1014,17 @@ def main():  # pragma: no cover
     schema_registry_url = demisto_params.get('schema_registry_url', None)
     schema_registry_username = demisto_params.get('schema_registry_credentials', {}).get('identifier', None)
     schema_registry_password = demisto_params.get('schema_registry_credentials', {}).get('password', None)
-    validate_params(use_ssl=use_ssl, use_sasl=use_sasl, plain_username=plain_username, plain_password=plain_password,
-                    brokers=brokers, ca_cert=ca_cert, client_cert=client_cert, client_cert_key=client_cert_key)
+    validate_params(
+        use_ssl=use_ssl,
+        use_sasl=use_sasl,
+        trust_any_cert=trust_any_cert,
+        plain_username=plain_username,
+        plain_password=plain_password,
+        brokers=brokers,
+        ca_cert=ca_cert,
+        client_cert=client_cert,
+        client_cert_key=client_cert_key
+    )
 
     kafka_kwargs = {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
                     'use_sasl': use_sasl, 'group_id': group_id,
