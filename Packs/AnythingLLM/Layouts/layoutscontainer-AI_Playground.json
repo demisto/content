@@ -33,10 +33,7 @@
   },
   "definitionId": "",
   "description": "Playground to test concepts and data engineering and prompt engineering using LLM and Retrieval Augmented Generation (RAG) in the development of use cases",
-  "detached": false,
-  "details": null,
   "detailsV2": {
-    "TypeName": "",
     "tabs": [
       {
         "id": "summary",
@@ -579,8 +576,8 @@
   },
   "group": "incident",
   "id": "AI Playground",
-  "itemVersion": "",
   "name": "AI Playground",
   "system": false,
+  "fromVersion": "6.0.0",
   "version": -1
 }
