@@ -767,7 +767,7 @@ script:
         If your instance configuration involves a Cortex XSOAR engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`.
         For example - `https://my-engine.name:443`, `http://1.1.1.1:443`.   
       name: engine_url
-  dockerimage: demisto/teams:1.0.0.2027266
+  dockerimage: demisto/teams:1.0.0.1860894
   longRunning: true
   longRunningPort: true
   script: ''
