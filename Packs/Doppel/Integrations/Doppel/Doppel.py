@@ -547,43 +547,10 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
         demisto.incidents([])
         demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
-def get_modified_remote_data_command(client: Client, args: dict):
-    """
-    Gets the modified remote incidents.
-    Args:
-        args:
-            last_update: the last time we retrieved modified incidents.
-
-    Returns:
-        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents IDs.
-    """
-
-    remote_args = GetModifiedRemoteDataArgs(args)
-
-    last_update = dateparser.parse(remote_args.last_update)
-    assert last_update is not None, f"could not parse{remote_args.last_update}"
-
-    modified_ids_to_mirror = []
-
-    last_update = last_update.strftime(DOPPEL_API_DATE_FORMAT)
-    query_params = {
-        'created_after': last_update,  # Fetch alerts after the last_fetch,
-        'sort_type': 'date_sourced',
-        'sort_order': 'asc',
-        'page': 0,
-    }
-    get_alerts_response = client.get_alerts(params=query_params)
-    alerts = get_alerts_response.get('alerts', None)
-
-    for alert in alerts:
-        remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(client, alert.get("id"), remote_args.last_update)
-        modified_ids_to_mirror.append(remote_updated_incident_data.get("id"))
-
-    demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
-
-    return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
-
-
+def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
+    demisto.debug('Command get-modified-remote-data is not implemented')
+    raise NotImplementedError('The command "get-modified-remote-data" is not implemented, \
+        as Doppel does provide the API to fetch updated alerts.')
 
 def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
     try:
@@ -690,7 +657,7 @@ def main() -> None:
     supported_commands = {
         'test-module': test_module,
         'fetch-incidents': fetch_incidents_command,
-        # 'get-modified-remote-data': get_modified_remote_data_command,
+        'get-modified-remote-data': get_modified_remote_data_command,
         'get-remote-data': get_remote_data_command,
         'update-remote-system': update_remote_system_command,
         'get-mapping-fields': get_mapping_fields_command,
