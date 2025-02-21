@@ -100,6 +100,9 @@ class KafkaCommunicator:
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
+        demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
+        demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
+
         # Set schema registry conf dict
         if schema_registry_url:
             self.conf_schema_registry = {
@@ -108,9 +111,7 @@ class KafkaCommunicator:
             if schema_registry_username and schema_registry_password:
                 self.conf_schema_registry['basic.auth.user.info'] = f'{schema_registry_username}:{schema_registry_password}'
 
-        demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
-        demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
-        demisto.debug(f"The schema registry configuration is  \n{self.conf_schema_registry}\n")
+            demisto.debug(f"The schema registry configuration is  \n{self.conf_schema_registry}\n")
 
     def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password,
                            use_sasl, plain_username, plain_password, brokers):
