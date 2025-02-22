@@ -11,11 +11,11 @@ enabled: true
 args:
 - name: lat
   default: true
-  description: Latitude (e.g. `32.064622`)
+  description: Latitude (e.g. `32.064622`).
 - name: lng
-  description: Longitude (e.g. `34.774131`)
+  description: Longitude (e.g. `34.774131`).
 - name: address
-  description: Address (e.g., `1600 Pennsylvania ave, DC`)
+  description: Address (e.g., `1600 Pennsylvania ave, DC`).
 scripttarget: 0
 fromversion: 5.0.0
 marketplaces:

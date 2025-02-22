@@ -11,10 +11,10 @@ system: true
 args:
 - name: system
   required: true
-  description: Name of system on which to run the command
+  description: Name of system on which to run the command.
 - name: cmd
   required: true
-  description: Command to run
+  description: Command to run.
 scripttarget: 0
 dependson:
   must:

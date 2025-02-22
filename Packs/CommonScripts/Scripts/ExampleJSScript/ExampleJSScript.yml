@@ -11,7 +11,7 @@ system: true
 args:
 - name: ArgumentExample
   required: true
-  description: An example argument that will be passed into and used by the script
+  description: An example argument that will be passed into and used by the script.
 scripttarget: 0
 dependson: {}
 timeout: 0s

@@ -20,7 +20,7 @@ args:
 - name: message
   required: true
   default: true
-  description: Message to send
+  description: Message to send.
 scripttarget: 0
 tests:
 - No test

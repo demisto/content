@@ -13,7 +13,7 @@ args:
 - name: domain
   required: true
   default: true
-  description: Domain to look up
+  description: Domain to look up.
 scripttarget: 0
 fromversion: 5.0.0
 marketplaces:
