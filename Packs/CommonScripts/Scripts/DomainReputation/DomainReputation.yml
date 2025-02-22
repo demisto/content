@@ -7,7 +7,7 @@ type: python
 subtype: python3
 tags:
 - enhancement
-comment: A context script for Domain entities
+comment: A context script for Domain entities.
 enabled: true
 args:
 - name: domain
