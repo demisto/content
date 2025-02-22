@@ -40,7 +40,7 @@ ignore=GR103
 
 # TODO - Remove this - temporary for platform support PR
 [file:playbook-Remote_PsExec_with_Lolbin_Command_Execution_alert.yml]
-ignore=PB118,PB119
+ignore=PB118,PB119,RM116
 
 [known_words]
 xsiam
