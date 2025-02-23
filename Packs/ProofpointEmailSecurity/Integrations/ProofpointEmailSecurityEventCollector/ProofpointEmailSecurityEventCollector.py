@@ -7,7 +7,6 @@ from websockets import Data
 from CommonServerPython import *  # noqa: F401
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
-from websockets.exceptions import InvalidStatus
 from dateutil import tz
 import traceback
 
@@ -84,7 +83,7 @@ def set_the_integration_context(key: str, val):
     cnx = demisto.getIntegrationContext()
     cnx[key] = val
     demisto.setIntegrationContext(cnx)
-    
+
 
 @contextmanager
 def websocket_connections(
@@ -121,16 +120,15 @@ def websocket_connections(
                 connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers)),
                 fetch_interval=fetch_interval,
             ) for event_type in EventType]
-            
+
             set_the_integration_context(
                 "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(timezone.utc)}")
-            
+
             yield connections
     except Exception as e:
         set_the_integration_context("last_run_results",
                                     f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
         raise DemistoException(f"{str(e)}\n")
-
 
 
 def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
