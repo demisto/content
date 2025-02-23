@@ -274,7 +274,7 @@ script:
   - deprecated: true
     description: 'WARNING: This command will reset your fetch history.'
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.117320
+  dockerimage: demisto/taxii2:1.0.0.1792752
   feed: true
   runonce: false
   script: '-'
