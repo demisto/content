@@ -13,6 +13,18 @@ def check_conditions_cybereason_isolate_machine(pre_command_context) -> bool:
     return True
 
 
+def check_conditions_cb_edr_quarantine_device(pre_command_context) -> bool:
+    return True
+
+
+def check_conditions_fireeye_hx_host_containment(pre_command_context) -> bool:
+    return True
+
+
+def check_conditions_cs_falcon_contain_host(pre_command_context) -> bool:
+    return True
+
+
 class Command:
     def __init__(
         self,
@@ -30,9 +42,8 @@ class Command:
 
 
 class CommandsManager:
-    def __init__(self, command_runner, zipped_args):
+    def __init__(self, command_runner):
         self.command_runner = command_runner
-        self.zipped_args = zipped_args
         self.first_layer_commands_list = []
         self.second_layer_commands_list = []
         self.initialize_commands()
@@ -40,11 +51,41 @@ class CommandsManager:
     def initialize_commands(self):
         first_layer_commands_list = [
             Command(
+                brand='Cortex Core - IR',
+                name='core-isolate-endpoint',
+                args_mapping={'endpoint_id': 'agent_id'},
+                post_command_name='',
+                preprocess_checks=None
+            ),
+            Command(
                 brand='Cybereason',
                 name='cybereason-is-probe-connected',
                 args_mapping={'machine': 'agent_hostname'},
                 post_command_name='cybereason-is-probe-connected',
+                preprocess_checks=None
             ),
+            Command(
+                brand='CrowdstrikeFalcon',
+                name='cs-falcon-search-device',
+                args_mapping={'ids': 'agent_id', 'hostname': 'agent_hostname'},
+                post_command_name='cs-falcon-contain-host',
+                preprocess_checks=None
+            ),
+            Command(
+                brand='FireEyeHX v2',
+                name='fireeye-hx-get-host-information',
+                args_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},
+                post_command_name='fireeye-hx-host-containment',
+                preprocess_checks=None
+            ),
+            Command(
+                brand='VMware Carbon Black EDR v2',
+                name='cb-edr-sensors-list',
+                args_mapping={'id': 'agent_id', 'ip': 'agent_ip', 'hostname': 'agent_hostname'},
+                post_command_name='cb-edr-quarantine-device',
+                preprocess_checks=None
+            )
+            # TODO to add microsoft
         ]
 
         second_layer_commands_list = [
@@ -52,8 +93,30 @@ class CommandsManager:
                 brand='Cybereason',
                 name='cybereason-isolate-machine',
                 args_mapping={'machine': 'agent_hostname'},
+                post_command_name='',
                 preprocess_checks=check_conditions_cybereason_isolate_machine
-            )
+            ),
+            Command(
+                brand='CrowdstrikeFalcon',
+                name='cs-falcon-contain-host',
+                args_mapping={'ids': 'agent_id'},
+                post_command_name='',
+                preprocess_checks=check_conditions_cs_falcon_contain_host
+            ),
+            Command(
+                brand='FireEyeHX v2',
+                name='fireeye-hx-host-containment',
+                args_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},
+                post_command_name='',
+                preprocess_checks=check_conditions_fireeye_hx_host_containment
+            ),
+            Command(
+                brand='VMware Carbon Black EDR v2',
+                name='cb-edr-quarantine-device',
+                args_mapping={'sensor_id': 'agent_id'},
+                post_command_name='',
+                preprocess_checks=check_conditions_cb_edr_quarantine_device
+            ),
         ]
         self.first_layer_commands_list = first_layer_commands_list
         self.second_layer_commands_list = second_layer_commands_list
@@ -64,15 +127,31 @@ class CommandsManager:
     def get_second_layer_command_by_name(self, name) -> Command:
         return next((cmd for cmd in self.second_layer_commands_list if cmd.name == name), None)
 
-    def run_all_commands(self, verbose: bool):
-        human_readable_list = []
-        context_list = []
-        for agent_id, agent_ip, agent_hostname in self.zipped_args:
-            single_output = []
-            single_human_readable = []
-            for command in self.first_layer_commands_list:
-                human_readable, context_outputs = not self.command_runner.run_command(
-                    command=command,
+    def run_commands_for_endpoint(self, agent_id, agent_ip, agent_hostname):
+        single_output = []
+        single_human_readable = []
+        for command in self.first_layer_commands_list:
+            human_readable, context_outputs = not self.command_runner.run_command(
+                command=command,
+                args={
+                    'agent_id': agent_id,
+                    'agent_ip': agent_ip,
+                    'agent_hostname': agent_hostname
+                }
+            )
+
+            single_output.append(context_outputs)
+            single_human_readable.extend(human_readable)
+
+            if command.post_command_name:
+                post_command = self.get_second_layer_command_by_name(command.post_command_name)
+                if not post_command.preprocess_checks(context_outputs):
+                    demisto.debug(
+                        f'Skipping command "{post_command.name}" since the previous command {command} context did not'
+                        f' satisfied the conditions for this command.')
+                    continue
+                human_readable, context_outputs = self.command_runner.run_command(
+                    command=post_command,
                     args={
                         'agent_id': agent_id,
                         'agent_ip': agent_ip,
@@ -80,33 +159,11 @@ class CommandsManager:
                     }
                 )
 
-                single_output.append(context_outputs)
-                single_human_readable.extend(human_readable)
+            single_output.append(context_outputs)
+            single_human_readable.extend(human_readable)
 
-                if command.post_command_name:
-                    post_command = self.get_second_layer_command_by_name(command.post_command_name)
-                    if not post_command.preprocess_checks(context_outputs):
-                        demisto.debug(
-                            f'Skipping command "{post_command.name}" since the previous command {command} context did not'
-                            f' satisfied the conditions for this command.')
-                        continue
-                    human_readable, context_outputs = self.command_runner.run_command(
-                        command=post_command,
-                        args={
-                            'agent_id': agent_id,
-                            'agent_ip': agent_ip,
-                            'agent_hostname': agent_hostname
-                        }
-                    )
+        return single_human_readable, single_output
 
-                single_output.append(context_outputs)
-                single_human_readable.extend(human_readable)
-
-            if verbose:
-                human_readable_list.extend(single_human_readable)
-            context_list.append(single_output)
-
-        return human_readable_list, context_list
 
 class ModuleManager:
     def __init__(self, modules: dict[str, Any], brands_to_run: list[str]) -> None:
@@ -175,7 +232,7 @@ class IsolateEndpointCommandRunner:
 
     @staticmethod
     def get_command_results(command: str, results: list[dict[str, Any]], args: dict[str, Any]) -> tuple[list, list, list]:
-        # todo need to change the context by the design pattern
+        # todo need to change the context by the pattern in the design
         command_context_outputs = []
         human_readable_outputs = []
         command_error_outputs = []
@@ -194,8 +251,23 @@ class IsolateEndpointCommandRunner:
 
 
 def run_commands(commands_manager,
-                 verbose: bool = False):
-    human_readable_list, context_list = commands_manager.run_all_commands(verbose)
+                 zipped_args,
+                 verbose: bool = False,
+                 force: bool = False,
+                 ):
+    human_readable_list = []
+    context_list = []
+    for agent_id, agent_ip, agent_hostname in zipped_args:
+        if not check_servers_using_get_endpoint_data(args={'agent_id': agent_id, 'agent_ip': agent_ip,
+                                                           'agent_hostname': agent_hostname}, force=force):
+            continue
+        single_human_readable, single_output = commands_manager.run_commands_for_endpoint(agent_id, agent_ip, agent_hostname)
+
+        if verbose:
+            human_readable_list.extend(single_human_readable)
+        context_list.append(single_output)
+
+    return human_readable_list, context_list
 
 
 def check_servers_using_get_endpoint_data(args: dict, force: bool):
@@ -205,11 +277,11 @@ def check_servers_using_get_endpoint_data(args: dict, force: bool):
         is_isolated = command_results.outputs.get('Endpoint', {}).get('IsIsolated', {}).get('value')
         server_status = command_results.outputs.get('Endpoint', {}).get('Status', {}).get('value')
         if server in SERVERS_RELEASES and not force:
-            demisto.debug('Skipping endpoint isolation: Server detected and force parameter is False.')
+            demisto.debug('Error with isolating the endpoint: Server detected and force parameter is False.')
         if is_isolated:
-            pass
-        if server_status == 'DISCONNECTED':
-            pass
+            demisto.debug('Error with isolating the endpoint: Endpoint is already isolated.')
+        if server_status == 'DISCONNECTED':  # TODO to check this condition
+            demisto.debug('Error with isolating the endpoint: Server is disconnected.')
 
 
 def main():
@@ -225,8 +297,6 @@ def main():
 
         zipped_args: list[tuple] = list(zip_longest(agent_ids, agent_ips, agent_hostnames, fillvalue=''))
 
-        check_servers_using_get_endpoint_data(args, force)
-
         module_manager = ModuleManager(
             modules=demisto.getModules(),
             brands_to_run=brands_to_run
@@ -236,10 +306,13 @@ def main():
         )
         commands_manager = CommandsManager(
             command_runner=command_runner,
-            zipped_args=zipped_args
         )
-        run_commands(
-            commands_manager, verbose
+
+        human_readable_list, context_list = run_commands(
+            commands_manager=commands_manager,
+            zipped_args=zipped_args,
+            verbose=verbose,
+            force=force
         )
 
     except Exception as e:
