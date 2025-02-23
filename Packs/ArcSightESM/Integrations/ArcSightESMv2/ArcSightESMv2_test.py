@@ -616,13 +616,15 @@ def test_invalid_json_requiring_fixing_json_string():
 def test_invalid_json_requiring_fixing_json_string_with_multi_json_object():
     broken_json_response = requests.Response()
     broken_json_response.status_code = 200
-    broken_json_response._content = b'{"test":[{"test1": "test_val", "$": "value with "quotes" inside"},{"$": "value with "quotes" inside"}]}'
+    broken_json_response._content = (
+        b'{"test":[{"test1": "test_val", "$": "value with "quotes" inside"},{"$": "value with "quotes" inside"}]}'
+    )
     assert parse_json_response(broken_json_response) == {
         "test": [
             {"test1": "test_val", '$': 'value with "quotes" inside'},
             {'$': 'value with "quotes" inside'}
-            ]
-        }
+        ]
+    }
 
 
 def test_unfixable_json_response():
