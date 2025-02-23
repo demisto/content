@@ -12483,7 +12483,7 @@ def content_profiler(func):
                 # some code
             ```
     Analyze the Profiling Data with SnakeViz:
-        Download the <automation_name>.prof from the war room and run:
+        Download the {automation_name}.prof from the war room and run:
             pip install snakeviz; snakveiz <automation_name>.prof
 
     **Tested with Python 3.10**
