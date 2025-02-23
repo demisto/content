@@ -48,6 +48,8 @@ _MODULES_LINE_MAPPING = {
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
 # So if you're using a "heavy" API it is recommended to use maximum of 4MB chunk size.
+MAX_ALLOWED_ENTRY_SIZE = 5 * (10 ** 6)  # 5 MB, this is the maximum allowed size of a single entry.
+# So if you're using a "heavy" API it is recommended to use maximum of 9MB chunk size.
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -60,25 +62,6 @@ HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
-    """
-        Register a module in the line mapping for the traceback line correction algorithm.
-
-        :type module_name: ``str``
-        :param module_name: The name of the module. (required)
-
-        :type start_end: ``str``
-        :param start_end: Whether to register the line as the start or the end of the module.
-            Possible values: start, end. (required)
-
-        :type line: ``int``
-        :param line: the line number to record. (required)
-
-        :type wrapper: ``int``
-        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
-
-        :return: None
-        :rtype: ``None``
-    """
     global _MODULES_LINE_MAPPING
     default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
     try:
@@ -98,15 +81,6 @@ def register_module_line(module_name, start_end, line, wrapper=0):
 
 
 def _find_relevant_module(line):
-    """
-    Find which module contains the given line number.
-
-    :type line: ``int``
-    :param trace_str: Line number to search. (required)
-
-    :return: The name of the module.
-    :rtype: ``str``
-    """
     global _MODULES_LINE_MAPPING
 
     relevant_module = ''
@@ -121,15 +95,6 @@ def _find_relevant_module(line):
 
 
 def fix_traceback_line_numbers(trace_str):
-    """
-    Fixes the given traceback line numbers.
-
-    :type trace_str: ``str``
-    :param trace_str: The traceback string to edit. (required)
-
-    :return: The new formated traceback.
-    :rtype: ``str``
-    """
 
     def is_adjusted_block(start, end, adjusted_lines):
         return any(
@@ -178,7 +143,6 @@ elif sys.platform.startswith('win32'):
 
 
 class WarningsHandler(object):
-    #    Wrapper to handle warnings. We use a class to cleanup after execution
 
     @staticmethod
     def handle_warning(message, category, filename, lineno, file=None, line=None):
@@ -1005,11 +969,9 @@ def urljoin(url, suffix=""):
 
 def positiveUrl(entry):
     """
-       Checks if the given entry from a URL reputation query is positive (known bad) (deprecated)
-
+       Deprecated
        :type entry: ``dict``
        :param entry: URL entry (required)
-
        :return: True if bad, false otherwise
        :rtype: ``bool``
     """
@@ -1026,11 +988,9 @@ def positiveUrl(entry):
 
 def positiveFile(entry):  # pragma: no cover
     """
-       Checks if the given entry from a file reputation query is positive (known bad) (deprecated)
-
+       Deprecated
        :type entry: ``dict``
        :param entry: File entry (required)
-
        :return: True if bad, false otherwise
        :rtype: ``bool``
     """
@@ -1111,7 +1071,7 @@ def formatEpochDate(t):
 
 def shortCrowdStrike(entry):  # pragma: no cover
     """
-       Display CrowdStrike Intel results in Markdown (deprecated)
+       Deprecated
 
        :type entry: ``dict``
        :param entry: CrowdStrike result entry (required)
@@ -1150,7 +1110,7 @@ def shortCrowdStrike(entry):  # pragma: no cover
 
 def shortUrl(entry):  # pragma: no cover
     """
-       Formats a URL reputation entry into a short table (deprecated)
+       Deprecated
 
        :type entry: ``dict``
        :param entry: URL result entry (required)
@@ -1178,7 +1138,7 @@ def shortUrl(entry):  # pragma: no cover
 
 def shortFile(entry):  # pragma: no cover
     """
-       Formats a file reputation entry into a short table (deprecated)
+       Deprecated
 
        :type entry: ``dict``
        :param entry: File result entry (required)
@@ -1228,7 +1188,7 @@ def shortFile(entry):  # pragma: no cover
 
 def shortIp(entry):
     """
-       Formats an ip reputation entry into a short table (deprecated)
+       Deprecated
 
        :type entry: ``dict``
        :param entry: IP result entry (required)
@@ -1254,7 +1214,7 @@ def shortIp(entry):
 
 def shortDomain(entry):
     """
-       Formats a domain reputation entry into a short table (deprecated)
+       Deprecated
 
        :type entry: ``dict``
        :param entry: Domain result entry (required)
@@ -7518,27 +7478,16 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     """
     DEPRECATED: use return_results() instead
 
-    This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
-
     :type readable_output: ``str`` | ``int``
-    :param readable_output: markdown string that will be presented in the warroom, should be human readable -
-        (HumanReadable)
-
+    :param readable_output: markdown string
     :type outputs: ``dict``
-    :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
-
+    :param outputs: the outputs
     :type raw_response: ``dict`` | ``list`` | ``str``
-    :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
-        raw response from the 3rd party service (originally Contents)
-
+    :param raw_response: must be dictionary
     :type timeline: ``dict`` | ``list``
-    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
-        indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
-        be be added to the dict(s) with its value set to 'Integration Update'.
-
+    :param timeline: expects a list
     :type ignore_auto_extract: ``bool``
-    :param ignore_auto_extract: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
-
+    :param ignore_auto_extract: expects a bool value
     :return: None
     :rtype: ``None``
     """
@@ -12059,8 +12008,14 @@ def split_data_to_chunks(data, target_chunk_size):
             yield chunk
             chunk = []
             chunk_size = 0
+        data_part_size = sys.getsizeof(data_part)
+        if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
+            demisto.error(
+                "entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
+                                                                                                             MAX_ALLOWED_ENTRY_SIZE))
+            continue
         chunk.append(data_part)
-        chunk_size += sys.getsizeof(data_part)
+        chunk_size += data_part_size
     if chunk_size != 0:
         demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
@@ -12519,18 +12474,9 @@ def get_server_config():
 
 def content_profiler(func):
     """
-    A decorator for profiling the execution time and performance of a function.
-
-    This decorator is useful for identifying performance bottlenecks and understanding the time complexity of your code.
-    It collects and displays detailed profiling information, including the total execution time, the number of calls,
-    and the average time per call.
-    When to use it:
-        - When you need to debug and optimize the performance of your functions or methods.
-        - When you want to identify slow or inefficient parts of your code.
-        - During the development and testing phases to ensure that your code meets performance requirements.
-
-    To use, decorate the function that calls the function you want to profile with @content_profiler.
-    Example: I want to profile the function_to_profile() function:
+    A decorator that profiles a function’s execution time and performance. It reports total runtime,
+    call count, and average time per call, helping you identify bottlenecks and optimize your code.
+    Simply decorate the function with @content_profiler.
             ```
             @content_profiler
             function_to_profile():
