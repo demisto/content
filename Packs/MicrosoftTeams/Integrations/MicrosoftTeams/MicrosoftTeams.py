@@ -2888,7 +2888,7 @@ def create_messaging_endpoint_command():
 
     # Get instance name and server url:
     urls = demisto.demistoUrls()
-    instance_name = demisto.integrationInstance()
+    instance_name = urllib.parse.quote(demisto.integrationInstance())
     xsoar_url = urls.get('server', '')
     engine_url = demisto.args().get('engine_url', '')
 
