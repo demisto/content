@@ -3460,7 +3460,7 @@ def parse_incident(alert: dict, entity_name: str, mirror_direction: str | None) 
 
 
 def get_next_link(response):
-    link_header = response.headers.get("link", "") or response.headers.get("Link", "")
+    link_header = response.headers.get("link", "")
     if not link_header:
         demisto.debug("No 'link' header found in response.")
         return ""
