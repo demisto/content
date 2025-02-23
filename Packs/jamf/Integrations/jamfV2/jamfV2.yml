@@ -2671,7 +2671,7 @@ script:
       - contextPath: JAMF.OSX.ProfileConfiguration.self_service
         description: Self-service object of the configuration profile.
         type: String
-  dockerimage: demisto/btfl-soup:1.0.1.115405
+  dockerimage: demisto/btfl-soup:1.0.1.2129515
   runonce: false
   script: '-'
   subtype: python3

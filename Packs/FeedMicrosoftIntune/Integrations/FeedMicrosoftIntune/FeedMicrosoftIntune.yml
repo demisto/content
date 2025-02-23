@@ -100,7 +100,7 @@ script:
       description: The maximum number of results to return. The default value is 10.
       defaultValue: "0"
     description: Gets indicators from the feed.
-  dockerimage: demisto/btfl-soup:1.0.1.115405
+  dockerimage: demisto/btfl-soup:1.0.1.2129515
   feed: true
   subtype: python3
 tests:
