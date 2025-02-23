@@ -247,5 +247,6 @@ description: This integration fetches indicators from the USTA Threat Stream fee
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)

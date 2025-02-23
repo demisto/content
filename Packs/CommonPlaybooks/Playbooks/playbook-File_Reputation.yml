@@ -1,7 +1,7 @@
 id: File Reputation
 version: -1
 name: File Reputation
-"marketplaces": ["marketplacev2", platform]
+"marketplaces": ["marketplacev2", "platform"]
 description: "This playbook checks the file reputation and sets the verdict as a new context key.\n\nThe verdict is composed by 3 main components:\n\n* VirusTotal detection rate\n* Digital certificate signers\n* NSRL DB\n\nNote: a user can provide a list of trusted signers of his own using the playbook inputs\n "
 starttaskid: "0"
 tasks:

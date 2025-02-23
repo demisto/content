@@ -444,5 +444,5 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2", platform]
+marketplaces: ["marketplacev2", "platform"]
 fromversion: 6.6.0
