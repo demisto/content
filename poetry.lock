@@ -800,7 +800,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "dump-playbook-tags-in-metadata"
+reference = "platform-support"
 resolved_reference = "b3623961cdfbcd66ec09ef439b4553904da5810a"
 
 [[package]]
