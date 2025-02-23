@@ -189,7 +189,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
 def test_module(host: str, cluster_id: str, api_key: str):
     raise DemistoException(
         "No test option is available due to API limitations.\
-        To verify the configuration, run the proofpoint-es-get-last-run-results command and ensure it returns no errors.")
+        To verify the configuration, run the proofpoint-es-get-last-run-results command.")
 
 
 def get_last_run_results_command():
