@@ -1,0 +1,37 @@
+{
+    "api_response": {
+        "success": true,
+        "result": {
+            "count": 1,
+            "data": {
+                "domains": [
+                    {
+                        "domainName": "example.com",
+                        "lastSyncTmp": 1740289657,
+                        "netbios": "test",
+                        "objects": [
+                            {
+                                "Common-Name": "Test",
+                                "Distinguished Name": "CN=Test,UID=TestID,DC=example,DC=com",
+                                "Name": "Test",
+                                "Unique Identifier": "1111111-1111-1111-1111-111111111111",
+                                "User Principal Name": "test@example.com"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "pageNum": 1,
+            "pageSz": 500,
+            "remains": 0
+        }
+    },
+    "expected_result": {
+        "Common-Name": "Test",
+        "Distinguished Name": "CN=Test,UID=TestID,DC=example,DC=com",
+        "Manager": null,
+        "Name": "Test",
+        "Unique Identifier": "1111111-1111-1111-1111-111111111111",
+        "User Principal Name": "test@example.com"
+    }
+}
