@@ -165,7 +165,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.117327
+  dockerimage: demisto/vendors-sdk:1.0.0.2432953
 fromversion: 6.1.0
 tests:
 - KafkaV3 Test
