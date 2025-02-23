@@ -3211,3 +3211,20 @@ def test_user_mapping_used_cache(mocker):
     for _ in range(5):
         mapper.get_xsoar_user_by_splunk('test_splunk_user')
     assert mocked_service.kvstore.__getitem__().data.query.call_count == 1
+
+
+@pytest.mark.parametrize("query, expected_query", [
+    ("search index=_internal", "search index=_internal"),
+    ("| inputlookup some_lookup", "| inputlookup some_lookup"),
+    ("index=_internal", "search index=_internal")
+])
+def test_splunk_job_create_command(mocker, query, expected_query):
+    mocked_service = mocker.patch('SplunkPy.client.Service')
+    mocked_create_job = MagicMock()
+    mocked_service.jobs.create = mocked_create_job
+    mock_return_results = mocker.patch('SplunkPy.return_results')
+    args = {'query': query}
+    splunk.splunk_job_create_command(mocked_service, args)
+    mocked_create_job.assert_called_once_with(expected_query, exec_mode="normal", app="")
+
+    
