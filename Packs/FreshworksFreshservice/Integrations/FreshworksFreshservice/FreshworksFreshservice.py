@@ -3577,7 +3577,9 @@ def fetch_incidents(client: Client, params: dict):
                 'id': last_run_id,
                 'time': last_run_datetime_str
             }
-    if not incidents:
+    if incidents:
+        demisto.debug(f'Added {len(incidents)=} new incidents.')
+    else:
         demisto.debug('No new incidents fetched in this run.')
     demisto.debug(f'setting last run {last_run=}')
     demisto.setLastRun(last_run)
