@@ -76,7 +76,41 @@ def create_context(response: dict) -> dict:
         }
 
 
+def prepare_context_and_hr(response: list[dict], verbose) -> list[CommandResults]:
+    results = []
+    for entry in response:
+        command_hr = entry.get('HumanReadable')
+        if verbose and command_hr:
+            demisto.debug(f"BEI: The command has {verbose=}, adding {command_hr=}")
+            results.append(CommandResults(readable_output=command_hr))
+        hr = create_human_readable(entry)
+        context = create_context(entry)
+        demisto.debug(f"BEI: {hr=} {context=}")
+        results.append(CommandResults(
+            readable_output=hr,
+            outputs_prefix="BlockExternalIPResults",
+            outputs=context,
+            raw_response=context
+        ))
+    return results
+
+
 """ COMMAND FUNCTION """
+
+
+def prisma_sase_block_ip(ip_list_arr: list, address_group: str, verbose: bool) -> list[CommandResults]:
+    if address_group:
+        # Check if the ip already exists in the group
+        response = demisto.executeCommand("prisma-sase-address-group-list", {"name": address_group})
+        demisto.debug(f"The response of prisma-sase-address-group-list {response}")
+        addresses = response[0].get('Contents', {}).get('AddressGroup', {}).get('addresses', [])
+        non_existing_ips = [ip for ip in ip_list_arr if ip not in addresses]
+        if not non_existing_ips:
+            return prepare_context_and_hr(response, verbose)
+        else:
+            if "Object Not Present" not in response:  # TODO check the proper structure
+                # create a new address group for the ips that aren't in the original existing address group
+
 
 
 def run_execute_command(command_name: str, args: dict[str, Any], verbose : bool) -> list[CommandResults]:
@@ -94,22 +128,7 @@ def run_execute_command(command_name: str, args: dict[str, Any], verbose : bool)
     demisto.debug(f"BEI: Executing command: {command_name} {args=}")
     res = demisto.executeCommand(command_name, args)
     demisto.debug(f"BEI: The response {res}")
-    results = []
-    for entry in res:
-        command_hr = entry.get('HumanReadable')
-        if verbose and command_hr:
-            demisto.debug(f"BEI: The command has {verbose=}, adding {command_hr=}")
-            results.append(CommandResults(readable_output=command_hr))
-        hr = create_human_readable(entry)
-        context = create_context(entry)
-        demisto.debug(f"BEI: {hr=} {context=}")
-        results.append(CommandResults(
-            readable_output=hr,
-            outputs_prefix="BlockExternalIPResults",
-            outputs=context,
-            raw_response=context
-        ))
-    return results
+    return prepare_context_and_hr(res, verbose)
 
 
 """ MAIN FUNCTION """
@@ -183,6 +202,9 @@ def main():
                         "ip_address": ip_list_arg
                     }
                     return_results(run_execute_command(command_name, args, verbose))
+
+                elif brand == "Palo Alto Networks - Prisma SASE":
+                    return_results(prisma_sase_block_ip(ip_list_arr, address_group, verbose))
 
                 else:
                     return_error(f"The brand {brand} isn't a part of the supported integration for 'block-external-ip'. "
