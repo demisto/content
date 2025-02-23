@@ -2086,7 +2086,7 @@ def get_cie_user_command(client: Client, args: Dict[str, Any]) -> CommandResults
     outputs = parse_cie_response(raw_response)
     if outputs:
         return CommandResults(
-            outputs_prefix=f'{PA_OUTPUT_PREFIX}.CIE.User',
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}CIE.User',
             outputs=outputs,
             readable_output=tableToMarkdown('CIE User', outputs),
             raw_response=raw_response
