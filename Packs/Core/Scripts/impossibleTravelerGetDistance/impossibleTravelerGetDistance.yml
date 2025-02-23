@@ -2,6 +2,7 @@ commonfields:
   id: impossibleTravelerGetDistance
   version: -1
 name: impossibleTravelerGetDistance
+prettyname: Test impossibleTravelerGetDistance
 script: ''
 type: python
 tags:
@@ -13,6 +14,10 @@ args:
   required: true
   description: Latitude and Longitude coordinates for the first location.  Required format 1.23,4.56
   isArray: true
+  prettyname: Test arg name
+  prettypredefined:
+    "Test Key": Test Val
+    "Test Key 2": Test Val 2
 - name: dest_coords
   description: Latitude and Longitude coordinates for the second location.  Required format 1.23,4.56
   isArray: true
@@ -20,6 +25,7 @@ outputs:
 - contextPath: GeoEvents
   description: The calculated events for each input
 scripttarget: 0
+quickaction: true
 subtype: python3
 dockerimage: demisto/py3-tools:1.0.0.114656
 runas: DBotWeakRole
