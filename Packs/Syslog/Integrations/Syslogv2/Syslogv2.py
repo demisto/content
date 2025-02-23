@@ -261,13 +261,16 @@ def perform_long_running_execution(sock: Any, address: tuple) -> None:
                 if not line:
                     demisto.info(f'Disconnected from {address}')
                     break
-                perform_long_running_loop(line.strip())
+                socket_data = line.strip()
+                demisto.debug(f"####Syslog Performing long_running_loop on data {socket_data}")
+                perform_long_running_loop(socket_data)
             except Exception as e:
                 demisto.error(traceback.format_exc())  # print the traceback
                 demisto.error(f'Error occurred during long running loop. Error was: {e}')
             finally:
                 demisto.debug('Finished reading message')
     finally:
+        demisto.debug("Closing file_obj")
         file_obj.close()
 
 
@@ -297,6 +300,7 @@ def prepare_globals_and_create_server(port: int, message_regex: Optional[str], c
         private_key_path = private_key_file.name
         private_key_file.write(bytes(private_key, 'utf-8'))
         private_key_file.close()
+        demisto.debug(f"making server with {private_key_path=} and {certificate_path=}")
         server = StreamServer(('0.0.0.0', port), perform_long_running_execution, keyfile=private_key_path,
                               certfile=certificate_path)
         demisto.debug('Starting HTTPS Server')
@@ -359,6 +363,7 @@ def main() -> None:
             fetch_samples()
         elif command == 'long-running-execution':
             server: StreamServer = prepare_globals_and_create_server(port, message_regex, certificate, private_key)
+            demisto.debug("Prepared a server, starting to run long-running-execution")
             server.serve_forever()
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields())
