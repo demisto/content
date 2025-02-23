@@ -147,6 +147,65 @@ def filter_entries(entries, entry_filter):
 
     return filtered_entries
 
+def repair_malformed_json(malformed_json: str) -> str:
+    """
+    Repairs a malformed JSON string by properly escaping quotes within dollar-sign ($) values.
+
+    This function addresses a specific issue where quotes within dollar-sign values are not
+    properly escaped, causing JSON parsing errors. It splits the input string into segments,
+    identifies dollar-sign values, and escapes inner quotes while preserving the outermost quotes.
+
+    Args:
+        malformed_json (str): The input string containing malformed JSON data.
+
+    Returns:
+        str: A repaired JSON string with properly escaped quotes within dollar-sign values.
+
+    Example:
+        >>> malformed_json = '{"$": "value "with" quotes"}, {"$": "another "quoted" value"}'
+        >>> repaired_json = repair_malformed_json(malformed_json)
+        >>> print(repaired_json)
+        '{"$": "value \\"with\\" quotes"}, {"$": "another \\"quoted\\" value"}'
+    """
+    def escape_inner_quotes(json_value, quote_indices):
+        # We need to escape all quotes except the first and last found quotes
+        json_chars = list(json_value)
+        for i in range(1, len(quote_indices) - 1):  # Skip first and last quotes
+            json_chars[quote_indices[i]] = '\\"'
+        return ''.join(json_chars)
+
+    # Split the text by "},{"
+    parts = malformed_json.split('},{')
+
+    modified_parts = []
+    for part in parts:
+        # Split by "$": and get the last part
+        dollar_key_parts = part.split('"$":')
+        
+        if len(dollar_key_parts) > 1:
+            prefix = '"$":'.join(dollar_key_parts[:-1]) + '"$":'  # Keep all parts before the last "$"
+            json_value = dollar_key_parts[-1].strip()  # Get the last value
+            
+            search_start = 0
+            quote_positions = []
+
+            # Loop to find all occurrences of the substring
+            while True:
+                quote_pos = json_value.find('\"', search_start)
+                if quote_pos == -1:  # No more occurrences found
+                    break
+                quote_positions.append(quote_pos)
+                search_start = quote_pos + 1  # Move start position to just after the found index
+
+            if '\"' in json_value and len(quote_positions) > 2:
+                json_value = escape_inner_quotes(json_value, quote_positions)
+            modified_parts.append(prefix + json_value)
+        else:
+            modified_parts.append(part)
+
+    # Join the parts back together
+    return '},{'.join(modified_parts)
+
 
 def login():
     query_path = 'www/core-service/rest/LoginService/login'
@@ -939,9 +998,14 @@ def parse_json_response(response: requests.Response):
         try:
             fixed_response_json = json.loads(fixed_response_text)
 
-        except json.JSONDecodeError:
-            demisto.debug('Failed to parse modified response as JSON. Raising original exception.')
-            raise e  # Raise the original exception
+        except json.JSONDecodeError as json_error:
+            demisto.debug(f'Failed to parse fixed response as JSON. Error: {json_error}')
+            demisto.debug('Attempt two to fix the modified response as JSON.')
+            try:
+                fixed_response_json = json.loads(repair_malformed_json(fixed_response_text))
+            except Exception:
+                demisto.debug('Failed to parse modified response as JSON. Raising original exception.')
+                raise e  # Raise the original exception
 
         demisto.debug('Response successfully parsed after fixing invalid escape sequences.')
         return fixed_response_json
