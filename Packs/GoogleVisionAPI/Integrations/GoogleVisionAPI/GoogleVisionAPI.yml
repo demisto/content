@@ -44,7 +44,7 @@ script:
     - contextPath: GoogleVisionAPI.Logo.Score
       description: The certainty score provided by the Google Vision API.
       type: Unknown
-  dockerimage: demisto/google-vision-api:1.0.0.2032298
+  dockerimage: demisto/google-vision-api:1.0.0.2100971
   runonce: false
   script: '-'
   type: python
