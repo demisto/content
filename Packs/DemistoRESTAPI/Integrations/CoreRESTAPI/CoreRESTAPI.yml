@@ -1,3 +1,5 @@
+sectionOrder:
+- Connect
 commonfields:
   id: Core REST API
   version: -1
@@ -221,10 +223,6 @@ script:
       required: true
       description: IDs of the incidents to delete.
       isArray: true
-    - name: fields
-      description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
-      isArray: true
-      defaultValue: id,name,type,severity,status
     description: Delete Core incidents.
     execution: true
   - name: core-api-install-packs
@@ -293,6 +291,3 @@ tests:
 - TestDemistoRestAPI
 - UploadFile Test
 fromversion: 5.0.0
-sectionOrder:
-- Connect
-- Collect

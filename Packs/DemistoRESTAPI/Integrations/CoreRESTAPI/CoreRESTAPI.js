@@ -212,56 +212,39 @@ var sendRequest = function(method, uri, body, raw) {
     }
 };
 
-function reduce_one_entry(data, keep_fields) {
+function reduce_data(data, keep_fields) {
     var new_d = {};
     for (var field_index = 0; field_index < keep_fields.length; field_index += 1) {
         var field = keep_fields[field_index];
-        if (data[field]) {
+        if (field in data) {
             new_d[field] = data[field];
         }
     }
     return new_d;
 }
 
-function reduce_data(data, fields_to_keep) {
-    if (data instanceof Array) {
-        var new_data = [];
-        for (var data_index = 0; data_index < data.length; data_index += 1) {
-            var d = data[data_index];
-            new_data.push(reduce_one_entry(d, fields_to_keep));
-        }
-        return new_data;
-    }
-    else {
-        if (data.constructor == Object) {
-            return [reduce_one_entry(data, fields_to_keep)];
-        }
-    }
-    return data;
-}
-
-var deleteIncidents = function(ids_to_delete, fields_to_keep) {
+var deleteIncidents = function(ids_to_delete) {
     var body = {
         ids: ids_to_delete,
         all: false,
-        filter: {}
+        filter: {"size": 1},
+        excludeIncidentsResponseData: true // exclude unrelated data in response
     };
 
     var res = sendRequest('POST', '/incident/batchDelete', JSON.stringify(body));
     if (isError(res[0])) {
         throw res[0].Contents;
     }
+    
+    var relevant_headers = ['totalDeleted', "notUpdated", 'total']
+    var response = reduce_data(res['response'], relevant_headers)
 
-    var response = res['response'];
-    if (fields_to_keep && (fields_to_keep != "all")) {
-        response['data'] = reduce_data(response['data'], fields_to_keep);
-    }
-    var md = tableToMarkdown('Core delete incidents', response, ['data', 'total', "notUpdated"]);
+    var md = tableToMarkdown('Core delete incidents', response);
 
     return {
         ContentsFormat: formats.json,
         Type: entryTypes.note,
-        Contents: res,
+        Contents: {"response": response},
         HumanReadable: md
     };
 };
@@ -615,8 +598,7 @@ switch (command) {
     case 'demisto-delete-incidents':
     case 'core-delete-incidents':
         var ids = argToList(args.ids);
-        var fields = argToList(args.fields);
-        return deleteIncidents(ids, fields);
+        return deleteIncidents(ids);
     case 'demisto-api-install-packs':
     case 'core-api-install-packs':
         return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
