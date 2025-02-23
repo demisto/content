@@ -188,7 +188,7 @@ class KafkaCommunicator:
 
     def get_kafka_schema_registry(self) -> Optional[KSchemaRegistryClient]:
         if self.conf_schema_registry:
-            return KSchemaRegistryClient(self.conf_schema_registry, logger=self.kafka_logger)
+            return KSchemaRegistryClient(self.conf_schema_registry)
         return None
 
     def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None):
@@ -214,7 +214,6 @@ class KafkaCommunicator:
         schema_registry: Optional[KSchemaRegistryClient] = None
 
         try:
-
             consumer = self.get_kafka_consumer()
             consumer_topics = consumer.list_topics(timeout=self.REQUESTS_TIMEOUT)
             consumer_topics.topics
