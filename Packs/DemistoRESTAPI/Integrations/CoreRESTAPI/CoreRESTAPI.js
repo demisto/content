@@ -106,7 +106,7 @@ sendMultipart = function (uri, entryID, body) {
     else if (params.auth_method == 'Advanced') {
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'multipart/form-data')
     }
-    timeout = 0.2 * 60 * 1000; // timeout in milliseconds
+    timeout = 3 * 60 * 1000; // timeout in milliseconds
 
     var res;
     var tries = 0;
@@ -171,7 +171,7 @@ var sendRequest = function(method, uri, body, raw) {
         }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
-    timeout = 0.2 * 60 * 1000; // timeout in milliseconds
+    timeout = 3 * 60 * 1000; // timeout in milliseconds
     logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ' Headers = ' + JSON.stringify(headers) + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
     var res = http(
         requestUrl,
@@ -352,7 +352,7 @@ Returns:
 """
  */
 var uploadFile= function(incident_id, entry_id) {
-    timeout = 2 * 60 * 1000; // timeout in milliseconds
+    timeout = 3 * 60 * 1000; // timeout in milliseconds
     logDebug('Calling httpMultipart from uploadFile, with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id + ', timeout in milliseconds = ' + timeout);
     var res = httpMultipart(`/entry/upload/${incident_id}`, entry_id, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, timeout);
     logDebug('After Calling to httpMultipart with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id + '. The satus code: ' + res.StatusCode);
