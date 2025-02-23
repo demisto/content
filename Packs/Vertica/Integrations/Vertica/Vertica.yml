@@ -46,7 +46,7 @@ script:
       description: The content of rows.
       type: string
     description: Executes a query on the Vertica database.
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.2072021
   subtype: python3
 tests:
 - Vertica Test

@@ -78,7 +78,7 @@ script:
       type: String
   - description: Returns the number of log entries.
     name: mongodb-logs-number
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.2072021
   runonce: true
   script: '-'
   type: python

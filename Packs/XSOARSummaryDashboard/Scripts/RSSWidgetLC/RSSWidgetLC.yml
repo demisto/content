@@ -9,7 +9,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/py3-tools:1.0.0.114656
+dockerimage: demisto/py3-tools:1.0.0.2072021
 enabled: true
 name: RSSWidget_LC
 runas: DBotWeakRole
