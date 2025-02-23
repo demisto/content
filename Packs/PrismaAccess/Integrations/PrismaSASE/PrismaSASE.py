@@ -2061,7 +2061,7 @@ def get_cie_user_command(client: Client, args: Dict[str, Any]) -> CommandResults
             "useNormalizedAttrs": "True"
         }
 
-    def parse_cie_response(raw_response: dict) -> list:
+    def parse_cie_response(raw_response: dict) -> dict:
         """
             Parse the raw response from the API call.
         Args:
@@ -2074,20 +2074,23 @@ def get_cie_user_command(client: Client, args: Dict[str, Any]) -> CommandResults
         if error := result_response.get("error"):
             raise ValueError(
                 f"Error: {error.get('error-message', default_error_msg)}")
-        return result_response.get("data", {}).get("domains", [])
+        parsed_raw_response = result_response.get("data", {}).get("domains", [])
+        if parsed_raw_response and (objects := parsed_raw_response[0].get("objects", [])):
+            return {key: objects[0].get(key) for key in argToList(args.get('attributes_to_return', []))}
+        return {}
 
     payload = prepare_args(args)
+
     raw_response = client.get_cie_user(payload)
-    parsed_raw_response = parse_cie_response(raw_response)
-    if parsed_raw_response and (objects := parsed_raw_response[0].get("objects", [])):
-        outputs = {key: objects[0].get(key) for key in argToList(args.get('attributes_to_return', []))}
+
+    outputs = parse_cie_response(raw_response)
+    if outputs:
         return CommandResults(
             outputs_prefix=f'{PA_OUTPUT_PREFIX}.CIE.User',
             outputs=outputs,
             readable_output=tableToMarkdown('CIE User', outputs),
             raw_response=raw_response
         )
-
     return CommandResults(
         readable_output='No CIE user found with the given arguments. Please verify the arguments and try again.',
         raw_response=raw_response
