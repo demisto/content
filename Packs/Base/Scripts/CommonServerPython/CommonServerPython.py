@@ -143,6 +143,7 @@ elif sys.platform.startswith('win32'):
 
 
 class WarningsHandler(object):
+    #    Wrapper to handle warnings. We use a class to cleanup after execution
 
     @staticmethod
     def handle_warning(message, category, filename, lineno, file=None, line=None):
@@ -969,9 +970,11 @@ def urljoin(url, suffix=""):
 
 def positiveUrl(entry):
     """
-       Deprecated
+       Checks if the given entry from a URL reputation query is positive (known bad) (deprecated)
+
        :type entry: ``dict``
        :param entry: URL entry (required)
+
        :return: True if bad, false otherwise
        :rtype: ``bool``
     """
@@ -988,9 +991,11 @@ def positiveUrl(entry):
 
 def positiveFile(entry):  # pragma: no cover
     """
-       Deprecated
+       Checks if the given entry from a file reputation query is positive (known bad) (deprecated)
+
        :type entry: ``dict``
        :param entry: File entry (required)
+
        :return: True if bad, false otherwise
        :rtype: ``bool``
     """
@@ -1071,7 +1076,7 @@ def formatEpochDate(t):
 
 def shortCrowdStrike(entry):  # pragma: no cover
     """
-       Deprecated
+       Display CrowdStrike Intel results in Markdown (deprecated)
 
        :type entry: ``dict``
        :param entry: CrowdStrike result entry (required)
@@ -1110,7 +1115,7 @@ def shortCrowdStrike(entry):  # pragma: no cover
 
 def shortUrl(entry):  # pragma: no cover
     """
-       Deprecated
+       Formats a URL reputation entry into a short table (deprecated)
 
        :type entry: ``dict``
        :param entry: URL result entry (required)
@@ -1138,7 +1143,7 @@ def shortUrl(entry):  # pragma: no cover
 
 def shortFile(entry):  # pragma: no cover
     """
-       Deprecated
+       Formats a file reputation entry into a short table (deprecated)
 
        :type entry: ``dict``
        :param entry: File result entry (required)
@@ -1188,7 +1193,7 @@ def shortFile(entry):  # pragma: no cover
 
 def shortIp(entry):
     """
-       Deprecated
+       Formats an ip reputation entry into a short table (deprecated)
 
        :type entry: ``dict``
        :param entry: IP result entry (required)
@@ -1214,7 +1219,7 @@ def shortIp(entry):
 
 def shortDomain(entry):
     """
-       Deprecated
+       Formats a domain reputation entry into a short table (deprecated)
 
        :type entry: ``dict``
        :param entry: Domain result entry (required)
@@ -7478,16 +7483,27 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     """
     DEPRECATED: use return_results() instead
 
+    This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
+
     :type readable_output: ``str`` | ``int``
-    :param readable_output: markdown string
+    :param readable_output: markdown string that will be presented in the warroom, should be human readable -
+        (HumanReadable)
+
     :type outputs: ``dict``
-    :param outputs: the outputs
+    :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
+
     :type raw_response: ``dict`` | ``list`` | ``str``
-    :param raw_response: must be dictionary
+    :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
+        raw response from the 3rd party service (originally Contents)
+
     :type timeline: ``dict`` | ``list``
-    :param timeline: expects a list
+    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
+        indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
+        be be added to the dict(s) with its value set to 'Integration Update'.
+
     :type ignore_auto_extract: ``bool``
-    :param ignore_auto_extract: expects a bool value
+    :param ignore_auto_extract: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
+
     :return: None
     :rtype: ``None``
     """
@@ -8667,11 +8683,11 @@ def is_xsiam():
 
 def is_using_engine():
     """Determines whether or not the platform is using engine.
-    NOTE: 
+    NOTE:
      - This method works only for system integrations (not custom).
      - On xsoar 8, this method works only for integrations that runs on the xsoar pod - not on the engine-0 (mainly long running
        integrations) such as:  EDL, Cortex Core - IOC, Cortex Core - IR, ExportIndicators, Generic Webhook, PingCastle,
-       Publish List, Simple API Proxy, Syslog v2, TAXII Server, TAXII2 Server, Web File Repository, Workday_IAM_Event_Generator, 
+       Publish List, Simple API Proxy, Syslog v2, TAXII Server, TAXII2 Server, Web File Repository, Workday_IAM_Event_Generator,
        XSOAR-Web-Server, Microsoft Teams, AWS-SNS-Listener.
 
     :return: True iff the platform is using engine.
@@ -8715,7 +8731,7 @@ def is_integration_instance_running_on_engine():
 
 
 def get_engine_base_url(engine_id):
-    """Gets the xsoar engine id and returns it's base url. 
+    """Gets the xsoar engine id and returns it's base url.
     For example: for engine_id = '4ccccccc-5aaa-4000-b666-dummy_id', base url = '11.180.111.111:1443'.
 
     :type engine_id: ``str``
@@ -8770,7 +8786,7 @@ class DemistoHandler(logging.Handler):
 
 def censor_request_logs(request_log):
     """
-    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask. 
+    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask.
     In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
     :param request_log: The request log to censor
     :type request_log: ``str``
@@ -12474,12 +12490,25 @@ def get_server_config():
 
 def content_profiler(func):
     """
-    A decorator that profiles a function's execution time and performance. It reports total runtime,
-    call count, and average time per call, helping you identify bottlenecks and optimize your code.
-    Simply decorate the function with @content_profiler.
+    A decorator for profiling the execution time and performance of a function.
 
+    This decorator is useful for identifying performance bottlenecks and understanding the time complexity of your code.
+    It collects and displays detailed profiling information, including the total execution time, the number of calls,
+    and the average time per call.
+    When to use it:
+        - When you need to debug and optimize the performance of your functions or methods.
+        - When you want to identify slow or inefficient parts of your code.
+        - During the development and testing phases to ensure that your code meets performance requirements.
+
+    To use, decorate the function that calls the function you want to profile with @content_profiler.
+    Example: I want to profile the function_to_profile() function:
+            ```
+            @content_profiler
+            function_to_profile():
+                # some code
+            ```
     Analyze the Profiling Data with SnakeViz:
-        Download the {automation_name}.prof from the war room and run:
+        Download the <automation_name>.prof from the war room and run:
             pip install snakeviz; snakveiz <automation_name>.prof
 
     **Tested with Python 3.10**
