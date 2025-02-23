@@ -12474,14 +12474,10 @@ def get_server_config():
 
 def content_profiler(func):
     """
-    A decorator that profiles a function’s execution time and performance. It reports total runtime,
+    A decorator that profiles a function's execution time and performance. It reports total runtime,
     call count, and average time per call, helping you identify bottlenecks and optimize your code.
     Simply decorate the function with @content_profiler.
-            ```
-            @content_profiler
-            function_to_profile():
-                # some code
-            ```
+
     Analyze the Profiling Data with SnakeViz:
         Download the {automation_name}.prof from the war room and run:
             pip install snakeviz; snakveiz <automation_name>.prof
