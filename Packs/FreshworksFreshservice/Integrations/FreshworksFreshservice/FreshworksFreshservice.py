@@ -3303,7 +3303,7 @@ def get_alert_properties(args: dict[str, Any]) -> tuple:
 
     ticket_prefix = 'ticket_'
     alert_properties = [(alert_property,
-                         argToList(args.get(ticket_prefix + alert_property)))
+                         argToList(args.get(ticket_prefix + alert_property, 'All')))
                         for alert_property in
                         ['impact', 'status', 'risk', 'urgency', 'priority']]
 
@@ -3461,8 +3461,6 @@ def parse_incident(alert: dict, entity_name: str, mirror_direction: str | None) 
 
 def get_next_link(response):
     link_header = response.headers.get("link", "") or response.headers.get("Link", "")
-    demisto.debug(f"Link header: {link_header}")
-
     if not link_header:
         demisto.debug("No 'link' header found in response.")
         return ""
@@ -3583,7 +3581,6 @@ def fetch_incidents(client: Client, params: dict):
         demisto.debug('No new incidents fetched in this run.')
     demisto.debug(f'setting last run {last_run=}')
     demisto.setLastRun(last_run)
-    demisto.debug(f'{len(incidents)=}')
     demisto.incidents(incidents)
 
 
