@@ -1,79 +1,113 @@
 category: Case Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- display: Server URL (e.g., https://192.168.0.1/rsaarcher or https://192.168.0.1/ or https://192.168.0.1/archer)
+- additionalinfo: 'For example: https://192.168.0.1/rsaarcher, https://192.168.0.1/, or https://192.168.0.1/archer.'
+  display: Server URL 
   name: url
   required: true
+  section: Connect
   type: 0
-- additionalinfo: Change only if you have another API endpoint.
+- additionalinfo: Change only if using another API endpoint.
   defaultvalue: api
-  display: 'Advanced: API Endpoint'
+  display: 'API Endpoint'
   name: api_endpoint
+  section: Connect
+  advanced: true
   type: 0
   required: false
 - display: Instance name
   name: instanceName
   required: true
+  section: Connect
   type: 0
 - display: Username
   name: credentials
-  required: true
+  section: Connect
   type: 9
+  required: true
 - display: User domain
   name: userDomain
+  section: Connect
   type: 0
   required: false
 - display: Fetch incidents
   name: isFetch
+  section: Collect
   type: 8
   required: false
 - display: Incident type
   name: incidentType
+  section: Collect
   type: 13
   required: false
 - display: Application ID for fetch
   name: applicationId
+  section: Collect
   required: true
   type: 0
 - defaultvalue: Date/Time Occurred
   display: Application date field for fetch
   name: applicationDateField
   required: true
+  section: Collect
   type: 0
-  additionalinfo: The value should be the field name
+  additionalinfo: The value should be the field name.
 - defaultvalue: '10'
   display: Maximum number of incidents to pull per fetch
   name: fetch_limit
+  section: Collect
   type: 0
   required: false
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
+  additionalinfo: 'Time from which to begin fetching incidents in the <number> <time unit> format. For example: 12 hours, 7 days, 3 months, 1 year.'
+  display: First fetch timestamp
   name: fetch_time
+  section: Collect
   type: 0
   required: false
-- display: List of fields from the application to get into the incident
+- additionalinfo: 'A comma-separated list of application field names. For example: "Date/Time Occurred,Days Open".'
+  display: List of fields from the application to get into the incident
   name: fields_to_fetch
+  section: Collect
   type: 0
   required: false
-- additionalinfo: Request timeout value, in seconds. Default is 400.
+- additionalinfo: 'Additional XML condition element(s) to use when fetching. Using a "DateComparisonFilterCondition" element is not supported. For more information, check the "Limitations" section of the documentation.'
+  display: XML for fetch filtering
+  name: fetch_xml
+  section: Collect
+  advanced: true
+  type: 12  # long text block
+  required: false
+- additionalinfo: Request timeout value in seconds.
   defaultvalue: '400'
   display: Timeout
   name: timeout
+  section: Connect
+  advanced: true
   type: 0
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
+  section: Connect
+  advanced: true
   type: 8
   required: false
 - display: Use system proxy settings
+  section: Connect
+  advanced: true
   name: proxy
   type: 8
   required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
+  section: Collect
+  advanced: true
   type: 19
   required: false
 description: The RSA Archer GRC platform provides a common foundation for managing policies, controls, risks, assessments, and deficiencies across lines of business.
@@ -389,6 +423,8 @@ script:
       - 'false'
     - description: The Level ID to use for searching. This argument is relevant when fullData is True. If empty, the command by default takes the first level ID.
       name: levelId
+    - description: 'The raw XML filter condition. For example: "DateComparisonFilterCondition" or "TextFilterCondition" XML element.'
+      name: xmlForFiltering
     description: Searches for records in the given application.
     name: archer-search-records
     outputs:

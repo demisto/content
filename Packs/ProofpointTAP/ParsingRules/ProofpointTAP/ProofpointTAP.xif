@@ -1,3 +1,6 @@
 [INGEST:vendor="Proofpoint", product="Tap", target_dataset="proofpoint_tap_raw" , no_hit=keep]
 filter clickTime != null or messageTime != null
-| alter _time = coalesce(messageTime, clickTime);
+| alter
+        messageTime_timestamp = if(messageTime ~= "^\d{4}-\d{2}-\d{2}", parse_timestamp("%FT%R:%E*SZ", to_string(messageTime)), messageTime ~= "^\w{3}", parse_timestamp("%b %d %Y %X", to_string(messageTime))),
+        clickTime_timestamp = if(clickTime ~= "^\d{4}-\d{2}-\d{2}", parse_timestamp("%FT%R:%E*SZ", to_string(clickTime)), clickTime ~= "^\w{3}", parse_timestamp("%b %d %Y %X", to_string(clickTime)))
+| alter _time = coalesce(messageTime_timestamp, clickTime_timestamp);

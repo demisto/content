@@ -83,7 +83,11 @@ tasks:
       - "4"
     scriptarguments:
       guid:
-        simple: ${Venafi.Certificate.ID}
+        complex:
+          root: Venafi.Certificate
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-

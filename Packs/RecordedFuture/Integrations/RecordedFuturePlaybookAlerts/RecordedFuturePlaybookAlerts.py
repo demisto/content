@@ -218,7 +218,7 @@ class Actions:
 def get_client(proxies: dict) -> Client:
     demisto_params = demisto.params()
     base_url = demisto_params.get("server_url", "").rstrip("/")
-    verify_ssl = not demisto_params.get("unsecure", False)
+    verify_ssl = not demisto_params.get("insecure", False)
 
     api_token = demisto_params.get("token", {}).get("password")
 

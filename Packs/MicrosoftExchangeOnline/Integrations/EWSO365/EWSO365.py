@@ -6,7 +6,6 @@ import os
 import subprocess
 import sys
 import traceback
-import uuid
 import warnings
 from email import _header_value_parser as parser
 from email.policy import SMTP, SMTPUTF8
@@ -18,26 +17,20 @@ import chardet
 import dateparser
 import exchangelib
 from exchangelib import (
-    IMPERSONATION,
+    DELEGATE,
     OAUTH2,
-    Account,
     Body,
-    Configuration,
     EWSDateTime,
     EWSTimeZone,
     ExtendedProperty,
     FileAttachment,
     Folder,
     HTMLBody,
-    Identity,
     ItemAttachment,
-    OAuth2AuthorizationCodeCredentials,
-    Version,
 )
 from exchangelib.errors import (
     ErrorFolderNotFound,
     ErrorInvalidIdMalformed,
-    ErrorItemNotFound,
     ErrorMailboxMoveInProgress,
     ErrorMailboxStoreUnavailable,
     ErrorNameResolutionNoResults,
@@ -45,17 +38,14 @@ from exchangelib.errors import (
     RateLimitError,
     ResponseMessageError,
 )
-from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol
+from exchangelib.items import Contact, Message
 from exchangelib.services.common import EWSAccountService, EWSService
 from exchangelib.util import MNS, TNS, add_xml_child, create_element
-from exchangelib.version import EXCHANGE_O365
-from oauthlib.oauth2 import OAuth2Token
 from requests.exceptions import ConnectionError
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from MicrosoftApiModule import *
+from EWSApiModule import *
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -127,309 +117,6 @@ LEGACY_NAME = argToBoolean(demisto.params().get('legacy_name', False))
 UTF_8 = 'utf-8'
 
 """ Classes """
-
-
-class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
-    def __init__(self, azure_cloud: AzureCloud, **kwargs):
-        self.ad_base_url = azure_cloud.endpoints.active_directory or 'https://login.microsoftonline.com'
-        self.exchange_online_scope = azure_cloud.endpoints.exchange_online or 'https://outlook.office365.com'
-        demisto.debug(f'Initializing {self.__class__}: '
-                      f'{azure_cloud.abbreviation=} | {self.ad_base_url=} | {self.exchange_online_scope}')
-        super().__init__(**kwargs)
-
-    @property
-    def token_url(self):
-        """
-            The URL to request tokens from.
-            Overrides the token_url property to specify custom token retrieval endpoints for different authority's cloud env.
-        """
-        # We may not know (or need) the Microsoft tenant ID. If not, use common/ to let Microsoft select the appropriate
-        # tenant for the provided authorization code or refresh token.
-        return f"{self.ad_base_url}/{self.tenant_id or 'common'}/oauth2/v2.0/token"
-
-    @property
-    def scope(self):
-        """
-            The scope we ask for the token to have
-            Overrides the scope property to specify custom token retrieval endpoints for different authority's cloud env.
-        """
-        return [f"{self.exchange_online_scope}/.default"]
-
-
-class ProxyAdapter(requests.adapters.HTTPAdapter):
-    """
-    Proxy Adapter used to add PROXY to requests
-    """
-
-    def send(self, *args, **kwargs):
-        kwargs['proxies'] = handle_proxy()
-        return super().send(*args, **kwargs)
-
-
-class InsecureProxyAdapter(SSLAdapter):
-    """
-    Insecure Proxy Adapter used to add PROXY and INSECURE to requests
-    NoVerifyHTTPAdapter is a built-in insecure HTTPAdapter class
-    """
-
-    def __init__(self, *args, **kwargs):
-        # Processing before init call
-        kwargs.pop('verify', None)
-        super().__init__(verify=False, **kwargs)
-
-    def cert_verify(self, conn, url, verify, cert):
-        # We're overriding a method, so we have to keep the signature, although verify is unused
-        del verify
-        super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
-
-    def send(self, *args, **kwargs):
-        kwargs['proxies'] = handle_proxy()
-        return super().send(*args, **kwargs)
-
-
-class EWSClient:
-    def __init__(
-        self,
-        default_target_mailbox,
-        folder="Inbox",
-        is_public_folder=False,
-        request_timeout="120",
-        max_fetch=MAX_INCIDENTS_PER_FETCH,
-        self_deployed=True,
-        insecure=True,
-        proxy=False,
-        **kwargs,
-    ):
-        """
-        Client used to communicate with EWS
-        :param default_target_mailbox: Email address from which to fetch incidents
-        :param client_id: Application client ID
-        :param client_secret: Application client secret
-        :param folder: Name of the folder from which to fetch incidents
-        :param is_public_folder: Public Folder flag
-        :param request_timeout: Timeout (in seconds) for HTTP requests to Exchange Server
-        :param max_fetch: Max incidents per fetch
-        :param insecure: Trust any certificate (not secure)
-        """
-
-        client_id = kwargs.get('_client_id') or kwargs.get('client_id')
-        tenant_id = kwargs.get('_tenant_id') or kwargs.get('tenant_id')
-        client_secret = (kwargs.get('credentials') or {}).get('password') or kwargs.get('client_secret')
-        access_type = kwargs.get('access_type', IMPERSONATION) or IMPERSONATION
-
-        if not client_secret:
-            raise Exception('Key / Application Secret must be provided.')
-        elif not client_id:
-            raise Exception('ID / Application ID must be provided.')
-        elif not tenant_id:
-            raise Exception('Token / Tenant ID must be provided.')
-
-        BaseProtocol.TIMEOUT = int(request_timeout)
-        azure_cloud = get_azure_cloud(kwargs, INTEGRATION_NAME)
-        self.ews_server = f"{azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx/"
-        self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id,
-            auth_id=client_id,
-            enc_key=client_secret,
-            app_name=APP_NAME,
-            base_url=self.ews_server,
-            verify=not insecure,
-            proxy=proxy,
-            self_deployed=self_deployed,
-            scope=f"{azure_cloud.endpoints.exchange_online}/.default",
-            command_prefix="ews",
-            azure_cloud=azure_cloud
-        )
-        self.folder_name = folder
-        self.is_public_folder = is_public_folder
-        self.access_type = (access_type[0] if isinstance(access_type, list) else access_type).lower()
-        self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
-        self.last_run_ids_queue_size = 500
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.account_email = default_target_mailbox
-        self.config = self.__prepare(azure_cloud, insecure)
-        self.protocol = BaseProtocol(self.config)
-        self.mark_as_read = kwargs.get('mark_as_read', False)
-        self.legacy_name = argToBoolean(kwargs.get('legacy_name', False))
-
-    def __prepare(self, azure_cloud: AzureCloud, insecure: bool):  # pragma: no cover
-        """
-        Prepares the client PROTOCOL, CREDENTIALS and CONFIGURATION
-        :param insecure: Trust any certificate (not secure)
-        :return: OAuth 2 Configuration
-        """
-        BaseProtocol.HTTP_ADAPTER_CLS = InsecureProxyAdapter if insecure else ProxyAdapter
-        access_token = self.ms_client.get_access_token()
-        oauth2_token = OAuth2Token({"access_token": access_token})
-        self.credentials = credentials = CustomDomainOAuth2Credentials(
-            azure_cloud=azure_cloud,
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            access_token=oauth2_token,
-        )
-        # need to add identity for protocol OAuth header
-        self.credentials.identity = Identity(upn=self.account_email)
-        config_args = {
-            "credentials": credentials,
-            "auth_type": OAUTH2,
-            "version": Version(EXCHANGE_O365),
-            "service_endpoint": f"{azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx",
-        }
-
-        return Configuration(**config_args)
-
-    def get_account(self, target_mailbox=None):
-        """
-        Request an account from EWS
-        :param (Optional) target_mailbox: Mailbox associated with the requested account
-        :return: exchangelib Account
-        """
-        if not target_mailbox:
-            target_mailbox = self.account_email
-        return Account(
-            primary_smtp_address=target_mailbox,
-            autodiscover=False,
-            config=self.config,
-            access_type=self.access_type,
-        )
-
-    def get_items_from_mailbox(self, account, item_ids):  # pragma: no cover
-        """
-        Request specific items from a mailbox associated with an account
-        :param account: EWS account or target_mailbox associated with that account
-        :param item_ids: item_ids of the requested items
-        :return: list of exchangelib Items
-        """
-        # allow user to pass target_mailbox as account
-        account = self.get_account(account) if isinstance(account, str) else self.get_account(self.account_email)
-        if type(item_ids) is not list:
-            item_ids = [item_ids]
-        items = [Item(id=x) for x in item_ids]
-        result = list(account.fetch(ids=items))
-        result = [x for x in result if not (isinstance(x, ErrorItemNotFound | ErrorInvalidIdMalformed))]
-        if len(result) != len(item_ids):
-            raise Exception("One or more items were not found/malformed. Check the input item ids")
-        return result
-
-    def get_item_from_mailbox(self, account, item_id):
-        """
-        Request a single item from a mailbox associated with an account
-        :param account: EWS account or target_mailbox associated with that account
-        :param item_id: item_id of the requested item
-        :return: exchangelib Item
-        """
-        result = self.get_items_from_mailbox(account, [item_id])
-        if len(result) == 0:
-            raise Exception(f"ItemId {str(item_id)} not found")
-        return result[0]
-
-    def get_attachments_for_item(self, item_id, account, attachment_ids=None):  # pragma: no cover
-        """
-        Request attachments for an item
-        :param item_id: item_id of the item to retrieve attachments from
-        :param account: EWS account or target_mailbox associated with that account
-        :param (Optional) attachment_ids: attachment_ids: attachment_ids to retrieve
-        :return: list of exchangelib Item.attachments
-        """
-        item = self.get_item_from_mailbox(account, item_id)
-        attachments = []
-        attachment_ids = argToList(attachment_ids)
-        if item:
-            if item.attachments:
-                for attachment in item.attachments:
-                    if (
-                        attachment_ids
-                        and attachment.attachment_id.id not in attachment_ids
-                    ):
-                        continue
-                    attachments.append(attachment)
-
-        else:
-            raise Exception("Message item not found: " + item_id)
-
-        if attachment_ids and len(attachments) < len(attachment_ids):
-            raise Exception(
-                "Some attachment id did not found for message:" + str(attachment_ids)
-            )
-
-        return attachments
-
-    def is_default_folder(self, folder_path, is_public=None):
-        """
-        Is the given folder_path public
-        :param folder_path: folder path to check if is public
-        :param is_public: (Optional) if provided, will return this value
-        :return: Boolean
-        """
-        if is_public is not None:
-            return is_public
-
-        if folder_path == self.folder_name:
-            return self.is_public_folder
-
-        return False
-
-    def get_folder_by_path(self, path, account=None, is_public=False):  # pragma: no cover
-        """
-        Retrieve folder by path
-        :param path: path of the folder
-        :param account: account associated with the requested path
-        :param is_public: is the requested folder public
-        :return: exchangelib Folder
-        """
-        if account is None:
-            account = self.get_account()
-        # handle exchange folder id
-        if len(path) == FOLDER_ID_LEN:
-            folders_map = account.root._folders_map
-            if path in folders_map:
-                return account.root._folders_map[path]
-
-        root = account.public_folders_root if is_public else account.root
-        folder = root if path == 'AllItems' else root.tois
-        path = path.replace("/", "\\")
-        path = path.split("\\")
-        for part in path:
-            try:
-                demisto.debug(f'resolving {part=} {path=}')
-                folder = folder // part
-            except Exception as e:
-                demisto.debug(f'got error {e}')
-                raise ValueError(f'No such folder {path}')
-        return folder
-
-    def send_email(self, message: Message):
-        account = self.get_account()
-        message.account = account
-        message.send_and_save()
-
-    def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments):  # pragma: no cover
-        account = self.get_account()
-        item_to_reply_to = account.inbox.get(id=inReplyTo)  # pylint: disable=E1101
-        if isinstance(item_to_reply_to, ErrorItemNotFound):
-            raise Exception(item_to_reply_to)
-
-        subject = subject or item_to_reply_to.subject
-        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else (None, [])
-        message_body = HTMLBody(htmlBody) if htmlBody else body
-        reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
-                                              cc_recipients=cc,
-                                              bcc_recipients=bcc)
-        reply = reply.save(account.drafts)
-        m = account.inbox.get(id=reply.id)  # pylint: disable=E1101
-
-        attachments += htmlAttachments
-        for attachment in attachments:
-            if not attachment.get('cid'):
-                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
-            else:
-                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                                is_inline=True, content_id=attachment.get('cid'))
-            m.attach(new_attachment)
-        m.send()
-
-        return m
 
 
 class MarkAsJunk(EWSAccountService):
@@ -594,7 +281,7 @@ def exchangelib_cleanup():  # pragma: no cover
                 del protocol.__dict__["thread_pool"]
             else:
                 demisto.info(
-                    f"Thread pool not found (ignoring terminate) in protcol dict: {dir(protocol.__dict__)}"
+                    f"Thread pool not found (ignoring terminate) in protocol dict: {dir(protocol.__dict__)}"
                 )
         except Exception as ex:
             demisto.error(f"Error with thread_pool.terminate, ignoring: {ex}")
@@ -620,6 +307,64 @@ def start_logging():
 
 
 """ Helper Functions """
+
+
+def get_client_from_params(params: dict) -> EWSClient:
+    """
+    Parse the integration params and create an EWS client object
+    Args:
+        params (dict): dict received from demisto.params()
+
+    Returns:
+        EWSClient: EWS client object to interact with the exchange API
+    """
+    client_id = params.get('_client_id') or params.get('client_id', '')
+    client_secret = (params.get('credentials') or {}).get('password') or params.get('client_secret', '')
+    tenant_id = params.get('_tenant_id') or params.get('tenant_id', '')
+    if not client_secret:
+        raise Exception('Key / Application Secret must be provided.')
+    elif not client_id:
+        raise Exception('ID / Application ID must be provided.')
+    elif not tenant_id:
+        raise Exception('Token / Tenant ID must be provided.')
+
+    access_type = params.get('access_type', DELEGATE) or DELEGATE
+    access_type = (access_type[0] if isinstance(access_type, list) else access_type).lower()
+    default_target_mailbox = params.get('default_target_mailbox', '')
+    max_fetch = min(int(params.get('max_fetch', MAX_INCIDENTS_PER_FETCH)), MAX_INCIDENTS_PER_FETCH)
+    azure_cloud = get_azure_cloud(params, INTEGRATION_NAME)
+    ews_server = f'{azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx/'
+    folder = params.get('folder', 'Inbox')
+    is_public_folder = argToBoolean(params.get('is_public_folder', False))
+    request_timeout = int(params.get('request_timeout', 120))
+    mark_as_read = params.get('mark_as_read', False)
+    incident_filter = IncidentFilter(params.get('incidentFilter', IncidentFilter.RECEIVED_FILTER))
+    self_deployed = argToBoolean(params.get('self_deployed', False))
+    insecure = argToBoolean(params.get('insecure', False))
+    proxy = params.get('proxy', False)
+
+    return EWSClient(
+        client_id=client_id,
+        client_secret=client_secret,
+        access_type=access_type,
+        default_target_mailbox=default_target_mailbox,
+        max_fetch=max_fetch,
+        ews_server=ews_server,
+        auth_type=OAUTH2,
+        version='O365',
+        folder=folder,
+        is_public_folder=is_public_folder,
+        request_timeout=request_timeout,
+        mark_as_read=mark_as_read,
+        incident_filter=incident_filter,
+        azure_cloud=azure_cloud,
+        tenant_id=tenant_id,
+        self_deployed=self_deployed,
+        log_memory=is_debug_mode(),
+        app_name=APP_NAME,
+        insecure=insecure,
+        proxy=proxy,
+    )
 
 
 def get_attachment_name(attachment_name, eml_extension=False, content_id="", is_inline=False):
@@ -754,20 +499,19 @@ def email_ec(item):
     :return: entry context dict
     """
     return {
-        "CC": None
-        if not item.cc_recipients
-        else [mailbox.email_address for mailbox in item.cc_recipients],
+        "CC": None if not item.cc_recipients else
+        [mailbox.email_address for mailbox in item.cc_recipients],
         "BCC": None
-        if not item.bcc_recipients
-        else [mailbox.email_address for mailbox in item.bcc_recipients],
-        "To": None
-        if not item.to_recipients
-        else [mailbox.email_address for mailbox in item.to_recipients],
+        if not item.bcc_recipients else
+        [mailbox.email_address for mailbox in item.bcc_recipients],
+        "To": None if not item.to_recipients else
+        [mailbox.email_address for mailbox in item.to_recipients],
         "From": item.author.email_address,
         "Subject": item.subject,
         "Text": item.text_body,
         "HTML": item.body,
-        "HeadersMap": {header.name: header.value for header in item.headers},
+        "HeadersMap": None if not item.headers else
+        {header.name: header.value for header in item.headers},
     }
 
 
@@ -1027,7 +771,7 @@ def get_expanded_group(client: EWSClient, email_address, recursive_expansion=Fal
     :param (Optional) recursive_expansion: Whether to enable recursive expansion. Default is "False".
     :return: Expanded groups output tuple
     """
-    group_members = ExpandGroup(protocol=client.protocol).call(
+    group_members = ExpandGroup(protocol=client.get_protocol()).call(
         email_address, recursive_expansion
     )
     group_details = {"name": email_address, "members": group_members}
@@ -1042,7 +786,7 @@ def get_searchable_mailboxes(client: EWSClient):
     :param client: EWS Client
     :return: Searchable mailboxes output tuple
     """
-    searchable_mailboxes = GetSearchableMailboxes(protocol=client.protocol).call()
+    searchable_mailboxes = GetSearchableMailboxes(protocol=client.get_protocol()).call()
     readable_output = tableToMarkdown(
         "Searchable mailboxes", searchable_mailboxes, headers=["displayName", "mailbox"]
     )
@@ -1061,6 +805,7 @@ def delete_attachments_for_message(
     :param (Optional) attachment_ids: attachment ids to delete
     :return: entries that were delted
     """
+    attachment_ids = argToList(attachment_ids)
     attachments = client.get_attachments_for_item(
         item_id, target_mailbox, attachment_ids
     )
@@ -1109,6 +854,7 @@ def fetch_attachments_for_message(
     :return: list of parsed entries
     """
     identifiers_filter = argToList(identifiers_filter)
+    attachment_ids = argToList(attachment_ids)
     account = client.get_account(target_mailbox)
     attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
@@ -1711,32 +1457,6 @@ def mark_item_as_read(
     return readable_output, output, marked_items
 
 
-def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
-    """
-    Extract all data-url content from within the html and return as separate attachments.
-    Due to security implications, we support only images here
-    We might not have Beautiful Soup so just do regex search
-    """
-    attachments = []
-    clean_body = ''
-    last_index = 0
-    for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
-        name = f'image{i}'
-        cid = (f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
-        attachment = {
-            'data': b64_decode(m.group(3)),
-            'name': name
-        }
-        attachment['cid'] = cid
-        attachments.append(attachment)
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
-        last_index = m.end() - 1
-
-    clean_body += html_body[last_index:]
-    return clean_body, attachments
-
-
 def collect_manual_attachments(manualAttachObj):  # pragma: no cover
     """Collect all manual attachments' data
 
@@ -1866,7 +1586,7 @@ def handle_template_params(template_params):  # pragma: no cover
                 elif params[p].get('key'):
                     actual_params[p] = demisto.dt(demisto.context(), params[p]['key'])
         except ValueError as e:
-            return_error('Unable to parse template_params: %s' % (str(e)))
+            return_error(f'Unable to parse template_params: {str(e)}')
 
     return actual_params
 
@@ -1899,8 +1619,10 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
     )
 
 
-def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=[],
-                   additional_headers=None, from_address=None, reply_to=None, importance=None):  # pragma: no cover
+def create_message(
+    to, handle_inline_image: bool = True, subject='', body='', bcc=None, cc=None, html_body=None,
+    attachments=[], additional_headers=None, from_address=None, reply_to=None, importance=None,
+):  # pragma: no cover
     """Creates the Message object that will be sent.
 
     Args:
@@ -1914,10 +1636,11 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         additional_headers (Dict): Custom headers to be added to the message.
         from_address (str): The email address from which to reply.
         reply_to (list): Email addresses that need to be used to reply to the message.
-
+        handle_inline_image (bool): Whether to handle inline images in the HTML body.
     Returns:
         Message. Message object ready to be sent.
     """
+    demisto.debug(f"create_message: Received {len(attachments)} attachments, {handle_inline_image=}")
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
@@ -1928,20 +1651,23 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
                 message.attach(new_attachment)
 
     else:
-        html_body, html_attachments = handle_html(html_body)
-        attachments += html_attachments
-
+        html_attachments: list = []
+        if handle_inline_image:
+            html_body, html_attachments = handle_html(html_body)
+            attachments += html_attachments
+            demisto.debug(f"create_message: Processed HTML body with {len(attachments)} attachments")
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
                                         reply_to, importance)
 
         for attachment in attachments:
-            if not attachment.get('cid'):
-                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
-            else:
-                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+            if not isinstance(attachment, FileAttachment):
+                if not attachment.get('cid'):
+                    attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
+                else:
+                    attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
                                                 is_inline=True, content_id=attachment.get('cid'))
 
-            message.attach(new_attachment)
+            message.attach(attachment)
 
     return message
 
@@ -1983,12 +1709,13 @@ def send_email(client: EWSClient, to=None, subject='', body="", bcc=None, cc=Non
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
                additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None,
-               renderBody=False):  # pragma: no cover
+               renderBody=False, handle_inline_image=True):  # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
     reply_to = argToList(replyTo)
     render_body = argToBoolean(renderBody)
+    handle_inline_image = argToBoolean(handle_inline_image)
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -2022,8 +1749,20 @@ def send_email(client: EWSClient, to=None, subject='', body="", bcc=None, cc=Non
             if htmlBody:
                 htmlBody = htmlBody.format(**template_params)
 
-        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
-                                 reply_to, importance)
+        message = create_message(
+            to,
+            handle_inline_image,
+            subject,
+            body,
+            bcc,
+            cc,
+            htmlBody,
+            attachments,
+            additionalHeader,
+            from_address,
+            reply_to,
+            importance
+        )
 
     client.send_email(message)
 
@@ -2047,7 +1786,7 @@ def reply_mail(client: EWSClient, to, inReplyTo, subject='', body="", bcc=None, 
     # collect all types of attachments
     attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
     attachments.extend(collect_manual_attachments(manualAttachObj))
-    client.reply_mail(inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
+    client.reply_email(inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
 
 
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma: no cover
@@ -2627,13 +2366,22 @@ def sub_main():  # pragma: no cover
     params = demisto.params()
     args = prepare_args(demisto.args())
     # client's default_target_mailbox is the authorization source for the instance
-    params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
+    params['default_target_mailbox'] = args.get('target_mailbox',
+                                                args.get('source_mailbox', params.get('default_target_mailbox', '')))
     if params.get('upn_mailbox') and not (args.get('target_mailbox')):
-        params['default_target_mailbox'] = params.get('upn_mailbox')
+        params['default_target_mailbox'] = params.get('upn_mailbox', '')
+
+    if params.get('access_type') == 'Impersonation':
+        demisto.info(
+            'Note: The access type Impersonation you are using is deprecated. For more information, '
+            'please refer to the integration description.')
     try:
-        client = EWSClient(**params)
+        client = get_client_from_params(params)
         start_logging()
         # replace sensitive access_token value in logs
+        if not isinstance(client.credentials, CustomDomainOAuth2Credentials):  # Should not fail
+            raise DemistoException('Failed to initialize EWS Client properly, check credentials')
+
         add_sensitive_log_strs(client.credentials.access_token.get('access_token', ''))
         command = demisto.command()
         # commands that return a single note result
