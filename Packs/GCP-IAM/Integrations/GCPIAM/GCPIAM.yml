@@ -1250,7 +1250,7 @@ script:
     description: Create a short-lived access token for a service account. The generated token will be exposed to the context menu and War Room, and can potentially be logged.
     execution: true
     name: gcp-iam-service-account-generate-access-token
-  dockerimage: demisto/google-api-py3:1.0.0.116623
+  dockerimage: demisto/google-api-py3:1.0.0.2027982
   runonce: false
   script: '-'
   subtype: python3

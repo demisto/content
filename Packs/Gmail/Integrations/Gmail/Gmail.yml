@@ -1735,7 +1735,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.116623
+  dockerimage: demisto/google-api-py3:1.0.0.2027982
   isfetch: true
   runonce: false
   script: '-'
