@@ -3222,9 +3222,7 @@ def test_splunk_job_create_command(mocker, query, expected_query):
     mocked_service = mocker.patch('SplunkPy.client.Service')
     mocked_create_job = MagicMock()
     mocked_service.jobs.create = mocked_create_job
-    mock_return_results = mocker.patch('SplunkPy.return_results')
+    mocker.patch('SplunkPy.return_results')
     args = {'query': query}
     splunk.splunk_job_create_command(mocked_service, args)
     mocked_create_job.assert_called_once_with(expected_query, exec_mode="normal", app="")
-
-    
