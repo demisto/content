@@ -2,7 +2,7 @@ comment: 'Generates the HTML needed for a formatted email to be sent using the o
 commonfields:
   id: SSLVerifierV2_GenerateEmailBody
   version: -1
-dockerimage: demisto/ansible-runner:1.0.0.2024530
+dockerimage: demisto/ansible-runner:1.0.0.2084661
 enabled: true
 name: SSLVerifierV2_GenerateEmailBody
 outputs:
