@@ -299,7 +299,7 @@ def setup_search_events(first_fetch_datetime: datetime,
     pagination_logic = extract_pagination_params(params)
     # If we've an initial query argument, we try with it.
     if first_fetch_for_this_integration:
-        demisto.debug(f"First fetch for integration, Checking if one of the 'initial_*' params is set to get the initial request")
+        demisto.debug("First fetch for integration, Checking if one of the 'initial_*' params is set to get the initial request")
         if initial_query_params := params.get('initial_query_params'):
             demisto.debug(f"Initial query params: {initial_query_params}")
             query_params = parse_json_param(initial_query_params, 'initial_query_params')
@@ -392,9 +392,9 @@ def parse_json_param(json_param_value: Any, json_param_name) -> dict | None:
 def generate_headers(params: dict[str, Any]) -> dict[Any, Any]:
 
     headers = generate_authentication_headers(params)
-    if add_fields_to_header := str(params.get('add_fields_to_header')):
-        if (parsed := parse_json_param(add_fields_to_header, 'add_fields_to_header')) is not None:
-            headers.update(parsed)
+    if ((add_fields_to_header := str(params.get('add_fields_to_header')))
+            and (parsed := parse_json_param(add_fields_to_header, 'add_fields_to_header')) is not None):
+        headers.update(parsed)
     return headers
 
 
@@ -618,7 +618,7 @@ def main() -> None:  # pragma: no cover
                                                      http_method,  # type: ignore[arg-type]
                                                      ok_codes,
                                                      request_data, events_keys, limit)
-            demisto.debug(f"Fetched events")
+            demisto.debug("Fetched events")
             return_results(results)
 
             if should_push_events:
