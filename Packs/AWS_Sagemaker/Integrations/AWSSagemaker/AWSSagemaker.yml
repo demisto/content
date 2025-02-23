@@ -63,7 +63,7 @@ script:
       description: The predication probability (range 0-1).
       type: number
     description: Classify input text (usually email content).
-  dockerimage: demisto/boto3py3:1.0.0.1865449
+  dockerimage: demisto/boto3py3:1.0.0.2449603
 tests:
 - Test Sagemaker
 fromversion: 5.0.0

@@ -410,7 +410,7 @@ script:
     - contextPath: AWS.Route53.RecordSetsChange.Comment
       description: A complex type that describes change information about changes made to your hosted zone.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.115129
+  dockerimage: demisto/boto3py3:1.0.0.2449603
   runonce: false
   script: ''
   subtype: python3
