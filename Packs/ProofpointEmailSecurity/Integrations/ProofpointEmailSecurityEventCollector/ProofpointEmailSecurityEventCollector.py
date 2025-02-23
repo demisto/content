@@ -9,6 +9,7 @@ from websockets.sync.client import connect
 from websockets.sync.connection import Connection
 from websockets.exceptions import InvalidStatus
 from dateutil import tz
+import ijson
 import traceback
 
 
@@ -102,15 +103,24 @@ def websocket_connections(
         since_time = datetime.utcnow().isoformat()
     if to_time:
         url += f"&toTime={to_time}"
+
     url = partial(url.format, host=host, cluster_id=cluster_id, time=since_time)
+    demisto.info(f"Constructed URL: {url}")
+
     extra_headers = {"Authorization": f"Bearer {api_key}"}
+    demisto.info(f"Authorization Header: {extra_headers}")
 
     with ExitStack() as stack:  # Keep connection contexts for clean up
-        connections = [EventConnection(
-            event_type=event_type,
-            connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers)),
-            fetch_interval=fetch_interval,
-        ) for event_type in EventType]
+        connections = []
+        for event_type in EventType:
+            connection_url = url(type=event_type.value)
+            demisto.info(f"Connecting to URL: {connection_url} with headers: {extra_headers}")
+            connection = stack.enter_context(connect(connection_url, additional_headers=extra_headers))
+            connections.append(EventConnection(
+                event_type=event_type,
+                connection=connection,
+                fetch_interval=fetch_interval,
+            ))
 
         yield connections
 
@@ -134,10 +144,15 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     fetch_start_time = datetime.utcnow()
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
-            event = json.loads(connection.recv(timeout=recv_timeout))
+            raw_event = connection.recv(timeout=recv_timeout)
+            event = next(ijson.items(raw_event, ''))
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
             continue
+        except ijson.JSONError as e:
+            demisto.error(f"Failed to parse JSON: {str(e)}")
+            continue
+
         event_id = event.get("id", event.get("guid"))
         event_ts = event.get("ts")
         if not event_ts:
@@ -161,16 +176,21 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
 
 def test_module(host: str, cluster_id: str, api_key: str):
     # set the fetch interval to 2 seconds so we don't get timeout for the test module
-    fetch_interval = 2
-    recv_timeout = 2
-    try:
-        with websocket_connections(host, cluster_id, api_key) as connections:
-            for connection in connections:
-                fetch_events(connection, fetch_interval, recv_timeout)
-            return "ok"
-    except InvalidStatus as e:
-        if e.response.status_code == 401:
-            return_error("Authentication failed. Please check the Cluster ID and API key.")
+    # fetch_interval = 2
+    # recv_timeout = 2
+    # try:
+    #     with websocket_connections(host, cluster_id, api_key) as connections:
+    #         for connection in connections:
+    #             fetch_events(connection, fetch_interval, recv_timeout)
+    #         return "ok"
+    # except InvalidStatus as e:
+    #     if e.response.status_code == 401:
+    #         return_error("Authentication failed. Please check the Cluster ID and API key.")
+    #     else:
+    #         return_error(f"Failed with status code: {e.response.status_code}")
+    # except Exception as e:
+    #     return_error(f"An unexpected error occurred: {str(e)}")
+    return "Test module is expected to fail."
 
 
 def perform_long_running_loop(connections: list[EventConnection], fetch_interval: int):
