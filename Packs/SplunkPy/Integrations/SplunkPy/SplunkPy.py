@@ -2840,8 +2840,6 @@ def extract_indexes(events: str | dict):
     """
     events_str = str(events)
     indexes = re.findall(INDEXES_REGEX, events_str)
-    if not indexes:
-        demisto.debug("No indexes were given, sending event/s to the default index.")
     demisto.debug(f"Indexes found: {indexes}")
     return indexes
 
@@ -2884,6 +2882,8 @@ def splunk_submit_event_hec(
             time=time_
         )
     indexes = extract_indexes(events)
+    if not indexes:
+        demisto.debug("No indexes were given, sending event/s to the default index.")
 
     validate_indexes(indexes, service)
 
