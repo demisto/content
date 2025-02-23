@@ -264,6 +264,7 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
         pack_url,
         {
             Method: method,
+            Headers: {},
             SaveToFile: save_to_file
         },
         undefined,
