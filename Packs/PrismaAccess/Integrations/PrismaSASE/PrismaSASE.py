@@ -812,6 +812,22 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
+    def get_cie_user(self, json_data: Dict[str, Any]) -> dict:  # pragma: no cover
+        """
+        Get CIE user
+        Args:
+            json_data: The JSON data to send in the request body.
+        Returns:
+            The response from the API.
+        """
+        url_suffix = 'cie/directory-sync/v1/cache-users'
+
+        return self.http_request(
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+        )
+
 
 """HELPER FUNCTIONS"""
 
@@ -2006,6 +2022,78 @@ def quarantine_host_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
+def get_cie_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command get cie user
+    Args:
+        client: Client
+        args: Dict[str, Any]
+    Returns:
+        CommandResults
+    """
+
+    def prepare_args(args: Dict[str, Any]) -> Dict[str, Any]:
+        """
+            Prepare args for get_cie_user_command.
+        Args:
+            args: Dict[str, Any] - args to prepare
+        Returns:
+            Dict[str, Any] - The JSON data for the API call
+        """
+        operator_mapping = {"Equal": "equal", "Starts With": "startsWith", "Ends With": "endsWith",
+                            "Contain": "contain", "Text Search": "textSearch"}
+
+        missing_args = {"attributes_to_return": args.get('attributes_to_return'), "operator": args.get('operator'),
+                        "attributes_to_filter_by": args.get('attributes_to_filter_by')}
+        errors = [name for name, value in missing_args.items() if not value]
+        if errors:
+            raise ValueError(f"The following arguments are empty: {', '.join(errors)}")
+
+        return {
+            "domain": args.get("domain"),
+            "attrs": argToList(args.get("attributes_to_return", "")),
+            "name":
+                {
+                    "attrNameOR": argToList(args.get("attributes_to_filter_by", "")),
+                    "attrValue": args.get("value_for_filter"),
+                    "match": operator_mapping.get(args.get('operator', 'Equal'))
+            },
+            "useNormalizedAttrs": "True"
+        }
+
+    def parse_cie_response(raw_response: dict) -> list:
+        """
+            Parse the raw response from the API call.
+        Args:
+            raw_response: dict - The raw response from the API call
+        Returns:
+            list - The parsed response objects
+        """
+        default_error_msg = "The get_cie_user_command failed. Please verify the arguments and try again."
+        result_response = raw_response.get("result", {})
+        if error := result_response.get("error"):
+            raise ValueError(
+                f"Error: {error.get('error-message', default_error_msg)}")
+        return result_response.get("data", {}).get("domains", [])
+
+    payload = prepare_args(args)
+    raw_response = client.get_cie_user(payload)
+    parsed_raw_response = parse_cie_response(raw_response)
+    if parsed_raw_response and (objects := parsed_raw_response[0].get("objects", [])):
+        outputs = {key: objects[0].get(key) for key in argToList(args.get('attributes_to_return', []))}
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}.CIE.User',
+            outputs=outputs,
+            readable_output=tableToMarkdown('CIE User', outputs),
+            raw_response=raw_response
+        )
+
+    return CommandResults(
+        readable_output='No CIE user found with the given arguments. Please verify the arguments and try again.',
+        raw_response=raw_response
+    )
+
+
 def run_push_jobs_polling_command(client: Client, args: dict):
     """
     This function is generically handling the polling flow. In the polling flow, there is always an initial call that
@@ -2140,6 +2228,8 @@ def main():  # pragma: no cover
         'prisma-sase-external-dynamic-list-delete': delete_custom_url_category_command,
 
         'prisma-sase-quarantine-host': quarantine_host_command,
+
+        'prisma-sase-cie-user-get': get_cie_user_command,
 
     }
     client = Client(
