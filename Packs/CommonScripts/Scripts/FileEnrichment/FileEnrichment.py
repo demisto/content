@@ -485,10 +485,12 @@ def search_file_indicator(
         per_command_context (dict[str, Any]): Dictionary of the context output (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
     """
+    demisto.debug(f"Starting to search for File indicator with value: {file_hash}.")
     try:
         search_results = IndicatorsSearcher(query=f"type:File and {file_hash}", size=1)
 
     except Exception as e:
+        demisto.debug(f"Error searching for File indicator with value: {file_hash}. Error: {str(e)}.")
         readable_command_results = CommandResults(
             readable_output=f"#### Error for Search Indicators\n{str(e)}",
             entry_type=EntryType.ERROR,
@@ -536,6 +538,8 @@ def run_external_enrichment(
         per_command_context (dict[str, Any]): Dictionary of the context output (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
     """
+    demisto.debug(f"Starting to run external enrichment flow on file hash: {file_hash} using brands: {brands_to_run}.")
+
     # A. Run file reputation command - using VirusTotal (API v3)
     file_reputation_command = Command(
         brand=Brands.VIRUS_TOTAL_V3,
@@ -552,6 +556,8 @@ def run_external_enrichment(
             args={"sha256": file_hash} if hash_type == "sha256" else {"md5": file_hash},
         )
         enrich_with_command(wildfire_report_command, modules, brands_to_run, per_command_context, verbose_command_results)
+    else:
+        demisto.debug(f"Skipping running command 'wildfire-report'. Unsupported file hash type: {hash_type}.")
 
     # C. Run Wildfire Verdict command
     wildfire_verdict_command = Command(
@@ -569,6 +575,10 @@ def run_external_enrichment(
             args={"sha256": file_hash},
         )
         enrich_with_command(hash_analytics_command, modules, brands_to_run, per_command_context, verbose_command_results)
+    else:
+        demisto.debug(f"Skipping running command 'core-get-hash-analytics-prevalence'. Unsupported file hash type: {hash_type}.")
+
+    demisto.debug(f"Finished running external enrichment flow on file hash: {file_hash} using brands: {brands_to_run}.")
 
 
 def summarize_command_results(
