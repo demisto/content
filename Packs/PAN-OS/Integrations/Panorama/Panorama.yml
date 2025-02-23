@@ -9562,7 +9562,7 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: The action type of the exception. Default value is 'default'. 
+    - description: The action type of the exception. Default value is 'default'.
       name: action
       auto: PREDEFINED
       required: false
@@ -9578,13 +9578,11 @@ script:
       name: packet_capture
       required: false
       auto: PREDEFINED
-      predefined: 
+      predefined:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated
-        session has either a matching source or destination IP address; for all other sessions, the threat
-        is enforced based on the default signature action.
+    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action.
       name: exempt_ip
       required: false
     - description: Device group. This will override any configured device group or vsys.
@@ -9616,7 +9614,7 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: The action type of the exception. Default value is 'default'. 
+    - description: The action type of the exception. Default value is 'default'.
       name: action
       required: false
       auto: PREDEFINED
@@ -9632,13 +9630,11 @@ script:
       name: packet_capture
       required: false
       auto: PREDEFINED
-      predefined: 
+      predefined:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated
-        session has either a matching source or destination IP address; for all other sessions, the threat
-        is enforced based on the default signature action.
+    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action.
       name: exempt_ip
       required: false
     - description: Device group. This will override any configured device group or vsys.
@@ -9802,7 +9798,7 @@ script:
       type: Number
       required: true
       isArray: false
-  dockerimage: demisto/pan-os-python:1.0.0.117206
+  dockerimage: demisto/pan-os-python:1.0.0.2067372
   isfetch: true
   runonce: false
   script: ''
