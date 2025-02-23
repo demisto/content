@@ -254,7 +254,7 @@ def create_ticket():
         raw_ticket_res = create_ticket_attachments_request(encoded, files_data)
     else:
         raw_ticket_res = create_ticket_request(encoded)
-    ticket_id = re.findall('\d+', raw_ticket_res.text)[-1]
+    ticket_id = re.findall(r'\d+', raw_ticket_res.text)[-1]
     demisto.debug(f"got ticket with id: {ticket_id}")
     if ticket_id == -1:
         raise DemistoException('Ticket creation failed')
