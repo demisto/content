@@ -27,7 +27,7 @@
         "platform"
     ],
     "supportedModules": [
-        "XSIAM",
-        "XSPANSE"
+        "X1",
+        "X3"
     ]
 }
