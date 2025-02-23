@@ -2,7 +2,7 @@
     "name": "GitHub",
     "description": "Manage GitHub issues and pull requests directly from Cortex XSOAR",
     "support": "xsoar",
-    "currentVersion": "2.1.4",
+    "currentVersion": "2.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

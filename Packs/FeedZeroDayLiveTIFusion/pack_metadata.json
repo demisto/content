@@ -2,7 +2,7 @@
     "name": "Zero Day Live TI FUSION Feed",
     "description": "Blackwired defines a new approach to Threat Intelligence. The flagship Zero Day Live platform is designed to proactively prevent cyber-attacks before they happen. It is the first and only platform making military-grade cyber-warfare capability accessible to enterprise.",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Grzegorz Papkala",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

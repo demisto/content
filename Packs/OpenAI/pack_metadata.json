@@ -2,7 +2,7 @@
     "name": "OpenAI",
     "description": "The OpenAI API can be applied to virtually any task that involves understanding or generating natural language or code.",
     "support": "xsoar",
-    "currentVersion": "2.0.1",
+    "currentVersion": "2.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
