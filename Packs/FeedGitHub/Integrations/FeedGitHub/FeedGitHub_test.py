@@ -2,7 +2,6 @@ import base64
 
 import pytest
 
-
 import json
 from freezegun import freeze_time
 import demistomock as demisto
@@ -471,3 +470,48 @@ def test_filtering_stix_files():
         {'type': 'non-stix', 'id': 'non-stix--12345678-1234-5678-1234-567812345678'}
     ]
     assert filtering_stix_files(content_files) == expected_result
+
+
+def test_fetch_indicators_command_with_tlp_color_red(mocker):
+    """
+        Given: params with tlp_color set to RED and enrichmentExcluded set to False.
+        When: Calling fetch_indicators_command with the provided parameters.
+        Then: Verify that the fetch_indicators function is called with the expected parameters.
+    """
+    from FeedGitHub import fetch_indicators_command
+    client_mock = mock_client()
+    params = {
+        'feedTags': 'tag1,tag2',
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False,
+        'limit': '50'
+    }
+    args = {}
+    mocker.patch('FeedGitHub.is_xsiam_or_xsoar_saas', return_value=True)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    fetch_indicators_mock = mocker.patch('FeedGitHub.fetch_indicators')
+
+    # Call the function under test
+    fetch_indicators_command(client_mock, params, args)
+
+    # Assertion - verify the output
+    assert fetch_indicators_mock.call_args.kwargs.get('enrichment_excluded') is True
+
+
+def test_get_indicators_command_with_tlp_color_red(mocker):
+    from FeedGitHub import get_indicators_command
+    client_mock = mock_client()
+    params = {
+        'feedTags': 'tag1,tag2',
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False,
+        'limit': '50'
+    }
+    args = {}
+    mocker.patch('FeedGitHub.Client.get_commits_between_dates', return_value=['test_hash'])
+    mocker.patch('FeedGitHub.is_xsiam_or_xsoar_saas', return_value=True)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch('FeedGitHub.get_indicators', return_value=([{"name": "test_ind"}], None))
+
+    command_res = get_indicators_command(client_mock, params, args)
+    assert command_res.outputs[0].get('enrichmentExcluded') is True
