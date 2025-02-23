@@ -165,7 +165,7 @@ script:
       name: secret
     description: A command to decode JWT tokens
     name: jwt-decode-token
-  dockerimage: demisto/auth-utils:1.0.0.115527
+  dockerimage: demisto/auth-utils:1.0.0.2025089
   runonce: false
   script: '-'
   subtype: python3

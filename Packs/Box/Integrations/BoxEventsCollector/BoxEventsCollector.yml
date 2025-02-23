@@ -57,7 +57,7 @@ script:
       defaultValue: 3 days
     description: Get events.
     name: box-get-events
-  dockerimage: demisto/auth-utils:1.0.0.116752
+  dockerimage: demisto/auth-utils:1.0.0.2025089
   runonce: false
   script: '-'
   subtype: python3
