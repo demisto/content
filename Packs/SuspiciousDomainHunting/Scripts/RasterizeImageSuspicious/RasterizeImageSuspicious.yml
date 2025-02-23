@@ -10,7 +10,7 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/processing-image-file:1.0.0.1858714
+dockerimage: demisto/processing-image-file:1.0.0.2084793
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0
