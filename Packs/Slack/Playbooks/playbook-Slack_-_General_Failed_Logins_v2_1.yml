@@ -755,5 +755,13 @@ inputs:
   description: The username or the email address of the user who failed to login.
 outputs: []
 fromversion: 5.0.0
+tags:
+  - "slack"
+  - "tag1"
+  - tag2
+supportedModules:
+  - ENT_PLUS
+  - C1
+  - C3
 tests:
 - No tests
