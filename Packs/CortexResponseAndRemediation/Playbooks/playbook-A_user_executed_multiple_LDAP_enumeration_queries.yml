@@ -1,0 +1,2078 @@
+id: A user executed multiple LDAP enumeration queries
+version: -1
+name: A user executed multiple LDAP enumeration queries
+description: |-
+  This playbook addresses the following alerts:
+
+  - A user executed suspicious LDAP enumeration queries
+
+  Playbook Stages:
+
+  Triage:
+
+  - Get additional event information about the LDAP searches executed by the user
+  - Ensure that a single client IP exists in the alert
+  - Get endpoint information for the client IP
+  - Check preconditions for continuing investigation based on the number of suspicious attributes, attack tool queries, and vulnerable certificate templates
+
+
+  Investigation:
+
+  - Enrich the user that executed the queries
+  - Check if the user was created recently
+  - Search for additional discovery alerts in the incident
+  - Check user groups and roles to determine if the user is unprivileged
+  - Check user querying frequency to detect anomalies
+  - Get host risk level
+  - Search for recent malware alerts on client IP
+
+  Remediation:
+
+  - With analyst approval, disable the user in Active Directory if user-related anomalies are found and the alert is a True Positive.
+  - With analyst approval, isolate the endpoint if host-related anomalies are found and the alert is a True Positive.
+  - Logoff user from client host if an active session is detected and the alert is a True Positive.
+
+  Requirements:
+
+  For any response action, you need the following integrations:
+
+  - Core - IR
+  - Active Directory Query v2.
+tags:
+- T1087 - Account Discovery
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b3cdd99f-2cb2-48cf-82a2-83496b582087
+    type: start
+    task:
+      id: b3cdd99f-2cb2-48cf-82a2-83496b582087
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3b45073c-b0d9-4d5a-852c-df4e74dc0779
+    type: title
+    task:
+      id: 3b45073c-b0d9-4d5a-852c-df4e74dc0779
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "57"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2b12deed-65f6-4e1d-8b5e-175f07cb4c84
+    type: regular
+    task:
+      id: 2b12deed-65f6-4e1d-8b5e-175f07cb4c84
+      version: -1
+      name: Search for additional discovery alerts in the incident
+      description: Searches for additional alerts in the incident that may further indicate user attempts to enumerate Active Directory.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      extend-context:
+        simple: DiscoveryAlertsInIncident=
+      fromdate:
+        simple: 1 days ago
+      ignore-outputs:
+        simple: "true"
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix:
+                value:
+                  simple: ' and (mitreattcktechnique:*T1083* or mitreattcktechnique:*T1087* or mitreattcktechnique:*T1615* or mitreattcktechnique:*T1016*) and -id:'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: alert.id
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1040,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 397aa0fb-bbfe-403b-807b-e1815c8e2bea
+    type: regular
+    task:
+      id: 397aa0fb-bbfe-403b-807b-e1815c8e2bea
+      version: -1
+      name: Get additional event information
+      description: Returns detailed information about the LDAP searches executed by the user.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2967545d-ba7a-4934-89fc-84f4a41ff124
+    type: regular
+    task:
+      id: 2967545d-ba7a-4934-89fc-84f4a41ff124
+      version: -1
+      name: Search for recent malware alerts on client IP
+      description: Searches for alerts that happened in the past day with Malware category where the host IP is the client IP of the current alert.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      extend-context:
+        simple: MalwareAlertsOnHost=
+      fromdate:
+        simple: 1 days ago
+      ignore-outputs:
+        simple: "true"
+      query:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: client
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'hostip:'
+              suffix:
+                value:
+                  simple: ' and categoryname:Malware'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6effa91d-38e0-4dfb-8a92-df531a3d6b4e
+    type: title
+    task:
+      id: 6effa91d-38e0-4dfb-8a92-df531a3d6b4e
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a685af16-c239-4712-81ff-00dbcca78bca
+    type: condition
+    task:
+      id: a685af16-c239-4712-81ff-00dbcca78bca
+      version: -1
+      name: Ensure that a single client IP exists
+      description: Ensures that the alert contains only 1 client IP. LDAP enumeration query alerts containing multiple IPs are not supported by the playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert.event
+                accessor: client
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: \.
+                    unpack_matches: {}
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.event.client
+            iscontext: true
+          right:
+            value:
+              simple: 127.0.0.1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1095fda1-e8e9-4711-8634-165e8ba8345d
+    type: regular
+    task:
+      id: 1095fda1-e8e9-4711-8634-165e8ba8345d
+      version: -1
+      name: Get endpoint information for the client IP
+      description: Retrieves the endpoint name, agent ID and more information about the IP used by the client in which the LDAP queries were executed.
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ip_list:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: client
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f1020a0f-6601-47cd-8617-10fb41f95280
+    type: condition
+    task:
+      id: f1020a0f-6601-47cd-8617-10fb41f95280
+      version: -1
+      name: Check client is not a server
+      description: Ensures that the client that executed the LDAP queries is not a server or the domain controller.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Non-Server:
+      - "11"
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: Non-Server
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.endpoint_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.agentid
+                      iscontext: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.endpoint_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AGENT_TYPE_SERVER
+                    ignorecase: true
+                accessor: endpoint_id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.event.client
+            iscontext: true
+          right:
+            value:
+              simple: 127.0.0.1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: d0f20db7-f43f-4f64-8517-f117cc5ce025
+    type: regular
+    task:
+      id: d0f20db7-f43f-4f64-8517-f117cc5ce025
+      version: -1
+      name: Get host risk level
+      description: Retrieves risk information for the client host.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      host_id:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_name
+          transformers:
+          - operator: uniq
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: f26cce9f-ec35-472f-8ddc-820ac6c5ceae
+    type: regular
+    task:
+      id: f26cce9f-ec35-472f-8ddc-820ac6c5ceae
+      version: -1
+      name: Enrich user
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "22"
+      - "29"
+      - "3"
+    scriptarguments:
+      attributes:
+        simple: whenCreated
+      user_name:
+        simple: ${UsernameWithoutPrefix}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: bf1f8757-6ccd-48fb-8deb-1949e097e4ac
+    type: title
+    task:
+      id: bf1f8757-6ccd-48fb-8deb-1949e097e4ac
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0caeb27b-423f-45e3-8971-fa08e763f2d5
+    type: condition
+    task:
+      id: 0caeb27b-423f-45e3-8971-fa08e763f2d5
+      version: -1
+      name: Check preconditions for continuing investigation
+      description: Checks if investigation and remediation can be done based on pre-conditions signifying high probability of a true positive alert and inherently malicious behavior.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Core.OriginalAlert.stateful_raw_data.count_distinct_search_filter_suspicious_attributes
+            iscontext: true
+          right:
+            value:
+              simple: "15"
+        - operator: greaterThan
+          left:
+            value:
+              simple: Core.OriginalAlert.stateful_raw_data.count_distinct_search_filter_attack_tool_queries_reliable_signature
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: greaterThan
+          left:
+            value:
+              simple: Core.OriginalAlert.stateful_raw_data.count_distinct_search_filter_vulnerable_certificate_template
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: lessThan
+          left:
+            value:
+              simple: Core.OriginalAlert.stateful_raw_data.visited_to_returned_ratio
+            iscontext: true
+          right:
+            value:
+              simple: "0.1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b9b43bcd-a930-4a38-8459-1c1e985bd858
+    type: title
+    task:
+      id: b9b43bcd-a930-4a38-8459-1c1e985bd858
+      version: -1
+      name: Skip / False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 3090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 8f70c85b-5ef3-4fee-8d9a-7ca33697047a
+    type: condition
+    task:
+      id: 8f70c85b-5ef3-4fee-8d9a-7ca33697047a
+      version: -1
+      name: Check host analysis results
+      description: Checks whether any host-related anomalies were found in the investigation (the host is risky or malware alerts occurred on the host in the past 1 day).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      Remediate:
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: Remediate
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MalwareAlertsOnHost
+            iscontext: true
+          right:
+            value: {}
+        - operator: isTrue
+          left:
+            value:
+              simple: HostIsRisky
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: cbef50e1-da3d-48ca-8e11-ea9882cd7780
+    type: title
+    task:
+      id: cbef50e1-da3d-48ca-8e11-ea9882cd7780
+      version: -1
+      name: User Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 5630dcc4-a789-44fd-8886-1c893f868719
+    type: title
+    task:
+      id: 5630dcc4-a789-44fd-8886-1c893f868719
+      version: -1
+      name: Host Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 778e431e-ce22-471f-87b3-94c1097cc9df
+    type: condition
+    task:
+      id: 778e431e-ce22-471f-87b3-94c1097cc9df
+      version: -1
+      name: Check user LDAP querying frequency
+      description: Checks if the user executes LDAP queries on a regular basis from one or from multiple hosts, daily.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Anomaly:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: Anomaly
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: Core.OriginalAlert.stateful_raw_data.actor_user_over_actor_user_ldap_query_count_distinct_search_filter_multiple_days_seen_count
+            iscontext: true
+          right:
+            value:
+              simple: "20"
+        - operator: lessThan
+          left:
+            value:
+              simple: Core.OriginalAlert.stateful_raw_data.actor_user_over_actor_user_ldap_query_count_distinct_search_filter_multiple_clients_multiple_days
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 75c00eb7-57a6-479b-8116-e1b3036785ab
+    type: regular
+    task:
+      id: 75c00eb7-57a6-479b-8116-e1b3036785ab
+      version: -1
+      name: Save result - User does not perform LDAP queries regularly
+      description: Saves a context key indicating the user doesn't regularly execute LDAP queries (from one or more hosts).
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: UserDoesNotRegularlyQuery
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: f147ff27-f084-40cc-82ee-7187f4b11f11
+    type: condition
+    task:
+      id: f147ff27-f084-40cc-82ee-7187f4b11f11
+      version: -1
+      name: Check if user creation date exists
+      description: Checks if the date and time of when the user was created is available.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Exists:
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.whenCreated.Value
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d2b6725d-73e9-468b-84d6-c59a4fd309af
+    type: regular
+    task:
+      id: d2b6725d-73e9-468b-84d6-c59a4fd309af
+      version: -1
+      name: Convert user creation date to epoch
+      description: Converts the user creation date to epoch to find relative time of creation.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: UserCreationDateInEpoch
+      value:
+        complex:
+          root: Account.whenCreated
+          accessor: Value
+          transformers:
+          - operator: toUnix
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 8082772d-1556-493e-89ce-9ced56fa975e
+    type: condition
+    task:
+      id: 8082772d-1556-493e-89ce-9ced56fa975e
+      version: -1
+      name: Check if user was created recently
+      description: Checks if the user's creation date in AD happened 24 hours or less since the time that this alert occurred.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Anomaly:
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: Anomaly
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert
+                accessor: alert_generated_time
+                transformers:
+                - operator: subtraction
+                  args:
+                    by:
+                      value:
+                        simple: UserCreationDateInEpoch
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: "86400"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 0c17e758-0700-4d96-8fb9-e9e4a4f32253
+    type: regular
+    task:
+      id: 0c17e758-0700-4d96-8fb9-e9e4a4f32253
+      version: -1
+      name: Save result - User does not perform LDAP queries regularly
+      description: Saves a context key indicating the user was created recently.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: UserCreatedLast24Hours
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 3b855ee6-8e16-4a2c-8567-185090bcd3ff
+    type: condition
+    task:
+      id: 3b855ee6-8e16-4a2c-8567-185090bcd3ff
+      version: -1
+      name: Check user groups and roles
+      description: Checks if the user is part of built-in privileged Active Directory groups.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Anomaly:
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: Anomaly
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: Account.Groups.Value
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Account.Groups.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CN=Domain Admins,
+                    ignorecase: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Account.Groups.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CN=Enterprise Admins
+                    ignorecase: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Account.Groups.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CN=Schema Admins
+                    ignorecase: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Account.Groups.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CN=Administrators
+                    ignorecase: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Account.Groups.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CN=Account Operators
+                    ignorecase: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Account.Groups.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CN=Backup Operators
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isFalse
+          left:
+            value:
+              simple: Core.OriginalAlert.stateful_raw_data.is_ldap_actor_user_service_account
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: Core.OriginalAlert.stateful_raw_data.is_ldap_actor_user_it_user
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 4132aec2-37d9-44ce-84b0-7ca2ceb5e7d7
+    type: regular
+    task:
+      id: 4132aec2-37d9-44ce-84b0-7ca2ceb5e7d7
+      version: -1
+      name: Save result - user is unprivileged
+      description: Saves a context key indicating the user does not belong to default privileged AD groups.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: UserIsUnprivileged
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 8549af3b-58bb-4216-86b8-545001f9562b
+    type: condition
+    task:
+      id: 8549af3b-58bb-4216-86b8-545001f9562b
+      version: -1
+      name: Check host risk level
+      description: Checks if the client host's risk level is high.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Anomaly:
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: Anomaly
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.RiskyHost.risk_level
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.RiskyHost.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 69f4f4c5-9123-4058-8230-f35cc881ca48
+    type: regular
+    task:
+      id: 69f4f4c5-9123-4058-8230-f35cc881ca48
+      version: -1
+      name: Save risk result
+      description: Saves a context key indicating that the client host's risk level is high.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: HostIsRisky
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 164debc9-a89b-403d-8566-3fd31c1185ba
+    type: regular
+    task:
+      id: 164debc9-a89b-403d-8566-3fd31c1185ba
+      version: -1
+      name: Logoff user from client host
+      description: |-
+        Logs off the user by using the logoff command for the active user session's ID.
+        Note: the regex relies on the fact that interactively logged in users will have an active "console" session in Windows machines.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      command_type:
+        simple: powershell
+      commands:
+        complex:
+          root: Core.ScriptResult.results.command_output
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: UsernameWithoutPrefix
+                iscontext: true
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: Active
+              ignorecase: true
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=\bconsole\s+)\d+
+              unpack_matches: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'logoff '
+              suffix: {}
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      is_raw_command:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 3075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c2828931-1af9-4e07-8701-bf60232a986a
+    type: regular
+    task:
+      id: c2828931-1af9-4e07-8701-bf60232a986a
+      version: -1
+      name: Isolate the endpoint
+      description: Isolates the client host machine where the LDAP queries were executed.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: Core.Endpoint
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Core.Endpoint.endpoint_id
+                iscontext: true
+              right:
+                value:
+                  simple: alert.agentid
+                iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Core.Endpoint.endpoint_type
+                iscontext: true
+              right:
+                value:
+                  simple: AGENT_TYPE_SERVER
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.Endpoint.os_type
+                iscontext: true
+              right:
+                value:
+                  simple: AGENT_OS_WINDOWS
+              ignorecase: true
+          accessor: endpoint_id
+          transformers:
+          - operator: uniq
+      suppress_disconnected_endpoint_error:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 2890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 66791eda-dabf-4492-88bd-6841c95509eb
+    type: condition
+    task:
+      id: 66791eda-dabf-4492-88bd-6841c95509eb
+      version: -1
+      name: Manual - decide whether to isolate the endpoint
+      description: |
+        Review the following findings and decide whether the host should be isolated:
+
+        ${Core.Endpoint.endpoint_name}
+
+        Below are the findings of the investigation:
+
+        ---
+
+        #### Malware Alerts on Host:
+        `${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length > 0 ? "True" : "False"}`
+
+        ---
+
+        #### Host is Risky:
+        `${.=val.HostIsRisky ? "True" : "False"}`
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Do not isolate:
+      - "42"
+      Isolate:
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 2725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Isolate
+      - Do not isolate
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: e95328f6-94c8-443b-84a0-0118c0aa0a6a
+    type: condition
+    task:
+      id: e95328f6-94c8-443b-84a0-0118c0aa0a6a
+      version: -1
+      name: Manual - decide whether to disable the user
+      description: |
+        Review the following findings and decide whether you want to disable the user.
+
+        Username: ${UsernameWithoutPrefix}
+
+
+        Below are the findings of the investigation:
+
+        ---
+
+        #### User Created Recently:
+        `${.=val.UserCreatedLast24Hours ? "True" : "False"}`
+
+        ---
+
+        #### Related Discovery Alerts:
+        `${.=val.DiscoveryAlertsInIncident && Object.keys(val.DiscoveryAlertsInIncident).length > 0 ? "True" : "False"}`
+
+        ---
+
+        #### User is Unprivileged:
+        `${.=val.UserIsUnprivileged ? "True" : "False"}`
+
+        ---
+
+        #### User Rarely Executes Queries:
+        `${.=val.UserDoesNotRegularlyQuery ? "True" : "False"}`
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Disable:
+      - "43"
+      Do not disable:
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 2725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Disable
+      - Do not disable
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 5c2a3c2d-4e31-497b-8511-e0a84c97a96a
+    type: regular
+    task:
+      id: 5c2a3c2d-4e31-497b-8511-e0a84c97a96a
+      version: -1
+      name: Close the alert
+      description: Closes the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 8f55e219-35b2-459e-854f-cacc017c3c06
+    type: regular
+    task:
+      id: 8f55e219-35b2-459e-854f-cacc017c3c06
+      version: -1
+      name: Disable user in AD
+      description: Disables the user that executed the LDAP enumeration queries in Active Directory.
+      script: '|||ad-disable-account'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      username:
+        simple: ${UsernameWithoutPrefix}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 2890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: e64d505f-b741-489d-8513-9b68a04129f1
+    type: condition
+    task:
+      id: e64d505f-b741-489d-8513-9b68a04129f1
+      version: -1
+      name: Check that client OS is Windows and client role is not Server
+      description: Ensures that the client is not a server, not the domain controller, and runs the Windows operating system (required for automatic remediation).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      Non-Server:
+      - "17"
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: Non-Server
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.endpoint_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.agentid
+                      iscontext: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.endpoint_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AGENT_TYPE_SERVER
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.os_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AGENT_OS_WINDOWS
+                    ignorecase: true
+                accessor: endpoint_id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 904e0927-8a4d-4289-8031-e7efbb6c5c30
+    type: condition
+    task:
+      id: 904e0927-8a4d-4289-8031-e7efbb6c5c30
+      version: -1
+      name: Check user analysis results
+      description: Checks whether any user-related anomalies were found in the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      Remediate:
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: Remediate
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: UserCreatedLast24Hours
+            iscontext: true
+          right:
+            value: {}
+        - operator: isTrue
+          left:
+            value:
+              simple: UserDoesNotRegularlyQuery
+            iscontext: true
+        - operator: isTrue
+          left:
+            value:
+              simple: UserIsUnprivileged
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: DiscoveryAlertsInIncident
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: fb134545-e8fb-432f-8194-8a901d99a119
+    type: title
+    task:
+      id: fb134545-e8fb-432f-8194-8a901d99a119
+      version: -1
+      name: Insufficient evidence for remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 12287b3f-c14f-46d2-8873-42a4283f7c3d
+    type: regular
+    task:
+      id: 12287b3f-c14f-46d2-8873-42a4283f7c3d
+      version: -1
+      name: Manually remediate server / DC / non-Windows machine
+      description: "The following host is a domain controller, a server, or not a Windows machine. This means automatic remediation cannot be executed. \n\nPlease review the information below and manually remediate the alert.\nEndpoint name: ${Core.Endpoint.endpoint_name}\n\nFindings of the investigation:\n\n---\n\n#### Malware Alerts on Host:\n`${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length > 0 ? \"True\" : \"False\"}`\n\n---\n\n#### Host is Risky:\n`${.=val.HostIsRisky ? \"True\" : \"False\"}`\n"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 2ad19e3a-59ad-43a6-8e87-3221a3e9fcc7
+    type: regular
+    task:
+      id: 2ad19e3a-59ad-43a6-8e87-3221a3e9fcc7
+      version: -1
+      name: Check if user is logged in
+      description: Initiates code execution on the client host to check if the user is currently logged in to the host.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      commands:
+        simple: quser ${UsernameWithoutPrefix}
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      is_raw_command:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: f369276b-2db7-4648-8fed-32516d14d725
+    type: regular
+    task:
+      id: f369276b-2db7-4648-8fed-32516d14d725
+      version: -1
+      name: Get log in check result
+      description: Retrieves results from the "quser" command for the user - which can be used to tell if the user is currently logged in.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 2725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: e53a7044-64ba-47db-8470-d9d23b475850
+    type: condition
+    task:
+      id: e53a7044-64ba-47db-8470-d9d23b475850
+      version: -1
+      name: Check for active session of the user
+      description: Checks if the execution results show that there is currently an active session for the user - which means the user is currently logged in.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      Active:
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: Active
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.ScriptResult.results.command_output
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.ScriptResult.results.command_output
+                      iscontext: true
+                    right:
+                      value:
+                        simple: UsernameWithoutPrefix
+                      iscontext: true
+                    ignorecase: true
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.ScriptResult.results.command_output
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 2890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 699a3c31-10f1-431d-8287-6e5d296cd319
+    type: regular
+    task:
+      id: 699a3c31-10f1-431d-8287-6e5d296cd319
+      version: -1
+      name: Save username without domain prefix
+      description: Saves the username without the domain prefix.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: UsernameWithoutPrefix
+      value:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: LastArrayElement
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=\\)[^\\]+$
+              unpack_matches: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_13_#default#": 0.2,
+      "10_5_Non-Server": 0.36,
+      "14_50_#default#": 0.15,
+      "14_6_yes": 0.49,
+      "17_40_Remediate": 0.56,
+      "17_42_#default#": 0.14,
+      "20_13_#default#": 0.2,
+      "20_21_Anomaly": 0.67,
+      "22_13_#default#": 0.26,
+      "22_24_Exists": 0.45,
+      "27_13_#default#": 0.4,
+      "27_28_Anomaly": 0.52,
+      "29_13_#default#": 0.1,
+      "29_31_Anomaly": 0.68,
+      "35_13_#default#": 0.32,
+      "40_39_Isolate": 0.53,
+      "40_42_Do not isolate": 0.27,
+      "41_42_Do not disable": 0.36,
+      "41_43_Disable": 0.59,
+      "49_41_Remediate": 0.55,
+      "49_42_#default#": 0.15,
+      "55_16_#default#": 0.19,
+      "8_9_yes": 0.41
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3315,
+        "width": 3090,
+        "x": -1040,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs: []
+marketplaces: ["marketplacev2"]
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

@@ -138,7 +138,7 @@ script:
     - contextPath: SslLabs.Analyze.certs
       description: a list of Cert object, representing the chain certificates in the order in which they were retrieved from the server.
     polling: true
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: ''
   subtype: python3
