@@ -147,6 +147,7 @@ def filter_entries(entries, entry_filter):
 
     return filtered_entries
 
+
 def repair_malformed_json(malformed_json: str) -> str:
     """
     Repairs a malformed JSON string by properly escaping quotes within dollar-sign ($) values.
@@ -181,11 +182,11 @@ def repair_malformed_json(malformed_json: str) -> str:
     for part in parts:
         # Split by "$": and get the last part
         dollar_key_parts = part.split('"$":')
-        
+
         if len(dollar_key_parts) > 1:
             prefix = '"$":'.join(dollar_key_parts[:-1]) + '"$":'  # Keep all parts before the last "$"
             json_value = dollar_key_parts[-1].strip()  # Get the last value
-            
+
             search_start = 0
             quote_positions = []
 
@@ -612,8 +613,9 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
     if not res.ok:
         demisto.debug(res.text)
         return_error(
-            'Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
-                event_ids, BASE_URL + query_path, res.status_code, res.text))
+            f'Failed to get security events with ids {event_ids}.\n'
+            f'Full URL: {BASE_URL + query_path}\nStatus Code: {res.status_code}\nResponse Body: {res.text}'
+        )
 
     res_json = parse_json_response(res)
     if res_json.get('sev.getSecurityEventsResponse') and res_json.get('sev.getSecurityEventsResponse').get(
@@ -786,8 +788,10 @@ def get_entries_command(use_rest, args):
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error("Failed to get entries:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
-            resource_id, res.status_code, body, res.text))
+        return_error(
+            f"Failed to get entries:\nResource ID: {resource_id}\n"
+            f"Status Code: {res.status_code}\nRequest Body: {body}\nResponse: {res.text}"
+        )
 
     if use_rest:
         res_json = parse_json_response(res)
@@ -858,8 +862,9 @@ def clear_entries_command(use_rest, args):
     if not res.ok:
         demisto.debug(res.text)
         return_error(
-            "Failed to clear entries.\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
-                resource_id, res.status_code, body, res.text))
+            f"Failed to clear entries.\nResource ID: {resource_id}\n"
+            f"Status Code: {res.status_code}\nRequest Body: {body}\nResponse: {res.text}"
+        )
 
     demisto.results("Success")
 
@@ -934,10 +939,11 @@ def add_entries_command(args):
     res = send_request(query_path, body=body)
 
     if not res.ok:
-        raise ValueError("Failed to add entries. Please make sure to enter Active List resource ID"
-                         "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(resource_id,
-                                                                                                     res.status_code, body,
-                                                                                                     res.text))
+        raise ValueError(
+            "Failed to add entries. Please make sure to enter Active List resource ID"
+            f"\nResource ID: {resource_id}\nStatus Code: {res.status_code}\n"
+            f"Request Body: {body}\nResponse: {res.text}"
+        )
 
     demisto.results("Success")
 

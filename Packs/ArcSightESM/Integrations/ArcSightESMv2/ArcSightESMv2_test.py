@@ -591,11 +591,13 @@ def test_valid_json_response():
     valid_response._content = b'{"key": "value"}'
     assert parse_json_response(valid_response) == {"key": "value"}
 
+
 def test_invalid_json_with_escape_sequence():
     invalid_response = requests.Response()
     invalid_response.status_code = 200
     invalid_response._content = b'{"key": "value with \\ backslash"}'
     assert parse_json_response(invalid_response) == {"key": "value with \\ backslash"}
+
 
 def test_invalid_json_with_multiple_escape_sequences():
     complex_invalid_response = requests.Response()
@@ -603,17 +605,25 @@ def test_invalid_json_with_multiple_escape_sequences():
     complex_invalid_response._content = b'{"key": "value with \\ backslash and \\" quote"}'
     assert parse_json_response(complex_invalid_response) == {"key": 'value with \\ backslash and " quote'}
 
+
 def test_invalid_json_requiring_fixing_json_string():
     broken_json_response = requests.Response()
     broken_json_response.status_code = 200
     broken_json_response._content = b'{"$": "value with "quotes" inside"}'
     assert parse_json_response(broken_json_response) == {"$": 'value with "quotes" inside'}
 
+
 def test_invalid_json_requiring_fixing_json_string_with_multi_json_object():
     broken_json_response = requests.Response()
     broken_json_response.status_code = 200
     broken_json_response._content = b'{"test":[{"test1": "test_val", "$": "value with "quotes" inside"},{"$": "value with "quotes" inside"}]}'
-    assert parse_json_response(broken_json_response) == {"test":[{"test1": "test_val",'$': 'value with "quotes" inside'}, {'$': 'value with "quotes" inside'}]}
+    assert parse_json_response(broken_json_response) == {
+        "test": [
+            {"test1": "test_val", '$': 'value with "quotes" inside'},
+            {'$': 'value with "quotes" inside'}
+            ]
+        }
+
 
 def test_unfixable_json_response():
     unfixable_response = requests.Response()
@@ -621,4 +631,3 @@ def test_unfixable_json_response():
     unfixable_response._content = b'{"key": "value"'  # Missing closing brace
     with pytest.raises(json.JSONDecodeError):
         parse_json_response(unfixable_response)
-
