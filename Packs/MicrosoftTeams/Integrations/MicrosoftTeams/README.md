@@ -49,6 +49,15 @@ In order to verify that the messaging endpoint is open as expected, you can surf
     - microsoftonline.com
 When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u), it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
+## First time setup
+
+Refer to the [Setup Video](#setup-video) and the [Prerequisites](#prerequisites) sections for detailed steps to configure the teams bot and instance for the first time.
+
+**Important notes:**
+
+- The steps should be performed in order to ensure no communication between the services is lost.
+- Refer to the [Setup Examples](#setup-examples) for information regarding advanced setups.
+
 ## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM.
 
 ### Using Cortex XSOAR or Cortex XSIAM rerouting
@@ -155,8 +164,8 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 
 ### Create the Demisto Bot in Microsoft Teams
 
-
 #### Creating the Demisto Bot using Microsoft Azure Portal
+
 1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
 2. In the Bot Handle field, type **Demisto Bot**.
 3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
@@ -165,7 +174,11 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 6. Click **Review + Create**, and wait for the validation to pass.
 7. Click **create** if the validation has passed, and wait for the deployment to finish.
 8. Under Next Steps, click **Go to resource**.
-9. Navigate to **Configuration** on the left bar, and fill in the **Messaging Endpoint**. (To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations. use the `microsoft-teams-create-messaging-endpoint`command).
+9. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
+
+    - To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations. use the `microsoft-teams-create-messaging-endpoint`command.
+**Note:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#configure-microsoft-teams-on-cortex-xsoar) section.
+
 10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
 11. Click **New Client Secret**, fill in the **Description** and **Expires** fields as desired. Then click **Add**.
 12. Copy the client secret from the **value** field and store it for the next steps.
@@ -247,7 +260,6 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
    - TeamsAppInstallation.ReadWriteForTeam
 9. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
 
-
 ### Configure Microsoft Teams on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -290,7 +302,8 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 5. Set the *Long running instance* parameter to 'True'.
 6. Save the instance.
 7. Click **Test** to validate the URLs, token, and connection.
-8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
+8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
+9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
 ##### Authentication Using the Authorization Code Flow
 
@@ -301,35 +314,38 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 5. Set the *Default team* and the *Notifications channel* parameters.
 6. Set the *Long running instance* parameter to 'True'.
 7. Save the instance.
-8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
-9. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
-10. Save the instance.
-11. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
-
+8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
+9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
+10. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
+11. Save the instance.
+12. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
 ### Add the Demisto Bot to a Team
 
 **Notes:**
+
 - The following needs to be done after configuring the integration on Cortex XSOAR/Cortex XSIAM (the previous step).
 - According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
 1. Download the ZIP file located at the bottom of this article.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
-4. In the `id`, replace the value of the attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-5. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-6. In the `webApplicationInfo`, replace the value of `id` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-7. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
-8. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
-9. Click the **Actions** button and then the **+ Upload new app** button.
-10. In the pop-up window, click the **Upload** button.
-11. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
-12. Search for **Demisto Bot**.
-13. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
-14. Click the **Add to team** button.
-15. In the search box, type the name of the team to which you want to add the bot.
-16. Click the **Add** button on the wanted team and then click the **Apply** button.
+4. Update the following values to use the *Bot ID* from step 5 of the [Create the Demisto Bot in Microsoft Teams](#creating-the-demisto-bot-using-microsoft-azure-portal) section:
 
+    1. The `id` field.
+    2. The `BotId` attribute in the `bots` list.
+    3. The `id` attribute in the `webApplicationInfo` field.
+
+5. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
+6. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
+7. Click the **Actions** button and then the **+ Upload new app** button.
+8. In the pop-up window, click the **Upload** button.
+9. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
+10. Search for **Demisto Bot**.
+11. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
+12. Click the **Add to team** button.
+13. In the search box, type the name of the team to which you want to add the bot.
+14. Click the **Add** button on the wanted team and then click the **Apply** button.
 
 ## Known Limitations
 ---
@@ -1243,6 +1259,7 @@ If your authentication type is the `Authorization Code Flow`, after running the 
    First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
    If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
 5. If the previous step did not work, remove the bot from the team, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), then add the bot to the team again.
+6. If you are receiving repeated `Connection reset by peer` errors, the requests might be getting blocked temporarily by Azure due to repeated permission errors. Ensure you are not missing any permissions that might cause constant failures and eventually leading to server timeouts.
 
 ## Download Demisto Bot
 
