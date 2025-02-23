@@ -8,6 +8,13 @@ from CommonServerUserPython import *
 
 
 def create_human_readable(response: dict) -> str:
+    """
+    Creates the human readable of the command.
+    Args:
+        response (dict): the response of the command.
+    Returns:
+        A string representing the human readable of the command.
+    """
     message = response.get('Contents')
     demisto.debug(f"BEI: {message=}")
     headers = ['Status', 'Result', 'Created rule name', 'Used integration', 'Message']
@@ -42,6 +49,13 @@ def create_human_readable(response: dict) -> str:
 
 
 def create_context(response: dict) -> dict:
+    """
+    Creates the context data of the command.
+    Args:
+        response (dict): the response of the command.
+    Returns:
+        A dict, representing the context of the command.
+    """
     message = response.get('Contents')
     source = response.get('Metadata', {}).get('brand')
     if message and 'Failed' in message:
@@ -75,7 +89,7 @@ def run_execute_command(command_name: str, args: dict[str, Any], verbose : bool)
         args (dict[str, Any]): A dictionary of arguments to pass to the command.
         verbose (boll): Whether to retrieve human readable entry for every command or only the final result.
     Returns:
-
+        A list of the relevant command results.
     """
     demisto.debug(f"BEI: Executing command: {command_name} {args=}")
     res = demisto.executeCommand(command_name, args)
