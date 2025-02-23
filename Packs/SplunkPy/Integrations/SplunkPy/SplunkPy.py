@@ -17,7 +17,7 @@ from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 INTEGRATION_LOG = "Splunk- "
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
-INDEXES_REGEX = r"""["'][\s]*index[\s]*["'][\s]*:[\s]*["']([^"']+)["']"""
+INDEXES_REGEX = r"""["'][ ]*index[ ]*["'][\s]*:[\s]*["']([^"']+)["']"""
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -2779,11 +2779,9 @@ def splunk_submit_event_command(service: client.Service, args: dict):
 def validate_indexes(indexes, service):
     """Validates that all provided Splunk indexes exist within the Splunk service instance."""
     real_indexes = service.indexes
-    real_indexes_names_set = set()
-    for real_index in real_indexes:
-        real_indexes_names_set.add(real_index.name)
-    indexes_set = set(indexes)
-    return indexes_set.issubset(real_indexes_names_set)
+    for index in indexes:
+        if index not in real_indexes:
+            demisto.debug(f"Index {index} not found in Splunk instance, the related event will be skipped.")
 
 
 def get_events_from_file(entry_id):
@@ -2842,6 +2840,9 @@ def extract_indexes(events: str | dict):
     """
     events_str = str(events)
     indexes = re.findall(INDEXES_REGEX, events_str)
+    if not indexes:
+        demisto.debug("No indexes were given, sending event/s to the default index.")
+    demisto.debug(f"Indexes found: {indexes}")
     return indexes
 
 
@@ -2884,10 +2885,7 @@ def splunk_submit_event_hec(
         )
     indexes = extract_indexes(events)
 
-    if not validate_indexes(indexes, service):
-        raise DemistoException('Index name does not exist in your splunk instance')
-
-    demisto.debug("All indexes are valid, sending events to Splunk.")
+    validate_indexes(indexes, service)
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
