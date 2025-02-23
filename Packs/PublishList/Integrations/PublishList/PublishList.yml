@@ -53,7 +53,7 @@ description: The Publish List integration is used to publish XSOAR lists for ext
 display: Publish List
 name: Publish List
 script:
-  dockerimage: demisto/fastapi:0.115.4.115067
+  dockerimage: demisto/fastapi:0.115.8.2108714
   longRunning: true
   longRunningPort: true
   script: ''
