@@ -254,7 +254,7 @@ def create_ticket():
         raw_ticket_res = create_ticket_attachments_request(encoded, files_data)
     else:
         raw_ticket_res = create_ticket_request(encoded)
-    ticket_id = re.findall('\d+', raw_ticket_res.text)[-1]
+    ticket_id = re.findall(r'\d+', raw_ticket_res.text)[-1]
     demisto.debug(f"got ticket with id: {ticket_id}")
     if ticket_id == -1:
         raise DemistoException('Ticket creation failed')
@@ -267,7 +267,7 @@ def create_ticket():
     referred_to_by = args.get('referred-to-by')
 
     if members or member_of or depends_on or depended_on_by or refers_to or referred_to_by:
-        edit_links(ticket_id, members, member_of, depends_on, depended_on_by, refers_to, referred_to_by)
+        edit_links(ticket_id, member_of, members, depends_on, depended_on_by, refers_to, referred_to_by)
 
     ticket_context = ({
         'ID': ticket_id,
@@ -534,7 +534,7 @@ def edit_ticket():
     referred_to_by = args.get('referred-to-by')
 
     if members or member_of or depends_on or depended_on_by or refers_to or referred_to_by:
-        links = edit_links(ticket_id, members, member_of, depends_on, depended_on_by, refers_to, referred_to_by)
+        links = edit_links(ticket_id, member_of, members, depends_on, depended_on_by, refers_to, referred_to_by)
         if "200 Ok" in links.text:
             edit_succeeded = True
 
@@ -934,8 +934,7 @@ def get_ticket_id(ticket):
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_ticket_id = last_run['ticket_id'] if (last_run and last_run['ticket_id']) else 0
-    raw_query = 'id>{}+AND+Priority>{}+AND+Queue={}{}{}'.format(last_ticket_id, FETCH_PRIORITY, apostrophe, FETCH_QUEUE,
-                                                                apostrophe)
+    raw_query = f'id>{last_ticket_id}+AND+Priority>{FETCH_PRIORITY}+AND+Queue={apostrophe}{FETCH_QUEUE}{apostrophe}'
     if FETCH_STATUS:
         status_list = FETCH_STATUS.split(',')
         status_query = '+AND+('
