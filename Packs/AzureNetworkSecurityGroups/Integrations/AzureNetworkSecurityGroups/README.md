@@ -1009,7 +1009,7 @@ Creates or updates a network interface.
             },
             "enableAcceleratedNetworking": false,
             "enableIPForwarding": false,
-            "etag": "9951f336-2839-426b-864f-9f7b6e5712228",
+            "etag": "74523636-2749-426b-745f-9f41512228",
             "hostedWorkloads": [],
             "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test",
             "ipConfigurationName": [
@@ -1037,7 +1037,7 @@ Creates or updates a network interface.
             ],
             "ipConfigurations": [
                 {
-                    "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                    "etag": "W/\"74523636-2749-426b-745f-9f41512228\"",
                     "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
                     "name": "ipconfig1",
                     "properties": {
@@ -1073,7 +1073,7 @@ Creates or updates a network interface.
                 "hostedWorkloads": [],
                 "ipConfigurations": [
                     {
-                        "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                        "etag": "W/\"74523636-2749-426b-745f-9f41512228\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
                         "name": "ipconfig1",
                         "properties": {
@@ -1113,7 +1113,7 @@ Creates or updates a network interface.
 >### Network Interface
 >|Name|Etag|Provisioning State|Ip Configuration Name|Ip Configuration Private IP Address|Subnet Id|
 >|---|---|---|---|---|---|
->| test | 9951f336-2839-426b-864f-9f7b6e5712228 | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
+>| test | 74523636-2749-426b-745f-9f41512228 | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
 
 
 #### Command example
@@ -1135,7 +1135,7 @@ Creates or updates a network interface.
             },
             "enableAcceleratedNetworking": false,
             "enableIPForwarding": false,
-            "etag": "b91a6977-be89-4454-9d76-5c1218427dec",
+            "etag": "b5266977-8529-4415-9476-5884552427dec",
             "hostedWorkloads": [],
             "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test",
             "ipConfigurationName": [
@@ -1163,7 +1163,7 @@ Creates or updates a network interface.
             ],
             "ipConfigurations": [
                 {
-                    "etag": "W/\"b91a6977-be89-4454-9d76-5c1218427dec\"",
+                    "etag": "W/\"b5266977-8529-4415-9476-5884552427dec\"",
                     "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
                     "name": "ipconfig1",
                     "properties": {
@@ -1202,7 +1202,7 @@ Creates or updates a network interface.
                 "hostedWorkloads": [],
                 "ipConfigurations": [
                     {
-                        "etag": "W/\"b91a6977-be89-4454-9d76-5c1218427dec\"",
+                        "etag": "W/\"b5266977-8529-4415-9476-5884552427dec\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
                         "name": "ipconfig1",
                         "properties": {
@@ -1245,7 +1245,7 @@ Creates or updates a network interface.
 >### Network Interface
 >|Name|Etag|Provisioning State|Ip Configuration Name|Ip Configuration Private IP Address|Subnet Id|
 >|---|---|---|---|---|---|
->| test | b91a6977-be89-4454-9d76-5c1218427dec | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
+>| test | b5266977-8529-4415-9476-5884552427dec | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
 
 
 ### azure-nsg-virtual-networks-list
@@ -1294,7 +1294,7 @@ Gets virtual networks in a resource group.
                 ]
             },
             "enableDdosProtection": false,
-            "etag": "702f1e03-4a6b-43de-a0ae-d09cc4808ba5",
+            "etag": "78562e03-4a6b-4845-dswae-ds541c4808ba5",
             "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet",
             "location": "westeurope",
             "name": "reso-vnet",
@@ -1311,7 +1311,7 @@ Gets virtual networks in a resource group.
                 "resourceGuid": "60d3a04a-d654-49e9-abf1-a4f0f33230b9",
                 "subnets": [
                     {
-                        "etag": "W/\"702f1e03-4a6b-43de-a0ae-d09cc4808ba5\"",
+                        "etag": "W/\"78562e03-4a6b-4845-dswae-ds541c4808ba5\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default",
                         "name": "default",
                         "properties": {
@@ -1414,7 +1414,7 @@ Gets virtual networks in a resource group.
             ],
             "subnets": [
                 {
-                    "etag": "W/\"702f1e03-4a6b-43de-a0ae-d09cc4808ba5\"",
+                    "etag": "W/\"78562e03-4a6b-4845-dswae-ds541c4808ba5\"",
                     "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default",
                     "name": "default",
                     "properties": {
@@ -1468,7 +1468,7 @@ Gets virtual networks in a resource group.
 >### Virtual Networks List
 >|Name|Etag|Location|Address Prefixes|Subnet Name|Subnet Adrdress Prefix|Subnet ID|
 >|---|---|---|---|---|---|---|
->| reso-vnet | 702f1e03-4a6b-43de-a0ae-d09cc4808ba5 | westeurope | 1.1.1.1/16 | default | 1.1.1.1/24 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR___/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/B_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC1/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC2/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/TEST/ipConfigurations/IPCONFIG1 |
+>| reso-vnet | 78562e03-4a6b-4845-dswae-ds541c4808ba5 | westeurope | 1.1.1.1/16 | default | 1.1.1.1/24 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR___/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/B_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC1/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC2/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/TEST/ipConfigurations/IPCONFIG1 |
 
 
 ### azure-nsg-security-group-create
@@ -1505,14 +1505,14 @@ Creates a network security group in the specified resource group.
 {
     "AzureNSG": {
         "SecurityGroup": {
-            "etag": "793369e4-1c53-4d8e-b36d-a064fbb7ee78",
+            "etag": "8459e4-6553-526e-bsad-asx54dxbb7ee78",
             "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo",
             "location": "westeurope",
             "name": "b_tdemo",
             "properties": {
                 "defaultSecurityRules": [
                     {
-                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "etag": "W/\"8459e4-6553-526e-bsad-asx54dxbb7ee78\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/AllowVnetInBound",
                         "name": "AllowVnetInBound",
                         "properties": {
@@ -1534,7 +1534,7 @@ Creates a network security group in the specified resource group.
                         "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
                     },
                     {
-                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "etag": "W/\"8459e4-6553-526e-bsad-asx54dxbb7ee78\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/AllowAzureLoadBalancerInBound",
                         "name": "AllowAzureLoadBalancerInBound",
                         "properties": {
@@ -1556,7 +1556,7 @@ Creates a network security group in the specified resource group.
                         "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
                     },
                     {
-                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "etag": "W/\"8459e4-6553-526e-bsad-asx54dxbb7ee78\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/DenyAllInBound",
                         "name": "DenyAllInBound",
                         "properties": {
@@ -1578,7 +1578,7 @@ Creates a network security group in the specified resource group.
                         "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
                     },
                     {
-                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "etag": "W/\"8459e4-6553-526e-bsad-asx54dxbb7ee78\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/AllowVnetOutBound",
                         "name": "AllowVnetOutBound",
                         "properties": {
@@ -1600,7 +1600,7 @@ Creates a network security group in the specified resource group.
                         "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
                     },
                     {
-                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "etag": "W/\"8459e4-6553-526e-bsad-asx54dxbb7ee78\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/AllowInternetOutBound",
                         "name": "AllowInternetOutBound",
                         "properties": {
@@ -1622,7 +1622,7 @@ Creates a network security group in the specified resource group.
                         "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
                     },
                     {
-                        "etag": "W/\"793369e4-1c53-4d8e-b36d-a064fbb7ee78\"",
+                        "etag": "W/\"8459e4-6553-526e-bsad-asx54dxbb7ee78\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkSecurityGroups/b_tdemo/defaultSecurityRules/DenyAllOutBound",
                         "name": "DenyAllOutBound",
                         "properties": {
@@ -1660,7 +1660,7 @@ Creates a network security group in the specified resource group.
 >### Security Group List
 >|Name|Etag|Location|
 >|---|---|---|
->| b_tdemo | 793369e4-1c53-4d8e-b36d-a064fbb7ee78 | westeurope |
+>| b_tdemo | 8459e4-6553-526e-bsad-asx54dxbb7ee78 | westeurope |
 
 
 ### azure-nsg-network-interfaces-list
@@ -1722,7 +1722,7 @@ Gets network interfaces in a resource group.
                 },
                 "enableAcceleratedNetworking": false,
                 "enableIPForwarding": false,
-                "etag": "W/\"4f006f0c-acd1-4aeb-8d53-37ae4159f05a\"",
+                "etag": "W/\"ds06f0c-d74s1-42eb-8d53-37ae4159f05a\"",
                 "hostedWorkloads": [],
                 "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te",
                 "internalDomainNameSuffix": "example.ax.internal.cloudapp.net",
@@ -1737,15 +1737,15 @@ Gets network interfaces in a resource group.
                 ],
                 "ipConfigurationPublicIPAddress": [
                     {
-                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                        "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name"
                     }
                 ],
                 "ipConfigurationPublicIPAddressName": [
-                    "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                    "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name"
                 ],
                 "ipConfigurations": [
                     {
-                        "etag": "W/\"4f006f0c-acd1-4aeb-8d53-37ae4159f05a\"",
+                        "etag": "W/\"ds06f0c-d74s1-42eb-8d53-37ae4159f05a\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1",
                         "name": "ipconfig1",
                         "properties": {
@@ -1755,7 +1755,7 @@ Gets network interfaces in a resource group.
                             "privateIPAllocationMethod": "Dynamic",
                             "provisioningState": "Succeeded",
                             "publicIPAddress": {
-                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                                "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name"
                             },
                             "subnet": {
                                 "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
@@ -1772,7 +1772,7 @@ Gets network interfaces in a resource group.
                         "privateIPAllocationMethod": "Dynamic",
                         "provisioningState": "Succeeded",
                         "publicIPAddress": {
-                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name"
                         },
                         "subnet": {
                             "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
@@ -1802,7 +1802,7 @@ Gets network interfaces in a resource group.
                     "hostedWorkloads": [],
                     "ipConfigurations": [
                         {
-                            "etag": "W/\"4f006f0c-acd1-4aeb-8d53-37ae4159f05a\"",
+                            "etag": "W/\"ds06f0c-d74s1-42eb-8d53-37ae4159f05a\"",
                             "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1",
                             "name": "ipconfig1",
                             "properties": {
@@ -1812,7 +1812,7 @@ Gets network interfaces in a resource group.
                                 "privateIPAllocationMethod": "Dynamic",
                                 "provisioningState": "Succeeded",
                                 "publicIPAddress": {
-                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST"
+                                    "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name"
                                 },
                                 "subnet": {
                                     "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default"
@@ -1851,7 +1851,7 @@ Gets network interfaces in a resource group.
                 },
                 "enableAcceleratedNetworking": false,
                 "enableIPForwarding": false,
-                "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                "etag": "W/\"74523636-2749-426b-745f-9f41512228\"",
                 "hostedWorkloads": [],
                 "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test",
                 "internalDomainNameSuffix": "example.ax.internal.cloudapp.net",
@@ -1866,7 +1866,7 @@ Gets network interfaces in a resource group.
                 ],
                 "ipConfigurations": [
                     {
-                        "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                        "etag": "W/\"74523636-2749-426b-745f-9f41512228\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
                         "name": "ipconfig1",
                         "properties": {
@@ -1914,7 +1914,7 @@ Gets network interfaces in a resource group.
                     "hostedWorkloads": [],
                     "ipConfigurations": [
                         {
-                            "etag": "W/\"9951f336-2839-426b-864f-9f7b6e5712228\"",
+                            "etag": "W/\"74523636-2749-426b-745f-9f41512228\"",
                             "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1",
                             "name": "ipconfig1",
                             "properties": {
@@ -1957,7 +1957,7 @@ Gets network interfaces in a resource group.
                 },
                 "enableAcceleratedNetworking": false,
                 "enableIPForwarding": false,
-                "etag": "W/\"330eecfe-c3f8-4f5e-8af0-6a21d4a1c80a\"",
+                "etag": "W/\"ds4decfe-d4s58-d545e-8af0-6a21d4a1c80a\"",
                 "hostedWorkloads": [],
                 "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___",
                 "internalDomainNameSuffix": "example.ax.internal.cloudapp.net",
@@ -1972,7 +1972,7 @@ Gets network interfaces in a resource group.
                 ],
                 "ipConfigurations": [
                     {
-                        "etag": "W/\"330eecfe-c3f8-4f5e-8af0-6a21d4a1c80a\"",
+                        "etag": "W/\"ds4decfe-d4s58-d545e-8af0-6a21d4a1c80a\"",
                         "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___/ipConfigurations/ipconfig1",
                         "name": "ipconfig1",
                         "properties": {
@@ -2023,7 +2023,7 @@ Gets network interfaces in a resource group.
                     "hostedWorkloads": [],
                     "ipConfigurations": [
                         {
-                            "etag": "W/\"330eecfe-c3f8-4f5e-8af0-6a21d4a1c80a\"",
+                            "etag": "W/\"ds4decfe-d4s58-d545e-8af0-6a21d4a1c80a\"",
                             "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___/ipConfigurations/ipconfig1",
                             "name": "ipconfig1",
                             "properties": {
@@ -2064,7 +2064,7 @@ Gets network interfaces in a resource group.
 >### Network Interfaces List
 >|Name|Id|Provisioning State|Ip Configuration Name|Ip Configuration ID|Ip Configuration Private IP Address|Ip Configuration Public IP Address Name|Internal Domain Name Suffix|Location|Kind|
 >|---|---|---|---|---|---|---|---|---|---|
->| b_te | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST | example.ax.internal.cloudapp.net | westeurope | Regular |
+>| b_te | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name | example.ax.internal.cloudapp.net | westeurope | Regular |
 >| test | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1 | 1.1.1.1 |  | example.ax.internal.cloudapp.net | westeurope | Regular |
 >| b___ | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___ | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___/ipConfigurations/ipconfig1 | 1.1.1.1 |  | example.ax.internal.cloudapp.net | westeurope | Regular |
 
@@ -2110,8 +2110,8 @@ Gets public IP addresses in a resource group.
             "ddosSettings": {
                 "protectionMode": "Enabled"
             },
-            "etag": "f71be785-f134-4ccc-a1f9-b044415d9969",
-            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST",
+            "etag": "54525785-f484-4dsa-a419-452115d9969",
+            "id": "/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name",
             "idleTimeoutInMinutes": 4,
             "ipAddress": "1.1.1.1",
             "ipConfiguration": {
@@ -2119,7 +2119,7 @@ Gets public IP addresses in a resource group.
             },
             "ipTags": [],
             "location": "westeurope",
-            "name": "WinVM-CRTX-71942-ip-TEST",
+            "name": "public-ip-name",
             "properties": {
                 "ddosSettings": {
                     "protectionMode": "Enabled"
@@ -2160,6 +2160,6 @@ Gets public IP addresses in a resource group.
 >### Public IP Addresses List
 >|Name|Id|Etag|Provisioning State|Public IP Address Version|Ip Address|
 >|---|---|---|---|---|---|
->| WinVM-CRTX-71942-ip-TEST | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/WinVM-CRTX-71942-ip-TEST | f71be785-f134-4ccc-a1f9-b044415d9969 | Succeeded | IPv4 | 1.1.1.1 |
+>| public-ip-name | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name | 54525785-f484-4dsa-a419-452115d9969 | Succeeded | IPv4 | 1.1.1.1 |
 
 
