@@ -3303,7 +3303,7 @@ def get_alert_properties(args: dict[str, Any]) -> tuple:
 
     ticket_prefix = 'ticket_'
     alert_properties = [(alert_property,
-                         argToList(args.get(ticket_prefix + alert_property, 'All')))
+                         argToList(args.get(ticket_prefix + alert_property)))
                         for alert_property in
                         ['impact', 'status', 'risk', 'urgency', 'priority']]
 
