@@ -8,12 +8,14 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Network Security"
+        "Network Security",
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }
