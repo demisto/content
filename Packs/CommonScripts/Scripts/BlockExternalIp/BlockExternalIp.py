@@ -11,7 +11,7 @@ def create_human_readable(response: dict) -> str:
     message = response.get('Contents')
     demisto.debug(f"BEI: {message=}")
     headers = ['Status', 'Result', 'Created rule name', 'Used integration', 'Message']
-    if 'Failed' in message:
+    if message and 'Failed' in message:
         d = {
             "Status": "Done",
             "Result": "Failed",
@@ -44,7 +44,7 @@ def create_human_readable(response: dict) -> str:
 def create_context(response: dict) -> dict:
     message = response.get('Contents')
     source = response.get('Metadata', {}).get('brand')
-    if 'Failed' in message:
+    if message and 'Failed' in message:
         return {
             "Message": message,
             "Result": "Failed",
@@ -65,7 +65,7 @@ def create_context(response: dict) -> dict:
 """ COMMAND FUNCTION """
 
 
-def run_execute_command(command_name: str, args: dict[str, Any]) -> list[CommandResults]:
+def run_execute_command(command_name: str, args: dict[str, Any], verbose : bool) -> list[CommandResults]:
     """
     Executes a command and processes its results.
     This function runs a specified command with given arguments, handles any errors,
@@ -73,6 +73,7 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> list[Command
     Args:
         command_name (str): The name of the command to execute.
         args (dict[str, Any]): A dictionary of arguments to pass to the command.
+        verbose (boll): Whether to retrieve human readable entry for every command or only the final result.
     Returns:
 
     """
@@ -81,7 +82,11 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> list[Command
     demisto.debug(f"BEI: The response {res}")
     results = []
     for entry in res:
-        hr = create_human_readable(entry)  # TODO check what to do if there are more hr from the commands.
+        command_hr = entry.get('HumanReadable')
+        if verbose and command_hr:
+            demisto.debug(f"BEI: The command has {verbose=}, adding {command_hr=}")
+            results.append(CommandResults(readable_output=command_hr))
+        hr = create_human_readable(entry)
         context = create_context(entry)
         demisto.debug(f"BEI: {hr=} {context=}")
         results.append(CommandResults(
@@ -127,7 +132,8 @@ def main():
                         'ip': ip_list_arg
                     }
                     command_name = 'zscaler-blacklist-ip'
-                    return_results(run_execute_command(command_name, args))
+                    return_results(run_execute_command(command_name, args, verbose))
+
                 elif brand == "Cisco ASA":
                     results = []
                     command_name = 'cisco-asa-create-rule'
@@ -138,10 +144,11 @@ def main():
                             "source": "0.0.0.0",
                             "permit": False
                         }
-                        result = run_execute_command(command_name, args)
+                        result = run_execute_command(command_name, args, verbose)
                         results.append(result)
                     demisto.debug(f"BEI: return {results=}")
                     return_results(results)
+
                 elif brand == "F5Silverline":
                     command_name = "f5-silverline-ip-object-add"
                     results = []
@@ -151,16 +158,17 @@ def main():
                             "cidr_range": ip,
                             "tags": tag
                         }
-                        result = run_execute_command(command_name, args)
+                        result = run_execute_command(command_name, args, verbose)
                         results.append(result)
                     demisto.debug(f"BEI: return {results=}")
                     return_results(results)
+
                 elif brand == "FortiGate":
                     command_name = "fortigate-ban-ip"
                     args = {
                         "ip_address": ip_list_arg
                     }
-                    return_results(run_execute_command(command_name, args))
+                    return_results(run_execute_command(command_name, args, verbose))
 
                 else:
                     return_error(f"The brand {brand} isn't a part of the supported integration for 'block-external-ip'. "
