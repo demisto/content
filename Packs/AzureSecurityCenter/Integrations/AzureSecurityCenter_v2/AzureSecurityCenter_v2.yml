@@ -466,7 +466,7 @@ script:
       type: Unknown
     - contextPath: Azure.ResourceGroupName.properties.provisioningState
       description: Resource group provisioning state.
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2005673
   runonce: false
   script: '-'
   type: python

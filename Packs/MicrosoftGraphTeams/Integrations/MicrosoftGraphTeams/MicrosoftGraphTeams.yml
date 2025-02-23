@@ -302,7 +302,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-teams-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2005673
   script: ''
   subtype: python3
   type: python
