@@ -43,23 +43,27 @@ def generate_mocked_event(event_time: int):
     
 
 @pytest.mark.parametrize(
-    'scenario, last_fetch, limit, events_amount, events_per_time, new_events_amount',
+    'scenario, last_fetch, limit, events_amount, events_per_time, new_events_amount, last_event_time, events_size',
     [
         (
             'get all events between the timespan',  # scenario
             1,  # last_fetch
-            7, # limit
-            0, #events_amount
+            10, # limit
+            0, # events_amount
             [2,5,6,7,8,9,9], # events_per_time,
             0, # new_events_amount
+            9, # last_event_time
+            7, # events_size
         ),
         (
-            'testing starting from a timestamp where we already have existing events in the last fetch (dedup)',  # scenario
+            'testing starting from a timestamp where we already have existing events in the last fetch',  # scenario
             2,  # last_fetch
             3, # limit
-            2, #events_amount
+            3, # events_amount
             [2,2,2,7,8,55], # events_per_time
-            0, # new_events_amount
+            1, # new_events_amount
+            55, # last_event_time
+            3, # events_size
         ),
         (
             'all events were already fetched',  # scenario
@@ -68,6 +72,8 @@ def generate_mocked_event(event_time: int):
             3, #events_amount
             [9,9,9], # events_per_time
             0, # new_events_amount
+            0, # last_event_time
+            0, # events_size
         ),
         (
             'fetch more than limit',  # scenario
@@ -75,7 +81,9 @@ def generate_mocked_event(event_time: int):
             3, # limit
             0, #events_amount
             [2,5,6,7,8,9], # events_per_time
-            0, # new_events_amount
+            1, # new_events_amount
+            6, # last_event_time
+            3, # events_size
         ),
         (
             'fetch multiple events at the same time',  # scenario
@@ -84,32 +92,32 @@ def generate_mocked_event(event_time: int):
             0, #events_amount
             [2,5,8,8,8,8], # events_per_time
             3, # new_events_amount
+            8, # last_event_time
+            5, # events_size
         ),
     ]
 )
 
-def test_fetch_events(mocker, scenario, last_fetch, limit, events_amount, events_per_time, new_events_amount):
+def test_fetch_events(mocker, scenario, last_fetch, limit, events_amount, events_per_time, new_events_amount, last_event_time, events_size):
 
     def mock_get_events(from_date, to_time):
         events = [generate_mocked_event(event_time) for event_time in events_per_time]
         return {
-            'auditRecord': events[:limit],
+            'auditRecord': events,
             'total_count': len(events),
         }
 
     mocked_client = mocker.Mock()
     mocked_client.get_logs.side_effect = mock_get_events
-    mocked_client.limit = limit
+    mocked_client.max_fetch = limit
 
-    last_run = {'events_amount': new_events_amount}
-
-    mocked_demisto_get_last_run = mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
-
+    last_run = {'events_amount': events_amount, 'last_fetch': last_fetch}
     next_run, events = fetch_events(
         client=mocked_client,
         last_run=last_run,
     )
 
-    assert len(events) == limit
-    assert mocked_demisto_get_last_run.return_value.get('events_amount') == next_run.get('events_amount'), f'{scenario} - set last run does not match expected value'
-    assert events[-1].get('timeStamp') == events_per_time[limit-1]
+    assert len(events) == events_size
+    assert next_run.get('events_amount') == new_events_amount, f'{scenario} - set last run does not match expected value'
+    if events:
+        assert events[-1].get('timeStamp') == last_event_time

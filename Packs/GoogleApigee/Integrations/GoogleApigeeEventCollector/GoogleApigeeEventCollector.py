@@ -30,11 +30,11 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool,
-                 org_name: str, zone: str, limit=DEFAULT_LIMIT, **kwargs):
+                 org_name: str, zone: str, limit: int=DEFAULT_LIMIT, **kwargs):
         self.username = username
         self.password = password
         self.org_name = org_name
-        self.limit = limit
+        self.max_fetch = limit
         self.zone = zone
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
@@ -103,7 +103,6 @@ class Client(BaseClient):
         }
         zone = f'{self.zone}.' if self.zone else ''
         url = f'https://{zone}login.apigee.com/oauth/token'
-        # TODO: differ between refresh and new?
         token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
         return token_response.get('access_token'), token_response.get('expires_in')
 
@@ -154,18 +153,17 @@ def search_events(client, last_run: Dict[str, float]) -> tuple[List[Dict[str, An
     logs = logs_response.get('auditRecord', [])
     if not logs:
         return events, {'last_fetch': to_time, 'events_amount': events_count}
-
     events_amount = last_run.get('events_amount', 0)
+    event_to_reduce = 0
     for event in logs:
-        if event.get('timeStamp') == last_fetch and events_amount >= 1:
+        if event.get('timeStamp') == last_fetch and events_amount > 0:
             events_amount -= 1
-            logs.pop(0)
+            event_to_reduce += 1
         else:
             break
-    
-    events = logs[:client.limit + 1]
-    time_stamp = events[-1].get('timeStamp')
-    if len(events) == client.limit:
+    events = logs[event_to_reduce : event_to_reduce + client.max_fetch]
+    time_stamp = events[-1].get('timeStamp') if events else 0
+    if len(events) == client.max_fetch:
         to_time = time_stamp
     # could be less than limit and still same
     if time_stamp == to_time:
@@ -189,7 +187,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        from_time = time.time() - 10000
+        from_time = int(time.time()) - 10000
         search_events(client, last_run={'last_fetch': from_time})
 
     except Exception as e:
@@ -202,7 +200,7 @@ def test_module(client: Client) -> str:
 
 
 def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
-    from_date = arg_to_number(args.get('from_date')) or time.time()
+    from_date = arg_to_number(args.get('from_date')) or int(time.time())
     events, _ = search_events(client, {'last_fetch': from_date})
     hr = tableToMarkdown(name='Audit Logs', t=events)
     return events, CommandResults(readable_output=hr, raw_response=events)
