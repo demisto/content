@@ -110,16 +110,20 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         model_type = FASTTEXT_MODEL_TYPE
     if model_type not in [FASTTEXT_MODEL_TYPE, TORCH_TYPE, UNKNOWN_MODEL_TYPE]:
         model_type = UNKNOWN_MODEL_TYPE
+    demisto.debug(f"DBPW: Got {model_type=}")
 
     phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
+    demisto.debug(f"DBPW: Got {email_subject=} and {email_body=}")
 
     is_model_applied_on_a_single_incidents = isinstance(email_subject, str) and isinstance(email_body, str)
     if is_model_applied_on_a_single_incidents:
+        demisto.debug("DBPW: Running predict on single incidents")
         return predict_single_incident_full_output(email_subject, email_body, is_return_error, label_threshold,
                                                    min_text_length,
                                                    model_type, phishing_model, set_incidents_fields, top_word_limit,
                                                    word_threshold)
     else:
+        demisto.debug("DBPW: Running predict on batch incidents")
         return predict_batch_incidents_light_output(email_subject, email_body, phishing_model, model_type,
                                                     min_text_length)
 
@@ -143,11 +147,15 @@ def predict_batch_incidents_light_output(email_subject, email_body, phishing_mod
                 prob = prob.item()
             incident_res['Probability'] = prob
         batch_predictions.append(incident_res)
+    demisto.debug(f"DBPW: Got predictions: {batch_predictions}")
     return {
         'Type': entryTypes['note'],
         'Contents': batch_predictions,
         'ContentsFormat': formats['json'],
         'HumanReadable': f'Applied predictions on {len(batch_predictions)} incidents.',
+        'EntryContext': {
+            'DBotPredictPhishingWords': batch_predictions
+        }
     }
 
 
@@ -246,6 +254,7 @@ def main():
         email_subject = try_get_incident_field(field='emailsubject')
     if email_body == '':
         email_body = try_get_incident_field(field='emailbody')
+    
     result = predict_phishing_words(demisto.args()['modelName'],
                                     demisto.args()['modelStoreType'],
                                     email_subject,
