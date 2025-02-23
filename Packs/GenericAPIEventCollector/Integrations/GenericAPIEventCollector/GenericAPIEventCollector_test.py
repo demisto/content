@@ -6,7 +6,7 @@ import pytest
 from CommonServerPython import DemistoException
 from GenericAPIEventCollector import (
     datetime_to_timestamp_format, timestamp_format_to_datetime, recursive_replace,
-    get_time_field_from_event_to_dt, is_pagination_needed, iso8601_to_datetime_str, try_load_json,
+    get_time_field_from_event_to_dt, is_pagination_needed, iso8601_to_datetime_str,
     parse_json_param, generate_authentication_headers,
     extract_pagination_params, PaginationLogic, TimestampFieldConfig, organize_events_to_xsiam_format, setup_search_events,
     RequestData, generate_headers
@@ -62,7 +62,7 @@ def test_is_pagination_needed():
 
 
 def test_is_pagination_not_needed():
-    events = {'next_page': 'page2', 'has_more': False}
+    events = {'has_more': False}
     pagination_logic = PaginationLogic(True, ['next_page'], ['has_more'])
     needed, next_page = is_pagination_needed(events, pagination_logic)
     assert needed is False
@@ -73,12 +73,6 @@ def test_iso8601_to_datetime_str():
     iso_time = '2023-05-01T12:00:00.1234567Z'
     result = iso8601_to_datetime_str(iso_time)
     assert result == '2023-05-01T12:00:00.123456Z'
-
-
-def test_try_load_json():
-    json_str = '{"key": "value"}'
-    result = try_load_json(json_str)
-    assert result == {"key": "value"}
 
 
 def test_parse_json_param():

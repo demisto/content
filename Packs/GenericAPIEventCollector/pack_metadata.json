@@ -2,7 +2,7 @@
     "name": "GenericAPIEventCollector",
     "description": "This pack provides a generic API event collector integration that can be used to collect events from various sources.",
     "support": "xsoar",
-    "serverMinVersion": "5.0.0",
+    "serverMinVersion": "6.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
