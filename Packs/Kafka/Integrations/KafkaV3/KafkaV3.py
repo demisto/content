@@ -155,16 +155,15 @@ class KafkaCommunicator:
 
         # SASL with SSL
         elif use_sasl:
-            client_dict.update({'sasl.mechanism': 'PLAIN',
+            client_dict.update({'security.protocol': 'SASL_SSL',
+                                'sasl.mechanism': 'PLAIN',
                                 'sasl.username': plain_username,
                                 'sasl.password': plain_password})
 
             if trust_any_cert:
-                client_dict.update({'security.protocol': 'SASL_PLAINTEXT',
-                                    'ssl.endpoint.identification.algorithm': 'none',
+                client_dict.update({'ssl.endpoint.identification.algorithm': 'none',
                                     'enable.ssl.certificate.verification': False})
             else:  # ca_cert
-                client_dict.update({'security.protocol': 'SASL_SSL'})
                 if self.ca_path:
                     client_dict.update({'ssl.ca.location': self.ca_path})
                 else:
