@@ -681,13 +681,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "decorator"
-version = "5.2.0"
+version = "5.2.1"
 description = "Decorators for Humans"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "decorator-5.2.0-py3-none-any.whl", hash = "sha256:f30a69c066f698c7c11fa1fa3425f684d3b4b01b494ee41e73c0a14f3de48427"},
-    {file = "decorator-5.2.0.tar.gz", hash = "sha256:1cf2ab68f8c1c7eae3895d82ab0daab41294cfbe6fbdebf50b44307299980762"},
+    {file = "decorator-5.2.1-py3-none-any.whl", hash = "sha256:d316bb415a2d9e2d2b3abcc4084c6502fc09240e292cd76a76afc106a1c8e04a"},
+    {file = "decorator-5.2.1.tar.gz", hash = "sha256:65f266143752f734b0a7cc83c46f4618af75b8c5911b00ccb61d0ac9b6da0360"},
 ]
 
 [package.source]
@@ -801,7 +801,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "platform-content-support-2"
-resolved_reference = "baf0e4b4f51232b6a49af941ddcb9c1ed7aa9fe4"
+resolved_reference = "16718cddb461a0649a2f64d0fa7bd3aae1f9f896"
 
 [[package]]
 name = "deprecated"
@@ -3897,13 +3897,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "types-decorator"
-version = "5.1.8.20250215"
+version = "5.2.0.20250224"
 description = "Typing stubs for decorator"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "types_decorator-5.1.8.20250215-py3-none-any.whl", hash = "sha256:0289b854559c12f92e8166f9880a6194eb475256d93a6d6b611dc1a9ddcc5867"},
-    {file = "types_decorator-5.1.8.20250215.tar.gz", hash = "sha256:735d96deb5007544e27fa62ed27c80951f83a2c93db67cc07998152e0f839b8f"},
+    {file = "types_decorator-5.2.0.20250224-py3-none-any.whl", hash = "sha256:baa205eddcacd380512d10e70f1bdf9b8effde90367bc137bcba5db08ec240d1"},
+    {file = "types_decorator-5.2.0.20250224.tar.gz", hash = "sha256:d68aa2f55cf504510dd7d01b49e68dd32c3a200d0bc0cbb84595dba1a11954ff"},
 ]
 
 [package.source]
