@@ -16,7 +16,7 @@ configuration:
     display: Endpoint
     type: 0
     required: true
-    additionalinfo: Add the endpoint you want to collect data from (Alert/Events Etc..)
+    additionalinfo: Add the endpoint you want to collect data from (Alert/Events, etc.).
   - name: authentication
     section: Connect
     display: Authentication Type
@@ -29,7 +29,7 @@ configuration:
       - Api-Key
       - RawToken
       - No Authorization
-    additionalinfo: Select the authentication method
+    additionalinfo: Select the authentication method.
   - name: http_method
     section: Connect
     display: 'HTTP Method'
@@ -60,9 +60,9 @@ configuration:
     type: 0
     required: false
     advanced: true
-    additionalinfo: 'If the additional header are required,
-     please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
+    additionalinfo: 'If the additional header is required,
+     add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - name: proxy
     section: Connect
@@ -82,13 +82,13 @@ configuration:
     display: Vendor
     type: 0
     required: true
-    additionalinfo: 'Enter vendor name for dataset'
+    additionalinfo: Enter vendor name for dataset.
   - name: product
     section: Collect
     display: Product
     type: 0
     required: true
-    additionalinfo: 'Enter product name for dataset'
+    additionalinfo: Enter product name for dataset.
   - name: request_data
     section: Collect
     display: Request data
@@ -96,8 +96,8 @@ configuration:
     required: false
     advanced: true
     additionalinfo: 'If required to pass DATA when calling the API to collect data, 
-    please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
+    add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - name: initial_request_data
     section: Collect
@@ -105,8 +105,8 @@ configuration:
     type: 0
     required: false
     advanced: true
-    additionalinfo: 'If the product requires a different initial DATA,  please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
+    additionalinfo: 'If the product requires a different initial DATA, add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - name: request_json
     section: Collect
@@ -114,8 +114,8 @@ configuration:
     type: 0
     required: false
     advanced: true
-    additionalinfo: 'If required to pass JSON data when calling the API to collect data, please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
+    additionalinfo: 'If required to pass JSON data when calling the API to collect data, add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - name: initial_request_json
     section: Collect
@@ -123,8 +123,8 @@ configuration:
     type: 0
     required: false
     advanced: true
-    additionalinfo: 'If the product requires a different initial request JSON, please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
+    additionalinfo: 'If the product requires a different initial request JSON, add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - name: query_params
     section: Collect
@@ -133,8 +133,8 @@ configuration:
     required: false
     advanced: true
     additionalinfo: 'If required to filter the results using query parameters
-   please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
+   please add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - name: initial_query_params
     section: Collect
@@ -143,8 +143,8 @@ configuration:
     required: false
     advanced: true
     additionalinfo: 'If the product requires a different initial query parameters for the first fetch call,
-   please add it here in a dictionary format {unique_field : 286} if there''s
-    a need to add more then one use it in this format: {''field-1'': value_example,
+   add it here in dictionary format {unique_field : 286}. If there''s
+    a need to add more then one, use it in this format: {''field-1'': value_example,
     ''field-2'': value_2, ''field-3'': value_3}'
   - name: pagination_needed
     section: Collect
@@ -168,25 +168,25 @@ configuration:
     display: 'Timestamp format of the event creation time or "epoch".'
     type: 0
     required: false
-    additionalinfo: 'Python compatible datetime formatting (e.g. "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S") or "epoch" to use UNIX epoch time.'
+    additionalinfo: 'Python compatible datetime formatting (e.g., "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S") or "epoch" to use UNIX epoch time.'
   - name: timestamp_field_name
     section: Collect
     display: Timestamp field
     type: 0
     required: true
-    additionalinfo: 'The name of the event creation time in the response data, e.g. "timestamp" or "created_at".'
+    additionalinfo: 'The name of the event creation time in the response data, e.g., "timestamp" or "created_at".'
   - name: events_keys
     section: Collect
-    display: 'Events lookup path in the response JSON, dot seperated, e.g. "data.items".'
+    display: 'Events lookup path in the response JSON, dot-separated, e.g. ,"data.items".'
     type: 0
     required: false
     additionalinfo: 'Where within the response object to find the events list.'
   - name: id_keys
     section: Collect
-    display: 'Event ID lookup path in the event response JSON, dot seperated, e.g. "id".'
+    display: 'Event ID lookup path in the event response JSON, dot-separated, e.g., "id".'
     type: 0
     required: false
-    additionalinfo: 'Where within the event object to find the events id.'
+    additionalinfo: 'Where within the event object to find the event ID.'
   - name: id_type
     section: Collect
     display: 'The type of ID field, either "integer" or "string"'
@@ -195,7 +195,7 @@ configuration:
       - string
     type: 15
     required: false
-    additionalinfo: 'ID field of type integer are comparable and when last fetched id is the 
+    additionalinfo: 'ID field of type integer are comparable and when last fetched ID is the 
     maximum ID between the fetched events, when the type is string, the last fetched ID is the last event returned from the API.'
   - name: ok_codes
     section: Collect
@@ -203,7 +203,7 @@ configuration:
     type: 0
     required: false
     defaultvalue: '200'
-    additionalinfo: 'OK codes is a list delimited by comma (e.g. "200,201,202"), default is "200".'
+    additionalinfo: 'OK codes is a comma-separated list (e.g., "200,201,202"). Default is "200".'
   - name: limit
     display: Number of incidents to fetch per fetch.
     type: 0
