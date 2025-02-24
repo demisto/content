@@ -1,0 +1,23 @@
+commonfields:
+  id: SekoiaXDRUpdateEvents
+  version: -1
+name: SekoiaXDRUpdateEvents
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Updates events from the Sekoia platform if any changes occur.
+enabled: true
+args:
+- name: earliest_time
+  required: true
+  description: The earliest time to search for events.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.8.1983910
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

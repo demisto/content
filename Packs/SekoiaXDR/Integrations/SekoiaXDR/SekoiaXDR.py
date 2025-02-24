@@ -178,9 +178,7 @@ class Client(BaseClient):
             url_suffix=f"/v1/sic/conf/events/search/jobs/{event_search_job_uuid}/events",
         )
 
-    def get_cases_alert(
-        self, alert_uuid: str, case_id: str | None
-    ) -> dict[str, Any]:
+    def get_cases_alert(self, alert_uuid: str, case_id: str | None) -> dict[str, Any]:
         request_params: dict[str, Any] = {"match[alert_uuid]": alert_uuid}
 
         """ Matching parameters"""
@@ -197,9 +195,7 @@ class Client(BaseClient):
             url_suffix=f"/v1/asset-management/assets/{asset_uuid}",
         )
 
-    def list_asset(
-        self, limit: str | None, assets_type: str | None
-    ) -> dict[str, Any]:
+    def list_asset(self, limit: str | None, assets_type: str | None) -> dict[str, Any]:
         request_params: dict[str, Any] = {}
 
         """ Normal parameters"""
@@ -613,7 +609,10 @@ def fetch_incidents(
         }
         # If the integration parameter is set to mirror add the appropriate fields to the incident
         alert["mirror_instance"] = demisto.integrationInstance()
-        alert["mirrorOut"] = str(mirror_direction) in ["Outgoing", "Incoming and Outgoing"]
+        alert["mirrorOut"] = str(mirror_direction) in [
+            "Outgoing",
+            "Incoming and Outgoing",
+        ]
         incident["rawJSON"] = json.dumps(alert)
         incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(str(mirror_direction))
         incident["dbotMirrorId"] = alert["short_id"]
@@ -822,7 +821,6 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 
 def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
     alerts = client.list_alerts(
         alerts_limit=args.get("limit"),
         alerts_status=args.get("status"),
