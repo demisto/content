@@ -65,15 +65,6 @@ class EventConnection:
             time.sleep(self.idle_timeout)
 
 
-def set_the_integration_context(key: str, val):  # pragma: no cover
-    """Adds a key-value pair to the integration context dictionary.
-        If the key already exists in the integration context, the function will overwrite the existing value with the new one.
-    """
-    cnx = demisto.getIntegrationContext()
-    cnx[key] = val
-    demisto.setIntegrationContext(cnx)
-    
-    
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     """This function checks if the given interval has passed since the given start time
 
@@ -85,6 +76,15 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
         bool: True if the interval has passed, False otherwise
     """
     return fetch_start_time + timedelta(seconds=fetch_interval) < datetime.utcnow()
+
+
+def set_the_integration_context(key: str, val):
+    """Adds a key-value pair to the integration context dictionary.
+        If the key already exists in the integration context, the function will overwrite the existing value with the new one.
+    """
+    cnx = demisto.getIntegrationContext()
+    cnx[key] = val
+    demisto.setIntegrationContext(cnx)
 
 
 @contextmanager
@@ -122,10 +122,11 @@ def websocket_connections(
                 connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers)),
                 fetch_interval=fetch_interval,
             ) for event_type in EventType]
+
             set_the_integration_context(
-                    "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(timezone.utc)}")
+                "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(timezone.utc)}")
+
             yield connections
-        
     except Exception as e:
         set_the_integration_context("last_run_results",
                                     f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
@@ -201,7 +202,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
 def test_module():
     raise DemistoException(
         "No test option is available due to API limitations.\
-        To verify the configuration, run the proofpoint-es-get-last-run-results command and ensure it returns no errors.")
+        To verify the configuration, run the proofpoint-es-get-last-run-results command.")
 
 
 def get_last_run_results_command():
@@ -209,7 +210,8 @@ def get_last_run_results_command():
     if last_run_results:
         return CommandResults(readable_output=last_run_results)
     else:
-        return CommandResults(readable_output="No results from the last run yet. Wait one minute and try running the command again.")
+        return CommandResults(readable_output="No results from the last run yet, \
+            please wait one minute and try running the command again.")
 
 
 def perform_long_running_loop(connections: list[EventConnection], fetch_interval: int, extensive_logs: bool):
