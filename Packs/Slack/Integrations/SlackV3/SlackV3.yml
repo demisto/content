@@ -503,7 +503,7 @@ script:
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  dockerimage: demisto/slackv3:1.0.0.117556
+  dockerimage: demisto/slackv3:1.0.0.2155785
   longRunning: true
   runonce: false
   script: '-'
