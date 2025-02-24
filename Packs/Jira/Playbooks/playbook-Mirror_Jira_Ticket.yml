@@ -252,3 +252,9 @@ outputs: []
 tests:
 - No test.
 fromversion: 6.0.0
+tags: 
+  - Jira-TEST-TAG
+  - Mirroring-TEST-TAG
+supportedModules:
+  - "ENT_PLUS"
+  - "X0"

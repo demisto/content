@@ -26,7 +26,7 @@ slack_sdk = "^3.31.0"
 
 [tool.poetry.group.dev.dependencies]
 # demisto-sdk = "1.35.0" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", branch = "platform-content-support-2"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", branch = "platform-content-support_supported-modules-and-playbook-tags"}
 pytest = ">=7.1.2"
 requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"

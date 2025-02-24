@@ -24,7 +24,11 @@
     ],
     "defaultDataSource": "Jira Event Collector",
     "supportedModules": [
-        "automation",
-        "b"
-    ]
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "ENT_PLUS"
+      ]
 }
