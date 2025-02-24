@@ -1,0 +1,41 @@
+{
+    "policy_name": "hard4",
+    "rules": [
+        {
+            "rule_name": "rule1",
+            "rule_source": {
+                "endpoint_channel_machine_type": "ALL_MACHINES",
+                "endpoint_connection_type": "ANYWARE"
+            },
+            "rule_destination": {
+                "email_monitor_directions": [
+                    "INCOMING"
+                ],
+                "channels": [
+                    {
+                        "channel_type": "SPECIFIC_MACHINES",
+                        "enabled": "true"
+                    }
+                ]
+            }
+        },
+        {
+            "rule_name": "555",
+            "rule_source": {
+                "endpoint_channel_machine_type": "ALL_MACHINES",
+                "endpoint_connection_type": "ANYWARE"
+            },
+            "rule_destination": {
+                "email_monitor_directions": [
+                    "OUTGOING"
+                ],
+                "channels": [
+                    {
+                        "channel_type": "CASB_NEAR_REAL_TIME",
+                        "enabled": "false"
+                    }
+                ]
+            }
+        }
+    ]
+}

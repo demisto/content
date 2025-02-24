@@ -1,0 +1,903 @@
+id: ForcepointDLP
+name: ForcepointDLP
+version: -1
+fromversion: 4.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: "0"
+    type: start
+    task:
+      id: "0"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+        - "1"
+    separatecontext: false
+    view: '{"position":{"x":-300,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: 1
+    taskid: "1"
+    type: regular
+    task:
+      id: "1"
+      version: -1
+      name: DeleteContext
+      description: ""
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "12"
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":0,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: 2
+    taskid: "2"
+    type: regular
+    task:
+      id: "2"
+      version: -1
+      name: fp-dlp-policy-list
+      description: ""
+      script: ForcePointDLP|||fp-dlp-policy-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "3"
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":-300,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: "3"
+    type: condition
+    task:
+      id: "3"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "4"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.name
+                iscontext: true
+    view: '{"position":{"x":-300,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: 4
+    taskid: "4"
+    type: regular
+    task:
+      id: "4"
+      version: -1
+      name: fp-dlp-policy-rule-list
+      description: ""
+      script: ForcePointDLP|||fp-dlp-policy-rule-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "5"
+    scriptarguments:
+      policy_name:
+        simple: new_policy
+    separatecontext: false
+    view: '{"position":{"x":-300,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: "5"
+    type: condition
+    task:
+      id: "5"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "6"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.dlp_version
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.policy_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.enabled
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.predefined_policy
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.description
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.policy_level
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.policy_level_data_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.Rule.rule_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.Rule.enabled
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.Rule.parts_count_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.Rule.condition_relation_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.Rule.Classifier.classifier_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.Rule.Classifier.predefined
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.Rule.Classifier.position
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.Rule.Classifier.threshold_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Policy.Rule.Classifier.threshold_calculate_type
+                iscontext: true
+    view: '{"position":{"x":-300,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "6":
+    id: 6
+    taskid: "6"
+    type: regular
+    task:
+      id: "6"
+      version: -1
+      name: fp-dlp-rule-exception-list
+      description: ""
+      script: ForcePointDLP|||fp-dlp-rule-exception-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "7"
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":-300,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "7":
+    id: "7"
+    taskid: "7"
+    type: condition
+    task:
+      id: "7"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "8"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.PolicyException.policy_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.PolicyException.rule_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.PolicyException.exception_rule_names
+                iscontext: true
+    view: '{"position":{"x":-300,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "8":
+    id: 8
+    taskid: "8"
+    type: regular
+    task:
+      id: "8"
+      version: -1
+      name: fp-dlp-rule-severity-action-get
+      description: ""
+      script: ForcePointDLP|||fp-dlp-rule-severity-action-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "9"
+    scriptarguments:
+      policy_name:
+        simple: new_policy
+    separatecontext: false
+    view: '{"position":{"x":-300,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "9":
+    id: "9"
+    taskid: "9"
+    type: condition
+    task:
+      id: "9"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "10"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.policy_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.Rule.rule_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.Rule.type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.Rule.max_matches
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.selected
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.number_of_matches
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.severity_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.dup_severity_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.action_plan
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SeverityActionRule.Rule.risk_adaptive_protection_enabled
+                iscontext: true
+    view: '{"position":{"x":-300,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "10":
+    id: 10
+    taskid: "10"
+    type: regular
+    task:
+      id: "10"
+      version: -1
+      name: fp-dlp-rule-source-destination-get
+      description: ""
+      script: ForcePointDLP|||fp-dlp-rule-source-destination-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "11"
+    scriptarguments:
+      policy_name:
+        simple: new_policy
+    separatecontext: false
+    view: '{"position":{"x":-300,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "11":
+    id: "11"
+    taskid: "11"
+    type: condition
+    task:
+      id: "11"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "21"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SourceDestinationRule.policy_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SourceDestinationRule.Rule.rule_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SourceDestinationRule.Rule.Source.endpoint_channel_machine_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SourceDestinationRule.Rule.Source.endpoint_connection_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SourceDestinationRule.Rule.Destination.email_monitor_directions
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.channel_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.enabled
+                iscontext: true
+    view: '{"position":{"x":-300,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "12":
+    id: 12
+    taskid: "12"
+    type: regular
+    task:
+      id: "12"
+      version: -1
+      name: fp-dlp-rule-create
+      description: ""
+      script: ForcePointDLP|||fp-dlp-rule-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "13"
+    scriptarguments:
+      policy_name:
+        simple: new_policy
+      rule_name:
+        simple: new_rule
+      classifier_name:
+        simple: test
+      classifier_position:
+        simple: "1"
+      classifier_predefined:
+        simple: "false"
+      classifier_threshold_calculate_type:
+        simple: ALL
+      classifier_threshold_type:
+        simple: CHECK_GREATER_THAN
+      classifier_threshold_value_from:
+        simple: "1"
+      dlp_version:
+        simple: 10.2.0
+      policy_enabled:
+        simple: "true"
+      predefined_policy:
+        simple: "false"
+      rule_enabled:
+        simple: "true"
+      rule_condition_relation_type:
+        simple: AND
+      rule_parts_count_type:
+        simple: CROSS_COUNT
+      policy_level:
+        simple: "1"
+      policy_data_type:
+        simple: NETWORKING
+    separatecontext: false
+    view: '{"position":{"x":300,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "13":
+    id: 13
+    taskid: "13"
+    type: regular
+    task:
+      id: "13"
+      version: -1
+      name: fp-dlp-rule-update
+      description: ""
+      script: ForcePointDLP|||fp-dlp-rule-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "14"
+    scriptarguments:
+      policy_name:
+        simple: new_policy
+      rule_name:
+        simple: new_rule
+      policy_description:
+        simple: test
+    separatecontext: false
+    view: '{"position":{"x":300,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "14":
+    id: 14
+    taskid: "14"
+    type: regular
+    task:
+      id: "14"
+      version: -1
+      name: fp-dlp-rule-severity-action-update
+      description: ""
+      script: ForcePointDLP|||fp-dlp-rule-severity-action-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "15"
+    scriptarguments:
+      policy_name:
+        simple: new_policy
+      rule_name:
+        simple: new_rule
+      classifier_number_of_matches:
+        simple: "1"
+      classifier_action_plan:
+        simple: Audit Only
+      classifier_selected:
+        simple: "true"
+      classifier_severity_type:
+        simple: LOW
+      override_classifier_number_of_matches:
+        simple: "2"
+    separatecontext: false
+    view: '{"position":{"x":300,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "15":
+    id: 15
+    taskid: "15"
+    type: regular
+    task:
+      id: "15"
+      version: -1
+      name: fp-dlp-rule-source-destination-update
+      description: ""
+      script: ForcePointDLP|||fp-dlp-rule-source-destination-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "16"
+    scriptarguments:
+      policy_name:
+        simple: new_policy
+      rule_name:
+        simple: new_rule
+      rule_source_endpoint_channel_machine_type:
+        simple: ALL_MACHINES
+      rule_destination_email_monitor_directions:
+        simple: INCOMING
+    separatecontext: false
+    view: '{"position":{"x":300,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "16":
+    id: 16
+    taskid: "16"
+    type: regular
+    task:
+      id: "16"
+      version: -1
+      name: fp-dlp-rule-exception-create
+      description: ""
+      script: ForcePointDLP|||fp-dlp-rule-exception-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "17"
+    scriptarguments:
+      parent_policy_name:
+        simple: new_policy
+      parent_rule_name:
+        simple: new_rule
+      description:
+        simple: test
+      destination_enabled:
+        simple: "false"
+      source_enabled:
+        simple: "false"
+      condition_enabled:
+        simple: "true"
+      classifier_name:
+        simple: test
+      classifier_position:
+        simple: "1"
+      classifier_predefined:
+        simple: "false"
+      classifier_threshold_calculate_type:
+        simple: ALL
+      classifier_threshold_type:
+        simple: CHECK_GREATER_THAN
+      classifier_threshold_value_from:
+        simple: "1"
+      severity_classifier_action_plan:
+        simple: Audit Only
+      severity_classifier_max_matches:
+        simple: SUM_ALL
+      severity_classifier_number_of_matches:
+        simple: "1"
+      severity_classifier_severity_type:
+        simple: LOW
+      severity_classifier_selected:
+        simple: "true"
+      enabled:
+        simple: "true"
+      parts_count_type:
+        simple: CROSS_COUNT
+      condition_relation_type:
+        simple: AND
+      exception_rule_name:
+        simple: test_exception
+    separatecontext: false
+    view: '{"position":{"x":300,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "17":
+    id: 17
+    taskid: "17"
+    type: regular
+    task:
+      id: "17"
+      version: -1
+      name: fp-dlp-rule-exception-update
+      description: ""
+      script: ForcePointDLP|||fp-dlp-rule-exception-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "18"
+    scriptarguments:
+      parent_policy_name:
+        simple: new_policy
+      parent_rule_name:
+        simple: new_rule
+      exception_rule_name:
+        simple: test_exception
+      description:
+        simple: test2
+    separatecontext: false
+    view: '{"position":{"x":300,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "18":
+    id: 18
+    taskid: "18"
+    type: regular
+    task:
+      id: "18"
+      version: -1
+      name: fp-dlp-incident-list
+      description: ""
+      script: ForcePointDLP|||fp-dlp-incident-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "19"
+    scriptarguments:
+      from_date:
+        simple: "3 months"
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":300,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "19":
+    id: "19"
+    taskid: "19"
+    type: condition
+    task:
+      id: "19"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "20"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.action
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.Source.ip_address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.history
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.event_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.maximum_matches
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.transaction_size
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.analyzed_by
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.event_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.incident_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.channel
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.policies
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.detected_by
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForcepointDlp.Incident.details
+                iscontext: true
+    view: '{"position":{"x":300,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "20":
+    id: 20
+    taskid: "20"
+    type: regular
+    task:
+      id: "20"
+      version: -1
+      name: fp-dlp-incident-update
+      description: ""
+      script: ForcePointDLP|||fp-dlp-incident-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "2"
+    scriptarguments:
+      event_ids:
+        simple: ${ForcepointDlp.Incident.event_id}
+      severity:
+        simple: HIGH
+    separatecontext: false
+    view: '{"position":{"x":300,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "21":
+    id: "21"
+    taskid: "21"
+    type: title
+    task:
+      id: "21"
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: '{"position":{"x":300,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []

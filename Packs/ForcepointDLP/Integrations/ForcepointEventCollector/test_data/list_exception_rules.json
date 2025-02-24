@@ -1,0 +1,12 @@
+{
+    "exception_rules": [
+        {
+            "policy_name": "test_policy",
+            "rule_name": "test_rule",
+            "exception_rule_names": [
+                "test_exception"
+            ]
+        }
+    ],
+    "number_of_exception_rules": 1
+}

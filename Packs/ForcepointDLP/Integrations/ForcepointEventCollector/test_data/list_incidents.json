@@ -1,0 +1,858 @@
+{
+    "incidents": [
+        {
+            "id": 131069,
+            "severity": "HIGH",
+            "action": "BLOCKED",
+            "tag": "custom taasdasdg",
+            "status": "New",
+            "source": {
+                "ip_address": "secret"
+            },
+            "history": [
+                {
+                    "task_name": "Incident tagged. New tag: custom taasdasdg",
+                    "admin_name": "dlpapi",
+                    "update_time": "27/01/2025 15:35:57"
+                },
+                {
+                    "task_name": "Incident tagged. New tag: custom tag",
+                    "admin_name": "dlpapi",
+                    "update_time": "27/01/2025 15:35:54"
+                },
+                {
+                    "task_name": "Incident tagged. New tag: custom tag",
+                    "admin_name": "dlpapi",
+                    "update_time": "27/01/2025 15:35:53"
+                },
+                {
+                    "task_name": "Incident tagged. New tag: custom tag",
+                    "admin_name": "dlpapi",
+                    "update_time": "27/01/2025 15:35:52"
+                },
+                {
+                    "task_name": "Incident tagged. New tag: custom tag",
+                    "admin_name": "dlpapi",
+                    "update_time": "20/01/2025 13:07:44"
+                },
+                {
+                    "task_name": "Changed incident assignment from Unassigned to admin ",
+                    "admin_name": "dlpapi",
+                    "update_time": "20/01/2025 12:48:18"
+                },
+                {
+                    "task_name": "Changed incident severity from Medium to High",
+                    "admin_name": "dlpapi",
+                    "update_time": "20/01/2025 12:47:15"
+                },
+                {
+                    "task_name": "Incident tagged. New tag: 123",
+                    "admin_name": "dlpapi",
+                    "update_time": "20/01/2025 12:47:03"
+                },
+                {
+                    "task_name": "Incident tagged. New tag: custom tag",
+                    "admin_name": "dlpapi",
+                    "update_time": "20/01/2025 12:46:20"
+                },
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "13/11/2024 17:34:08"
+                }
+            ],
+            "event_id": "2612565687635980284",
+            "maximum_matches": 1,
+            "transaction_size": 98,
+            "assigned_to": "admin",
+            "analyzed_by": "Policy Engine  fp-wcg-wcg",
+            "ignored_incidents": false,
+            "event_time": "13/11/2024 17:33:53",
+            "incident_time": "13/11/2024 17:34:06",
+            "channel": "HTTPS",
+            "policies": "Test",
+            "partition_index": 20241113,
+            "destination": "dlptest.com",
+            "detected_by": "Forcepoint Content Gateway Server on fp-wcg-wcg",
+            "details": "secret",
+            "released_incident": false,
+            "violation_triggers": [
+                {
+                    "classifiers": [
+                        {
+                            "classifier_name": "PizzaTestKeyword (Key Phrase)",
+                            "number_matches": 1
+                        }
+                    ],
+                    "policy_name": "Test",
+                    "rule_name": "Test-Rule"
+                }
+            ]
+        },
+        {
+            "id": 196603,
+            "severity": "MEDIUM",
+            "action": "BLOCKED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:48:13"
+                }
+            ],
+            "event_id": "5674207435205141697",
+            "maximum_matches": 1,
+            "transaction_size": 126,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:48:05",
+            "incident_time": "27/01/2025 12:48:06",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "Test",
+            "partition_index": 20241113,
+            "destination": "DLPTEST.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [
+                        {
+                            "classifier_name": "PizzaTestKeyword (Key Phrase)",
+                            "number_matches": 1
+                        }
+                    ],
+                    "policy_name": "Test",
+                    "rule_name": "Test-Rule"
+                }
+            ]
+        },
+        {
+            "id": 196611,
+            "severity": "MEDIUM",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:51:02"
+                }
+            ],
+            "event_id": "5023508118098072845",
+            "maximum_matches": 0,
+            "transaction_size": 354,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:50:54",
+            "incident_time": "27/01/2025 12:50:53",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "cvxcvx",
+            "partition_index": 20241113,
+            "destination": "WWW.BING.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196614,
+            "severity": "MEDIUM",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:51:02"
+                }
+            ],
+            "event_id": "5524410177124916015",
+            "maximum_matches": 0,
+            "transaction_size": 604,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:50:56",
+            "incident_time": "27/01/2025 12:50:55",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "cvxcvx",
+            "partition_index": 20241113,
+            "destination": "WWW.BING.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196617,
+            "severity": "MEDIUM",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:51:02"
+                }
+            ],
+            "event_id": "5048132259469714907",
+            "maximum_matches": 0,
+            "transaction_size": 1,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:50:56",
+            "incident_time": "27/01/2025 12:50:55",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "cvxcvx",
+            "partition_index": 20241113,
+            "destination": "WWW.BING.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196620,
+            "severity": "MEDIUM",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:51:02"
+                }
+            ],
+            "event_id": "4883725037746342498",
+            "maximum_matches": 0,
+            "transaction_size": 173,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:50:56",
+            "incident_time": "27/01/2025 12:50:56",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "cvxcvx",
+            "partition_index": 20241113,
+            "destination": "WWW.BING.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196623,
+            "severity": "MEDIUM",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:51:02"
+                }
+            ],
+            "event_id": "4978083359406210814",
+            "maximum_matches": 0,
+            "transaction_size": 144,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:50:59",
+            "incident_time": "27/01/2025 12:50:59",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "cvxcvx",
+            "partition_index": 20241113,
+            "destination": "WWW.PORNHUB.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196626,
+            "severity": "MEDIUM",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:51:02"
+                }
+            ],
+            "event_id": "5283260143757734452",
+            "maximum_matches": 0,
+            "transaction_size": 16246,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:51:00",
+            "incident_time": "27/01/2025 12:50:59",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "cvxcvx",
+            "partition_index": 20241113,
+            "destination": "WWW.BING.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196678,
+            "severity": "HIGH",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:48:52"
+                }
+            ],
+            "event_id": "4794370434259778160",
+            "maximum_matches": 0,
+            "transaction_size": 116,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:48:51",
+            "incident_time": "27/01/2025 12:48:51",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "Password files; cvxcvx",
+            "partition_index": 20241113,
+            "destination": "DLPTEST.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [
+                        {
+                            "classifier_name": "Base64/Hexadecimal Characters Block (Regular Expression)",
+                            "number_matches": 1
+                        }
+                    ],
+                    "policy_name": "Password files",
+                    "rule_name": "Password Files: General File"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196686,
+            "severity": "MEDIUM",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:51:12"
+                }
+            ],
+            "event_id": "5712497629400186544",
+            "maximum_matches": 0,
+            "transaction_size": 4198,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:51:03",
+            "incident_time": "27/01/2025 12:51:02",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "cvxcvx",
+            "partition_index": 20241113,
+            "destination": "WWW.BING.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196753,
+            "severity": "MEDIUM",
+            "action": "BLOCKED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:49:22"
+                }
+            ],
+            "event_id": "5651085501934397336",
+            "maximum_matches": 1,
+            "transaction_size": 126,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:49:16",
+            "incident_time": "27/01/2025 12:49:15",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "Test",
+            "partition_index": 20241113,
+            "destination": "DLPTEST.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [
+                        {
+                            "classifier_name": "PizzaTestKeyword (Key Phrase)",
+                            "number_matches": 1
+                        }
+                    ],
+                    "policy_name": "Test",
+                    "rule_name": "Test-Rule"
+                }
+            ]
+        },
+        {
+            "id": 196759,
+            "severity": "MEDIUM",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:51:22"
+                }
+            ],
+            "event_id": "4984748118078853712",
+            "maximum_matches": 0,
+            "transaction_size": 1060,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:51:16",
+            "incident_time": "27/01/2025 12:51:15",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "cvxcvx",
+            "partition_index": 20241113,
+            "destination": "WWW.BING.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196828,
+            "severity": "MEDIUM",
+            "action": "BLOCKED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:50:12"
+                }
+            ],
+            "event_id": "5534214359389244829",
+            "maximum_matches": 1,
+            "transaction_size": 126,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:50:08",
+            "incident_time": "27/01/2025 12:50:07",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "Test",
+            "partition_index": 20241113,
+            "destination": "DLPTEST.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [
+                        {
+                            "classifier_name": "PizzaTestKeyword (Key Phrase)",
+                            "number_matches": 1
+                        }
+                    ],
+                    "policy_name": "Test",
+                    "rule_name": "Test-Rule"
+                }
+            ]
+        },
+        {
+            "id": 196831,
+            "severity": "MEDIUM",
+            "action": "BLOCKED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:50:12"
+                }
+            ],
+            "event_id": "5722783234296993556",
+            "maximum_matches": 1,
+            "transaction_size": 271,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:50:09",
+            "incident_time": "27/01/2025 12:50:08",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "Test",
+            "partition_index": 20241113,
+            "destination": "WWW.GOOGLE-ANALYTICS.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [
+                        {
+                            "classifier_name": "PizzaTestKeyword (Key Phrase)",
+                            "number_matches": 1
+                        }
+                    ],
+                    "policy_name": "Test",
+                    "rule_name": "Test-Rule"
+                }
+            ]
+        },
+        {
+            "id": 196834,
+            "severity": "MEDIUM",
+            "action": "BLOCKED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:50:12"
+                }
+            ],
+            "event_id": "4641392113392557987",
+            "maximum_matches": 1,
+            "transaction_size": 126,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:50:13",
+            "incident_time": "27/01/2025 12:50:12",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "Test",
+            "partition_index": 20241113,
+            "destination": "DLPTEST.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [
+                        {
+                            "classifier_name": "PizzaTestKeyword (Key Phrase)",
+                            "number_matches": 1
+                        }
+                    ],
+                    "policy_name": "Test",
+                    "rule_name": "Test-Rule"
+                }
+            ]
+        },
+        {
+            "id": 196903,
+            "severity": "MEDIUM",
+            "action": "BLOCKED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 12:50:32"
+                }
+            ],
+            "event_id": "4823154252895955323",
+            "maximum_matches": 1,
+            "transaction_size": 126,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 12:50:24",
+            "incident_time": "27/01/2025 12:50:24",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "Test",
+            "partition_index": 20241113,
+            "destination": "DLPTEST.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [
+                        {
+                            "classifier_name": "PizzaTestKeyword (Key Phrase)",
+                            "number_matches": 1
+                        }
+                    ],
+                    "policy_name": "Test",
+                    "rule_name": "Test-Rule"
+                }
+            ]
+        },
+        {
+            "id": 196909,
+            "severity": "MEDIUM",
+            "action": "AUTHORIZED",
+            "status": "New",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 13:09:42"
+                }
+            ],
+            "event_id": "5454478041952917795",
+            "maximum_matches": 0,
+            "transaction_size": 1039,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 13:09:37",
+            "incident_time": "27/01/2025 13:09:36",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "cvxcvx",
+            "partition_index": 20241113,
+            "destination": "WWW.BING.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "cvxcvx"
+                },
+                {
+                    "classifiers": [],
+                    "policy_name": "cvxcvx",
+                    "rule_name": "nbmgjhghj"
+                }
+            ]
+        },
+        {
+            "id": 196912,
+            "severity": "MEDIUM",
+            "action": "BLOCKED",
+            "status": "In Process",
+            "source": {
+                "login_name": "NEWHOSTNAME\\qdev",
+                "host_name": "NewHostname"
+            },
+            "history": [
+                {
+                    "task_name": "Changed incident status from New to In Process",
+                    "admin_name": "admin",
+                    "update_time": "30/01/2025 15:12:11"
+                },
+                {
+                    "task_name": "Detected and recorded incident",
+                    "admin_name": "system",
+                    "update_time": "27/01/2025 13:09:42"
+                }
+            ],
+            "event_id": "5714233366023380780",
+            "maximum_matches": 1,
+            "transaction_size": 126,
+            "analyzed_by": "Policy Engine  WIN-OCFRAM4CBQ5",
+            "ignored_incidents": false,
+            "event_time": "27/01/2025 13:09:41",
+            "incident_time": "27/01/2025 13:09:40",
+            "channel": "ENDPOINT_HTTPS",
+            "policies": "Test",
+            "partition_index": 20241113,
+            "destination": "DLPTEST.COM",
+            "detected_by": "Endpoint Agent",
+            "details": "EndPoint Operation",
+            "released_incident": false,
+            "endpoint_type": "DESKTOP",
+            "violation_triggers": [
+                {
+                    "classifiers": [
+                        {
+                            "classifier_name": "PizzaTestKeyword (Key Phrase)",
+                            "number_matches": 1
+                        }
+                    ],
+                    "policy_name": "Test",
+                    "rule_name": "Test-Rule"
+                }
+            ]
+        }
+    ],
+    "total_count": 18,
+    "total_returned": 18
+}

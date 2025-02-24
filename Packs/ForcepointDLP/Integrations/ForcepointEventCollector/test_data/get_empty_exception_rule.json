@@ -1,0 +1,6 @@
+{
+    "parent_policy_name": "test_policy",
+    "parent_rule_name": "test_rule",
+    "policy_type": "DLP",
+    "exception_rules": []
+}

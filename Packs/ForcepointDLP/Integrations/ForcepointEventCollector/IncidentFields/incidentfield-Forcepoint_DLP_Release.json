@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Forcepoint DLP Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "forcepointdlprelease",
+    "closeForm": false,
+    "content": true,
+    "description": "The status of the released incidents will change from Releasing... to Released after the action is completed. Refresh the screen and check the Status column. In case of failure, the status will remian Quarantined.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_forcepointdlprelease",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Forcepoint DLP Release",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

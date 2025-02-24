@@ -1,1 +1,14 @@
 !forcepoint-dlp-get-events limit=1
+!fp-dlp-rule-create policy_name=new_policy_4 rule_name=new_rule_2 classifier_name=test classifier_position=1 classifier_predefined=false classifier_threshold_calculate_type=ALL classifier_threshold_type=CHECK_GREATER_THAN classifier_threshold_value_from=1 dlp_version=10.2.0 policy_enabled=true predefined_policy=false rule_enabled=true rule_condition_relation_type=AND rule_parts_count_type=CROSS_COUNT policy_level=1 policy_data_type=NETWORKING
+!fp-dlp-rule-update policy_name=new_policy_4 rule_name=new_rule_2 policy_description=test
+!fp-dlp-rule-severity-action-update policy_name=new_policy_4 rule_name=new_rule_2 classifier_number_of_matches=1 classifier_action_plan=test classifier_selected=true classifier_severity_type=LOW override_classifier_number_of_matches=2
+!fp-dlp-rule-source-destination-update policy_name=new_policy_4 rule_name=new_rule_2 rule_source_endpoint_channel_machine_type=ALL_MACHINES rule_destination_email_monitor_directions=INCOMING
+!fp-dlp-rule-exception-create parent_policy_name=new_policy_4 parent_rule_name=new_rule_2 description=test destination_enabled=false source_enabled=false condition_enabled=true classifier_name=test classifier_position=1 classifier_predefined=false classifier_threshold_calculate_type=ALL classifier_threshold_type=CHECK_GREATER_THAN classifier_threshold_value_from=1 severity_classifier_action_plan=test severity_classifier_max_matches=SUM_ALL severity_classifier_number_of_matches=1 severity_classifier_severity_type=LOW severity_classifier_selected=true enabled=true parts_count_type=CROSS_COUNT condition_relation_type=AND exception_rule_name=test_exception
+!fp-dlp-rule-exception-update parent_policy_name=new_policy_4 parent_rule_name=new_rule_2 exception_rule_name=test_exception description=test2
+!fp-dlp-policy-list
+!fp-dlp-policy-rule-list policy_name=new_policy_4
+!fp-dlp-rule-exception-list
+!fp-dlp-rule-severity-action-get policy_name=new_policy_4
+!fp-dlp-rule-source-destination-get policy_name=new_policy_4
+!fp-dlp-incident-list from_date="2022-01-01T00:00:00.000Z" limit=1
+!fp-dlp-incident-update event_ids=2612565687635980284 severity=HIGH

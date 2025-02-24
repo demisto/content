@@ -22,12 +22,6 @@ configuration:
     required: false
     type: 0
     section: Collect
-  - display: First fetch
-    name: first_fetch
-    required: false
-    type: 0
-    section: Collect
-    hidden: true
   - display: Trust any certificate (not secure)
     name: insecure
     required: false
@@ -40,6 +34,30 @@ configuration:
     type: 8
     section: Connect
     advanced: true
+  - name: mirror_direction
+    additionalinfo: "Choose the direction to mirror the incident: Incoming (from Cyberint to Cortex XSOAR), Outgoing (from Cortex XSOAR to Cyberint), or Incoming and Outgoing (from/to Cortex XSOAR and Cyberint)."
+    display: Incident Mirroring Direction
+    type: 15
+    required: false
+    defaultvalue: None
+    options:
+      - None
+      - Incoming
+      - Outgoing
+      - Incoming And Outgoing
+  - name: first_fetch
+    display: First fetch timestamp
+    additionalinfo: Timestamp in ISO format or <number> <time unit>, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+    required: true
+    defaultvalue: 1 day
+    type: 0
+    section: Collect
+  - name: max_fetch
+    display: Maximum incidents per fetch
+    required: true
+    defaultvalue: 10
+    type: 0
+    section: Collect
 description: Use this integration to fetch security incidents from Forcepoint DLP as Cortex XSIAM events.
 display: Forcepoint DLP Event Collector (Beta)
 name: Forcepoint DLP Event Collector
@@ -72,14 +90,1086 @@ script:
           required: true
       description: Gets security events from Forcepoint DLP.
       name: forcepoint-dlp-get-events
+    - name: fp-dlp-policy-list
+      description: List the names of all enabled policies displayed in the 'Manage DLP and Discovery Policies' section.
+      arguments:
+        - name: type
+          description: Specifies the type of policies to retrieve, such as DLP or DISCOVERY.
+          defaultValue: DLP
+          auto: PREDEFINED
+          predefined:
+            - DLP
+            - DISCOVERY
+          required: false
+        - name: all_results
+          description: Indicates whether to retrieve all results by overriding the default limit. Use 'true' to fetch all results or 'false' to respect the default limit.
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: limit
+          description: The maximum number of records to retrieve. If 'all_results' is set to true, this field is ignored.
+          defaultValue: "50"
+          required: false
+      outputs:
+        - contextPath: ForcepointDlp.Policy.name
+          description: The name of the enabled policy.
+          type: String
+    - name: fp-dlp-policy-rule-list
+      description: List the details of policy rules and classifiers, including condition properties.
+      arguments:
+        - name: policy_name
+          description: Name of the policy for which rules will be retrieved. Use `fp-dlp-policy-list` to obtain the required policy names.
+          required: true
+          default: true
+        - name: all_results
+          description: Indicates whether to retrieve all results by overriding the default limit. Use 'true' to fetch all results or 'false' to respect the default limit.
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: limit
+          description: The maximum number of records to retrieve. If 'all_results' is set to true, this field is ignored.
+          defaultValue: "50"
+          required: false
+      outputs:
+        - contextPath: ForcepointDlp.Policy.dlp_version
+          description: The version of Forcepoint Security Manager.
+          type: String
+        - contextPath: ForcepointDlp.Policy.policy_name
+          description: The name of the policy.
+          type: String
+        - contextPath: ForcepointDlp.Policy.enabled
+          description: Indicates whether the policy is enabled.
+          type: String
+        - contextPath: ForcepointDlp.Policy.predefined_policy
+          description: Indicates whether the policy is predefined or custom.
+          type: String
+        - contextPath: ForcepointDlp.Policy.description
+          description: The description of the policy.
+          type: String
+        - contextPath: ForcepointDlp.Policy.policy_level
+          description: The priority level of the policy, determining its execution order.
+          type: Number
+        - contextPath: ForcepointDlp.Policy.policy_level_data_type
+          description: The data type associated with the policy level.
+          type: String
+        - contextPath: ForcepointDlp.Policy.Rule.rule_name
+          description: The name of the policy rule.
+          type: String
+        - contextPath: ForcepointDlp.Policy.Rule.enabled
+          description: Indicates whether the rule is enabled.
+          type: String
+        - contextPath: ForcepointDlp.Policy.Rule.parts_count_type
+          description: Defines how matches within a transaction are evaluated to trigger an incident.
+          type: String
+        - contextPath: ForcepointDlp.Policy.Rule.condition_relation_type
+          description: "Specifies the condition relationship to trigger the rule: all conditions, at least one condition, or a custom relationship."
+          type: String
+        - contextPath: ForcepointDlp.Policy.Rule.Classifier.classifier_name
+          description: The name of the classifier.
+          type: String
+        - contextPath: ForcepointDlp.Policy.Rule.Classifier.predefined
+          description: Indicates whether the classifier is predefined.
+          type: String
+        - contextPath: ForcepointDlp.Policy.Rule.Classifier.position
+          description: The position of the classifier in the rule conditions.
+          type: Number
+        - contextPath: ForcepointDlp.Policy.Rule.Classifier.threshold_type
+          description: The type of threshold used for the classifier.
+          type: String
+        - contextPath: ForcepointDlp.Policy.Rule.Classifier.threshold_value_from
+          description: The starting threshold value for the classifier.
+          type: Number
+        - contextPath: ForcepointDlp.Policy.Rule.Classifier.threshold_calculate_type
+          description: Defines how the classifier's threshold is calculated.
+          type: String
+        - contextPath: ForcepointDlp.Policy.Rule.Classifier.threshold_value_to
+          description: The ending threshold value for the classifier.
+          type: Number
+    - name: fp-dlp-rule-exception-list
+      description: List all exception rules associated with policies, including detailed information about conditions and classifiers.
+      arguments:
+        - name: all_results
+          description: Indicates whether all results should be retrieved, overriding the default limit. Use 'true' to retrieve all or 'false' for default limits.
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: limit
+          description: The maximum number of records to retrieve.
+          defaultValue: "50"
+          required: false
+        - name: type
+          description: Specifies the type of policies to retrieve.
+          required: false
+          defaultValue: "DLP"
+          auto: PREDEFINED
+          predefined:
+            - "DLP"
+            - "DISCOVERY"
+        - name: policy_name
+          description: Name of the policy for which exception rules will be retrieved. Use `fp-dlp-policy-list` to obtain the required policy names.
+          required: false
+        - name: rule_name
+          description: Name of the specific rule to retrieve exceptions. When using this argument, `policy_name` is required.
+          required: false
+      outputs:
+        - contextPath: ForcepointDlp.PolicyException.policy_name
+          description: The name of the policy.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.rule_name
+          description: The name of the policy rule.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.exception_rule_names
+          description: The names of the exception rules for the policy.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.policy_type
+          description: The type of the policy, such as DLP.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.exception_rule_name
+          description: The name of the exception rule.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.enabled
+          description: Indicates whether the exception rule is enabled.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.description
+          description: The description of the exception rule.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.display_description
+          description: A user-facing description of the exception rule.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.condition_enabled
+          description: Indicates whether the condition for the exception rule is enabled.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.source_enabled
+          description: Indicates whether the source condition is enabled for the exception rule.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.destination_enabled
+          description: Indicates whether the destination condition is enabled for the exception rule.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.parts_count_type
+          description: Specifies how matches within a transaction are evaluated to trigger an exception rule.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.condition_relation_type
+          description: Defines the condition relation type for the exception rule (e.g., AND or OR).
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.classifiers
+          description: The classifiers used in the exception rule.
+          type: Unknown
+        - contextPath: ForcepointDlp.PolicyException.RuleException.classifier_name
+          description: The name of the classifier.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.predefined
+          description: Indicates whether the classifier is predefined.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.position
+          description: The position of the classifier in the rule conditions.
+          type: Number
+        - contextPath: ForcepointDlp.PolicyException.RuleException.threshold_type
+          description: The type of threshold used for the classifier.
+          type: String
+        - contextPath: ForcepointDlp.PolicyException.RuleException.threshold_value_from
+          description: The starting threshold value for the classifier.
+          type: Number
+        - contextPath: ForcepointDlp.PolicyException.RuleException.threshold_calculate_type
+          description: Defines how the classifier's threshold is calculated.
+          type: String
+    - name: fp-dlp-rule-severity-action-get
+      description: Retrieve details of rule severity and corresponding action properties for a specified policy.
+      arguments:
+        - name: policy_name
+          description: Name of the policy for which rule severity and action details will be retrieved. Use `fp-dlp-policy-list` to obtain the required policy names.
+          required: true
+          default: true
+      outputs:
+        - contextPath: ForcepointDlp.SeverityActionRule.policy_name
+          description: The name of the policy.
+          type: String
+        - contextPath: ForcepointDlp.SeverityActionRule.Rule.rule_name
+          description: The name of the policy rule.
+          type: String
+        - contextPath: ForcepointDlp.SeverityActionRule.Rule.type
+          description: The rule type defines when to trigger an incident.
+          type: String
+        - contextPath: ForcepointDlp.SeverityActionRule.Rule.max_matches
+          description: Defines the maximum number of matches to trigger an action.
+          type: String
+        - contextPath: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.selected
+          description: Whether the classifier is selected.
+          type: String
+        - contextPath: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.number_of_matches
+          description: The number of matches with the classifier.
+          type: Number
+        - contextPath: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.severity_type
+          description: The severity level of the classifier.
+          type: String
+        - contextPath: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.dup_severity_type
+          description: The severity level of the classifier.
+          type: String
+        - contextPath: ForcepointDlp.SeverityActionRule.Rule.ClassifierDetail.action_plan
+          description: The action plan when there is a match.
+          type: String
+        - contextPath: ForcepointDlp.SeverityActionRule.Rule.risk_adaptive_protection_enabled
+          description: Whether risk adaptive protection is enabled.
+          type: String
+    - name: fp-dlp-rule-source-destination-get
+      description: Retrieve the source and destination details of rules associated with a specified policy.
+      arguments:
+        - name: policy_name
+          description: Name of the policy to retrieve source and destination details. Use `fp-dlp-policy-list` to obtain the required policy names.
+          required: true
+          default: true
+      outputs:
+        - contextPath: ForcepointDlp.SourceDestinationRule.policy_name
+          description: The name of the policy.
+          type: Unknown
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.rule_name
+          description: The name of the policy rule.
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.endpoint_channel_machine_type
+          description: The source machine type.
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.endpoint_connection_type
+          description: The network location of the endpoint machines to analyze.
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.resource_name
+          description: The name of the resource.
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.type
+          description: The type of the resource (for example, computers).
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.include
+          description: Indicates whether the resource is included or excluded
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.email_monitor_directions
+          description: "Specifies the email traffic directions to monitor: inbound, outbound, internal, or all."
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.channel_type
+          description: The type of the channel.
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.enabled
+          description: Indicates whether the resource is enabled.
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.user_operations
+          description: A user operation to monitor, such as file uploading, downloading, or external file-sharing.
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.Resource.resource_name
+          description: The name of the resource.
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.Resource.type
+          description: The type of the resource (for example, computers).
+          type: String
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.Resource.include
+          description: Indicates whether the resource is included or excluded.
+          type: String
+    - name: fp-dlp-rule-create
+      description: Create a new rule in a specified DLP policy with a single classifier. To add more classifiers, use the `fp-dlp-rule-update` command or provide a JSON configuration file via the `entry_id` argument. If the specified policy does not exist, it will be created automatically. If the rule already exists, use the `fp-dlp-rule-update` command.
+      arguments:
+        - name: dlp_version
+          description: The DLP version to use. Required when not using `entry_id``. Use `fp-dlp-policy-rule-list` to retrieve the DLP version.
+          required: false
+        - name: policy_name
+          description: The name of the policy where the rule will be created. Use `fp-dlp-policy-list` to obtain the required policy names or define a new policy name. Not existed policy will automatically created. Required when not using `entry_id`.
+          required: true
+        - name: policy_enabled
+          description: Indicates whether the policy is enabled. Put attention - if set to false, the policy will disappear from the the existing policies and you will have to enable it in the product.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          defaultValue: "true"
+          required: false
+        - name: predefined_policy
+          description: Specifies if the policy is predefined.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: policy_description
+          description: The description of the policy.
+        - name: policy_level
+          description: The priority level of the policy. Required when not using `entry_id`.
+          required: false
+        - name: policy_data_type
+          description: The data type associated with the policy level.
+          required: false
+        - name: rule_name
+          description: The name of the rule to be created. In case the rule is already exists, use the update command. Required when not using `entry_id`.
+          required: true
+        - name: rule_enabled
+          description: Indicates whether the rule is enabled.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+          defaultValue: "true"
+        - name: rule_parts_count_type
+          description: Defines how matches within a transaction are evaluated to trigger the rule. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - CROSS_COUNT
+            - INTERNAL_COUNT
+          required: false
+        - name: rule_condition_relation_type
+          description: Specifies the condition relationship to trigger the rule. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - AND
+            - OR
+          required: false
+        - name: classifier_name
+          description: The name of the classifier in Forcepoint DLP. Required when not using `entry_id`.
+          required: false
+        - name: classifier_predefined
+          description: Specifies if the classifier is predefined. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: classifier_position
+          description: The position of the classifier in the rule conditions. Required when not using `entry_id`.
+          required: false
+        - name: classifier_threshold_type
+          description: Classifier threshold type. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - CHECK_EMPTY
+            - CHECK_GREATER_THAN
+            - CHECK_IN_RANGE
+          required: false
+        - name: classifier_threshold_value_from
+          description: Threshold first parameter. Required when not using `entry_id` and when classifier_threshold_type is `CHECK_IN_RANGE` or `CHECK_GREATER_THAN`.
+          required: false
+        - name: classifier_threshold_value_to
+          description: Threshold first parameter. Required when not using `entry_id` and when classifier_threshold_type is `CHECK_IN_RANGE`.
+          required: false
+        - name: classifier_threshold_calculate_type
+          description: Defines how the classifier's threshold is calculated. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - UNIQUE
+            - ALL
+          required: false
+        - name: entry_id
+          description: Entry ID of a JSON file to pass the configuration instead of using the command inputs. Use `fp-dlp-policy-rule-list` to retrive examples for the payload to provide.
+          required: false
+    - name: fp-dlp-rule-update
+      description: Update an existing rule in a specific DLP policy or create a classifier within it. To add/ update more classifiers, use this command multiple times (with diffrent position to add or existing position to update). or provide a JSON configuration file via the `entry_id` argument, which overrides all classifiers. If the policy does not exist, it will be created. If the classifier does not exist in the rule, it will be added. Use the `fp-dlp-rule-create` command to create a rule if it does not exist.
+      arguments:
+        - name: dlp_version
+          description: The DLP version to use. Required when not using `entry_id`. Use `fp-dlp-policy-rule-list` to retrieve the DLP version.
+          required: false
+        - name: policy_name
+          description: The name of the policy where the rule will be updated. Use `fp-dlp-policy-list` to obtain the required policy names.
+          required: true
+        - name: rule_name
+          description: The name of the rule that will be updated. Use `fp-dlp-policy-rule-list` to obtain the required rule names.
+          required: true
+        - name: policy_enabled
+          description: Indicates whether the policy is enabled.. Put attention - if set to false, the policy will disappear from the the existing policies and you will have to enable it in the product.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: predefined_policy
+          description: Specifies if the policy is predefined.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: policy_description
+          description: The description of the policy.
+        - name: policy_level
+          description: The priority level of the policy.
+          required: false
+        - name: policy_data_type
+          description: The data type associated with the policy level.
+          required: false
+        - name: rule_enabled
+          description: Indicates whether the rule is enabled.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: rule_parts_count_type
+          description: Defines how matches within a transaction are evaluated to trigger the rule.
+          auto: PREDEFINED
+          predefined:
+            - CROSS_COUNT
+            - INTERNAL_COUNT
+          required: false
+        - name: rule_condition_relation_type
+          description: Specifies the condition relationship to trigger the rule.
+          auto: PREDEFINED
+          predefined:
+            - AND
+            - OR
+          required: false
+        - name: classifier_name
+          description: The name of the classifier in Forcepoint DLP.
+          required: false
+        - name: classifier_predefined
+          description: Specifies if the classifier is predefined.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: classifier_position
+          description: The position of the classifier in the rule conditions.
+          required: false
+        - name: classifier_threshold_type
+          description: Classifier threshold type.
+          auto: PREDEFINED
+          predefined:
+            - CHECK_EMPTY
+            - CHECK_GREATER_THAN
+            - CHECK_IN_RANGE
+          required: false
+        - name: classifier_threshold_value_from
+          description: Threshold first parameter. Mandatory when classifier_threshold_type is `CHECK_IN_RANGE` or `CHECK_GREATER_THAN`.
+          required: false
+        - name: classifier_threshold_value_to
+          description: Threshold first parameter. Required when not using entry_id and when classifier_threshold_type is CHECK_IN_RANGE.
+          required: false
+        - name: classifier_threshold_calculate_type
+          description: Defines how the classifier's threshold is calculated.
+          auto: PREDEFINED
+          predefined:
+            - UNIQUE
+            - ALL
+          required: false
+        - name: entry_id
+          description: Entry ID of a JSON file to pass the configuration instead of using the command inputs. Use `fp-dlp-policy-rule-list` to retrive examples for the payload to provide.
+          required: false
+    - name: fp-dlp-rule-severity-action-update
+      description: Update the severity actions for a rule in a specific DLP policy. To add more classifiers, use this command multiple times or provide a JSON configuration file via the `entry_id` argument to override all classifiers. A maximum of 3 classifiers is allowed. Use the `override_classifier_number_of_matches` argument to specify which classifier to update based on its number of matches.
+      arguments:
+        - name: policy_name
+          description: The name of the policy where the rules will be updated. Use `fp-dlp-policy-list` to obtain the required policy names.
+          required: true
+        - name: rule_name
+          description: The name of the rule to be updated. Use `fp-dlp-policy-rule-list` to obtain the required rule names. Required when not using `entry_id`.
+          required: true
+        - name: rule_type
+          description: The type of the rule. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - CUMULATIVE_CONDITION
+            - EVERY_MATCHED_CONDITION
+          required: false
+        - name: rule_count_type
+          description: The type of the matches to count. Required when rule_type is CUMULATIVE_CONDITION. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - MATCHES
+            - UNIQUE_MATCHES
+            - EVENTS
+          required: false
+        - name: rule_count_period
+          description: The period of the matches to count. Required when rule_type is CUMULATIVE_CONDITION. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - FIVE_MINUTES
+            - FIFTEEN_MINUTES
+            - ONE_HOUR
+            - FOUR_HOUR
+            - EIGHT_HOURS
+            - TWENTY_FOUR_HOURS
+          required: false
+        - name: rule_rate_match_period
+          description: The match type (for example, transactions) will accumulate until the rate declines for the specified duration. Required when rule_type is CUMULATIVE_CONDITION. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - FIVE_MINUTES
+            - FIFTEEN_MINUTES
+            - ONE_HOUR
+            - FOUR_HOUR
+            - EIGHT_HOURS
+            - TWENTY_FOUR_HOURS
+          required: false
+        - name: rule_max_matches
+          description: Matches are calculated as the X matched conditions. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - GREATEST_NUMBER
+            - SUM_ALL
+          required: false
+        - name: classifier_selected
+          description: Indicates if the classifier is selected. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: classifier_number_of_matches
+          description: The number of matches for the classifier. In case therer is no classifier with this number of matches, use `override_classifier_number_of_matches` to override classifier. Required when not using `entry_id`.
+          required: false
+        - name: override_classifier_number_of_matches
+          description: The number of matches classifier to override.
+          required: false
+        - name: classifier_severity_type
+          description: The severity type of the classifier. Required when not using `entry_id`.
+          auto: PREDEFINED
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+          required: false
+        - name: classifier_action_plan
+          description: The action plan associated with the classifier. There are predefined values (such as `Audit Only`, `Block All`, `Audit and Notify`, `Drop Email Attachment`, `Audit Without Forensis`, `Block Without Forencis`) and defined by user action plans. Required when not using `entry_id`.
+          required: false
+        - name: entry_id
+          description: Entry ID of a JSON file to pass the configuration instead of using the command inputs. Use `fp-dlp-rule-severity-action-get` to retrive examples for the payload to provide.
+          required: false
+    - name: fp-dlp-rule-source-destination-update
+      description: Update the source and destination settings for a rule in a specific DLP policy. You can pass configuration data via parameters to update one channel and resource, or provide a JSON configuration file via the `entry_id` argument to override all channels.
+      arguments:
+        - name: policy_name
+          description: The name of the policy where the rules will be updated. Use `fp-dlp-policy-list` to obtain the required policy names.
+          required: true
+        - name: rule_name
+          description: The name of the rule to be updated. Use `fp-dlp-policy-rule-list` to obtain the required rule names
+          required: true
+        - name: rule_source_endpoint_channel_machine_type
+          description: The type of endpoint machine.
+          auto: PREDEFINED
+          predefined:
+            - ALL_MACHINES
+            - ALL_MACHINES_EXCEPT_LAPTOPS
+            - LAPTOPS_ONLY
+          required: false
+        - name: rule_source_endpoint_connection_type
+          description: The type of endpoint connection.
+          auto: PREDEFINED
+          predefined:
+            - NONE
+            - ANYWARE
+            - CONNECTED_TO_CORPORATE_NETWORK
+            - NOT_CONNECTED_TO_CORPORATE_NETWORK
+          required: false
+        - name: rule_destination_email_monitor_directions
+          description: Email monitor directions.
+          auto: PREDEFINED
+          predefined:
+            - INCOMING
+            - OUTGOING
+            - INTERNAL
+          isArray: true
+        - name: channel_type
+          description: The type of the channel.
+          auto: PREDEFINED
+          predefined:
+            - EMAIL
+            - ENDPOINT_EMAIL
+            - FTP
+            - IM
+            - HTTP
+            - HTTPS
+            - GENERIC_TEXT
+            - ENDPOINT_HTTP
+            - ENDPOINT_HTTPS
+            - NETWORK_PRINTING
+            - ENDPOINT_PRINTING
+            - ENDPOINT_APPLICATION
+            - ENDPOINT_REMOVABLE_MEDIA
+            - ENDPOINT_LAN
+            - MOBILE_AIRSYNC
+            - EFSS
+            - CASB_REAL_TIME
+            - CASB_NEAR_REAL_TIME
+          required: false
+        - name: channel_enabled
+          description: Indicates whether the channel is enabled.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: resource_name
+          description: The name of the resource.
+          required: false
+        - name: resource_type
+          description: The type of the resource.
+          auto: PREDEFINED
+          predefined:
+            - DIRECTORY_ENTRY_USER
+            - DIRECTORY_ENTRY_GROUP
+            - DIRECTORY_ENTRY_OU
+            - CUSTOM_USER
+            - NETWORK
+            - CUSTOM_COMPUTER
+            - DOMAIN
+            - BUSINESS_UNIT
+            - APPLICATION_GROUP
+            - ONLINE_APPLICATION_GROUP
+            - PRINTER
+            - DEVICE
+            - COUNTRY
+            - URL_CATEGORY
+            - CLOUD_APPLICATION
+          required: false
+        - name: resource_include
+          description: Indicates whether the resource is included.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: entry_id
+          description: Entry ID of a JSON file to pass the configuration instead of using the command inputs. Use `fp-dlp-rule-source-destination-get` to retrive examples for the payload to provide.
+          required: false
+    - name: fp-dlp-rule-exception-create
+      description: Create an exception rule for a specified parent rule and policy type. To add more classifiers, use this command multiple times or provide a JSON configuration file via the `entry_id` argument to override all classifiers.
+      arguments:
+        - name: parent_policy_name
+          description: The name of the parent policy that holds the rule. Use `fp-dlp-policy-list` to obtain the required policy names.
+          required: true
+        - name: parent_rule_name
+          description: The name of the parent rule that holds exception rules. Use `fp-dlp-policy-rule-list` to obtain the required rule names.
+          required: true
+        - name: policy_type
+          description: The type of the policy.
+          auto: PREDEFINED
+          predefined:
+            - DLP
+            - DISCOVERY
+          required: false
+          defaultValue: DLP
+        - name: exception_rule_name
+          description: The name of the exception rule that will be created.
+          required: false
+        - name: enabled
+          description: Indicates whether the exception rule is enabled.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: description
+          description: A description of the exception rule.
+        - name: parts_count_type
+          description: The parts count type of the exception rule.
+          auto: PREDEFINED
+          predefined:
+            - CROSS_COUNT
+            - INTERNAL_COUNT
+          required: false
+        - name: condition_relation_type
+          description: The condition relation type of the exception rule.
+          auto: PREDEFINED
+          predefined:
+            - AND
+            - OR
+            - CUSTOMIZED
+          required: false
+        - name: condition_enabled
+          description: Indicates whether the condition is enabled.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: source_enabled
+          description: Indicates whether the source condition is enabled (only for DLP policy type).
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: destination_enabled
+          description: Indicates whether the destination condition is enabled (only for DLP policy type).
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: classifier_name
+          description: The name of the classifier.
+          required: false
+        - name: classifier_predefined
+          description: Indicates if the classifier is predefined.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: classifier_position
+          description: The position of the classifier inside the condition.
+          required: false
+        - name: classifier_threshold_type
+          description: The threshold type for the classifier.
+          auto: PREDEFINED
+          predefined:
+            - CHECK_EMPTY
+            - CHECK_GREATER_THAN
+            - CHECK_IN_RANGE
+          required: false
+        - name: classifier_threshold_value_from
+          description: The first threshold value for CHECK_IN_RANGE or CHECK_GREATER_THAN.
+          required: false
+        - name: classifier_threshold_value_to
+          description: Threshold first parameter. Required when not using `entry_id` and when classifier_threshold_type is `CHECK_IN_RANGE`.
+          required: false
+        - name: classifier_threshold_calculate_type
+          description: How the threshold is calculated.
+          auto: PREDEFINED
+          predefined:
+            - UNIQUE
+            - ALL
+          required: false
+        - name: severity_classifier_max_matches
+          description: The method for calculating matches.
+          auto: PREDEFINED
+          predefined:
+            - GREATEST_NUMBER
+            - SUM_ALL
+          required: false
+        - name: severity_classifier_selected
+          description: Indicates whether the classifier detail is selected.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: severity_classifier_number_of_matches
+          description: The number of matches for the classifier detail.
+          required: false
+        - name: severity_classifier_severity_type
+          description: The severity type for the classifier detail.
+          auto: PREDEFINED
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+          required: false
+        - name: severity_classifier_action_plan
+          description: The action plan for the classifier detail. There are predefined values (such as `Audit Only`, `Block All`, `Audit and Notify`, `Drop Email Attachment`, `Audit Without Forensis`, `Block Without Forencis`) and defined by user action plans.
+          required: false
+        - name: entry_id
+          description: Entry ID of a JSON file to pass the configuration instead of using the command inputs. Use `fp-dlp-rule-exception-list` to retrieve examples for the payload to provide.
+          required: false
+    - name: fp-dlp-rule-exception-update
+      description: Update an existing exception rule for a specified parent rule and policy type. To add/ update more classifiers, use this command multiple times (with diffrent position to add or existing position to update) or provide a JSON configuration file via the `entry_id` argument to override all classifiers.
+      arguments:
+        - name: parent_policy_name
+          description: The name of the parent policy that holds the rule. Use fp-dlp-policy-list to obtain the required policy names.
+          required: true
+        - name: parent_rule_name
+          description: The name of the parent rule that holds exception rules. Use fp-dlp-policy-rule-list to obtain the required rule names.
+          required: true
+        - name: policy_type
+          description: The type of the policy.
+          auto: PREDEFINED
+          predefined:
+            - DLP
+            - DISCOVERY
+          required: false
+          defaultValue: DLP
+        - name: exception_rule_name
+          description: The name of the exception rule that will be updated. Use 'forcepoint-dlp-get-rule-exception' to obtain the required exception rule names.
+          required: false
+        - name: enabled
+          description: Indicates whether the exception rule is enabled.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: description
+          description: A description of the exception rule.
+        - name: parts_count_type
+          description: The parts count type of the exception rule.
+          auto: PREDEFINED
+          predefined:
+            - CROSS_COUNT
+            - INTERNAL_COUNT
+          required: false
+        - name: condition_relation_type
+          description: The condition relation type of the exception rule.
+          auto: PREDEFINED
+          predefined:
+            - AND
+            - OR
+            - CUSTOMIZED
+          required: false
+        - name: condition_enabled
+          description: Indicates whether the condition is enabled.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: source_enabled
+          description: Indicates whether the source condition is enabled (only for DLP policy type).
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: destination_enabled
+          description: Indicates whether the destination condition is enabled (only for DLP policy type).
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: classifier_name
+          description: The name of the classifier.
+          required: false
+        - name: classifier_predefined
+          description: Indicates if the classifier is predefined.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: classifier_position
+          description: The position of the classifier inside the condition.
+          required: false
+        - name: classifier_threshold_type
+          description: The threshold type for the classifier.
+          auto: PREDEFINED
+          predefined:
+            - CHECK_EMPTY
+            - CHECK_GREATER_THAN
+            - CHECK_IN_RANGE
+          required: false
+        - name: classifier_threshold_value_from
+          description: The first threshold value for `CHECK_IN_RANGE` or `CHECK_GREATER_THAN`.
+          required: false
+        - name: classifier_threshold_value_to
+          description: Threshold first parameter. Required when not using `entry_id` and when classifier_threshold_type is `CHECK_IN_RANGE`.
+          required: false
+        - name: classifier_threshold_calculate_type
+          description: How the threshold is calculated.
+          auto: PREDEFINED
+          predefined:
+            - UNIQUE
+            - ALL
+          required: false
+        - name: severity_classifier_max_matches
+          description: The method for calculating matches.
+          auto: PREDEFINED
+          predefined:
+            - GREATEST_NUMBER
+            - SUM_ALL
+          required: false
+        - name: severity_classifier_selected
+          description: Indicates whether the classifier detail is selected.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: severity_classifier_number_of_matches
+          description: The number of matches for the classifier. In case therer is no classifier with this number of matches, use override_severity_classifier_number_of_matches to override classifier. Required when not using `entry_id`.
+          required: false
+        - name: override_severity_classifier_number_of_matches
+          description: The number of matches classifier to override. Required when not using `entry_id`.
+          required: false
+        - name: severity_classifier_severity_type
+          description: The severity type for the classifier detail.
+          auto: PREDEFINED
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+          required: false
+        - name: severity_classifier_action_plan
+          description: The action plan for the classifier detail. There are predefined values (such as `Audit Only`, `Block All`, `Audit and Notify`, `Drop Email Attachment`, `Audit Without Forensis`, `Block Without Forencis`) and defined by user action plans.
+          required: false
+        - name: entry_id
+          description: Entry ID of a JSON file to pass the configuration instead of using the command inputs. Use `fp-dlp-rule-exception-list` to retrieve examples for the payload to provide.
+          required: false
+    - name: fp-dlp-incident-list
+      description: Retrieve a list of incidents based on specified filters.
+      arguments:
+        - name: type
+          description: The type of incidents to retrieve.
+          auto: PREDEFINED
+          predefined:
+            - INCIDENTS
+            - DISCOVERY
+          required: false
+          defaultValue: INCIDENTS
+        - name: ids
+          description: Comma separated array of incident IDs to retrieve. For example, 131069,131066.
+          required: false
+        - name: from_date
+          description: Start date for the incident search. Timestamp in ISO format or <number> <time unit>, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          required: true
+        - name: to_date
+          description: End date for the incident search. Timestamp in ISO format or <number> <time unit>, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          required: false
+          defaultValue: now
+        - name: status
+          description: The status of incidents to filter.
+          auto: PREDEFINED
+          predefined:
+            - NEW
+            - IN_PROCESS
+            - CLOSE
+            - FALSE_POSITIVE
+            - ESCALATED
+        - name: all_results
+          description: Indicates whether to retrieve all results by overriding the default limit. Use 'true' to fetch all results or 'false' to respect the default limit.
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          required: false
+        - name: limit
+          description: The maximum number of records to retrieve. If 'all_results' is set to true, this field is ignored.
+          defaultValue: "50"
+          required: false
+      outputs:
+        - contextPath: ForcepointDlp.Incident.id
+          description: Unique identifier for the incident.
+          type: Number
+        - contextPath: ForcepointDlp.Incident.severity
+          description: Severity level of the incident.
+          type: String
+        - contextPath: ForcepointDlp.Incident.action
+          description: Action taken on the incident.
+          type: String
+        - contextPath: ForcepointDlp.Incident.status
+          description: Current status of the incident.
+          type: String
+        - contextPath: ForcepointDlp.Incident.Source.ip_address
+          description: Source IP address associated with the incident.
+          type: String
+        - contextPath: ForcepointDlp.Incident.history
+          description: History of the incident with task details.
+          type: Array
+        - contextPath: ForcepointDlp.Incident.event_id
+          description: Unique event identifier associated with the incident.
+          type: String
+        - contextPath: ForcepointDlp.Incident.maximum_matches
+          description: Maximum matches in the incident.
+          type: Number
+        - contextPath: ForcepointDlp.Incident.transaction_size
+          description: Size of the transaction triggering the incident.
+          type: Number
+        - contextPath: ForcepointDlp.Incident.analyzed_by
+          description: Policy engine or tool that analyzed the incident.
+          type: String
+        - contextPath: ForcepointDlp.Incident.event_time
+          description: Time the event was recorded.
+          type: String
+        - contextPath: ForcepointDlp.Incident.incident_time
+          description: Time the incident was identified.
+          type: String
+        - contextPath: ForcepointDlp.Incident.channel
+          description: Communication channel associated with the incident.
+          type: String
+        - contextPath: ForcepointDlp.Incident.policies
+          description: Policies associated with the incident.
+          type: String
+        - contextPath: ForcepointDlp.Incident.detected_by
+          description: Detection tool or method.
+          type: String
+        - contextPath: ForcepointDlp.Incident.details
+          description: Detailed information about the incident.
+          type: String
+        - contextPath: ForcepointDlp.Incident.violation_triggers
+          description: Array of violation triggers, including classifiers, policy name, and rule name.
+          type: Array
+    - name: fp-dlp-incident-update
+      description: Update an incident's attributes such as status, severity, assignment, comments, tags, or false positive indication.
+      arguments:
+        - name: event_ids
+          description: A list of event IDs to update. Use the 'fp-dlp-incident-get' command to retrieve incident IDs.
+          required: true
+        - name: type
+          description: The type of incidents to retrieve.
+          auto: PREDEFINED
+          predefined:
+            - INCIDENTS
+            - DISCOVERY
+          required: false
+          defaultValue: INCIDENTS
+        - name: status
+          description: The status to update for the specified incidents.
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - NEW
+            - IN_PROCESS
+            - CLOSE
+            - FALSE_POSITIVE
+            - ESCALATED
+        - name: comment
+          description: A comment to attach to the specified incidents.
+          required: false
+        - name: assign
+          description: The user to assign the specified incidents to. Provide 'admin' or the username of the assignee.
+          required: false
+        - name: tag
+          description: Tag to assign to the specified incidents.
+          required: false
+        - name: severity
+          description: The severity level to update for the specified incidents.
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - HIGH
+            - MEDIUM
+            - LOW
+        - name: false_positive
+          description: Flag to indicate whether the specified incidents are false positives.
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+    - name: get-modified-remote-data
+      arguments:
+        - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
+          name: lastUpdate
+      description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
+    - name: get-remote-data
+      arguments:
+        - description: The ticket ID.
+          name: id
+          required: true
+        - description: Retrieve entries that were created after lastUpdate.
+          name: lastUpdate
+          required: true
+      description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+    - name: get-mapping-fields
+      arguments: []
+      description: Returns the list of fields for an incident type.
+    - name: update-remote-system
+      arguments: []
+      description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
   dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   runonce: false
+  isfetch: true
+  isremotesyncin: true
+  isremotesyncout: true
+  ismappable: true
   script: ""
   subtype: python3
   type: python
-fromversion: 8.2.0
+fromversion: 6.10.0 #TODO: is the version should be 6.10.0?
 marketplaces:
   - marketplacev2
+  - xsoar
 tests:
   - No tests (auto formatted)
