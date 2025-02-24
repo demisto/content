@@ -1722,6 +1722,44 @@ def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: 
     assert next_run == DEFAULT_LAST_ASSETS_RUN  # pulling finished, next run stage should be assets
 
 
+def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Qualys client and last run dictionary with fetch stage, total assets count, and snapshot ID.
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "assets" stage results in a request read timeout.
+
+    Assert:
+        - Ensure no data is sent to XSIAM and module health is not updated.
+        - Ensure assets next run is correctly set with the half of the original host limit, same snapshot ID, and next trigger 0.
+    """
+    last_total_assets = 10
+    last_run = {'stage': 'assets', 'total_assets': last_total_assets, 'snapshot_id': SNAPSHOT_ID}
+
+    assets, next_page, set_new_limit = [], '', True  # assume request read timeout, so `set_new_limit` flag returned is True
+    mocker.patch('Qualysv2.get_host_list_detections_events', return_value=(assets, next_page, set_new_limit))
+
+    mock_send_data_to_xsiam = mocker.patch('Qualysv2.send_data_to_xsiam')
+    mock_update_module_health = mocker.patch('Qualysv2.demisto.updateModuleHealth')
+    mock_set_assets_last_run = mocker.patch('Qualysv2.demisto.setAssetsLastRun')
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+    assets_next_run = mock_set_assets_last_run.call_args[0][0]
+
+    assert mock_send_data_to_xsiam.call_count == 0
+    assert mock_update_module_health.call_count == 0
+
+    assert mock_set_assets_last_run.call_count == 1
+    assert assets_next_run == {
+        'stage': 'assets',
+        'total_assets': last_total_assets,
+        'snapshot_id': SNAPSHOT_ID,
+        'limit': HOST_LIMIT // 2,
+        'nextTrigger': '0',
+    }
+
+
 @freeze_time("2025-01-01 00:00:00 UTC")
 def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, client: Client):
     """
