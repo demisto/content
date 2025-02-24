@@ -1,4 +1,7 @@
 category: Email
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CheckPointHEC
   version: -1
@@ -30,11 +33,13 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  additionalinfo: Enable fetching incidents from the selected SaaS application.
 - section: Collect
   display: Incident type
   name: incidentType
   type: 13
   required: false
+  additionalinfo: Fetch incidents of the selected types.
 - section: Connect
   display: ""
   name: client_id
@@ -103,6 +108,7 @@ configuration:
   - Spam
   - Malicious URL
   - Malicious URL Click
+  - Graymail
   additionalinfo: Get incidents with only the selected types.
 - display: Maximum number of incidents per fetch
   name: max_fetch
@@ -367,6 +373,10 @@ script:
     - name: entity
       description: Scanned entity id.
       required: true
+    - name: include_clean
+      description: Include clean scans.
+      type: Boolean
+      required: false
     description: Retrieve specific email scan with positive threats.
     outputs:
     - contextPath: CheckPointHEC.ScanResult.ap
@@ -1840,6 +1850,15 @@ script:
       required: false
     - name: entity_id
       description: Entity id.
+      required: false
+  - name: checkpointhec-download-email
+    description: Download email file.
+    arguments:
+    - name: entity
+      description: Email entity id.
+      required: true
+    - name: original
+      description: Download original email.
       required: false
   isfetch: true
   runonce: false

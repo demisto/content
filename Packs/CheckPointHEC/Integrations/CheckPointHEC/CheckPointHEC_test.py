@@ -188,13 +188,13 @@ def test_call_smart_api(mocker):
 
     client._call_api(method, url_suffix)
     get_headers.assert_called_with(request_string)
-    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None)
+    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None, resp_type='json')
 
     params = {'param1': 'value1'}
     request_string += '?param1=value1'
     client._call_api(method, url_suffix, params=params)
     get_headers.assert_called_with(request_string)
-    http_request.assert_called_with(method, url_suffix=path, headers={}, params=params, json_data=None)
+    http_request.assert_called_with(method, url_suffix=path, headers={}, params=params, json_data=None, resp_type='json')
 
 
 def test_call_infinity_api(mocker):
@@ -223,7 +223,7 @@ def test_call_infinity_api(mocker):
 
     client._call_api(method, url_suffix)
     get_headers.assert_called_with(None)
-    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None)
+    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None, resp_type='json')
 
 
 def test_test_module(mocker):
