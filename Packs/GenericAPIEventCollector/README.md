@@ -1,5 +1,5 @@
 
-# Generic API Event Collector Pack
+# Generic API Event Collector
 ## Overview
 The **Generic API Event Collector** allows you to ingest data from any API endpoint into Cortex.
 By configuring this collector, you can gather data from various systems and bring it into the Cortex ecosystem for better analysis and correlation.
@@ -12,4 +12,4 @@ This pack provides an integration that enables you to:
 
 ## Use cases
 - Ingest logs and event data from third-party systems that expose an API.
-- Enhance threat detection and correlation by bringing external events into XSIAM.
+- Enhance threat detection and correlation by bringing external events into Cortex.
