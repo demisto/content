@@ -2194,6 +2194,29 @@ class MsClient:
 
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
+    def get_missing_kbs_by_machine_id(self, machine_id):
+        """Retrieves a list of missing security updates (KBs) by machine id.
+        https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-missing-kbs-machine?view=o365-worldwide
+
+        Args:
+            machine_id (str): Machine ID
+
+        Returns:
+            dict. Machine's info
+        """
+        cmd_url = f"/machines/{machine_id}/getmissingkbs"
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+
+    def get_software_by_machine_id(self, machine_id: str) -> dict:
+        """Retrieve a list of the installed software from the defined machine_id .
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict: list vulnerabilities by software.
+        """
+        cmd_url = f'/machines/{machine_id}/software'
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+
     def get_list_vulnerabilities_by_machine(self, filter_req: str, limit: str, offset: str) -> dict:
         """Retrieves a list of all the vulnerabilities affecting the organization per machine.
 
@@ -2205,6 +2228,19 @@ class MsClient:
         if filter_req:
             params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+
+    def get_vulnerabilities_by_machine_id(self, machine_id):
+        """Retrieves a list of vulnerabilities affected by a machine id.
+        https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-discovered-vulnerabilities?view=o365-worldwide
+
+        Args:
+            machine_id (str): Machine ID
+
+        Returns:
+            dict. Machine's info
+        """
+        cmd_url = f"/machines/{machine_id}/vulnerabilities"
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url)
 
     def get_list_vulnerabilities(self, filter_req: str, limit: str, offset: str) -> dict:
         """Retrieves a list of all vulnerabilities.
@@ -2650,6 +2686,91 @@ def get_machine_details_command(client: MsClient, args: dict) -> CommandResults:
         outputs=machines_outputs,
         readable_output=human_readable,
         raw_response=raw_response)
+
+
+def get_machine_software_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of installed software on a specific device.
+    https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-installed-software?view=o365-worldwide
+
+    Args:
+        machine_id (str): Machine ID
+
+    Returns:
+        CommandResults.
+    """
+    headers = ['id', 'name', 'vendor', 'weakness', 'publicExploit', 'activeAlert',
+               'exposedMachines', 'installedMachines', 'impactScore', "isNormalized", "category"]
+    machine_id = args["machine_id"]
+
+    raw_response = client.get_software_by_machine_id(machine_id)
+    software_outputs = raw_response.get('value')
+
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} software on machine: {machine_id}',
+                                     software_outputs, headers=headers, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Machine',
+        outputs_key_field='id',
+        outputs=software_outputs,
+        readable_output=human_readable,
+        raw_response=raw_response)
+
+
+def get_machine_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of vulnerabilities related to specific device.
+
+    Returns:
+        CommandResults.
+    """
+    headers = ["id", "name", "cveSupportability", "cvssV3", "cvssVector", "description", "epss", "exploitInKit", "exploitTypes",
+               "exploitUris", "exploitVerified", "exposedMachines", "firstDetected", "publicExploit", "publishedOn", "severity", "tags", "updatedOn"]  # noqa: E501
+
+    machine_id = args.get("machine_id")
+    raw_response = client.get_vulnerabilities_by_machine_id(machine_id)
+    vulns_outputs = raw_response.get('value')
+
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Vulnerabilities for machine: {machine_id}',
+                                     vulns_outputs, headers=headers, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Machine',
+        outputs_key_field='id',
+        outputs=vulns_outputs,
+        readable_output=human_readable,
+        raw_response=raw_response)
+
+
+def get_machine_missing_kbs_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of missing security updates on a specific device.
+
+     Args:
+        machine_id (str): Machine ID
+
+    Returns:
+        CommandResults.
+    """
+
+    headers = ['id', 'name', 'osBuild', 'url', 'machineMissedOn', 'cveAddressed', 'productNames']
+    machine_id = args.get("machine_id")
+
+    raw_response = client.get_missing_kbs_by_machine_id(machine_id)
+
+    missing_kbs_output = raw_response.get('value')
+
+    human_readable = tableToMarkdown(
+        f"Missing Security Updates (KBs) for machine: {machine_id}",
+        missing_kbs_output, headers=headers, removeNull=True,
+    )
+
+    # assert 0
+
+    return CommandResults(
+        outputs_prefix="MicrosoftATP.Machine",
+        outputs=missing_kbs_output,
+        outputs_key_field='id',
+        readable_output=human_readable,
+        raw_response=raw_response,
+    )
 
 
 def run_antivirus_scan_command(client: MsClient, args: dict):
@@ -5711,6 +5832,12 @@ def main():  # pragma: no cover
         elif command == 'microsoft-atp-get-machine-details':
             return_results(get_machine_details_command(client, args))
 
+        elif command == "microsoft-atp-get-machine-software":
+            return_results(get_machine_software_command(client, args))
+
+        elif command == "microsoft-atp-get-machine-missing-kbs":
+            return_results(get_machine_missing_kbs_command(client, args))
+
         elif command == 'microsoft-atp-run-antivirus-scan':
             return_outputs(*run_antivirus_scan_command(client, args))
 
@@ -5875,6 +6002,8 @@ def main():  # pragma: no cover
             return_results(get_machine_users_command(client, args))
         elif command == 'microsoft-atp-get-machine-alerts':
             return_results(get_machine_alerts_command(client, args))
+        elif command == 'microsoft-atp-get-machine-vulnerabilities':
+            return_results(get_machine_vulnerabilities_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
         elif command == 'microsoft-atp-generate-login-url':
