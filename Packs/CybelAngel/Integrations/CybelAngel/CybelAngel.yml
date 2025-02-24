@@ -153,3 +153,6 @@ fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
 category: "Data Enrichment & Threat Intelligence"
+sectionorder:
+  - Connect
+  - Collect

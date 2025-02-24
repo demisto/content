@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import datetime, timedelta, UTC
-import requests
+import requests #type: ignore
 import json
 from typing import Any
 
