@@ -9,7 +9,7 @@ from websockets.sync.client import connect
 from websockets.sync.connection import Connection
 from websockets.exceptions import InvalidStatus
 from dateutil import tz
-from psutil import *
+import psutil
 import traceback
 
 
@@ -122,10 +122,10 @@ def websocket_connections(
                 connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers)),
                 fetch_interval=fetch_interval,
             ) for event_type in EventType]
-            yield connections
-        set_the_integration_context(
+            set_the_integration_context(
                     "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(timezone.utc)}")
-
+            yield connections
+        
     except Exception as e:
         set_the_integration_context("last_run_results",
                                     f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
@@ -152,14 +152,18 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     max_message_size = 0
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
-            event = json.loads(connection.recv(timeout=recv_timeout))
+            message = connection.recv(timeout=recv_timeout)
+            event = json.loads(message)
             max_message_size = max(sys.getsizeof(event), max_message_size)
-            if is_interval_passed(fetch_start_time, int(fetch_interval/3)) or is_interval_passed(fetch_start_time, int((fetch_interval/3)*2)) and extensive_logs:
-                demisto.debug(f"{psutil.virtual_memory()}")
+            if extensive_logs and (is_interval_passed(fetch_start_time, int(fetch_interval/3))\
+                            or is_interval_passed(fetch_start_time, int((fetch_interval/3)*2))):
+                demisto.debug(f"Memory in use: {psutil.virtual_memory()}")
                 demisto.debug(f"Max message size {max_message_size}")
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
             continue
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Failed to JSON decode message {message}. error: {e}")
         except Exception as e:
             set_the_integration_context("last_run_results",
                                         f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
@@ -182,21 +186,19 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         event_ids.add(event_id)
     
     if extensive_logs:
-        demisto.debug(f"{psutil.virtual_memory()}")
+        demisto.debug(f"Memory in use: {psutil.virtual_memory()}")
         demisto.debug(f"Max message size {max_message_size}")
     num_events = len(events)
-    
     demisto.debug(f"Fetched {num_events} events of type {event_type.value}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     
     set_the_integration_context("last_run_results",
                                 f"Got from connection {num_events} events starting\
                                     at {str(fetch_start_time)} until {datetime.now().astimezone(timezone.utc)}")
-
     return events
 
 
-def test_module(host: str, cluster_id: str, api_key: str):
+def test_module():
     raise DemistoException(
         "No test option is available due to API limitations.\
         To verify the configuration, run the proofpoint-es-get-last-run-results command and ensure it returns no errors.")
@@ -272,7 +274,7 @@ def main():  # pragma: no cover
     cluster_id = params.get("cluster_id", "")
     api_key = params.get("api_key", {}).get("password", "")
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
-    extensive_logs = argToBoolean(params.get("extensive_logs"))
+    extensive_logs = argToBoolean(params.get("extensive_logs", False))
     
     demisto.debug(f"Command being called is {command}")
     try:
@@ -281,7 +283,7 @@ def main():  # pragma: no cover
         elif command == "proofpoint-es-get-last-run-results":
             return_results(get_last_run_results_command())
         elif command == "test-module":
-            return_results(test_module(host, cluster_id, api_key))
+            return_results(test_module())
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:

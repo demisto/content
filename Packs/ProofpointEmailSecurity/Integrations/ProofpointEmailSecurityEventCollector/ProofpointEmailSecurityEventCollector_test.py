@@ -111,6 +111,45 @@ def test_fetch_events(mocker, connection):
     debug_logs.assert_any_call("The fetched events ids are: 3")
 
 
+def test_fetch_events__logs_and_memory(mocker, connection):
+    """
+    Given: connection fetch_interval=11 recv_timeout=10, extensive_logs=True
+    When: Calling fetch_events function
+    Then:
+        - psutil.virtual_memory() is called 3 times
+        - demisto.debug(f"Max message size {max_message_size}") is logged 3 times
+    """
+    fetch_interval = 15
+    event_connection = EventConnection(event_type=EventType.MESSAGE, connection=connection)
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, "is_interval_passed", side_effect=is_interval_passed)
+    mock_virtual_memory = mocker.patch("psutil.virtual_memory")
+    debug_logs = mocker.patch.object(demisto, "debug")
+    
+    _ = fetch_events(connection=event_connection, fetch_interval=fetch_interval, extensive_logs=True)
+    
+    assert mock_virtual_memory.call_count == 3
+    assert str(debug_logs.call_args_list).count("Max message size") == 3
+
+    
+def test_fetch_events__JSON_loads_exception(mocker, connection):
+    """
+    Given: connection fetch_interval=1 recv_timeout=10, extensive_logs=False and json.loads(message) fails.
+    When: Calling fetch_events function
+    Then: DemistoException(f"Failed to JSON decode message {message}. error: {e}") will be raised.
+    """
+    fetch_interval = 5
+    event_connection = EventConnection(event_type=EventType.MESSAGE, connection=connection)
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, "is_interval_passed", side_effect=is_interval_passed)
+    mocker.patch("psutil.virtual_memory")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("json.loads", side_effect=json.JSONDecodeError("Expecting value", "", 0))
+
+    with pytest.raises(DemistoException):
+        fetch_events(connection=event_connection, fetch_interval=fetch_interval, extensive_logs=True)
+
+    
+    
+    
 @freeze_time("2023-08-16T13:24:12.147573+0100")
 def test_connects_to_websocket(mocker):
     """
