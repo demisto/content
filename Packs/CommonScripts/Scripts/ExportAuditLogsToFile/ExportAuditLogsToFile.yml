@@ -3,10 +3,10 @@ args:
   description: How many days back to fetch for, supports 1,2,3 or 7 days back.
   name: days_back
   predefined:
-  - "1"
-  - "2"
-  - "3"
-  - "7"
+  - '1'
+  - '2'
+  - '3'
+  - '7'
   required: true
 - auto: PREDEFINED
   defaultValue: csv
@@ -21,11 +21,11 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
+    fromServerVersion: ''
 dependson:
   must:
   - core-api-post
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: ExportAuditLogsToFile
 runas: DBotWeakRole
@@ -39,5 +39,6 @@ fromversion: 6.5.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)

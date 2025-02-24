@@ -4,31 +4,25 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Containment Plan
 description: "This playbook handles the main containment actions available with Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan - Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 8aa2ff75-9b37-45eb-8c00-1233cf5410ac
     type: start
     task:
       id: 8aa2ff75-9b37-45eb-8c00-1233cf5410ac
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "150"
+      - '150'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -1210
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": -1210\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -36,8 +30,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     taskid: 585cb24c-cfe1-45cd-8c5d-370621442364
     type: title
     task:
@@ -46,20 +40,14 @@ tasks:
       name: Isolate Device
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "145"
+      - '145'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -780,
-          "y": 35
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -780,\n    \"y\": 35\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -67,8 +55,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
+  '49':
+    id: '49'
     taskid: abb87f28-a965-4d8d-8069-eb635815bb13
     type: title
     task:
@@ -77,20 +65,14 @@ tasks:
       name: Disable Account
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "141"
+      - '141'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -360,
-          "y": 35
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -360,\n    \"y\": 35\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -98,8 +80,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     taskid: ed18bff1-e327-4889-85e8-65d66ff9ef5a
     type: title
     task:
@@ -108,20 +90,14 @@ tasks:
       name: Quarantine File
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "142"
+      - '142'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 35
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 35\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -129,8 +105,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "51":
-    id: "51"
+  '51':
+    id: '51'
     taskid: 1784b84c-0c06-44ae-8230-83edc6deccba
     type: title
     task:
@@ -139,20 +115,14 @@ tasks:
       name: Block Indicators
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "143"
+      - '143'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 35
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 35\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -160,8 +130,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "58":
-    id: "58"
+  '58':
+    id: '58'
     taskid: f495b99b-b851-438c-8fc8-0db9145c81a2
     type: title
     task:
@@ -170,20 +140,14 @@ tasks:
       name: Clear User Sessions
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "144"
+      - '144'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 35
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 35\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -191,28 +155,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "138":
-    id: "138"
+  '138':
+    id: '138'
     taskid: c69a7bbb-62d0-447a-8184-87aea4d7c440
     type: condition
     task:
       id: c69a7bbb-62d0-447a-8184-87aea4d7c440
       version: -1
       name: Should containment automatically?
-      description: |+
-        Whether to perform containment actions automatically or manually.
-
+      description: "Whether to perform containment actions automatically or manually.\n\n"
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "139"
-      "yes":
-      - "147"
+      - '139'
+      yes:
+      - '147'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -222,16 +184,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -490
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": -490\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -239,8 +195,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "139":
-    id: "139"
+  '139':
+    id: '139'
     taskid: 6b328ab7-5553-4c6b-86d3-ca365bf5766d
     type: collection
     task:
@@ -250,19 +206,13 @@ tasks:
       description: Select which indicators to block.
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "147"
+      - '147'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -190,
-          "y": -300
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -190,\n    \"y\": -300\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -271,7 +221,7 @@ tasks:
       subject:
       body:
       methods: []
-      format: ""
+      format: ''
       bcc:
       cc:
       timings:
@@ -282,8 +232,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: Select the Endpoint to isolate by Endpoint name
         required: false
@@ -297,12 +247,12 @@ tasks:
             accessor: endpoint_name
             transformers:
             - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "1"
-        label: ""
+      - id: '1'
+        label: ''
         labelarg:
           simple: Select Endpoint to isolate by Endpoint ID
         required: false
@@ -315,12 +265,12 @@ tasks:
             root: inputs.EndpointID
             transformers:
             - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "2"
-        label: ""
+      - id: '2'
+        label: ''
         labelarg:
           simple: Select Users to disable
         required: false
@@ -333,12 +283,12 @@ tasks:
             root: inputs.Username
             transformers:
             - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "3"
-        label: ""
+      - id: '3'
+        label: ''
         labelarg:
           simple: Select Files to quarantine
         required: false
@@ -358,12 +308,12 @@ tasks:
                   value:
                     simple: inputs.FilePath
                   iscontext: true
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "4"
-        label: ""
+      - id: '4'
+        label: ''
         labelarg:
           simple: Select IPs to block
         required: false
@@ -376,12 +326,12 @@ tasks:
             root: inputs.IP
             transformers:
             - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "5"
-        label: ""
+      - id: '5'
+        label: ''
         labelarg:
           simple: Select URLs to block
         required: false
@@ -394,12 +344,12 @@ tasks:
             root: inputs.URL
             transformers:
             - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "6"
-        label: ""
+      - id: '6'
+        label: ''
         labelarg:
           simple: 'Select Files Hash to block '
         required: false
@@ -413,12 +363,12 @@ tasks:
             transformers:
             - operator: uniq
         - {}
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "7"
-        label: ""
+      - id: '7'
+        label: ''
         labelarg:
           simple: 'Select Domains to block '
         required: false
@@ -431,12 +381,12 @@ tasks:
             root: inputs.Domain
             transformers:
             - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "8"
-        label: ""
+      - id: '8'
+        label: ''
         labelarg:
           simple: Select Users to clear their sessions
         required: false
@@ -449,21 +399,21 @@ tasks:
             root: inputs.Username
             transformers:
             - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: Which containment actions would you like to perform?
       description: Select which containment actions to perform
-      sender: ""
+      sender: ''
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "141":
-    id: "141"
+  '141':
+    id: '141'
     taskid: b14b5f26-d428-4b62-8ba3-2c1253e171fc
     type: playbook
     task:
@@ -473,11 +423,11 @@ tasks:
       playbookName: Containment Plan - Disable Account
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "148"
+      - '148'
     scriptarguments:
       UserContainment:
         complex:
@@ -510,26 +460,20 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
                   simple: inputs.Username
                 iscontext: true
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": -360,
-          "y": 170
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -360,\n    \"y\": 170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -537,8 +481,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "142":
-    id: "142"
+  '142':
+    id: '142'
     taskid: e302b10a-140c-4997-8584-b2dc75debb4a
     type: playbook
     task:
@@ -548,11 +492,11 @@ tasks:
       playbookName: Containment Plan - Quarantine File
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "148"
+      - '148'
     scriptarguments:
       AutoContainment:
         complex:
@@ -588,7 +532,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -619,7 +563,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -629,19 +573,13 @@ tasks:
         complex:
           root: inputs.FileRemediation
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 170
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -649,8 +587,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "143":
-    id: "143"
+  '143':
+    id: '143'
     taskid: 07e811df-f4de-42bb-8910-13684b6086f1
     type: playbook
     task:
@@ -660,11 +598,11 @@ tasks:
       playbookName: Containment Plan - Block Indicators
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "148"
+      - '148'
     scriptarguments:
       AutoBlockIndicators:
         complex:
@@ -700,7 +638,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -731,7 +669,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -765,7 +703,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -796,7 +734,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -809,19 +747,13 @@ tasks:
         complex:
           root: inputs.Username
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 170
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -829,8 +761,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "144":
-    id: "144"
+  '144':
+    id: '144'
     taskid: df1758c9-fbf9-4532-876f-b60ea180dcbc
     type: playbook
     task:
@@ -840,11 +772,11 @@ tasks:
       playbookName: Containment Plan - Clear User Sessions
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "148"
+      - '148'
     scriptarguments:
       ClearUserSessions:
         complex:
@@ -877,26 +809,20 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
                   simple: inputs.Username
                 iscontext: true
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 170
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -904,8 +830,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "145":
-    id: "145"
+  '145':
+    id: '145'
     taskid: 8bd87a2a-710a-479b-8356-540bcdf010fd
     type: playbook
     task:
@@ -915,11 +841,11 @@ tasks:
       playbookName: Containment Plan - Isolate Device
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "148"
+      - '148'
     scriptarguments:
       EndpointHostName:
         complex:
@@ -946,7 +872,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -977,7 +903,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -987,19 +913,13 @@ tasks:
         complex:
           root: inputs.HostContainment
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": -780,
-          "y": 170
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -780,\n    \"y\": 170\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1007,8 +927,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "146":
-    id: "146"
+  '146':
+    id: '146'
     taskid: 953056e0-a248-437e-8498-348287ca39bc
     type: regular
     task:
@@ -1019,10 +939,10 @@ tasks:
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "138"
+      - '138'
     scriptarguments:
       endpoint_id_list:
         complex:
@@ -1035,14 +955,8 @@ tasks:
                 value:
                   simple: No Value
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -670
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": -670\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1050,8 +964,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "147":
-    id: "147"
+  '147':
+    id: '147'
     taskid: c468a69f-b7e5-4fdc-8ea5-c1b5d6710a2e
     type: title
     task:
@@ -1060,24 +974,18 @@ tasks:
       name: Containment
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "50"
-      - "49"
-      - "48"
-      - "51"
-      - "58"
+      - '50'
+      - '49'
+      - '48'
+      - '51'
+      - '58'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -120
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": -120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1085,8 +993,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "148":
-    id: "148"
+  '148':
+    id: '148'
     taskid: a8f6c601-67bc-4dfd-8c09-008797b89324
     type: title
     task:
@@ -1095,17 +1003,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 340
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 340\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1113,8 +1015,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "149":
-    id: "149"
+  '149':
+    id: '149'
     taskid: afefe6f1-1bc6-4c69-8fd4-7072d4fa9962
     type: regular
     task:
@@ -1125,15 +1027,15 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "146"
+      - '146'
     scriptarguments:
       key:
         simple: FilesList
       stringify:
-        simple: "false"
+        simple: 'false'
       value:
         complex:
           root: inputs.FilePath
@@ -1156,14 +1058,8 @@ tasks:
                 value:
                   simple: Hash
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -190,
-          "y": -870
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -190,\n    \"y\": -870\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1171,8 +1067,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "150":
-    id: "150"
+  '150':
+    id: '150'
     taskid: 4541881d-148b-4360-83d3-c66c78b3d624
     type: condition
     task:
@@ -1182,15 +1078,15 @@ tasks:
       description: Check if the file path and file hash are defined.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "146"
-      "yes":
-      - "149"
+      - '146'
+      yes:
+      - '149'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1206,14 +1102,8 @@ tasks:
               complex:
                 root: inputs.FileHash
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -1060
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": -1060\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1221,57 +1111,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "138_139_#default#": 0.64,
-      "150_146_#default#": 0.45
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1615,
-        "width": 2060,
-        "x": -780,
-        "y": -1210
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"138_139_#default#\": 0.64,\n    \"150_146_#default#\": 0.45\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1615,\n      \"width\": 2060,\n      \"x\": -780,\n      \"y\": -1210\n    }\n  }\n}"
 inputs:
 - key: AutoContainment
   value:
-    simple: "False"
+    simple: 'False'
   required: false
-  description: |-
-    Whether to execute containment plan (except isolation) automatically.
-    The specific containment playbook inputs should also be set to 'True'.
+  description: "Whether to execute containment plan (except isolation) automatically.\nThe specific containment playbook inputs should also be set to 'True'."
   playbookInputQuery:
 - key: HostContainment
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Whether to execute endpoint isolation.
   playbookInputQuery:
 - key: UserContainment
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to 'True' to disable the user account.
   playbookInputQuery:
 - key: BlockIndicators
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to 'True' to block the indicators.
   playbookInputQuery:
 - key: FileContainment
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to 'True' to quarantine the identified file.
   playbookInputQuery:
 - key: ClearUserSessions
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to 'True' to clear the user active Okta sessions.
   playbookInputQuery:
@@ -1323,20 +1197,15 @@ inputs:
   playbookInputQuery:
 - key: UserVerification
   value:
-    simple: "False"
+    simple: 'False'
   required: false
   description: "Possible values: True/False.\nWhether to provide user verification for blocking those IPs and disabling the users. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
 - key: AutoBlockIndicators
   value:
-    simple: "True"
+    simple: 'True'
   required: false
-  description: |-
-    Possible values: True/False.  Default: True.
-    Should the given indicators be automatically blocked, or should the user be given the option to choose?
-
-    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to True - the user will be prompted to select which indicators to block.
+  description: "Possible values: True/False.  Default: True.\nShould the given indicators be automatically blocked, or should the user be given the option to choose?\n\nIf set to False - no prompt will appear, and all provided indicators will be blocked automatically.\nIf set to True - the user will be prompted to select which indicators to block."
   playbookInputQuery:
 outputs:
 - contextPath: Blocklist.Final
@@ -1354,3 +1223,4 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
+- platform

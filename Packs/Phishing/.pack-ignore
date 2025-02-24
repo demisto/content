@@ -23,8 +23,9 @@ ignore=PB106
 [file:Phishing_-_Generic_v3_6_5.yml]
 ignore=PB106,GR107
 
+# TODO - Remove this - temporary for platform support PR
 [file:Phishing_-_Generic_v3_6_8.yml]
-ignore=PB106
+ignore=PB106,RM116
 
 [file:Phishing_-_Generic_v3_README.md]
 ignore=RM106
