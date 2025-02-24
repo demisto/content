@@ -44,13 +44,19 @@ configuration:
   type: 8
   required: false
   section: Collect
+- display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
+  name: extensive_logs
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 script:
   script: ""
   type: python
   commands:
   - name: "proofpoint-es-get-last-run-results"
     description: Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
-  dockerimage: demisto/netutils:1.0.0.118055
+  dockerimage: demisto/netutils:1.0.0.2550297
   longRunning: true
   subtype: python3
 marketplaces:

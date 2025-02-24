@@ -7,7 +7,9 @@ from websockets import Data
 from CommonServerPython import *  # noqa: F401
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
+from websockets.exceptions import InvalidStatus
 from dateutil import tz
+import psutil
 import traceback
 
 
@@ -131,7 +133,7 @@ def websocket_connections(
         raise DemistoException(f"{str(e)}\n")
 
 
-def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
+def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10, extensive_logs: bool = False) -> list[dict]:
     """
     This function fetches events from the given connection, for the given fetch interval
 
@@ -148,12 +150,21 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.utcnow()
+    max_message_size = 0
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
-            event = json.loads(connection.recv(timeout=recv_timeout))
+            message = connection.recv(timeout=recv_timeout)
+            event = json.loads(message)
+            max_message_size = max(sys.getsizeof(event), max_message_size)
+            if extensive_logs and (is_interval_passed(fetch_start_time, int(fetch_interval/3))\
+                            or is_interval_passed(fetch_start_time, int((fetch_interval/3)*2))):
+                demisto.debug(f"Memory in use: {psutil.virtual_memory()}")
+                demisto.debug(f"Max message size {max_message_size}")
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
             continue
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Failed to JSON decode message {message}. error: {e}")
         except Exception as e:
             set_the_integration_context("last_run_results",
                                         f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
@@ -174,17 +185,21 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         event["event_type"] = event_type.value
         events.append(event)
         event_ids.add(event_id)
+    
+    if extensive_logs:
+        demisto.debug(f"Memory in use: {psutil.virtual_memory()}")
+        demisto.debug(f"Max message size {max_message_size}")
     num_events = len(events)
     demisto.debug(f"Fetched {num_events} events of type {event_type.value}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
+    
     set_the_integration_context("last_run_results",
                                 f"Got from connection {num_events} events starting\
-                                    at {str(fetch_start_time)} untill {datetime.now().astimezone(timezone.utc)}")
-
+                                    at {str(fetch_start_time)} until {datetime.now().astimezone(timezone.utc)}")
     return events
 
 
-def test_module(host: str, cluster_id: str, api_key: str):
+def test_module():
     raise DemistoException(
         "No test option is available due to API limitations.\
         To verify the configuration, run the proofpoint-es-get-last-run-results command.")
@@ -199,7 +214,7 @@ def get_last_run_results_command():
             please wait one minute and try running the command again.")
 
 
-def perform_long_running_loop(connections: list[EventConnection], fetch_interval: int):
+def perform_long_running_loop(connections: list[EventConnection], fetch_interval: int, extensive_logs: bool):
     """
     Long running loop iteration function. Fetches events from each connection and sends them to XSIAM.
 
@@ -210,7 +225,7 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
     integration_context = demisto.getIntegrationContext()
     events_to_send = []
     for connection in connections:
-        events = fetch_events(connection, fetch_interval)
+        events = fetch_events(connection, fetch_interval, extensive_logs)
         events.extend(integration_context.get(connection.event_type.value, []))
         integration_context[connection.event_type.value] = events  # update events in context in case of fail
         demisto.debug(f'Adding {len(events)} {connection.event_type.value} Events to XSIAM')
@@ -227,7 +242,7 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
         demisto.setIntegrationContext(integration_context)
 
 
-def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
+def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int, extensive_logs: bool):
     """
     Performs the long running execution loop.
     Opens a connection to Proofpoints for every event type and fetches events in a loop.
@@ -249,7 +264,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
             threading.Thread(target=connection.heartbeat, daemon=True).start()
 
         while True:
-            perform_long_running_loop(connections, fetch_interval)
+            perform_long_running_loop(connections, fetch_interval, extensive_logs)
             # sleep for a bit to not throttle the CPU
             time.sleep(FETCH_SLEEP)
 
@@ -261,14 +276,16 @@ def main():  # pragma: no cover
     cluster_id = params.get("cluster_id", "")
     api_key = params.get("api_key", {}).get("password", "")
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
-
+    extensive_logs = argToBoolean(params.get("extensive_logs", False))
+    
+    demisto.debug(f"Command being called is {command}")
     try:
         if command == "long-running-execution":
-            return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval))
-        elif command == "test-module":
-            return_results(test_module(host, cluster_id, api_key))
+            return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval, extensive_logs))
         elif command == "proofpoint-es-get-last-run-results":
             return_results(get_last_run_results_command())
+        elif command == "test-module":
+            return_results(test_module())
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:
