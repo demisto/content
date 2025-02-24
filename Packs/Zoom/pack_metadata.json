@@ -20,7 +20,8 @@
     ],
     "defaultDataSource": "ZoomEventCollector",
     "supportedModules": [
-        "XSIAM",
-        "XSPANSE"
+        "C1",
+        "C3",
+        "ENT_PLUS"
     ]
 }
