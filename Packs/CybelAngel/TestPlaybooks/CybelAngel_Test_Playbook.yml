@@ -1,0 +1,1004 @@
+id: CybelAngel Test Playbook
+version: -1
+name: CybelAngel Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c4635b7f-f38e-4bc6-86a8-3c2d97a3de54
+    type: start
+    task:
+      id: c4635b7f-f38e-4bc6-86a8-3c2d97a3de54
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ae7a829d-e63e-4295-8318-840cf0234c22
+    type: regular
+    task:
+      id: ae7a829d-e63e-4295-8318-840cf0234c22
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 126d8d83-c66c-4891-8677-ec72843283fe
+    type: regular
+    task:
+      id: 126d8d83-c66c-4891-8677-ec72843283fe
+      version: -1
+      name: cybelangel-report-list
+      description: Retrieve reports from CybelAngel.
+      script: '|||cybelangel-report-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      end_date:
+        simple: now
+      start_date:
+        simple: 6 month ago
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d8c591b8-2b81-450a-8275-5b1fa6ea6fdc
+    type: condition
+    task:
+      id: d8c591b8-2b81-450a-8275-5b1fa6ea6fdc
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CybelAngel.Report.reports.[0].id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a163318b-4a43-4f5c-880f-cda5fa83a397
+    type: regular
+    task:
+      id: a163318b-4a43-4f5c-880f-cda5fa83a397
+      version: -1
+      name: cybelangel-report-get
+      description: Retrieve reports from CybelAngel.
+      script: '|||cybelangel-report-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      report_id:
+        simple: ${CybelAngel.Report.reports.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 428ec210-30ab-48db-8dc9-9834f11992aa
+    type: condition
+    task:
+      id: 428ec210-30ab-48db-8dc9-9834f11992aa
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${CybelAngel.Report.reports.[0]}
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${CybelAngel.Report.reports.[1]}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8b52edfe-67f3-425d-8622-23e8e08739d5
+    type: regular
+    task:
+      id: 8b52edfe-67f3-425d-8622-23e8e08739d5
+      version: -1
+      name: scybelangel-report-get To PDF
+      description: Retrieve reports from CybelAngel.
+      script: '|||cybelangel-report-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      pdf:
+        simple: "True"
+      report_id:
+        simple: ${CybelAngel.Report.reports.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5a6ddd6c-491c-404c-87b3-6ca5ce904868
+    type: condition
+    task:
+      id: 5a6ddd6c-491c-404c-87b3-6ca5ce904868
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: endWith
+          left:
+            value:
+              simple: ${InfoFile.Name}
+            iscontext: true
+          right:
+            value:
+              simple: .pdf
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 4e6e5af4-2f0d-4be0-82d1-0c609efa07fe
+    type: regular
+    task:
+      id: 4e6e5af4-2f0d-4be0-82d1-0c609efa07fe
+      version: -1
+      name: cybelangel-mirror-report-get
+      description: Retrieve mirror details for a report.
+      script: '|||cybelangel-mirror-report-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "15"
+      '#none#':
+      - "10"
+    scriptarguments:
+      report_id:
+        simple: ${CybelAngel.Report.[0].reports.[0].id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8f8dd7c0-425a-4155-8cd0-fa134c493bfd
+    type: condition
+    task:
+      id: 8f8dd7c0-425a-4155-8cd0-fa134c493bfd
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${CybelAngel.ReportMirror.files_volume}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 53981ecf-793e-4028-8348-6e675a232ed9
+    type: regular
+    task:
+      id: 53981ecf-793e-4028-8348-6e675a232ed9
+      version: -1
+      name: cybelangel-mirror-report-get To CSV
+      description: Retrieve mirror details for a report.
+      script: '|||cybelangel-mirror-report-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      csv:
+        simple: "True"
+      report_id:
+        simple: ${CybelAngel.Report.[0].reports.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8fe82792-0604-4519-8ac3-f710ee1c52d3
+    type: condition
+    task:
+      id: 8fe82792-0604-4519-8ac3-f710ee1c52d3
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: endWith
+          left:
+            value:
+              simple: ${InfoFile.Name}
+            iscontext: true
+          right:
+            value:
+              simple: .csv
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: feaf7895-4667-4c78-8731-ea953fb82a0e
+    type: regular
+    task:
+      id: feaf7895-4667-4c78-8731-ea953fb82a0e
+      version: -1
+      name: cybelangel-archive-report-by-id-get
+      description: Retrieve an archived report by ID.
+      script: '|||cybelangel-archive-report-by-id-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      report_id:
+        simple: ${CybelAngel.Report.[0].reports.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d6d11400-9991-443b-81fe-8310fc3ce270
+    type: condition
+    task:
+      id: d6d11400-9991-443b-81fe-8310fc3ce270
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: endWith
+          left:
+            value:
+              simple: ${InfoFile.Name}
+            iscontext: true
+          right:
+            value:
+              simple: .zip
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e971fd10-87a8-4c42-8795-ab20c632a1cb
+    type: regular
+    task:
+      id: e971fd10-87a8-4c42-8795-ab20c632a1cb
+      version: -1
+      name: cybelangel-report-status-update
+      description: Update the status of one or multiple reports.
+      script: '|||cybelangel-report-status-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      report_ids:
+        simple: ${CybelAngel.Report.reports.[0].id}
+      status:
+        simple: resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 838503f6-b7b8-4f33-88ba-e53f613fbb7f
+    type: regular
+    task:
+      id: 838503f6-b7b8-4f33-88ba-e53f613fbb7f
+      version: -1
+      name: get prev report info
+      description: Retrieve reports from CybelAngel.
+      script: '|||cybelangel-report-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      report_id:
+        simple: ${CybelAngel.Report.reports.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 40a55b02-2ad7-41f8-8cc6-f1b9b8a86d9e
+    type: condition
+    task:
+      id: 40a55b02-2ad7-41f8-8cc6-f1b9b8a86d9e
+      version: -1
+      name: Verify Output (Update status)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${CybelAngel.Report.status}
+            iscontext: true
+          right:
+            value:
+              simple: resolved
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: cb844262-369a-43e9-883f-8e1e974ef1aa
+    type: regular
+    task:
+      id: cb844262-369a-43e9-883f-8e1e974ef1aa
+      version: -1
+      name: cybelangel-report-comments-get
+      description: Retrieve comments from a report.
+      script: '|||cybelangel-report-comments-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      report_id:
+        simple: ${CybelAngel.Report.[0].reports.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 877557e2-7a1f-48ef-8b31-42b9175b0136
+    type: condition
+    task:
+      id: 877557e2-7a1f-48ef-8b31-42b9175b0136
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${CybelAngel.Report.[2].Comments.comments.[0].id}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: be838d99-a686-4924-8a98-bdad12947be8
+    type: regular
+    task:
+      id: be838d99-a686-4924-8a98-bdad12947be8
+      version: -1
+      name: cybelangel-report-comment-create
+      description: Create a new comment on a report.
+      script: '|||cybelangel-report-comment-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      content:
+        simple: Test Playbook
+      report_id:
+        simple: ${CybelAngel.Report.reports.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: fb005837-fc55-4373-8046-60b86d5240e4
+    type: condition
+    task:
+      id: fb005837-fc55-4373-8046-60b86d5240e4
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CybelAngel.Report.[3].Comments.content
+            iscontext: true
+          right:
+            value:
+              simple: Test Playbook
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 5dd694cf-835f-432c-8fba-a9c9262c9eb2
+    type: regular
+    task:
+      id: 5dd694cf-835f-432c-8fba-a9c9262c9eb2
+      version: -1
+      name: cybelangel-report-attachment-get
+      description: Retrieve an attachment from a report.
+      script: '|||cybelangel-report-attachment-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "26"
+      '#none#':
+      - "25"
+    scriptarguments:
+      attachment_id:
+        simple: ${CybelAngel.Report.[0].reports.[0].attachments.[0].id}
+      report_id:
+        simple: ${CybelAngel.Report.[0].reports.[0].id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c0e2a078-413d-43c7-8822-18067d178dde
+    type: condition
+    task:
+      id: c0e2a078-413d-43c7-8822-18067d178dde
+      version: -1
+      name: Untitled Task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: endWith
+          left:
+            value:
+              simple: ${InfoFile.Name}
+            iscontext: true
+          right:
+            value:
+              simple: .csv
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 750ad957-a53a-4206-810b-956c96e16405
+    type: regular
+    task:
+      id: 750ad957-a53a-4206-810b-956c96e16405
+      version: -1
+      name: cybelangel-report-remediation-request-create
+      description: Create a remediation request for a report.
+      script: '|||cybelangel-report-remediation-request-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      report_id:
+        simple: ${CybelAngel.Report.[0].reports.[0].id}
+      requestor_email:
+        simple: TestPlaybook@paloaltonetworks.com
+      requestor_fullname:
+        simple: Test Playbook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: bc7fe652-4007-493a-8889-b1ab83394748
+    type: condition
+    task:
+      id: bc7fe652-4007-493a-8889-b1ab83394748
+      version: -1
+      name: Untitled Task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CybelAngel.Report.[4].RemediationRequest.report_id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e6a940d6-7b6f-481a-832a-1bce381b4c21
+    type: title
+    task:
+      id: e6a940d6-7b6f-481a-832a-1bce381b4c21
+      version: -1
+      name: End Playbook
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 4830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_28_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4845,
+        "width": 680,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+description: ''
