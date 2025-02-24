@@ -128,11 +128,11 @@ class MatiIndicator:
             entity_b = association.get("name", "")
 
             if association_type == "threat-actor":
-                relationships.append(EntityRelationship(name="uses", reverse_name="used-by", entity_a=self.ioc_value,
-                                                        entity_a_type=self.ioc_type, entity_b=entity_b,
-                                                        entity_b_type="Threat Actor"))
+                relationships.append(EntityRelationship(name="uses", reverse_name="used-by", brand="Mandiant",
+                                                        entity_a=self.ioc_value, entity_a_type=self.ioc_type,
+                                                        entity_b=entity_b, entity_b_type="Threat Actor"))
             elif association_type == "malware":
-                relationships.append(EntityRelationship(name="indicates", reverse_name="indicated-by",
+                relationships.append(EntityRelationship(name="indicates", reverse_name="indicator-of", brand="Mandiant",
                                                         entity_a=self.ioc_value, entity_a_type=self.ioc_type,
                                                         entity_b=entity_b, entity_b_type="Malware"))
         return relationships
@@ -234,7 +234,6 @@ class MatiIndicator:
         return indicator_object
 
     def build_markdown(self) -> str:
-        ioc_type = self.ioc_data.get("type", "")
         categories = set()
         for t in self.build_threat_types():
             categories.add(t.threat_category)
@@ -251,8 +250,7 @@ class MatiIndicator:
         }
 
         return tableToMarkdown(f"Mandiant Advantage Threat Intelligence information for {self.ioc_value}\n"
-                               f"[View on Mandiant Advantage]({ADV_BASE_URL}/indicator/"
-                               f"{ioc_type}/{self.get_stix_id()})", table)
+                               f"[View on Mandiant Advantage]({ADV_BASE_URL}/indicator/{self.get_stix_id()})", table)
 
     def build_indicator_command_result(self) -> CommandResults:
         return CommandResults(
@@ -417,21 +415,21 @@ class MatiThreatActor:
 
     def build_malware_relationships(self) -> Generator:
         for malware in self.actor_data.get("malware", []):
-            yield EntityRelationship(name="uses", reverse_name="used-by", entity_a=self.actor_name,
+            yield EntityRelationship(name="uses", reverse_name="used-by", brand="Mandiant", entity_a=self.actor_name,
                                      entity_a_type="Threat Actor", entity_b=malware.get("name", ""),
                                      entity_b_type="Malware").to_indicator()
 
     def build_vulnerbility_relationships(self) -> Generator:
         for vuln in self.actor_data.get("cve", []):
-            yield EntityRelationship(name="exploits", reverse_name="exploited-by", entity_a=self.actor_name,
+            yield EntityRelationship(name="exploits", reverse_name="used-by", brand="Mandiant", entity_a=self.actor_name,
                                      entity_a_type="Threat Actor", entity_b=vuln.get("cve_id", ""),
                                      entity_b_type="CVE").to_indicator()
 
     def build_unc_relationships(self) -> Generator:
         for unc in self.actor_data.get("associated_uncs", []):
-            yield EntityRelationship(name="related-to", reverse_name="related-to", entity_a=self.actor_name,
-                                     entity_a_type="Threat Actor", entity_b=unc.get("name", ""),
-                                     entity_b_type="Threat Actor").to_indicator()
+            yield EntityRelationship(name="related-to", reverse_name="related-to", brand="Mandiant",
+                                     entity_a=self.actor_name, entity_a_type="Threat Actor",
+                                     entity_b=unc.get("name", ""), entity_b_type="Threat Actor").to_indicator()
 
     def build_attack_pattern_relationships(self) -> Generator:
         attack_patterns = self.client.get_attack_patterns("actor", self.actor_id).get("attack-patterns", {})
@@ -441,7 +439,7 @@ class MatiThreatActor:
             ap_title = attack_patterns.get(ap).get("name", "")
             mitre_ap = mitre_attack_patterns.get(ap_id, "")
             entity_b = mitre_ap if mitre_ap else f"{ap_id}: {ap_title}"
-            yield EntityRelationship(name="uses", reverse_name="used-by", entity_a=self.actor_name,
+            yield EntityRelationship(name="uses", reverse_name="used-by", brand="Mandiant", entity_a=self.actor_name,
                                      entity_a_type="Threat Actor", entity_b=entity_b,
                                      entity_b_type="Attack Pattern").to_indicator()
 
@@ -449,9 +447,9 @@ class MatiThreatActor:
         for c in self.client.get_associated_campaigns("actor", self.actor_id).get("campaigns", []):
             campaign_id = c.get("short_name", "")
             campaign_title = c.get("name", "")
-            yield EntityRelationship(name="related-to", reverse_name="related-to", entity_a=self.actor_name,
-                                     entity_a_type="Threat Actor", entity_b=f"{campaign_title} ({campaign_id})",
-                                     entity_b_type="Campaign").to_indicator()
+            yield EntityRelationship(name="related-to", reverse_name="related-to", brand="Mandiant",
+                                     entity_a=self.actor_name, entity_a_type="Threat Actor",
+                                     entity_b=f"{campaign_title} ({campaign_id})", entity_b_type="Campaign").to_indicator()
 
     def build_actor_relationships(self) -> List:
         relationships = []
@@ -525,15 +523,15 @@ class MatiMalware:
 
     def build_actor_relationships(self) -> Generator:
         for actor in self.malware_data.get("actors", []):
-            yield EntityRelationship(name="used-by", reverse_name="uses", entity_a=self.malware_name,
+            yield EntityRelationship(name="used-by", reverse_name="uses", brand="Mandiant", entity_a=self.malware_name,
                                      entity_a_type="Malware", entity_b=actor.get("name", ""),
                                      entity_b_type="Threat Actor").to_indicator()
 
     def build_vulnerability_relationships(self) -> Generator:
         for vuln in self.malware_data.get("cve", []):
-            yield EntityRelationship(name="exploits", reverse_name="exploited-by", entity_a=self.malware_name,
-                                     entity_a_type="Malware", entity_b=vuln.get("cve_id", ""),
-                                     entity_b_type="CVE").to_indicator()
+            yield EntityRelationship(name="exploits", reverse_name="used-by", brand="Mandiant",
+                                     entity_a=self.malware_name, entity_a_type="Malware",
+                                     entity_b=vuln.get("cve_id", ""), entity_b_type="CVE").to_indicator()
 
     def build_attack_pattern_relationships(self) -> Generator:
         attack_patterns = self.client.get_attack_patterns("malware", self.malware_id).get("attack-patterns", {})
@@ -543,7 +541,7 @@ class MatiMalware:
             ap_title = attack_patterns.get(ap).get("name", "")
             mitre_ap = mitre_attack_patterns.get(ap_id, "")
             entity_b = mitre_ap if mitre_ap else f"{ap_id}: {ap_title}"
-            yield EntityRelationship(name="uses", reverse_name="used-by", entity_a=self.malware_name,
+            yield EntityRelationship(name="uses", reverse_name="used-by", brand="Mandiant", entity_a=self.malware_name,
                                      entity_a_type="Malware", entity_b=entity_b,
                                      entity_b_type="Attack Pattern").to_indicator()
 
@@ -551,9 +549,9 @@ class MatiMalware:
         for c in self.client.get_associated_campaigns("malware", self.malware_id).get("campaigns", []):
             campaign_id = c.get("short_name", "")
             campaign_title = c.get("name", "")
-            yield EntityRelationship(name="related-to", reverse_name="related-to", entity_a=self.malware_name,
-                                     entity_a_type="Malware", entity_b=f"{campaign_title} ({campaign_id})",
-                                     entity_b_type="Campaign").to_indicator()
+            yield EntityRelationship(name="related-to", reverse_name="related-to", brand="Mandiant",
+                                     entity_a=self.malware_name, entity_a_type="Malware",
+                                     entity_b=f"{campaign_title} ({campaign_id})", entity_b_type="Campaign").to_indicator()
 
     def build_malware_relationships(self) -> List:
         relationships = []
@@ -690,14 +688,14 @@ class MatiCve:
         relationships = []
 
         for a in self.cve_data.get("associated_actors", []):
-            relationships.append(EntityRelationship(name="exploited-by", reverse_name="exploits", entity_a=self.cve_id,
-                                                    entity_a_type="Indicator", entity_b=a.get("name", ""),
-                                                    entity_b_type="Threat Actor"))
+            relationships.append(EntityRelationship(name="used-by", reverse_name="exploits", brand="Mandiant",
+                                                    entity_a=self.cve_id, entity_a_type="Indicator",
+                                                    entity_b=a.get("name", ""), entity_b_type="Threat Actor"))
 
         for m in self.cve_data.get("associated_malware", []):
-            relationships.append(EntityRelationship(name="exploited-by", reverse_name="exploits", entity_a=self.cve_id,
-                                                    entity_a_type="Indicator", entity_b=m.get("name", ""),
-                                                    entity_b_type="Malware"))
+            relationships.append(EntityRelationship(name="used-by", reverse_name="exploits", brand="Mandiant",
+                                                    entity_a=self.cve_id, entity_a_type="Indicator",
+                                                    entity_b=m.get("name", ""), entity_b_type="Malware"))
         return relationships
 
     def build_cpe_objects(self):
@@ -712,7 +710,12 @@ class MatiCve:
             return "0.0"
 
     def build_exploitation_vectors(self):
-        return ", ".join(self.cve_data.get("exploitation_vectors", ""))
+        exploitation_vectors = self.cve_data.get("exploitation_vectors", [])
+
+        if not exploitation_vectors:
+            return ""
+
+        return ", ".join(exploitation_vectors)
 
     def build_markdown(self) -> str:
         details_table_dict = {
@@ -732,10 +735,10 @@ class MatiCve:
         return "\n\n".join(markdown_sections)
 
     def get_cvss_score(self):
-        return str(self.cvss_data.get(self.cvss_version).get("base_score", "0.0"))
+        return str(self.cvss_data.get(self.cvss_version, {}).get("base_score", "0.0"))
 
     def get_cvss_vector(self) -> str:
-        return self.cvss_data.get(self.cvss_version).get("vector_string", "")
+        return self.cvss_data.get(self.cvss_version, {}).get("vector_string", "")
 
     def build_publications(self) -> List:
         publications = []
@@ -846,13 +849,13 @@ class MatiCampaign:
         relationships = []
 
         for actor in self.campaign_data.get("actors", []):
-            relationships.append(EntityRelationship(name="related-to", reverse_name="related-to",
+            relationships.append(EntityRelationship(name="related-to", reverse_name="related-to", brand="Mandiant",
                                                     entity_a=self.campaign_name, entity_a_type="Campaign",
                                                     entity_b=actor.get("name"),
                                                     entity_b_type="Campaign").to_indicator())
 
         for malware in self.campaign_data.get("malware", []):
-            relationships.append(EntityRelationship(name="related-to", reverse_name="related-to",
+            relationships.append(EntityRelationship(name="related-to", reverse_name="related-to", brand="Mandiant",
                                                     entity_a=self.campaign_name, entity_a_type="Campaign",
                                                     entity_b=malware.get("name"),
                                                     entity_b_type="Campaign").to_indicator())
