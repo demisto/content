@@ -194,7 +194,7 @@ class Client(BaseClient):
         base_url = urljoin(base_url, "/ias/v1/")
         super().__init__(
             base_url=base_url,
-            headers={"X-Api-Key": api_key},
+            headers={"X-Api-Key": api_key, "Content-Type": "application/json"},
             verify=verify,
             proxy=proxy,
         )
