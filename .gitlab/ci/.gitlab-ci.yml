@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: create_sdk_ref
+  CURRENT_BRANCH_NAME: add_validate_summary_gh_annotation
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: create_sdk_ref
+    ref: add_validate_summary_gh_annotation
     project: "${CI_PROJECT_NAMESPACE}/infra"
