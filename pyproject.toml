@@ -32,6 +32,7 @@ pytest-mock = ">=3.7.0"
 freezegun = ">=1.1.0"
 dateparser = ">=1.2.0"
 ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
+pandas = "*"
 
 [tool.poetry.group.typing.dependencies]
 types-tqdm = "^4.66.0.2"
