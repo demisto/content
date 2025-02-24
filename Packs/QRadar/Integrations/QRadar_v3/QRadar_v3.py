@@ -2460,7 +2460,8 @@ def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional
         'name': f'''{offense.get('id')} {offense.get('description', '')}''',
         'rawJSON': json.dumps(offense),
         'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
-        'type': incident_type
+        'type': incident_type,
+        "haIntegrationEventID": offense.get("id")
     } for offense in offenses]
 
 
