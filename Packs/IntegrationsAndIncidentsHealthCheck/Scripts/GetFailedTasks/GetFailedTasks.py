@@ -73,6 +73,18 @@ def get_failed_tasks_output(tasks: list, incident: dict, custom_scripts_map_id_a
         else:
             command_id = command
 
+        if task.get("continueOnError", False):
+            if task.get("continueOnErrorType", "Continue") == "errorPath":
+                error_handling = "Error Path"
+                next_task = task.get("nextTasks", {}).get("#error#", [])
+            else:
+                error_handling = "Continue"
+                next_task = task.get("nextTasks", {}).get("#none#", [])
+            if not next_task:
+                error_handling = error_handling + " (No Next Task)"
+        else:
+            error_handling = "Stop Playbook"
+
         entry = {
             "Incident ID": incident.get("id"),
             "Playbook Name": task.get("ancestors", [''])[0],
@@ -83,7 +95,8 @@ def get_failed_tasks_output(tasks: list, incident: dict, custom_scripts_map_id_a
             "Incident Created Date": incident.get("created", ''),
             "Command Name": custom_scripts_map_id_and_name.get(command_id, command_id),
             "Brand Name": brand_name,
-            "Incident Owner": incident["owner"]
+            "Incident Owner": incident["owner"],
+            "Error Handling": error_handling
         }
         if task.get("task", {}).get("description"):
             entry["Command Description"] = task.get("task", {}).get("description")
@@ -329,7 +342,7 @@ def main():
             readable_output=tableToMarkdown("GetFailedTasks:", incidents_output,
                                             ["Incident Created Date", "Incident ID", "Task Name", "Task ID",
                                              "Playbook Name",
-                                             "Command Name", "Brand Name", "Error Entry ID"]),
+                                             "Command Name", "Brand Name", "Error Entry ID", "Error Handling"]),
             outputs={
                 "GetFailedTasks": incidents_output,
                 "NumberofFailedIncidents": total_failed_incidents,
