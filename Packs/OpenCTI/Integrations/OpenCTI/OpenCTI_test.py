@@ -37,7 +37,7 @@ class Client:
 def test_get_observables(mocker):
     """Tests get_observables function
     Given
-        The following observable types: 'registry key', 'account' that were chosen by the user.
+        The following observable types: 'registry key', 'account' that were chosen by the user and other additional_filters
     When
         - `fetch_observables_command` or `get_observables_command` are calling the get_observables function
     Then
@@ -48,7 +48,12 @@ def test_get_observables(mocker):
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_OBSERVABLES)
-    observables = get_observables(client, observable_types=['registry key', 'account'], limit=10)
+    observables = get_observables(
+        client,
+        observable_types=['registry key', 'account'],
+        limit=10,
+        additional_filters=[{'key': 'score', 'values': ['0', '50'], 'operator': 'AND'}]
+    )
     assert len(observables) == 2
 
 
@@ -222,7 +227,7 @@ def test_observable_field_update_command(mocker, field, value):
     mocker.patch.object(client.stix_cyber_observable, 'update_field', return_value={'id': '123456'})
     results: CommandResults = observable_field_update_command(client, args)
     assert "updated successfully" in results.readable_output
-    assert {'id': '123456'} == results.outputs
+    assert results.outputs == {'id': '123456'}
 
 
 def test_observable_create_command(mocker):
@@ -246,7 +251,7 @@ def test_observable_create_command(mocker):
                         'id': '123456', 'value': 'devtest.com', 'type': 'Domain'})
     results: CommandResults = observable_create_command(client, args)
     assert "Observable created successfully" in results.readable_output
-    assert {'id': '123456', 'value': 'devtest.com', 'type': 'Domain'} == results.outputs
+    assert results.outputs == {'id': '123456', 'value': 'devtest.com', 'type': 'Domain'}
 
 
 @pytest.mark.parametrize(argnames="field, value, function_name",
@@ -323,8 +328,8 @@ def test_organization_list_command(mocker):
                         })
     results: CommandResults = organization_list_command(client, {})
     assert "Organizations" in results.readable_output
-    assert [{'id': '1', 'name': 'test organization'}] == \
-        results.outputs.get('OpenCTI.Organizations.OrganizationsList(val.id === obj.id)')
+    assert results.outputs.get('OpenCTI.Organizations.OrganizationsList(val.id === obj.id)') == \
+        [{'id': '1', 'name': 'test organization'}]
 
 
 def test_organization_create_command(mocker):
@@ -343,7 +348,7 @@ def test_organization_create_command(mocker):
     mocker.patch.object(client.identity, 'create', return_value={'id': '1'})
     results: CommandResults = organization_create_command(client, args)
     assert "was created successfully" in results.readable_output
-    assert {'id': '1'} == results.outputs
+    assert results.outputs == {'id': '1'}
 
 
 def test_label_list_command(mocker):
@@ -363,7 +368,7 @@ def test_label_list_command(mocker):
                         })
     results: CommandResults = label_list_command(client, {})
     assert "Labels" in results.readable_output
-    assert [{'id': '1', 'value': 'test-label'}] == results.outputs.get('OpenCTI.Labels.LabelsList(val.id === obj.id)')
+    assert results.outputs.get('OpenCTI.Labels.LabelsList(val.id === obj.id)') == [{'id': '1', 'value': 'test-label'}]
 
 
 def test_label_create_command(mocker):
@@ -382,7 +387,7 @@ def test_label_create_command(mocker):
     mocker.patch.object(client.label, 'create', return_value={'id': '1'})
     results: CommandResults = label_create_command(client, args)
     assert "was created successfully" in results.readable_output
-    assert {'id': '1'} == results.outputs
+    assert results.outputs == {'id': '1'}
 
 
 def test_external_reference_create_command(mocker):
@@ -403,7 +408,7 @@ def test_external_reference_create_command(mocker):
     mocker.patch.object(client.external_reference, 'create', return_value={'id': '1'})
     results: CommandResults = external_reference_create_command(client, args)
     assert "was created successfully" in results.readable_output
-    assert {'id': '1'} == results.outputs
+    assert results.outputs == {'id': '1'}
 
 
 def test_marking_list_command(mocker):
@@ -423,8 +428,8 @@ def test_marking_list_command(mocker):
                         })
     results: CommandResults = marking_list_command(client, {})
     assert "Markings" in results.readable_output
-    assert [{'id': '1', 'value': 'TLP:RED'}] \
-        == results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)')
+    assert results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)') \
+        == [{'id': '1', 'value': 'TLP:RED'}]
 
 
 def test_incident_create_command(mocker):
@@ -449,7 +454,7 @@ def test_incident_create_command(mocker):
     mocker.patch.object(client.incident, 'create', return_value={'id': '123456'})
     results: CommandResults = incident_create_command(client, args)
     assert "Incident created successfully" in results.readable_output
-    assert {'id': '123456'} == results.outputs
+    assert results.outputs == {'id': '123456'}
 
 
 def test_incident_create_command_exception(mocker, capfd):
@@ -554,7 +559,12 @@ def test_get_incidents(mocker):
     """
     client = Client
     mocker.patch.object(client.incident, 'list', return_value=RESPONSE_DATA_INCIDENTS)
-    incidents = get_incidents(client, incident_types=['incident_type_1', 'incident_type_2'], limit=10)
+    incidents = get_incidents(
+        client,
+        incident_types=['incident_type_1', 'incident_type_2'],
+        limit=10,
+        additional_filters=[{'key': 'score', 'values': ['0', '50'], 'operator': 'AND'}]
+    )
     assert len(incidents) == 2
 
 
@@ -638,8 +648,8 @@ def test_incident_types_list_command(mocker):
                         })
     results: CommandResults = incident_types_list_command(client, {})
     assert "Incident Types" in results.readable_output
-    assert [{'id': '1', 'name': 'Phishing', 'description': 'Phishing incident type'}] == \
-        results.outputs.get('OpenCTI.IncidentTypes.IncidentTypesList(val.id === obj.id)')
+    assert results.outputs.get('OpenCTI.IncidentTypes.IncidentTypesList(val.id === obj.id)') == \
+        [{'id': '1', 'name': 'Phishing', 'description': 'Phishing incident type'}]
 
 
 def test_incident_types_list_command_with_no_data_to_return(mocker):
@@ -701,7 +711,7 @@ def test_relationship_create_command(mocker):
     mocker.patch.object(client.stix_core_relationship, 'create', return_value={'id': '123456', 'relationship_type': 'related-to'})
     results: CommandResults = relationship_create_command(client, args)
     assert "Relationship created successfully" in results.readable_output
-    assert {'id': '123456', 'relationshipType': 'related-to'} == results.outputs
+    assert results.outputs == {'id': '123456', 'relationshipType': 'related-to'}
 
 
 def test_relationship_delete_command(mocker):
@@ -769,10 +779,10 @@ def test_relationship_list_command(mocker):
                         })
     results: CommandResults = relationship_list_command(client, {'from_id': '17282d6a-2da1-491a-b1ad-13b29bead0c8'})
     assert "Relationships" in results.readable_output
-    assert [{'id': '4acaed3c-5683-4caa-b87d-28ba32c72056', 'relationshipType': 'related-to',
-             'fromId': '17282d6a-2da1-491a-b1ad-13b29bead0c8', 'toId': 'a4ff07c2-3ea8-42fc-b227-947e74a3a551',
-             'toEntityType': 'IPv4-Addr'}] == \
-        results.outputs.get('OpenCTI.Relationships.RelationshipsList(val.id === obj.id)')
+    assert results.outputs.get('OpenCTI.Relationships.RelationshipsList(val.id === obj.id)') == \
+        [{'id': '4acaed3c-5683-4caa-b87d-28ba32c72056', 'relationshipType': 'related-to',
+          'fromId': '17282d6a-2da1-491a-b1ad-13b29bead0c8', 'toId': 'a4ff07c2-3ea8-42fc-b227-947e74a3a551',
+          'toEntityType': 'IPv4-Addr'}]
 
 
 def test_relationship_create_command_with_no_data_to_return(mocker):
@@ -841,7 +851,7 @@ def test_indicator_create_command(mocker):
     mocker.patch.object(client.indicator, 'create', return_value={'id': '123456'})
     results: CommandResults = indicator_create_command(client, args)
     assert "Indicator created successfully" in results.readable_output
-    assert {'id': '123456'} == results.outputs
+    assert results.outputs == {'id': '123456'}
 
 
 def test_indicator_create_command_exception(mocker, capfd):
@@ -919,8 +929,8 @@ def test_indicator_update_command(mocker):
     })
     results: CommandResults = indicator_update_command(client, args)
     assert "Indicator updated successfully" in results.readable_output
-    assert {'id': '123456', 'name': 'Lorem ipsum dolor', 'validFrom': '2023-01-01T00:00:00.000Z',
-            'validUntil': '2023-12-31T23:59:59.000Z'} == results.outputs
+    assert results.outputs == {'id': '123456', 'name': 'Lorem ipsum dolor', 'validFrom': '2023-01-01T00:00:00.000Z',
+                               'validUntil': '2023-12-31T23:59:59.000Z'}
 
 
 def test_indicator_update_command_exception(mocker, capfd):
@@ -1110,7 +1120,12 @@ def test_get_indicators(mocker):
     """
     client = Client
     mocker.patch.object(client.indicator, 'list', return_value=RESPONSE_DATA_INDICATORS)
-    indicators = get_indicators(client, indicator_types=['indicator_type_1', 'indicator_type_2'], limit=10)
+    indicators = get_indicators(
+        client,
+        indicator_types=['indicator_type_1', 'indicator_type_2'],
+        limit=10,
+        additional_filters=[{'key': 'score', 'values': ['0', '50'], 'operator': 'AND'}]
+    )
     assert len(indicators) == 2
 
 
@@ -1194,8 +1209,8 @@ def test_indicator_types_list_command(mocker):
                         })
     results: CommandResults = indicator_types_list_command(client, {})
     assert "Indicator Types" in results.readable_output
-    assert [{'id': '1', 'name': 'compromised', 'description': 'compromised'}] == \
-        results.outputs.get('OpenCTI.IndicatorTypes.IndicatorTypesList(val.id === obj.id)')
+    assert results.outputs.get('OpenCTI.IndicatorTypes.IndicatorTypesList(val.id === obj.id)') == \
+        [{'id': '1', 'name': 'compromised', 'description': 'compromised'}]
 
 
 def test_indicator_types_list_command_with_no_data_to_return(mocker):
