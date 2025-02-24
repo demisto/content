@@ -305,7 +305,7 @@ class KafkaCommunicator:
         value_schema_type: Optional[str],
         value_schema_str: Optional[str],
         value_schema_subject_name: Optional[str],
-        partition: Optional[int]
+        partition: int
     ) -> None:
         """Produce in to kafka
 
@@ -354,7 +354,7 @@ class KafkaCommunicator:
         kafka_producer.produce(
             topic=topic,
             value=serialized_value,
-            partition=partition if partition is not None else None,
+            partition=partition,
             on_delivery=self.delivery_report
         )
         kafka_producer.flush()
@@ -667,7 +667,7 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     value_schema_subject_name = demisto_args.get('value_schema_subject_name')
     partition_arg = demisto_args.get('partitioning_key')
 
-    partition = None
+    partition = -1
     if partition_arg is not None and str(partition_arg).isdigit():
         partition = int(partition_arg)
 
