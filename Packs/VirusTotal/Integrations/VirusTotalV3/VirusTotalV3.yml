@@ -36,7 +36,7 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
-  section: Collect
+  section: Connect
 - display: File Malicious Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   defaultvalue: '10'
