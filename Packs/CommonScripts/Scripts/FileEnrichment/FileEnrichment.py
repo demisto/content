@@ -136,7 +136,7 @@ class Command:
             mark_as_note=True,
         )
 
-    def execute(self, data_path: str) -> tuple[list[dict], list[CommandResults]]:
+    def execute(self) -> tuple[list[dict], list[CommandResults]]:
         """
         Executes the specified command with given arguments, handles any errors, and parses the execution results.
 
@@ -145,7 +145,7 @@ class Command:
             args (dict[str, Any]): A dictionary of arguments to pass to the command.
 
         Returns:
-            tuple[list[dict], list[CommandResults]]: A tuple of data, human readable results, and error messages.
+            tuple[list[dict], list[CommandResults]]: A tuple of entry context dictionaries and human-readable CommandResults.
         """
         demisto.debug(f"Stating to execute command: {self}")
         execution_results = demisto.executeCommand(self.name, self.args)
@@ -156,26 +156,29 @@ class Command:
             error_result = self.prepare_human_readable(error_message, is_error=True)
             return [], [error_result]
 
-        data_list: list[dict] = []
-        human_readable_results: list[CommandResults] = []
+        entry_context: list[dict] = []
+        readable_command_results: list[CommandResults] = []
 
         demisto.debug(f"Parsing execution response of command: {self}")
 
         for result in execution_results:
 
             if is_error(result):
-                human_readable_results.append(self.prepare_human_readable(get_error(result), is_error=True))
+                readable_command_results.append(self.prepare_human_readable(get_error(result), is_error=True))
+                continue
 
-            elif isinstance(result, dict):
-                if human_readable := result.get("HumanReadable"):
-                    human_readable_results.append(self.prepare_human_readable(human_readable))
+            if human_readable := result.get("HumanReadable"):
+                readable_command_results.append(self.prepare_human_readable(human_readable))
 
-                if data := result.get(data_path):
-                    data_list.extend(data) if isinstance(data, list) else data_list.append(data)
+            if entry_context_item := result.get("EntryContext"):
+                if isinstance(entry_context_item, list):
+                    entry_context.extend(entry_context_item)
+                else:
+                    entry_context.append(entry_context_item)
 
         demisto.debug(f"Finished parsing execution response of command: {self}")
 
-        return data_list, human_readable_results
+        return entry_context, readable_command_results
 
     def __str__(self) -> str:
         """
@@ -199,6 +202,7 @@ class Command:
 def get_file_from_ioc_custom_fields(ioc_custom_fields: dict[str, Any]) -> dict:
     """
     Gets the `File` context dictionary using the `CustomFields` value in the Indicator of Compromise (IOC) record.
+    Maps indicator fields in the 'connectedlowercase' format to context paths in the 'UpperCamelCase' format.
 
     Args:
         ioc_custom_fields (dict[str, Any]): The IOC `CustomFields` dictionary.
@@ -320,7 +324,7 @@ def execute_file_reputation(command: Command) -> tuple[dict, list[CommandResults
     Returns:
         tuple[dict, list[CommandResults]]: A tuple of the transformed context output, and human-readable command results.
     """
-    entry_context, readable_command_results = command.execute(data_path="EntryContext")
+    entry_context, readable_command_results = command.execute()
 
     context_output: dict[str, Any] = {"_DBotScore": [], "_File": {}}
     for context_item in entry_context:
@@ -359,7 +363,7 @@ def execute_wildfire_report(command: Command) -> tuple[dict, list[CommandResults
     Returns:
         tuple[dict, list[CommandResults]]: A tuple of the transformed context output, and human-readable command results.
     """
-    entry_context, readable_command_results = command.execute(data_path="EntryContext")
+    entry_context, readable_command_results = command.execute()
 
     brand = command.brand
     report_excluded_keys = ["MD5", "SHA1", "SHA256", "SHA512"]
@@ -390,7 +394,7 @@ def execute_wildfire_verdict(command: Command) -> tuple[dict, list[CommandResult
     Returns:
         tuple[dict, list[CommandResults]]: A tuple of the transformed context output, and human-readable command results.
     """
-    entry_context, readable_command_results = command.execute(data_path="EntryContext")
+    entry_context, readable_command_results = command.execute()
 
     brand = command.brand
     verdict_excluded_keys = ["MD5", "SHA1", "SHA256", "SHA512"]
@@ -417,7 +421,7 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict, list[CommandResul
     Returns:
         tuple[dict, list[CommandResults]]: A tuple of the transformed context output, and human-readable command results.
     """
-    entry_context, readable_command_results = command.execute(data_path="EntryContext")
+    entry_context, readable_command_results = command.execute()
 
     brand = command.brand
     context_output: dict[str, Any] = {"_File": {}}

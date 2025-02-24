@@ -1,0 +1,87 @@
+[
+    {
+        "Type": 1,
+        "HumanReadable": "### Results of file hash 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0\n|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|\n|—|—|—|—|—|—|—|—|\n| d8b426700c3c10413abb8acdcfeccaaec8f06cd9 | 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0 | 4e76823c05048e92a4c0122d61000edf | 未確認 639898.crdownload | jar | 2025-02-02 12:54:47Z | -208 | 43/76 |\n",
+        "EntryContext": {
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                {
+                    "Indicator": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Reliability": "C - Fairly reliable",
+                    "Score": 3,
+                    "Type": "file",
+                    "Vendor": "VirusTotal (API v3)"
+                }
+            ],
+            "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+                {
+                    "Extension": "zip",
+                    "Hashes": [
+                        {
+                            "type": "MD5",
+                            "value": "4e76823c05048e92a4c0122d61000edf"
+                        },
+                        {
+                            "type": "SHA1",
+                            "value": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9"
+                        },
+                        {
+                            "type": "SHA256",
+                            "value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0"
+                        },
+                        {
+                            "type": "SSDeep",
+                            "value": "6144:WWEH6pcEypX3dNGGkfxlLrnR8mfhAd2HNRg/U/:WWs6pcVlHtkDR8/Ad23z"
+                        }
+                    ],
+                    "MD5": "4e76823c05048e92a4c0122d61000edf",
+                    "Relationships": [
+                        {
+                            "EntityA": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                            "EntityAType": "File",
+                            "EntityB": "jmcoru.alcatelupd.xyz",
+                            "EntityBType": "Domain",
+                            "Relationship": "communicates-with"
+                        }
+                    ],
+                    "SHA1": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9",
+                    "SHA256": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "SSDeep": "6144:WWEH6pcEypX3dNGGkfxlLrnR8mfhAd2HNRg/U/:WWs6pcVlHtkDR8/Ad23z",
+                    "Size": 262291,
+                    "Tags": [
+                        "jar",
+                        "checks-cpu-name",
+                        "sets-process-name",
+                        "detect-debug-environment",
+                        "checks-hostname"
+                    ],
+                    "Type": "application/zip",
+                    "VTVendors": {
+                        "EngineDetectionNames": [
+                            "Trojan.ZIP.Java.m!c",
+                            "Malicious (score: 99)"
+                        ],
+                        "EngineDetections": 43,
+                        "EngineVendors": [
+                            "CTX",
+                            "AVG"
+                        ]
+                    }
+                }
+            ],
+            "VirusTotal.File(val.id && val.id == obj.id)": {
+                "attributes": {
+                    "last_analysis_stats": {
+                        "confirmed-timeout": 0,
+                        "failure": 2,
+                        "harmless": 0,
+                        "malicious": 43,
+                        "suspicious": 0,
+                        "timeout": 0,
+                        "type-unsupported": 11,
+                        "undetected": 20
+                    }
+                }
+            }
+        }
+    }
+]
