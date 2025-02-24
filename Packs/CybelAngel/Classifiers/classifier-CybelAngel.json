@@ -1,19 +1,12 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
+	"id": "CybelAngel",
+	"version": -1,
+	"type": "mapping-incoming",
+	"name": "CybelAngel",
 	"description": "",
+	"defaultIncidentType": "CybelAngel",
+	"definitionId": "",
 	"feed": false,
-	"fromServerVersion": "",
-	"id": "7858e040-10ab-4e7c-8a2c-91fc147846da",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 7,
 	"mapping": {
 		"CybelAngel": {
 			"dontMapEventToLabels": false,
@@ -236,19 +229,5 @@
 				}
 			}
 		}
-	},
-	"name": "CybelAngel",
-	"nameRaw": "CybelAngel",
-	"packID": "4875ef4f-6c52-4de3-8e89-15cdc9878af5",
-	"packName": "CybelAngel Contribution Pack",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+	}
 }

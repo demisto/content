@@ -6,6 +6,7 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "defaultDataSource": "CybelAngel",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
