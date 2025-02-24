@@ -1470,7 +1470,7 @@ script:
       description: Quarantine a host.
       name: prisma-sase-quarantine-host
     - arguments:
-        - description: The domain of the active directory.
+        - description: The domain of the directory-sync connected to the CIE.
           name: domain
           required: true
         - description: The attribute value for the filter.
@@ -1496,24 +1496,24 @@ script:
             - "Text Search"
           name: operator
           auto: PREDEFINED
-          required: true
+          required: false
       description: Get the CIE user.
       outputs:
-    - contextPath: PrismaSase.CIE.User.Common-Name
-      description: The common name.
-      type: String
-    - contextPath: PrismaSase.CIE.User.Distinguished Name
-      description: The distinguished name.
-      type: String
-    - contextPath: PrismaSase.CIE.User.Manager
-      description: The manager.
-      type: String
-    - contextPath: PrismaSase.CIE.User.Name
-      description: The name.
-      type: String
-    - contextPath: PrismaSase.CIE.User.Unique Identifier
-      description: The unique identifier.
-      type: String
+      - contextPath: PrismaSase.CIE.User.Common-Name
+        description: The common name.
+        type: String
+      - contextPath: PrismaSase.CIE.User.Distinguished Name
+        description: The distinguished name.
+        type: String
+      - contextPath: PrismaSase.CIE.User.Manager
+        description: The manager.
+        type: String
+      - contextPath: PrismaSase.CIE.User.Name
+        description: The name.
+        type: String
+      - contextPath: PrismaSase.CIE.User.Unique Identifier
+        description: The unique identifier.
+        type: String
       name: prisma-sase-cie-user-get
   dockerimage: demisto/python3:3.11.10.115186
   runonce: false
