@@ -20,6 +20,11 @@ def client() -> Client:
     )
 
 
+def load_test_data(file_name):
+    with open(f"test_data/{file_name}") as file:
+        return json.load(file)
+
+
 class HttpRequestsMocker:
 
     def __init__(self, num_of_events: int):
@@ -516,3 +521,78 @@ def test_get_events_command_command(mocker):
     CybelAngelEventCollector.main()
     fetched_events = return_results_mocker.call_args[0][0]
     assert len(fetched_events.outputs) == 100
+
+
+def mock_client():
+    """
+    Create a mock client for testing.
+    """
+    from CybelAngelEventCollector import Client
+
+    return Client(
+        TEST_URL,
+        client_id="1234",
+        client_secret="1234",
+        verify=False,
+        proxy=False,
+    )
+
+def MockFileResult(filename, data, file_type=None):
+    if file_type is None:
+        file_type = entryTypes['file']
+    return {'Contents': '',
+            'ContentsFormat': formats['text'],
+            'Type': file_type,
+            'File': filename,
+            'FileID': 'fileid'}
+
+def test_cybelangel_report_list_command(mocker):
+    from CybelAngelEventCollector import cybelangel_report_list_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("report_list.json"),
+    )
+    args = {"start_date": "2024-01-01", "end_date": "2024-02-01"}
+    
+    result = cybelangel_report_list_command(client, args)
+    
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "CybelAngel.Report"
+    assert result.outputs is not None
+    assert "All reports retrieved." in result.readable_output
+
+
+def test_cybelangel_report_get_command(mocker):
+    from CybelAngelEventCollector import cybelangel_report_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("report_list.json").get("reports")[0],
+    )
+    args = {"report_id": "test"}
+
+    result = cybelangel_report_get_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "CybelAngel.Report"
+    assert result.outputs is not None
+    assert "Report ID" in result.readable_output
+    
+    # test get report to pdf
+    args = {"report_id": "test", "pdf": "true"}
+    mocker.patch(
+        "CybelAngelEventCollector.fileResult",
+        return_value={
+            "Contents": "",
+            "ContentsFormat": "text",
+            "Type": 9,
+            "File": "cybelangel_report_<report_id>.pdf",
+            "FileID": "<report_id>",
+        },
+    )
+    result = cybelangel_report_get_command(client, args)
+
+    assert isinstance(result, dict)

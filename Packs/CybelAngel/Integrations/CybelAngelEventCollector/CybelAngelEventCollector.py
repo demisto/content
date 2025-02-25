@@ -41,7 +41,7 @@ class Client(BaseClient):
         data: dict | None = None,
         params: dict[str, Any] | None = None,
         pdf: bool = False,
-        cve: bool = False,
+        csv: bool = False,
     ) -> dict[str, Any] | Response:
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
@@ -71,7 +71,7 @@ class Client(BaseClient):
         if response.status_code in (200, 201):
             return response.json() if not pdf else response
 
-        if response.status_code == 302 and cve:
+        if response.status_code == 302 and csv:
             cve_response = requests.get(url=response.text)
             return cve_response
 
@@ -322,7 +322,7 @@ def cybelangel_mirror_report_get_command(client: Client, args):
         else f"/api/v1/reports/{report_id}/mirror"
     )
     try:
-      response = client.http_request("GET", endpoint, cve=True)
+      response = client.http_request("GET", endpoint, csv=True)
     except Exception as e:
       if "Mirror details not found" in str(e):
           return_error(f"Mirror details not found for this report ID: {report_id}.")
@@ -345,7 +345,7 @@ def cybelangel_archive_report_by_id_get_command(client: Client, args):
     """Retrieves the archived mirror of a report as a ZIP file."""
     report_id = args.get("report_id")
     try:
-        response = client.http_request("GET", f"/api/v1/reports/{report_id}/mirror/archive", cve=True)
+        response = client.http_request("GET", f"/api/v1/reports/{report_id}/mirror/archive", csv=True)
     except Exception as e:
       if "No mirrored archive" in str(e):
           return_error(f"No mirrored archive found for report: ID: {report_id}.")
