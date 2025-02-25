@@ -347,10 +347,7 @@ def gcenter103_alerts_list_command(client: GwClient, args: dict[str, Any]) -> Co
         "page_size": args.get("page_size")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/alerts/", params=params)
-    except requests.exceptions.HTTPError as e:
-        raise Exception(str(e))
+    req = client._get(endpoint="/api/v1/alerts/", params=params)
 
     res: dict[Any, Any] = req.json()
 
@@ -384,12 +381,7 @@ def gcenter103_alerts_get_command(client: GwClient, args: dict[str, str]) -> Com
         "uuid": args.get("uuid")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', ""))
-        if req.status_code != 200:
-            raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', ""))
 
     res = req.json()
 
@@ -420,12 +412,7 @@ def gcenter103_alerts_note_add_command(client: GwClient, args: dict[str, str]) -
             "note": params.get('note', "")
         }
 
-        try:
-            req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/note", data=data)
-            if req.status_code != 200:
-                raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
-        except Exception as e:
-            raise Exception(f"Exception: {str(e)}")
+        req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/note", data=data)
 
         res = req.json()
 
@@ -443,12 +430,7 @@ def gcenter103_alerts_note_add_command(client: GwClient, args: dict[str, str]) -
 
     else:
 
-        try:
-            req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', ""))
-            if req.status_code != 200:
-                raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
-        except Exception as e:
-            raise Exception(f"Exception: {str(e)}")
+        req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', ""))
 
         res = req.json()
         old_note = res.get('note', "")
@@ -458,12 +440,7 @@ def gcenter103_alerts_note_add_command(client: GwClient, args: dict[str, str]) -
             "note": old_note + "\n" + params.get('note', "")
         }
 
-        try:
-            req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/note", json_data=data)
-            if req.status_code != 200:
-                raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
-        except Exception as e:
-            raise Exception(f"Exception: {str(e)}")
+        req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/note", json_data=data)
 
         res = req.json()
         res_keys: dict[Any, Any] = {
@@ -486,12 +463,7 @@ def gcenter103_alerts_note_remove_command(client: GwClient, args: dict[str, str]
         "uuid": args.get("uuid")
     }
 
-    try:
-        req = client._delete(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/note")
-        if req.status_code != 204:
-            raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    client._delete(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/note")
 
     return CommandResults(
         readable_output="# gcenter103-alerts-note-remove - Note removed of the alert: " + params.get('uuid', ""),
@@ -507,12 +479,7 @@ def gcenter103_alerts_tags_get_command(client: GwClient, args: dict[str, Any]) -
         "uuid": args.get("uuid")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/alerts/" + params['uuid'] + "/tags")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/alerts/" + params['uuid'] + "/tags")
 
     res = req.json()
 
@@ -536,12 +503,7 @@ def gcenter103_alerts_tags_get_command(client: GwClient, args: dict[str, Any]) -
 
 def get_tags(client: GwClient) -> list[dict[str, Any]]:
 
-    try:
-        req = client._get(endpoint="/api/v1/tags/")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/tags/")
 
     res = req.json()
     tags = []
@@ -592,12 +554,7 @@ def gcenter103_alerts_tags_add_command(client: GwClient, args: dict[str, Any]) -
 
     data['tags'] = tags
 
-    try:
-        req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags")
 
     res = req.json()
 
@@ -605,12 +562,7 @@ def gcenter103_alerts_tags_add_command(client: GwClient, args: dict[str, Any]) -
 
         data.get('tags', [{}]).append(res.get('tags', {})[i])
 
-    try:
-        req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags", json_data=data)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags", json_data=data)
 
     res = req.json()
     res_keys: dict[Any, Any] = {
@@ -641,12 +593,7 @@ def gcenter103_alerts_tags_remove_command(client: GwClient, args: dict[str, Any]
 
     data['tags'] = tags
 
-    try:
-        req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags")
 
     res = req.json()
     data2 = {"tags": []}
@@ -671,12 +618,7 @@ def gcenter103_alerts_tags_remove_command(client: GwClient, args: dict[str, Any]
     for i in range(0, len(li)):
         data2.get('tags', [{}]).append({'id': int(li[i])})
 
-    try:
-        req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags", json_data=data2)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._put(endpoint="/api/v1/alerts/" + params.get('uuid', "") + "/tags", json_data=data2)
 
     res = req.json()
 
@@ -730,12 +672,7 @@ def gcenter103_alerts_status_update_command(client: GwClient, args: dict[str, An
         for i in range(0, len(tags)):
             data['tag'].append(int(tags[i]))
 
-    try:
-        req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', ""))
-        if req.status_code != 200:
-            raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/alerts/" + params.get('uuid', ""))
 
     res = req.json()
     params['ids'] = res.get('id', "")
@@ -746,12 +683,7 @@ def gcenter103_alerts_status_update_command(client: GwClient, args: dict[str, An
     del params['tag_u']
     del params['uuid']
 
-    try:
-        req = client._put(endpoint="/api/v1/alerts/action/" + action, json_data=data, params=params)
-        if req.status_code != 204:
-            raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._put(endpoint="/api/v1/alerts/action/" + action, json_data=data, params=params)
 
     return CommandResults(
         readable_output=f"# gcenter103-alerts-status-update {req.status_code}: OK",
@@ -765,12 +697,7 @@ def gcenter103_raw_alerts_get_command(client: GwClient, args: dict[str, str]) ->
         "id": args.get("uuid")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/raw-alerts/" + params.get('id'))
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.json()}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/raw-alerts/" + params.get('id'))
 
     res = req.json()
 
@@ -786,12 +713,7 @@ def gcenter103_raw_alerts_file_get_command(client: GwClient, args: dict[str, str
         "id": args.get("uuid")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/raw-alerts/" + params.get('id', "") + "/file")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/raw-alerts/" + params.get('id', "") + "/file")
 
     res = req.content
     filename = str(params.get('id', "")) + "-file.zip"
@@ -815,12 +737,7 @@ def gcenter103_file_scan_command(client: GwClient, args: dict[str, str]) -> Comm
     fp_d = demisto.getFilePath(params.get('entryID', ""))
     files = {"file": open(fp_d['path'], 'rb')}
 
-    try:
-        req = client._post(endpoint="/api/v1/gscan/" + params.get('engine', ""), files=files)
-        if req.status_code != 201:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._post(endpoint="/api/v1/gscan/" + params.get('engine', ""), files=files)
 
     res = req.json()
     res.update({"file_name": str(fp_d.get('name', ""))})
@@ -837,12 +754,7 @@ def gcenter103_file_scan_result_get_command(client: GwClient, args: dict[str, st
         "id": args.get("id")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/gscan/histories/" + params.get('id', ""))
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/gscan/histories/" + params.get('id', ""))
 
     res = req.json()
 
@@ -876,12 +788,7 @@ def gcenter103_assets_list_command(client: GwClient, args: dict[str, Any]) -> Co
         "no_tag": args.get("no_tag")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/assets/", params=params)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/assets/", params=params)
 
     res = req.json()
 
@@ -928,12 +835,7 @@ def gcenter103_assets_alerts_get_command(client: GwClient, args: dict[str, Any])
     asset_name = params.get('asset_name', "")
     del params['asset_name']
 
-    try:
-        req = client._get(endpoint="/api/v1/assets/" + asset_name + "/alerts", params=params)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/assets/" + asset_name + "/alerts", params=params)
 
     res = req.json()
 
@@ -956,12 +858,7 @@ def gcenter103_assets_get_command(client: GwClient, args: dict[str, Any]) -> Com
     asset_name = params.get('asset_name', "")
     del params['asset_name']
 
-    try:
-        req = client._get(endpoint="/api/v1/assets/" + asset_name, params=params)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/assets/" + asset_name, params=params)
 
     res = req.json()
 
@@ -983,12 +880,7 @@ def gcenter103_assets_note_add_command(client: GwClient, args: dict[str, Any]) -
 
         data = {"note": params.get('note', "")}
 
-        try:
-            req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/note", json_data=data)
-            if req.status_code != 200:
-                raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-        except Exception as e:
-            raise Exception(f"Exception: {str(e)}")
+        req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/note", json_data=data)
 
         res = req.json()
 
@@ -999,12 +891,7 @@ def gcenter103_assets_note_add_command(client: GwClient, args: dict[str, Any]) -
 
     else:
 
-        try:
-            req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', ""))
-            if req.status_code != 200:
-                raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-        except Exception as e:
-            raise Exception(f"Exception: {str(e)}")
+        req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', ""))
 
         res = req.json()
         old_note = res.get('note', "")
@@ -1012,12 +899,7 @@ def gcenter103_assets_note_add_command(client: GwClient, args: dict[str, Any]) -
             old_note = ""
         data = {"note": old_note + "\n" + params.get('note', "")}
 
-        try:
-            req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name') + "/note", json_data=data)
-            if req.status_code != 200:
-                raise Exception(f"Request failed: {req.status_code}: {req.reason}, {req.json()}")
-        except Exception as e:
-            raise Exception(f"Exception: {str(e)}")
+        req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name') + "/note", json_data=data)
 
         res = req.json()
 
@@ -1033,12 +915,7 @@ def gcenter103_assets_note_remove_command(client: GwClient, args: dict[str, Any]
         "asset_name": args.get("asset_name")
     }
 
-    try:
-        req = client._delete(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/note")
-        if req.status_code != 204:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    client._delete(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/note")
 
     return CommandResults(
         readable_output="# gcenter103-assets-note-remove - Note removed of asset: " + params.get('asset_name', ""),
@@ -1052,12 +929,7 @@ def gcenter103_assets_tags_get_command(client: GwClient, args: dict[str, Any]) -
         "asset_name": args.get("asset_name")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags")
 
     res = req.json()
 
@@ -1087,12 +959,7 @@ def gcenter103_assets_tags_add_command(client: GwClient, args: dict[str, Any]) -
 
     data['tags'] = tags
 
-    try:
-        req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags")
 
     res = req.json()
 
@@ -1100,12 +967,7 @@ def gcenter103_assets_tags_add_command(client: GwClient, args: dict[str, Any]) -
 
         data.get('tags', [{}]).append(res.get('tags', [{}])[i])
 
-    try:
-        req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags", json_data=data)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags", json_data=data)
 
     res = req.json()
 
@@ -1129,12 +991,7 @@ def gcenter103_assets_tags_remove_command(client: GwClient, args: dict[str, Any]
 
     data['tags'] = tags
 
-    try:
-        req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags", json_data=data)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags", json_data=data)
 
     res = req.json()
     data2 = {"tags": []}
@@ -1159,12 +1016,7 @@ def gcenter103_assets_tags_remove_command(client: GwClient, args: dict[str, Any]
     for i in range(0, len(li)):
         data2['tags'].append({'id': int(li[i])})
 
-    try:
-        req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags", json_data=data2)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._put(endpoint="/api/v1/assets/" + params.get('asset_name', "") + "/tags", json_data=data2)
 
     res = req.json()
 
@@ -1196,12 +1048,7 @@ def gcenter103_users_list_command(client: GwClient, args: dict[str, Any]) -> Com
         "no_tag": args.get("no_tag")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/kusers", params=params)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/kusers", params=params)
 
     res = req.json()
 
@@ -1248,12 +1095,7 @@ def gcenter103_users_alerts_get_command(client: GwClient, args: dict[str, Any]) 
     kuser_name = params.get('kuser_name', "")
     del params['kuser_name']
 
-    try:
-        req = client._get(endpoint="/api/v1/kusers/" + kuser_name + "/alerts", params=params)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/kusers/" + kuser_name + "/alerts", params=params)
 
     res = req.json()
 
@@ -1276,12 +1118,7 @@ def gcenter103_users_get_command(client: GwClient, args: dict[str, Any]) -> Comm
     kuser_name = params.get('kuser_name', "")
     del params['kuser_name']
 
-    try:
-        req = client._get(endpoint="/api/v1/kusers/" + kuser_name, params=params)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/kusers/" + kuser_name, params=params)
 
     res = req.json()
 
@@ -1303,12 +1140,7 @@ def gcenter103_users_note_add_command(client: GwClient, args: dict[str, Any]) ->
 
         data = {"note": params.get('note', "")}
 
-        try:
-            req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/note", json_data=data)
-            if req.status_code != 200:
-                raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-        except Exception as e:
-            raise Exception(f"Exception: {str(e)}")
+        req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/note", json_data=data)
 
         res = req.json()
 
@@ -1319,12 +1151,7 @@ def gcenter103_users_note_add_command(client: GwClient, args: dict[str, Any]) ->
 
     else:
 
-        try:
-            req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', ""))
-            if req.status_code != 200:
-                raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-        except Exception as e:
-            raise Exception(f"Exception: {str(e)}")
+        req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', ""))
 
         res = req.json()
         old_note = res.get('note', "")
@@ -1332,12 +1159,7 @@ def gcenter103_users_note_add_command(client: GwClient, args: dict[str, Any]) ->
             old_note = ""
         data = {"note": old_note + "\n" + params.get('note', "")}
 
-        try:
-            req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/note", json_data=data)
-            if req.status_code != 200:
-                raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-        except Exception as e:
-            raise Exception(f"Exception: {str(e)}")
+        req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/note", json_data=data)
 
         res = req.json()
 
@@ -1353,12 +1175,7 @@ def gcenter103_users_note_remove_command(client: GwClient, args: dict[str, Any])
         "kuser_name": args.get("kuser_name")
     }
 
-    try:
-        req = client._delete(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/note")
-        if req.status_code != 204:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    client._delete(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/note")
 
     return CommandResults(
         readable_output="# gcenter103-users-note-remove - Note of: " + params.get('kuser_name', "") + " deleted",
@@ -1372,12 +1189,7 @@ def gcenter103_users_tags_get_command(client: GwClient, args: dict[str, Any]) ->
         "kuser_name": args.get("kuser_name")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags")
 
     res = req.json()
 
@@ -1407,24 +1219,14 @@ def gcenter103_users_tags_add_command(client: GwClient, args: dict[str, Any]) ->
 
     data['tags'] = tags
 
-    try:
-        req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags")
 
     res = req.json()
 
     for i in range(0, len(res['tags'])):
         data.get('tags', [{}]).append(res.get('tags', [{}])[i])
 
-    try:
-        req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags", json_data=data)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags", json_data=data)
 
     res = req.json()
 
@@ -1448,12 +1250,7 @@ def gcenter103_users_tags_remove_command(client: GwClient, args: dict[str, Any])
 
     data['tags'] = tags
 
-    try:
-        req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags")
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags")
 
     res = req.json()
     data2 = {"tags": []}
@@ -1478,12 +1275,7 @@ def gcenter103_users_tags_remove_command(client: GwClient, args: dict[str, Any])
     for i in range(0, len(li)):
         data2.get('tags', [{}]).append({'id': int(li[i])})
 
-    try:
-        req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags", json_data=data2)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._put(endpoint="/api/v1/kusers/" + params.get('kuser_name', "") + "/tags", json_data=data2)
 
     res = req.json()
 
@@ -1499,12 +1291,7 @@ def gcenter103_yara_rules_get_command(client: GwClient, args: dict[str, Any]) ->
         "export": args.get("export")
     }
 
-    try:
-        req = client._get(endpoint="/api/v1/malcore/yara/settings", params=params)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/malcore/yara/settings", params=params)
 
     res = req.json()
 
@@ -1531,12 +1318,7 @@ def gcenter103_yara_rules_add_command(client: GwClient, args: dict[str, Any]) ->
     fp_d = demisto.getFilePath(params.get('entryID', ""))
     data['file'] = open(fp_d.get('path', "")).read()
 
-    try:
-        req = client._put(endpoint="/api/v1/malcore/yara/settings/", json_data=data)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._put(endpoint="/api/v1/malcore/yara/settings/", json_data=data)
 
     res = req.json()
 
@@ -1557,12 +1339,7 @@ def gcenter103_malcore_fingerprints_get_command(client: GwClient, args: dict[str
     list_type = params.get('list_type', "")
     del params['list_type']
 
-    try:
-        req = client._get(endpoint="/api/v1/malcore/hash-" + list_type + "-list", params=params)
-        if req.status_code != 200:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._get(endpoint="/api/v1/malcore/hash-" + list_type + "-list", params=params)
 
     res = req.json()
 
@@ -1587,12 +1364,7 @@ def gcenter103_malcore_fingerprints_add_command(client: GwClient, args: dict[str
         "threat": params.get('threat', "")
     }
 
-    try:
-        req = client._post(endpoint="/api/v1/malcore/hash-" + params.get('list_type', "") + "-list/", json_data=data)
-        if req.status_code != 201:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    req = client._post(endpoint="/api/v1/malcore/hash-" + params.get('list_type', "") + "-list/", json_data=data)
 
     res = req.json()
 
@@ -1609,12 +1381,7 @@ def gcenter103_malcore_fingerprints_remove_command(client: GwClient, args: dict[
         "list_type": args.get("list_type")
     }
 
-    try:
-        req = client._delete(endpoint="/api/v1/malcore/hash-" + params.get('list_type', "") + "-list/" + params.get('sha256', ""))
-        if req.status_code != 204:
-            raise Exception(f"Request error: {req.status_code}: {req.reason}, {req.content}")
-    except Exception as e:
-        raise Exception(f"Exception: {str(e)}")
+    client._delete(endpoint="/api/v1/malcore/hash-" + params.get('list_type', "") + "-list/" + params.get('sha256', ""))
 
     return CommandResults(
         readable_output="# gcenter103-malcore-fingerprints-remove\n"

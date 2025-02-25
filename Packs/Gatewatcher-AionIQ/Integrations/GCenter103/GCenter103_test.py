@@ -967,7 +967,7 @@ def test_gcenter103_command(
 
 def test_test_module() -> None:
 
-    from GCenter103 import GwClient, test_module
+    from GCenter103 import GwClient
 
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -1000,5 +1000,4 @@ def test_get_tags() -> None:
         mock_response.status_code = 200
         mock_response.json.return_value = {"results": [{"id": "1", "label": "tag"}]}
         with patch.object(GwClient, '_get', return_value=mock_response):
-            assert get_tags(client=client) == [{"id": "1", "label": "tag"}] 
-   
+            assert get_tags(client=client) == [{"id": "1", "label": "tag"}]
