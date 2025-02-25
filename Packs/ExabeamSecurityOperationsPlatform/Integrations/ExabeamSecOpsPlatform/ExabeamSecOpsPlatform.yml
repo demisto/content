@@ -49,9 +49,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
+  section: Collect
 description: Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 display: Exabeam Security Operations Platform
 name: ExabeamSecOpsPlatform
