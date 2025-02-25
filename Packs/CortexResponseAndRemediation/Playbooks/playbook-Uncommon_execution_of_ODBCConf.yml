@@ -2,37 +2,37 @@ id: Uncommon execution of ODBCConf
 version: -1
 name: Uncommon execution of ODBCConf
 description: |-
-    This playbook handles "Uncommon execution of ODBCConf" alerts.
+  This playbook handles "Uncommon execution of ODBCConf" alerts.
 
-    Playbook Stages:
+  Playbook Stages:
 
-    Analysis:
-    During the analysis, the playbook will perform the following:
+  Analysis:
+  During the analysis, the playbook will perform the following:
 
-    - Checks if the causality process (CGO) is signed and prevalent.
-    - Checks for the host's risk score.
+  - Checks if the causality process (CGO) is signed and prevalent.
+  - Checks for the host's risk score.
 
-    If the CGO process is not signed and not prevalent, or if either of these conditions is met in addition to having a high-risk score, the playbook proceeds with remediation actions. Otherwise, it will continue to the investigation phase.
+  If the CGO process is not signed and not prevalent, or if either of these conditions is met in addition to having a high-risk score, the playbook proceeds with remediation actions. Otherwise, it will continue to the investigation phase.
 
-    Investigation:
-    During the alert investigation, the playbook will perform the following:
+  Investigation:
+  During the alert investigation, the playbook will perform the following:
 
-    Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :  
-    - Evasion Technique - 3048798454
-    - An uncommon LOLBIN added to startup-related Registry keys
-    - Behavioral Threat
-    - An uncommon file was created in the startup folder
-    - Unsigned process running from a temporary directory
-    - Execution From a Restricted Location
-    - Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
+  Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :  
+  - Evasion Technique - 3048798454
+  - An uncommon LOLBIN added to startup-related Registry keys
+  - Behavioral Threat
+  - An uncommon file was created in the startup folder
+  - Unsigned process running from a temporary directory
+  - Execution From a Restricted Location
+  - Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
 
-    The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions. Otherwise, it closes the alert with the following message: "No indication of malicious activity was found".
+  The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions. Otherwise, it closes the alert with the following message: "No indication of malicious activity was found".
 
 
-    Remediation:  
+  Remediation:  
 
-    - Automatically terminate the causality process.
-    - Automatically Close the alert.
+  - Automatically terminate the causality process.
+  - Automatically Close the alert.
 tags:
 - 'T1218.008 - System Binary Proxy Execution: Odbcconf'
 - TA0005 - Defense Evasion
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -260
+          "y": -190
         }
       }
     note: false
@@ -93,8 +93,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": -100
+          "x": 220,
+          "y": -52
         }
       }
     note: false
@@ -106,13 +106,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a30d9322-0cf5-469f-88cf-c6c63d905b08
+    taskid: e4ef5f69-4552-4de2-b9fa-3c00f70a2e7f
     type: condition
     task:
-      id: a30d9322-0cf5-469f-88cf-c6c63d905b08
+      id: e4ef5f69-4552-4de2-b9fa-3c00f70a2e7f
       version: -1
-      name: Check if the causality process is prevalent and not signed
-      description: Checks if the causality process is prevalent and unsigned.
+      name: Check if the causality process is not prevalent and not signed
+      description: Checks if the causality process is not prevalent and unsigned.
       type: condition
       iscommand: false
       brand: ""
@@ -292,7 +292,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1510
+          "y": 1482
         }
       }
     note: false
@@ -330,7 +330,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
+          "x": 1062,
           "y": 1700
         }
       }
@@ -361,7 +361,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
+          "x": 1062,
           "y": 1170
         }
       }
@@ -438,8 +438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": -100
+          "x": 671,
+          "y": -52
         }
       }
     note: false
@@ -492,13 +492,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 5170b127-ee82-4589-874a-6b668e00b2c5
+    taskid: e200ea58-debd-4d02-ad61-eef4808cce89
     type: condition
     task:
-      id: 5170b127-ee82-4589-874a-6b668e00b2c5
+      id: e200ea58-debd-4d02-ad61-eef4808cce89
       version: -1
-      name: Is the Risk Score High and the CGO isn't prevelant or unsigned
-      description: Checks if the host risk score is "High" and the CGO isn't prevelant or unsigned.
+      name: Is the Host Risk Score High and is the CGO not prevalent or unsigned
+      description: Checks if the host risk score is "High" and the CGO isn't prevalent or unsigned.
       type: condition
       iscommand: false
       brand: ""
@@ -570,7 +570,7 @@ tasks:
       name: Check For Specific Alerts By CGO
       description: |-
         Searches Cortex XSIAM alerts. A summarized version of this scripts is available with the summarizedversion argument.
-      scriptName: SearchIncidentsV2
+      scriptName: SearchAlertsV2
       type: regular
       iscommand: false
       brand: ""
@@ -715,14 +715,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "10_7_#error#": 0.45
+      "10_7_#error#": 0.45,
+      "15_16_Related Insights": 0.42,
+      "15_4_Related Alerts": 0.65
     },
     "paper": {
       "dimensions": {
-        "height": 2195,
-        "width": 1380,
+        "height": 2120,
+        "width": 1223,
         "x": 220,
-        "y": -260
+        "y": -190
       }
     }
   }
@@ -732,3 +734,6 @@ tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
 marketplaces: ["marketplacev2"]
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
