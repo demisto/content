@@ -1587,17 +1587,9 @@ def fetch_incidents(client: Client):
     max_update_time = int(last_update_time)
 
     if FETCH_BY == 'MALOP UPDATE TIME':
-        filters = [{
-            'facetName': 'malopLastUpdateTime',
-            'values': [last_update_time],
-            'filterType': 'GreaterThan'
-        }]
+        pass
     elif FETCH_BY == 'MALOP CREATION TIME':
-        filters = [{
-            'facetName': 'creationTime',
-            'values': [last_update_time],
-            'filterType': 'GreaterThan'
-        }]
+        pass
     else:
         raise Exception('Given filter to fetch by is invalid.')
 
@@ -1619,13 +1611,13 @@ def fetch_incidents(client: Client):
         offset = 0
     if not total_malops_fetched:
         total_malops_fetched = 0
-    
+
     malop_management_response = get_malop_management_data(client, start_time, end_time, offset)
     demisto.info(f"mmng/v2 response: {malop_management_response}")
-    demisto.debug((
-    f"Polling starts. total_malops_fetched: {total_malops_fetched} "
-    f"offset: {offset} start_time: {start_time} end_time: {end_time}"
-    ))
+    demisto.debug(
+        f"Polling starts. total_malops_fetched: {total_malops_fetched} "
+        f"offset: {offset} start_time: {start_time} end_time: {end_time}"
+    )
 
     edr_guid_list, non_edr_guid_list = [], []
     total_malops_available = malop_management_response["data"]["totalHits"]
@@ -1713,11 +1705,10 @@ def fetch_incidents(client: Client):
     integration_context['offset'] = offset
     set_integration_context(integration_context)
     demisto.debug("Saved integration context data for mmng/v2")
-    demisto.debug((
-    f"Polling ends. total_malops_available: {total_malops_available} "
-    f"total_malops_fetched: {total_malops_fetched} offset: {offset}"
-    ))
-
+    demisto.debug(
+        f"Polling ends. total_malops_available: {total_malops_available} "
+        f"total_malops_fetched: {total_malops_fetched} offset: {offset}"
+    )
 
 
 def login(client: Client):

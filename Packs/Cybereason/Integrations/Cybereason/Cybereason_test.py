@@ -250,7 +250,7 @@ def test_unisolate_machine_command(mocker):
 
 
 def test_get_non_edr_malop_data(mocker):
-    from Cybereason import get_non_edr_malop_data
+    from Cybereason import get_detection_details
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
@@ -259,12 +259,12 @@ def test_get_non_edr_malop_data(mocker):
         headers=HEADERS,
         proxy=True)
     args = {
-        "lastUpdateTime": 1672848355574
+        "malopGuid": "AAAA0yUlnvXGQODT"
     }
     raw_response = json.loads(load_mock_response('malop_detection_data.json'))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    command_output = get_non_edr_malop_data(client, args)
-    assert command_output[0]['guid'] == 'AAAA0yUlnvXGQODT'
+    command_output = get_detection_details(client, args)
+    assert command_output['malops'][0]['guid'] == 'AAAA0yUlnvXGQODT'
 
 
 def test_query_malops_command(mocker):
@@ -774,12 +774,10 @@ def test_fetch_incidents(mocker):
         headers=HEADERS,
         proxy=True)
 
-    raw_response = json.loads(load_mock_response('query_malop_raw_response.json'))
-    mocker.patch("Cybereason.query_malops", return_value=(raw_response, {}))
-    raw_response = json.loads(load_mock_response('non_edr.json'))
-    mocker.patch("Cybereason.get_non_edr_malop_data", return_value=(raw_response, {}))
-    raw_response = json.loads(load_mock_response('malop_to_incident.json'))
-    mocker.patch("Cybereason.malop_to_incident", return_value=(raw_response, {}))
+    raw_response = json.loads(load_mock_response('query_malop_management_raw_response.json'))
+    mocker.patch("Cybereason.get_malop_management_data", return_value=raw_response)
+    malop_process_raw_response = json.loads(load_mock_response('query_malop_raw_response.json'))
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=malop_process_raw_response)
 
     command_output = fetch_incidents(client)
     command_output = str(command_output)
