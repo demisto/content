@@ -8691,7 +8691,7 @@ def whois_command(reliability: str) -> List[CommandResults]:
 
             results.append(result)
 
-        except PywhoisError as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+        except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
 
             execution_metrics = increment_metric(
@@ -8761,7 +8761,7 @@ def domain_command(reliability: str) -> List[CommandResults]:
 
             results.append(result)
 
-        except PywhoisError as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+        except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
 
             execution_metrics = increment_metric(
@@ -9084,7 +9084,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                     raw_response=dict(domain_data),
                 )
             )
-        except PywhoisError as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+        except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
 
             execution_metrics = increment_metric(
