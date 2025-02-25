@@ -322,10 +322,10 @@ def cybelangel_mirror_report_get_command(client: Client, args):
         else f"/api/v1/reports/{report_id}/mirror"
     )
     try:
-      response = client.http_request("GET", endpoint, csv=True)
+        response = client.http_request("GET", endpoint, csv=True)
     except Exception as e:
-      if "Mirror details not found" in str(e):
-          return_error(f"Mirror details not found for this report ID: {report_id}.")
+        if "Mirror details not found" in str(e):
+            return_error(f"Mirror details not found for this report ID: {report_id}.")
 
     if csv:
         return fileResult(
@@ -347,8 +347,8 @@ def cybelangel_archive_report_by_id_get_command(client: Client, args):
     try:
         response = client.http_request("GET", f"/api/v1/reports/{report_id}/mirror/archive", csv=True)
     except Exception as e:
-      if "No mirrored archive" in str(e):
-          return_error(f"No mirrored archive found for report: ID: {report_id}.")
+        if "No mirrored archive" in str(e):
+            return_error(f"No mirrored archive found for report: ID: {report_id}.")
 
     return fileResult(
         f"cybelangel_archive_report_{report_id}.zip",
@@ -379,7 +379,7 @@ def cybelangel_report_status_update_command(client: Client, args):
 def cybelangel_report_comments_get_command(client: Client, args):
     """Retrieves comments for a specific report by ID."""
     report_id = args.get("report_id")
-    
+
     response = client.http_request("GET", f"/api/v1/reports/{report_id}/comments")
 
     return CommandResults(
@@ -399,7 +399,7 @@ def cybelangel_report_comment_create_command(client: Client, args):
     comments_response = client.http_request(
         "GET", f"/api/v1/reports/{report_id}/comments"
     )
-    
+
     discussion_id = comments_response.get("comments", [])[0].get("discussion_id")  # type: ignore
 
     data = {
@@ -421,7 +421,7 @@ def cybelangel_report_comment_create_command(client: Client, args):
     )
 
 
-def cybelangel_report_attachment_get_command(client: Client, args): #pragma: no cover
+def cybelangel_report_attachment_get_command(client: Client, args):  # pragma: no cover
     """Retrieves a specific attachment from a report."""
     report_id = args.get("report_id")
     attachment_id = args.get("attachment_id")
@@ -437,7 +437,7 @@ def cybelangel_report_attachment_get_command(client: Client, args): #pragma: no 
     )
 
 
-def cybelangel_report_remediation_request_create_command(client: Client, args): #pragma: no cover
+def cybelangel_report_remediation_request_create_command(client: Client, args):  # pragma: no cover
     """Creates a remediation request for a report."""
     report_id = args.get("report_id")
     requestor_email = args.get("requestor_email")

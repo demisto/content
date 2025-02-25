@@ -537,6 +537,7 @@ def mock_client():
         proxy=False,
     )
 
+
 def MockFileResult(filename, data, file_type=None):
     if file_type is None:
         file_type = entryTypes['file']
@@ -545,6 +546,7 @@ def MockFileResult(filename, data, file_type=None):
             'Type': file_type,
             'File': filename,
             'FileID': 'fileid'}
+
 
 def test_cybelangel_report_list_command(mocker):
     from CybelAngelEventCollector import cybelangel_report_list_command
@@ -555,9 +557,9 @@ def test_cybelangel_report_list_command(mocker):
         return_results=load_test_data("report_list.json"),
     )
     args = {"start_date": "2024-01-01", "end_date": "2024-02-01"}
-    
+
     result = cybelangel_report_list_command(client, args)
-    
+
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "CybelAngel.Report"
     assert result.outputs is not None
@@ -580,7 +582,7 @@ def test_cybelangel_report_get_command(mocker):
     assert result.outputs_prefix == "CybelAngel.Report"
     assert result.outputs is not None
     assert "Report ID" in result.readable_output
-    
+
     # test get report to pdf
     args = {"report_id": "test", "pdf": "true"}
     mocker.patch(
