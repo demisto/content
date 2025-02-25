@@ -97,6 +97,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     Creates paging response for relevant commands.
 
     """
+    demisto.debug(f"Sending request from request_with_pagination with {limit=}, {data=}")
     headers = {}
     if page and page_size:
         limit = page * page_size
@@ -136,9 +137,41 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
         response = http_request('POST', api_endpoint, payload, headers=headers)
         next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
     if page and page_size:
-        return results[(-1 * page_size):], page_size
+        return results[(-1 * page_size):], page_size, next_page
 
-    return results, len_of_results
+    return results, len_of_results, next_page
+
+
+def request_with_pagination_with_next_page(api_endpoint: str, data: list , current_next_page: str):
+    demisto.debug(f"Sending request from request_with_pagination with, {data=}, {current_next_page=}")
+    len_of_results = 0
+    results = []
+    while True:
+        payload = {
+            'meta': {
+                'pagination': {
+                    'pageToken': current_next_page
+                }
+            },
+            'data': data
+        }
+        response = http_request('POST', api_endpoint, payload)
+        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+        if response.get('fail'):
+            raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+        response_data = response.get('data')
+        for entry in response_data:
+            # If returning this log will not exceed the specified limit
+            if len_of_results < MAX_FETCH:
+                len_of_results += 1
+                results.append(entry)
+        # If limit is reached or there are no more pages
+        if not next_page or (len_of_results >= MAX_FETCH):
+            break
+    return results, next_page
+        
+        
+    
 
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
@@ -826,7 +859,7 @@ def query(args: dict):
         'admin': True,
         'query': query_xml
     }]
-    messages, _ = request_with_pagination(api_endpoint='/api/archive/search',
+    messages, _, _ = request_with_pagination(api_endpoint='/api/archive/search',
                                           data=data,
                                           response_param='items',
                                           limit=limit,
@@ -1735,7 +1768,7 @@ def list_messages():
         search_params['start'] = start_time
     subject = demisto.args().get('subject')
 
-    messages_list, _ = request_with_pagination(api_endpoint='/api/archive/get-message-list',
+    messages_list, _, _ = request_with_pagination(api_endpoint='/api/archive/get-message-list',
                                                data=[search_params],
                                                limit=limit,
                                                page=page,
@@ -1799,7 +1832,7 @@ def get_url_logs():
         search_params['to'] = to_date
     if scan_result:
         search_params['scanResult'] = scan_result
-    url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
+    url_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
                                           data=[search_params],
                                           response_param='clickLogs',
                                           limit=limit,
@@ -1865,7 +1898,7 @@ def get_attachment_logs():
     if result:
         search_params['result'] = result
 
-    attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
+    attachment_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                  data=[search_params],
                                                  response_param='attachmentLogs',
                                                  limit=limit,
@@ -1942,7 +1975,7 @@ def get_impersonation_logs():
     if actions:
         search_params['actions'] = actions
 
-    impersonation_logs, result_count = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
+    impersonation_logs, result_count, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
                                                                data=[search_params],
                                                                response_param='impersonationLogs',
                                                                limit=limit,
@@ -2029,7 +2062,7 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'scanResult': 'malicious'
         }
-        url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
+        url_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
                                               data=[search_params],
                                               response_param='clickLogs',
                                               limit=MAX_FETCH)
@@ -2055,7 +2088,7 @@ def fetch_incidents():
             'result': 'malicious'
         }
         demisto.debug(search_params, 'search_params')
-        attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
+        attachment_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                      data=[search_params],
                                                      response_param='attachmentLogs',
                                                      limit=MAX_FETCH)
@@ -2081,7 +2114,7 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'taggedMalicious': True
         }
-        impersonation_logs, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
+        impersonation_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
                                                         data=[search_params],
                                                         response_param='impersonationLogs',
                                                         limit=MAX_FETCH)
@@ -2104,14 +2137,21 @@ def fetch_incidents():
     if FETCH_HELD_MESSAGES:
         # Added dedup mechanism only to held_messages due to a bug
         next_dedup_held_messages = dedup_held_messages = last_run.get('dedup_held_messages', [])
+        current_next_page = last_run.get('next_page')
+        demisto.debug(f"{current_next_page=}")
         demisto.debug(f"{dedup_held_messages=}")
         search_params = {
             'start': last_fetch_held_messages_date_time,
             'admin': True
         }
-        held_messages, _ = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
-                                                   data=[search_params],
-                                                   limit=MAX_FETCH+len(dedup_held_messages))
+        if not current_next_page:
+            held_messages, _, next_page = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
+                                                    data=[search_params],
+                                                    limit=MAX_FETCH+len(dedup_held_messages))
+        else:
+            held_messages, next_page = request_with_pagination_with_next_page(api_endpoint='/api/gateway/get-hold-message-list',
+                                                                              data = [search_params],
+                                                                              current_next_page=current_next_page)
         current_held_message_count = 0
         for held_message in held_messages:
             incident = held_to_incident(held_message)
@@ -2127,30 +2167,36 @@ def fetch_incidents():
                 elif temp_date == last_fetch_held_messages:
                     if isinstance(next_dedup_held_messages, List):
                         next_dedup_held_messages.append(held_message_id)
+                        demisto.debug(f"Appended a held message {held_message_id} to dedup as temp_date=last_fetch_held_messages"
+                                      f"={last_fetch_held_messages}")
                     else:
                         demisto.debug(f"Next_dedup_held_messages is not of type List but of type "
                                       f"{type(next_dedup_held_messages)}.")
                 else:
-                    demisto.debug(f"Skipped held message with id {held_message_id} as {temp_date=} < {last_fetch_held_messages=}")
+                    demisto.debug(f"In the else for held messages with id {held_message_id} as {temp_date=} < "
+                                  f"{last_fetch_held_messages=}")
                 # avoid duplication due to weak time query
                 if temp_date > current_fetch_held_message:
                     incidents.append(incident)
                     current_held_message_count += 1
                 else:
-                    demisto.debug(f"Did not append held_message with name {incident.get('name')} since {temp_date=} <= "
+                    demisto.debug(f"Did not append held_message with id {held_message_id} since {temp_date=} <= "
                                   f"{current_held_message_count=}.")
             else:
                 demisto.debug(f"Dropped held message with id {held_message_id}.")
-            demisto.debug(f"Pulled {len(held_messages)} held messages.")
-            demisto.debug(f"After dropping dedup incidents, added {current_held_message_count} held messages.")
+        demisto.debug(f"Pulled {len(held_messages)} held messages.")
+        demisto.debug(f"After dropping dedup incidents, added {current_held_message_count} held messages.")
+        
     time = last_fetch.isoformat().split('.')[0] + 'Z'
     time_held_messages = last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
-    demisto.setLastRun({'time': time,
-                        'dedup_held_messages': next_dedup_held_messages,
-                        'time_held_messages': time_held_messages})
-    demisto.debug(f"Changed time to {time}")
-    demisto.debug(f"Changed time_held_messages to {time_held_messages}")
-    demisto.debug(f"Changed dedup_held_messages to {next_dedup_held_messages}")
+    new_last_run = {'time': time,
+                    'dedup_held_messages': next_dedup_held_messages,
+                    'time_held_messages': time_held_messages}
+    if next_page:
+        new_last_run["nextTrigger"] = "0"
+        new_last_run['next_page'] = next_page
+    demisto.setLastRun(new_last_run)
+    demisto.debug(f"Changed last_run to {new_last_run=}")
     demisto.incidents(incidents)
 
 
@@ -3283,7 +3329,7 @@ def list_held_messages_command(args):
             args: input arguments for the command.
 
     """
-    response, _ = list_held_messages_request(args)
+    response, _ , _= list_held_messages_request(args)
     from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
     table_json_transformer = {'to': from_transformer,
                               'from': from_transformer,
@@ -3372,7 +3418,7 @@ def search_processing_message_command(args):
         args: input arguments for the command.
 
     """
-    response, _ = search_processing_message_request(args)
+    response, _ , _= search_processing_message_request(args)
     from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
 
     table_json_transformer = {'to': from_transformer,
@@ -3471,7 +3517,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
     data = assign_params(query=query, start=start, end=end)
 
     api_endpoint = "/api/archive/get-archive-search-logs"
-    result_list, _ = request_with_pagination(
+    result_list, _, _= request_with_pagination(
         api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size)  # type: ignore
 
     return CommandResults(
@@ -3539,7 +3585,7 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    policies_list, _ = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)  # type: ignore
+    policies_list, _, _ = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)  # type: ignore
 
     contents = []
     for policy_list in policies_list:
