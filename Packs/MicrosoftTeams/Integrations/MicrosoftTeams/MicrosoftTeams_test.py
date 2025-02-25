@@ -116,6 +116,11 @@ ONEONONE_CHAT_ID = "19:09ddc990-3821-4ceb-8019-24d39998f93e_48d31887-5fad-4d73-a
 GROUP_CHAT_ID = "19:2da4c29f6d7041eca70b638b43d45437@thread.v2"
 
 
+def util_load_json(path: str):
+    with open(path, encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
 @pytest.fixture(autouse=True)
 def get_integration_context(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
@@ -479,6 +484,9 @@ def test_send_message_with_user(mocker, requests_mock, message):
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
 
+    expected = util_load_json('test_data/send_message/expected_generic.json')
+    raw = util_load_json('test_data/send_message/raw_generic.json')
+
     mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
     mocker.patch.object(
         demisto,
@@ -496,7 +504,7 @@ def test_send_message_with_user(mocker, requests_mock, message):
     )
     requests_mock.post(
         f'{service_url}/v3/conversations/conversation-id/activities',
-        json={}
+        json=raw
     )
     expected_create_personal_conversation_data: dict = {
         'bot': {
@@ -516,7 +524,7 @@ def test_send_message_with_user(mocker, requests_mock, message):
     assert requests_mock.request_history[0].json() == expected_create_personal_conversation_data
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Message was sent successfully.'
+    assert results[0] == expected
 
 
 def test_send_message_with_channel(mocker, requests_mock):
@@ -524,6 +532,9 @@ def test_send_message_with_channel(mocker, requests_mock):
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
     mocker.patch('MicrosoftTeams.get_channel_type', return_value='standard')
+
+    expected = util_load_json('test_data/send_message/expected_generic.json')
+    raw = util_load_json('test_data/send_message/raw_generic.json')
 
     mocker.patch.object(
         demisto,
@@ -542,18 +553,21 @@ def test_send_message_with_channel(mocker, requests_mock):
     )
     requests_mock.post(
         f"{service_url}/v3/conversations/{mirrored_channels[0]['channel_id']}/activities",
-        json={}
+        json=raw
     )
     send_message()
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Message was sent successfully.'
+    assert results[0] == expected
 
 
 def test_send_message_with_entitlement(mocker, requests_mock):
     # verify message is sent properly given entitlement
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
+
+    expected = util_load_json('test_data/send_message/expected_generic.json')
+    raw = util_load_json('test_data/send_message/raw_generic.json')
 
     message: dict = {
         'message_text': 'is this really working?',
@@ -576,7 +590,7 @@ def test_send_message_with_entitlement(mocker, requests_mock):
         json={'id': 'conversation-id'})
     requests_mock.post(
         f'{service_url}/v3/conversations/conversation-id/activities',
-        json={}
+        json=raw
     )
     expected_ask_user_message: dict = {
         'attachments': [{
@@ -635,13 +649,16 @@ def test_send_message_with_entitlement(mocker, requests_mock):
     assert requests_mock.request_history[1].json() == expected_ask_user_message
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Message was sent successfully.'
+    assert results[0] == expected
 
 
 def test_send_message_with_adaptive_card(mocker, requests_mock):
     # verify adaptive card sent successfully
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
+
+    expected = util_load_json('test_data/send_message/expected_generic.json')
+    raw = util_load_json('test_data/send_message/raw_generic.json')
 
     adaptive_card: dict = {
         "contentType": "application/vnd.microsoft.card.adaptive",
@@ -673,17 +690,21 @@ def test_send_message_with_adaptive_card(mocker, requests_mock):
         json={'id': 'conversation-id'})
     requests_mock.post(
         f'{service_url}/v3/conversations/conversation-id/activities',
-        json={}
+        json=raw
     )
     send_message()
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Message was sent successfully.'
+    assert results[0] == expected
 
 
 def test_sending_message_using_email_address(mocker, requests_mock):
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
+
+    expected = util_load_json('test_data/send_message/expected_generic.json')
+    raw = util_load_json('test_data/send_message/raw_generic.json')
+
     # verify message is sent properly given email with uppercase letters to send to
     mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
     mocker.patch.object(
@@ -702,7 +723,7 @@ def test_sending_message_using_email_address(mocker, requests_mock):
     )
     requests_mock.post(
         f'{service_url}/v3/conversations/conversation-id/activities',
-        json={}
+        json=raw
     )
     expected_create_personal_conversation_data: dict = {
         'bot': {
@@ -722,7 +743,7 @@ def test_sending_message_using_email_address(mocker, requests_mock):
     assert requests_mock.request_history[0].json() == expected_create_personal_conversation_data
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Message was sent successfully.'
+    assert results[0] == expected
 
 
 def test_send_message_server_notifications_incident_opened(mocker, requests_mock):
@@ -740,6 +761,9 @@ def test_send_message_server_notifications_incident_opened(mocker, requests_mock
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
     mocker.patch('MicrosoftTeams.get_channel_type', return_value='standard')
+
+    expected = util_load_json('test_data/send_message/expected_generic.json')
+    raw = util_load_json('test_data/send_message/raw_generic.json')
 
     mocker.patch.object(
         demisto,
@@ -775,12 +799,13 @@ def test_send_message_server_notifications_incident_opened(mocker, requests_mock
     )
     requests_mock.post(
         f'{service_url}/v3/conversations/19:67pd3966e74g45f28d0c65f1689132bb@thread.skype/activities',
-        json={}
+        json=raw
     )
+
     send_message()
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Message was sent successfully.'
+    assert results[0] == expected
 
 
 def test_send_message_server_notifications_incident_changed(mocker, requests_mock):
@@ -798,6 +823,9 @@ def test_send_message_server_notifications_incident_changed(mocker, requests_moc
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
     mocker.patch('MicrosoftTeams.get_channel_type', return_value='standard')
+
+    expected = util_load_json('test_data/send_message/expected_generic.json')
+    raw = util_load_json('test_data/send_message/raw_generic.json')
 
     mocker.patch.object(
         demisto,
@@ -833,12 +861,12 @@ def test_send_message_server_notifications_incident_changed(mocker, requests_moc
     )
     requests_mock.post(
         f'{service_url}/v3/conversations/19:67pd3966e74g45f28d0c65f1689132bb@thread.skype/activities',
-        json={}
+        json=raw
     )
     send_message()
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Message was sent successfully.'
+    assert results[0] == expected
 
 
 def test_get_channel_id(requests_mock):
@@ -2781,3 +2809,49 @@ def test_auth_type_handling_for_first_run_of_the_instance(mocker):
     assert set_integration_context_mocker.call_args[0][0] == {'current_auth_type': 'Authorization Code'}
     assert 'This is the first run of the integration instance' in debug_log_mocker.call_args[0][0]
     assert debug_log_mocker.call_count == 1
+
+
+def test_message_update(mocker, requests_mock):
+    """
+    Given:
+        - a message as a basic string and a  message that contains GUID.
+    When:
+        - running send message function.
+    Then:
+        - The message is sent successfully in both cases.
+    """
+    from MicrosoftTeams import message_update_command
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('MicrosoftTeams.get_channel_type', return_value='standard')
+
+    expected = util_load_json('test_data/send_message/expected_generic.json')
+    raw = util_load_json('test_data/send_message/raw_generic.json')
+
+    activity_id: str = '1730232813350'
+    conversation_id: str = '19:2cbad0d78c624400ef83a5750534448g@thread.skype'
+    mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'message_id': activity_id,
+            'team': team_name,
+            'channel': 'incident-10',
+            'message': "Updated message",
+            'format_as_card': False
+        }
+    )
+
+    requests_mock.put(
+        f'{service_url}/v3/conversations/{conversation_id}/activities/{activity_id}',
+        json={'id': activity_id}
+    )
+
+    requests_mock.post(
+        f"{service_url}/v3/conversations/{mirrored_channels[0]['channel_id']}/activities",
+        json=raw
+    )
+    message_update_command()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == expected
