@@ -1835,7 +1835,8 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     delta = parsed_args.delta
     notable_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
+    connection_args = get_connection_args(params)
+    base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
         demisto.debug(
@@ -2683,10 +2684,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
 
 
 def splunk_job_create_command(service: client.Service, args: dict):
-    query = args['query']
     app = args.get('app', '')
-    if not query.startswith('search'):
-        query = f'search {query}'
+    query = build_search_query(args)
     search_kwargs = {
         "exec_mode": "normal",
         "app": app
@@ -3352,7 +3351,6 @@ def main():  # pragma: no cover
 
     connection_args = get_connection_args(params)
 
-    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     auth_token = None
     username = params['authentication']['identifier']
     password = params['authentication']['password']
@@ -3404,6 +3402,7 @@ def main():  # pragma: no cover
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service, args)
     elif command == 'splunk-notable-event-edit':
+        base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
         token = get_auth_session_key(service)
         splunk_edit_notable_event_command(base_url, token, auth_token, args)
     elif command == 'splunk-submit-event-hec':

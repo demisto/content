@@ -137,7 +137,7 @@ class Client:
             if last_modified:
                 self.headers['If-Modified-Since'] = last_modified
 
-        result = []
+        result: List[Dict] = []
         if not self.post_data:
             r = requests.get(
                 url=url,
@@ -163,7 +163,9 @@ class Client:
             if r.content:
                 demisto.debug(f'JSON: found content for {feed_name}')
                 data = r.json()
-                result = jmespath.search(expression=feed.get('extractor'), data=data)
+                result = jmespath.search(expression=feed.get('extractor'), data=data) or []
+                if not result:
+                    demisto.debug(f'No results found - retrieved data is: {data}')
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
@@ -197,7 +199,7 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
     last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
-        demisto.debug('Last-Modified and Etag headers are not exists,'
+        demisto.debug('Last-Modified and Etag headers are not exists, '
                       'createIndicators will be executed with noUpdate=False.')
         return False
 
@@ -442,7 +444,8 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
     auto_detect = params.get('auto_detect_type')
     feedTags = argToList(params.get('feedTags'))
     limit = int(demisto.args().get('limit', 10))
-    enrichment_excluded = params.get('enrichmentExcluded', False)
+    enrichment_excluded = (params.get('enrichmentExcluded', False)
+                           or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     command = demisto.command()
     if prefix and not prefix.endswith('-'):
         prefix += '-'
@@ -462,6 +465,7 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
                                                              create_relationships,
                                                              remove_ports=remove_ports,
                                                              enrichment_excluded=enrichment_excluded)
+            demisto.debug(f"Received {len(indicators)} indicators, no_update={no_update}")
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
@@ -484,7 +488,9 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
             create_relationships = params.get('create_relationships')
             indicators, _ = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
                                                      create_relationships, limit, remove_ports)
+
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
+
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
     except Exception as err:
