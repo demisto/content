@@ -20,5 +20,8 @@ tags:
 type: powershell
 dockerimage: demisto/powershell:7.4.6.117357
 fromversion: 5.5.0
+supportedModules:
+  - X3
+  - X5
 tests:
 - VerifyJSON - Test

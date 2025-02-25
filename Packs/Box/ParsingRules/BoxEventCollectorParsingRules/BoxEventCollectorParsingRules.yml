@@ -4,3 +4,7 @@ fromversion: 6.10.0
 tags: []
 rules: ''
 samples: ''
+supportedModules:
+  - X0
+  - X1
+  - X3
