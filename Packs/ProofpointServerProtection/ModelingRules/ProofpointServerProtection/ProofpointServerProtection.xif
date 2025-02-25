@@ -3,7 +3,7 @@
        xdm.event.type = arrayindex(regextract(_raw_log, "^\<\d+\>\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2}\s+\w+\s+([^\[]+)"),0),
        xdm.event.description = parsed_fields,
        xdm.email.subject = ltrim(rtrim(parsed_fields -> subject,"\""),"\""),
-       xdm.observer.action = coalesce(parsed_fields -> module, parsed_fields -> mod),
+       xdm.observer.type = coalesce(parsed_fields -> module, parsed_fields -> mod),
        xdm.network.rule = coalesce(parsed_fields -> rule, parsed_fields -> policy),
        xdm.alert.name = ltrim(rtrim(parsed_fields -> alert,"\""),"\""),
        xdm.network.ip_protocol = parsed_fields -> proto,
@@ -20,4 +20,4 @@
        xdm.network.session_id = parsed_fields -> x,
        xdm.event.outcome = parsed_fields -> action,
        xdm.event.operation_sub_type = parsed_fields -> cmd,
-       xdm.email.recipients = arraymap(split(parsed_fields -> to,","),ltrim(rtrim("@element","\>"),"\<"))
+       xdm.email.recipients = arraymap(split(parsed_fields -> to,","),ltrim(rtrim("@element","\>"),"\<"));
