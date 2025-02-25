@@ -470,6 +470,6 @@ script:
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
-  ismappable:true
+  ismappable: true
   runonce: false
   fromversion: 6.0.0
