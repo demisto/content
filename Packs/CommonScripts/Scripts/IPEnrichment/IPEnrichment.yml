@@ -31,13 +31,50 @@ args:
   - 'true'
   - 'false'
 outputs:
-- contextPath: Endpoint
-  description: The endpoint object.
-- contextPath: Endpoint.Hostname
-  description: The endpoint hostname.
+- contextPath: IP
+  description: The IP address objects.
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, and Vendor.
+  type: unknown
+- contextPath: IP.Address
+  description: The IP Address.
   type: string
-- contextPath: Endpoint.IP
-  description: The endpoint IP.
+- contextPath: IP.InRange
+  description: Is the IP in the input ranges? (could be 'yes' or 'no).
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: string
+- contextPath: IP.ASN
+  description: The Autonomous System (AS) number associated with the indicator.
+  type: string
+- contextPath: IP.Tags
+  description: List of IP tags.
+  type: string
+- contextPath: IP.ThreatTypes
+  description: Threat types associated with the IP.
+  type: string
+- contextPath: IP.Geo.Country
+  description: The country associated with the indicator.
+  type: string
+- contextPath: IP.Geo.Location
+  description: The longitude and latitude of the IP address.
+  type: string
+- contextPath: IP.Malicious.Vendor
+  description: The vendor that reported the indicator as malicious.
+  type: string
+- contextPath: IP.Malicious.Description
+  description: For malicious IPs, the reason that the vendor made the decision.
   type: string
 scripttarget: 0
 fromversion: 5.0.0
