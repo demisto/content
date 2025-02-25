@@ -3078,10 +3078,22 @@ def check_fetch_duration_time_exceeded(start_time):
     return False
 
 
-def set_last_run_with_new_limit(last_run, limit):
+def set_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
+    """Updates last assets run by setting `limit` to half, `nextTrigger` to 0, and `type` to 1 (assets).
+    This instructs the server to immediately trigger the next assets fetch iteration.
+
+    Args:
+        last_run (dict): Last assets run dictionary.
+        limit (int): Host detections limit.
+
+    Returns:
+        dict: Updated next assets run.
+    """
     new_limit = int(limit / 2) if limit > 1 else 1
     demisto.debug(f'Setting host limit to: {new_limit}')
     last_run['limit'] = new_limit
+    last_run['nextTrigger'] = '0'  # Trigger next fetch iteration immediately
+    last_run['type'] = FETCH_COMMAND['assets']  # Set next fetch iteration to type 'assets'
     return last_run
 
 
@@ -3305,7 +3317,6 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
         if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
             new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
-            new_last_run['nextTrigger'] = '0'
         else:
             cumulative_assets_count: int = new_last_run["total_assets"]
             demisto.debug(f'Sending {len(assets)} assets to XSIAM. '
@@ -3346,7 +3357,6 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
     if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
         new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
-        new_last_run['nextTrigger'] = '0'
     else:
         cumulative_assets_count: int = new_last_run['total_assets']
         has_next_assets_page = bool(new_last_run.get('next_page'))

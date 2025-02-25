@@ -28,6 +28,7 @@ from Qualysv2 import (
     get_vulnerabilities,
     get_activity_logs_events_command,
     send_assets_and_vulnerabilities_to_xsiam,
+    set_last_run_with_new_limit,
     fetch_events, get_activity_logs_events,
     fetch_assets, fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
@@ -1649,6 +1650,28 @@ def test_get_vulnerabilities_valid_inputs(
     assert http_request_kwargs["params"] == expected_params
 
 
+def test_set_last_run_with_new_limit():
+    """
+    Given:
+        - A last run dictionary with fetch stage, total assets count, and snapshot ID.
+
+    When:
+        - Calling set_last_run_with_new_limit.
+
+    Assert:
+        - Ensure last_run is correctly updated with half 'limit', 'nextTrigger' 0, and 'type' 1.
+    """
+    last_run = {'stage': 'assets', 'total_assets': 10, 'snapshot_id': SNAPSHOT_ID}
+    updated_last_run = set_last_run_with_new_limit(last_run, limit=HOST_LIMIT)
+
+    assert updated_last_run == {
+        **last_run,
+        'nextTrigger': '0',
+        'type': 1,  # assets
+        'limit': HOST_LIMIT // 2,
+    }
+
+
 @freeze_time("2025-01-01 00:00:00 UTC")
 def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFixture, client: Client):
     """
@@ -1757,6 +1780,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFi
         'snapshot_id': SNAPSHOT_ID,
         'limit': HOST_LIMIT // 2,
         'nextTrigger': '0',
+        'type': 1,  # assets
     }
 
 
