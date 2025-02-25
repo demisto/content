@@ -136,6 +136,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
         payload['meta']['pagination'] = pagination
         response = http_request('POST', api_endpoint, payload, headers=headers)
         next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+    # returning next_page is only required for fetch mechanism
     if page and page_size:
         return results[(-1 * page_size):], page_size, next_page
 
