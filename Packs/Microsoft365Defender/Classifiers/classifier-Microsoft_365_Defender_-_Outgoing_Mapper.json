@@ -1,0 +1,120 @@
+{
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"id": "Microsoft 365 Defender - Outgoing Mapper",
+	"mapping": {
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"assignedTo": {
+					"complex": {
+						"filters": [],
+						"root": "assigneduser",
+						"transformers": []
+					}
+				},
+				"classification": {
+					"complex": {
+						"filters": [],
+						"root": "microsoft365defenderclassification",
+						"transformers": [
+							{
+								"args": {
+									"action_dt": {
+										"isContext": false
+									},
+									"ignore_case": {
+										"isContext": false
+									},
+									"multi_line": {
+										"isContext": false
+									},
+									"output_format": {
+										"isContext": false,
+										"value": {
+											"simple": "\\1"
+										}
+									},
+									"period_matches_newline": {
+										"isContext": false
+									},
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "([a-zA-Z0-9_ ]+) - ([a-zA-Z0-9_ ]+)"
+										}
+									}
+								},
+								"operator": "RegexReplace"
+							}
+						]
+					}
+				},
+				"comments": {
+					"complex": {
+						"filters": [],
+						"root": "microsoft365defendercomments",
+						"transformers": []
+					}
+				},
+				"determination": {
+					"complex": {
+						"filters": [],
+						"root": "microsoft365defenderclassification",
+						"transformers": [
+							{
+								"args": {
+									"action_dt": {
+										"isContext": false
+									},
+									"ignore_case": {
+										"isContext": false
+									},
+									"multi_line": {
+										"isContext": false
+									},
+									"output_format": {
+										"isContext": false,
+										"value": {
+											"simple": "\\2"
+										}
+									},
+									"period_matches_newline": {
+										"isContext": false
+									},
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "([a-zA-Z0-9_ ]+) - ([a-zA-Z0-9_ ]+)"
+										}
+									}
+								},
+								"operator": "RegexReplace"
+							}
+						]
+					}
+				},
+				"status": {
+					"complex": {
+						"filters": [],
+						"root": "microsoft365defenderstatus",
+						"transformers": []
+					}
+				},
+				"tags": {
+					"complex": {
+						"filters": [],
+						"root": "microsoft365defendertags",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "Microsoft 365 Defender - Outgoing Mapper",
+	"type": "mapping-outgoing",
+	"version": -1,
+    "fromVersion": "6.0.0"
+}
