@@ -1,7 +1,4 @@
 category: Email
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: CheckPointHEC
   version: -1
@@ -49,6 +46,7 @@ configuration:
   hiddenusername: true
   additionalinfo: The client ID of the Smart API or Check Point Infinity API.
 - display: ""
+  section: Connect
   displaypassword: Client Secret
   name: client_secret
   type: 9
@@ -64,6 +62,7 @@ configuration:
   additionalinfo: The time range for the first fetch. The default is 1 hour.
 - display: SaaS Application
   name: saas_apps
+  section: Collect
   type: 16
   required: false
   options:
@@ -71,6 +70,7 @@ configuration:
   - Gmail
   additionalinfo: Get incidents from the selected SaaS.
 - display: State
+  section: Collect
   name: event_state
   type: 16
   required: false
@@ -82,6 +82,7 @@ configuration:
   - Dismissed
   additionalinfo: Get incidents with only the selected states.
 - display: Severity
+  section: Collect
   name: event_severity
   type: 16
   required: false
@@ -93,6 +94,7 @@ configuration:
   - Very Low
   additionalinfo: Get incidents with only the selected severities.
 - display: Threat Type
+  section: Collect
   name: threat_type
   type: 16
   required: false
@@ -379,8 +381,8 @@ script:
       type: Boolean
       auto: PREDEFINED
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: false
     description: Retrieve specific email scan with positive threats.
     outputs:
@@ -1876,7 +1878,10 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.113941
+  dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect
