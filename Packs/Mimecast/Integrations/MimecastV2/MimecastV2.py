@@ -117,6 +117,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     len_of_results = 0
     results = []
     while True:
+        demisto.debug("Another loop")
         if response.get('fail'):
             raise Exception(json.dumps(response.get('fail')[0].get('errors')))
         if response_param:
@@ -148,6 +149,7 @@ def request_with_pagination_with_next_page(api_endpoint: str, data: list, curren
     len_of_results = 0
     results = []
     while True:
+        demisto.debug("Another loop")
         payload = {
             'meta': {
                 'pagination': {
@@ -158,16 +160,18 @@ def request_with_pagination_with_next_page(api_endpoint: str, data: list, curren
         }
         response = http_request('POST', api_endpoint, payload)
         next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+        limit = int(response.get('meta', {}).get('pagination', {}).get('pageSize', MAX_FETCH))
+        demisto.debug(f"The limit in the request is {limit}")
         if response.get('fail'):
             raise Exception(json.dumps(response.get('fail')[0].get('errors')))
         response_data = response.get('data')
         for entry in response_data:
             # If returning this log will not exceed the specified limit
-            if len_of_results < MAX_FETCH:
+            if len_of_results < limit:
                 len_of_results += 1
                 results.append(entry)
         # If limit is reached or there are no more pages
-        if not next_page or (len_of_results >= MAX_FETCH):
+        if not next_page or (len_of_results >= limit):
             break
     return results, next_page
 
