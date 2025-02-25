@@ -3069,11 +3069,21 @@ def fetch_assets(client: Client, assets_last_run):
     return assets, new_last_run, amount_to_report, snapshot_id, set_new_limit
 
 
-def check_fetch_duration_time_exceeded(start_time):
+def check_fetch_duration_time_exceeded(start_time: float) -> bool:
+    """Checks if the 'fetch-assets' command execution time exceeded the defined value.
+
+    Args:
+        start_time (float): The time in seconds since the Epoch (Unix time).
+
+    Returns:
+        bool: True if execution time has been exceeded, False otherwise.
+    """
     elapsed_time = time.time() - start_time
     if elapsed_time > FETCH_ASSETS_COMMAND_TIME_OUT:
-        demisto.debug('We passed the defined timeout, so we will not send the results to XSIAM,'
-                      'because there is not enough time left, and we will lower the limit for the next time')
+        demisto.debug(
+            f'Exceeded the defined exceution timeout: {FETCH_ASSETS_COMMAND_TIME_OUT}. Elapsed time: {elapsed_time}. '
+            'Data will not be sent to XSIAM due to insufficient remaining time. The limit will be reduced for future runs.'
+        )
         return True
     return False
 
