@@ -729,7 +729,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDSHA1Field} CONTAINS-ANY [${SHA1Parsed}])
+        simple: where(${inputs.InsightIDRSHA1Field} CONTAINS-ANY [${SHA1Parsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
