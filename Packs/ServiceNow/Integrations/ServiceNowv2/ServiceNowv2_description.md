@@ -31,7 +31,7 @@ If MFA is enabled for your user, follow the next steps:
 **Notes:**
 1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
 2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
-3. For more information about using JWT Profile authentication, please refer to [JWT Authentication Configuration ](https://xsoar.pan.dev/docs/reference/integrations/service-now-v2#jwt-profile-authentication-configuration)
+3. For more information about using JWT Profile authentication, refer to [JWT Authentication Configuration ](https://xsoar.pan.dev/docs/reference/integrations/service-now-v2#jwt-profile-authentication-configuration)
 4. **look-back parameter note**:
 In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
 the look back to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.

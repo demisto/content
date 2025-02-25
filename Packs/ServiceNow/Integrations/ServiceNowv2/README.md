@@ -55,31 +55,22 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 ## JWT Profile Authentication Configuration
 
 Grant access token to admin is not allowed.
-Customer should have non-admin user with all necessary roles(only non-admin roles) in addition to existing  role snc_platform_rest_api_access that required to make API call
+You should have non-admin user with all necessary roles (only non-admin roles) in addition to existing role snc_platform_rest_api_access that are required to make API calls.
 
-Prerequisites in order to support JWT
-Create a Java Key Store and upload it to the instance
-	(Accessing from the upper menu :All→System Definition→Certificates)
-(Private key will be used as integration parameter)
-Configure a JWT signing key (use keystore from above .Keep the Key Id -  it will be used as kid integration parameter) 
-(All→System OAuth→JWT Keys)
-Create a JWT provider with a JWT signing key
-(Customer required to set  in Standard Claims the same values for aud, iss and sub that will be used as integration parameters. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles)
+### Prerequisites to support JWT
 
-(All→System OAuth→JWT providers)
-Connect to an OAuth provider and create OAuth application registry
-           (aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider
-If necessary.Value of Kid in JWT Verifier Maps has to be the  same as Key Id in JWT signing key -
- the value can be updated if necessary )
-(All→System OAuth→Application Registry)
+1. Create a Java KeyStore and upload it to the instance. To access the Java KeyStore, click **All** > **System Definition** > **Certificates**. The Private key will be used as the integration parameter.
+2. Configure a JWT signing key. Use the Java KeyStore created in the previous step. Save the Key ID -  it will be used as the kid integration parameter. To access, click **All** > **System OAuth** > **JWT Keys**.
+3. Create a JWT provider with a JWT signing key. In Standard Claims, set the same values for aud, iss and sub that will be used as the integration parameters. Claim Name sub in Standard Claims has to exist as a non-admin ServiceNow user with all necessary roles. Click **All** > **System OAuth** > **JWT providers**.
+
+4. Connect to an OAuth provider and create OAuth application registry. aud in JWT provider has to be equal to Client ID from the OAuth JWT application. Update the JWT provider if necessary. The value of kid in JWT Verifier Maps has to be the same as Key ID in JWT signing key. The value can be updated if necessary. To access, click **All** > **System OAuth** > **Application Registry**.
 
 
-   5. Create API Access Policy or add Authentication profile to existing Policy
-(All→System Web Services→API Access Policies→Rest API Access Policies )
+5. Create an API Access Policy or add Authentication profile to the existing Policy.  To access, click **All** > **System Web Services** > **API Access Policies** > **Rest API Access Policies**.
 
 IMPORTANT:
 
-Standard Authentication Profile of type Oauth should be already present in ServiceNow and this one needs to be added to Policy.
+Standard Authentication Profile of type Oauth should already be present in ServiceNow and needs to be added to the Policy.
 API Access Policy should be configured as global in order to cover all available resources and not just now/table.
 
 

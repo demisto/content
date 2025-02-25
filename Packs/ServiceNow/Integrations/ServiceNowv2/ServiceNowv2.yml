@@ -18,12 +18,12 @@ configuration:
   required: false
   section: Connect
   displaypassword: password/Client Secret
-- display: ServiceNow API Version (e.g. 'v1')
+- display: ServiceNow API Version (e.g., 'v1')
   name: api_version
   type: 0
   required: false
   section: Connect
-- additionalinfo: 'Select this checkbox if to use OAuth 2.0 authentication. See (?) for more information.'
+- additionalinfo: 'Select this checkbox to use OAuth 2.0 authentication. See (?) for more information.'
   display: Use OAuth Login
   name: use_oauth
   type: 8
