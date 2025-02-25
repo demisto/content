@@ -570,7 +570,7 @@ tasks:
       name: Check For Specific Alerts By CGO
       description: |-
         Searches Cortex XSIAM alerts. A summarized version of this scripts is available with the summarizedversion argument.
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
