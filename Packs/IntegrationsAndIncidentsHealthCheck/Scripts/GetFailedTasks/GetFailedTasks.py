@@ -80,6 +80,7 @@ def get_failed_tasks_output(tasks: list, incident: dict, custom_scripts_map_id_a
             else:
                 error_handling = "Continue"
                 next_task = task.get("nextTasks", {}).get("#none#", [])
+                
             if not next_task:
                 error_handling = error_handling + " (No Next Task)"
         else:
