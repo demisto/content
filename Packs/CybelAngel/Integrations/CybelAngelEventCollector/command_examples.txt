@@ -1,9 +1,12 @@
-!cybelangel-report-list start_date="3 month ago" end_date="2 month ago"
-!cybelangel-report-get report_id=1111111aa-222b-3333-444444-5555cc pdf=true
-!cybelangel-mirror-report-get report_id=1111111aa-222b-3333-444444-5555cc csv=true
-!cybelangel-archive-report-by-id-get report_id=1111111aa-222b-3333-444444-5555cc
-!cybelangel-report-status-update report_ids=1111111aa-222b-3333-444444-5555cc,1111111aa-222b-3333-444444-5555cc status=resolved
-!cybelangel-report-comments-get report_id=1111111aa-222b-3333-444444-5555cc
-!cybelangel-report-comment-create report_id=1111111aa-222b-3333-444444-5555cc content="Demo Test"
-!cybelangel-report-attachment-get report_id=1111111aa-222b-3333-444444-5555cc attachment_id=1111111aa-222b-3333-444444-5555cc
-!cybelangel-report-remediation-request-create report_id=1111111aa-222b-3333-444444-5555cc requestor_email=<your email> requestor_fullname="<your full name>"
+cybelangel-report-list start_date=2024-10-18T13:45:30 end_date=2025-01-15T13:45:30
+cybelangel-report-get report_id=8df67b49-47df-40f6-a5f8-83bd6053a31b
+cybelangel-report-get report_id=8df67b49-47df-40f6-a5f8-83bd6053a31b pdf=true
+cybelangel-mirror-report-get report_id=513c10f3-969b-4833-a965-229ae1cb8b30
+cybelangel-mirror-report-get report_id=513c10f3-969b-4833-a965-229ae1cb8b30 csv=true
+cybelangel-archive-report-by-id-get report_id=4751c0bf-5cb5-4e21-b677-5ce9c1b5de89
+cybelangel-report-status-update report_ids=513c10f3-969b-4833-a965-229ae1cb8b30 status=open
+cybelangel-report-status-update report_ids=513c10f3-969b-4833-a965-229ae1cb8b30,4751c0bf-5cb5-4e21-b677-5ce9c1b5de89 status=resolved
+cybelangel-report-comments-get report_id=513c10f3-969b-4833-a965-229ae1cb8b30
+cybelangel-report-comment-create report_id=513c10f3-969b-4833-a965-229ae1cb8b30 content=Demo Test
+cybelangel-report-attachment-get report_id=062aba24-e44b-4e96-98b9-a65c63e93b6c attachment_id=9c166e86-66f9-4e9f-9523-161ab7f153da
+cybelangel-report-remediation-request-create report_id=4751c0bf-5cb5-4e21-b677-5ce9c1b5de89 requestor_email=azonenfeld@paloaltonetworks.com requestor_fullname="Aaron Sonnenfeld"
