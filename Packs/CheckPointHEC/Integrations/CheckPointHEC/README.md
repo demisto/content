@@ -139,7 +139,7 @@ Retrieve specific email scan with positive threats.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entity | Scanned entity id. | Required | 
-| include_clean | Include clean scans. | Optional | 
+| include_clean | Include clean scans. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 
@@ -1234,8 +1234,8 @@ Download email file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity | Email entity id. | Required | 
-| original | Download original email. | Optional | 
+| entity_id | Email entity id, currently available in the incident's mirror external id. | Required | 
+| original | Whether to download original email or with modifications. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 

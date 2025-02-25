@@ -374,8 +374,13 @@ script:
       description: Scanned entity id.
       required: true
     - name: include_clean
+      defaultValue: 'False'
       description: Include clean scans.
       type: Boolean
+      auto: PREDEFINED
+      predefined:
+        - 'True'
+        - 'False'
       required: false
     description: Retrieve specific email scan with positive threats.
     outputs:
@@ -1854,11 +1859,17 @@ script:
   - name: checkpointhec-download-email
     description: Download email file.
     arguments:
-    - name: entity
-      description: Email entity id.
+    - name: entity_id
+      description: Email entity id, currently available in the incident's mirror external id.
       required: true
     - name: original
-      description: Download original email.
+      defaultValue: 'False'
+      type: Boolean
+      description: Whether to download original email or with modifications.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
       required: false
   isfetch: true
   runonce: false

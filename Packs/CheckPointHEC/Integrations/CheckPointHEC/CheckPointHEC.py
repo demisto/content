@@ -157,7 +157,14 @@ class Client(BaseClient):
         )
         return self.token or ''
 
-    def _call_api(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None, resp_type: str = 'json'):
+    def _call_api(
+        self,
+        method: str,
+        url_suffix: str,
+        params: dict = None,
+        json_data: dict = None,
+        resp_type: str = 'json'
+    ) -> Dict[str, Any]:
         if self.is_infinity:
             path = '/'.join(['app', 'hec-api', self.api_version, url_suffix])
             request_string = None
@@ -1040,7 +1047,7 @@ def checkpointhec_report_mis_classification(client: Client, args: dict) -> Comma
 
 
 def checkpointhec_download_email(client: Client, args: dict) -> dict:
-    entity: str = args['entity']
+    entity: str = args['entity_id']
     original: bool = arg_to_bool(args.get('original'))
     eml = client.download_email(entity, original)
 
