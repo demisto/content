@@ -175,7 +175,7 @@ script:
       required: true
     description: Fetches an email by message ID and returns the information in an eml file format.
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/py3-tools:1.0.0.112434
+  dockerimage: demisto/py3-tools:1.0.0.117220
   isfetch: true
   runonce: false
   script: '-'

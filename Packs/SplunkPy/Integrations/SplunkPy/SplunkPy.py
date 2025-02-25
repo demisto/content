@@ -15,7 +15,9 @@ from splunklib.data import Record
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 
+INTEGRATION_LOG = "Splunk- "
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
+INDEXES_REGEX = r"""["'][\s]*index[\s]*["'][\s]*:[\s]*["']([^"']+)["']"""
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -659,7 +661,8 @@ class Notable:
                     'Comment': comment})
         labels.append({'type': 'SplunkComments', 'value': str(comment_entries)})
         incident['labels'] = labels
-        incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
+        if notable_data.get(EVENT_ID):
+            incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
         notable_data['SplunkComments'] = comment_entries
         incident["rawJSON"] = json.dumps(notable_data)
         incident['SplunkComments'] = comment_entries
@@ -1022,6 +1025,29 @@ def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
     return earliest_offset, latest_offset
 
 
+def escape_invalid_chars_in_drilldown_json(drilldown_search):
+    """ Goes over the drilldown search, and replace the unescaped or invalid chars.
+
+    Args:
+        drilldown_search (str): The drilldown search.
+
+    Returns:
+        str: The escaped drilldown search.
+    """
+    # escape the " of string from the form of 'some_key="value"' which the " char are invalid in json value
+    for unescaped_val in re.findall(r'(?<==)\"[^\"]*\"', drilldown_search):
+        escaped_val = unescaped_val.replace('"', '\\"')
+        drilldown_search = drilldown_search.replace(unescaped_val, escaped_val)
+
+    # replace the new line (\n) with in the IN (...) condition with ','
+    # Splunk replace the value of some multiline fields to the value which contain \n
+    # due to the 'expandtoken' macro
+    for multiline_val in re.findall(r'(?<=in|IN)\s*\([^\)]*\n[^\)]*\)', drilldown_search):
+        csv_val = multiline_val.replace('\n', ',')
+        drilldown_search = drilldown_search.replace(multiline_val, csv_val)
+    return drilldown_search
+
+
 def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     """ Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
 
@@ -1037,6 +1063,7 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     for drilldown_search in drilldown_searches:
         try:
             # drilldown_search may be a json list/dict represented as string
+            drilldown_search = escape_invalid_chars_in_drilldown_json(drilldown_search)
             search = json.loads(drilldown_search)
             if isinstance(search, list):
                 searches.extend(search)
@@ -2473,7 +2500,10 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
     total_parsed_results: list[dict[str, Any]] = []
     dbot_scores: list[dict[str, Any]] = []
 
-    while len(total_parsed_results) < int(num_of_results_from_query) and len(total_parsed_results) < results_limit:
+    while (
+        len(total_parsed_results) < int(num_of_results_from_query)  # type: ignore[arg-type]
+        and len(total_parsed_results) < results_limit
+    ):
         current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
         max_results_to_add = results_limit - len(total_parsed_results)
         parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add,
@@ -2591,6 +2621,75 @@ def splunk_submit_event_command(service: client.Service, args: dict):
         return_results(f'Event was created in Splunk index: {r.name}')
 
 
+def validate_indexes(indexes, service):
+    """Validates that all provided Splunk indexes exist within the Splunk service instance."""
+    real_indexes = service.indexes
+    real_indexes_names_set = set()
+    for real_index in real_indexes:
+        real_indexes_names_set.add(real_index.name)
+    indexes_set = set(indexes)
+    return indexes_set.issubset(real_indexes_names_set)
+
+
+def get_events_from_file(entry_id):
+    """
+    Retrieves event data from a file in Demisto based on a specified entry ID as a string.
+
+    Args:
+        entry_id (int): The entry ID corresponding to the file containing event data.
+
+    Returns:
+        str: The content of the file as a string.
+    """
+    get_file_path_res = demisto.getFilePath(entry_id)
+    file_path = get_file_path_res["path"]
+    with open(file_path, encoding='utf-8') as file_data:
+        return file_data.read()
+
+
+def parse_fields(fields):
+    """
+    Parses the `fields` input into a dictionary.
+
+    - If `fields` is a valid JSON string, it is converted into the corresponding dictionary.
+    - If `fields` is not valid JSON, it is wrapped as a dictionary with a single key-value pair,
+    where the key is `"fields"` and the value is the original `fields` string.
+
+    Examples:
+    1. Input: '{"severity": "INFO", "category": "test2, test2"}'
+       Output: {"severity": "INFO", "category": "test2, test2"}
+
+    2. Input: 'severity: INFO, category: test2, test2'
+       Output: {"fields": "severity: INFO, category: test2, test2"}
+    """
+    if fields:
+        try:
+            parsed_fields = json.loads(fields)
+        except Exception:
+            demisto.debug('Fields provided are not valid JSON; treating as a single field')
+            parsed_fields = {'fields': fields}
+        return parsed_fields
+    return None
+
+
+def extract_indexes(events: str | dict):
+    """
+    Extracts indexes from the provided events.
+
+    Args:
+        events (str | dict): The input events from which indexes will be extracted.
+        For example: "{"index": "index1", "event": "something happened1"} {"index": "index2", "event": "something happened2"}"
+
+    Returns:
+        List[str]: A list of extracted indexes.
+        For example: ["index1", "index2"]
+
+    """
+    events_str = str(events)
+    indexes = re.findall(INDEXES_REGEX, events_str)
+    return indexes
+
+
 def splunk_submit_event_hec(
     hec_token: str | None,
     baseurl: str,
@@ -2601,27 +2700,39 @@ def splunk_submit_event_hec(
     source_type: str | None,
     source: str | None,
     time_: str | None,
-    request_channel: str | None
+    request_channel: str | None,
+    batch_event_data: str | None,
+    entry_id: int | None,
+    service
 ):
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
-    parsed_fields = None
-    if fields:
-        try:
-            parsed_fields = json.loads(fields)
-        except Exception:
-            parsed_fields = {'fields': fields}
+    if batch_event_data:
+        events = batch_event_data
 
-    args = assign_params(
-        event=event,
-        host=host,
-        fields=parsed_fields,
-        index=index,
-        sourcetype=source_type,
-        source=source,
-        time=time_
-    )
+    elif entry_id:
+        demisto.debug(f'{INTEGRATION_LOG} - loading events data from file with {entry_id=}')
+        events = get_events_from_file(entry_id)
+
+    else:
+        parsed_fields = parse_fields(fields)
+
+        events = assign_params(
+            event=event,
+            host=host,
+            fields=parsed_fields,
+            index=index,
+            sourcetype=source_type,
+            source=source,
+            time=time_
+        )
+    indexes = extract_indexes(events)
+
+    if not validate_indexes(indexes, service):
+        raise DemistoException('Index name does not exist in your splunk instance')
+
+    demisto.debug("All indexes are valid, sending events to Splunk.")
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
@@ -2630,15 +2741,21 @@ def splunk_submit_event_hec(
     if request_channel:
         headers['X-Splunk-Request-Channel'] = request_channel
 
+    data = ''
+    if entry_id or batch_event_data:
+        data = events
+    else:
+        data = json.dumps(events)
+
     return requests.post(
         f'{baseurl}/services/collector/event',
-        data=json.dumps(args),
+        data=data,
         headers=headers,
         verify=VERIFY_CERTIFICATE,
     )
 
 
-def splunk_submit_event_hec_command(params: dict, args: dict):
+def splunk_submit_event_hec_command(params: dict, service, args: dict):
     hec_token = params.get('cred_hec_token', {}).get('password') or params.get('hec_token')
     baseurl = params.get('hec_url')
     if baseurl is None:
@@ -2652,18 +2769,25 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     source = args.get('source')
     time_ = args.get('time')
     request_channel = args.get('request_channel')
+    batch_event_data = args.get('batch_event_data')
+    entry_id = args.get('entry_id')
+
+    if not event and not batch_event_data and not entry_id:
+        raise DemistoException("Invalid input: Please specify one of the following arguments: `event`, "
+                               "`batch_event_data`, or `entry_id`.")
 
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_,
-                                            request_channel)
+                                            request_channel, batch_event_data, entry_id, service)
 
     if 'Success' not in response_info.text:
         return_error(f"Could not send event to Splunk {response_info.text}")
     else:
-        response_dict = json.loads(response_info.text)
+        response_dict = json.loads(response_info.text
+                                   )
         if response_dict and 'ackId' in response_dict:
-            return_results(f"The event was sent successfully to Splunk. AckID: {response_dict['ackId']}")
+            return_results(f"The events were sent successfully to Splunk. AckID: {response_dict['ackId']}")
         else:
-            return_results('The event was sent successfully to Splunk.')
+            return_results('The events were sent successfully to Splunk.')
 
 
 def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
@@ -3033,10 +3157,12 @@ def get_connection_args(params: dict) -> dict:
     """
     app = params.get('app', '-')
     return {
-        'host': params['host'],
+        'host': params['host'].replace('https://', '').rstrip('/'),
         'port': params['port'],
         'app': app or "-",
         'verify': VERIFY_CERTIFICATE,
+        'retries': 3,
+        'retryDelay': 3,
     }
 
 
@@ -3127,7 +3253,7 @@ def main():  # pragma: no cover
         token = get_auth_session_key(service)
         splunk_edit_notable_event_command(base_url, token, auth_token, args)
     elif command == 'splunk-submit-event-hec':
-        splunk_submit_event_hec_command(params, args)
+        splunk_submit_event_hec_command(params, service, args)
     elif command == 'splunk-job-status':
         return_results(splunk_job_status(service, args))
     elif command.startswith('splunk-kv-') and service is not None:

@@ -675,7 +675,7 @@ tasks:
       '#default#':
       - "17"
       "yes":
-      - "19"
+      - "94"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -719,7 +719,7 @@ tasks:
       '#default#':
       - "22"
       "yes":
-      - "18"
+      - "95"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -736,8 +736,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5445
+          "x": 55,
+          "y": 5450
         }
       }
     note: false
@@ -771,8 +771,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 5620
+          "x": -267.5,
+          "y": 5780
         }
       }
     note: false
@@ -806,7 +806,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 482.5,
           "y": 5620
         }
       }
@@ -842,7 +842,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5940
+          "y": 6120
         }
       }
     note: false
@@ -894,7 +894,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 6115
+          "y": 6285
         }
       }
     note: false
@@ -925,7 +925,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5795
+          "y": 5995
         }
       }
     note: false
@@ -952,7 +952,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 13465
+          "y": 13545
         }
       }
     note: false
@@ -991,7 +991,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10315
+          "y": 10405
         }
       }
     note: false
@@ -1030,7 +1030,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10140
+          "y": 10240
         }
       }
     note: false
@@ -1069,7 +1069,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9965
+          "y": 10055
         }
       }
     note: false
@@ -1108,7 +1108,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9790
+          "y": 9900
         }
       }
     note: false
@@ -1151,7 +1151,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9615
+          "y": 9725
         }
       }
     note: false
@@ -1183,7 +1183,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9440
+          "y": 9560
         }
       }
     note: false
@@ -1222,7 +1222,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9265
+          "y": 9375
         }
       }
     note: false
@@ -1255,7 +1255,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9090
+          "y": 9210
         }
       }
     note: false
@@ -1294,7 +1294,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8915
+          "y": 9025
         }
       }
     note: false
@@ -1329,7 +1329,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8740
+          "y": 8860
         }
       }
     note: false
@@ -1375,7 +1375,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8565
+          "y": 8685
         }
       }
     note: false
@@ -1411,7 +1411,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8390
+          "y": 8530
         }
       }
     note: false
@@ -1460,7 +1460,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8215
+          "y": 8355
         }
       }
     note: false
@@ -1505,7 +1505,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8040
+          "y": 8190
         }
       }
     note: false
@@ -1552,7 +1552,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 7865
+          "y": 7995
         }
       }
     note: false
@@ -1595,7 +1595,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 7690
+          "y": 7830
         }
       }
     note: false
@@ -1634,7 +1634,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 7515
+          "y": 7645
         }
       }
     note: false
@@ -1671,7 +1671,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 7340
+          "y": 7490
         }
       }
     note: false
@@ -1721,7 +1721,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 7165
+          "y": 7305
         }
       }
     note: false
@@ -1756,7 +1756,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 6990
+          "y": 7150
         }
       }
     note: false
@@ -1800,7 +1800,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 6815
+          "y": 6965
         }
       }
     note: false
@@ -1847,7 +1847,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 6640
+          "y": 6810
         }
       }
     note: false
@@ -1891,7 +1891,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 6465
+          "y": 6625
         }
       }
     note: false
@@ -1923,7 +1923,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 6290
+          "y": 6470
         }
       }
     note: false
@@ -2176,7 +2176,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10665
+          "y": 10775
         }
       }
     note: false
@@ -2224,7 +2224,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10840
+          "y": 10930
         }
       }
     note: false
@@ -2247,7 +2247,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -2264,7 +2266,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10490
+          "y": 10610
         }
       }
     note: false
@@ -2303,7 +2305,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 11015
+          "y": 11105
         }
       }
     note: false
@@ -2360,7 +2362,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 11365
+          "y": 11445
         }
       }
     note: false
@@ -2399,7 +2401,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 11190
+          "y": 11270
         }
       }
     note: false
@@ -2441,7 +2443,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 11540
+          "y": 11630
         }
       }
     note: false
@@ -2473,7 +2475,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 11715
+          "y": 11800
         }
       }
     note: false
@@ -2514,7 +2516,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 11890
+          "y": 11970
         }
       }
     note: false
@@ -2551,7 +2553,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 12065
+          "y": 12165
         }
       }
     note: false
@@ -2588,7 +2590,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 12590
+          "y": 12670
         }
       }
     note: false
@@ -2628,7 +2630,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 12765
+          "y": 12825
         }
       }
     note: false
@@ -2663,7 +2665,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 13115
+          "y": 13225
         }
       }
     note: false
@@ -2706,7 +2708,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 13290
+          "y": 13380
         }
       }
     note: false
@@ -2835,7 +2837,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 12240
+          "y": 12340
         }
       }
     note: false
@@ -2875,7 +2877,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 12415
+          "y": 12485
         }
       }
     note: false
@@ -2923,7 +2925,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 12940
+          "y": 13000
         }
       }
     note: false
@@ -3218,22 +3220,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
-              simple: ${PaloAltoNetworksXDR.Incident.alerts.[0].severity}
+              simple: ${PaloAltoNetworksXDR.Incident.alerts.severity(val=="low")}
             iscontext: true
-          right:
-            value:
-              simple: low
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
-              simple: ${PaloAltoNetworksXDR.Incident.alerts.[0].resolution_comment}
-            iscontext: true
-          right:
-            value:
-              simple: i was updated from playbook
+              simple: ${PaloAltoNetworksXDR.Incident.alerts.resolution_comment(val=="i
+                was updated from playbook")}
     continueonerrortype: ""
     view: |-
       {
@@ -3249,14 +3245,86 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 17de2123-245b-4ae4-87c3-ab7b391f64b7
+    type: regular
+    task:
+      id: 17de2123-245b-4ae4-87c3-ab7b391f64b7
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      seconds:
+        simple: "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 482.5,
+          "y": 5450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 90ddb885-04e6-470a-8ee3-945c1605b287
+    type: regular
+    task:
+      id: 90ddb885-04e6-470a-8ee3-945c1605b287
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      seconds:
+        simple: "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -267.5,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "17_22_#default#": 0.47
+    },
     "paper": {
       "dimensions": {
-        "height": 13480,
-        "width": 922.5,
-        "x": 50,
+        "height": 13560,
+        "width": 1130,
+        "x": -267.5,
         "y": 50
       }
     }
@@ -3264,4 +3332,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: ''

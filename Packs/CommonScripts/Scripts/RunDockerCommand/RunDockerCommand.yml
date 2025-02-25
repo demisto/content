@@ -22,6 +22,6 @@ outputs:
   description: This will have the full results as a single string of the results. You will need to parse the results of the command into the format you want. Try looking at commands like ExtractRegex or create your own follow on automation script that will parse the results into the format you would like.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No tests (auto formatted)

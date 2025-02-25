@@ -16,5 +16,7 @@ tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.11.10.116949
 fromversion: 5.0.0
+tests:
+- No tests

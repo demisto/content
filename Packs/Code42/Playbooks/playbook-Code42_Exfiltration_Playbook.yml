@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: "Start the playbook"
     nexttasks:
       '#none#':
       - "1"
@@ -49,7 +49,7 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
-      - "35"
+      - "37"
     separatecontext: false
     view: |-
       {
@@ -89,8 +89,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 515
+          "x": 530,
+          "y": 520
         }
       }
     note: false
@@ -112,7 +112,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "Begin the branch for when the incident constitutes malicious behavior"
     nexttasks:
       '#none#':
       - "19"
@@ -145,7 +145,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "Begin the branch for when the behavior is not malicious"
     nexttasks:
       '#none#':
       - "9"
@@ -154,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1725
+          "y": 1620
         }
       }
     note: false
@@ -167,28 +167,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 40b4a303-c384-4390-8942-f07e76010e80
+    taskid: a8d0ab81-32fb-41b9-8af9-4580f186bd07
     type: regular
     task:
-      id: 40b4a303-c384-4390-8942-f07e76010e80
-      description: ""
+      id: a8d0ab81-32fb-41b9-8af9-4580f186bd07
+      description: "Changes the state of an Incydr alert session."
       version: -1
-      name: Resolve Code42 Alert
-      script: Code42|||code42-alert-resolve
+      name: Close alert - False positive
+      script: Code42|||code42-alert-update
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Code42"
     nexttasks:
       '#none#':
       - "26"
     scriptarguments:
       id:
-        simple: ${incident.labels.id}
+        simple: ${incident.code42alertid}
+      state:
+        simple: CLOSED_FP
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 407.5,
+          "x": 50,
           "y": 2030
         }
       }
@@ -211,7 +213,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "Stop the remediation timer"
     nexttasks:
       '#none#':
       - "8"
@@ -219,8 +221,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 407.5,
-          "y": 1885
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -244,7 +246,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "End of the playbook"
     separatecontext: false
     view: |-
       {
@@ -269,7 +271,7 @@ tasks:
       id: 08f325cd-0162-470c-8be5-4a045309b75b
       version: -1
       name: Locate CrowdStrike Host
-      description: ""
+      description: Locate the appopriate host in Crowdstrike
       script: CrowdstrikeFalcon|||cs-falcon-search-device
       type: regular
       iscommand: true
@@ -289,7 +291,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 990,
+          "x": 970,
           "y": 1010
         }
       }
@@ -309,7 +311,7 @@ tasks:
       id: e47f5c76-9a17-4b8a-89b3-16fe10613723
       version: -1
       name: Is Jira Enabled?
-      description: ""
+      description: Check if Jira branch is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -369,7 +371,7 @@ tasks:
       id: 77fc6d22-33b2-484f-80e7-498a1398dc80
       version: -1
       name: Create Jira Incident Ticket
-      description: ""
+      description: Create an incident ticket in Jira
       script: jira-v2|||jira-create-issue
       type: regular
       iscommand: true
@@ -408,7 +410,7 @@ tasks:
       id: c9d81dd1-f324-4ba5-8942-b81894d03815
       version: -1
       name: Can host be contained?
-      description: ""
+      description: Check if the host can be contained.
       type: condition
       iscommand: false
       brand: ""
@@ -472,7 +474,7 @@ tasks:
       id: 7b949216-7fd5-4381-8b3f-ac4c58d3a38e
       version: -1
       name: Does Manager Email Exist?
-      description: ""
+      description: Check if the manager's email exists.
       type: condition
       iscommand: false
       brand: ""
@@ -517,7 +519,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
+      description: "Retrieve manager details from Active Directory"
     nexttasks:
       '#none#':
       - "5"
@@ -553,7 +555,7 @@ tasks:
       id: 5780cd88-c739-4170-807c-55b04126ada4
       version: -1
       name: Close Incident
-      description: ""
+      description: Close the incident
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -585,7 +587,7 @@ tasks:
       id: 795c6712-38a7-4ab2-8274-ecaddf72be79
       version: -1
       name: Confirm Network Contain
-      description: ""
+      description: Confirm that the network has been contained.
       type: condition
       iscommand: false
       brand: ""
@@ -618,7 +620,7 @@ tasks:
       id: 24e269c9-29c2-4afc-80cb-ca07203aa29f
       version: -1
       name: Send email to manager
-      description: ""
+      description: Send an email to the manager.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -670,13 +672,13 @@ tasks:
       id: ca7c8de0-f5b9-45e6-8455-42fdc6ccb541
       version: -1
       name: Confirm Remediation Is Complete
-      description: ""
+      description: Confirm Remediation Is Complete
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "38"
     separatecontext: false
     view: |-
       {
@@ -701,7 +703,7 @@ tasks:
       id: 7226625c-88a1-41a0-8777-6d5683692852
       version: -1
       name: Determine if network contain should be bypassed based on host count
-      description: ""
+      description: Determine if the network containment should be bypassed.
       type: condition
       iscommand: false
       brand: ""
@@ -755,7 +757,7 @@ tasks:
       id: aaccca5a-4ce2-4639-84a7-1b008bb3225e
       version: -1
       name: CrowdStrike Network Contain
-      description: ""
+      description: contain the network using Crowdstrike
       script: '|||cs-falcon-contain-host'
       type: regular
       iscommand: true
@@ -791,7 +793,7 @@ tasks:
       id: 2fa3d2ff-96b8-466f-8b7c-ce934f09b6ff
       version: -1
       name: Is email integration enabled?
-      description: ""
+      description: Check if the email integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -888,120 +890,6 @@ tasks:
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 4a3550d2-78a8-4055-8a6b-f54178938a09
-    type: playbook
-    task:
-      id: 4a3550d2-78a8-4055-8a6b-f54178938a09
-      version: -1
-      name: Code42 File Download
-      description: This playbook downloads a file via Code42 by either MD5 or SHA256 hash.
-      playbookName: Code42 File Download
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      Filename:
-        complex:
-          root: incident
-          accessor: code42fileevents
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: filename
-      MD5:
-        complex:
-          root: incident
-          accessor: code42fileevents
-          transformers:
-          - operator: uniq
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: md5checksum
-      SHA256:
-        complex:
-          root: incident
-          accessor: code42fileevents
-          transformers:
-          - operator: uniq
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: sha256checksum
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 406ad007-cca1-44df-879e-92d33dd3d415
-    type: condition
-    task:
-      id: 406ad007-cca1-44df-879e-92d33dd3d415
-      version: -1
-      name: V2 File Events?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "34"
-      "yes":
-      - "36"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.code42fileeventsversion
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 940,
-          "y": 70
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "36":
     id: "36"
     taskid: 3290b447-84e8-40fe-8729-f0ec83ebbb64
@@ -1072,9 +960,122 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 4bc82fbf-a687-4da4-83f7-df2ddc6e0425
+    type: condition
+    task:
+      id: 4bc82fbf-a687-4da4-83f7-df2ddc6e0425
+      version: -1
+      name: File events exist?
+      description: Check if there are file events.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.code42fileevents
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 730179c0-ed7a-4a11-8409-fa4d9ca7ef51
+    type: title
+    task:
+      id: 730179c0-ed7a-4a11-8409-fa4d9ca7ef51
+      version: -1
+      name: Stop remediation timer
+      type: title
+      iscommand: false
+      brand: ""
+      description: "Stop the remediation timer"
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 857.5,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 04955f5a-de50-490e-82a3-8ba83b3e81db
+    type: regular
+    task:
+      id: 04955f5a-de50-490e-82a3-8ba83b3e81db
+      version: -1
+      name: Close alert - True positive
+      description: Changes the state of an Incydr alert session.
+      script: Code42|||code42-alert-update
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      id:
+        simple: ${incident.code42alertid}
+      state:
+        simple: CLOSED_TP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "5_7_#default#": 0.63
+    },
     "paper": {
       "dimensions": {
         "height": 2665,
@@ -1115,7 +1116,9 @@ inputs:
   required: false
   description: URL of Demisto instance for emails.
   playbookInputQuery:
-fromversion: "5.0.0"
+fromversion: "6.0.0"
 tests:
 - No tests (auto formatted)
 outputs: []
+contentitemexportablefields:
+  contentitemfields: {}

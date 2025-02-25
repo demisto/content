@@ -1,29 +1,25 @@
 Qintel's QWatch system contains credentials obtained from dump sites, hacker collaboratives, and command and control infrastructures of eCrime- and APT-related malware. With this integration, users can fetch exposure alerts as incidents and discover exposed credentials associated with their organization.
 This integration was integrated and tested with version 1.1.6 of QWatch
 
-## Configure QintelQWatch on Cortex XSOAR
+## Configure QintelQWatch in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for QintelQWatch.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | QWatch API URL (optional) | False |
-    | Qintel Credentials | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Fetch plaintext passwords | False |
-    | Limit number of records per fetch | False |
-    | First fetch time | False |
-    | Incidents Fetch Interval | False |
-    | Default Incident Severity | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| QWatch API URL (optional) | False |
+| Qintel Credentials | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| Fetch plaintext passwords | False |
+| Limit number of records per fetch | False |
+| First fetch time | False |
+| Incidents Fetch Interval | False |
+| Default Incident Severity | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### qintel-qwatch-exposures
 ***
@@ -96,4 +92,3 @@ Search QWatch for exposed credentials
 >| test@example.local | SuperSecretPassword | combo-BigComboList | 2021-02-05 04:35:33 | 2020-03-25 09:38:40 | 2021-02-05 04:35:33 |
 >| test@example.local | SuperSecretPassword | dump-example.local | 2020-08-10 02:10:11 | 2020-03-25 09:38:40 | 2021-02-05 04:35:33 |
 >| test@example.local | SuperSecretPassword | malware-evilbot_March_22_2020 | 2020-03-25 09:38:40 | 2020-03-25 09:38:40 | 2021-02-05 04:35:33 |
-

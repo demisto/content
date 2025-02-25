@@ -1,27 +1,23 @@
 Integrate with open source LLMs using Ollama. With an instance of Ollama running locally you can use this integration to have a conversation in an Incident, download models, and create new models.
-## Configure Ollama on Cortex XSOAR
+## Configure Ollama in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ollama.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Protocol | HTTP or HTTPS | False |
-    | Server hostname or IP | Enter the Ollama IP or hostname | True |
-    | Port | The port Ollama is running on | True |
-    | Path | By default Ollama's API path is /api, but you may be running it behind a proxy with a different path. | True |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\) | False |
-    | Use system proxy settings | Use system proxy settings | False |
-    | Cloudflare Access Client Id | If Ollama is running behind CLoudflare ZeroTrust, provide the Service Access ID here. | False |
-    | Cloudflare Access Client Secret | If Ollama is running behind CLoudflare ZeroTrust, provide the Service Access Secret here. | False |
-    | Default Model | Some commands allow you to specify a model. If no model is provided, this value will be used. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Protocol | HTTP or HTTPS | False |
+| Server hostname or IP | Enter the Ollama IP or hostname | True |
+| Port | The port Ollama is running on | True |
+| Path | By default Ollama's API path is /api, but you may be running it behind a proxy with a different path. | True |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\) | False |
+| Use system proxy settings | Use system proxy settings | False |
+| Cloudflare Access Client Id | If Ollama is running behind CLoudflare ZeroTrust, provide the Service Access ID here. | False |
+| Cloudflare Access Client Secret | If Ollama is running behind CLoudflare ZeroTrust, provide the Service Access Secret here. | False |
+| Default Model | Some commands allow you to specify a model. If no model is provided, this value will be used. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ollama-list-models

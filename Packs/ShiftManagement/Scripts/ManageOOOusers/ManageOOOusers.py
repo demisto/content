@@ -50,7 +50,7 @@ def main():
         return_error(f'Failed to get users out of office: {str(get_error(ooo_list))}')
 
     if "Item not found" in ooo_list:
-        demisto.results(demisto.executeCommand("createList", {"listName": list_name, "listData": []}))
+        demisto.results(demisto.executeCommand("createList", {"listName": list_name, "listData": "[]"}))
         ooo_list = demisto.executeCommand("getList", {"listName": list_name})[0]["Contents"]
 
     # check status of the list, and add/remove the user from it.

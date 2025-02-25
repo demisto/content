@@ -41,6 +41,7 @@ from exchangelib.errors import (
     RateLimitError,
     ResponseMessageError,
     TransportError,
+    ErrorCannotOpenFileAttachment,
 )
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, FaultTolerance, Protocol
@@ -604,7 +605,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     return m
 
 
-def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
+def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
@@ -618,12 +619,11 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
         name = f'image{i}'
         cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
-            'data': base64.b64decode(m.group(3)),
+            'data': b64_decode(m.group(3)),
             'name': name
-
         }
         attachment['cid'] = cid
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
+        clean_body += html_body[last_index:m.start(1)] + 'cid:' + str(attachment['cid'])
         last_index = m.end() - 1
         new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
                                         content_id=attachment.get('cid'), is_inline=True)
@@ -1100,9 +1100,9 @@ def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
     if isinstance(mime_content, bytes):
-        return email.message_from_bytes(mime_content, policy=email_policy)
+        return email.message_from_bytes(mime_content, policy=email_policy)  # type: ignore[arg-type]
     else:
-        return email.message_from_string(mime_content, policy=email_policy)
+        return email.message_from_string(mime_content, policy=email_policy)  # type: ignore[arg-type]
 
 
 def parse_incident_from_item(item, is_fetch):  # pragma: no cover
@@ -1183,6 +1183,11 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
                                 raise
+                            continue
+                        except ErrorCannotOpenFileAttachment as e:
+                            if str(e) != "The attachment could not be opened.":
+                                raise
+                            demisto.error(f"Skipped attachment: {attachment.name} - {e}")
                             continue
                     else:
                         # other item attachment
@@ -1333,16 +1338,17 @@ def fetch_emails_as_incidents(account_email, folder_name, skip_unparsable_emails
 
                     if len(incidents) >= MAX_FETCH:
                         break
-            except (UnicodeEncodeError, UnicodeDecodeError, IndexError) as e:
-                if skip_unparsable_emails:
-                    error_msg = (
-                        "Encountered email parsing issue while fetching. "
-                        f"Skipping item with message id: {item.message_id if item.message_id else ''}"
-                    )
-                    demisto.debug(error_msg + f", Error: {str(e)}")
-                    demisto.updateModuleHealth(error_msg, is_error=False)
-                else:
-                    raise e
+            except Exception as e:
+                if not skip_unparsable_emails:  # default is to raise and exception and fail the command
+                    raise
+
+                # when the skip param is `True`, we log the exceptions and move on instead of failing the whole fetch
+                error_msg = (
+                    "Encountered email parsing issue while fetching. "
+                    f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
+                )
+                demisto.debug(f"{error_msg}, Error: {str(e)} {traceback.format_exc()}")
+                demisto.updateModuleHealth(error_msg, is_error=False)
 
         demisto.debug(f'EWS V2 - ending fetch - got {len(incidents)} incidents.')
         last_fetch_time = last_run.get(LAST_RUN_TIME)
@@ -1442,9 +1448,10 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
                 else ITEM_ATTACHMENT_TYPE
             }
 
-    except TypeError as e:
-        if str(e) != "must be string or buffer, not None":
+    except (TypeError, ErrorCannotOpenFileAttachment) as e:
+        if str(e) not in ("must be string or buffer, not None", "The attachment could not be opened."):
             raise
+        demisto.debug(f"Add attachment info to context, without the content. Error: {str(e)}")
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
@@ -1539,9 +1546,10 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
             try:
                 if attachment.content:
                     entries.append(get_entry_for_file_attachment(item_id, attachment))
-            except TypeError as e:
-                if str(e) != "must be string or buffer, not None":
+            except (TypeError, ErrorCannotOpenFileAttachment) as e:
+                if str(e) not in ("must be string or buffer, not None", "The attachment could not be opened."):
                     raise
+                demisto.debug(f"Skipping attachment '{attachment.name}', Error: {e}")
         else:
             entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
             if attachment.item.mime_content:
@@ -1605,7 +1613,7 @@ def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):
 def delete_items(item_ids, delete_type, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     deleted_items = []
-    if type(item_ids) != list:
+    if type(item_ids) is not list:
         item_ids = item_ids.split(",")
     items = get_items_from_mailbox(account, item_ids)
     delete_type = delete_type.lower()
@@ -1721,7 +1729,7 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
     is_public = is_default_folder(target_folder_path, is_public)
     target_folder = get_folder_by_path(account, target_folder_path, is_public)
     recovered_messages = []
-    if type(message_ids) != list:
+    if type(message_ids) is not list:
         message_ids = message_ids.split(",")
     items_to_recover = account.recoverable_items_deletions.filter(  # pylint: disable=E1101
         message_id__in=message_ids).all()  # pylint: disable=E1101
@@ -1885,7 +1893,7 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
 
 def get_items(item_ids, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    if type(item_ids) != list:
+    if type(item_ids) is not list:
         item_ids = item_ids.split(",")
 
     items = get_items_from_mailbox(account, item_ids)

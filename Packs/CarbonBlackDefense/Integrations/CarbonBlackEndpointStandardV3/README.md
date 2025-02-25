@@ -41,38 +41,34 @@ The following commands from the Carbon Black Endpoint Standard v2 integration ha
 ### Classifier
 **Carbon Black Endpoint Standard**
 
-## Configure Carbon Black Endpoint Standard v3 on Cortex XSOAR
+## Configure Carbon Black Endpoint Standard v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Carbon Black Endpoint Standard v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | URL |  | True |
-    | Organization Key | The organization unique key. This is required for all use cases \(and for fetching incidents\). | True |
-    | Custom Api Key | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
-    | Password | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
-    | Api Key (Api/Live Response key) | This Live Response API key is required only for the policy use cases. | False |
-    | Password | This Live Response API key is required only for the policy use cases. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | The type of the alert | Type of alert to be fetched. | False |
-    | Device ID | The alerts related to a specific device, according to the device ID. | False |
-    | Policy ID | The alerts related to a specific policy, according to the policy ID. | False |
-    | Device username | The alerts related to a specific device, according to the device username. | False |
-    | Minimum severity | The minimum severity of the alerts to be fetched. | False |
-    | Query | Query in Lucene syntax and/or value searches. If defined, the other fetch incidents parameters should be left blank. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
-    | Maximum number of incidents per fetch |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| URL |  | True |
+| Organization Key | The organization unique key. This is required for all use cases \(and for fetching incidents\). | True |
+| Custom Api Key | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
+| Password | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
+| Api Key (Api/Live Response key) | This Live Response API key is required only for the policy use cases. | False |
+| Password | This Live Response API key is required only for the policy use cases. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| The type of the alert | Type of alert to be fetched. | False |
+| Device ID | The alerts related to a specific device, according to the device ID. | False |
+| Policy ID | The alerts related to a specific policy, according to the policy ID. | False |
+| Device username | The alerts related to a specific device, according to the device username. | False |
+| Minimum severity | The minimum severity of the alerts to be fetched. | False |
+| Query | Query in Lucene syntax and/or value searches. If defined, the other fetch incidents parameters should be left blank. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
+| Maximum number of incidents per fetch |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cbd-get-alert-details

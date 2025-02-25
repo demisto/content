@@ -22,7 +22,7 @@ def test_get_endpoint_id_command(mocker):
     m = mocker.patch.object(cisco_ise, 'return_outputs')
     mocker.patch.object(demisto, 'args', return_value={'macAddress': MAC_ADDRESS})
     mocker.patch.object(cisco_ise, 'get_endpoint_id', return_value=EMPTY_SEARCH_RES)
-    
+
     cisco_ise.get_endpoint_id_command()
     assert m.call_args[0][0] == 'The endpoint ID is: None'
     assert m.call_args[0][1] == {'Endpoint(val.ID === obj.ID)': {'ID': None, 'MACAddress': MAC_ADDRESS}}
@@ -44,13 +44,13 @@ def test_get_endpoint_details_command(mocker, requests_mock):
     mocker.patch.object(cisco_ise, 'http_request', return_value=None)
     mocker.patch.object(demisto, 'args', return_value={'macAddress': MAC_ADDRESS})
     mocker.patch.object(cisco_ise, 'get_endpoint_id', return_value=EMPTY_SEARCH_RES)
-    
+
     with pytest.raises(SystemExit):
         cisco_ise.get_endpoint_details_command()
 
     assert results.call_args[0][0]["Contents"] == 'Endpoint was not found.'
-    assert results.call_args[0][0]["Type"] == 4 #error entry
-        
+    assert results.call_args[0][0]["Type"] == 4  # error entry
+
 
 def test_update_endpoint_group_command(mocker):
     """
@@ -67,13 +67,12 @@ def test_update_endpoint_group_command(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'groupName': 'group1'})
     mocker.patch.object(cisco_ise, 'get_endpoint_id', return_value=EMPTY_SEARCH_RES)
-    
 
     with pytest.raises(SystemExit):
         cisco_ise.update_endpoint_group_command()
 
     assert results.call_args[0][0]["Contents"] == 'No endpoints were found. Please make sure you entered the correct group name'
-    assert results.call_args[0][0]["Type"] == 4 #error entry
+    assert results.call_args[0][0]["Type"] == 4  # error entry
 
 
 def test_update_endpoint_group_command_populate_endpoint_data(mocker):
@@ -87,10 +86,10 @@ def test_update_endpoint_group_command_populate_endpoint_data(mocker):
     """
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     cisco_ise = importlib.import_module("cisco-ise")
-    m = mocker.patch.object(cisco_ise, 'update_endpoint_by_id', return_value={'ERSResponse':{}})
+    m = mocker.patch.object(cisco_ise, 'update_endpoint_by_id', return_value={'ERSResponse': {}})
     mocker.patch.object(demisto, 'args', return_value={'groupId': '1', 'id': '2', 'macAddress': MAC_ADDRESS})
-    mocker.patch.object(cisco_ise, 'get_endpoint_details', return_value=
-                        {'ERSEndPoint': {'id': '3', 'mac': MAC_ADDRESS, 'name': 'endpoint1'}})
+    mocker.patch.object(cisco_ise, 'get_endpoint_details', return_value={
+                        'ERSEndPoint': {'id': '3', 'mac': MAC_ADDRESS, 'name': 'endpoint1'}})
 
     cisco_ise.update_endpoint_group_command()
     assert m.call_args[0][1] == {'ERSEndPoint': {'groupId': '1', 'id': '3', 'mac': MAC_ADDRESS, 'name': 'endpoint1'}}
@@ -107,9 +106,9 @@ def test_get_blacklist_endpoints_request(mocker):
     cisco_ise = importlib.import_module("cisco-ise")
     results = mocker.spy(demisto, 'results')
     mocker.patch.object(cisco_ise, 'get_blacklist_group_id', return_value=EMPTY_SEARCH_RES)
-    
+
     with pytest.raises(SystemExit):
         cisco_ise.get_blacklist_endpoints_request()
 
     assert results.call_args[0][0]["Contents"] == 'No blacklist endpoint were found.'
-    assert results.call_args[0][0]["Type"] == 4 #error entry
+    assert results.call_args[0][0]["Type"] == 4  # error entry

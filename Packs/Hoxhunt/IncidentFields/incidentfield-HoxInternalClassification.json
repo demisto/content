@@ -1,0 +1,40 @@
+{
+    "id": "incident_hoxinternalclassification",
+    "version": -1,
+    "modified": "2024-10-14T12:03:51.978835137Z",
+    "itemVersion": "1.0.0",
+    "fromVersion": "6.10.0",
+    "name": "Hox Internal Classification",
+    "ownerOnly": false,
+    "description": "Classification given for the incident by Hoxhunt",
+    "cliName": "hoxinternalclassification",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "selectValues": [
+        "LIKELY_MALICIOUS",
+        "MALICIOUS",
+        "POSSIBLY_MALICIOUS"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Hoxhunt BEC",
+        "Hoxhunt Campaign",
+        "Hoxhunt User Acted"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

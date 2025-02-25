@@ -2,16 +2,24 @@
     "name": "F5 APM",
     "description": "F5 BIG-IP Access Policy Manager (APM) is a secure, flexible, high-performance access management proxy solution managing global access to your network, the cloud, applications, and application programming interfaces (APIs).",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "F5",
+        "APM",
+        "BIG-IP",
+        "Access Policy Manager"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]

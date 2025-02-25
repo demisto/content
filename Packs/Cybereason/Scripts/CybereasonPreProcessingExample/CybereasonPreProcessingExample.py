@@ -11,9 +11,9 @@ def get_guid_from_system_incident(incident: dict[str, Any]) -> str:
     return malop_guid
 
 
-res = True
 incident = demisto.incidents()
 for inc in incident:
+    res = True
     malop_guid = get_guid_from_system_incident(inc)
     response = execute_command(
         'getIncidents',

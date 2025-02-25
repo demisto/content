@@ -11,58 +11,53 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 * Create a new event in Splunk.
 * Get results of a search that was executed in Splunk.
 
-## Configure SplunkPy on Cortex XSOAR
+## Configure SplunkPy in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SplunkPy.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Port | The port in Splunk server which is open to the REST API calls. | True |
-    | Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES notable events, make sure to include the \\\`notable\\\` macro in your query. | False |
-    | Fetch Limit (Max.- 200, Recommended less than 50) |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Use Splunk Clock Time For Fetch | Whether to use the Splunk clock time from the Splunk server for fetch, or not. | False |
-    | Parse Raw Part of Notable Events | Whether to parse the raw part of the Notables, or not. | False |
-    | Replace with Underscore in Incident Fields | Whether to replace special characters to underscore when parsing the raw data of the Notables, or not. | False |
-    | Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled. |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
-    | Extract Fields - CSV fields that will be parsed out of _raw notable events |  | False |
-    | Event Type Field | Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field. | False |
-    | Use CIM Schemas for Mapping | If selected, when creating a mapper using the \`Select Schema\` feature \(supported from Cortex XSOAR V6.0\), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information. | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Splunk to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Splunk\), or Incoming and Outgoing \(from/to Cortex XSOAR and Splunk\). | False |
-    | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident. | False |
-    | Additional Splunk status labels to close on mirror (Incoming Mirroring) | A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident \(Example: Resolved,False-Positive\). | False |
-    | Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring) | When selected, Splunk Notable Events with a status that is marked as "End Status" will close the Cortex XSOAR incident. | False |
-    | Close Mirrored Splunk Notable Events (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | The app context of the namespace |  | False |
-    | HEC Token (HTTP Event Collector) |  | False |
-    | HEC Token (HTTP Event Collector) |  | False |
-    | HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
-    | Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see [Enriching Notable Events](#enriching-notable-events). | False |
-    | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
-    | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
-    | Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
-    | Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" \(not recommended\). | False |
-    | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
-    | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
-    | Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
-    | Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
-    | Users Lookup table name | The name of the lookup table in Splunk, containing the username's mapping data. | False |
-    | XSOAR user key | The name of the lookup column containing the Cortex XSOAR username. | False |
-    | SPLUNK user key | The name of the lookup table containing the Splunk username. | False |
-    | Incidents Fetch Interval |  | False |
-    | Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
-    | Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Username |  | True |
+| Password |  | True |
+| Port | The port in Splunk server which is open to the REST API calls. | True |
+| Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES notable events, make sure to include the \\\`notable\\\` macro in your query. | False |
+| Fetch Limit (Max.- 200, Recommended less than 50) |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Use Splunk Clock Time For Fetch | Whether to use the Splunk clock time from the Splunk server for fetch, or not. | False |
+| Parse Raw Part of Notable Events | Whether to parse the raw part of the Notables, or not. | False |
+| Replace with Underscore in Incident Fields | Whether to replace special characters to underscore when parsing the raw data of the Notables, or not. | False |
+| Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled. |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
+| Extract Fields - CSV fields that will be parsed out of _raw notable events |  | False |
+| Event Type Field | Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field. | False |
+| Use CIM Schemas for Mapping | If selected, when creating a mapper using the \`Select Schema\` feature \(supported from Cortex XSOAR V6.0\), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information. | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Splunk to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Splunk\), or Incoming and Outgoing \(from/to Cortex XSOAR and Splunk\). | False |
+| Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident. | False |
+| Additional Splunk status labels to close on mirror (Incoming Mirroring) | A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident \(Example: Resolved,False-Positive\). | False |
+| Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring) | When selected, Splunk Notable Events with a status that is marked as "End Status" will close the Cortex XSOAR incident. | False |
+| Close Mirrored Splunk Notable Events (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| The app context of the namespace |  | False |
+| HEC Token (HTTP Event Collector) |  | False |
+| HEC Token (HTTP Event Collector) |  | False |
+| HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
+| Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see [Enriching Notable Events](#enriching-notable-events). | False |
+| Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
+| Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
+| Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
+| Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" \(not recommended\). | False |
+| Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
+| Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
+| Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
+| Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
+| Users Lookup table name | The name of the lookup table in Splunk, containing the username's mapping data. | False |
+| XSOAR user key | The name of the lookup column containing the Cortex XSOAR username. | False |
+| SPLUNK user key | The name of the lookup table containing the Splunk username. | False |
+| Incidents Fetch Interval |  | False |
+| Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
+| Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
@@ -104,24 +99,24 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
 1. Define the lookup table in Splunk.  
    1. Under **App: Lookup Editor**, select **Lookup Editor**.  
 
-      ![image](https://raw.githubusercontent.com/demisto/content-docs/091b2154a54c6208428b84f2969836c71a36bafe/docs/doc_imgs/integrations/splunk-lookup-editor.png)  
+      ![image](../../doc_files/splunk-lookup-editor.png)  
 
    2. Select **Create a New Lookup** > **KV Store lookup**.  
 
-      ![image](https://raw.githubusercontent.com/demisto/content-docs/5d64d0aa825b56327759c5c6ec1b81b1d9dcf493/docs/doc_imgs/integrations/kv-store-lookup.png)  
+      ![image](../../doc_files/kv-store-lookup.png)  
 
    3. Enter the **Name** for the table. For example, **splunk_xsoar_users** is the default lookup table name defined in the SplunkPy integration settings.
    4. Under **App**, select **Enterprise Security**.
    5. Assign two **Key-value collection schema** fields, one for the Cortex XSOAR usernames and one for the corresponding Splunk usernames. For example, **xsoar_user** and **splunk_user** are the default field values defined in the SplunkPy integration settings.
    6. Click **Create Lookup**. 
 
-      ![image](https://raw.githubusercontent.com/demisto/content-docs/ab6faddf6146cab19d13a8f3211b49ba70b166a7/docs/doc_imgs/integrations/new-lookup-table.png) 
+      ![image](../../doc_files/new-lookup-table.png) 
        
      **Note:**  
     If the user keys are defined already in another table, you can use that table name and relevant key names in the SplunkPy integration settings.
     7. Add values to the table to map Cortex XSOAR users to the Splunk users.  
 
-      ![image](https://raw.githubusercontent.com/demisto/content-docs/79c67e22ea19619f3278b2956eb41375c4d77f3f/docs/doc_imgs/integrations/add-values-to-lookup-table.png)
+      ![image](../../doc_files/add-values-to-lookup-table.png)
 2. Configure the Splunk integration instance.  
 Define the lookup table in Splunk.  
    1. Under **Settings** > **Integrations**, search for the SplunkPy integration and create an instance.
@@ -131,7 +126,7 @@ Define the lookup table in Splunk.
        3. Set the **XSOAR user key**  to the field defined in the Splunk lookup table. By default it is **xsoar_user**.
        4. Set the **SPLUNK user key** to the field defined in the Splunk lookup table. By default it is **splunk_user**. 
 
-          ![image](https://raw.githubusercontent.com/demisto/content-docs/9a41b8c19df9d5fd8120471bfde111de31caf033/docs/doc_imgs/integrations/user-mapping-settings-configuration.png)
+          ![image](../../doc_files/user-mapping-settings-configuration.png)
    
 
 #### Troubleshooting enrichment status
@@ -294,7 +289,7 @@ For example:
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### splunk-results
@@ -393,7 +388,7 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-![image](https://user-images.githubusercontent.com/50324325/63268589-2fda4b00-c29d-11e9-95b5-4b9fcf6c08ee.png)
+![image](../../doc_files/63268589-2fda4b00-c29d-11e9-95b5-4b9fcf6c08ee.png)
 
 
 ### splunk-get-indexes
@@ -416,7 +411,7 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-![image](https://user-images.githubusercontent.com/50324325/63268447-d8d47600-c29c-11e9-88a4-5003971a492e.png)
+![image](../../doc_files/63268447-d8d47600-c29c-11e9-88a4-5003971a492e.png)
 
 
 ### splunk-notable-event-edit
@@ -447,7 +442,7 @@ There is no context output for this command.
 ``` !splunk-notable-event-edit eventIDs=66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@a045b8acc3ec93c2c74a2b18c2caabf4 comment="Demisto"```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/50324325/63522203-914e2400-c500-11e9-949a-0b55eb2c5871.png)
+![image](../../doc_files/63522203-914e2400-c500-11e9-949a-0b55eb2c5871.png)
 
 
 ### splunk-job-create
@@ -484,7 +479,7 @@ Creates a new search job in Splunk.
 }
 ```
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/50324325/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
+![image](../../doc_files/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
 
 
 ### splunk-parse-raw
@@ -516,7 +511,8 @@ Parses the raw part of the event.
 
 ### splunk-submit-event-hec
 ***
-Sends events to an HTTP event collector using the Splunk platform JSON event protocol.
+Sends events Splunk. if `batch_event_data` or `entry_id` arguments are provided then all arguments related to a single event are ignored.
+
 ##### Base Command
 
 `splunk-submit-event-hec`
@@ -524,14 +520,23 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event | The event payload key-value pair. An example string: "event": "Access log test message.". | Required |
+| event | The event payload key-value pair. An example string: "event": "Access log test message.". | Optional |
 | fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional |
 | index | The index name. | Optional |
 | host | The hostname. | Optional |
 | source_type | The user-defined event source type. | Optional |
 | source | The user-defined event source. | Optional | 
 | time | The epoch-formatted time. | Optional | 
-| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). **If the indexer acknowledgment is turned on, a channel is required.** | Optional | 
+| batch_event_data | A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. **If provided, the arguments related to a single event and the `entry_id` argument are ignored.** | Optional |
+| batch_event_data | A  batch of events to send to splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/exeample/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. **If provided, the arguments related to a single event and the `entry_id` argument are ignored.** | Optional |
+| entry_id | The entry id in Cortex XSOAR of the file containing a batch of events. Content of the file should be valid batch event's data, as it would be provided to the `batch_event_data`. **If provided, the arguments related to a single event are ignored.** | Optional |
+
+##### Batched events description
+This command allows sending events to Splunk, either as a single event or a batch of multiple events.
+To send a single event: Use the `event`, `fields`, `host`, `index`, `source`, `source_type`, and `time` arguments.
+To send a batch of events, there are two options, either use the batch_event_data argument or use the entry_id argument (for a file uploaded to Cortex XSOAR).
+Batch format requirements: The batch must be a single string containing valid dictionaries, each representing an event. Events should not be separated by commas. Each dictionary should include all necessary fields for an event. For example: `{"event": "event occurred at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test1"}, "index": "index0", "sourcetype": "sourcetype0", "source": "/path/event1"} {"event": "event occurred at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1", "source": "/path/event2", "fields": {"severity": "INFO", "category": "test2"}}`.
+This formatted string can be passed directly via `batch_event_data`, or, if saved in a file, the file can be uploaded to Cortex XSOAR, and the `entry_id` (e.g., ${File.[4].EntryID}) should be provided.
 
 ##### Context Output
 
@@ -573,7 +578,7 @@ Splank.JobStatus = {
 ```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/50324325/77630707-2b24f600-6f54-11ea-94fe-4bf6c734aa29.png)
+![image](../../doc_files/77630707-2b24f600-6f54-11ea-94fe-4bf6c734aa29.png)
 
 ### get-mapping-fields
 ***

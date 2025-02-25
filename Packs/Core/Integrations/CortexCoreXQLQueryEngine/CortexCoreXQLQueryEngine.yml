@@ -12,16 +12,19 @@ configuration:
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: API Key ID
   name: apikey_id
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API Key
   name: apikey
   type: 4
   hidden: true
   required: false
+  section: Connect
 description: XQL Query Engine enables you to run XQL queries on your data sources.
 display: XQL Query Engine
 name: XQL Query Engine
@@ -1551,7 +1554,7 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-  dockerimage: demisto/python3:3.10.14.99144
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3

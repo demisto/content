@@ -30,7 +30,7 @@ tags:
 timeout: 6µs
 type: python
 runas: DBotWeakRole
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - Get EWS Folder Test
 fromversion: 5.0.0

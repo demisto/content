@@ -2,7 +2,7 @@
     "name": "PassiveTotal",
     "description": "Analyze and understand threat infrastructure from a variety of sources–passive DNS, active DNS, WHOIS, SSL certificates and more–without devoting resources to time-intensive manual threat research and analysis",
     "support": "community",
-    "currentVersion": "2.1.16",
+    "currentVersion": "2.1.18",
     "author": "RiskIQ",
     "url": "https://www.riskiq.com/resources/support/",
     "email": "paloaltonetworks@riskiq.net",

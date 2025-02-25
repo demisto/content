@@ -2,7 +2,7 @@
     "name": "Akamai WAF",
     "description": "Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.",
     "support": "xsoar",
-    "currentVersion": "2.0.12",
+    "currentVersion": "2.1.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

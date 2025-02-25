@@ -1,4 +1,7 @@
 category: Case Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: ServiceNow v2
   version: -1
@@ -7,44 +10,53 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username/Client ID
   name: credentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?) for more information.
   display: Use OAuth Login
   name: use_oauth
   type: 8
   required: false
+  section: Connect
 - additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item.'
   defaultvalue: incident
   display: Default ticket type for running ticket commands and fetching incidents
   name: ticket_type
   type: 0
   required: false
+  section: Connect
 - display: ServiceNow API Version (e.g. 'v1')
   name: api_version
   type: 0
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - defaultvalue: stateNOT IN6,7
   display: The query to use when fetching incidents
   name: sysparm_query
   type: 0
   required: false
+  section: Collect
 - defaultvalue: '10'
   display: How many incidents to fetch each time
   name: fetch_limit
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 10 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   type: 0
   required: false
+  section: Collect
 - defaultvalue: opened_at
   display: |-
     Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at>[Last Run]".
@@ -52,19 +64,23 @@ configuration:
   name: timestamp_field
   type: 0
   required: false
+  section: Collect
 - defaultvalue: number
   display: ServiceNow ticket column to be set as the incident name. Default is the incident number
   name: incident_name
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Get incident attachments
   name: get_attachments
   type: 8
   required: false
+  section: Collect
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to Cortex XSOAR), Outgoing (from Cortex XSOAR to ServiceNow), or Incoming and Outgoing (from/to Cortex XSOAR and ServiceNow).'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -78,11 +94,13 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: Select this checkbox to retrieve comments and work notes without accessing the `sys_field_journal` table.
   display: Use Display Value
   name: use_display_value
   type: 8
   required: false
+  section: Collect
 - additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM.'
   defaultvalue: None
   display: Instance Date Format
@@ -97,6 +115,7 @@ configuration:
   - mmm-dd-yyyy
   type: 15
   required: false
+  section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in ServiceNow.
   defaultvalue: comments
   display: Comment Entry Tag To ServiceNow
@@ -105,6 +124,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment from ServiceNow.
   defaultvalue: CommentFromServiceNow
   display: Comment Entry Tag From ServiceNow
@@ -113,6 +133,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a work note in ServiceNow.
   defaultvalue: work_notes
   display: Work Note Entry Tag To ServiceNow
@@ -121,6 +142,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a work note from ServiceNow.
   defaultvalue: WorkNoteFromServiceNow
   display: Work Note Entry Tag From ServiceNow
@@ -129,6 +151,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
   defaultvalue: ForServiceNow
   display: File Entry Tag To ServiceNow
@@ -137,6 +160,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file from ServiceNow.
   defaultvalue: 'FromServiceNow'
   display: File Entry Tag From ServiceNow
@@ -145,6 +169,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: "According to the timestamp in this field, records will be queried to check for updates."
   display: Timestamp field to query for updates as part of the mirroring flow
   name: update_timestamp_field
@@ -153,6 +178,7 @@ configuration:
   - marketplacev2
   defaultvalue: sys_updated_on
   required: false
+  section: Collect
 - additionalinfo: If a greater number of incidents than the limit were modified, then they won't be mirrored in.
   defaultvalue: '100'
   display: How many incidents to mirror incoming each time
@@ -161,6 +187,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here."
   display: Custom Fields to Mirror
   name: custom_fields
@@ -168,6 +195,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'None'
   display: Mirrored XSOAR Ticket closure method
@@ -180,17 +208,24 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
   defaultvalue: ''
   display: Mirrored XSOAR Ticket custom close state code
   name: server_close_custom_state
   type: 0
+  hidden:
+  - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
   display: Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state)
   name: server_custom_close_code
   type: 0
+  hidden:
+  - marketplacev2
   required: false
+  section: Collect
 - additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: 'None'
   display: Mirrored ServiceNow Ticket closure method
@@ -200,7 +235,10 @@ configuration:
   - None
   - closed
   - resolved
+  hidden:
+  - marketplacev2
   required: false
+  section: Collect
 - display: Mirrored ServiceNow Ticket custom close state code
   name: close_custom_state
   type: 0
@@ -208,6 +246,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+  section: Collect
 - defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
@@ -215,33 +254,41 @@ configuration:
   additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   hidden: true
   required: false
+  section: Collect
 - defaultvalue: 'false'
   additionalinfo: 'When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present.'
   display: Mirror Existing Notes For New Fetched Incidents
   name: mirror_notes_for_new_incidents
   type: 8
+  hidden:
+  - marketplacev2
   required: false
+  section: Collect
 - defaultvalue: 'false'
   display: 'Use system proxy settings'
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: 'false'
   display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
   required: false
+  section: Connect
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   type: 19
   required: false
+  section: Collect
 - defaultvalue: 0
   display: 'Advanced: Minutes to look back when fetching'
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
   type: 0
   required: false
+  section: Collect
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2
@@ -1636,7 +1683,7 @@ script:
       required: true
     description: Retrieves attachments from a ticket.
     name: servicenow-get-ticket-attachments
-  dockerimage: demisto/python3:3.11.10.113941
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -454,7 +454,7 @@ script:
         Event payload key-value pair.
         String example: "event": "Access log test message".
       name: event
-      required: true
+      required: false
     - description: Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields.
       name: fields
     - description: The index name.
@@ -469,6 +469,10 @@ script:
       name: time
     - description: A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). If the indexer acknowledgment is turned on, a channel is required.
       name: request_channel
+    - description: 'A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. If provided all arguments except of `request_channel` are ignored.'
+      name: batch_event_data
+    - description: The entry ID in Cortex XSOAR of the file containing a batch of events. If provided, the arguments related to a single event are ignored.
+      name: entry_id
     description: Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
     name: splunk-submit-event-hec
   - arguments:
@@ -673,7 +677,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.108075
+  dockerimage: demisto/splunksdk-py3:1.0.0.117329
   isfetch: true
   ismappable: true
   isremotesyncin: true

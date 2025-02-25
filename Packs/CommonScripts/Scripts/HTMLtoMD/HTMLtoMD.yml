@@ -20,7 +20,7 @@ script: '-'
 timeout: '0'
 type: python
 tags: []
-dockerimage: demisto/btfl-soup:1.0.1.86352
+dockerimage: demisto/btfl-soup:1.0.1.115405
 runas: DBotWeakRole
 subtype: python3
 tests:

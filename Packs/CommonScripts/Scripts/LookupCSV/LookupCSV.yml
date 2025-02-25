@@ -32,7 +32,7 @@ outputs:
   description: The value that was searched.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.11.11.1940698
 runas: DBotWeakRole
 commonfields:
   id: LookupCSV

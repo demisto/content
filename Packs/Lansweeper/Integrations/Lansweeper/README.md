@@ -1,21 +1,17 @@
 The Lansweeper integration allows users to retrieve the asset details.
 This integration was integrated and tested with version 2.0 of Lansweeper
 
-## Configure Lansweeper on Cortex XSOAR
+## Configure Lansweeper in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Lansweeper.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Application Identity Code | Identity code generated for the specific application. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Application Identity Code | Identity code generated for the specific application. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ls-site-list
 ***
@@ -295,4 +291,3 @@ Return a list of all assets associated with a given site and MAC address.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| [XLAN-897](https://app.lansweeper.com/api-demo-data/asset/ODk3LUFzc2V0LTBkZjNkZGJhLTM3MDctNDRlZS05YjQzLWMxOTE5NDU2ZmRhMQ==/summary) | Demo-domain | John Doe | Demo-domain | Demo67.com | Video / Image Editing | APC | 10.10.11.104 | 03:00:00:00:00:57 | iMac18,3 | Apple | LAN897 | LN001 | api-demo-data | 2018-02-12T16:04:02.733Z | 2018-02-12T16:04:02.733Z |
 >| [XLAN-897](https://app.lansweeper.com/api-demo-data-v2/asset/ODk3LUFzc2V0LWY4N2RmODkxLWQ2ZWQtNDJjOC1hOGYxLWNkMmYxMGViYTVkZQ==/summary) | Demo-domain | John Doe | Demo-domain | Demo67.com | Video / Image Editing | APC | 10.10.11.104 | 03:00:00:00:00:57 | iMac18,3 | Apple | LAN897 | LN001 | api-demo-data-v2 | 2018-02-12T14:04:02.733Z | 2021-08-10T14:18:20.913Z |
-

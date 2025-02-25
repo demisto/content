@@ -238,7 +238,7 @@ script:
     - contextPath: Darktrace.Model.Component
       description: A dictionary of the details of the model. Each model might have different keys. It is recommended to run the command once to check the relevant outputs in context.
       type: Unknown
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.116439
   isfetch: true
   runonce: false
   script: '-'

@@ -46,4 +46,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cloud Response - Azure](https://raw.githubusercontent.com/demisto/content/37db8986e1fd776d2264975f321ef82022c24512/Packs/Azure-Enrichment-Remediation/doc_files/Cloud_Response_-_Azure.png)
+![Cloud Response - Azure](../doc_files/Cloud_Response_-_Azure.png)

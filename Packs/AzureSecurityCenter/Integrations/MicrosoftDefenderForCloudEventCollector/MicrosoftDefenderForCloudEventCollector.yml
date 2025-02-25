@@ -103,7 +103,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ms-defender-for-cloud-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.111961
+  dockerimage: demisto/crypto:1.0.0.114611
   isfetchevents: true
   script: '-'
   subtype: python3

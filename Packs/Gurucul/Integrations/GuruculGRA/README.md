@@ -2,11 +2,8 @@
 
 Please make sure you look at the integration source code and comments.
 
-## Configure Gurucul on Cortex XSOAR
+## Configure Gurucul in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Gurucul.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -21,9 +18,8 @@ Please make sure you look at the integration source code and comments.
 | first_fetch | First fetch time | False |
 | max_fetch | Maximum number of incidents per fetch | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gra-fetch-users
 ***
@@ -1151,5 +1147,4 @@ ok
 ```
 
 #### Human Readable Output
-
 

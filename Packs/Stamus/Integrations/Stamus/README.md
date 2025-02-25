@@ -1,28 +1,24 @@
 [Get Declaration of Compromises from Stamus Security Platform and build Incidents. Then get related artifacts, events and Host Insight information]
 This integration was integrated and tested with version 39.0.1 of Stamus Security Platform
 
-## Configure Stamus on Cortex XSOAR
+## Configure Stamus in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Stamus.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Stamus Central Server |  | True |
-    | API Key | The API Key to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Maximum number of incidents per fetch |  | False |
-    | First fetch time |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Stamus Central Server |  | True |
+| API Key | The API Key to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Maximum number of incidents per fetch |  | False |
+| First fetch time |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### stamus-check-ioc

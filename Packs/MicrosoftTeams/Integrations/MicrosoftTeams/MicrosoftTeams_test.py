@@ -2038,7 +2038,7 @@ def test_chat_add_user_command(mocker, chat, member, expected_exit, expected_war
     get_user_mock = mocker.patch('MicrosoftTeams.get_user', side_effect=mocked_get_user)
     add_user_to_chat_mock = mocker.patch('MicrosoftTeams.add_user_to_chat')
 
-    if expected_warning == ValueError:
+    if expected_warning is ValueError:
         with pytest.raises(ValueError) as e:
             chat_add_user_command()
         assert str(e.value) == expected_result
@@ -2111,7 +2111,7 @@ def test_chat_list_command(mocker, requests_mock, args, expected_response, expec
     return_results = mocker.patch('MicrosoftTeams.return_results')
     mocker.patch.object(demisto, 'args', return_value=args)
 
-    if expected_response == ValueError:
+    if expected_response is ValueError:
         with pytest.raises(ValueError) as e:
             chat_list_command()
         assert str(e.value) == "Retrieve a single chat does not support the 'filter' ODate query parameter."
@@ -2471,3 +2471,310 @@ def test_add_data_to_actions_non_dict_data():
     data_value = "string_data"
     add_data_to_actions(card_json, data_value)
     assert card_json["data"] == data_value
+
+
+@pytest.mark.parametrize('token, decoded_token, auth_type, expected_hr', [
+    ('dummy_token',
+     {'aud': 'url', 'exp': '1111', 'roles': ['AppCatalog.Read.All', 'Group.ReadWrite.All', 'User.Read.All']},
+     'Client Credentials',
+     'The current API permissions in the Teams application are'),
+    ('dummy_token',
+     {'aud': 'url', 'exp': '1111', 'roles': []},
+     'Client Credentials',
+     'No permissions obtained for the used graph access token.'),
+    ('dummy_token',
+     {'aud': 'url', 'exp': '1111', 'scp': 'AppCatalog.Read.All Group.ReadWrite.All User.Read.All'},
+     'Authorization Code',
+     'The current API permissions in the Teams application are'),
+    ('dummy_token',
+     {'aud': 'url', 'exp': '1111', 'scp': ''},
+     'Authorization Code',
+     'No permissions obtained for the used graph access token.'),
+    ('',
+     {'roles': []},
+     'Client Credentials',
+     'Graph access token is not set.')
+], ids=["Test token permissions list command - client credentials auth flow",
+        "Test token permissions list command - client credentials auth flow - no permissions set",
+        "Test token permissions list command - auth code auth flow",
+        "Test token permissions list command - client auth code flow - no permissions set",
+        "Test token permissions list command - missing token"
+        ])
+def test_token_permissions_list_command(mocker, token, decoded_token, auth_type, expected_hr):
+    """
+    Tests the 'token_permissions_list_command' logic:
+    For client credentials auth flow, the API permissions are found under the 'roles' key in the decoded token data,
+    while for the auth code flow they are found under the 'scp' key.
+    This test checks that we extract the API permissions from the graph access token successfully for both auth types.
+
+    Given:
+        1. A dummy token, mocked response of the jet.decode func with API permissions roles under the 'roles' key -
+           (auth type is client credentials).
+        2. A dummy token, mocked response of the jet.decode func without API permissions roles under the 'roles' key -
+           (auth type is client credentials).
+        3. A dummy token, mocked response of the jet.decode func with API permissions roles under the 'scp' key -
+           (auth type is Authorization Code).
+        4. A dummy token, mocked response of the jet.decode func without API permissions roles under the 'scp' key -
+           (auth type is Authorization Code).
+        5. Missing token.
+    When:
+        - Running the token_permissions_list_command.
+    Then:
+        Verify that the human readable output is as expected:
+        1. API permissions list.
+        2. No permissions obtained for the used graph access token.
+        3. API permissions list.
+        4. No permissions obtained for the used graph access token.
+        5. Graph access token is not set.
+    """
+    from MicrosoftTeams import token_permissions_list_command
+    import MicrosoftTeams
+    mocker.patch('MicrosoftTeams.get_graph_access_token', return_value=token)
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new=auth_type)
+    mocker.patch('jwt.decode', return_value=decoded_token)
+    results = mocker.patch.object(MicrosoftTeams, 'return_results')
+
+    token_permissions_list_command()
+
+    assert expected_hr in results.call_args[0][0].readable_output
+
+
+@pytest.mark.parametrize('xsoar_server, is_xsoar_on_prem, is_xsiam, expected_hr', [
+    ('https://dns-test.name:443', True, False, 'https://dns-test.name:443/instance/execute/teams'),
+    ('https://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com', False, False,
+     'https://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('http://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com', False, False,
+     'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('https://viso-test-dummy.xdr-qa-ttt.ss.paloaltonetworks.com', False, True,
+     'https://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('http://viso-test-dummy.xdr.qa-ttt.ss.paloaltonetworks.com', False, True,
+     'http://ext-viso-test-dummy.crtx.qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+    ('http://viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com', False, True,
+     'http://ext-viso-test-dummy.crtx-qa-ttt.ss.paloaltonetworks.com/xsoar/instance/execute/teams'),
+],
+    ids=["Test xsoar 6 server url",
+         "Test xsoar 8 server url (with https:// prefix)",
+         "Test xsoar 8 server url (with http:// prefix)",
+         "Test xsiam server url (with https:// prefix)",
+         "Test xsiam server url (with http:// prefix)",
+         "Test xsiam server url without the 'xdr' string in the dns name"
+         ])
+def test_create_messaging_endpoint_command(mocker, xsoar_server, is_xsoar_on_prem, is_xsiam, expected_hr):
+    """
+    Tests the 'create_messaging_endpoint_command' logic.
+
+    Given:
+        1. An xsoar 6 server url.
+        2. An xsoar 8 server url (with https:// prefix).
+        3. An xsoar 8 server url (with http:// prefix).
+        4. An xsiam server url (with https:// prefix).
+        5. An xsiam server url (with http:// prefix).
+        6. An xsiam server url without the 'xdr' string in the dns name.
+
+    When:
+        - Running the create_messaging_endpoint_command.
+    Then:
+        Verify that the messaging endpoint was created as expected:
+        1. The 'instance/execute/teams' suffix was added.
+        2. The 'ext' prefix was added to the dns name, and the 'xsoar/instance/execute/teams' suffix was added.
+        3. The 'ext' prefix was added to the dns name, and the 'xsoar/instance/execute/teams' suffix was added.
+        4. The 'ext' prefix was added to the dns name, the 'xdr' was replaced with 'crtx' and the 'xsoar/instance/execute/teams'
+           suffix was added.
+        5. The 'ext' prefix was added to the dns name, the 'xdr' was replaced with 'crtx' and the 'xsoar/instance/execute/teams'
+           suffix was added.
+        6. The 'ext' prefix was added to the dns name, and the 'xsoar/instance/execute/teams' suffix was added.
+    """
+    from MicrosoftTeams import create_messaging_endpoint_command
+    import MicrosoftTeams
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': xsoar_server})
+    mocker.patch.object(demisto, 'integrationInstance', return_value="teams")
+    mocker.patch.object(demisto, 'args', return_value={'engine_url': ''})
+    mocker.patch('MicrosoftTeams.is_xsoar_on_prem', return_value=is_xsoar_on_prem)
+    mocker.patch('MicrosoftTeams.is_xsiam', return_value=is_xsiam)
+    mocker.patch('MicrosoftTeams.is_using_engine', return_value=False)
+    results = mocker.patch.object(MicrosoftTeams, 'return_results')
+
+    create_messaging_endpoint_command()
+
+    assert expected_hr in results.call_args[0][0].readable_output
+
+
+@pytest.mark.parametrize('engine_url, is_xsoar_on_prem, is_xsiam, expected_hr', [
+    ('https://my-engine.com:333', True, False, 'https://my-engine.com:333'),
+    ('https://my-engine.com:333', False, False, 'https://my-engine.com:333'),
+    ('https://my-engine.com:333', False, True, 'https://my-engine.com:333'),
+    ('https://1.1.1.1:333', False, True, 'https://1.1.1.1:333')
+],
+    ids=["Test xsoar 6 engine url",
+         "Test xsoar 8 engine url",
+         "Test xsiam engine url",
+         "Test xsoar engine url - with IP",
+         ])
+def test_create_messaging_endpoint_command_for_xsoar_engine(mocker, engine_url, is_xsoar_on_prem, is_xsiam, expected_hr):
+    """
+    Tests the 'create_messaging_endpoint_command' logic when the user uses an xsoar engine.
+
+    Given:
+      - An xsoar engine url.
+
+    When:
+        - Running the create_messaging_endpoint_command on:
+            1. xsoar 6
+            2. xsoar 8
+            3. xsiam
+        4. The engine url include an IP and not a DNS name.
+    Then:
+        Verify that the messaging endpoint was created as expected - only the engine url and port (without any suffix).
+    """
+    from MicrosoftTeams import create_messaging_endpoint_command
+    import MicrosoftTeams
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://test-server.com:443'})
+    mocker.patch.object(demisto, 'integrationInstance', return_value="teams")
+    mocker.patch.object(demisto, 'args', return_value={'engine_url': engine_url})
+    mocker.patch('MicrosoftTeams.is_xsoar_on_prem', return_value=is_xsoar_on_prem)
+    mocker.patch('MicrosoftTeams.is_xsiam', return_value=is_xsiam)
+    mocker.patch('MicrosoftTeams.is_using_engine', return_value=True)
+    results = mocker.patch.object(MicrosoftTeams, 'return_results')
+
+    create_messaging_endpoint_command()
+
+    assert expected_hr in results.call_args[0][0].readable_output
+
+
+@pytest.mark.parametrize('engine_url', [
+    ('https://my-engine.com'),
+    ('my-engine.com:333'),
+    ('https://my engine.com:433'),
+],
+    ids=["Test engine url without a port",
+         "Test engine url without an http or https prefix",
+         "Test engine url with spaces in the dns name",
+         ])
+def test_create_messaging_endpoint_command_invalid_xsoar_engine(mocker, engine_url):
+    """
+    Tests the 'create_messaging_endpoint_command' logic when the user uses an xsoar engine, and provides an invalid engine url.
+
+    Given:
+      - An invalid engine URL:
+        1. without a port.
+        2. without an http:// or https:// prefix
+        3. with a space in the dns name
+
+    When:
+        - Running the create_messaging_endpoint_command.
+
+    Then:
+        Verify that a valueError exception is raised with the error description.
+    """
+    from MicrosoftTeams import create_messaging_endpoint_command
+    import MicrosoftTeams
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://test-server.com:443'})
+    mocker.patch.object(demisto, 'integrationInstance', return_value="teams")
+    mocker.patch.object(demisto, 'args', return_value={'engine_url': engine_url})
+    mocker.patch('MicrosoftTeams.is_using_engine', return_value=True)
+    mocker.patch.object(MicrosoftTeams, 'return_results')
+
+    with pytest.raises(ValueError) as e:
+        create_messaging_endpoint_command()
+    assert 'Invalid engine URL -' in str(e.value)
+
+
+def test_switch_auth_type_to_client_credentials(mocker):
+    """
+    Tests the 'auth_type_switch_handling' logic when the user switched the auth type in the instance parameters from Auth Code
+    Flow to the Client Credentials Flow.
+
+    Given:
+        - Auth type instance parameter is now 'Client Credentials'.
+
+    When:
+        - Running the 'auth_type_switch_handling' function.
+
+    Then:
+        - Verify that the integration context was updated as follows:
+            1. current_auth_type =  'Client Credentials'.
+            2. graph token related values were deleted.
+        - Verify that the debug logs are as expected.
+    """
+    from MicrosoftTeams import auth_type_switch_handling
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={'current_auth_type': 'Authorization Code',
+                                                                         'current_refresh_token': 'test_refresh_token',
+                                                                         'graph_access_token': 'test_graph_token',
+                                                                         'graph_valid_until': 'test_valid_until'})
+    set_integration_context_mocker = mocker.patch('MicrosoftTeams.set_integration_context', return_value={})
+    debug_log_mocker = mocker.patch.object(demisto, 'debug')
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new='Client Credentials')
+
+    auth_type_switch_handling()
+
+    assert set_integration_context_mocker.call_count == 2
+    assert set_integration_context_mocker.call_args[0][0] == {
+        'current_auth_type': 'Client Credentials', 'current_refresh_token': '',
+        'graph_access_token': '', 'graph_valid_until': ''}
+    assert 'Setting the current_auth_type in the integration context to Client Credentials' in debug_log_mocker.call_args[0][0]
+    assert debug_log_mocker.call_count == 4
+
+
+def test_switch_auth_type_to_authorization_code_flow(mocker):
+    """
+    Tests the 'auth_type_switch_handling' logic when the user switched the auth type in the instance parameters from the
+    Client Credentials Flow to the Auth Code Flow.
+
+    Given:
+        - Auth type instance parameter is now 'Authorization Code'.
+
+    When:
+        - Running the 'auth_type_switch_handling' function.
+
+    Then:
+        - Verify that the integration context was updated as follows:
+            1. current_auth_type = 'Authorization Code'.
+            2. graph token related values were deleted.
+        - Verify that the debug logs are as expected.
+    """
+    from MicrosoftTeams import auth_type_switch_handling
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={'current_auth_type': 'Client Credentials',
+                                                                         'current_refresh_token': 'test_refresh_token',
+                                                                         'graph_access_token': 'test_graph_token',
+                                                                         'graph_valid_until': 'test_valid_until'})
+    set_integration_context_mocker = mocker.patch('MicrosoftTeams.set_integration_context', return_value={})
+    debug_log_mocker = mocker.patch.object(demisto, 'debug')
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new='Authorization Code')
+
+    auth_type_switch_handling()
+
+    assert set_integration_context_mocker.call_count == 2
+    assert set_integration_context_mocker.call_args[0][0] == {
+        'current_auth_type': 'Authorization Code', 'current_refresh_token': '',
+        'graph_access_token': '', 'graph_valid_until': ''}
+    assert 'Setting the current_auth_type in the integration context to Authorization Code' in debug_log_mocker.call_args[0][0]
+    assert debug_log_mocker.call_count == 4
+
+
+def test_auth_type_handling_for_first_run_of_the_instance(mocker):
+    """
+    Tests the 'auth_type_switch_handling' logic in the first run of the integration instance/
+
+    Given:
+        - Auth type instance parameter is now 'Authorization Code'.
+
+    When:
+        - Running the 'auth_type_switch_handling' function.
+
+    Then:
+        - Verify that the integration context was updated as follows:
+            1. current_auth_type = 'Authorization Code'.
+        - Verify that the debug logs are as expected.
+    """
+    from MicrosoftTeams import auth_type_switch_handling
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={})
+    set_integration_context_mocker = mocker.patch('MicrosoftTeams.set_integration_context', return_value={})
+    debug_log_mocker = mocker.patch.object(demisto, 'debug')
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new='Authorization Code')
+
+    auth_type_switch_handling()
+
+    assert set_integration_context_mocker.call_count == 1
+    assert set_integration_context_mocker.call_args[0][0] == {'current_auth_type': 'Authorization Code'}
+    assert 'This is the first run of the integration instance' in debug_log_mocker.call_args[0][0]
+    assert debug_log_mocker.call_count == 1

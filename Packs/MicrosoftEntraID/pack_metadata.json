@@ -1,18 +1,47 @@
 {
-    "name": "Microsoft Entra ID (formerly Azure Active Directory)",
-    "description": "Microsoft Entra ID (formerly Azure Active Directory) is a cloud-based identity and access management service, that can be used to access both internal and external resources.",
+    "name": "Azure Logs",
+    "description": "Normalize various Azure Logs to the Cortex Data Model (XDM) schema, including Azure Entra ID events ingested via the Office 365 data source, and Azure Logs ingested via the Azure Event Hub data source.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Cloud Service Provider"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": ["EntraID", "AAD", "Azure", "Active Directory"],
+    "tags": [
+        "IAM",
+        "marketplacev2:Data Source",
+        "Alerts"
+    ],
+    "useCases": [
+        "Identity and Access Management"
+    ],
+    "keywords": [
+        "AAD",
+        "Azure",
+        "Azure Logs",
+        "Active Directory",
+        "Entra",
+        "EntraID",
+        "Entra ID",
+        "Activity Logs"
+    ],
     "marketplaces": [
         "marketplacev2"
-    ]
+    ],
+    "dependencies": {
+        "AzureFirewall": {
+            "mandatory": true,
+            "display_name": "Azure Firewall"
+        },
+        "AzureWAF": {
+            "mandatory": true,
+            "display_name": "Azure WAF"
+        },
+        "AzureAppService": {
+            "mandatory": true,
+            "display_name": "Azure App Service"
+        }
+    }
 }

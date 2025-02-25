@@ -26,7 +26,7 @@ As an example, we'll use the public TAXII threat intelligence feed by Abuse_ch a
 
 **Feed Fetch Interval** - For this example, we can leave the default value here.
 
-**Discovery Service** - Enter `http://hailataxii.com/taxii-discovery-service`.
+**Discovery Service** - Enter `http://example.com/taxii-discovery-service`.
 
 **Collection** - Enter `guest.Abuse_ch`.
 

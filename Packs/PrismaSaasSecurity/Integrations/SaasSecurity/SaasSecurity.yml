@@ -1,4 +1,7 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: SaasSecurity
   version: -1
@@ -9,25 +12,30 @@ configuration:
   additionalinfo: 'The instance configuration URL based on the server location: <br/>US: https://api.aperture.paloaltonetworks.com<br/> EU: https://api.aperture-eu.paloaltonetworks.com<br/> APAC: https://api.aperture-apac.paloaltonetworks.com'
   type: 0
   required: true
+  section: Connect
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
   type: 9
   required: true
   additionalinfo: The SaaS Security Client ID and Client Secret.
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror Incoming only (from SaaS Security to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to SaaS Security), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -41,17 +49,20 @@ configuration:
   - Incoming And Outgoing
   type: 15
   required: false
+  section: Collect
 - display: Number of incidents per fetch
   name: max_fetch
   defaultvalue: "20"
   type: 0
   required: true
   additionalinfo: Minimum is 10. Maximum is 1000.
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 3 days
   type: 0
   required: false
+  section: Collect
 - display: 'Fetch only incidents with matching state'
   additionalinfo: Fetches only incidents with matching **All**, **Closed**, or **Open** state. If nothing is selected, **All** states will be used.
   name: state
@@ -61,6 +72,7 @@ configuration:
   - Open
   - Closed
   required: false
+  section: Collect
 - display: 'Fetch only incidents with matching severity'
   additionalinfo: If nothing is selected, **All** severities will be used.
   name: severity
@@ -72,6 +84,7 @@ configuration:
   - '4'
   - '5'
   required: false
+  section: Collect
 - display: 'Fetch only incidents with matching status'
   additionalinfo: If nothing is selected, **All** statuses will be used.
   name: status
@@ -87,11 +100,13 @@ configuration:
   - In The Cloud
   - Dismiss
   required: false
+  section: Collect
 - display: Fetch only incidents with matching Application IDs
   name: app_ids
   type: 0
   additionalinfo: A comma-separated list of Application IDs. Run the ***saas-security-get-apps*** command to return the **Application ID**, **Name**, and **Type** for all applications.
   required: false
+  section: Collect
 - additionalinfo: If selected, when the incident closes on SaaS Security, the incident closes in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -100,16 +115,19 @@ configuration:
   name: close_incident
   type: 8
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   additionalinfo: By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified.
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   additionalinfo: Uses the system proxy server to communicate with the integration. If not selected, the integration will not use the system proxy server.
   required: false
+  section: Connect
 description: SaaS Security API is a cloud-based service that you can connect directly to your sanctioned SaaS applications using the cloud app’s API to provide data classification, sharing and permission visibility, and threat detection. This Content Pack provides insights into risks posed by data exposure and policy violations and enables you to use Cortex XSOAR to effectively manage the incidents discovered by SaaS Security API.
 display: SaaS Security
 name: SaasSecurity
@@ -475,7 +493,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.113941
+  dockerimage: demisto/python3:3.11.11.1940698
 defaultmapperin: Saas Security - Incoming Mapper
 defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0

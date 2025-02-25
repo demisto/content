@@ -1,4 +1,4 @@
-Use this integration to collect audit logs automatically from ServiceNow.
+Use this integration to collect audit and syslog transactions logs automatically from ServiceNow.
 
 To use ServiceNow on Cortex XSIAM, ensure your user account has the rest_api_explorer and web_service_admin roles.
 These roles are required to make API calls.

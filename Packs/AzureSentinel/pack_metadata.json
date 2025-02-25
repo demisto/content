@@ -2,7 +2,7 @@
     "name": "Microsoft Sentinel",
     "description": "Microsoft Sentinel is a cloud-native security information and event manager (SIEM) platform that uses built-in AI to help analyze large volumes of data across an enterprise.",
     "support": "xsoar",
-    "currentVersion": "1.5.50",
+    "currentVersion": "1.5.57",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -1,11 +1,8 @@
 Integration to pull assets and other ASM related information.
 This integration was integrated and tested with version 2.0 of Cortex Expander.
 
-## Configure Cortex Xpanse on Cortex XSOAR
+## Configure Cortex Xpanse in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cortex Xpanse.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter**                                                                    | **Description**                                                                                                                                                                                                                                         | **Required** |
 |----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
@@ -24,11 +21,10 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
 | Look Back (Minutes to look back when fetching) | Use this parameter to determine how far back in time to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False        |
 
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### asm-list-external-service

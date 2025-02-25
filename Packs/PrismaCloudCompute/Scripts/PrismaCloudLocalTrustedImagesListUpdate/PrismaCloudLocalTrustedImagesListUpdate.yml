@@ -24,7 +24,7 @@ scripttarget: 0
 subtype: python3
 dependson: {}
 runonce: false
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.9.0

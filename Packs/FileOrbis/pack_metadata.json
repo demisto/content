@@ -2,7 +2,7 @@
     "name": "FileOrbis",
     "description": "FileOrbis XSOAR integration.",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "FileOrbis",
     "url": "https://www.fileorbis.com/",
     "email": "info@fileorbis.com",

@@ -4,7 +4,7 @@
     "id": "Securonix Incident - Incoming Mapper",
     "mapping": {
         "Securonix Incident": {
-            "dontMapEventToLabels": true,
+            "dontMapEventToLabels": false,
             "internalMapping": {
                 "Assigned User": {
                     "complex": {
@@ -118,10 +118,30 @@
                 },
                 "Securonix Policies": {
                     "complex": {
-                        "accessor": "Policies",
                         "filters": [],
-                        "root": "reason",
+                        "root": "policy_list",
                         "transformers": []
+                    }
+                },
+                "Securonix Policy Stages": {
+                    "complex": {
+                        "filters": [],
+                        "root": "policy_stages_table",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "value": {
+                                            "simple": "Stage Name,Policies"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
                     }
                 },
                 "Securonix Policy Type": {

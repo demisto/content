@@ -2,7 +2,7 @@
     "name": "Phishing",
     "description": "Phishing emails still hooking your end users? This Content Pack can drastically reduce the time your security team spends on phishing alerts.",
     "support": "xsoar",
-    "currentVersion": "3.6.24",
+    "currentVersion": "3.6.35",
     "serverMinVersion": "6.0.0",
     "videos": [
         "https://www.youtube.com/watch?v=SY-3L348PoY"

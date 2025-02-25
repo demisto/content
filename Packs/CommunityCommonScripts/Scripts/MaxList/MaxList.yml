@@ -8,7 +8,7 @@ comment: "Gets the maximum value from list\ne.g. [\"25\", \"10\", \"25\"] =>  \"
 commonfields:
   id: MaxList
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: MaxList
 runas: DBotWeakRole

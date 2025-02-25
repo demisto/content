@@ -2,7 +2,7 @@
     "name": "McAfee ePO",
     "description": "McAfee ePolicy Orchestrator",
     "support": "xsoar",
-    "currentVersion": "2.0.36",
+    "currentVersion": "2.0.39",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

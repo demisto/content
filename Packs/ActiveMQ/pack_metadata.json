@@ -2,7 +2,7 @@
     "name": "ActiveMQ",
     "description": "Uses Durable Topic Subscribers to fetch messages and ingest them as incidents in Demisto.",
     "support": "xsoar",
-    "currentVersion": "1.1.15",
+    "currentVersion": "1.1.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

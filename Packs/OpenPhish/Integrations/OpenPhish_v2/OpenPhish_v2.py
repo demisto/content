@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 
 import urllib3
 import traceback
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -17,7 +16,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 class Error(Exception):
     """Base class for exceptions in this module."""
-    pass
 
 
 class NotFoundError(Error):
@@ -69,7 +67,7 @@ def _save_urls_to_instance(client: Client):
         raise Exception(f'Check server URL - {e.message}')
 
 
-def _is_reload_needed(client: Client, data: Dict) -> bool:
+def _is_reload_needed(client: Client, data: dict) -> bool:
     """
     Checks if there is a need to reload the data from api to instance's memory
     Args:

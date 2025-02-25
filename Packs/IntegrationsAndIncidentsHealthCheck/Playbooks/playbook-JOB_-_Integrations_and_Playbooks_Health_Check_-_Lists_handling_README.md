@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![JOB - Integrations and Playbooks Health Check - Lists handling](https://raw.githubusercontent.com/demisto/content/63a3dc4dadf030473dc093d855c25fc3b3f57ded/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup_-_Lists_handling.png)
+![JOB - Integrations and Playbooks Health Check - Lists handling](../doc_files/JOB_-_Integrations_and_Playbooks_Checkup_-_Lists_handling.png)

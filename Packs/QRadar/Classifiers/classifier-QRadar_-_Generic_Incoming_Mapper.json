@@ -1,940 +1,976 @@
 {
-  "description": "Default Mapping for Qradar Offenses, Events, and Assets.",
-  "feed": false,
-  "id": "QRadar - Generic Incoming Mapper",
-  "mapping": {
-    "Access": {
-      "dontMapEventToLabels": false,
-      "internalMapping": {
-        "Dest NT Domain": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "destination_networks",
-            "transformers": [
-              {
-                "args": {
-                  "separator": {
-                    "isContext": false,
-                    "value": null
-                  }
+    "description": "Default Mapping for Qradar Offenses, Events, and Assets.",
+    "feed": false,
+    "id": "QRadar - Generic Incoming Mapper",
+    "mapping": {
+        "Access": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Dest NT Domain": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "destination_networks",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
                 },
-                "operator": "join"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Src NT Domain": {
-          "complex": null,
-          "simple": "source_network"
-        },
-        "Src User": {
-          "complex": null,
-          "simple": "offense_source"
-        },
-        "details": {
-          "complex": null,
-          "simple": "description"
-        },
-        "occurred": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "start_time",
-            "transformers": []
-          },
-          "simple": ""
-        }
-      }
-    },
-    "Qradar Generic": {
-      "dontMapEventToLabels": false,
-      "internalMapping": {
-        "Asset Table": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "assets",
-            "transformers": []
-          },
-          "simple": ""
-        },
-        "Assigned User": {
-          "complex": null,
-          "simple": "assigned_to"
-        },
-        "CVSS Availability Requirement": {
-          "complex": {
-            "accessor": "CVSS Availability Requirement",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "CVSS Collateral Damage Potential": {
-          "complex": {
-            "accessor": "CVSS Collateral Damage Potential",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "CVSS Confidentiality Requirement": {
-          "complex": {
-            "accessor": "CVSS Confidentiality Requirement",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "CVSS Integrity Requirement": {
-          "complex": {
-            "accessor": "CVSS Integrity Requirement",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Category Count": {
-          "complex": null,
-          "simple": "category_count"
-        },
-        "Close Time": {
-          "complex": null,
-          "simple": "close_time"
-        },
-        "Closing Reason": {
-          "complex": null,
-          "simple": "closing_reason_id"
-        },
-        "Closing User": {
-          "complex": null,
-          "simple": "closing_user"
-        },
-        "Compliance Notes": {
-          "complex": {
-            "accessor": "Compliance Notes",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Credibility - Offense": {
-          "complex": null,
-          "simple": "credibility"
-        },
-        "DNS Name": {
-          "complex": {
-            "accessor": "Unified Name",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Description - Asset": {
-          "complex": {
-            "accessor": "Description",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Description - Offense": {
-          "complex": null,
-          "simple": "description"
-        },
-        "Destination Geolocation": {
-          "complex": {
-            "accessor": "destinationgeographiclocation",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Destination IP - Offense": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "local_destination_address_ids",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Destination IPV6": {
-          "complex": {
-            "accessor": "destinationv6",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Destination IPs": {
-          "complex": {
-            "accessor": "destinationip",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Destination MAC Address": {
-          "complex": {
-            "accessor": "destinationMAC",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Destination Network - Offense": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "destination_networks",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Device Time": {
-          "complex": {
-            "accessor": "devicetime",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Domain - Offense": {
-          "complex": null,
-          "simple": "domain_name"
-        },
-        "Dst Ports": {
-          "complex": {
-            "accessor": "destinationport",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Event Descriptions": {
-          "complex": {
-            "accessor": "qiddescription_qid",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Event Names": {
-          "complex": {
-            "accessor": "qidname_qid",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Events": {
-          "complex": null,
-          "simple": "events"
-        },
-        "Follow Up": {
-          "complex": null,
-          "simple": "follow_up"
-        },
-        "High Level Categories": {
-          "complex": {
-            "accessor": "categoryname_highlevelcategory",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "ID - Asset": {
-          "complex": {
-            "accessor": "id",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "ID - Offense": {
-          "complex": null,
-          "simple": "id"
-        },
-        "IP Address - Asset": {
-          "complex": {
-            "accessor": "value",
-            "filters": [],
-            "root": "assets.interfaces.ip_addresses",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "IncomingMirrorError": {
-          "complex": null,
-          "simple": "mirroring_events_message"
-        },
-        "Last Mirrored Time Stamp": {
-          "complex": null,
-          "simple": "last_mirror_in_time"
-        },
-        "Last Update Time": {
-          "complex": null,
-          "simple": "last_updated_time"
-        },
-        "External Last Updated Time": {
-            "complex": null,
-            "simple": "last_updated_time"
-        },
-        "Link To Offense": {
-          "complex": null,
-          "simple": "LinkToOffense"
-        },
-        "List Of Rules - Event": {
-          "complex": {
-            "accessor": "rulename_creeventlist",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "List of Rules - Offense": {
-          "complex": null,
-          "simple": "rules.name"
-        },
-        "Location - Asset": {
-          "complex": {
-            "accessor": "Location",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Log Source Name": {
-          "complex": {
-            "accessor": "logsourcename_logsourceid",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Log Source Type": {
-          "complex": {
-            "accessor": "logsourcetypename_devicetype",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Low Level Categories - Offense": {
-          "complex": null,
-          "simple": "categories"
-        },
-        "Low Level Categories Events": {
-          "complex": {
-            "accessor": "categoryname_category",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "MAC Address - Asset": {
-          "complex": {
-            "accessor": "mac_address",
-            "filters": [],
-            "root": "assets.interfaces",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Magnitude - Offense": {
-          "complex": null,
-          "simple": "magnitude"
-        },
-        "Number Of Events In Offense": {
-          "complex": null,
-          "simple": "event_count"
-        },
-        "Number Of Fetched Events": {
-          "complex": null,
-          "simple": "events_fetched"
-        },
-        "Number Of Flows": {
-          "complex": null,
-          "simple": "flow_count"
-        },
-        "Number Of Log Sources": {
-          "complex": null,
-          "simple": "device_count"
-        },
-        "Offense Inactive": {
-          "complex": null,
-          "simple": "inactive"
-        },
-        "Post Nat Destination IP": {
-          "complex": {
-            "accessor": "postNatDestinationIP",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Post Nat Destination Port": {
-          "complex": {
-            "accessor": "postNatDestinationPort",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Post Nat Source IP": {
-          "complex": {
-            "accessor": "postNatSourceIP",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Post Nat Source Port": {
-          "complex": {
-            "accessor": "postNatSourcePort",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Pre Nat Destination Port": {
-          "complex": {
-            "accessor": "preNatDestinationPort",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Pre Nat Source IP": {
-          "complex": {
-            "accessor": "preNatSourceIP",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Pre Nat Source Port": {
-          "complex": {
-            "accessor": "preNatSourcePort",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Protocol": {
-          "complex": {
-            "accessor": "protocolname_protocolid",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Protocol - Event": {
-          "complex": {
-            "accessor": "protocolname_protocolid",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Raw Event": {
-          "complex": {
-            "accessor": "utf8_payload",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Relevance - Offense": {
-          "complex": null,
-          "simple": "relevance"
-        },
-        "Severity - Offense": {
-          "complex": null,
-          "simple": "severity"
-        },
-        "Source Geolocation": {
-          "complex": {
-            "accessor": "sourcegeographiclocation",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Source IP - Offense": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "source_address_ids",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Source IPV6": {
-          "complex": {
-            "accessor": "sourcev6",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Source IPs": {
-          "complex": {
-            "accessor": "sourceip",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Source MAC Address": {
-          "complex": {
-            "accessor": "sourceMAC",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Src Ports": {
-          "complex": {
-            "accessor": "sourceport",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Start Time": {
-          "complex": null,
-          "simple": "start_time"
-        },
-        "External Start Time": {
-            "complex": null,
-            "simple": "start_time"
-          },
-        "Status - Offense": {
-          "complex": null,
-          "simple": "status"
-        },
-        "Switch ID - Asset": {
-          "complex": {
-            "accessor": "Switch ID",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Switch Port ID - Asset": {
-          "complex": {
-            "accessor": "Switch Port ID",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Technical Owner": {
-          "complex": {
-            "accessor": "Technical Owner",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Technical Owner Contact": {
-          "complex": {
-            "accessor": "Technical Contact",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Technical User": {
-          "complex": {
-            "accessor": "Technical User",
-            "filters": [],
-            "root": "assets",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Traffic Direction": {
-          "complex": {
-            "accessor": "eventDirection",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Type - Offense": {
-          "complex": null,
-          "simple": "offense_type"
-        },
-        "Username": {
-          "complex": {
-            "accessor": "username",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "Username Count - Offense": {
-          "complex": null,
-          "simple": "username_count"
-        },
-        "Usernames": {
-          "complex": {
-            "accessor": "username",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "uniq"
-              }
-            ]
-          },
-          "simple": ""
-        },
-        "severity": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "magnitude",
-            "transformers": [
-              {
-                "args": {
-                  "input_values": {
-                    "isContext": false,
-                    "value": {
-                      "complex": null,
-                      "simple": "1,2,3,4,5,6,7,8,9,10"
-                    }
-                  },
-                  "mapped_values": {
-                    "isContext": false,
-                    "value": {
-                      "complex": null,
-                      "simple": "1,1,1,2,2,2,2,3,3,3"
-                    }
-                  }
+                "Src NT Domain": {
+                    "complex": null,
+                    "simple": "source_network"
                 },
-                "operator": "MapValuesTransformer"
-              }
-            ]
-          },
-          "simple": ""
+                "Src User": {
+                    "complex": null,
+                    "simple": "offense_source"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "start_time",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Qradar Generic": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Asset Table": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Assigned User": {
+                    "complex": null,
+                    "simple": "assigned_to"
+                },
+                "CVSS Availability Requirement": {
+                    "complex": {
+                        "accessor": "CVSS Availability Requirement",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CVSS Collateral Damage Potential": {
+                    "complex": {
+                        "accessor": "CVSS Collateral Damage Potential",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CVSS Confidentiality Requirement": {
+                    "complex": {
+                        "accessor": "CVSS Confidentiality Requirement",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CVSS Integrity Requirement": {
+                    "complex": {
+                        "accessor": "CVSS Integrity Requirement",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Category Count": {
+                    "complex": null,
+                    "simple": "category_count"
+                },
+                "Close Time": {
+                    "complex": null,
+                    "simple": "close_time"
+                },
+                "Closing Reason": {
+                    "complex": null,
+                    "simple": "closing_reason_id"
+                },
+                "Closing User": {
+                    "complex": null,
+                    "simple": "closing_user"
+                },
+                "Compliance Notes": {
+                    "complex": {
+                        "accessor": "Compliance Notes",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Credibility - Offense": {
+                    "complex": null,
+                    "simple": "credibility"
+                },
+                "DNS Name": {
+                    "complex": {
+                        "accessor": "Unified Name",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Description - Asset": {
+                    "complex": {
+                        "accessor": "Description",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Description - Offense": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Destination Geolocation": {
+                    "complex": {
+                        "accessor": "destinationgeographiclocation",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Destination IP - Offense": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "local_destination_address_ids",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Destination IPV6": {
+                    "complex": {
+                        "accessor": "destinationv6",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Destination IPs": {
+                    "complex": {
+                        "accessor": "destinationip",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Destination MAC Address": {
+                    "complex": {
+                        "accessor": "destinationMAC",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Destination Network - Offense": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "destination_networks",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Device Time": {
+                    "complex": {
+                        "accessor": "devicetime",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Domain - Offense": {
+                    "complex": null,
+                    "simple": "domain_name"
+                },
+                "Dst Ports": {
+                    "complex": {
+                        "accessor": "destinationport",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Event Descriptions": {
+                    "complex": {
+                        "accessor": "qiddescription_qid",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Event Names": {
+                    "complex": {
+                        "accessor": "qidname_qid",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Events": {
+                    "complex": null,
+                    "simple": "events"
+                },
+                "Follow Up": {
+                    "complex": null,
+                    "simple": "follow_up"
+                },
+                "High Level Categories": {
+                    "complex": {
+                        "accessor": "categoryname_highlevelcategory",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "ID - Asset": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "ID - Offense": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "IP Address - Asset": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [],
+                        "root": "assets.interfaces.ip_addresses",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "IncomingMirrorError": {
+                    "complex": null,
+                    "simple": "mirroring_events_message"
+                },
+                "Last Mirrored Time Stamp": {
+                    "complex": null,
+                    "simple": "last_mirror_in_time"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "last_updated_time"
+                },
+                "External Last Updated Time": {
+                    "complex": null,
+                    "simple": "last_updated_time"
+                },
+                "Link To Offense": {
+                    "complex": null,
+                    "simple": "LinkToOffense"
+                },
+                "List Of Rules - Event": {
+                    "complex": {
+                        "accessor": "rulename_creeventlist",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "List of Rules - Offense": {
+                    "complex": null,
+                    "simple": "rules.name"
+                },
+                "Location - Asset": {
+                    "complex": {
+                        "accessor": "Location",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Log Source Name": {
+                    "complex": {
+                        "accessor": "logsourcename_logsourceid",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Log Source Type": {
+                    "complex": {
+                        "accessor": "logsourcetypename_devicetype",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Low Level Categories - Offense": {
+                    "complex": null,
+                    "simple": "categories"
+                },
+                "Low Level Categories Events": {
+                    "complex": {
+                        "accessor": "categoryname_category",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "MAC Address - Asset": {
+                    "complex": {
+                        "accessor": "mac_address",
+                        "filters": [],
+                        "root": "assets.interfaces",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Magnitude - Offense": {
+                    "complex": null,
+                    "simple": "magnitude"
+                },
+                "Number Of Events In Offense": {
+                    "complex": null,
+                    "simple": "event_count"
+                },
+                "Number Of Fetched Events": {
+                    "complex": null,
+                    "simple": "events_fetched"
+                },
+                "Number Of Flows": {
+                    "complex": null,
+                    "simple": "flow_count"
+                },
+                "Number Of Log Sources": {
+                    "complex": null,
+                    "simple": "device_count"
+                },
+                "Offense Inactive": {
+                    "complex": null,
+                    "simple": "inactive"
+                },
+                "Post Nat Destination IP": {
+                    "complex": {
+                        "accessor": "postNatDestinationIP",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Post Nat Destination Port": {
+                    "complex": {
+                        "accessor": "postNatDestinationPort",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Post Nat Source IP": {
+                    "complex": {
+                        "accessor": "postNatSourceIP",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Post Nat Source Port": {
+                    "complex": {
+                        "accessor": "postNatSourcePort",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Pre Nat Destination Port": {
+                    "complex": {
+                        "accessor": "preNatDestinationPort",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Pre Nat Source IP": {
+                    "complex": {
+                        "accessor": "preNatSourceIP",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Pre Nat Source Port": {
+                    "complex": {
+                        "accessor": "preNatSourcePort",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Protocol": {
+                    "complex": {
+                        "accessor": "protocolname_protocolid",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Protocol - Event": {
+                    "complex": {
+                        "accessor": "protocolname_protocolid",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Raw Event": {
+                    "complex": {
+                        "accessor": "utf8_payload",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Relevance - Offense": {
+                    "complex": null,
+                    "simple": "relevance"
+                },
+                "Severity - Offense": {
+                    "complex": null,
+                    "simple": "severity"
+                },
+                "Source Geolocation": {
+                    "complex": {
+                        "accessor": "sourcegeographiclocation",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Source IP - Offense": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "source_address_ids",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Source IPV6": {
+                    "complex": {
+                        "accessor": "sourcev6",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Source IPs": {
+                    "complex": {
+                        "accessor": "sourceip",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Source MAC Address": {
+                    "complex": {
+                        "accessor": "sourceMAC",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Src Ports": {
+                    "complex": {
+                        "accessor": "sourceport",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Start Time": {
+                    "complex": null,
+                    "simple": "start_time"
+                },
+                "External Start Time": {
+                    "complex": null,
+                    "simple": "start_time"
+                },
+                "Status - Offense": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "Switch ID - Asset": {
+                    "complex": {
+                        "accessor": "Switch ID",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Switch Port ID - Asset": {
+                    "complex": {
+                        "accessor": "Switch Port ID",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Technical Owner": {
+                    "complex": {
+                        "accessor": "Technical Owner",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Technical Owner Contact": {
+                    "complex": {
+                        "accessor": "Technical Contact",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Technical User": {
+                    "complex": {
+                        "accessor": "Technical User",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Traffic Direction": {
+                    "complex": {
+                        "accessor": "eventDirection",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Type - Offense": {
+                    "complex": null,
+                    "simple": "offense_type"
+                },
+                "Username": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Username Count - Offense": {
+                    "complex": null,
+                    "simple": "username_count"
+                },
+                "Usernames": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "magnitude",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6,7,8,9,10"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,1,1,2,2,2,2,3,3,3"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "description"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                }
+            }
         }
-      }
     },
-    "dbot_classification_incident_type_all": {
-      "dontMapEventToLabels": false,
-      "internalMapping": {
-        "dbotMirrorDirection": {
-          "complex": null,
-          "simple": "mirror_direction"
-        },
-        "dbotMirrorId": {
-          "complex": null,
-          "simple": "id"
-        },
-        "dbotMirrorInstance": {
-          "complex": null,
-          "simple": "mirror_instance"
-        }
-      }
-    }
-  },
-  "name": "QRadar - Generic Incoming Mapper",
-  "type": "mapping-incoming",
-  "version": -1,
-  "fromVersion": "6.0.0"
+    "name": "QRadar - Generic Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

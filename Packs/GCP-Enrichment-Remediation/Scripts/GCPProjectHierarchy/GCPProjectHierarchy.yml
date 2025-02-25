@@ -6,7 +6,7 @@ comment: Determine GCP project hierarchy by looking up parent objects until the 
 commonfields:
   id: GCPProjectHierarchy
   version: -1
-dockerimage: demisto/python3:3.10.13.84405
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: GCPProjectHierarchy
 outputs:

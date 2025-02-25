@@ -2,7 +2,7 @@
     "name": "Office 365 and Azure (Audit Log)",
     "description": "Search the unified audit log to view user and administrator activity in your organization.",
     "support": "xsoar",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

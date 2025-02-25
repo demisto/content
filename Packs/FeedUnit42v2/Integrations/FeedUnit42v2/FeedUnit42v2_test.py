@@ -507,3 +507,21 @@ def test_get_report_object(mocker):
     client.get_report_object("object_id")
     assert 'Unit42v2 Feed: Found more then one object for report object object_id skipping' in debug_logs_mock.call_args_list[
         0][0]
+
+
+def test_parse_indicators_no_name():
+    """
+    Given
+    - An indicator without a name.
+    When
+    - Calling the fetch-indicators command.
+    Then
+    - Use value in the pattern.
+    """
+    indicators = [
+        {'pattern': "[domain-name:value = 'www.example.com']"}
+    ]
+
+    res = parse_indicators(indicators)
+
+    assert res[0]['value'] == 'www.example.com'

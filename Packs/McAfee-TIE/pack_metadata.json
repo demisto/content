@@ -2,7 +2,7 @@
     "name": "McAfee Threat Intelligence Exchange",
     "description": "Connect to McAfee TIE using the McAfee DXL client.",
     "support": "xsoar",
-    "currentVersion": "2.0.18",
+    "currentVersion": "2.0.20",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

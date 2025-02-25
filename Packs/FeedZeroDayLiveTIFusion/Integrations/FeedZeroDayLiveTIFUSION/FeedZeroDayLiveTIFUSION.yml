@@ -111,7 +111,7 @@ description: "Zero Day Live is Blackwired's flagship product that delivers propr
 display: Zero Day Live TI FUSION Feed
 name: ZeroDayLiveTIFUSION Feed
 script:
-  dockerimage: demisto/py3-tools:1.0.0.102774
+  dockerimage: demisto/py3-tools:1.0.0.114656
   feed: true
   runonce: true
   script: '-'

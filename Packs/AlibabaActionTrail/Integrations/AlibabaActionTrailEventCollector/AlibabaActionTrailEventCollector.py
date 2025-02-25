@@ -170,8 +170,8 @@ def main():
                'Host': f'{project_name}.{endpoint}',
                'x-log-date': ''}
 
-    params = {'from': from_,
-              'to': from_ + 3600,
+    params = {'from': str(from_),
+              'to': str(from_ + 3600),
               'query': query}
 
     demisto_params['method'] = Method.GET
@@ -179,9 +179,9 @@ def main():
     demisto_params['headers'] = headers
 
     request = IntegrationHTTPRequest(**demisto_params)
-    request.params = AlibabaParams.parse_obj(params)  # type: ignore
+    request.params = AlibabaParams.model_validate(params)  # type: ignore[attr-defined,assignment]
 
-    options = IntegrationOptions.parse_obj(demisto_params)
+    options = IntegrationOptions.model_validate(demisto_params)  # type: ignore[attr-defined]
 
     client = AlibabaEventsClient(request, options, access_key=access_key,
                                  access_key_id=access_key_id, logstore_name=logstore_name)

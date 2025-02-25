@@ -4,25 +4,21 @@ Use Cisco Umbrella's Reporting to monitor your Umbrella integration and gain a b
 
 The Umbrella Reporting v2 API provides visibility into your core network and security activities and Umbrella logs. This integration was integrated and tested with version v2 of Cisco-umbrella-reporting.
 
-## Configure Cisco Umbrella Reporting on Cortex XSOAR
+## Configure Cisco Umbrella Reporting in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Umbrella Reporting.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API URL | Cisco Umbrella Reporting API base URL. | True |
-    | API Key | API Key | True |
-    | API Secret | API Secret | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API URL | Cisco Umbrella Reporting API base URL. | True |
+| API Key | API Key | True |
+| API Secret | API Secret | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### umbrella-reporting-destination-list

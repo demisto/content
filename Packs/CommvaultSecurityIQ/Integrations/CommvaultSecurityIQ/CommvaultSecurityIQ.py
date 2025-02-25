@@ -584,7 +584,7 @@ class Client(BaseClient):
         """
         date_str = date_obj.strftime("%d %B, %Y, %H:%M:%S")
         incidents = []
-        if type(extracted_message) != list:
+        if type(extracted_message) is not list:
             extracted_message = [extracted_message]
         for message_ in extracted_message:
             incident = {

@@ -11,30 +11,26 @@ This integration was integrated and tested with Tenable.sc v5.7.0.
     * View policies, repositories, credentials, users and more system information.
     * View and real-time receiving of alerts.
 
-## Configure Tenable.sc on Cortex XSOAR
+## Configure Tenable.sc in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Tenable.sc.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | The server URL. | True |
-    | Access key | See the help for instructions to generate the access key. | False |
-    | Secret key |  | False |
-    | Username | The Username is either admin or secman \(depend on the role you want to log into\) and your password to the tenable server. | False |
-    | Password |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The timestamp to start the fetch from. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://192.168.0.1) | The server URL. | True |
+| Access key | See the help for instructions to generate the access key. | False |
+| Secret key |  | False |
+| Username | The Username is either admin or secman \(depend on the role you want to log into\) and your password to the tenable server. | False |
+| Password |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The timestamp to start the fetch from. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### tenable-sc-list-scans

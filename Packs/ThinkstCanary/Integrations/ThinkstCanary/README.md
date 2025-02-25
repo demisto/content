@@ -170,7 +170,7 @@
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/43776787/53302684-b58aba00-3869-11e9-8a7e-67c13fc8562c.png" alt="image"></p>
+<p><img src="../../doc_files/53302684-b58aba00-3869-11e9-8a7e-67c13fc8562c.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="list-all-canary-tokens">2. List all Canary tokens</h3>
@@ -276,7 +276,7 @@
 <h5 id="human-readable-output-1">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/43776787/53302739-35b11f80-386a-11e9-95be-5af5db6e8a8a.png" alt="image"></p>
+<p><img src="../../doc_files/53302739-35b11f80-386a-11e9-95be-5af5db6e8a8a.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="check-if-an-ip-address-is-whitelisted">3. Check if an IP address is on allow list</h3>
@@ -379,7 +379,7 @@
 <h5 id="human-readable-output-2">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/43776787/53302758-86c11380-386a-11e9-89c5-d1bd1ab46a45.png" alt="image"></p>
+<p><img src="../../doc_files/53302758-86c11380-386a-11e9-89c5-d1bd1ab46a45.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="add-an-ip-address-to-the-whitelist">4. Add an IP address to the allow list</h3>
@@ -482,7 +482,7 @@
 <h5 id="human-readable-output-3">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/43776787/53302772-b5d78500-386a-11e9-816c-bb69eecfe879.png" alt="image"></p>
+<p><img src="../../doc_files/53302772-b5d78500-386a-11e9-816c-bb69eecfe879.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="edit-an-alert-status">5. Edit an alert status</h3>
@@ -579,7 +579,7 @@
 <h5 id="human-readable-output-4">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/43776787/53302809-2f6f7300-386b-11e9-8eba-71a9d6f4ddd8.png" alt="image"></p>
+<p><img src="../../doc_files/53302809-2f6f7300-386b-11e9-8eba-71a9d6f4ddd8.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-a-canary-token-file">6. Get a Canary Token file</h3>
@@ -725,5 +725,5 @@
 <h5 id="human-readable-output-5">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/43776787/53302891-55494780-386c-11e9-8f2d-5e96faf84353.png" alt="image"></p>
+<p><img src="../../doc_files/53302891-55494780-386c-11e9-8f2d-5e96faf84353.png" alt="image"></p>
 </div>

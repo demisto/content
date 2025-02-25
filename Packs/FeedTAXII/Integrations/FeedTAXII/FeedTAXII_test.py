@@ -16,7 +16,7 @@ def get_files_in_dir(mypath, only_with_ext=None):
 
 
 class TestStixDecode:
-    FILE_PATH = 'FeedTAXII_test/StixDecodeTest'
+    FILE_PATH = 'test_data/StixDecodeTest'
 
     def test_decode(self):
         """Test decode on all files"""

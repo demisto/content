@@ -746,6 +746,23 @@ def test_start_xql_query_polling_command(mocker):
     assert get_integration_context() == context
 
 
+def test_start_xql_query_polling_command_http_request_failure(mocker):
+    """
+    Given:
+    - A query that failed to start due to reaching the max allowed amount of parallel running queries.
+    When:
+    - Calling start_xql_query_polling_command function.
+    Then:
+    - Ensure the command will run again in the next polling interval instead of returning error.
+    """
+    from CoreXQLApiModule import start_xql_query_polling_command
+    query = 'MOCK_QUERY'
+    mocker.patch.object(CLIENT, 'start_xql_query', return_value='FAILURE')
+    command_results = start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
+    assert command_results.scheduled_command
+    assert 'The maximum allowed number of parallel running queries has been reached.' in command_results.readable_output
+
+
 def test_get_xql_query_results_polling_command_success_under_1000(mocker):
     """
     Given:
@@ -972,34 +989,3 @@ def test_get_built_in_query_results_polling_command(mocker):
     )
     assert res.call_args.args[1]['tenants'] == ["tenantID", "tenantID"]
     assert res.call_args.args[1]['time_frame'] == '7 days'
-
-
-# @pytest.mark.parametrize('allow_bin_response', [True, False])
-# def test_request_for_bin_file_via_demisto_call(mocker, allow_bin_response):
-#     """
-#     Given:
-#         - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
-#         - case 1 - build version that support response of binary files.
-#         - case 2 - build version that doesn't support response of binary files.
-#     When:
-#         - Calling the http_request method.
-#     Then:
-#         - case 1 - Make sure the response are as expected (base64 decoded).
-#         - case 2 - Make sure en DemistoException was thrown with details about the server version that allowed bin response.
-#     """
-#     from CoreXQLApiModule import CoreClient, ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION, ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM
-#     test_bin_data = b'test bin data'
-#     client = CoreClient(
-#         base_url='some_url/public_api/v1', headers={},
-#     )
-#     mocker.patch("CoreXQLApiModule.FORWARD_USER_RUN_RBAC", new=True)
-#     mocker.patch("CoreXQLApiModule.ALLOW_RESPONSE_AS_BINARY", new=allow_bin_response)
-#     mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1',
-#                                                            'status': 200,
-#                                                            'data': test_bin_data})
-#     try:
-#         res = client._http_request(method="get",
-#                                    response_data_type='bin')
-#         assert res == test_bin_data
-#     except DemistoException as e:
-#         assert f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}' in str(e)

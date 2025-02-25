@@ -1,0 +1,102 @@
+[
+    {
+        "id": "HVI-75466160",
+        "timestamp": 1720161042000,
+        "confidence": "confirmed",
+        "cve_id": "",
+        "cwe": [],
+        "issue_category": [
+            "Web Communication"
+        ],
+        "issue_name": "TLS Certificate is Self Signed",
+        "potential_attack_type": [],
+        "potential_impact": [], 
+        "status": "active",
+        "progress_status": "New",
+        "severity": "high",
+        "resolved_ip": "229.13.147.132",
+        "first_seen": "05-07-2024 06:28:28",
+        "last_seen": "26-10-2024 12:15:24",
+        "environments": [
+            "Marketing",
+            "JavaScript",
+            "Web Server"
+        ],
+        "ip": "",
+        "ticket_id": "HVI-75466160",
+        "technologies": [
+            "Apache",
+            "Google Analytics"
+        ],
+        "domain": "doughnutkitten.com",
+        "host": "doughnutkitten.com",
+        "asset_type": "host",
+        "asset": "doughnutkitten.com"
+    },
+    {
+        "id": "HVI-11136324",
+        "timestamp": 1720161795000,
+        "confidence": "confirmed",
+        "cve_id": "",
+        "cwe": [],
+        "issue_category": [
+            "Web Communication"
+        ],
+        "issue_name": "SSL Expiring in 30 days",
+        "potential_attack_type": [],
+        "potential_impact": [],
+        "status": "inactive",
+        "progress_status": "New",
+        "severity": "informational",
+        "resolved_ip": "154.134.143.229",
+        "first_seen": "05-07-2024 06:42:36",
+        "last_seen": "10-07-2024 10:55:13",
+        "environments": [
+            "Development",
+            "Hosting"
+        ],
+        "ip": "",
+        "ticket_id": "HVI-11136324",
+        "technologies": [
+            "Vercel Inc Vercel"
+        ],
+        "domain": "hacksplaining.com",
+        "host": "hacksplaining.com",
+        "asset_type": "host",
+        "asset": "hacksplaining.com"
+    },
+    {
+        "id": "HVI-98944790",
+        "timestamp": 1720163092000,
+        "confidence": "confirmed",
+        "cve_id": "",
+        "cwe": [],
+        "issue_category": [
+            "Web Communication"
+        ],
+        "issue_name": "TLS Certificate is Self Signed",
+        "potential_attack_type": [],
+        "potential_impact": [],
+        "status": "active",
+        "progress_status": "New",
+        "severity": "high",
+        "resolved_ip": "229.13.147.132",
+        "first_seen": "05-07-2024 07:02:47",
+        "last_seen": "26-10-2024 11:22:06",
+        "environments": [
+            "Marketing",
+            "JavaScript",
+            "Web Server"
+        ],
+        "ip": "",
+        "ticket_id": "HVI-98944790",
+        "technologies": [
+            "Apache",
+            "Google Analytics"
+        ],
+        "domain": "doughnutkitten.com",
+        "host": "www.doughnutkitten.com",
+        "asset_type": "host",
+        "asset": "www.doughnutkitten.com"
+    }
+]

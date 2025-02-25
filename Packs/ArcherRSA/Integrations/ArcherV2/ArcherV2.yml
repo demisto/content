@@ -261,7 +261,7 @@ script:
       description: The field value depth.
       type: Number
   - arguments:
-    - description: The entry ID of the file in Cortex XSOAR context.
+    - description: A comma seperated list of entry IDs of the files in Cortex XSOAR context.
       name: entryId
       required: true
     - description: ID of the application to upload the file to.
@@ -417,7 +417,7 @@ script:
   - arguments: []
     description: Prints the Archer's integration cache.
     name: archer-print-cache
-  dockerimage: demisto/python3-deb:3.11.10.114849
+  dockerimage: demisto/python3-deb:3.11.10.117398
   isfetch: true
   script: ''
   subtype: python3

@@ -2,7 +2,7 @@
     "name": "Pentera",
     "description": "Automate remediation actions based on Pentera, the Automated Security Validation Platform, proactively exposing high-risk vulnerabilities.",
     "support": "partner",
-    "currentVersion": "1.3.8",
+    "currentVersion": "1.3.10",
     "author": "Pentera",
     "url": "https://pentera.io",
     "email": "support@pentera.io",

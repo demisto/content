@@ -1,0 +1,44 @@
+args:
+- description: List of names of the users to retrieve.
+  name: user_name
+  isArray: true
+  required: true
+- description: |-
+    Select which integrations you want the script to run for. If you don't choose any, the command will run for all available integrations. To select multiple integrations, enter their names separated by commas."
+  name: brands
+  auto: PREDEFINED
+  predefined:
+  - 'Okta v2'
+  - 'Microsoft Graph User'
+- description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
+  name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+comment: This script clears user sessions across multiple integrations for a list of usernames.
+commonfields:
+  id: clear-user-session
+  version: -1
+name: clear-user-session
+outputs:
+- contextPath: SessionClearResults.UserName
+  description: The username for which the session clearance operation was performed.
+  type: string
+- contextPath: SessionClearResults.Message
+  description: A message indicating the outcome of the session clearance operation, such as success confirmation or error details.
+  type: string
+- contextPath: SessionClearResults.Result
+  description: The status of the session clearance process. Possible values are "Success" or "Failed".
+  type: string
+- contextPath: SessionClearResults.Source
+  description: The vendor or system source from which the session clearance result was obtained.
+  type: list
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.116949
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

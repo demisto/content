@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
-from CommonServerUserPython import *
 
 from typing import Optional, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
@@ -18,6 +17,7 @@ from taxii2client.exceptions import InvalidJSONError
 import tempfile
 import uuid
 from dateutil.parser import parse
+from stix2patterns.pattern import Pattern
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -101,12 +101,32 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
     "vulnerability": FeedIndicatorType.CVE,
     "x509-certificate": FeedIndicatorType.X509,
 }
-
-STIX_NOT_SUPPORTED_TYPES = {
-    "file:name": True
+STIX_SUPPORTED_TYPES = {
+    'url': ('value',),
+    'ip': ('value',),
+    'domain-name': ('value',),
+    'email-addr': ('value',),
+    'ipv4-addr': ('value',),
+    'ipv6-addr': ('value',),
+    'attack-pattern': ('name',),
+    'campaign': ('name',),
+    'identity': ('name',),
+    'infrastructure': ('name',),
+    'intrusion-set': ('name',),
+    'malware': ('name',),
+    'report': ('name',),
+    'threat-actor': ('name',),
+    'tool': ('name',),
+    'vulnerability': ('name',),
+    'mutex': ('name',),
+    'software': ('name',),
+    'autonomous-system': ('number',),
+    'file': ('hashes',),
+    'user-account': ('user_id',),
+    'location': ('name', 'country'),
+    'x509-certificate': ('serial_number', 'issuer'),
+    'windows-registry-key': ('key', 'values')
 }
-
-
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {       # pragma: no cover
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
     'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
@@ -284,7 +304,11 @@ def reached_limit(limit: int, element_count: int):
     return element_count >= limit > -1
 
 
+PatternComparisons = dict[str, list[tuple[list[str], str, str]]]
+
+
 class XSOAR2STIXParser:
+
     def __init__(self, namespace_uuid, fields_to_present,
                  types_for_indicator_sdo, server_version=TAXII_VER_2_1):
         self.server_version = server_version
@@ -857,15 +881,12 @@ class XSOAR2STIXParser:
     @staticmethod
     def get_labels_for_indicator(score):
         """Get indicator label based on the DBot score"""
-        if int(score) == 0:
-            return ['']
-        elif int(score) == 1:
-            return ['benign']
-        elif int(score) == 2:
-            return ['anomalous-activity']
-        elif int(score) == 3:
-            return ['malicious-activity']
-        return None
+        return {
+            0: [''],
+            1: ['benign'],
+            2: ['anomalous-activity'],
+            3: ['malicious-activity']
+        }.get(int(score))
 
 
 class STIX2XSOARParser(BaseClient):
@@ -890,11 +911,74 @@ class STIX2XSOARParser(BaseClient):
             re.compile(CIDR_ISSUBSET_VAL_PATTERN),
             re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
         ]
-        self.field_map = field_map if field_map else {}
+        self.field_map = field_map or {}
         self.update_custom_fields = update_custom_fields
-        self.tags = tags if tags else []
+        self.tags = tags or []
         self.last_fetched_indicator__modified = None
         self.enrichment_excluded = enrichment_excluded
+
+    @staticmethod
+    def get_pattern_comparisons(pattern: str, supported_only: bool = True) -> Optional[PatternComparisons]:
+        """
+        Parses a pattern and comparison and extracts the comparisons as a dictionary.
+        If the pattern is invalid, the return value will be "None".
+
+        For Example:
+
+        >>> STIX2XSOARParser.get_pattern_comparisons(
+        >>>     "[ipv4-addr:value = '1.1.1.1/32' "
+        >>>     "OR ipv4-addr:value = '8.8.8.8/32' "
+        >>>     "AND domain-name:value = 'example.com' "
+        >>>     "OR file:hashes.'SHA-256' = '13987239847...']"
+        >>> )
+        {
+            'ipv4-addr': [(['value'], '=', "'1.1.1.1/32'"), (['value'], '=', "'8.8.8.8/32'")],
+            'domain-name': [(['value'], '=', "'example.com'")],
+            'file': [(['hashes', 'SHA-256'], '=', "'13987239847...'")]
+        }
+
+        Args:
+            pattern: the pattern to extract the value from.
+            supported_only: Whether to remove comparisons that are not supported by Cortex XSOAR.
+
+        Returns:
+            Optional[PatternComparisons]. the value in the pattern.
+        """
+        try:
+            comparisons = cast(PatternComparisons, Pattern(pattern).inspect().comparisons)
+            return (
+                STIX2XSOARParser.get_supported_pattern_comparisons(comparisons)
+                if supported_only else comparisons
+            )
+        except Exception as error:
+            demisto.debug(f'Unable to parse {pattern=}, {error=}')
+        return None
+
+    @staticmethod
+    def get_supported_pattern_comparisons(comparisons: PatternComparisons) -> PatternComparisons:
+        """
+        Get only the patterns supported by XSOAR from a parsed pattern.
+
+        Args:
+            comparisons: The comparisons of the pattern to extract the supported values from.
+
+        Returns:
+            PatternComparisons. the value in the pattern.
+        """
+        def get_comparison_field(comparison: tuple[list[str], str, str]) -> str:
+            '''retrieves the field of a STIX comparison.'''
+            return cast(str, dict_safe_get(comparison, [0, 0]))
+
+        supported_comparisons: PatternComparisons = {}
+        for indicator_type, comps in comparisons.items():
+            if indicator_type in STIX_SUPPORTED_TYPES:
+                field_comparisons = [
+                    comp for comp in comps
+                    if (get_comparison_field(comp) in STIX_SUPPORTED_TYPES[indicator_type])
+                ]
+                if field_comparisons:
+                    supported_comparisons[indicator_type] = field_comparisons
+        return supported_comparisons
 
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any], ignore_external_id: bool = False):
@@ -942,10 +1026,10 @@ class STIX2XSOARParser(BaseClient):
         """
         indicator_obj = id_to_object.get(related_obj, {})
         entity_b_value = indicator_obj.get('name', '')
-        entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(indicator_obj.get('type', ''),
-                                                             STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
+        entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(
+            indicator_obj.get('type', ''), STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
         if indicator_obj.get('type') == "indicator":
-            entity_b_value = STIX2XSOARParser.get_ioc_value(related_obj, id_to_object)
+            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get('pattern', ''))
         elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
             _, entity_b_value = STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_obj)
         elif indicator_obj.get('type') == "report" and is_unit42_report:
@@ -1042,7 +1126,13 @@ class STIX2XSOARParser(BaseClient):
         Returns:
             bool.
         """
-        return all(not pattern.startswith(f"[{key}") for key in STIX_NOT_SUPPORTED_TYPES)
+        return any(
+            any(
+                pattern.startswith(f"[{key}:{field}")
+                for field in STIX_SUPPORTED_TYPES[key]
+            )
+            for key in STIX_SUPPORTED_TYPES
+        )
 
     @staticmethod
     def get_tlp(indicator_json: dict) -> str:
@@ -1089,13 +1179,35 @@ class STIX2XSOARParser(BaseClient):
                 break
         return custom_fields, score
 
+    @staticmethod
+    def get_single_pattern_value(pattern: str) -> str | None:
+        """
+        Parses a pattern with a single comparison and extracts the right hand value of the comparison.
+        If the pattern is invalid, the pattern itself will be returned.
+
+        For Example:
+
+        >>> STIX2XSOARParser.get_single_pattern_value("[domain-name:value = 'www.example.com']")
+        'www.example.com'
+
+        Args:
+            pattern: the pattern to extract the value from.
+
+        Returns:
+            str. the value in the pattern.
+        """
+        comparisons = STIX2XSOARParser.get_pattern_comparisons(pattern) or {}
+        if comparisons:
+            return dict_safe_get(tuple(comparisons.values()), [0, 0, -1], '', str).strip("'") or None
+        return None
+
     def parse_indicator(self, indicator_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Parses a single indicator object
         :param indicator_obj: indicator object
         :return: indicators extracted from the indicator object in cortex format
         """
-        field_map = self.field_map if self.field_map else {}
+        field_map = self.field_map or {}
         pattern = indicator_obj.get("pattern")
         indicators = []
         if pattern:
@@ -1542,6 +1654,8 @@ class STIX2XSOARParser(BaseClient):
         Args:
             autonomous_system_obj (dict): indicator as an observable object of type autonomous-system.
         """
+        if isinstance(autonomous_system_obj, dict) and 'number' in autonomous_system_obj:
+            autonomous_system_obj['number'] = str(autonomous_system_obj.get('number', ''))
         autonomous_system_indicator = self.parse_general_sco_indicator(autonomous_system_obj, value_mapping='number')
         autonomous_system_indicator[0]['fields']['name'] = autonomous_system_obj.get('name')
 
@@ -2016,16 +2130,12 @@ class STIX2XSOARParser(BaseClient):
     def extract_ioc_value(ioc_obj, key: str = "name"):
         """
         Extract SHA-256 from specific key, default key is name.
-        ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
+        "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
         """
         ioc_value = ioc_obj.get(key, '')
-        try:
-            ioc_value_groups = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value)
-            if ioc_value_groups:
-                ioc_value = ioc_value_groups.group(0)
-        except AttributeError:
-            ioc_value = None
-        return ioc_value
+        comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value) or {}
+        return next(
+            (comp[-1].strip("'") for comp in comps.get('file', []) if ['hashes', 'SHA-256'] in comp), None)
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
         if not indicator_modified_str:

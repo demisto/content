@@ -2,7 +2,7 @@
     "name": "Tripwire",
     "description": "Tripwire is a file integrity managment(FIM),used to track files and folders on different systems and monitors their changes.",
     "support": "xsoar",
-    "currentVersion": "1.0.19",
+    "currentVersion": "1.0.20",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

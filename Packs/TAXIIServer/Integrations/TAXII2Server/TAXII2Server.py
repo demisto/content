@@ -887,6 +887,8 @@ def test_module(params: dict) -> str:
     """
     Integration test module.
     """
+    if not params.get('longRunningPort'):
+        params['longRunningPort'] = '1111'
     run_long_running(params, is_test=True)
     return 'ok'
 
@@ -963,11 +965,6 @@ def main():  # pragma: no cover
     fields_to_present = create_fields_list(params.get('fields_filter', ''))
     types_for_indicator_sdo = argToList(params.get('provide_as_indicator'))
 
-    try:
-        port = int(params.get('longRunningPort'))
-    except ValueError as e:
-        raise ValueError(f'Invalid listen port - {e}')
-
     collections = get_collections(params)
     version = params.get('version')
     credentials = params.get('credentials', {})
@@ -991,6 +988,13 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
 
     try:
+        if command == 'test-module':
+            return_results(test_module(params))
+        try:
+            port = int(params.get('longRunningPort', ''))
+        except ValueError as e:
+            raise ValueError(f'Invalid listen port - {e}')
+
         SERVER = TAXII2Server(scheme, str(host_name), port, collections, certificate,
                               private_key, http_server, credentials, version, service_address, fields_to_present,
                               types_for_indicator_sdo)
@@ -1004,9 +1008,6 @@ def main():  # pragma: no cover
             set_integration_context(integration_context)
 
             run_long_running(params)
-
-        elif command == 'test-module':
-            return_results(test_module(params))
 
         elif command == 'taxii-server-list-collections':
             integration_context = get_integration_context(True)

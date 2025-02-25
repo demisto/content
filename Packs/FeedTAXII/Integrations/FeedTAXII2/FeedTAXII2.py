@@ -61,19 +61,26 @@ def filter_previously_fetched_indicators(indicators: list, last_run: dict) -> li
         last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
                                          if obj.get("value") != "$$DummyIndicator$$" else obj
                                          for obj in indicators]
+        demisto.debug("with first fetch, updated the latest_indicators")
         return indicators
     for indicator in indicators:
-        indicator_id = indicator.get("rawJSON", {}).get('id', "")
+        indicator_id = indicator.get("rawJSON", {}).get("id")
 
         # check if the indicator is stored in latest_indicators
         saved_indicator = list(filter(lambda ind: indicator_id in ind, last_indicators))
 
         # if the indicator is stored in latest_indicators -> check if it was modified
         if saved_indicator:
-            modified_date = saved_indicator[0].get(indicator_id)
+            saved_modified_date = saved_indicator[0].get(indicator_id)
+            new_modified_date = indicator.get('rawJSON', {}).get('modified')
 
+            # if indicator stored in saved indicators but does not have modified field -> add to new_indicators
+            if not saved_modified_date or not new_modified_date:
+                demisto.debug(f"saved indicator's modified value: {saved_modified_date}, "
+                              f"new indicator's modified value is: {new_modified_date}")
+                new_indicators.append(indicator)
             # the indicator is stored in latest_indicators, but got modified -> add to new_indicators
-            if indicator.get("rawJSON", {}).get("modified", "") > modified_date:
+            elif new_modified_date > saved_modified_date:
                 new_indicators.append(indicator)
             else:
                 skipped_indicators.append(indicator_id)

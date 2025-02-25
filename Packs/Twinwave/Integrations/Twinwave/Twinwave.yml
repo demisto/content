@@ -240,7 +240,7 @@ script:
     - contextPath: Twinwave.TempArtifactURL.URL
       description: Temporary URL.
       type: Unknown
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   script: ''
   subtype: python3

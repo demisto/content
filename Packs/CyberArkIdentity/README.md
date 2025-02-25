@@ -22,6 +22,10 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
 
 * Pay attention: Timestamp parsing is currently supported for the **WhenOccurred** field with Epoch string in it.
 
+### Timestamp Ingestion
+Timestamp parsing is performed according to the *WhenOccurred* field, in the format **/Date(EpochMillis>)/**.
+E.g., /Date(1677206879107)/ (Millis - 13 Digits).
+
 ## Commands
 You can execute these commands from the Cortex XSIAM Alerts War Room as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

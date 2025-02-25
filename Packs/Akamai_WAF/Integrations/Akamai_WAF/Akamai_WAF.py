@@ -215,6 +215,7 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
+        payload = ""
         if key_algorithm == "RSA":
             payload = '{\"certificatesAndTrustChains\":[{\"certificate\":\"' + certificate + '\",' \
                 ' \"keyAlgorithm\":\"RSA\",' \
@@ -573,6 +574,10 @@ class Client(BaseClient):
                     }
 
                 )
+        else:
+            staticRRSets = []
+            trafficTargets = []
+            demisto.debug(f"{property_type} -> initialized {staticRRSets=} {trafficTargets=}")
 
         body = {
             "balanceByDownloadScore": False,
@@ -731,6 +736,9 @@ class Client(BaseClient):
             Type = raw_response.get('type')
 
         else:
+            SyncPoint = None
+            Name = None
+            Type = None
             demisto.results("Could not get the Sync Point...")
 
         body = {
@@ -2102,6 +2110,22 @@ class Client(BaseClient):
                                   headers=headers,
                                   )
 
+    def list_cps_active_certificates(self, contract_id: str,) -> dict:
+        """
+            Lists enrollments with active certificates.
+            Note that the rate limit for this operation is 10 requests per minute per account.
+        Args:
+            contract_id: Specify the contract on which to operate or view.
+
+        Returns:
+            The response provides a list of active certificates
+
+        """
+        return self._http_request(method="GET",
+                                  url_suffix=f'cps/v2/active-certificates?contractId={contract_id}',
+                                  headers={"accept": "application/vnd.akamai.cps.active-certificates.v1+json"},
+                                  )
+
     def cancel_cps_change(self, change_path: str, account_switch_key: str = "") -> dict:
         """
             Cancels a pending change.
@@ -2141,6 +2165,36 @@ class Client(BaseClient):
         return self._http_request(method=method,
                                   url_suffix=f'cps/v2/enrollments/{enrollment_id}',
                                   headers=headers,
+                                  )
+
+    # created by D.S.
+    def list_dns_zones(self):
+        """
+        List Edge DNS Zones
+        Args:
+
+        Returns:
+            <Response [200]>
+        """
+
+        return self._http_request(method='Get',
+                                  url_suffix='config-dns/v2/zones?showAll=true',
+                                  )
+
+    # created by D.S.
+
+    def list_dns_zone_recordsets(self, zone: str):
+        """
+        List Edge DNS zone recordsets
+        Args:
+            zone: string. The name of the zone.
+
+        Returns:
+            <Response [200]>
+        """
+
+        return self._http_request(method='Get',
+                                  url_suffix=f'config-dns/v2/zones/{zone}/recordsets?showAll=true',
                                   )
 
 
@@ -3042,6 +3096,7 @@ def update_cps_enrollment_schedule_ec(raw_response: dict) -> tuple[list, list]:
             changeId = change.split('/')[6]
         else:
             changeId = ""
+            enrollmentId = ""
         entry_context.append(assign_params(**{
             "id": enrollmentId,
             "changeId": changeId,
@@ -3930,6 +3985,8 @@ def clone_papi_property_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
+    title = ""
+    human_readable_ec: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_property_bygroup(contract_id=contract_id, group_id=group_id)
@@ -4097,6 +4154,8 @@ def new_papi_edgehostname_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
+    title = ""
+    human_readable_ec: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_edgehostname_bygroup(contract_id=contract_id,
@@ -4197,6 +4256,8 @@ def new_papi_cpcode_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
+    title = ""
+    human_readable_ec: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_cpcodeid_bygroup(contract_id=contract_id, group_id=group_id)
@@ -6038,6 +6099,124 @@ def get_cps_enrollment_by_id_command(client: Client,
     return human_readable, context_entry, raw_response
 
 
+@logger
+def list_appsec_config_command(client: Client) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Lists available security configurations.
+
+    Args:
+        client:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_appsec_config()
+    title = f'{INTEGRATION_NAME} - list application configuration command'
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.AppSecurity": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec.get("configurations", ""),
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_dns_zones_command(client: Client) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Lists all zones that the current user has access to manage.
+
+    Args:
+        client:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_dns_zones()
+    title = f'{INTEGRATION_NAME} - list dns zones command'
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.EdgeDns.Zones": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_dns_zone_recordsets_command(client: Client, zone: str) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Lists all record sets for this Zone. It works only for PRIMARY and SECONDARY zones.
+
+    Args:
+        client:
+        zone: The name of the zone.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_dns_zone_recordsets(zone)
+    title = f'{INTEGRATION_NAME} - list dns zones command'
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.EdgeDns.ZoneRecordSets": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec.get("recordsets"),
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_cps_active_certificates_command(client: Client,
+                                         contract_id: str,
+                                         ) -> tuple[str, dict, Union[list, dict]]:
+    """
+        lists enrollments with active certificates. Note that the rate limit for this
+        operation is 10 requests per minute per account.
+
+    Args:
+        client:
+        contract_id: Unique Identifier of the contract on which to operate or view.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_cps_active_certificates(contract_id=contract_id)
+
+    title = f'{INTEGRATION_NAME} - cps list active certificates command'
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Cps.Active.Certificates.Enrollments": entry_context.get("enrollments")
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec.get("enrollments"),
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -6134,6 +6313,10 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-get-cps-change-status': get_cps_change_status_command,
         f'{INTEGRATION_COMMAND_NAME}-cancel-cps-change': cancel_cps_change_command,
         f'{INTEGRATION_COMMAND_NAME}-get-cps-enrollment-by-id': get_cps_enrollment_by_id_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-appsec-config': list_appsec_config_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-dns-zones': list_dns_zones_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-dns-zone-recordsets': list_dns_zone_recordsets_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-cps-active-certificates': list_cps_active_certificates_command,
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())

@@ -494,7 +494,7 @@ def query_malops_command(client: Client, args: dict):
                                                                  template_context, filters, guid_list=guid_list)
     outputs = []
 
-    data = {}
+    data: dict = {}
     for response in (malop_process_type, malop_loggon_session_type):
         data = response.get('data', {}) if response else {}
         malops_map = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
@@ -734,8 +734,8 @@ def malop_processes_command(client: Client, args: dict):
     for output in outputs:
         # Remove whitespaces from dictionary keys
         context.append({key.translate({32: None}): value for key, value in output.items()})
-    demisto.info(f"context, {context}")
-    demisto.info(f"outputs, {outputs}")
+    demisto.debug(f"context, {context}")
+    demisto.debug(f"outputs, {outputs}")
     return CommandResults(
         readable_output=tableToMarkdown('Cybereason Malop Processes', outputs, headers=PROCESS_HEADERS, removeNull=True),
         outputs_prefix='Cybereason.Process',
@@ -1502,12 +1502,11 @@ def malop_to_incident(malop: str) -> dict:
     status = 0
     malopStatus = ""
     if malop.get('status', ''):
-        malopStatus = malop.get('status', 'UNREAD')
+        malopStatus = (malop.get('status', 'UNREAD'))
     elif malop.get('simpleValues', ''):
-        malopStatus = malop.get('simpleValues', {}).get('managementStatus', {}).get('values', ['UNREAD'])[0]
-    if (malopStatus == "Active") or (malopStatus == "UNREAD"):
-        status = 0
-    elif (malopStatus == "Remediated") or (malopStatus == "TODO"):
+        malopStatus = (malop.get('simpleValues', {}).get('managementStatus', {}).get('values', ['UNREAD'])[0])
+
+    if (malopStatus == "Remediated") or (malopStatus == "TODO"):
         status = 1
     elif (malopStatus == "Closed") or (malopStatus == "RESOLVED"):
         status = 2
@@ -1525,19 +1524,17 @@ def malop_to_incident(malop: str) -> dict:
         link = SERVER + '/#/detection-malop/' + guid_string
         isEdr = False
 
-    if malop.get('simpleValues'):
-        malopCreationTime = malop.get('simpleValues', {}).get('creationTime', {}).get('values', ['2010-01-01'])[0]
-        malopUpdateTime = malop.get('simpleValues', {}).get('malopLastUpdateTime', {}).get('values', ['2010-01-01'])[0]
+    if simple_values := malop.get('simpleValues'):
+        malopCreationTime = simple_values.get('creationTime', {}).get('values', ['2010-01-01'])[0]
+        malopUpdateTime = simple_values.get('malopLastUpdateTime', {}).get('values', ['2010-01-01'])[0]
     else:
         malopCreationTime = str(malop.get('creationTime', '2010-01-01'))
         malopUpdateTime = str(malop.get('lastUpdateTime', '2010-01-01'))
 
-    if malop.get('elementValues'):
-        if malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues', ''):
-            rootCauseElementName = (malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues',
-                                                                                                    '')[0]).get('name', '')
-            rootCauseElementType = (malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues', '')[0]
-                                    ).get('elementType', '')
+    if element_values := malop.get('elementValues'):
+        if root_cause_elements := element_values.get('rootCauseElements', {}).get('elementValues', []):
+            rootCauseElementName = root_cause_elements[0].get('name', '')
+            rootCauseElementType = root_cause_elements[0].get('elementType', '')
         else:
             rootCauseElementName = ''
             rootCauseElementType = ''
@@ -1545,10 +1542,10 @@ def malop_to_incident(malop: str) -> dict:
         rootCauseElementName = malop.get('primaryRootCauseName', '')
         rootCauseElementType = malop.get('rootCauseElementType', '')
 
-    if malop.get('malopDetectionType'):
-        detectionType = malop.get('malopDetectionType', '')
+    if malop_detection_type := malop.get('malopDetectionType'):
+        detectionType = malop_detection_type
     else:
-        detectionType = malop.get('simpleValues', {}).get('detectionType', {}).get('values', [''])[0]
+        detectionType = (malop.get('simpleValues', {}).get('detectionType', {}).get('values', [''])[0])
 
     malopGroup = malop.get('group', '')
 
@@ -1885,7 +1882,7 @@ def fetch_imagefile_guids(client: Client, processes: list) -> dict:
             image_files = ('' if details['elementValues']['imageFile']['elementValues'] is None else details[
                 'elementValues']['imageFile']['elementValues'])
             for image_file in image_files:
-                img_file_guids[image_file['name']] = image_file['guid']
+                img_file_guids[image_file['name']] = image_file['guid']  # type: ignore[index]
     except Exception as e:
         demisto.error(str(e))
     return img_file_guids
@@ -1956,7 +1953,7 @@ def get_batch_id(client: Client, suspect_files_guids: dict) -> list:
         malop_comment = f'Could not download the file {suspect_file} from source machine, even after waiting for 80 seconds.'
         demisto.info(malop_comment)
 
-    if new_malop_comments == []:
+    if not new_malop_comments:
         raise DemistoException(malop_comment)
     else:
         return new_malop_comments

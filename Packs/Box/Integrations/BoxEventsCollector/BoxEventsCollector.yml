@@ -19,7 +19,7 @@ configuration:
   name: isFetchEvents
   type: 8
   required: false
-- defaultvalue: 7 days
+- defaultvalue: 1 days
   display: |-
     First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: created_after
@@ -57,7 +57,7 @@ script:
       defaultValue: 3 days
     description: Get events.
     name: box-get-events
-  dockerimage: demisto/auth-utils:1.0.0.108110
+  dockerimage: demisto/auth-utils:1.0.0.116752
   runonce: false
   script: '-'
   subtype: python3

@@ -44,4 +44,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Calculate_Severity_Critical_Assets_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_Critical_Assets_v2.png)
+![Calculate_Severity_Critical_Assets_v2](../doc_files/Calculate_Severity_Critical_Assets_v2.png)

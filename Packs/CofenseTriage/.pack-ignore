@@ -2,7 +2,7 @@
 ignore=IN126,IN136
 
 [file:README.md]
-ignore=RM102
+ignore=RM102,RM106
 
 [file:CofenseTriagev2_image.png]
 ignore=IM111

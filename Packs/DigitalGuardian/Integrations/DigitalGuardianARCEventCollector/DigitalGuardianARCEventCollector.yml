@@ -21,28 +21,27 @@ configuration:
   name: credentials
   displaypassword: Client Secret
   required: true
-- display: Export Profile
-  additionalinfo: GUID of export profile, part of the export URL
+- display: Export Profiles
+  additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles.
   name: export_profile
   required: true
-  type: 0
+  type: 16  # Multi Select
+  defaultvalue: defaultExportProfile
+  options:
+    - defaultExportProfile
   section: Connect
-- defaultvalue: 1000
-  section: Collect
-  display: Max events per fetch
-  name: number_of_events
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
+  advanced: true
 description: Digital Guardian ARC event collector.
 display: Digital Guardian ARC Event Collector
 name: DigitalGuardianARCEventCollector
@@ -61,16 +60,16 @@ script:
       required: true
     - default: false
       defaultValue: 1000
-      description: Maximum results to return.
+      description: Maximum results to return per export profile.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Gets events from Hello World.
+    description: Gets events from the configured Digital Guardian ARC export profile.
     execution: false
     name: digital-guardian-get-events
-  dockerimage: demisto/python3:3.10.14.98471
+  dockerimage: demisto/python3:3.11.10.116949
   isfetchevents: true
   runonce: false
   script: '-'

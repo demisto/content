@@ -2,7 +2,7 @@
     "name": "GsuiteAuditor",
     "description": "G Suite Auditor integration with Cortex XSOAR. G Suite Auditor is an integration to recieve audit log data from G Suite services like drive,gmail and more. The integration uses Google Admin SDK",
     "support": "xsoar",
-    "currentVersion": "1.0.25",
+    "currentVersion": "1.0.28",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

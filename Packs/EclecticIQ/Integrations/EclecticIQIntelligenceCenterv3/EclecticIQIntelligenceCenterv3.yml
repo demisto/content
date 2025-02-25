@@ -680,7 +680,7 @@ script:
       description: 'Entity tags and taxonomies.'
       type: Unknown
   - arguments:
-    - description: EclecticIQ URI excluding Intelligence Cetner address but including API version and params if needed. e.g. /private/status.
+    - description: EclecticIQ URI excluding Intelligence Center address but including API version and params if needed. e.g. /private/status.
       name: uri
       required: true
     description: Make HTTP GET request to EclecticIQ Intelligence Center.
@@ -696,7 +696,7 @@ script:
       description: 'GET reply requested URI.'
       type: String
   - arguments:
-    - description: EclecticIQ URI excluding Intelligence Cetner address but including API version and params if needed.
+    - description: EclecticIQ URI excluding Intelligence Center address but including API version and params if needed.
       name: uri
       required: true
     - description: JSON payload.
@@ -714,7 +714,43 @@ script:
       description: 'POST reply requested URI.'
       type: String
   - arguments:
-    - description: EclecticIQ URI excluding Intelligence Cetner address but including API version and params if needed.
+    - description: EclecticIQ URI excluding Intelligence Center address but including API version and params if needed.
+      name: uri
+      required: true
+    - description: JSON payload.
+      name: body
+    description: Make HTTP PUT request to EclecticIQ Intelligence Center.
+    name: eclecticiq-request-put
+    outputs:
+    - contextPath: EclecticIQ.PUT.ReplyBody
+      description: 'PUT reply body.'
+      type: String
+    - contextPath: EclecticIQ.PUT.ReplyStatus
+      description: 'PUT reply status code.'
+      type: String
+    - contextPath: EclecticIQ.PUT.URI
+      description: 'PUT reply requested URI.'
+      type: String
+  - arguments:
+    - description: EclecticIQ URI excluding Intelligence Center address but including API version and params if needed.
+      name: uri
+      required: true
+    - description: JSON payload.
+      name: body
+    description: Make HTTP PATCH request to EclecticIQ Intelligence Center.
+    name: eclecticiq-request-patch
+    outputs:
+    - contextPath: EclecticIQ.PATCH.ReplyBody
+      description: 'PATCH reply body.'
+      type: String
+    - contextPath: EclecticIQ.PATCH.ReplyStatus
+      description: 'PATCH reply status code.'
+      type: String
+    - contextPath: EclecticIQ.PATCH.URI
+      description: 'PATCH reply requested URI.'
+      type: String
+  - arguments:
+    - description: EclecticIQ URI excluding Intelligence Center address but including API version and params if needed.
       name: uri
       required: true
     description: Make HTTP DELETE request to EclecticIQ Intelligence Center.
@@ -729,7 +765,7 @@ script:
   - arguments: []
     name: eclecticiq-get-indicators
     description: Get last block of Indicators from configured to fetch Outgoing feed.
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.11.10.116949
   feed: true
   isFetchSamples: true
   runonce: false
