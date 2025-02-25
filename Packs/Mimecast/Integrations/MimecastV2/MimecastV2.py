@@ -45,7 +45,7 @@ PASSWORD = demisto.params().get('password') or demisto.params().get('credentials
 if isinstance(PASSWORD, dict):
     PASSWORD = PASSWORD.get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
-MAX_FETCH=arg_to_number(demisto.params().get('max_fetch', 100)) or 100
+MAX_FETCH = arg_to_number(demisto.params().get('max_fetch', 100)) or 100
 if MAX_FETCH > 200:
     raise DemistoException("The maximum fetch limit cannot exceed 200. Please enter a lower value.")
 
@@ -143,7 +143,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results, next_page
 
 
-def request_with_pagination_with_next_page(api_endpoint: str, data: list , current_next_page: str):
+def request_with_pagination_with_next_page(api_endpoint: str, data: list, current_next_page: str):
     demisto.debug(f"Sending request from request_with_pagination with, {data=}, {current_next_page=}")
     len_of_results = 0
     results = []
@@ -170,9 +170,6 @@ def request_with_pagination_with_next_page(api_endpoint: str, data: list , curre
         if not next_page or (len_of_results >= MAX_FETCH):
             break
     return results, next_page
-        
-        
-    
 
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
@@ -200,8 +197,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             'Authorization': auth_header
         }
 
-    LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
-        method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+    LOG(f'running {method} request with url={url}\tparams={json.dumps(params)}\tdata={json.dumps(payload)}\tis user auth={is_user_auth}')
     try:
         res = requests.request(
             method,
@@ -861,11 +857,11 @@ def query(args: dict):
         'query': query_xml
     }]
     messages, _, _ = request_with_pagination(api_endpoint='/api/archive/search',
-                                          data=data,
-                                          response_param='items',
-                                          limit=limit,
-                                          page=page,
-                                          page_size=page_size)
+                                             data=data,
+                                             response_param='items',
+                                             limit=limit,
+                                             page=page,
+                                             page_size=page_size)
 
     for message in messages:
         additional_dict = {k: message[k] for k in additional_keys}
@@ -1770,10 +1766,10 @@ def list_messages():
     subject = demisto.args().get('subject')
 
     messages_list, _, _ = request_with_pagination(api_endpoint='/api/archive/get-message-list',
-                                               data=[search_params],
-                                               limit=limit,
-                                               page=page,
-                                               page_size=page_size)
+                                                  data=[search_params],
+                                                  limit=limit,
+                                                  page=page,
+                                                  page_size=page_size)
     for message in messages_list:
         if subject == message.get('subject') or not subject:
             contents.append({
@@ -1834,11 +1830,11 @@ def get_url_logs():
     if scan_result:
         search_params['scanResult'] = scan_result
     url_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
-                                          data=[search_params],
-                                          response_param='clickLogs',
-                                          limit=limit,
-                                          page=page,
-                                          page_size=page_size)
+                                             data=[search_params],
+                                             response_param='clickLogs',
+                                             limit=limit,
+                                             page=page,
+                                             page_size=page_size)
     for url_log in url_logs:
         contents.append({
             'Action': url_log.get('action'),
@@ -1900,11 +1896,11 @@ def get_attachment_logs():
         search_params['result'] = result
 
     attachment_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
-                                                 data=[search_params],
-                                                 response_param='attachmentLogs',
-                                                 limit=limit,
-                                                 page=page,
-                                                 page_size=page_size)
+                                                    data=[search_params],
+                                                    response_param='attachmentLogs',
+                                                    limit=limit,
+                                                    page=page,
+                                                    page_size=page_size)
 
     for attachment_log in attachment_logs:
         contents.append({
@@ -1977,11 +1973,11 @@ def get_impersonation_logs():
         search_params['actions'] = actions
 
     impersonation_logs, result_count, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
-                                                               data=[search_params],
-                                                               response_param='impersonationLogs',
-                                                               limit=limit,
-                                                               page=page,
-                                                               page_size=page_size)
+                                                                  data=[search_params],
+                                                                  response_param='impersonationLogs',
+                                                                  limit=limit,
+                                                                  page=page,
+                                                                  page_size=page_size)
 
     for impersonation_log in impersonation_logs:
         contents.append({
@@ -2064,9 +2060,9 @@ def fetch_incidents():
             'scanResult': 'malicious'
         }
         url_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
-                                              data=[search_params],
-                                              response_param='clickLogs',
-                                              limit=MAX_FETCH)
+                                                 data=[search_params],
+                                                 response_param='clickLogs',
+                                                 limit=MAX_FETCH)
         demisto.debug(f"Pulled {len(url_logs)} click logs.")
         for url_log in url_logs:
             incident = url_to_incident(url_log)
@@ -2090,9 +2086,9 @@ def fetch_incidents():
         }
         demisto.debug(search_params, 'search_params')
         attachment_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
-                                                     data=[search_params],
-                                                     response_param='attachmentLogs',
-                                                     limit=MAX_FETCH)
+                                                        data=[search_params],
+                                                        response_param='attachmentLogs',
+                                                        limit=MAX_FETCH)
         demisto.debug(f"Pulled {len(attachment_logs)} attachment logs.")
         for attachment_log in attachment_logs:
             incident = attachment_to_incident(attachment_log)
@@ -2108,7 +2104,8 @@ def fetch_incidents():
             if temp_date > current_fetch:
                 incidents.append(incident)
             else:
-                demisto.debug(f"Did not appended attachment_log with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
+                demisto.debug(
+                    f"Did not appended attachment_log with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
 
     if FETCH_IMPERSONATIONS:
         search_params = {
@@ -2116,9 +2113,9 @@ def fetch_incidents():
             'taggedMalicious': True
         }
         impersonation_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
-                                                        data=[search_params],
-                                                        response_param='impersonationLogs',
-                                                        limit=MAX_FETCH)
+                                                           data=[search_params],
+                                                           response_param='impersonationLogs',
+                                                           limit=MAX_FETCH)
         demisto.debug(f"number of impersonation_logs={len(impersonation_logs)}")
         for impersonation_log in impersonation_logs:
             incident = impersonation_to_incident(impersonation_log)
@@ -2134,7 +2131,8 @@ def fetch_incidents():
             if temp_date > current_fetch:
                 incidents.append(incident)
             else:
-                demisto.debug(f"Did not appended impersonation_logs with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
+                demisto.debug(
+                    f"Did not appended impersonation_logs with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
     if FETCH_HELD_MESSAGES:
         # Added dedup mechanism only to held_messages due to a bug
         next_dedup_held_messages = dedup_held_messages = last_run.get('dedup_held_messages', [])
@@ -2147,11 +2145,11 @@ def fetch_incidents():
         }
         if not current_next_page:
             held_messages, _, next_page = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
-                                                    data=[search_params],
-                                                    limit=MAX_FETCH+len(dedup_held_messages))
+                                                                  data=[search_params],
+                                                                  limit=MAX_FETCH + len(dedup_held_messages))
         else:
             held_messages, next_page = request_with_pagination_with_next_page(api_endpoint='/api/gateway/get-hold-message-list',
-                                                                              data = [search_params],
+                                                                              data=[search_params],
                                                                               current_next_page=current_next_page)
         current_held_message_count = 0
         for held_message in held_messages:
@@ -2187,7 +2185,7 @@ def fetch_incidents():
                 demisto.debug(f"Dropped held message with id {held_message_id}.")
         demisto.debug(f"Pulled {len(held_messages)} held messages.")
         demisto.debug(f"After dropping dedup incidents, added {current_held_message_count} held messages.")
-        
+
     time = last_fetch.isoformat().split('.')[0] + 'Z'
     time_held_messages = last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
     new_last_run = {'time': time,
@@ -3106,7 +3104,7 @@ def mimecast_incident_api_response_to_markdown(api_response, action_type):
         md = 'Incident ' + incident_id + ' has been created'
     else:
         md = 'Incident ' + incident_id + ' has been found'
-    md_metadata = """
+    md_metadata = f"""
 #### Code: {incident_code}
 #### Type: {incident_type}
 #### Reason: {incident_reason}
@@ -3114,13 +3112,7 @@ def mimecast_incident_api_response_to_markdown(api_response, action_type):
 #### The number successfully remediated messages: {incident_successful_messages_amount}
 #### The number of messages that failed to remediate: {incident_failed_messages_amount}
 #### The number of messages that were restored from the incident: {incident_restored_messages_amount}
-""".format(incident_code=incident_code,
-           incident_type=incident_type,
-           incident_reason=incident_reason,
-           incident_identified_messages_amount=incident_identified_messages_amount,
-           incident_successful_messages_amount=incident_successful_messages_amount,
-           incident_failed_messages_amount=incident_failed_messages_amount,
-           incident_restored_messages_amount=incident_restored_messages_amount)
+"""
 
     message = response_data['searchCriteria']
     message_entry = {
@@ -3330,7 +3322,7 @@ def list_held_messages_command(args):
             args: input arguments for the command.
 
     """
-    response, _ , _= list_held_messages_request(args)
+    response, _, _ = list_held_messages_request(args)
     from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
     table_json_transformer = {'to': from_transformer,
                               'from': from_transformer,
@@ -3419,7 +3411,7 @@ def search_processing_message_command(args):
         args: input arguments for the command.
 
     """
-    response, _ , _= search_processing_message_request(args)
+    response, _, _ = search_processing_message_request(args)
     from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
 
     table_json_transformer = {'to': from_transformer,
@@ -3518,7 +3510,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
     data = assign_params(query=query, start=start, end=end)
 
     api_endpoint = "/api/archive/get-archive-search-logs"
-    result_list, _, _= request_with_pagination(
+    result_list, _, _ = request_with_pagination(
         api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size)  # type: ignore
 
     return CommandResults(
@@ -3586,7 +3578,8 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    policies_list, _, _ = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)  # type: ignore
+    policies_list, _, _ = request_with_pagination(api_endpoint, data=[], limit=limit,
+                                                  page=page, page_size=page_size)  # type: ignore
 
     contents = []
     for policy_list in policies_list:
