@@ -152,6 +152,7 @@ configuration:
   type: 8
   required: false
 - display: Incidents Fetch Interval
+  section: Collect
   additionalinfo: The interval in minutes to fetch incidents. The default is 1 minute.
   name: incidentFetchInterval
   defaultvalue: "1"
@@ -1885,3 +1886,4 @@ tests:
 sectionOrder:
 - Connect
 - Collect
+- Restore requests

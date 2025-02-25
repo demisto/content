@@ -18,6 +18,7 @@ from CheckPointHEC import (
     checkpointhec_create_avdlp_exception, checkpointhec_update_avdlp_exception, checkpointhec_delete_avdlp_exception,
     checkpointhec_delete_avdlp_exceptions, checkpointhec_download_email, test_module as check_module
 )
+import CommonServerPython
 from CommonServerPython import DemistoException
 
 
@@ -675,7 +676,7 @@ def test_checkpointhec_download_email(mocker):
     content = b'abc123'
     entity_id = '0' * 32
 
-    file_result = mocker.patch.object(demisto, 'fileResult')
+    file_result = mocker.patch.object(CommonServerPython, 'fileResult')
     mocker.patch.object(client, '_call_api', return_value=content)
 
     checkpointhec_download_email(client, {'entity_id': entity_id})
