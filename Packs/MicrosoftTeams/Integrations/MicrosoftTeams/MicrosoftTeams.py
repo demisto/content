@@ -748,6 +748,9 @@ def get_graph_access_token() -> str:
         'client_secret': BOT_PASSWORD
     }
     if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+        if not AUTH_CODE:
+            raise ValueError('No authorization code configured. Please use the !microsoft-teams-generate-login-url command'
+                             ' and follow the instructions to generate one.')
         data['redirect_uri'] = REDIRECT_URI
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         if refresh_token := refresh_token or get_refresh_token_from_auth_code_param():
