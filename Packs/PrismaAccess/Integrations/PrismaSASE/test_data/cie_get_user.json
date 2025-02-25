@@ -27,11 +27,11 @@
         }
     },
     "expected_result": {
-        "Common-Name": "Test",
-        "Distinguished Name": "CN=Test,UID=TestID,DC=example,DC=com",
-        "Manager": null,
-        "Name": "Test",
-        "Unique Identifier": "1111111-1111-1111-1111-111111111111",
-        "User Principal Name": "test@example.com"
+        "common_name": "Test",
+        "distinguished_name": "CN=Test,UID=TestID,DC=example,DC=com",
+        "manager": null,
+        "name": "Test",
+        "unique_identifier": "1111111-1111-1111-1111-111111111111",
+        "user_principal_name": "test@example.com"
     }
 }

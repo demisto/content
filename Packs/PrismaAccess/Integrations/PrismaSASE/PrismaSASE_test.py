@@ -843,7 +843,7 @@ def test_get_cie_user(mocker):
             'attributes_to_return': 'Common-Name, Unique Identifier, Manager, User Principal Name, Name, Distinguished Name',
             'domain': 'example.com', 'operator': 'Equal',
             'value_for_filter': 'CN=Test,UID=TestID,DC=example,DC=com'}
-    mocked_resp = json.loads(load_mock_response('./cie_get_user_response.json'))
+    mocked_resp = json.loads(load_mock_response('./cie_get_user.json'))
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     mocker.patch.object(client, '_http_request', return_value=mocked_resp.get('api_response'))
