@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 import requests
-from ArcSightESMv2 import parse_json_response
+from ArcSightESMv2 import parse_json_response, repair_malformed_json
 import demistomock as demisto
 import pytest
 import requests_mock
@@ -625,6 +625,12 @@ def test_invalid_json_requiring_fixing_json_string_with_multi_json_object():
             {'$': 'value with "quotes" inside'}
         ]
     }
+
+
+def test_repair_malformed_json_with_partial_escape():
+    assert repair_malformed_json('{"$": "value with \\"partial\\" and \\"full" quotes"}') == (
+        '{"$":"value with \\"partial\\" and \\"full\\" quotes"}'
+    )
 
 
 def test_unfixable_json_response():

@@ -168,6 +168,19 @@ def repair_malformed_json(malformed_json: str) -> str:
         >>> print(repaired_json)
         '{"$": "value \\"with\\" quotes"}, {"$": "another \\"quoted\\" value"}'
     """
+    def find_unescaped_quotes(json_value: str) -> List[int]:
+        quote_positions = []
+        search_start = 0
+        while True:
+            quote_pos = json_value.find('\"', search_start)
+            if quote_pos == -1:  # No more occurrences found
+                break
+            # Check if the quote is already escaped
+            if quote_pos == 0 or json_value[quote_pos - 1] != '\\':
+                quote_positions.append(quote_pos)
+            search_start = quote_pos + 1  # Move start position to just after the found index
+        return quote_positions
+
     def escape_inner_quotes(json_value, quote_indices):
         # We need to escape all quotes except the first and last found quotes
         json_chars = list(json_value)
@@ -184,19 +197,10 @@ def repair_malformed_json(malformed_json: str) -> str:
         dollar_key_parts = part.split('"$":')
 
         if len(dollar_key_parts) > 1:
-            prefix = '"$":'.join(dollar_key_parts[:-1]) + '"$":'  # Keep all parts before the last "$"
+            prefix = '"$":'.join(dollar_key_parts[:-1]) + '"$":'  # Keep all parts before the last `"$":`
             json_value = dollar_key_parts[-1].strip()  # Get the last value
 
-            search_start = 0
-            quote_positions = []
-
-            # Loop to find all occurrences of the substring
-            while True:
-                quote_pos = json_value.find('\"', search_start)
-                if quote_pos == -1:  # No more occurrences found
-                    break
-                quote_positions.append(quote_pos)
-                search_start = quote_pos + 1  # Move start position to just after the found index
+            quote_positions = find_unescaped_quotes(json_value)
 
             if '\"' in json_value and len(quote_positions) > 2:
                 json_value = escape_inner_quotes(json_value, quote_positions)
@@ -1009,7 +1013,7 @@ def parse_json_response(response: requests.Response):
             demisto.debug('Attempt two to fix the modified response as JSON.')
             try:
                 fixed_response_json = json.loads(repair_malformed_json(fixed_response_text))
-            except Exception:
+            except json.JSONDecodeError:
                 demisto.debug('Failed to parse modified response as JSON. Raising original exception.')
                 raise e  # Raise the original exception
 
