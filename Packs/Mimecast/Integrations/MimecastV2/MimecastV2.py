@@ -2141,56 +2141,10 @@ def fetch_incidents():
                 demisto.debug(
                     f"Did not appended impersonation_logs with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
     if FETCH_HELD_MESSAGES:
-        # Added dedup mechanism only to held_messages due to a bug
-        next_dedup_held_messages = dedup_held_messages = last_run.get('dedup_held_messages', [])
-        if not isinstance(dedup_held_messages, List):
-            raise DemistoException(f"dedup_held_messages is of type {type(dedup_held_messages)}")
-        current_next_page = last_run.get('next_page')
-        demisto.debug(f"{current_next_page=}")
-        demisto.debug(f"{dedup_held_messages=}")
-        search_params = {
-            'start': last_fetch_held_messages_date_time,
-            'admin': True
-        }
-        if not current_next_page:
-            held_messages, _, next_page = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
-                                                                  data=[search_params],
-                                                                  limit=MAX_FETCH)
-        else:
-            held_messages, next_page = request_with_pagination_with_next_page(api_endpoint='/api/gateway/get-hold-message-list',
-                                                                              data=[search_params],
-                                                                              current_next_page=current_next_page,
-                                                                              dedup_held_messages=dedup_held_messages)
-        current_held_message_count = 0
-        for held_message in held_messages:
-            incident = held_to_incident(held_message)
-            held_message_id = held_message.get('id')
-            temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
-            # update last run
-            if temp_date > last_fetch_held_messages:
-                demisto.debug(f"Increasing last_fetch since {temp_date=} > {last_fetch_held_messages=}")
-                last_fetch_held_messages = temp_date
-                next_dedup_held_messages = [held_message.get('id')]
-                demisto.debug(f"Increased last_fetch to {last_fetch_held_messages}")
-            elif temp_date == last_fetch_held_messages:
-                if isinstance(next_dedup_held_messages, List):
-                    next_dedup_held_messages.append(held_message_id)
-                    demisto.debug(f"Appended a held message {held_message_id} to dedup as temp_date=last_fetch_held_messages"
-                                    f"={last_fetch_held_messages}")
-                else:
-                    demisto.debug(f"Next_dedup_held_messages is not of type List but of type "
-                                    f"{type(next_dedup_held_messages)}.")
-            else:
-                demisto.debug(f"In the else for held messages with id {held_message_id} as {temp_date=} < "
-                                f"{last_fetch_held_messages=}")
-            # avoid duplication due to weak time query
-            if temp_date > current_fetch_held_message:
-                incidents.append(incident)
-                current_held_message_count += 1
-            else:
-                demisto.debug(f"Did not append held_message with id {held_message_id} since {temp_date=} <= "
-                                f"{current_held_message_count=}.")
-        demisto.debug(f"Pulled {len(held_messages)} held messages.")
+        next_page, next_dedup_held_messages, last_fetch_held_messages= fetch_held_messages(last_run,
+                                                                  last_fetch_held_messages_date_time,
+                                                                  current_fetch_held_message,
+                                                                  incidents)
 
     time = last_fetch.isoformat().split('.')[0] + 'Z'
     time_held_messages = last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
@@ -2204,6 +2158,59 @@ def fetch_incidents():
     demisto.debug(f"Changed last_run to {new_last_run=}")
     demisto.incidents(incidents)
 
+
+def fetch_held_messages(last_run, last_fetch_held_messages_date_time, current_fetch_held_message, incidents):
+    # Added dedup mechanism only to held_messages due to a bug
+    next_dedup_held_messages = dedup_held_messages = last_run.get('dedup_held_messages', [])
+    if not isinstance(dedup_held_messages, List):
+        raise DemistoException(f"dedup_held_messages is of type {type(dedup_held_messages)}")
+    current_next_page = last_run.get('next_page')
+    demisto.debug(f"{current_next_page=}")
+    demisto.debug(f"{dedup_held_messages=}")
+    search_params = {
+        'start': last_fetch_held_messages_date_time,
+        'admin': True
+    }
+    if not current_next_page:
+        held_messages, _, next_page = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
+                                                                data=[search_params],
+                                                                limit=MAX_FETCH)
+    else:
+        held_messages, next_page = request_with_pagination_with_next_page(api_endpoint='/api/gateway/get-hold-message-list',
+                                                                            data=[search_params],
+                                                                            current_next_page=current_next_page,
+                                                                            dedup_held_messages=dedup_held_messages)
+    current_held_message_count = 0
+    for held_message in held_messages:
+        incident = held_to_incident(held_message)
+        held_message_id = held_message.get('id')
+        temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+        # update last run
+        if temp_date > last_fetch_held_messages:
+            demisto.debug(f"Increasing last_fetch since {temp_date=} > {last_fetch_held_messages=}")
+            last_fetch_held_messages = temp_date
+            next_dedup_held_messages = [held_message.get('id')]
+            demisto.debug(f"Increased last_fetch to {last_fetch_held_messages}")
+        elif temp_date == last_fetch_held_messages:
+            if isinstance(next_dedup_held_messages, List):
+                next_dedup_held_messages.append(held_message_id)
+                demisto.debug(f"Appended a held message {held_message_id} to dedup as temp_date=last_fetch_held_messages"
+                                f"={last_fetch_held_messages}")
+            else:
+                demisto.debug(f"Next_dedup_held_messages is not of type List but of type "
+                                f"{type(next_dedup_held_messages)}.")
+        else:
+            demisto.debug(f"In the else for held messages with id {held_message_id} as {temp_date=} < "
+                            f"{last_fetch_held_messages=}")
+        # avoid duplication due to weak time query
+        if temp_date > current_fetch_held_message:
+            incidents.append(incident)
+            current_held_message_count += 1
+        else:
+            demisto.debug(f"Did not append held_message with id {held_message_id} since {temp_date=} <= "
+                            f"{current_held_message_count=}.")
+    demisto.debug(f"Pulled {len(held_messages)} held messages.")
+    return next_page, next_dedup_held_messages, last_fetch_held_messages
 
 def url_to_incident(url_log):
     incident = {}
