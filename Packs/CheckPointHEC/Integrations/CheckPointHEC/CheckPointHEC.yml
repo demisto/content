@@ -119,13 +119,13 @@ configuration:
   required: false
   section: Collect
   additionalinfo: The maximum number of incidents to retrieve per fetch.
-- section: Restore requests
+- section: Collect
   display: Collect restore requests
   name: collect_restore_requests
   type: 8
   required: false
   additionalinfo: Collect restore requests as incidents.
-- section: Restore requests
+- section: Collect
   display: Include denied requests
   name: include_denied_requests
   type: 8
@@ -135,7 +135,7 @@ configuration:
   name: include_accepted_requests
   type: 8
   required: false
-  section: Restore requests
+  section: Collect
   additionalinfo: Accepted restore requests will be in the results (they are not by default).
 - display: Trust any certificate (not secure)
   additionalinfo: Trust server certificate.
@@ -1886,4 +1886,3 @@ tests:
 sectionOrder:
 - Connect
 - Collect
-- Restore requests
