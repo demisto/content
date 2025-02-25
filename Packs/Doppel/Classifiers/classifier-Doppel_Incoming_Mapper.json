@@ -241,9 +241,6 @@
 				"Doppel  Alert Brand": {
 					"simple": "brand"
 				},
-				"Doppel Audit Logs": {
-					"simple": "audit_logs.[]."
-				},
 				"Doppel Brand": {
 					"simple": "brand"
 				},
@@ -390,9 +387,6 @@
 				},
 				"severity": {
 					"simple": "severity"
-				},
-				"sourceBrand": {
-					"simple": "brand"
 				},
 				"uploaded_by": {
 					"simple": "uploaded_by"

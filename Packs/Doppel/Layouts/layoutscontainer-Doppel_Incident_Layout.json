@@ -355,8 +355,17 @@
 								"endCol": 2,
 								"fieldId": "alertid",
 								"height": 26,
-								"id": "a6ce5d89-5115-4f48-b430-d33799081c52",
+								"id": "e151a0ab-11d1-4667-a874-2fbeb823cebe",
 								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "alertsource",
+								"height": 26,
+								"id": "7b939b5f-faa3-4505-9c58-334062803188",
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -365,16 +374,16 @@
 								"fieldId": "doppelseverity",
 								"height": 26,
 								"id": "2feff9ff-9c80-4aed-8866-abf3892a2fa6",
-								"index": 1,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "sourcebrand",
+								"fieldId": "doppelbrand",
 								"height": 26,
 								"id": "31921aa2-3b76-4b3a-a6d3-5f1e43968dcb",
-								"index": 2,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -383,7 +392,7 @@
 								"fieldId": "brand",
 								"height": 26,
 								"id": "5f7dc687-7405-4465-a603-fbab6c1e4686",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -392,7 +401,7 @@
 								"fieldId": "entitystate",
 								"height": 26,
 								"id": "dbd066f4-285b-4a9a-9467-50671f5a2915",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -401,7 +410,7 @@
 								"fieldId": "queuestate",
 								"height": 26,
 								"id": "27e8a019-7828-4406-93b9-dbf951f71a7a",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -410,7 +419,7 @@
 								"fieldId": "product",
 								"height": 26,
 								"id": "079c3ec9-f0a9-4673-8aa5-4e4c9e9e79cf",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -419,7 +428,7 @@
 								"fieldId": "platform",
 								"height": 26,
 								"id": "d2ad1638-1c98-4e96-a52e-561c72297fa6",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -428,7 +437,7 @@
 								"fieldId": "doppellink",
 								"height": 26,
 								"id": "128d659a-5c63-458c-a96b-0240bbeae842",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -437,7 +446,7 @@
 								"fieldId": "doppelnotes",
 								"height": 26,
 								"id": "a144e1c1-b303-4dcb-b56d-d89508e3ccd1",
-								"index": 4,
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -446,7 +455,7 @@
 								"fieldId": "doppelplatform",
 								"height": 26,
 								"id": "30e0153f-6343-44eb-b9ca-c4dea0e82161",
-								"index": 5,
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -455,7 +464,7 @@
 								"fieldId": "doppelproduct",
 								"height": 26,
 								"id": "edcef656-d794-4f5c-9fed-5b583384d3ea",
-								"index": 6,
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -464,7 +473,7 @@
 								"fieldId": "doppelqueuestate",
 								"height": 26,
 								"id": "820d34e6-33ef-4990-9345-865772efc7a1",
-								"index": 7,
+								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -473,7 +482,7 @@
 								"fieldId": "doppelcreatedat",
 								"height": 26,
 								"id": "270e7ec6-6db4-43ce-9f88-6d16e08649f9",
-								"index": 8,
+								"index": 9,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -481,7 +490,7 @@
 								"endCol": 2,
 								"fieldId": "tags",
 								"height": 26,
-								"id": "98baebf3-14e6-445c-ae21-91664a795ade",
+								"id": "661bd421-ccb4-401f-9354-754d2f414d08",
 								"index": 10,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -702,7 +711,7 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
 										"simple": "  ",
@@ -730,7 +739,7 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
 										"simple": "Safelist this Asset, We own it.",
@@ -758,7 +767,7 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
 										"simple": "Throw out this Alert later as this is a Noise.",
@@ -787,7 +796,7 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
 										"simple": " ",
@@ -814,7 +823,7 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
 										"simple": " ",
@@ -843,7 +852,7 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
 										"simple": "",
