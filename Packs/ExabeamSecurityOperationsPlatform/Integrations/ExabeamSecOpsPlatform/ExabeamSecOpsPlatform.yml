@@ -59,7 +59,7 @@ script:
       description: The ending date for the search range.
       name: end_time
     - defaultValue: ""
-      description: 'Query, using Lucene syntax, filters log data for precise analysis, without escaping and with values unquoted. e.g., query="product: Correlation Rule AND rule_severity: High"'
+      description: 'Query, using Lucene syntax, filters log data for precise analysis, without escaping and with values unquoted. E.g., query="product: Correlation Rule AND rule_severity: High"'
       name: query
       required: false
     - description: Comma-separated list of fields to be returned from the search.
