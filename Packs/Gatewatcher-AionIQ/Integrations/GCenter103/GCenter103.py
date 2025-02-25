@@ -1659,7 +1659,7 @@ def last_run_range(params: dict[str, Any]) -> list[str]:
 
     from_to: list[str] = ["", ""]
     first_fetch = params.get('first_fetch', '1 day')
-    first_fetch_dt = arg_to_datetime(arg=first_fetch, arg_name='First fetch', required=True)  # noqa: F405
+    first_fetch_dt = arg_to_datetime(arg=first_fetch, arg_name='First fetch', required=True)
 
     last_run = demisto.getLastRun()
     now = datetime.today()
@@ -2189,214 +2189,214 @@ def main() -> None:
             token=token
         )
         if command == "test-module":
-            return_results(  # noqa: F405
+            return_results(
                 test_module(client=client, user=user, password=password, token=token)
             )
         elif command == "fetch-incidents":
-            return_results(  # noqa: F405
+            return_results(
                 fetch_incidents()
             )
         elif command == "gcenter103-alerts-list":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_alerts_list_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-note-add":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_alerts_note_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-note-remove":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_alerts_note_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-tags-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_alerts_tags_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-tags-add":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_alerts_tags_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-tags-remove":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_alerts_tags_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-alerts-status-update":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_alerts_status_update_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-raw-alerts-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_raw_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-raw-alerts-file-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_raw_alerts_file_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-file-scan":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_file_scan_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-file-scan-result-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_file_scan_result_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-list":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_assets_list_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-alerts-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_assets_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_assets_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-note-add":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_assets_note_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-note-remove":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_assets_note_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-tags-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_assets_tags_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-tags-add":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_assets_tags_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-assets-tags-remove":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_assets_tags_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-list":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_users_list_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-alerts-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_users_alerts_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_users_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-note-add":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_users_note_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-note-remove":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_users_note_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-tags-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_users_tags_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-tags-add":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_users_tags_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-users-tags-remove":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_users_tags_remove_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-yara-rules-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_yara_rules_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-yara-rules-add":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_yara_rules_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-malcore-fingerprints-get":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_malcore_fingerprints_get_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-malcore-fingerprints-add":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_malcore_fingerprints_add_command(
                     client=client,
                     args=args)
             )
         elif command == "gcenter103-malcore-fingerprints-remove":
-            return_results(  # noqa: F405
+            return_results(
                 gcenter103_malcore_fingerprints_remove_command(
                     client=client,
                     args=args)
             )
 
     except Exception as e:
-        return_error(  # noqa: F405
+        return_error(
             f"Failed to execute {command} command.\nError: {str(e)}"
         )
 

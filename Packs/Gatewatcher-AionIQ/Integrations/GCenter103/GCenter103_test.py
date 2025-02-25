@@ -963,3 +963,42 @@ def test_gcenter103_command(
 
     assert command_result.__dict__
     assert command_result.__dict__.get("outputs_prefix") == output_data.__dict__.get("outputs_prefix")
+
+
+def test_test_module() -> None:
+
+    from GCenter103 import GwClient, test_module
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"token": "testtoken"}
+
+    with patch.object(GwClient, '_post', return_value=mock_response):
+        client = GwClient(ip="fake_ip")
+        client.auth(user="test_user", password="test_pass")
+        assert client.headers.get("API-KEY") == "testtoken"
+        mock_auth_response = MagicMock()
+        mock_auth_response.status_code = 200
+        mock_auth_response.json.return_value = {}
+        with patch.object(GwClient, '_get', return_value=mock_auth_response):
+            assert client.is_authenticated()
+
+
+def test_get_tags() -> None:
+
+    from GCenter103 import GwClient, get_tags
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"token": "testtoken"}
+
+    with patch.object(GwClient, '_post', return_value=mock_response):
+        client = GwClient(ip="fake_ip")
+        client.auth(user="test_user", password="test_pass")
+        assert client.headers.get("API-KEY") == "testtoken"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"results": [{"id": "1", "label": "tag"}]}
+        with patch.object(GwClient, '_get', return_value=mock_response):
+            assert get_tags(client=client) == [{"id": "1", "label": "tag"}] 
+   
