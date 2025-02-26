@@ -27,7 +27,18 @@ def mock_http_request(method, url_suffix, params=None, headers=None, data=None, 
 def client():
     # Create a mock client
     client = MagicMock()
-    client.get_alert = mock_http_request
+    client.get_alerts.return_value = ALERTS_RESPONSE
+    
+    # Mocking fetch single alert (Used in update_remote_system_command)
+    client.get_alert.return_value = {
+        "id": "123", 
+        "queue_state": "open", 
+        "entity_state": "active"
+    }
+
+    # Mocking update alert (Used in update_remote_system_command)
+    client.update_alert.return_value = None  # Assume update succeeds
+    
     client.create_abuse_alert = MagicMock(side_effect=mock_http_request)
     return client
 
@@ -81,7 +92,7 @@ def test_fetch_incidents_command(client, mocker):
     """Test fetch_incidents_command function."""
 
     # Mocking demisto functions using mocker.patch.object
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "10"})
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "20"})
     mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
     mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
     mock_incidents = mocker.patch.object(demisto, "incidents")
@@ -147,7 +158,7 @@ def test_get_remote_data_command(mocker, requests_mock):
     demisto.debug.assert_called()
 
 
-def test_update_remote_system_command(mock_client, mocker):
+def test_update_remote_system_command(client, mocker):
     """Test update_remote_system_command function."""
 
     # Mocking demisto functions using mocker.patch.object
@@ -161,21 +172,21 @@ def test_update_remote_system_command(mock_client, mocker):
     }
 
     # Run the function
-    result = update_remote_system_command(mock_client, args)
+    result = update_remote_system_command(client, args)
 
     # Assertions
     assert result == "123", "Returned remoteId should match input"
     mock_debug.assert_called()  # Ensure debug logs are being generated
     mock_error.assert_not_called()  # Ensure no errors were logged
 
-def test_get_mapping_fields_command(mock_client, mocker):
+def test_get_mapping_fields_command(client, mocker):
     """Test get_mapping_fields_command function."""
 
     # Mocking demisto functions using mocker.patch.object
     mock_debug = mocker.patch.object(demisto, "debug")
 
     # Run the function
-    result = get_mapping_fields_command(mock_client, {})
+    result = get_mapping_fields_command(client, {})
 
     # Assertions
     assert result is not None, "Result should not be None"
@@ -228,7 +239,7 @@ def test_doppel_update_alert_command(mocker):
     mock_debug = mocker.patch.object(demisto, "debug")
 
     # Mocking the Client instance
-    mock_client = MagicMock(spec=client)
+    mock_client = MagicMock()
     mock_client.update_alert.return_value = {"id": "123", "queue_state": "archived", "entity_state": "closed"}
 
     # Sample arguments
