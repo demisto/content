@@ -318,7 +318,9 @@ def test_doppel_update_alert_command_with_entity(client, mocker):
     assert result.outputs == mock_response  # Ensure the correct output is returned
 
 def test_doppel_get_alerts_command(client, mocker):
-    mocker.patch.object(client, 'get_alerts', side_effect=mock_http_request)
+    
+    mock_data = util_load_json('test_data/get-all-alerts.json')
+    mocker.patch.object(client, 'get_alerts', return_value=mock_data)
 
     args = {
         'search_key': 'test-key',
