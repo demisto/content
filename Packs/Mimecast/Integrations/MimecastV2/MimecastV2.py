@@ -91,14 +91,12 @@ default_query_xml = "<?xml version=\"1.0\"?> \n\
 
 def request_with_pagination(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
                             page: int = None,
-                            page_size: int = None, use_headers: bool = False, is_file: bool = False,
-                            dedup_messages: list = [], current_next_page: str = ''):
+                            page_size: int = None, use_headers: bool = False, is_file: bool = False):
     """
 
     Creates paging response for relevant commands.
 
     """
-    demisto.debug(f"Sending request from request_with_pagination with {limit=}, {data=}")
     headers = {}
     if page and page_size:
         limit = page * page_size
@@ -112,52 +110,86 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
         payload['data'] = data
     if use_headers:
         headers = generate_user_auth_headers(api_endpoint)
-    if not current_next_page:
-        demisto.debug("No current_next_page")
-        response = http_request('POST', api_endpoint, payload, headers=headers, is_file=is_file)
-        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
-    else:
-        demisto.debug(f"current_next_page exists with value {current_next_page}")
-        next_page = current_next_page
+    response = http_request('POST', api_endpoint, payload, headers=headers, is_file=is_file)
+
+    next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
     len_of_results = 0
     results = []
     while True:
-        demisto.debug("Another loop")
-        if not current_next_page:
-            demisto.debug("Do not have current_next_page")
-            if response.get('fail'):
-                raise Exception(json.dumps(response.get('fail')[0].get('errors')))
-            if response_param:
-                response_data = response.get('data')[0].get(response_param, [])
-            else:
-                response_data = response.get('data', [])
-            for entry in response_data:
-                # If returning this log will not exceed the specified limit
-                # For held message fetch- and it did not already was fetched
-                entry_id = entry.get('id')
-                if ((not limit or len_of_results < limit)
-                    and (not entry_id or entry_id not in dedup_messages)): # dedup for fetch
-                    len_of_results += 1
-                    results.append(entry)
-                elif entry_id in dedup_messages:
-                    demisto.debug(f"Dropped {entry_id} as it already exists.")
-            # If limit is reached or there are no more pages
-            if not next_page or (limit and len_of_results >= limit):
-                break
-        pagination = {'page_size': page_size or limit,  # type: ignore
+        if response.get('fail'):
+            raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+        if response_param:
+            response_data = response.get('data')[0].get(response_param)
+        else:
+            response_data = response.get('data')
+        for entry in response_data:
+            # If returning this log will not exceed the specified limit
+            if not limit or len_of_results < limit:
+                len_of_results += 1
+                results.append(entry)
+        # If limit is reached or there are no more pages
+        if not next_page or (limit and len_of_results >= limit):
+            break
+        pagination = {'page_size': page_size,  # type: ignore
                       'pageToken': next_page}  # type: ignore
         payload['meta']['pagination'] = pagination
         response = http_request('POST', api_endpoint, payload, headers=headers)
         next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
-        if current_next_page:
-            demisto.debug(f"Set {current_next_page} to null")
-            current_next_page = ''
-    # returning next_page is only required for fetch mechanism
     if page and page_size:
-        return results[(-1 * page_size):], page_size, next_page
+        return results[(-1 * page_size):], page_size
 
+    return results, len_of_results
+
+
+def request_with_pagination_fetch_held_messages(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
+                                                dedup_messages: list = [], current_next_page: str = ''):
+    """
+
+    Creates paging response for relevant commands.
+
+    """
+    demisto.debug(f"Sending request from request_with_pagination with {limit=}, {data=}")
+    headers = {}
+    payload = {}
+    len_of_results = 0
+    results = []
+    if data and data != [{}]:
+        payload['data'] = data
+    while True:
+        if not current_next_page:
+            demisto.debug("No current_next_page")
+            pagination = {'pageSize': limit}
+            payload['meta']['pagination'] = pagination
+        else:
+            next_page = current_next_page
+            current_next_page = ''
+            pagination = {'page_size': limit,
+                          'pageToken': next_page}
+            payload['meta']['pagination'] = pagination
+            demisto.debug(f"current_next_page exists with value {current_next_page}")
+        response = http_request('POST', api_endpoint, payload, headers=headers)
+        if response.get('fail'):
+            raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+        if response_param:
+            response_data = response.get('data')[0].get(response_param, [])
+        else:
+            response_data = response.get('data', [])
+        for entry in response_data:
+            # If returning this log will not exceed the specified limit
+            # For held message fetch- and it did not already was fetched
+            entry_id = entry.get('id')
+            if ((not limit or len_of_results < limit)
+                and (not entry_id or entry_id not in dedup_messages)): # dedup for fetch
+                len_of_results += 1
+                results.append(entry)
+            elif entry_id in dedup_messages:
+                demisto.debug(f"Dropped {entry_id} as it already exists.")
+            # If limit is reached or there are no more pages
+        if not next_page or (limit and len_of_results >= limit):
+            break
+        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+        # returning next_page is only required for fetch mechanism
     return results, len_of_results, next_page
-
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
     is_user_auth = True
@@ -843,7 +875,7 @@ def query(args: dict):
         'admin': True,
         'query': query_xml
     }]
-    messages, _, _ = request_with_pagination(api_endpoint='/api/archive/search',
+    messages, _ = request_with_pagination(api_endpoint='/api/archive/search',
                                              data=data,
                                              response_param='items',
                                              limit=limit,
@@ -1752,7 +1784,7 @@ def list_messages():
         search_params['start'] = start_time
     subject = demisto.args().get('subject')
 
-    messages_list, _, _ = request_with_pagination(api_endpoint='/api/archive/get-message-list',
+    messages_list, _ = request_with_pagination(api_endpoint='/api/archive/get-message-list',
                                                   data=[search_params],
                                                   limit=limit,
                                                   page=page,
@@ -1816,7 +1848,7 @@ def get_url_logs():
         search_params['to'] = to_date
     if scan_result:
         search_params['scanResult'] = scan_result
-    url_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
+    url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
                                              data=[search_params],
                                              response_param='clickLogs',
                                              limit=limit,
@@ -1882,7 +1914,7 @@ def get_attachment_logs():
     if result:
         search_params['result'] = result
 
-    attachment_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
+    attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                     data=[search_params],
                                                     response_param='attachmentLogs',
                                                     limit=limit,
@@ -1959,7 +1991,7 @@ def get_impersonation_logs():
     if actions:
         search_params['actions'] = actions
 
-    impersonation_logs, result_count, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
+    impersonation_logs, result_count = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
                                                                   data=[search_params],
                                                                   response_param='impersonationLogs',
                                                                   limit=limit,
@@ -2045,7 +2077,7 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'scanResult': 'malicious'
         }
-        url_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
+        url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
                                                  data=[search_params],
                                                  response_param='clickLogs',
                                                  limit=MAX_FETCH)
@@ -2071,7 +2103,7 @@ def fetch_incidents():
             'result': 'malicious'
         }
         demisto.debug(search_params, 'search_params')
-        attachment_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
+        attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                         data=[search_params],
                                                         response_param='attachmentLogs',
                                                         limit=MAX_FETCH)
@@ -2098,7 +2130,7 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'taggedMalicious': True
         }
-        impersonation_logs, _, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
+        impersonation_logs, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
                                                            data=[search_params],
                                                            response_param='impersonationLogs',
                                                            limit=MAX_FETCH)
@@ -2153,7 +2185,7 @@ def fetch_held_messages(last_run: dict,
         'start': last_fetch_held_messages_date_time,
         'admin': True
     }
-    held_messages, _, next_page = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
+    held_messages, _, next_page = request_with_pagination_fetch_held_messages(api_endpoint='/api/gateway/get-hold-message-list',
                                                             data=[search_params],
                                                             limit=MAX_FETCH,
                                                             dedup_messages=dedup_held_messages,
@@ -3313,7 +3345,7 @@ def list_held_messages_command(args):
             args: input arguments for the command.
 
     """
-    response, _, _ = list_held_messages_request(args)
+    response, _ = list_held_messages_request(args)
     from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
     table_json_transformer = {'to': from_transformer,
                               'from': from_transformer,
@@ -3402,7 +3434,7 @@ def search_processing_message_command(args):
         args: input arguments for the command.
 
     """
-    response, _, _ = search_processing_message_request(args)
+    response, _ = search_processing_message_request(args)
     from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
 
     table_json_transformer = {'to': from_transformer,
@@ -3501,7 +3533,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
     data = assign_params(query=query, start=start, end=end)
 
     api_endpoint = "/api/archive/get-archive-search-logs"
-    result_list, _, _ = request_with_pagination(
+    result_list, _ = request_with_pagination(
         api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size)  # type: ignore
 
     return CommandResults(
@@ -3569,7 +3601,7 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    policies_list, _, _ = request_with_pagination(api_endpoint, data=[], limit=limit,
+    policies_list, _ = request_with_pagination(api_endpoint, data=[], limit=limit,
                                                   page=page, page_size=page_size)  # type: ignore
 
     contents = []
