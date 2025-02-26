@@ -2156,7 +2156,7 @@ def fetch_held_messages(last_run: dict,
     held_messages, _, next_page = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
                                                             data=[search_params],
                                                             limit=MAX_FETCH,
-                                                            dedup_held_messages=dedup_held_messages,
+                                                            dedup_messages=dedup_held_messages,
                                                             current_next_page=current_next_page)
     current_held_message_count = 0
     for held_message in held_messages:
