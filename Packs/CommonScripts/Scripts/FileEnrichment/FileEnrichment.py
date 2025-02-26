@@ -39,7 +39,7 @@ class ContextPaths(Enum):
     )
     WILDFIRE_V2_INFO_FILE = "InfoFile"
     WILDFIRE_V2_VERDICT = "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)"
-    CORE_IR_HASH_PREVALENCE = "Core.AnalyticsPrevalence.Hash"
+    CORE_IR_HASH_ANALYTICS = "Core.AnalyticsPrevalence.Hash"
     VIRUS_TOTAL_FILE = "VirusTotal.File(val.id && val.id == obj.id)"
 
 
@@ -426,8 +426,9 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict, list[CommandResul
     brand = command.brand
     context_output: dict[str, Any] = {"_File": {}}
     for context_item in entry_context:
-        hash_prevalence: dict = context_item.get(ContextPaths.CORE_IR_HASH_PREVALENCE.value, {})
-        context_output["_File"].update(add_source_brand_to_values(hash_prevalence, brand))
+        hash_analytics = context_item.get(ContextPaths.CORE_IR_HASH_ANALYTICS.value, [])
+        hash_analytics = hash_analytics[0] if hash_analytics and isinstance(hash_analytics, list) else hash_analytics
+        context_output["_File"].update(add_source_brand_to_values(hash_analytics, brand))
 
     return context_output, readable_command_results
 

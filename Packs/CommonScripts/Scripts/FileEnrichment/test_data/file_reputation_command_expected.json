@@ -1,0 +1,67 @@
+{
+    "DBotScore": [
+        {
+            "Indicator": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+            "Reliability": "C - Fairly reliable",
+            "Score": 3,
+            "Type": "file",
+            "Vendor": "VirusTotal (API v3)"
+        }
+    ],
+    "File": {
+        "Extension": "zip",
+        "Hashes": [
+            {
+                "type": "MD5",
+                "value": "4e76823c05048e92a4c0122d61000edf"
+            },
+            {
+                "type": "SHA1",
+                "value": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9"
+            },
+            {
+                "type": "SHA256",
+                "value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0"
+            },
+            {
+                "type": "SSDeep",
+                "value": "6144:WWEH6pcEypX3dNGGkfxlLrnR8mfhAd2HNRg/U/:WWs6pcVlHtkDR8/Ad23z"
+            }
+        ],
+        "MD5": "4e76823c05048e92a4c0122d61000edf",
+        "Relationships": [
+            {
+                "EntityA": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                "EntityAType": "File",
+                "EntityB": "jmcoru.alcatelupd.xyz",
+                "EntityBType": "Domain",
+                "Relationship": "communicates-with"
+            }
+        ],
+        "SHA1": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9",
+        "SHA256": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+        "SSDeep": "6144:WWEH6pcEypX3dNGGkfxlLrnR8mfhAd2HNRg/U/:WWs6pcVlHtkDR8/Ad23z",
+        "Size": 262291,
+        "Tags": [
+            "jar",
+            "checks-cpu-name",
+            "sets-process-name",
+            "detect-debug-environment",
+            "checks-hostname"
+        ],
+        "Type": "application/zip",
+        "VTVendors": {
+            "EngineDetectionNames": [
+                "Trojan.ZIP.Java.m!c",
+                "Malicious (score: 99)"
+            ],
+            "EngineDetections": 43,
+            "EngineVendors": [
+                "CTX",
+                "AVG"
+            ]
+        },
+        "VTFileVerdict": "Malicious"
+    },
+    "HumanReadable": "#### Result for !file file=\"7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0\"\n### Results of file hash 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0\n|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|\n|\u2014|\u2014|\u2014|\u2014|\u2014|\u2014|\u2014|\u2014|\n| d8b426700c3c10413abb8acdcfeccaaec8f06cd9 | 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0 | 4e76823c05048e92a4c0122d61000edf | \u672a\u78ba\u8a8d 639898.crdownload | jar | 2025-02-02 12:54:47Z | -208 | 43/76 |\n"
+}

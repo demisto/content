@@ -1,7 +1,7 @@
 import json
 import pytest
 from pytest_mock import MockerFixture
-from FileEnrichment import Command, Brands, ContextPaths
+from FileEnrichment import Command, Brands
 
 
 """ TEST CONSTANTS """
@@ -248,29 +248,75 @@ def test_add_source_brand_to_values():
 def test_execute_file_reputation(mocker: MockerFixture):
     """
     Given:
-        - A dictionary of string keys and values of different data types.
+        - ...
 
     When:
-        - Calling `add_source_brand_to_values`.
+        - Calling `execute_file_reputation`.
 
     Assert:
-        - Ensure the dictionary is transformed with the correct key prefix and the values nested in dictionaries that also
-          contain the source brand field.
+        - ...
     """
-    command = Command(Brands.VIRUS_TOTAL_V3, "file", {"file": SHA_256_HASH})
-
     from FileEnrichment import execute_file_reputation
+
+    command = Command(Brands.VIRUS_TOTAL_V3, "file", {"file": SHA_256_HASH})
 
     demisto_execute_response = util_load_json("test_data/file_reputation_command_response.json")
     mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
 
     context_output, readable_command_results = execute_file_reputation(command)
 
-    assert context_output["_DBotScore"] == demisto_execute_response[0]["EntryContext"][ContextPaths.DBOT_SCORE.value]
-    assert context_output["_File"] == {
-        **demisto_execute_response[0]["EntryContext"][ContextPaths.FILE.value][0],
-        "VTFileVerdict": "Malicious"  # VirusTotal.File.attributes.last_analysis_stats.malicious > 5
-    }
-    assert readable_command_results[0].readable_output == (
-        f"#### Result for {command}\n{demisto_execute_response[0]['HumanReadable']}"
-    )
+    expected_output = util_load_json("test_data/file_reputation_command_expected.json")
+    assert context_output["_DBotScore"] == expected_output["DBotScore"]
+    assert context_output["_File"] == expected_output["File"]
+    assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
+
+
+def test_execute_execute_wildfire_report(mocker: MockerFixture):
+    """
+    Given:
+        - ...
+
+    When:
+        - Calling `execute_wildfire_report`.
+
+    Assert:
+        - ...
+    """
+    from FileEnrichment import execute_wildfire_report
+
+    command = Command(Brands.WILDFIRE_V2, "wildfire-report", {"sha256": SHA_256_HASH})
+
+    demisto_execute_response = util_load_json("test_data/wildfire_report_command_response.json")
+    mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
+
+    context_output, readable_command_results = execute_wildfire_report(command)
+
+    expected_output = util_load_json("test_data/wildfire_report_command_expected.json")
+    assert context_output["_DBotScore"] == expected_output["DBotScore"]
+    assert context_output["_File"] == expected_output["File"]
+    assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
+
+
+def test_execute_ir_hash_analytics(mocker: MockerFixture):
+    """
+    Given:
+        - ...
+
+    When:
+        - Calling `execute_ir_hash_analytics`.
+
+    Assert:
+        - ...
+    """
+    from FileEnrichment import execute_ir_hash_analytics
+
+    command = Command(Brands.CORE_IR, "core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH})
+
+    demisto_execute_response = util_load_json("test_data/ir_hash_analytics_command_response.json")
+    mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
+
+    context_output, readable_command_results = execute_ir_hash_analytics(command)
+
+    expected_output = util_load_json("test_data/ir_hash_analytics_command_expected.json")
+    assert context_output["_File"] == expected_output["File"]
+    assert readable_command_results[0].readable_output == expected_output["HumanReadable"]

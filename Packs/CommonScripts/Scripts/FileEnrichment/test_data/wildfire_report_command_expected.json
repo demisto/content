@@ -1,0 +1,47 @@
+{
+    "DBotScore": [
+        {
+            "Indicator": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+            "Reliability": "B - Usually reliable",
+            "Score": 3,
+            "Type": "file",
+            "Vendor": "WildFire-v2"
+        }
+    ],
+    "File": {
+        "DigitalSignature": {
+            "Published": "None"
+        },
+        "Hashes": [
+            {
+                "type": "MD5",
+                "value": "4e76823c05048e92a4c0122d61000edf"
+            },
+            {
+                "type": "SHA1",
+                "value": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9"
+            },
+            {
+                "type": "SHA256",
+                "value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0"
+            }
+        ],
+        "MD5": "4e76823c05048e92a4c0122d61000edf",
+        "Malicious": {
+            "Description": null,
+            "Vendor": "WildFire-v2"
+        },
+        "SHA1": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9",
+        "SHA256": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+        "Size": "262291",
+        "Tags": [
+            "malware"
+        ],
+        "Type": "JAVA JAR",
+        "Status": {
+            "value": "Success",
+            "source": "WildFire-v2"
+        }
+    },
+    "HumanReadable": "#### Result for !wildfire-report sha256=\"7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0\"\n### WildFire File Report - PDF format\n|FileType|MD5|SHA256|Size|Status|\n|---|---|---|---|---|\n| JAVA JAR | 4e76823c05048e92a4c0122d61000edf | 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0 | 262291 | Completed |\n"
+}
