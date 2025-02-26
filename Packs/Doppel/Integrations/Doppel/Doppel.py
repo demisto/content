@@ -658,12 +658,34 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return new_incident_id
 
 
-def get_mapping_fields_command(client: Client, args: Dict[str, Any]):
+def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappingFieldsResponse:
+    """
+    Retrieves the mapping fields for Doppel alerts in XSOAR.
+
+    This function defines a custom mapping for Doppel alerts, adding specific fields that
+    can be used for incident mirroring and enrichment in Cortex XSOAR.
+
+    Args:
+        client (Client): The API client used to communicate with Doppel.
+        args (Dict[str, Any]): Command arguments (not used in this function).
+
+    Returns:
+        GetMappingFieldsResponse: The mapping response containing field definitions.
+    """
+    demisto.debug("Executing get_mapping_fields_command")  # Debug statement
+
+    # Define the incident mapping scheme
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=DOPPEL_ALERT)
     xdr_incident_type_scheme.add_field(name='queue_state', description='Queue State of the Doppel Alert')
+
+    # Create the response object
     mapping_response = GetMappingFieldsResponse()
     mapping_response.add_scheme_type(xdr_incident_type_scheme)
+
+    demisto.debug(f"Mapping fields response created: {mapping_response}")  # Debug statement
     return mapping_response
+
+
 
 
 ''' MAIN FUNCTION '''

@@ -218,18 +218,21 @@ def test_get_mapping_fields_command(client, mocker):
 
 
 def test_doppel_get_alert_command(client, mocker):
-    mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
+    # Mock API response
+    mocker.patch.object(client, 'get_alert', return_value={
+        "id": "TET-1953443",
+        "status": "Open",
+        "name": "Test Alert"
+    })
 
-    # Sample arguments for testing
-    args = {'id': 'TET-1953443'}  # Example test with an ID (use appropriate values)
-
+    args = {'id': 'TET-1953443'}  
     result = doppel_get_alert_command(client, args)
 
-    assert isinstance(result, CommandResults)
+    assert isinstance(result, CommandResults), f"Expected CommandResults but got {type(result)}"
     assert result.outputs_prefix == 'Doppel.Alert'
     assert result.outputs_key_field == 'id'
-    assert result.outputs.get('id') == 'TET-1953443'  # Adjust as per the sample response structure
-    assert 'Alert Summary' in result.readable_output  # Check if human-readable output contains expected text
+    assert result.outputs.get('id') == 'TET-1953443'
+    assert 'Alert Summary' in result.readable_output
 
 
 def test_doppel_get_alert_command_with_invalid_params(client):
