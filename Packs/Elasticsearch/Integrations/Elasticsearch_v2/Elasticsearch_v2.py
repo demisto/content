@@ -27,6 +27,7 @@ elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
     from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
+    from elastic_transport import RequestsHttpNode
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection, NotFoundError  # type: ignore[assignment]
     from elasticsearch_dsl import Search
@@ -165,17 +166,14 @@ def elasticsearch_builder(proxies):
         connection_args["connection_class"] = RequestsHttpConnection  # type: ignore[assignment]
         connection_args["proxies"] = proxies
 
-    # The input of proxy configuration is currently missing on client v8 - in this case we are dependent on the client using the
-    # proxy environment variables. To add the proxy parameter to the Elasticsearch client v8 - uncomment the following section.
-    # and import the RequestsHttpNode class from elastic_transport (for client v8).
-    # Reference- https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214
-    # else:
-    #     # Adding the proxy related parameter to the Elasticsearch client v8
-    #     class CustomHttpNode(RequestsHttpNode):
-    #         def __init__(self, *args, **kwargs):
-    #             super().__init__(*args, **kwargs)
-    #             self.session.proxies = proxies
-    #     connection_args['node_class'] = CustomHttpNode
+    else:
+        # Adding the proxy related parameter to the Elasticsearch client v8
+        # Reference- https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214
+        class CustomHttpNode(RequestsHttpNode):  # pylint: disable=E0601
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.session.proxies = proxies
+        connection_args['node_class'] = CustomHttpNode  # type: ignore[assignment]
 
     if API_KEY_ID:
         connection_args["api_key"] = API_KEY
@@ -836,7 +834,17 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
 
     requested_index = index or FETCH_INDEX
-    return es.search(index=requested_index, body=body, size=size, from_=page)
+
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
+        search = Search(using=es, index=requested_index).query(body.get('query'))
+        if size and isinstance(page, int):
+            search = search[page:page + size]
+        response = search.execute().to_dict()
+
+    else:  # Elasticsearch v7 and below or OpenSearch
+        response = es.search(index=requested_index, body=body, size=size, from_=page)
+
+    return response
 
 
 def fetch_incidents(proxies):
@@ -1130,9 +1138,9 @@ def main():  # pragma: no cover
 
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
-            return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
-                         'Please try using the Open Search client in the instance configuration.'
-                         '\nError message: {}'.format(demisto.command(), str(e)), error=str(e))
+            return_error(f'Failed executing {demisto.command()}. Seems that the client does not support the server\'s '
+                         f'distribution, Please try using the Open Search client in the instance configuration.'
+                         f'\nError message: {str(e)}', error=str(e))
         if 'failed to parse date field' in str(e):
             return_error(f'Failed to execute the {demisto.command()} command. Make sure the `Time field type` is correctly set.',
                          error=str(e))

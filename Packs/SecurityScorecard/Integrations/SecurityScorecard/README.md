@@ -414,4 +414,37 @@ This command does not require any arguments.
 | SecurityScorecard.AlertRules.Rule.name | String | Alert Rule name. | 
 | SecurityScorecard.AlertRules.Rule.target | String | Target of the Rule. | 
 | SecurityScorecard.AlertRules.Rule.updated_at | Date | Timestamp when the alert rule was last updated. | 
-| SecurityScorecard.AlertRules.Rule.paused_at | String | Timestamp when the alert rule was paused. | 
+| SecurityScorecard.AlertRules.Rule.paused_at | String | Timestamp when the alert rule was paused. |
+
+### securityscorecard-issue-details-get
+
+***
+Retrieve issue details for a specific issue type and domain.
+
+##### Base Command
+
+`securityscorecard-issue-details-get`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain to get the issue details for. | Required |
+| issue_type | The issue type to get the details for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SecurityScorecard.IssueDetails.issue_id | String | Unique UUID for this measurement. | 
+| SecurityScorecard.IssueDetails.parent_domain | String | Parent domain aka vendor. | 
+| SecurityScorecard.IssueDetails.issue_type | String | issue_type of the findings. | 
+| SecurityScorecard.IssueDetails.count | Number | The number of findings. | 
+| SecurityScorecard.IssueDetails.group_status | String | If findings are active or not. |
+| SecurityScorecard.IssueDetails.first_seen_time | Date | Epoch of observation in nanoseconds. |
+| SecurityScorecard.IssueDetails.last_seen_time | Date | Epoch of observation in nanoseconds. |
+| SecurityScorecard.IssueDetails.port | Number | Port number of the observation if applicable. |
+| SecurityScorecard.IssueDetails.domain | String | Domain of the observation if applicable. |
+| SecurityScorecard.IssueDetails.ip | String | IP address of the observation if applicable. |
+| SecurityScorecard.IssueDetails.protocol | String | Protocol of the observation if applicable. |
+| SecurityScorecard.IssueDetails.observations | String | Observation data in raw JSON format. |
