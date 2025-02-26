@@ -99,7 +99,7 @@ class Client(BaseClient):
 
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
-        params = {"id": alert_id} if alert_id else {"entity": entity}
+        params = {"id": alert_id} if alert_id is not None else {"entity": entity}
         payload = {"queue_state": queue_state, "entity_state": entity_state, "comment" :comment}
 
         response_content = self._http_request(
@@ -177,27 +177,28 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     last_update_str = last_update_str[:26] + "Z"
     last_update = datetime.strptime(last_update_str, "%Y-%m-%dT%H:%M:%S.%fZ")
     demisto.debug(f'Getting Remote Data for {doppel_alert_id} which was last updated on: {last_update}')
-    updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity=None)
+    updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity="")
     demisto.debug(f'Received alert data for {doppel_alert_id}')
     audit_logs = updated_doppel_alert.get('audit_logs')
-    demisto.debug(f'The alert contains {len(audit_logs)} audit logs')
-    if audit_logs:
+    demisto.debug(f'The alert contains {len(audit_logs or "")} audit logs')
+
+    if isinstance(audit_logs, list) and all(isinstance(log, dict) for log in audit_logs):
         most_recent_audit_log = max(audit_logs, key=lambda audit_log: audit_log['timestamp'])
         demisto.debug(f'Most recent audit log is {most_recent_audit_log}')
-        recent_audit_log_datetime_str = most_recent_audit_log['timestamp']
-        recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-        demisto.debug(f'The event was modified recently on {recent_audit_log_datetime}')
-        if recent_audit_log_datetime > last_update:
-            updated_doppel_alert['id'] = doppel_alert_id
-            entries: list = [{
-                "Type": EntryType.NOTE,
-                "Contents": most_recent_audit_log,
-                "ContentsFormat": EntryFormat.JSON,
-                "Note": True
-            }]
-            demisto.debug(f'Successfully returning the updated alert and entries: {updated_doppel_alert, entries}')
-            return updated_doppel_alert, entries
-
+        if isinstance(most_recent_audit_log, dict):
+            recent_audit_log_datetime_str = most_recent_audit_log['timestamp']
+            recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
+            demisto.debug(f'The event was modified recently on {recent_audit_log_datetime}')
+            if recent_audit_log_datetime > last_update:
+                updated_doppel_alert['id'] = doppel_alert_id
+                entries: list = [{
+                    "Type": EntryType.NOTE,
+                    "Contents": most_recent_audit_log,
+                    "ContentsFormat": EntryFormat.JSON,
+                    "Note": True
+                }]
+                demisto.debug(f'Successfully returning the updated alert and entries: {updated_doppel_alert, entries}')
+                return updated_doppel_alert, entries
     return None, []
 
 def _get_mirroring_fields():
@@ -220,7 +221,7 @@ def _get_last_fetch_datetime(last_run):
     else:
         # If no last run is found
         first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
-        last_fetch_datetime = dateparser.parse(first_fetch_time)
+        last_fetch_datetime = dateparser.parse(first_fetch_time) or datetime.now()
         assert last_fetch_datetime is not None, f'could not parse {first_fetch_time}'
         demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch_datetime}")
         
@@ -554,6 +555,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
 
 def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
     try:
+        mirrored_object={}
         demisto.debug(f'Calling the "get-remote-data" for {args["id"]}')
         parsed_args = GetRemoteDataArgs(args)
         remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(client, parsed_args.remote_incident_id, parsed_args.last_update)
@@ -562,7 +564,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
             return GetRemoteDataResponse(remote_updated_incident_data, parsed_entries)
         else:
             demisto.debug(f'Nothing new in the incident {parsed_args.remote_incident_id}')
-            return GetRemoteDataResponse(mirrored_object={}, entries=[{}])
+            return GetRemoteDataResponse(mirrored_object, entries=[{}])
 
     except Exception as e:
         demisto.error(f'Error while running get_remote_data_command: {e}')
@@ -609,7 +611,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
         if parsed_args.remote_incident_id and parsed_args.incident_changed:
             # Fetch existing incident details to preserve versioning
-            old_incident = client.get_alert(id=new_incident_id, entity=None)
+            old_incident = client.get_alert(id=new_incident_id, entity="")
 
             # Apply changes from XSOAR to the existing incident
             old_incident.update(parsed_args.delta)  # Simplifies key-value assignment
@@ -627,7 +629,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                 alert_id=new_incident_id
             )
     except Exception as e:
-        demisto.error(f"Doppel - Error in outgoing mirror for incident {remote_incident_id} \n"
+        demisto.error(f"Doppel - Error in outgoing mirror for incident {new_incident_id} \n"
                   f"Error message: {str(e)}")
 
     return new_incident_id

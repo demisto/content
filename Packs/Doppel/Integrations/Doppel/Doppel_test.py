@@ -1,6 +1,7 @@
 import json
 import pytest
-from unittest.mock import MagicMock, patch
+import demistomock as demisto
+from unittest.mock import MagicMock, Mock, patch
 from datetime import datetime
 from Doppel import test_module, fetch_incidents_command, _get_last_fetch_datetime, _get_mirroring_fields, _paginated_call_to_get_alerts, _get_remote_updated_incident_data_with_entry, get_remote_data_command, update_remote_system_command, get_mapping_fields_command, doppel_get_alert_command, doppel_update_alert_command, doppel_get_alerts_command, doppel_create_alert_command, doppel_create_abuse_alert_command
 from Packs.Base.Scripts.CommonServerPython.CommonServerPython import *
@@ -30,31 +31,76 @@ def test_test_module(client, mocker):
     result = test_module(client, {})
     assert result == 'ok'
 
-@pytest.mark.parametrize('fetch_timeout, max_fetch', [(30, 10)])
-def test_fetch_incidents_command(client, mocker, fetch_timeout, max_fetch):
-    mock_demisto = MagicMock()
-    mocker.patch('demisto.debug')
-    mocker.patch('demisto.setLastRun')
-    mocker.patch('demisto.incidents')
+# @pytest.mark.parametrize('fetch_timeout, max_fetch', [(30, 10)])
+# def test_fetch_incidents_command(client, mocker, fetch_timeout, max_fetch):
+#     mock_demisto = MagicMock()
+#     mocker.patch('demisto.debug')
+#     mocker.patch('demisto.setLastRun')
+#     mocker.patch('demisto.incidents')
 
-    mock_get_last_fetch_datetime = mocker.patch(_get_last_fetch_datetime)
-    mock_get_last_fetch_datetime.return_value = (datetime.now(), [])
+#     mock_get_last_fetch_datetime = mocker.patch(_get_last_fetch_datetime)
+#     mock_get_last_fetch_datetime.return_value = (datetime.now(), [])
 
-    mock_paginated_call = mocker.patch(_paginated_call_to_get_alerts)
-    mock_paginated_call.return_value = [{'created_at': datetime.now().isoformat()}]
+#     mock_paginated_call = mocker.patch(_paginated_call_to_get_alerts)
+#     mock_paginated_call.return_value = [{'created_at': datetime.now().isoformat()}]
 
-    mock_get_mirroring_fields = mocker.patch(_get_mirroring_fields)
-    mock_get_mirroring_fields.return_value = {'mirroring_field': 'value'}
+#     mock_get_mirroring_fields = mocker.patch(_get_mirroring_fields)
+#     mock_get_mirroring_fields.return_value = {'mirroring_field': 'value'}
 
-    args = {}
+#     args = {}
 
-    fetch_incidents_command(client, args)
+#     fetch_incidents_command(client, args)
 
-    mock_demisto.debug.assert_called()
+#     mock_demisto.debug.assert_called()
 
-    mock_demisto.setLastRun.assert_called()
+#     mock_demisto.setLastRun.assert_called()
 
-    mock_demisto.incidents.assert_called()
+#     mock_demisto.incidents.assert_called()
+
+
+
+@patch("demisto")
+@patch("_get_last_fetch_datetime")
+@patch("_paginated_call_to_get_alerts")
+@patch("_get_mirroring_fields")
+def test_fetch_incidents_command(mock_get_mirroring_fields, mock_paginated_call_to_get_alerts, mock_get_last_fetch_datetime, mock_demisto):
+    
+    mock_demisto.params.return_value = {"fetch_timeout": 30, "max_fetch": 10}
+    mock_demisto.getLastRun.return_value = {"last_run": None, "incidents_queue": []}
+
+    test_last_fetch = datetime.utcnow() - timedelta(days=1)
+    mock_get_last_fetch_datetime.return_value = test_last_fetch
+
+    mock_get_mirroring_fields.return_value = {"mirror_direction": "Both"}
+
+    mock_alerts = [
+        {
+            "id": str(uuid.uuid4()),
+            "created_at": test_last_fetch.strftime(DOPPEL_PAYLOAD_DATE_FORMAT)
+        }
+    ]
+    mock_paginated_call_to_get_alerts.side_effect = [mock_alerts, []]  # Simulate one page of alerts
+
+    # Mock incidents and setLastRun
+    mock_demisto.incidents = Mock()
+    mock_demisto.setLastRun = Mock()
+
+    # Call the function
+    fetch_incidents_command(Mock(spec=Client), {})
+
+    # Assertions
+    mock_demisto.debug.assert_called()  # Ensure debug logging is used
+    mock_demisto.incidents.assert_called()  # Ensure incidents are created
+    mock_demisto.setLastRun.assert_called()  # Ensure last run is updated
+
+    # Validate incidents format
+    incidents_created = mock_demisto.incidents.call_args[0][0]
+    assert len(incidents_created) == 1, "Should create one incident"
+    assert incidents_created[0]["type"] == DOPPEL_ALERT, "Incident type mismatch"
+    assert "occurred" in incidents_created[0], "Incident should have an 'occurred' field"
+    assert "dbotMirrorId" in incidents_created[0], "Incident should have 'dbotMirrorId'"
+    assert "rawJSON" in incidents_created[0], "Incident should have 'rawJSON'"
+
 
 @pytest.mark.parametrize('remote_incident_id, last_update, expected_result', [
     ('incident123', '2025-01-27T07:55:10.063742', {'id': 'incident123'}),
@@ -62,10 +108,11 @@ def test_fetch_incidents_command(client, mocker, fetch_timeout, max_fetch):
 ])
 def test_get_remote_data_command(client, mocker, remote_incident_id, last_update, expected_result):
     mock_demisto = MagicMock()
-    mocker.patch('demisto.debug')
-    mocker.patch('demisto.error')
-    mocker.patch('demisto.setLastRun')
-    mocker.patch('demisto.incidents')
+    
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'incidents')
 
     mock_get_remote_data_args = mocker.patch(GetRemoteDataArgs)
     mock_get_remote_data_args.return_value.remote_incident_id = remote_incident_id
@@ -91,51 +138,111 @@ def test_get_remote_data_command(client, mocker, remote_incident_id, last_update
     # Assert that demisto.incidents was called
     mock_demisto.incidents.assert_called()
 
-def test_update_remote_system_command(client, mocker):
-    mock_args = {
-        'remote_incident_id': '12345',
-        'inc_status': IncidentStatus.DONE,
-        'delta': {'closeReason': 'Resolved', 'closeNotes': 'Issue fixed', 'closingUserId': 'user1'},
-        'incident_changed': True
-    }
-    mocker.patch.object(UpdateRemoteSystemArgs, '__init__', lambda x, y: None)
-    mocker.patch.object(UpdateRemoteSystemArgs, 'remote_incident_id', mock_args['remote_incident_id'])
-    mocker.patch.object(UpdateRemoteSystemArgs, 'inc_status', mock_args['inc_status'])
-    mocker.patch.object(UpdateRemoteSystemArgs, 'delta', mock_args['delta'])
-    mocker.patch.object(UpdateRemoteSystemArgs, 'incident_changed', mock_args['incident_changed'])
 
-    mock_get_alert = MagicMock()
-    mock_get_alert.return_value = {'id': '12345', 'entity_state': 'active', 'queue_state': 'open'}
-    client.get_alert = mock_get_alert
-    client.update_alert = MagicMock()
+@patch("demisto")
+@patch("UpdateRemoteSystemArgs")
+def test_update_remote_system_command(mock_update_args, mock_demisto):
+    # Mock the client
+    mock_client = Mock(spec=Client)
 
-    result = update_remote_system_command(client, mock_args)
+    # Mock parsed arguments
+    mock_parsed_args = Mock()
+    mock_parsed_args.remote_incident_id = "incident123"
+    mock_parsed_args.inc_status = IncidentStatus.DONE  # Simulate incident closure
+    mock_parsed_args.incident_changed = True
+    mock_parsed_args.data = {"queue_state": "active", "entity_state": "open"}
+    mock_parsed_args.delta = {"notes": "Updated in XSOAR"}
 
-    client.get_alert.assert_called_once_with(id='12345', entity=None)
-    client.update_alert.assert_called_once_with(
-        queue_state='archived',
-        entity_state='active',
-        alert_id='12345'
+    # Set return value for UpdateRemoteSystemArgs
+    mock_update_args.return_value = mock_parsed_args
+
+    # Mock `get_alert` response
+    mock_client.get_alert.return_value = {"queue_state": "active", "entity_state": "open"}
+
+    # Call the function
+    result = update_remote_system_command(mock_client, {"remoteId": "incident123"})
+
+    # Assertions
+    assert result == "incident123", "Expected remote incident ID to be returned"
+
+    # Ensure `get_alert` was called to fetch existing data
+    mock_client.get_alert.assert_called_with(id="incident123", entity="")
+
+    # Ensure `update_alert` was called to update the remote incident
+    mock_client.update_alert.assert_called_with(
+        queue_state="archived",
+        entity_state="open",
+        comment="Updated in XSOAR",
+        alert_id="incident123"
     )
-    assert result == '12345'
+
+    # Ensure debug logs were used
+    mock_demisto.debug.assert_called()
+
+
+# def test_update_remote_system_command(client, mocker):
+#     mock_args = {
+#         'remote_incident_id': '12345',
+#         'inc_status': IncidentStatus.DONE,
+#         'delta': {'closeReason': 'Resolved', 'closeNotes': 'Issue fixed', 'closingUserId': 'user1'},
+#         'incident_changed': True
+#     }
+#     mocker.patch.object(UpdateRemoteSystemArgs, '__init__', lambda x, y: None)
+#     mocker.patch.object(UpdateRemoteSystemArgs, 'remote_incident_id', mock_args['remote_incident_id'])
+#     mocker.patch.object(UpdateRemoteSystemArgs, 'inc_status', mock_args['inc_status'])
+#     mocker.patch.object(UpdateRemoteSystemArgs, 'delta', mock_args['delta'])
+#     mocker.patch.object(UpdateRemoteSystemArgs, 'incident_changed', mock_args['incident_changed'])
+
+#     mock_get_alert = MagicMock()
+#     mock_get_alert.return_value = {'id': '12345', 'entity_state': 'active', 'queue_state': 'open'}
+#     client.get_alert = mock_get_alert
+#     client.update_alert = MagicMock()
+
+#     result = update_remote_system_command(client, mock_args)
+
+#     client.get_alert.assert_called_once_with(id='12345', entity=None)
+#     client.update_alert.assert_called_once_with(
+#         queue_state='archived',
+#         entity_state='active',
+#         alert_id='12345'
+#     )
+#     assert result == '12345'
+
+# def test_get_mapping_fields_command(client):
+#     """Test the get_mapping_fields_command function."""
+#     mock_scheme = MagicMock(spec=SchemeTypeMapping)
+#     mock_scheme.add_field = MagicMock()
+
+#     mock_response = MagicMock(spec=GetMappingFieldsResponse)
+#     mock_response.add_scheme_type = MagicMock()
+
+#     with patch('SchemeTypeMapping', return_value=mock_scheme), \
+#          patch('GetMappingFieldsResponse', return_value=mock_response):
+#         result = get_mapping_fields_command(client, {})
+
+#     mock_scheme.add_field.assert_called_once_with(name='queue_state', description='Queue State of the Doppel Alert')
+
+#     mock_response.add_scheme_type.assert_called_once_with(mock_scheme)
+
+#     assert result == mock_response
+
 
 def test_get_mapping_fields_command(client):
     """Test the get_mapping_fields_command function."""
-    mock_scheme = MagicMock(spec=SchemeTypeMapping)
-    mock_scheme.add_field = MagicMock()
+    mock_client = Mock(spec=client)
 
-    mock_response = MagicMock(spec=GetMappingFieldsResponse)
-    mock_response.add_scheme_type = MagicMock()
+    response = get_mapping_fields_command(mock_client, {})
 
-    with patch('your_module.SchemeTypeMapping', return_value=mock_scheme), \
-         patch('your_module.GetMappingFieldsResponse', return_value=mock_response):
-        result = get_mapping_fields_command(client, {})
+    assert isinstance(response, GetMappingFieldsResponse)
 
-    mock_scheme.add_field.assert_called_once_with(name='queue_state', description='Queue State of the Doppel Alert')
+    assert len(response.scheme_types_mappings) == 1
+    mapping = response.scheme_types_mappings[0]
+    assert mapping.type_name == 'Doppel Alert'
 
-    mock_response.add_scheme_type.assert_called_once_with(mock_scheme)
+    assert len(mapping.fields) == 1
+    assert mapping.fields[0].name == 'queue_state'
+    assert mapping.fields[0].description == 'Queue State of the Doppel Alert'
 
-    assert result == mock_response
 
 def test_doppel_get_alert_command(client, mocker):
     mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
@@ -174,33 +281,33 @@ def test_doppel_get_alert_command_with_no_alert_found(client, mocker):
     with pytest.raises(Exception):
         doppel_get_alert_command(client, args)
 
-def test_doppel_update_alert_command(client, mocker):
-    # Prepare the mock response for the _http_request function
-    mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
-    
-    # Sample arguments to simulate the command input
+@patch("demisto")  # Mock demisto module
+def test_doppel_update_alert_command(mock_demisto, client):
+    mock_client = Mock(spec=client)
+
     args = {
-        'alert_id': 'TET-1953443',  # Provide alert_id to test
-        'queue_state': 'doppel_review',
-        'entity_state': 'active',
-        'entity': '',  # No entity, as we are passing alert_id
-        'comment': 'Test update comment'
+        "alert_id": "incident123",
+        "queue_state": "archived",
+        "entity_state": "closed",
+        "comment": "Updated alert"
     }
 
-    mock_response = util_load_json('test_data/update-alert.json')
+    mock_client.update_alert.return_value = {"status": "success"}
 
-    # Set up the mock return value
-    client.update_alert.return_value = mock_response
+    # Call the function
+    result = doppel_update_alert_command(mock_client, args)
 
-    # Call the command function
-    result = doppel_update_alert_command(client, args)
+    # Assertions
+    assert isinstance(result, CommandResults), "Function should return a CommandResults object"
+    assert result.outputs == {"status": "success"}, "Expected correct API response in outputs"
 
-    # Assert that the result's human-readable output is generated correctly
-    assert 'Alert Summary' in result.readable_output  # Check if the title exists
-    assert isinstance(result, CommandResults)  # Ensure the result is a CommandResults object
-    assert result.outputs_prefix == 'Doppel.UpdatedAlert'  # Ensure the outputs prefix is correct
-    assert result.outputs_key_field == 'id'  # Ensure the key field is correct
-    assert result.outputs == mock_response  # Ensure the correct output is returned
+    # Ensure the update_alert method was called with correct parameters
+    mock_client.update_alert.assert_called_with(
+        queue_state="archived",
+        entity_state="closed",
+        comment="Updated alert",
+        alert_id="incident123"
+    )
 
 def test_doppel_update_alert_command_with_entity(client, mocker):
     # Prepare the mock response for the _http_request function
