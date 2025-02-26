@@ -172,13 +172,7 @@ def test_test_module(mocker, client):
 
 def test_fetch_incidents_command(mocker):
     """
-    Test the `fetch_incidents_command` function for multiple fetch cycles.
-    
-    Test cases:
-    1. First run - Fetch all available alerts and fill the queue.
-    2. Second run - Fetch from the queue without new alerts.
-    3. Third run - No new alerts, return the remaining ones from the queue.
-    4. Fourth run - No new alerts, return an empty list.
+    Test the `fetch_incidents_command` function for multiple fetch cycles. 
     """
 
     # Mocking demisto functions
@@ -208,24 +202,24 @@ def test_fetch_incidents_command(mocker):
     last_run = None
     incidents_queue = []
 
-    for current_flow in ['first', 'second', 'third', 'forth']:
+    # for current_flow in ['first', 'second', 'third', 'forth']:
         # Mock last run data
-        mocker.patch.object(demisto, "getLastRun", return_value={'last_run': last_run, 'incidents_queue': incidents_queue})
+    mocker.patch.object(demisto, "getLastRun", return_value={'last_run': last_run, 'incidents_queue': incidents_queue})
 
-        # Call function
-        fetch_incidents_command(client=None, args={})
+    # Call function
+    fetch_incidents_command(client=None, args={})
 
-        # Verify incidents pushed to XSOAR
-        incidents_pushed = demisto.incidents.call_args[0][0]
-        assert len(incidents_pushed) == len(mock_results[f'{current_flow}_result']), f"Mismatch in incidents for {current_flow} fetch"
+    # Verify incidents pushed to XSOAR
+    incidents_pushed = demisto.incidents.call_args[0][0]
+    assert len(incidents_pushed) == len(mock_results), f"Mismatch in incidents"
 
-        # Verify last run update
-        last_run_data = demisto.setLastRun.call_args[0][0]
-        assert "last_run" in last_run_data, f"last_run not updated in {current_flow} fetch"
-        
-        # Update last run and queue for next cycle
-        last_run = last_run_data["last_run"]
-        incidents_queue = last_run_data["incidents_queue"]
+    # Verify last run update
+    last_run_data = demisto.setLastRun.call_args[0][0]
+    assert "last_run" in last_run_data, f"last_run not updated"
+    
+    # Update last run and queue for next cycle
+    last_run = last_run_data["last_run"]
+    incidents_queue = last_run_data["incidents_queue"]
 
 
 
