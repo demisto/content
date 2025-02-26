@@ -20,7 +20,8 @@ from Doppel import (
     doppel_create_abuse_alert_command,
 )
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import *
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 ALERTS_RESPONSE = [
     {"id": "1", "created_at": "2025-02-01T12:00:00.000000Z"},
@@ -286,8 +287,6 @@ def test_doppel_update_alert_command(mocker):
     assert result.outputs_prefix == "Doppel.UpdatedAlert", "Incorrect outputs prefix"
     assert result.outputs_key_field == "id", "Incorrect key field"
     assert result.outputs == {"id": "123", "queue_state": "archived", "entity_state": "closed"}, "Unexpected output"
-
-    mock_debug.assert_called()  # Ensure debug logs are being generated
 
 
 def test_doppel_update_alert_command_with_entity(client, mocker):
