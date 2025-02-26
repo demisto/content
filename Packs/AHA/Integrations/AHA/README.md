@@ -15,6 +15,14 @@ This integration was integrated and tested with API version December 02, 2022 re
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### aha-itamar-test-command
+***
+itamar test command for testing rm110
+
+#### Base Command
+
+`aha-itamar-test-command`
+
 ### aha-get-features
 ***
 Lists all features from service, unless a specific feature is specified.
