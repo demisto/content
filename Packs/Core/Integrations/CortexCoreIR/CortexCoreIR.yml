@@ -201,6 +201,42 @@ script:
   - arguments:
     - description: Links the response action to the triggered incident.
       name: incident_id
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    - description: For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: The endpoint ID (string) to isolate. Retrieve the string from the core-get-endpoints command.
+      name: endpoint_id
+      required: true
+      prettyname: Run action on
+      prettypredefined:
+        Issue initiator host: ${alert.placeholder_1}
+        Issue remote host: ${alert.placeholder_2}
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Suppress an error when trying to isolate a disconnected endpoint. When set to false, an error is returned.
+      name: suppress_disconnected_endpoint_error
+      predefined:
+      - 'true'
+      - 'false'
+    description: Isolates the specified endpoint.
+    execution: true
+    name: core-isolate-endpoint-ia
+    prettyname: Isolate Endpoint
+    quickaction: true
+    hidden: true
+    polling: true
+    outputs:
+    - contextPath: Core.Isolation.endpoint_id
+      description: The endpoint ID.
+      type: String
+  - arguments:
+    - description: Links the response action to the triggered incident.
+      name: incident_id
     - description: The endpoint ID (string) to reverse the isolation. Retrieve it from the core-get-endpoints command.
       name: endpoint_id
       required: true
@@ -1029,6 +1065,74 @@ script:
       description: The error reason terminate result.
       type: Unknown
   - arguments:
+    - description: Links the response action to the triggered incident.
+      name: incident_id
+    - description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      prettyname: Run action on
+      defaultValue: 'Initiator host endpoint ID'
+      prettypredefined:
+        Initiator host endpoint ID: ${alert.placeholder_1}
+        Remote host endpoint ID: ${alert.placeholder_2}
+      required: true
+    - description: String that represents the path of the file you want to quarantine.
+      name: file_path
+      prettyname: File Path
+      defaultValue: 'File path from issue'
+      prettypredefined:
+        File path from issue: ${alert.placeholder_1}
+      required: true
+    - description: String that represents the file’s hash. Must be a valid SHA256 hash.
+      name: file_hash
+      defaultValue: 'File SHA256 from issue'
+      prettyname: File Hash (SHA256)
+      prettypredefined:
+        File SHA256 from issue: ${alert.placeholder_1}
+      required: true
+    - description: For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+    name: core-quarantine-files-ia
+    prettyname: Quarantine File
+    quickaction: true
+    hidden: true
+    polling: true
+    outputs:
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
+  - arguments:
     - description: String that represents the endpoint ID.
       name: endpoint_id
       required: true
@@ -1064,6 +1168,60 @@ script:
     name: core-restore-file
     prettyname: Restore File From Quarantine
     quickaction: true
+    polling: true
+    outputs:
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
+  - arguments:
+    - description: Links the response action to the incident that triggered it.
+      name: incident_id
+    - description: String that represents the file in hash. Must be a valid SHA256 hash.
+      name: file_hash
+      defaultValue: 'File SHA256 from issue'
+      prettyname: File Hash (SHA256)
+      prettypredefined:
+        File SHA256 from issue: ${alert.placeholder_1}
+      required: true
+    - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
+      name: endpoint_id
+    - description: For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    description: Restores a quarantined file on requested endpoints.
+    name: core-restore-file-ia
+    prettyname: Restore File From Quarantine
+    quickaction: true
+    hidden: true
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1161,6 +1319,110 @@ script:
     name: core-endpoint-scan
     prettyname: Run Malware Scan
     quickaction: true
+    polling: true
+    outputs:
+    - contextPath: Core.endpointScan.actionId
+      description: The action ID of the scan request.
+      type: Number
+    - contextPath: Core.endpointScan.aborted
+      description: Was the scan aborted.
+      type: Boolean
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
+  - arguments:
+    - description: Links the response action to the triggered incident.
+      name: incident_id
+    - description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      prettyname: Run action on list of endpoint IDs.
+      prettypredefined:
+        Issue initiator host: ${alert.placeholder_1}
+        I ssue remote host: ${alert.placeholder_2}
+    - description: Name of the distribution list.
+      isArray: true
+      name: dist_name
+    - description: Epoch timestamp in milliseconds.
+      name: gte_first_seen
+    - description: Epoch timestamp in milliseconds.
+      name: gte_last_seen
+    - description: Epoch timestamp in milliseconds.
+      name: lte_first_seen
+    - description: Epoch timestamp in milliseconds.
+      name: lte_last_seen
+    - description: List of IP addresses.
+      isArray: true
+      name: ip_list
+    - description: Name of the endpoint group.
+      isArray: true
+      name: group_name
+    - auto: PREDEFINED
+      description: Type of operating system.
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+    - description: Endpoint alias name.
+      isArray: true
+      name: alias
+    - auto: PREDEFINED
+      description: Choose if an endpoint has been isolated. Select "isolated" or "unisolated".
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+    - description: Name of the host.
+      isArray: true
+      name: hostname
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Choose whether to scan all of the endpoints or not. Default is false. Scanning all of the endpoints may cause performance issues and latency.
+      name: all
+      predefined:
+      - 'true'
+      - 'false'
+    - description: For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
+    execution: true
+    name: core-endpoint-scan-ia
+    prettyname: Run Malware Scan
+    quickaction: true
+    hidden: true
     polling: true
     outputs:
     - contextPath: Core.endpointScan.actionId
@@ -1485,6 +1747,80 @@ script:
     name: core-retrieve-files
     prettyname: Retrieve File
     quickaction: true
+    polling: true
+    outputs:
+    - contextPath: Core.RetrievedFiles.action_id
+      description: ID of the action to retrieve files from selected endpoints.
+      type: string
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
+  - arguments:
+    - description: Links the response action to the incident that triggered it.
+      name: incident_id
+    - description: Comma-separated list of endpoint IDs.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      defaultValue: 'Issue initiator host'
+      prettyname: Run action on
+      prettypredefined:
+        Issue initiator host: ${alert.placeholder_1}
+        Remote host: ${alert.placeholder_2}
+    - description: A comma-separated list of file paths on the Windows platform.
+      isArray: true
+      name: windows_file_paths
+    - description: A comma-separated list of file paths on the Linux platform.
+      isArray: true
+      name: linux_file_paths
+    - description: A comma-separated list of file paths on the Mac platform.
+      isArray: true
+      name: mac_file_paths
+    - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
+      isArray: true
+      name: generic_file_path
+      defaultValue: 'Issue initiator file'
+      prettyname: File to retrieve
+      prettypredefined:
+        Issue initiator file: ${alert.placeholder_1}
+        Issue CGO file path: ${alert.placeholder_2}
+    - description: For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
+    name: core-retrieve-files-ia
+    prettyname: Retrieve File
+    quickaction: true
+    hidden: true
     polling: true
     outputs:
     - contextPath: Core.RetrievedFiles.action_id
@@ -3384,6 +3720,88 @@ script:
       description: Timestamp in which the retrieved files will be deleted from the server.
       type: Date
   - arguments:
+    - description: Allows linking the response action to the incident that triggered it.
+      name: incident_id
+    - description: A comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      name: endpoint_ids
+      required: true
+      prettyname: Run action on
+      defaultValue: 'Initiator host endpoint ID'
+      prettypredefined:
+        Initiator host endpoint ID: ${alert.placeholder_1}
+        Remote host endpoint ID: ${alert.placeholder_2}
+    - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
+      name: script_uid
+      required: true
+      prettyname: Script
+      prettypredefined:
+        placeholder_1: ${alert.placeholder_1}
+        placeholder_2: ${alert.placeholder_2}
+    - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
+      name: parameters
+    - defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      name: timeout
+    - description: Interval in seconds between each poll.
+      defaultValue: '10'
+      name: polling_interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: polling_timeout_in_seconds
+      defaultValue: '600'
+    - description: The action ID for polling use.
+      name: action_id
+      hidden: true
+    - name: hide_polling_output
+      hidden: true
+      description: Whether to hide the polling result (automatically filled by polling).
+    - name: is_core
+      hidden: true
+      description: Is the command being called from a core pack.
+      defaultValue: true
+    description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
+    name: core-script-run-ia
+    prettyname: Run Endpoint Script
+    quickaction: true
+    hidden: true
+    polling: true
+    outputs:
+    - contextPath: Core.ScriptResult.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptResult.results.retrieved_files
+      description: Number of successfully retrieved files.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_ip_address
+      description: Endpoint IP address.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_name
+      description: Name of successfully retrieved files.
+      type: String
+    - contextPath: Core.ScriptResult.results.failed_files
+      description: Number of files failed to be retrieved.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_status
+      description: Endpoint status.
+      type: String
+    - contextPath: Core.ScriptResult.results.domain
+      description: Domain to which the endpoint belongs.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_id
+      description: Endpoint ID.
+      type: String
+    - contextPath: Core.ScriptResult.results.execution_status
+      description: Execution status of this endpoint.
+      type: String
+    - contextPath: Core.ScriptResult.results.return_value
+      description: Value returned by the script in case the type is not a dictionary.
+      type: String
+    - contextPath: Core.ScriptResult.results.standard_output
+      description: The STDOUT and the STDERR logged by the script during the execution.
+      type: String
+    - contextPath: Core.ScriptResult.results.retention_date
+      description: Timestamp in which the retrieved files will be deleted from the server.
+      type: Date
+  - arguments:
     - description: The agent ID.
       name: agent_id
       isArray: false
@@ -3485,6 +3903,83 @@ script:
     name: core-terminate-causality
     prettyname: Terminate CGO
     quickaction: true
+    description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
+    polling: true
+    outputs:
+    - contextPath: Core.TerminateCausality.action_id
+      description: The action id.
+      type: String
+    - contextPath: Core.GetActionStatus
+      description: The action status command results.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.endpoint_id
+      description: Endpoint ID.
+      type: string
+    - contextPath: Core.GetActionStatus.status
+      description: The status of the specific endpoint ID.
+      type: string
+    - contextPath: Core.GetActionStatus.action_id
+      description: The specified action ID.
+      type: number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
+  - arguments:
+    - description: The agent ID.
+      name: agent_id
+      prettyname: Run action on
+      prettypredefined:
+        Endpoint id from host: ${alert.placeholder_1}
+      isArray: false
+      required: true
+    - description: The causality ID.
+      name: causality_id
+      isArray: true
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident ID.
+      name: incident_id
+      isArray: false
+      required: false
+    - description: The action ID. For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    name: core-terminate-causality-ia
+    prettyname: Terminate CGO
+    quickaction: true
+    hidden: true
     description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
