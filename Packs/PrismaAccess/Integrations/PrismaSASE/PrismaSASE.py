@@ -251,7 +251,7 @@ class Client(BaseClient):
         )
 
     def push_candidate_config(self, folders: list, tsg_id: str | None, description: str | None = None) \
-            -> dict:  # pragma: no cover
+        -> dict:  # pragma: no cover
         """Push candidate configuration
         Args:
             folders: Target Prisma SASE Folders for the configuration commit
@@ -430,7 +430,7 @@ class Client(BaseClient):
         )
 
     def get_address_group_by_id(self, query_params: dict, group_id: str, tsg_id: str | None) \
-            -> dict:  # pragma: no cover
+        -> dict:  # pragma: no cover
         """Get a specific address group
         Args:
             query_params: folder param
@@ -484,7 +484,7 @@ class Client(BaseClient):
         )
 
     def create_address_group(self, query_params: dict, address_group: dict, tsg_id: str | None) \
-            -> dict:  # pragma: no cover
+        -> dict:  # pragma: no cover
         """Create new address group
         Args:
             address_group: address group dictionary
@@ -520,7 +520,7 @@ class Client(BaseClient):
         )
 
     def get_custom_url_category_by_id(self, query_params: dict, url_category_id: str, tsg_id: str | None) \
-            -> dict:  # pragma: no cover
+        -> dict:  # pragma: no cover
         """Get a specific custom URL category
         Args:
             query_params: folder param
@@ -556,7 +556,7 @@ class Client(BaseClient):
         )
 
     def update_custom_url_category(self, custom_url_category: dict, url_category_id: str, tsg_id: str | None) \
-            -> dict:  # pragma: no cover
+        -> dict:  # pragma: no cover
         """Update an existing custom url category
         Args:
             custom_url_category: custom url category dictionary
@@ -575,7 +575,7 @@ class Client(BaseClient):
         )
 
     def create_custom_url_category(self, query_params: dict, custom_url_category: dict, tsg_id: str | None) \
-            -> dict:  # pragma: no cover
+        -> dict:  # pragma: no cover
         """Create new custom url category
         Args:
             custom_url_category: custom url category dictionary
@@ -611,7 +611,7 @@ class Client(BaseClient):
         )
 
     def get_external_dynamic_list_by_id(self, query_params: dict, external_dynamic_list_id: str, tsg_id: str | None) \
-            -> dict:  # pragma: no cover
+        -> dict:  # pragma: no cover
         """Get a specific external dynamic list
         Args:
             query_params: folder param
@@ -647,7 +647,7 @@ class Client(BaseClient):
         )
 
     def update_external_dynamic_list(self, external_dynamic_list: dict, dynamic_list_id: str, tsg_id: str | None) \
-            -> dict:  # pragma: no cover
+        -> dict:  # pragma: no cover
         """Update an existing external dynamic list
         Args:
             external_dynamic_list: external dynamic list dictionary
@@ -666,7 +666,7 @@ class Client(BaseClient):
         )
 
     def create_external_dynamic_list(self, query_params: dict, external_dynamic_list: dict, tsg_id: str | None) \
-            -> dict:  # pragma: no cover
+        -> dict:  # pragma: no cover
         """Create new external dynamic list
         Args:
             external_dynamic_list: external dynamic list dictionary
@@ -2022,6 +2022,60 @@ def quarantine_host_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
+def cie_user_prepare_args(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+        Prepare args for get_cie_user_command.
+    Args:
+        args: Dict[str, Any] - args to prepare
+    Returns:
+        Dict[str, Any] - The JSON data for the API call
+    """
+    operator_mapping = {"Equal": "equal", "Starts With": "startsWith", "Ends With": "endsWith",
+                        "Contain": "contain", "Text Search": "textSearch"}
+
+    missing_args = {"attributes_to_return": args.get('attributes_to_return'), "operator": args.get('operator'),
+                    "attributes_to_filter_by": args.get('attributes_to_filter_by')}
+    errors = [name for name, value in missing_args.items() if not value]
+    if errors:
+        raise ValueError(f"The following arguments are empty: {', '.join(errors)}")
+
+    # Ensure "Unique Identifier" is always in the list for the deduplication process
+    attributes_to_return = list(set(argToList(args.get("attributes_to_return", ""))) | {"Unique Identifier"})
+    args["attributes_to_return"] = attributes_to_return
+
+    return {
+        "domain": args.get("domain"),
+        "attrs": attributes_to_return,
+        "name":
+            {
+                "attrNameOR": argToList(args.get("attributes_to_filter_by", "")),
+                "attrValue": args.get("value_for_filter"),
+                "match": operator_mapping.get(args.get('operator', 'Equal'))
+            },
+        "useNormalizedAttrs": "True"
+    }
+
+
+def parse_cie_user_response(args: Dict[str, Any] , raw_response: Dict[str, Any]) -> Dict[str, Any]:
+    """
+        Parse the raw response from the API call.
+    Args:
+        args: dict - The arguments passed to the command
+        raw_response: dict - The raw response from the API call
+    Returns:
+        Dict[str, Any] - The parsed response
+    """
+    default_error_msg = "The get_cie_user_command failed. Please verify the arguments and try again."
+    result_response = raw_response.get("result", {})
+    if error := result_response.get("error"):
+        raise ValueError(
+            f"Error: {error.get('error-message', default_error_msg)}")
+    parsed_raw_response = result_response.get("data", {}).get("domains", [])
+    if parsed_raw_response and (objects := parsed_raw_response[0].get("objects", [])):
+        return {key: objects[0].get(key) for key in args.get('attributes_to_return', [])}
+    return {}
+
+
 def get_cie_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Command get cie user
@@ -2031,63 +2085,11 @@ def get_cie_user_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Returns:
         CommandResults
     """
-
-    def prepare_args(args: Dict[str, Any]) -> Dict[str, Any]:
-        """
-            Prepare args for get_cie_user_command.
-        Args:
-            args: Dict[str, Any] - args to prepare
-        Returns:
-            Dict[str, Any] - The JSON data for the API call
-        """
-        operator_mapping = {"Equal": "equal", "Starts With": "startsWith", "Ends With": "endsWith",
-                            "Contain": "contain", "Text Search": "textSearch"}
-
-        missing_args = {"attributes_to_return": args.get('attributes_to_return'), "operator": args.get('operator'),
-                        "attributes_to_filter_by": args.get('attributes_to_filter_by')}
-        errors = [name for name, value in missing_args.items() if not value]
-        if errors:
-            raise ValueError(f"The following arguments are empty: {', '.join(errors)}")
-
-        # Ensure "Unique Identifier" is always in the list for the deduplication process
-        attributes_to_return = list(set(argToList(args.get("attributes_to_return", ""))) | {"Unique Identifier"})
-        args["attributes_to_return"] = attributes_to_return
-
-        return {
-            "domain": args.get("domain"),
-            "attrs": attributes_to_return,
-            "name":
-                {
-                    "attrNameOR": argToList(args.get("attributes_to_filter_by", "")),
-                    "attrValue": args.get("value_for_filter"),
-                    "match": operator_mapping.get(args.get('operator', 'Equal'))
-            },
-            "useNormalizedAttrs": "True"
-        }
-
-    def parse_cie_response(raw_response: Dict[str, Any]) -> Dict[str, Any]:
-        """
-            Parse the raw response from the API call.
-        Args:
-            raw_response: dict - The raw response from the API call
-        Returns:
-            Dict[str, Any] - The parsed response
-        """
-        default_error_msg = "The get_cie_user_command failed. Please verify the arguments and try again."
-        result_response = raw_response.get("result", {})
-        if error := result_response.get("error"):
-            raise ValueError(
-                f"Error: {error.get('error-message', default_error_msg)}")
-        parsed_raw_response = result_response.get("data", {}).get("domains", [])
-        if parsed_raw_response and (objects := parsed_raw_response[0].get("objects", [])):
-            return {key: objects[0].get(key) for key in args.get('attributes_to_return', [])}
-        return {}
-
-    payload = prepare_args(args)
+    payload = cie_user_prepare_args(args)
 
     raw_response = client.get_cie_user(payload)
 
-    outputs = parse_cie_response(raw_response)
+    outputs = parse_cie_user_response(args, raw_response)
 
     if outputs:
         return CommandResults(
