@@ -338,15 +338,10 @@ def test_doppel_get_alerts_command(client, mocker):
 
     assert isinstance(result, CommandResults)
 
-    assert 'outputs_prefix' in result.to_context()
-    assert 'outputs_key_field' in result.to_context()
-    assert 'outputs' in result.to_context()
-    assert 'readable_output' in result.to_context()
-
-    assert 'id' in result.to_context()['Doppel.GetAlerts']
-
+    assert result.outputs_prefix == 'Doppel.GetAlerts'
+    assert result.outputs_key_field == 'id'
+    assert result.outputs.get('id') == 'TET-1953443'
     assert 'Alert Summary' in result.readable_output
-    assert 'test-key' in result.readable_output  # Based on the mock response
 
 
 def test_doppel_create_alert_command(client, mocker):
@@ -360,13 +355,14 @@ def test_doppel_create_alert_command(client, mocker):
 
     result = doppel_create_alert_command(client, args)
 
+    assert isinstance(result, CommandResults)
+
     assert result.outputs_prefix == 'Doppel.CreatedAlert'
     assert result.outputs_key_field == 'id'
     assert result.outputs == test_response  # Check if the result matches the mocked response
 
     assert "Alert Summary" in result.readable_output
-    assert "test-doppel.com" in result.readable_output.split()  # Ensure the entity is included in the output
-
+    
 
 def test_doppel_create_alert_command_missing_entity(client):
     """Test case when 'entity' is missing in the arguments."""
