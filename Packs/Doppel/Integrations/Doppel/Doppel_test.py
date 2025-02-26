@@ -76,7 +76,7 @@ def client():
     return client
 
 
-def test_test_module(mocker):
+def test_test_module(mocker, client):
     """
     Given:
         - A mock Client instance
@@ -85,14 +85,12 @@ def test_test_module(mocker):
     Then:
         - The function should return 'ok' if the API request is successful
     """
-    # Create a mock Client instance
-    client = MagicMock()
-
+    
     # Mock the _http_request method
     mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
 
     # Pass an empty dictionary `{}` as `args`, not a string
-    result = test_module(client, args={})
+    result = test_module(client)
 
     # Assert the expected output
     assert result == 'ok'

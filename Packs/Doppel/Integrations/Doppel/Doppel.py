@@ -254,7 +254,7 @@ def _paginated_call_to_get_alerts(client, page, last_fetch_datetime):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, args: Dict[str, Any]) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
