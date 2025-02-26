@@ -11,8 +11,18 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["BeyondTrust", "Beyond Trust", "Beyond", "Remote Access", "Privileged Remote Access", "PRA", "Privileged"],
+    "keywords": [
+        "BeyondTrust",
+        "Beyond Trust",
+        "Beyond",
+        "Remote Access",
+        "Privileged Remote Access",
+        "PRA",
+        "Privileged"
+    ],
     "marketplaces": [
-        "marketplacev2"
-    ]
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": []
 }
