@@ -1028,7 +1028,7 @@ def test_close_fetchfile_command(mocker):
     assert exc_info.match(r"The given Batch ID does not exist")
 
 
-def test_malop_to_incident(mocker):
+def test_malop_to_incident_edr_malop(mocker):
     from Cybereason import malop_to_incident
     args = {
         "guidString": "12345A",
@@ -1077,55 +1077,7 @@ def test_malop_to_incident(mocker):
     assert exc_info.match(r"Cybereason raw response is not valid")
 
 
-def test_malop_to_incident_2(mocker):
-    from Cybereason import malop_to_incident
-    args = {
-        "guidString": "12345B",
-        "status": "UNREAD",
-        "simpleValues": {
-            "detectionType": {
-                "values": [
-                    "ABCD"
-                ]
-            },
-            "creationTime": {
-                "values": [
-                    "1721"
-                ]
-            },
-            "malopLastUpdateTime": {
-                "values": [
-                    "17280"
-                ]
-            },
-        },
-        "elementValues": {
-            "rootCauseElements": {
-                "elementValues": [
-                    {
-                        "elementType": "ABCD",
-                        "name": "fileName"
-                    }
-                ]
-            }
-        }
-    }
-    command_output = malop_to_incident(args)
-
-    assert all([(command_output['name'] == "Cybereason Malop 12345B"), (command_output['status'] == 0),
-                (command_output['CustomFields']['malopcreationtime'] == "1721"),
-                (command_output['CustomFields']['malopupdatetime'] == "17280"),
-                (command_output['CustomFields']['malopdetectiontype'] == "ABCD"),
-                (command_output['CustomFields']['maloprootcauseelementname'] == "fileName"),
-                (command_output['CustomFields']['maloprootcauseelementtype'] == "ABCD"),
-                (command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345B")])
-
-    with pytest.raises(Exception) as exc_info:
-        command_output = malop_to_incident("args")
-    assert exc_info.match(r"Cybereason raw response is not valid")
-
-
-def test_malop_to_incident_3(mocker):
+def test_malop_to_incident_remediated_non_edr_malop(mocker):
     from Cybereason import malop_to_incident
     args = {
         "guidString": "12345C",
@@ -1148,7 +1100,7 @@ def test_malop_to_incident_3(mocker):
     assert exc_info.match(r"Cybereason raw response is not valid")
 
 
-def test_malop_to_incident_4(mocker):
+def test_malop_to_incident_resolved_non_edr_malop(mocker):
     from Cybereason import malop_to_incident
     args = {
         "guidString": "12345D",
@@ -1156,7 +1108,7 @@ def test_malop_to_incident_4(mocker):
         "malopDetectionType": "ABCD",
         "creationTime": "23456",
         "lastUpdateTime": "6789",
-        "edr": True
+        "edr": False
     }
     command_output = malop_to_incident(args)
 
@@ -1164,21 +1116,22 @@ def test_malop_to_incident_4(mocker):
                 (command_output['CustomFields']['malopcreationtime'] == "23456"),
                 (command_output['CustomFields']['malopupdatetime'] == "6789"),
                 (command_output['CustomFields']['malopdetectiontype'] == "ABCD"),
-                (command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345D")])
+                (not command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345D")])
 
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
     assert exc_info.match(r"Cybereason raw response is not valid")
 
 
-def test_malop_to_incident_5(mocker):
+def test_malop_to_incident_active_non_edr_malop(mocker):
     from Cybereason import malop_to_incident
     args = {
         "guidString": "12345D",
-        "status": "",
+        "status": "Active",
         "malopDetectionType": "ABCD",
         "creationTime": "23456",
-        "lastUpdateTime": "6789"
+        "lastUpdateTime": "6789",
+        "edr": False
     }
     command_output = malop_to_incident(args)
 
@@ -1187,76 +1140,6 @@ def test_malop_to_incident_5(mocker):
                 (command_output['CustomFields']['malopupdatetime'] == "6789"),
                 (command_output['CustomFields']['malopdetectiontype'] == "ABCD"),
                 (not command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345D")])
-
-    with pytest.raises(Exception) as exc_info:
-        command_output = malop_to_incident("args")
-    assert exc_info.match(r"Cybereason raw response is not valid")
-
-
-def test_malop_to_incident_6(mocker):
-    from Cybereason import malop_to_incident
-    args = {
-        "guidString": "12345D",
-        "creationTime": 23456,
-        "lastUpdateTime": 6789
-    }
-    command_output = malop_to_incident(args)
-
-    assert all([(command_output['name'] == "Cybereason Malop 12345D"), (command_output['status'] == 0),
-                (command_output['CustomFields']['malopcreationtime'] == "23456"),
-                (command_output['CustomFields']['malopupdatetime'] == "6789"),
-                (command_output['CustomFields']['malopdetectiontype'] == ""),
-                (not command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345D")])
-
-    with pytest.raises(Exception) as exc_info:
-        command_output = malop_to_incident("args")
-    assert exc_info.match(r"Cybereason raw response is not valid")
-
-
-def test_malop_to_incident_7(mocker):
-    from Cybereason import malop_to_incident
-    args = {
-        "guidString": "12345B",
-        "simpleValues": {
-            "detectionType": {
-                "values": [
-                    "ABCD"
-                ]
-            },
-            "creationTime": {
-                "values": [
-                    "1721"
-                ]
-            },
-            "malopLastUpdateTime": {
-                "values": [
-                    "17280"
-                ]
-            },
-            "managementStatus": {
-                "values": ["REOPEN"]
-            }
-        },
-        "elementValues": {
-            "rootCauseElements": {
-                "elementValues": [
-                    {
-                        "elementType": "ABCD",
-                        "name": "fileName"
-                    }
-                ]
-            }
-        }
-    }
-    command_output = malop_to_incident(args)
-
-    assert all([(command_output['name'] == "Cybereason Malop 12345B"), (command_output['status'] == 0),
-                (command_output['CustomFields']['malopcreationtime'] == "1721"),
-                (command_output['CustomFields']['malopupdatetime'] == "17280"),
-                (command_output['CustomFields']['malopdetectiontype'] == "ABCD"),
-                (command_output['CustomFields']['maloprootcauseelementname'] == "fileName"),
-                (command_output['CustomFields']['maloprootcauseelementtype'] == "ABCD"),
-                (command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345B")])
 
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")

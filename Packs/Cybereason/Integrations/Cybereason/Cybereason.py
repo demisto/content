@@ -1495,7 +1495,7 @@ def delete_sensor_command(client: Client, args: dict):
     return CommandResults(readable_output=output)
 
 
-def malop_to_incident(malop: str) -> dict:
+def malop_to_incident(malop: dict) -> dict:
     if not isinstance(malop, dict):
         raise ValueError("Cybereason raw response is not valid, malop is not dict")
 
@@ -1532,7 +1532,7 @@ def malop_to_incident(malop: str) -> dict:
         malopUpdateTime = str(malop.get('lastUpdateTime', '2010-01-01'))
 
     if element_values := malop.get('elementValues'):
-        if root_cause_elements := element_values.get('rootCauseElements', {}).get('elementValues', []):
+        if root_cause_elements := element_values.get('primaryRootCauseElements', {}).get('elementValues', []):
             rootCauseElementName = root_cause_elements[0].get('name', '')
             rootCauseElementType = root_cause_elements[0].get('elementType', '')
         else:
@@ -1610,18 +1610,14 @@ def fetch_incidents(client: Client):
         total_malops_fetched = 0
 
     malop_management_response = get_malop_management_data(client, start_time, end_time, offset)
-    demisto.info(f"mmng/v2 response: {malop_management_response}")
     demisto.debug(
         f"Polling starts. total_malops_fetched: {total_malops_fetched} "
         f"offset: {offset} start_time: {start_time} end_time: {end_time}"
     )
 
     edr_guid_list, non_edr_guid_list = [], []
-    total_malops_available = malop_management_response["data"]["totalHits"]
-    malop_management_response = malop_management_response["data"]["data"]
-    # if malop_management_response == [] or malop_management_response == None:
-    #     has_more_results = False
-    #     continue
+    total_malops_available = malop_management_response.get("data", {}).get("totalHits", 0)
+    malop_management_response = malop_management_response.get("data", {}).get("data", [])
     malop_count_per_poll = len(malop_management_response)
     demisto.info(
         f"Malop stats: Malop per paginated call {malop_count_per_poll}. Malops per polling cycle {total_malops_available}")
@@ -1666,13 +1662,10 @@ def fetch_incidents(client: Client):
                 incidents.append(incident)
                 demisto.info(f"edr malop got appended in incidents: {incidents}")
 
-    demisto.info("non edr if start...")
     if IS_EPP_ENABLED and non_edr_guid_list:
-        demisto.info("inside if non_edr_guid_list")
+        demisto.info("Starting process for non-EDR incidents...")
         for non_edr_malop in non_edr_guid_list:
-            # demisto.info(f"processing non edr malop id: {non_edr_malop}")
             detection_detail_response = get_detection_details(client, non_edr_malop)
-            demisto.info(f"detection_detail_response: {detection_detail_response}")
             try:
                 incident = malop_to_incident(detection_detail_response)
             except Exception:
@@ -2176,7 +2169,7 @@ def query_malop_management_command(client: Client, args: dict):
         raise DemistoException(f"Could not find details for the provided MalopGuid {malop_guid}")
     else:
         outputs = []
-        for single_malop in response["data"]["data"]:
+        for single_malop in response.get("data", {}).get("data", []):
             demisto.debug(f"single_malop: {single_malop}")
             guid = single_malop.get("guid", "")
             creation_time = single_malop.get("creationTime", "")
