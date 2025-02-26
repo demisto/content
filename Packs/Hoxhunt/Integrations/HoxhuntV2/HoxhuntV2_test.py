@@ -735,3 +735,30 @@ def test_commands(
     else:
         output = command_function(mock_client, args, params={})
         assert output == expected_output
+
+def test_format_date_to_iso_string():
+    """
+    Given
+        A datetime object
+    When
+        Calling format_date_to_iso_string
+    Then
+        Returns correctly formatted ISO string with milliseconds and Z suffix
+    """
+    # Test with a specific datetime
+    test_date = datetime(2024, 1, 15, 14, 30, 45, 123456)
+    result = format_date_to_iso_string(test_date)
+    assert result == "2024-01-15T14:30:45.123Z"
+
+
+def test_format_date_to_iso_string_with_none():
+    """
+    Given
+        None as input
+    When
+        Calling format_date_to_iso_string
+    Then
+        Raises AttributeError since None has no strftime method
+    """
+    with pytest.raises(AttributeError):
+        format_date_to_iso_string(None)
