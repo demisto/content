@@ -16,8 +16,8 @@
        xdm.email.attachment.file_type = to_string(parsed_fields -> type),
        xdm.email.mime = to_string(parsed_fields -> mime),
        xdm.email.attachment.filename = parsed_fields -> file,
-       xdm.event.id = parsed_fields -> s,
-       xdm.network.session_id = parsed_fields -> x,
+       xdm.email.message_id = parsed_fields -> s,
+       xdm.event.id = parsed_fields -> x,
        xdm.event.outcome = parsed_fields -> action,
        xdm.event.operation_sub_type = parsed_fields -> cmd,
        xdm.email.recipients = arraymap(split(parsed_fields -> to,","),ltrim(rtrim("@element","\>"),"\<"));

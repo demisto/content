@@ -11,9 +11,17 @@
         "Network Security",
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "Network Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "proofpoint",
+        "email",
+        "security",
+        "protection server"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
