@@ -2884,7 +2884,7 @@ def get_detections_from_hosts(hosts):
     demisto.debug(f'Received {len(hosts)} hosts for extraction')
     fetched_assets = []
     for host in hosts:
-        if check_fetch_duration_time_exceeded(EXECUTION_START_TIME):  # We want to check that our execution is not too long.
+        if check_fetch_assets_duration_time_exceeded(EXECUTION_START_TIME):  # Check that execution time is not too long
             return [], True
         detections_list = host.get('DETECTION_LIST', {}).get('DETECTION') or [{}]
 
@@ -3069,7 +3069,7 @@ def fetch_assets(client: Client, assets_last_run):
     return assets, new_last_run, amount_to_report, snapshot_id, set_new_limit
 
 
-def check_fetch_duration_time_exceeded(start_time: float) -> bool:
+def check_fetch_assets_duration_time_exceeded(start_time: float) -> bool:
     """Checks if the 'fetch-assets' command execution time exceeded the defined value.
 
     Args:
@@ -3088,7 +3088,7 @@ def check_fetch_duration_time_exceeded(start_time: float) -> bool:
     return False
 
 
-def set_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
+def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
     """Updates last assets run by setting `limit` to half, `nextTrigger` to 0, and `type` to 1 (assets).
     This instructs the server to immediately trigger the next assets fetch iteration.
 
@@ -3325,8 +3325,8 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
 
         # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
-        if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
-            new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
+        if set_new_limit or check_fetch_assets_duration_time_exceeded(EXECUTION_START_TIME):
+            new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
         else:
             cumulative_assets_count: int = new_last_run["total_assets"]
             demisto.debug(f'Sending {len(assets)} assets to XSIAM. '
@@ -3365,8 +3365,8 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids) if detection_qids else ([], {})
 
     # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
-    if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
-        new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
+    if set_new_limit or check_fetch_assets_duration_time_exceeded(EXECUTION_START_TIME):
+        new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
     else:
         cumulative_assets_count: int = new_last_run['total_assets']
         has_next_assets_page = bool(new_last_run.get('next_page'))

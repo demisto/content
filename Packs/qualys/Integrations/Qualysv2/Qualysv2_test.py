@@ -28,7 +28,7 @@ from Qualysv2 import (
     get_vulnerabilities,
     get_activity_logs_events_command,
     send_assets_and_vulnerabilities_to_xsiam,
-    set_last_run_with_new_limit,
+    set_assets_last_run_with_new_limit,
     fetch_events, get_activity_logs_events,
     fetch_assets, fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
@@ -1650,19 +1650,19 @@ def test_get_vulnerabilities_valid_inputs(
     assert http_request_kwargs["params"] == expected_params
 
 
-def test_set_last_run_with_new_limit():
+def test_set_assets_last_run_with_new_limit():
     """
     Given:
         - A last run dictionary with fetch stage, total assets count, and snapshot ID.
 
     When:
-        - Calling set_last_run_with_new_limit.
+        - Calling set_assets_last_run_with_new_limit.
 
     Assert:
         - Ensure last_run is correctly updated with half 'limit', 'nextTrigger' 0, and 'type' 1.
     """
     last_run = {'stage': 'assets', 'total_assets': 10, 'snapshot_id': SNAPSHOT_ID}
-    updated_last_run = set_last_run_with_new_limit(last_run, limit=HOST_LIMIT)
+    updated_last_run = set_assets_last_run_with_new_limit(last_run, limit=HOST_LIMIT)
 
     assert updated_last_run == {
         **last_run,
