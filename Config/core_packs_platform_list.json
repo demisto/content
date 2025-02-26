@@ -3,12 +3,14 @@
         "Base",
         "CommonPlaybooks",
         "CommonScripts",
-        "Core"
+        "Core",
+        "FiltersAndTransformers"
     ],
     "update_core_packs_list": [
         "Base",
         "CommonPlaybooks",
         "CommonScripts",
-        "Core"
+        "Core",
+        "FiltersAndTransformers"
     ]
   }
