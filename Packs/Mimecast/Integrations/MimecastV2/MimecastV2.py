@@ -151,12 +151,11 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
     payload = {}
     len_of_results = 0
     results = []
-    if data and data != [{}]:
-        payload['data'] = data
     if current_next_page:
         demisto.debug(f"current_next_page exists with value {current_next_page}")
-        next_page = current_next_page
-        current_next_page = ''
+    next_page = current_next_page or ''
+    if data and data != [{}]:
+        payload['data'] = data
     while True:
         if not next_page:
             demisto.debug("No current_next_page")
@@ -175,20 +174,18 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
         else:
             response_data = response.get('data', [])
         for entry in response_data:
-            # If returning this log will not exceed the specified limit
-            # For held message fetch- and it did not already was fetched
             entry_id = entry.get('id')
-            if ((not limit or len_of_results < limit)
-                and (not entry_id or entry_id not in dedup_messages)): # dedup for fetch
+            if len_of_results == limit: # limit was reached page did not ended yet
+                return results, len_of_results, next_page
+            if not entry_id or entry_id not in dedup_messages: # dedup for fetch
                 len_of_results += 1
                 results.append(entry)
             elif entry_id in dedup_messages:
                 demisto.debug(f"Dropped {entry_id} as it already exists.")
-            # If limit is reached or there are no more pages
+        # If limit is reached or there are no more pages
+        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
         if not next_page or (limit and len_of_results >= limit):
             break
-        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
-        # returning next_page is only required for fetch mechanism
     return results, len_of_results, next_page
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
