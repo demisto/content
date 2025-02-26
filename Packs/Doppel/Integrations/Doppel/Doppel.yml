@@ -20,8 +20,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: The interval specifies the cadence with which the Doppel alerts
-    be fetched
+- additionalinfo: The interval specifies the cadence with which the Doppel alerts be fetched
   defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -31,9 +30,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring),
-    Incoming (from Doppel to XSOAR), Outgoing (from XSOAR to Doppel), Incoming and
-    Outgoing (from/to Cortex and Doppel)'
+- additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring), Incoming (from Doppel to XSOAR), Outgoing (from XSOAR to Doppel), Incoming and Outgoing (from/to Cortex and Doppel)'
   display: Mirror Direction
   name: mirror_direction
   options:
@@ -49,8 +46,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The time limit in seconds for fetch incidents to run. Leave this
-    empty to cancel the timeout limit.
+- additionalinfo: The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit.
   defaultvalue: "30"
   display: Fetch incidents timeout
   name: fetch_timeout
@@ -74,31 +70,9 @@ configuration:
   section: Connect
   advanced: true
   required: false
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 82a5f67a-7fbd-4e4b-8c20-1677bbb400ac
-    packName: Doppel
-    prevname: ""
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: |-
   Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.
   The XSOAR pack for Doppel mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
-detaileddescription: |-
-  ### Get Started
-
-  To use the app you need the following:
-
-  1. Doppel Tenant URL that you can use for calling the [Doppel APIs](https://doppel.readme.io/reference/create_alert). eg. *https://api.doppel.com/*
-  2. API Key for calling Doppel
-
-  Please reach out to Doppel to get access to above.
-
-  Once you have the URL and API Key, use the same for configuring the Doppel-XSOAR integration instance.
 display: Doppel
 name: Doppel
 script:
@@ -108,8 +82,7 @@ script:
       name: id
     - description: The alerted entity to retrieve details for.
       name: entity
-    description: Retrieves the alert details by ID or entity. Must include exactly
-      one of either id or entity.
+    description: Retrieves the alert details by ID or entity. Must include exactly one of either id or entity.
     name: doppel-get-alert
     outputs:
     - contextPath: Doppel.Alert.id
@@ -176,8 +149,7 @@ script:
     - description: The entity for which the alert should be created.
       name: entity
       required: true
-    description: Creates an alert for a specified entity. This command requires the
-      entity to be provided in the arguments.
+    description: Creates an alert for a specified entity. This command requires the entity to be provided in the arguments.
     name: doppel-create-alert
     outputs:
     - contextPath: Doppel.CreatedAlert.id
@@ -188,13 +160,13 @@ script:
       type: String
     - contextPath: Doppel.CreatedAlert.doppel_link
       description: 'The link to view the alert in the Doppel platform.'
-      type: String  
+      type: String
   - arguments:
     - description: The id of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
       name: alert_id
-    - description: The id of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
-      name: comment
     - description: A new comment to be added to the alert.
+      name: comment
+    - description: The entity of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
       name: entity
     - auto: PREDEFINED
       description: Status of which queue the alert is in.
@@ -213,7 +185,6 @@ script:
       - active
       - down
       - parked
-    - name: comment
     description: Updates an alert in the Doppel platform. Either 'alert_id' or 'entity' must be specified.
     name: doppel-update-alert
     outputs:
@@ -281,8 +252,7 @@ script:
     - description: The entity for which the abuse alert should be created.
       name: entity
       required: true
-    description: Create an alert for the provided value to abuse box. Will fail if
-      the alert value is invalid or is protected.
+    description: Create an alert for the provided value to abuse box. Will fail if the alert value is invalid or is protected.
     name: doppel-create-abuse-alert
     outputs:
     - contextPath: Doppel.AbuseAlert.message
@@ -312,11 +282,9 @@ script:
       - crypto
       - emails
       - paid_adds
-    - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. 
-        For durations, enter values like '12 hours' or '7 days'.
+    - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_before
-    - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. 
-        For durations, enter values like '12 hours' or '7 days'.
+    - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_after
     - auto: PREDEFINED
       description: The field to sort the reports by. Defaults to date_sourced.
@@ -338,8 +306,7 @@ script:
     - description: List of tags to filter alerts.
       isArray: true
       name: tags
-    description: Retrieves a list of alerts. The result can be filtered by provided
-      parameters.
+    description: Retrieves a list of alerts. The result can be filtered by provided parameters.
     name: doppel-get-alerts
     outputs:
     - contextPath: Doppel.GetAlerts.alerts.id
@@ -464,12 +431,17 @@ script:
       secret: false
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     execution: false
-    name: get-remote-data 
+    name: get-remote-data
   dockerimage: demisto/python3:3.10.14.100715
+  script: '-'
+  type: python
+  subtype: python3
   isFetchSamples: true
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
   ismappable: true
   runonce: false
-  fromversion: 6.0.0
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
