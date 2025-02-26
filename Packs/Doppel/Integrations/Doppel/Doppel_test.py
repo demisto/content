@@ -109,7 +109,11 @@ def test_get_remote_data_command(mocker, requests_mock):
     mocker.patch.object(demisto, 'command', return_value='get-remote-data')
 
     # Mock the function that fetches updated incident data
-    mock_get_remote_updated_incident_data_with_entry = mocker.patch("_get_remote_updated_incident_data_with_entry")
+    # mock_get_remote_updated_incident_data_with_entry = mocker.patch("_get_remote_updated_incident_data_with_entry")
+    mock_get_remote_updated_incident_data_with_entry = mocker.patch(
+        "Packs.Doppel.Integrations.Doppel.Doppel._get_remote_updated_incident_data_with_entry"
+    )
+
     mock_get_remote_updated_incident_data_with_entry.return_value = (
         {"id": "123456", "status": "updated", "name": "Test Alert"},
         []
