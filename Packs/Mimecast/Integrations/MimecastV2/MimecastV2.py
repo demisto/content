@@ -144,9 +144,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
 def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
                                                 dedup_messages: list = [], current_next_page: str = ''):
     """
-
     Creates paging response for fetching held_messages.
-
     """
     demisto.debug(f"Sending request from request_with_pagination with {limit=}, {data=}")
     headers = {}
