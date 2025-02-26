@@ -142,9 +142,10 @@ def test_fetch_incidents_command(client, mocker):
 
     # ✅ Mock `_paginated_call_to_get_alerts` to return test data
     test_alerts = [
-        {"id": "1", "created_at": "2025-02-01T12:00:00Z"},
-        {"id": "2", "created_at": "2025-02-01T12:01:00Z"},
+        {"id": "1", "created_at": "2025-02-01T12:00:00.000000Z"},
+        {"id": "2", "created_at": "2025-02-01T12:01:00.000000Z"},
     ]
+
     mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=test_alerts)
 
     # ✅ Mock `_get_mirroring_fields` to prevent errors
