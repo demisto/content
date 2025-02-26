@@ -1,5 +1,5 @@
 [INGEST:vendor="cisco", product="nexus", target_dataset="cisco_nexus_raw", no_hit=keep]
-// Support for the datetime formats:: yyyy MMM dd hh:mm:ss and yyyy MMM dd hh:mm:ss.ms. For example: "2021 Jan 01 10:00:00", "2021 Jan 01 10:00:00.123".
+// Support for the datetime formats: yyyy MMM dd hh:mm:ss and yyyy MMM dd hh:mm:ss.ms. For example: "2021 Jan 01 10:00:00", "2021 Jan 01 10:00:00.123".
 filter _raw_log ~= "\:\s\d{4}\s\w{3}\s+\d{1,2}\s\d{2}\:\d{2}\:\d{2}(?:\.\d+)?\s+UTC"
 | alter tmp_time = arrayindex(regextract(_raw_log ,"\:\s(\d{4}\s\w{3}\s+\d{1,2}\s\d{2}\:\d{2}\:\d{2}(?:\.\d+)?)\s+UTC"), 0)
 | alter _time = parse_timestamp("%Y %b %d %H:%M:%E*S",tmp_time)
