@@ -692,8 +692,8 @@ def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappi
     return mapping_response
 
 
-
 ''' MAIN FUNCTION '''
+
 
 def main() -> None:
     """Main function, parses params and runs command functions."""

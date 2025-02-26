@@ -1,15 +1,10 @@
 import json
 import pytest
 import demistomock as demisto
-from unittest.mock import MagicMock, Mock, patch
-from datetime import datetime
+from unittest.mock import MagicMock
 from Doppel import (
     test_module,
     fetch_incidents_command,
-    _get_last_fetch_datetime,
-    _get_mirroring_fields,
-    _paginated_call_to_get_alerts,
-    _get_remote_updated_incident_data_with_entry,
     get_remote_data_command,
     update_remote_system_command,
     get_mapping_fields_command,
@@ -17,8 +12,7 @@ from Doppel import (
     doppel_update_alert_command,
     doppel_get_alerts_command,
     doppel_create_alert_command,
-    doppel_create_abuse_alert_command,
-    main
+    doppel_create_abuse_alert_command
 )
 
 from CommonServerPython import *
@@ -97,82 +91,9 @@ def test_test_module(mocker, client):
     assert result == 'ok'
 
 
-# def test_fetch_incidents_command(client, mocker):
-#     """Test fetch_incidents_command function."""
-
-#     # Mocking demisto functions using mocker.patch.object
-#     mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})  # Increased timeout
-#     mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
-
-#     mocker.patch.object(client, "_http_request", return_value=ALERTS_RESPONSE)
-
-#     mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
-#     mock_incidents = mocker.patch.object(demisto, "incidents")
-#     mock_debug = mocker.patch.object(demisto, "debug")
-#     mock_info = mocker.patch.object(demisto, "info")
-
-#     # Run the function
-#     fetch_incidents_command(client, {})
-
-#     # Assertions
-#     mock_setLastRun.assert_called_once()
-#     last_run_data = mock_setLastRun.call_args[0][0]
-#     assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
-#     assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
-
-#     mock_incidents.assert_called_once()
-#     incidents_created = mock_incidents.call_args[0][0]
-#     assert len(incidents_created) == 2, "Expected 2 incidents to be created"
-#     assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
-
-#     mock_debug.assert_called()  # Ensure debug logs are being generated
-#     mock_info.assert_called()   # Ensure info logs are being generated
-
-
-
-# def test_fetch_incidents_command(client, mocker):
-    # """Test fetch_incidents_command function."""
-
-    # # Mock `demisto` functions
-    # mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "30"})
-    # mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
-    # mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
-    # mock_incidents = mocker.patch.object(demisto, "incidents")
-    # mock_debug = mocker.patch.object(demisto, "debug")
-    # mock_info = mocker.patch.object(demisto, "info")
-
-    # # ✅ Mock `_paginated_call_to_get_alerts` to return test data
-    # test_alerts = [
-    #     {"id": "1", "created_at": "2024-11-27T06:51:50.357664"},
-    #     {"id": "2", "created_at": "2024-11-28T06:51:50.357664"},
-    # ]
-
-    # mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=test_alerts)
-
-    # # ✅ Mock `_get_mirroring_fields` to prevent errors
-    # mocker.patch("Doppel._get_mirroring_fields", return_value={})
-
-    # # Run the function
-    # fetch_incidents_command(client, {})
-
-    # # ✅ Assertions
-    # mock_setLastRun.assert_called_once()
-    # last_run_data = mock_setLastRun.call_args[0][0]
-    # assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
-    # assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
-
-    # mock_incidents.assert_called_once()
-    # incidents_created = mock_incidents.call_args[0][0]
-    # assert len(incidents_created) == 2, "Expected 2 incidents to be created"
-    # assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
-
-    # mock_debug.assert_called()
-    # mock_info.assert_called()
-
-
 def test_fetch_incidents_command(mocker):
     """
-    Test the `fetch_incidents_command` function for multiple fetch cycles. 
+    Test the `fetch_incidents_command` function for multiple fetch cycles.
     """
 
     # Mocking demisto functions
@@ -184,7 +105,7 @@ def test_fetch_incidents_command(mocker):
 
     # Load mock data
     mock_alerts = util_load_json("test_data/get-all-alerts.json")  # List of alerts from Doppel
-    
+
     # Mock `_paginated_call_to_get_alerts` to simulate API responses in different cycles
     mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[
         mock_alerts['alerts'][:50],  # First fetch - fill queue
@@ -193,16 +114,12 @@ def test_fetch_incidents_command(mocker):
         []   # Fourth fetch - No new alerts, return empty
     ])
 
-    # Define fetch parameters
-    first_fetch_time = "3 days"
-    max_fetch = 2
-
     # Run test cycles
     last_run = None
     incidents_queue = []
 
     # for current_flow in ['first', 'second', 'third', 'forth']:
-        # Mock last run data
+    # Mock last run data
     mocker.patch.object(demisto, "getLastRun", return_value={'last_run': last_run, 'incidents_queue': incidents_queue})
 
     # Call function
@@ -210,9 +127,8 @@ def test_fetch_incidents_command(mocker):
 
     # Verify incidents pushed to XSOAR
     incidents_pushed = demisto.incidents.call_args[0][0]
-    assert len(incidents_pushed) == 1, f"Mismatch in incidents"
+    assert len(incidents_pushed) == 1, "Mismatch in incidents"
 
-    # ✅ Check incident structure
     incident = incidents_pushed[0]
     assert "name" in incident
     assert "type" in incident
@@ -228,12 +144,6 @@ def test_fetch_incidents_command(mocker):
     # Update last run and queue for next cycle
     last_run = last_run_data["last_run"]
     incidents_queue = last_run_data["incidents_queue"]
-
-
-
-
-
-
 
 
 def test_get_remote_data_command(mocker, requests_mock):
@@ -369,7 +279,6 @@ def test_doppel_get_alert_command_with_no_alert_found(client, mocker):
 def test_doppel_update_alert_command(mocker):
     """Test doppel_update_alert_command function with an inline mock client."""
 
-    
     # Mocking the Client instance
     mock_client = MagicMock()
     mock_client.update_alert.return_value = {"id": "123", "queue_state": "archived", "entity_state": "closed"}
