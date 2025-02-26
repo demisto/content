@@ -1,12 +1,7 @@
 {
-	"cacheVersn": 0,
-	"close": null,
 	"definitionId": "",
 	"description": "",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -124,7 +119,6 @@
 						"moved": false,
 						"name": "Linked Incidents",
 						"static": false,
-						"type": "linkedIncidents",
 						"w": 1,
 						"x": 1,
 						"y": 6
@@ -138,7 +132,6 @@
 						"moved": false,
 						"name": "Child Incidents",
 						"static": false,
-						"type": "childInv",
 						"w": 1,
 						"x": 2,
 						"y": 4
@@ -152,7 +145,6 @@
 						"moved": false,
 						"name": "Evidence",
 						"static": false,
-						"type": "evidence",
 						"w": 1,
 						"x": 2,
 						"y": 2
@@ -167,7 +159,6 @@
 						"moved": false,
 						"name": "Team Members",
 						"static": false,
-						"type": "team",
 						"w": 1,
 						"x": 2,
 						"y": 6
@@ -328,11 +319,6 @@
 				"id": "workPlan",
 				"name": "Work Plan",
 				"type": "workPlan"
-			},
-			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
 			},
 			{
 				"id": "canvas",
@@ -884,24 +870,10 @@
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "0.0.0",
 	"group": "incident",
 	"id": "Doppel Incident Layout",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "1.0.0",
-	"locked": false,
-	"mobile": null,
 	"name": "Doppel Incident Layout",
-	"packID": "",
-	"packName": "Doppel",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "99.99.99",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.10.0"
 }

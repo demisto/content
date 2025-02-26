@@ -6,33 +6,25 @@
 	"days": 0,
 	"daysR": 0,
 	"default": false,
-	"definitionId": "",
 	"detached": false,
 	"disabled": false,
 	"extractSettings": {
 		"fieldCliNameToExtractSettings": {},
 		"mode": "Specific"
 	},
-	"fromServerVersion": "",
 	"hours": 0,
 	"hoursR": 0,
 	"id": "Doppel Alert Email",
-	"itemVersion": "",
 	"layout": "Doppel Incident Layout",
 	"locked": false,
 	"name": "Doppel Alert Email",
 	"onChangeRepAlg": 0,
-	"packID": "248d399d-20e5-4697-8896-6f05664b8187",
-	"packName": "Doppel_Incident_Classifier Contribution Pack",
 	"preProcessingScript": "",
-	"propagationLabels": [
-		"all"
-	],
 	"readonly": false,
 	"reputationCalc": 0,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1,
 	"weeks": 0,
-	"weeksR": 0
+	"weeksR": 0,
+	"fromVersion": "6.10.0"
 }

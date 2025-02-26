@@ -61,14 +61,10 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  section: Connect
-  advanced: true
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  section: Connect
-  advanced: true
   required: false
 description: |-
   Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.

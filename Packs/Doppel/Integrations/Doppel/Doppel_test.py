@@ -11,31 +11,32 @@ ALERTS_RESPONSE = [
     {"id": "2", "created_at": "2025-02-01T12:05:00.000000Z"}
 ]
 
+
 def util_load_json(path):
     """Helper function to load JSON data from a file."""
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 # Mock function for _http_request
+
+
 def mock_http_request(method, url_suffix, params=None, headers=None, data=None, json_data=None):
     if url_suffix == 'alert':
         return util_load_json('test_data/get-alert.json')
     return {}
 
 
-
-
-
 # Mock function to return alerts in the expected format
 def mock_get_alerts(*args, **kwargs):
     if kwargs.get("page", 0) > 0:  # Simulate an empty response after the first page
         return {"alerts": []}
-    
+
     modified_alerts = [
         {**alert, "created_at": alert["created_at"].rstrip("Z")}
         for alert in ALERTS_RESPONSE
     ]
     return {"alerts": modified_alerts}  # Ensure response is a dictionary
+
 
 @pytest.fixture
 def client():
@@ -47,16 +48,16 @@ def client():
 
     # Mocking fetch single alert (Used in update_remote_system_command)
     client.get_alert.return_value = {
-        "id": "123", 
-        "queue_state": "open", 
+        "id": "123",
+        "queue_state": "open",
         "entity_state": "active"
     }
 
     # Mocking update alert (Used in update_remote_system_command)
     client.update_alert.return_value = None  # Assume update succeeds
-    
+
     client.create_abuse_alert = MagicMock(side_effect=mock_http_request)
-    
+
     return client
 
 
@@ -71,7 +72,7 @@ def test_test_module(mocker):
     """
     # Mock Client
     client = mocker.Mock()
-    
+
     # Mock `client.get_alerts` to return a successful response
     mocker.patch.object(client, 'get_alerts', return_value={"data": []})
 
@@ -83,7 +84,6 @@ def test_test_module(mocker):
 
     # Assertions
     assert result == "ok"
-
 
 
 def test_fetch_incidents_command(client, mocker):
@@ -115,7 +115,6 @@ def test_fetch_incidents_command(client, mocker):
     mock_info.assert_called()   # Ensure info logs are being generated
 
 
-
 def test_get_remote_data_command(mocker, requests_mock):
     """
     Given:
@@ -138,13 +137,12 @@ def test_get_remote_data_command(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={"id": "123456", "lastUpdate": "2025-01-27T07:55:10.063742"})
     mocker.patch.object(demisto, 'command', return_value='get-remote-data')
 
-    
-    mock_get_remote_updated_incident_data_with_entry = mocker.patch("Doppel._get_remote_updated_incident_data_with_entry", 
+    mock_get_remote_updated_incident_data_with_entry = mocker.patch("Doppel._get_remote_updated_incident_data_with_entry",
                                                                     return_value=(
                                                                         {"id": "123456", "status": "updated", "name": "Test Alert"},
                                                                         [])
                                                                     )
-    
+
     # Prepare client mock
     client = mocker.Mock()
 
@@ -155,7 +153,6 @@ def test_get_remote_data_command(mocker, requests_mock):
     assert result.entries == []
 
     mock_get_remote_updated_incident_data_with_entry.assert_called_once()
-
 
     demisto.debug.assert_called()
 
@@ -181,6 +178,7 @@ def test_update_remote_system_command(client, mocker):
     mock_debug.assert_called()  # Ensure debug logs are being generated
     mock_error.assert_not_called()  # Ensure no errors were logged
 
+
 def test_get_mapping_fields_command(client, mocker):
     """Test get_mapping_fields_command function."""
 
@@ -193,7 +191,7 @@ def test_get_mapping_fields_command(client, mocker):
     # Assertions
     assert result is not None, "Result should not be None"
     assert hasattr(result, "extract_mapping"), "Result should have extract_mapping method"
-    
+
     mock_debug.assert_called()  # Ensure debug logs are generated
 
 
@@ -202,7 +200,7 @@ def test_doppel_get_alert_command(client, mocker):
 
     # Sample arguments for testing
     args = {'id': 'TET-1953443'}  # Example test with an ID (use appropriate values)
-    
+
     result = doppel_get_alert_command(client, args)
 
     assert isinstance(result, CommandResults)
@@ -210,18 +208,21 @@ def test_doppel_get_alert_command(client, mocker):
     assert result.outputs_key_field == 'id'
     assert result.outputs.get('id') == 'TET-1953443'  # Adjust as per the sample response structure
     assert 'Alert Summary' in result.readable_output  # Check if human-readable output contains expected text
-    
+
+
 def test_doppel_get_alert_command_with_invalid_params(client):
     args = {'id': 'TET-1953443', 'entity': 'http://test-doppel.com'}
 
     with pytest.raises(ValueError):
         doppel_get_alert_command(client, args)
 
+
 def test_doppel_get_alert_command_with_missing_params(client):
     args = {}
 
     with pytest.raises(ValueError):
         doppel_get_alert_command(client, args)
+
 
 def test_doppel_get_alert_command_with_no_alert_found(client, mocker):
     def mock_no_alert_found(*args, **kwargs):
@@ -233,6 +234,7 @@ def test_doppel_get_alert_command_with_no_alert_found(client, mocker):
 
     with pytest.raises(Exception):
         doppel_get_alert_command(client, args)
+
 
 def test_doppel_update_alert_command(mocker):
     """Test doppel_update_alert_command function with an inline mock client."""
@@ -263,11 +265,10 @@ def test_doppel_update_alert_command(mocker):
     mock_debug.assert_called()  # Ensure debug logs are being generated
 
 
-
 def test_doppel_update_alert_command_with_entity(client, mocker):
     # Prepare the mock response for the _http_request function
     mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
-    
+
     # Sample arguments to simulate the command input, using 'entity' instead of 'alert_id'
     args = {
         'alert_id': '',  # Empty alert_id to test entity usage
@@ -292,6 +293,7 @@ def test_doppel_update_alert_command_with_entity(client, mocker):
     assert result.outputs_key_field == 'id'  # Ensure the key field is correct
     assert result.outputs == mock_response  # Ensure the correct output is returned
 
+
 def test_doppel_update_alert_command_missing_params(client):
     """Test the function when required parameters are missing"""
     args = {
@@ -301,13 +303,14 @@ def test_doppel_update_alert_command_missing_params(client):
         'entity': '',
         'comment': 'Test update comment'
     }
-    
+
     with pytest.raises(ValueError):
         doppel_update_alert_command(client, args)
 
+
 def test_doppel_get_alerts_command(client, mocker):
     mocker.patch.object(client, 'get_alerts', side_effect=mock_http_request)
-    
+
     args = {
         'search_key': 'test-key',
         'queue_state': 'open',
@@ -319,26 +322,27 @@ def test_doppel_get_alerts_command(client, mocker):
         'page': 1,
         'tags': 'tag1,tag2'
     }
-    
+
     result = doppel_get_alerts_command(client, args)
-    
+
     assert isinstance(result, CommandResults)
-    
+
     assert 'outputs_prefix' in result.to_context()
     assert 'outputs_key_field' in result.to_context()
     assert 'outputs' in result.to_context()
     assert 'readable_output' in result.to_context()
-    
+
     assert 'id' in result.to_context()['Doppel.GetAlerts']
-    
+
     assert 'Alert Summary' in result.readable_output
     assert 'test-key' in result.readable_output  # Based on the mock response
 
+
 def test_doppel_create_alert_command(client, mocker):
     test_response = util_load_json('test_data/create-alert.json')
-    
+
     client.create_alert.return_value = test_response
-    
+
     args = {
         'entity': 'test-doppel.com'  # Ensure 'entity' is included in the arguments
     }
@@ -352,6 +356,7 @@ def test_doppel_create_alert_command(client, mocker):
     assert "Alert Summary" in result.readable_output
     assert "test-doppel.com" in result.readable_output.split()  # Ensure the entity is included in the output
 
+
 def test_doppel_create_alert_command_missing_entity(client):
     """Test case when 'entity' is missing in the arguments."""
     args = {}  # Missing 'entity'
@@ -359,21 +364,23 @@ def test_doppel_create_alert_command_missing_entity(client):
     with pytest.raises(ValueError, match="Entity must be specified to create an alert."):
         doppel_create_alert_command(client, args)
 
+
 def test_doppel_create_abuse_alert_command(client, mocker):
     args = {'entity': 'test-doppel.com'}
-    
+
     result = doppel_create_abuse_alert_command(client, args)
-    
+
     assert isinstance(result, CommandResults)
-    
+
     assert result.outputs_prefix == 'Doppel.AbuseAlert'
     assert result.outputs_key_field == 'id'
-    
+
     expected_output = util_load_json('test_data/create-abuse-alert.json')
-    
+
     assert result.outputs == expected_output
-    
+
     assert 'Alert Summary' in result.readable_output
+
 
 def test_doppel_create_abuse_alert_command_missing_entity(client):
     args = {}

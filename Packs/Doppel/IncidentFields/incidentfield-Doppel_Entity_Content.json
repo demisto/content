@@ -1,18 +1,8 @@
 {
-	"XDRBuiltInField": false,
-	"XsiamIncidentFieldExtraData": {
-		"incidentsFilter": null,
-		"slaGoals": null,
-		"slaTimer": null,
-		"timerConditions": null
-	},
 	"aliasTo": "",
-	"aliases": null,
 	"associatedToAll": true,
 	"associatedTypes": [],
-	"autoCompleteTags": null,
 	"breachScript": "",
-	"cacheVersn": 0,
 	"caseInsensitive": true,
 	"cliName": "doppelentitycontent",
 	"closeForm": false,
@@ -122,40 +112,30 @@
 			"width": 150
 		}
 	],
-	"content": false,
+	"content": true,
 	"defaultRows": [
 		{}
 	],
-	"definitionId": "",
 	"description": "",
 	"editForm": true,
 	"fieldCalcScript": "",
-	"fromServerVersion": "",
 	"group": 0,
 	"hidden": false,
 	"id": "incident_doppelentitycontent",
-	"ipVersion": "",
 	"isReadOnly": false,
 	"itemVersion": "",
 	"locked": false,
-	"mergeStrategy": "",
 	"name": "Doppel Entity Content",
 	"neverSetAsRequired": false,
 	"openEnded": true,
-	"orgType": "grid",
 	"ownerOnly": false,
-	"packID": "248d399d-20e5-4697-8896-6f05664b8187",
-	"packName": "Doppel_Incident_Classifier Contribution Pack",
 	"placeholder": "",
-	"pretty_name": "Doppel Entity Content",
 	"propagationLabels": [
 		"all"
 	],
 	"required": false,
-	"runScriptAfterUpdate": false,
 	"script": "",
 	"selectValues": null,
-	"selectValuesMap": null,
 	"sla": 0,
 	"system": false,
 	"systemAssociatedTypes": null,
@@ -166,8 +146,8 @@
 	"unmapped": false,
 	"unsearchable": true,
 	"useAsKpi": false,
-	"validatedError": "",
 	"validationRegex": "",
 	"version": -1,
-	"x2_fields": ""
+	"x2_fields": "",
+	"fromVersion": "6.10.0"
 }

@@ -278,7 +278,7 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
         }
 
         # Call the client's `get_alerts` method to test the connection
-        results = client.get_alerts(params=query_params)
+        client.get_alerts(params=query_params)
         message: str = 'ok'
 
     except DemistoException as e:
