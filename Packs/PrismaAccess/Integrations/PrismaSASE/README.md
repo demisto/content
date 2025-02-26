@@ -1526,8 +1526,8 @@ Get the CIE user.
 | --- | --- | --- |
 | domain | The domain of the directory-sync connected to the CIE. | Required | 
 | value_for_filter | The attribute value for the filter. | Required | 
-| attributes_to_return | The attributes to return. Default is Common-Name, Unique Identifier, Manager, User Principal Name, Name, Distinguished Name. | Optional | 
-| attributes_to_filter_by | The attributes to filter by. Default is Distinguished Name, Unique Identifier, Common-Name, Name, User Principal Name. | Optional | 
+| attributes_to_return | A comma-separated list of attributes to return. Default is Common-Name, Unique Identifier, Manager, User Principal Name, Name, Distinguished Name. | Optional | 
+| attributes_to_filter_by | A comma-separated list of attributes to filter by. Default is Distinguished Name, Unique Identifier, Common-Name, Name, User Principal Name. | Optional | 
 | operator | The operator. Possible values are: Equal, Starts With, Ends With, Contain, Text Search. Default is Equal. | Optional | 
 
 #### Context Output
@@ -1539,4 +1539,3 @@ Get the CIE user.
 | PrismaSase.CIE.User.Manager | String | The manager. | 
 | PrismaSase.CIE.User.Name | String | The name. | 
 | PrismaSase.CIE.User.Unique Identifier | String | The unique identifier. | 
-
