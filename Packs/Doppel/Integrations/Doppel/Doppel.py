@@ -12,7 +12,7 @@ and the commands to perform different updates on the alerts
 """
 
 import urllib3
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -693,57 +693,53 @@ def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappi
 
 
 
-
 ''' MAIN FUNCTION '''
 
-
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
+    """Main function, parses params and runs command functions."""
     api_key = demisto.params().get('credentials', {}).get('password')
 
-    # get the service API url
+    # Get the service API URL
     base_url = urljoin(demisto.params()['url'], '/v1')
 
-    supported_commands = {
-        'test-module': test_module,
+    # Explicitly define the type for the command function dictionary
+    supported_commands: Dict[str, Callable[[Client, Dict[str, Any]], Any]] = {
         'fetch-incidents': fetch_incidents_command,
         'get-modified-remote-data': get_modified_remote_data_command,
         'get-remote-data': get_remote_data_command,
         'update-remote-system': update_remote_system_command,
         'get-mapping-fields': get_mapping_fields_command,
-
-        # Doppel Specific alerts
         'doppel-get-alert': doppel_get_alert_command,
         'doppel-update-alert': doppel_update_alert_command,
         'doppel-get-alerts': doppel_get_alerts_command,
         'doppel-create-alert': doppel_create_alert_command,
         'doppel-create-abuse-alert': doppel_create_abuse_alert_command,
     }
+
+    # Special case for 'test-module' which does not take args
+    supported_commands_test_module: Dict[str, Callable[[Client], Any]] = {
+        'test-module': test_module
+    }
+
     current_command: str = demisto.command()
     demisto.info(f'Command being called is {current_command}')
+
     try:
-        client = Client(
-            base_url=base_url,
-            api_key=api_key)
+        client = Client(base_url=base_url, api_key=api_key)
 
-        if current_command in supported_commands:
-            command_function = supported_commands[current_command]
-            if current_command == 'test-module':  # Special case for test_module
-                result = command_function(client)
-            else:
-                result = command_function(client, demisto.args())
-
-            demisto.info(f'Command run successful: {current_command}')
-            return_results(result)
+        if current_command in supported_commands_test_module:
+            # Calls test_module(client) without args
+            result = supported_commands_test_module[current_command](client)
+        elif current_command in supported_commands:
+            # Calls command_function(client, demisto.args())
+            result = supported_commands[current_command](client, demisto.args())
         else:
-            demisto.error(f'Command is not implemented: {demisto.command()}')
+            demisto.error(f'Command is not implemented: {current_command}')
             raise NotImplementedError(f'The {current_command} command is not supported')
 
-    # Log exceptions and return errors
+        demisto.info(f'Command run successful: {current_command}')
+        return_results(result)
+
     except Exception as e:
         return_error(f'Failed to execute {current_command} command.\nError:\n{str(e)}')
 
