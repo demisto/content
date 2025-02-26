@@ -73,8 +73,6 @@ def client():
     # Mocking update alert (Used in update_remote_system_command)
     client.update_alert.return_value = None  # Assume update succeeds
 
-    client.create_abuse_alert = MagicMock(side_effect=mock_http_request)
-
     return client
 
 
@@ -340,7 +338,7 @@ def test_doppel_get_alerts_command(client, mocker):
 
     assert result.outputs_prefix == 'Doppel.GetAlerts'
     assert result.outputs_key_field == 'id'
-    assert result.outputs.get('id') == 'TET-1953443'
+    assert result.outputs['alerts'][0]['id'] == 'TET-1953443'
     assert 'Alert Summary' in result.readable_output
 
 
@@ -373,6 +371,10 @@ def test_doppel_create_alert_command_missing_entity(client):
 
 
 def test_doppel_create_abuse_alert_command(client, mocker):
+    test_response = util_load_json('test_data/create-abuse-alert.json')
+
+    client.create_abuse_alert.return_value = test_response
+
     args = {'entity': 'test-doppel.com'}
 
     result = doppel_create_abuse_alert_command(client, args)
