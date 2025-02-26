@@ -31,33 +31,53 @@ def client():
     client.create_abuse_alert = MagicMock(side_effect=mock_http_request)
     return client
 
-def test_test_module(client, mocker):
-    mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
-    result = test_module(client, {})
-    assert result == 'ok'
-
-@pytest.fixture
-def mock_client():
-    """Fixture to mock the Client object."""
-    client = MagicMock(spec=client)
+def test_test_module(mocker):
+    """
+    Given:
+        - A mock Client instance
+    When:
+        - Running test_module() to test connectivity
+    Then:
+        - The function should return 'ok' if the API request is successful
+    """
+    # Mock Client
+    client = mocker.Mock()
     
-    # Mocking fetch alerts (Used in fetch_incidents_command)
-    client.get_alerts.return_value = ALERTS_RESPONSE  
+    # Mock `client.get_alerts` to return a successful response
+    mocker.patch.object(client, 'get_alerts', return_value={"data": []})
+
+    # Define empty args (not used in function)
+    args = {}
+
+    # Call the function
+    result = test_module(client, args)
+
+    # Assertions
+    assert result == "ok"
+
+
+# @pytest.fixture
+# def mock_client():
+#     """Fixture to mock the Client object."""
+#     client = MagicMock(spec=client)
     
-    # Mocking fetch single alert (Used in update_remote_system_command)
-    client.get_alert.return_value = {
-        "id": "123", 
-        "queue_state": "open", 
-        "entity_state": "active"
-    }
-
-    # Mocking update alert (Used in update_remote_system_command)
-    client.update_alert.return_value = None  # Assume update succeeds
+#     # Mocking fetch alerts (Used in fetch_incidents_command)
+#     client.get_alerts.return_value = ALERTS_RESPONSE  
     
-    return client
+#     # Mocking fetch single alert (Used in update_remote_system_command)
+#     client.get_alert.return_value = {
+#         "id": "123", 
+#         "queue_state": "open", 
+#         "entity_state": "active"
+#     }
+
+#     # Mocking update alert (Used in update_remote_system_command)
+#     client.update_alert.return_value = None  # Assume update succeeds
+    
+#     return client
 
 
-def test_fetch_incidents_command(mock_client, mocker):
+def test_fetch_incidents_command(client, mocker):
     """Test fetch_incidents_command function."""
 
     # Mocking demisto functions using mocker.patch.object
@@ -69,7 +89,7 @@ def test_fetch_incidents_command(mock_client, mocker):
     mock_info = mocker.patch.object(demisto, "info")
 
     # Run the function
-    fetch_incidents_command(mock_client, {})
+    fetch_incidents_command(client, {})
 
     # Assertions
     mock_setLastRun.assert_called_once()
@@ -114,8 +134,7 @@ def test_get_remote_data_command(mocker, requests_mock):
                                                                         {"id": "123456", "status": "updated", "name": "Test Alert"},
                                                                         [])
                                                                     )
-
-
+    
     # Prepare client mock
     client = mocker.Mock()
 
@@ -126,7 +145,6 @@ def test_get_remote_data_command(mocker, requests_mock):
     assert result.entries == []
 
     demisto.debug.assert_called()
-
 
 
 def test_update_remote_system_command(mock_client, mocker):
