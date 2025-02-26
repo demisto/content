@@ -1,15 +1,3 @@
-commonfields:
-  id: IPEnrichment
-  version: -1
-name: IPEnrichment
-script: ''
-type: python
-subtype: python3
-tags:
-- Core
-- ip
-comment: xxx
-system: true
 args:
 - name: ip
   required: true
@@ -30,6 +18,11 @@ args:
   predefined:
   - 'true'
   - 'false'
+comment: This script gathers IP data from multiple integrations, consolidating information such as reputation, prevalence, and more into a unified IP entity, which is then returned to the context.
+commonfields:
+  id: ip-enrichment
+  version: -1
+name: ip-enrichment
 outputs:
 - contextPath: IP
   description: The IP address objects.
@@ -76,7 +69,11 @@ outputs:
 - contextPath: IP.Malicious.Description
   description: For malicious IPs, the reason that the vendor made the decision.
   type: string
-scripttarget: 0
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.11.10.113941
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.116949
+fromversion: 5.5.0
 tests:
+- No tests (auto formatted)
