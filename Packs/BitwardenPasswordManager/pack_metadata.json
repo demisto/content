@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Bitwarden",
+        "Bitwarden Password",
+        "Bitwarden Password Manager",
+        "Password Manager",
+        "Password",
+        "Vault"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
