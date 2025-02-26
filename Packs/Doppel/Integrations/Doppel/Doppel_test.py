@@ -172,47 +172,53 @@ def test_test_module(mocker, client):
 
 
 
-
-def test_fetch_incidents_command(client, mocker):
-    """Test fetch_incidents_command function."""
-
-    # ✅ Mock `demisto` functions
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
-    mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
-    mock_incidents = mocker.patch.object(demisto, "incidents")
-    mock_debug = mocker.patch.object(demisto, "debug")
-    mock_info = mocker.patch.object(demisto, "info")
-
-    # ✅ Mock `_paginated_call_to_get_alerts` to return test data
-    test_alerts = [
-        {"id": "1", "created_at": "2024-11-27T06:51:50.357664"},
-        {"id": "2", "created_at": "2024-11-28T06:51:50.357664"},
-    ]
-    mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=test_alerts)
-
-    # ✅ Mock `_get_mirroring_fields` to prevent errors
-    mocker.patch("Doppel._get_mirroring_fields", return_value={})
-
-    # ✅ Call the function
-    fetch_incidents_command(client, {})
-
-    # ✅ Assertions
-    mock_setLastRun.assert_called_once()
-    last_run_data = mock_setLastRun.call_args[0][0]
-    assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
-    assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
-
-    mock_incidents.assert_called_once()
-    incidents_created = mock_incidents.call_args[0][0]
-    assert len(incidents_created) == 2, "Expected 2 incidents to be created"
+def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_results):
+    """Helper function to validate fetch results."""
     
-    # ✅ Fix the `occurred` assertion
-    assert incidents_created[0]['occurred'] == "2024-11-27T06:51:50Z"
-    assert incidents_created[1]['occurred'] == "2024-11-28T06:51:50Z"
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': last_run, 'incidents_queue': []})
+    mocker.patch.object(demisto, 'params', return_value={"max_fetch": fetch_limit, "fetch_timeout": "30"})
 
-    mock_debug.assert_called()
-    mock_info.assert_called()
+    mirroring_fields = {}  # Update if mirroring fields exist
+
+    # Call the function under test
+    results = fetch_incidents(client, mirroring_fields, first_fetch_time, fetch_limit)
+
+    # Validate the number of incidents
+    assert len(results) == len(mock_results), "Mismatch in number of fetched incidents"
+
+    # Validate each incident field
+    for incident, mock_incident in zip(results, mock_results):
+        assert incident['name'] == mock_incident['name']
+        assert incident['occurred'] == mock_incident['occurred']
+        assert json.loads(incident['rawJSON']) == json.loads(mock_incident['rawJSON'])
+
+
+def test_fetch_incidents(client, mocker):
+    """
+    Test fetch_incidents function through multiple fetch cycles.
+    """
+
+    # Load mock data
+    mock_data = util_load_json('test_data/get-all-alerts.json')
+    mock_results = util_load_json('test_data/fetch_results.json')
+
+    # Mock API response for fetching alerts (with pagination if needed)
+    mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[
+        mock_data['alerts'][:50],  # First fetch
+        mock_data['alerts'][50:100],  # Second fetch
+        [],  # Third fetch (no new incidents)
+        []   # Fourth fetch (still no new incidents)
+    ])
+
+    # Define fetch parameters
+    first_fetch_time = "3 days"
+    max_fetch = 50  # Match the fetch limit used in the main function
+
+    # Loop through different fetch scenarios
+    for current_flow in ['first', 'second', 'third', 'forth']:
+        fetch_check(mocker, client, mock_data['alerts'][0]['created_at'], first_fetch_time, max_fetch,
+                    mock_results[f'{current_flow}_result'])
+
 
 
 
