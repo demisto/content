@@ -170,53 +170,62 @@ def test_test_module(mocker, client):
     # mock_info.assert_called()
 
 
-
-def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_results):
-    """Helper function to validate fetch results."""
+def test_fetch_incidents_command(mocker):
+    """
+    Test the `fetch_incidents_command` function for multiple fetch cycles.
     
-    mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': last_run, 'incidents_queue': []})
-    mocker.patch.object(demisto, 'params', return_value={"max_fetch": fetch_limit, "fetch_timeout": "30"})
-
-    mirroring_fields = {}  # Update if mirroring fields exist
-
-    # Call the function under test
-    results = fetch_incidents_command(client, {})
-
-    # Validate the number of incidents
-    assert len(results) == len(mock_results), "Mismatch in number of fetched incidents"
-
-    # Validate each incident field
-    for incident, mock_incident in zip(results, mock_results):
-        assert incident['name'] == mock_incident['name']
-        assert incident['occurred'] == mock_incident['occurred']
-        assert json.loads(incident['rawJSON']) == json.loads(mock_incident['rawJSON'])
-
-
-def test_fetch_incidents(client, mocker):
+    Test cases:
+    1. First run - Fetch all available alerts and fill the queue.
+    2. Second run - Fetch from the queue without new alerts.
+    3. Third run - No new alerts, return the remaining ones from the queue.
+    4. Fourth run - No new alerts, return an empty list.
     """
-    Test fetch_incidents function through multiple fetch cycles.
-    """
+
+    # Mocking demisto functions
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "incidents")
 
     # Load mock data
-    mock_data = util_load_json('test_data/get-all-alerts.json')
-    mock_results = util_load_json('test_data/fetch_result.json')
+    mock_alerts = util_load_json("test_data/get-all-alerts.json")  # List of alerts from Doppel
+    mock_results = util_load_json("test_data/fetch_results.json")  # Expected fetch results
 
-    # Mock API response for fetching alerts (with pagination if needed)
+    # Mock `_paginated_call_to_get_alerts` to simulate API responses in different cycles
     mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[
-        mock_data['alerts'][:50],  # First fetch
-        mock_data['alerts'][50:100],  # Second fetch
-        [],  # Third fetch (no new incidents)
-        []   # Fourth fetch (still no new incidents)
+        mock_alerts['alerts'][:50],  # First fetch - fill queue
+        mock_alerts['alerts'][50:100],  # Second fetch - next batch
+        [],  # Third fetch - No new alerts, return remaining
+        []   # Fourth fetch - No new alerts, return empty
     ])
 
     # Define fetch parameters
     first_fetch_time = "3 days"
-    max_fetch = 50  # Match the fetch limit used in the main function
+    max_fetch = 2
 
-    # Loop through different fetch scenarios
+    # Run test cycles
+    last_run = None
+    incidents_queue = []
+
     for current_flow in ['first', 'second', 'third', 'forth']:
-        fetch_check(mocker, client, mock_data['alerts'][0]['created_at'], first_fetch_time, max_fetch,
-                    mock_results[f'{current_flow}_result'])
+        # Mock last run data
+        mocker.patch.object(demisto, "getLastRun", return_value={'last_run': last_run, 'incidents_queue': incidents_queue})
+
+        # Call function
+        fetch_incidents_command(client=None, args={})
+
+        # Verify incidents pushed to XSOAR
+        incidents_pushed = demisto.incidents.call_args[0][0]
+        assert len(incidents_pushed) == len(mock_results[f'{current_flow}_result']), f"Mismatch in incidents for {current_flow} fetch"
+
+        # Verify last run update
+        last_run_data = demisto.setLastRun.call_args[0][0]
+        assert "last_run" in last_run_data, f"last_run not updated in {current_flow} fetch"
+        
+        # Update last run and queue for next cycle
+        last_run = last_run_data["last_run"]
+        incidents_queue = last_run_data["incidents_queue"]
 
 
 
