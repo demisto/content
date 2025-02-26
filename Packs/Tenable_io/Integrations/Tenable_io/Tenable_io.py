@@ -1734,6 +1734,29 @@ def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_d
 ''' FETCH COMMANDS '''
 
 
+def set_index_audit_logs(dt_now: datetime, dt_start_date: datetime, audit_logs: List[dict], last_index_fetched: int) -> int:
+    """
+    This function set the new index_audit_logs by the following logic:
+        1. if dt_now > dt_start_date that means we're starting a new day (the fetch is per day, so we need to restart the index).
+        2. same day with new audit_logs - adding the amount of the new events to the exists index.
+        3. same day without new audit_logs - leave the index as the same.
+    Args:
+        dt_now: the current datetime
+        dt_start_date: the start day to fetch in the current cycle
+        audit_logs: the audit logs are retrieved in this cycle of fetch
+        last_index_fetched: the last index from the previous cycle
+
+    Returns:
+        The new last index fetched
+    """
+    if dt_now > dt_start_date:
+        return 0
+    elif audit_logs:
+        return len(audit_logs) + last_index_fetched
+    else:
+        return last_index_fetched
+
+
 def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, limit: int = 1000):
     """
     Fetches audit logs.
@@ -1764,9 +1787,17 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     for audit_log in audit_logs:
         audit_log['_time'] = audit_log.get('received') or audit_log.get('indexed')
 
-    next_run: str = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-    last_run.update({'index_audit_logs': len(audit_logs) + last_index_fetched if audit_logs else last_index_fetched,
-                     'last_fetch_time': next_run})
+    # creating date now as a string and as a datetime object for comparing
+    date_now_as_str = datetime.utcnow().date().strftime(DATE_FORMAT)
+    date_now_as_dt = datetime.strptime(date_now_as_str, DATE_FORMAT)
+
+    start_date_as_dt = datetime.strptime(start_date, DATE_FORMAT)  # convert back the start_date to datetime object for comparing
+    demisto.debug(f"Tenable_io - {date_now_as_str=}, {start_date=}, {len(audit_logs)}, {last_index_fetched=}")
+    index_audit_logs = set_index_audit_logs(date_now_as_dt, start_date_as_dt, audit_logs, last_index_fetched)
+    demisto.debug(f"Tenable_io - {index_audit_logs=}")
+
+    last_run.update({'index_audit_logs': index_audit_logs,
+                     'last_fetch_time': date_now_as_str})
     demisto.info(f'Done fetching {len(audit_logs)} audit logs, Setting {last_run=}.')
     return audit_logs, last_run
 
