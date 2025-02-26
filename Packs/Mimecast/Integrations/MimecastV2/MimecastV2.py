@@ -140,7 +140,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
             # If limit is reached or there are no more pages
             if not next_page or (limit and len_of_results >= limit):
                 break
-        pagination = {'page_size': page_size,  # type: ignore
+        pagination = {'page_size': page_size or limit,  # type: ignore
                       'pageToken': next_page}  # type: ignore
         payload['meta']['pagination'] = pagination
         response = http_request('POST', api_endpoint, payload, headers=headers)
