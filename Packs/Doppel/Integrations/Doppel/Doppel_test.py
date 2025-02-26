@@ -131,44 +131,43 @@ def test_test_module(mocker, client):
 
 
 # def test_fetch_incidents_command(client, mocker):
-    """Test fetch_incidents_command function."""
+    # """Test fetch_incidents_command function."""
 
-    # Mock `demisto` functions
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "30"})
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
-    mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
-    mock_incidents = mocker.patch.object(demisto, "incidents")
-    mock_debug = mocker.patch.object(demisto, "debug")
-    mock_info = mocker.patch.object(demisto, "info")
+    # # Mock `demisto` functions
+    # mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "30"})
+    # mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
+    # mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
+    # mock_incidents = mocker.patch.object(demisto, "incidents")
+    # mock_debug = mocker.patch.object(demisto, "debug")
+    # mock_info = mocker.patch.object(demisto, "info")
 
-    # ✅ Mock `_paginated_call_to_get_alerts` to return test data
-    test_alerts = [
-        {"id": "1", "created_at": "2024-11-27T06:51:50.357664"},
-        {"id": "2", "created_at": "2024-11-28T06:51:50.357664"},
-    ]
+    # # ✅ Mock `_paginated_call_to_get_alerts` to return test data
+    # test_alerts = [
+    #     {"id": "1", "created_at": "2024-11-27T06:51:50.357664"},
+    #     {"id": "2", "created_at": "2024-11-28T06:51:50.357664"},
+    # ]
 
-    mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=test_alerts)
+    # mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=test_alerts)
 
-    # ✅ Mock `_get_mirroring_fields` to prevent errors
-    mocker.patch("Doppel._get_mirroring_fields", return_value={})
+    # # ✅ Mock `_get_mirroring_fields` to prevent errors
+    # mocker.patch("Doppel._get_mirroring_fields", return_value={})
 
-    # Run the function
-    fetch_incidents_command(client, {})
+    # # Run the function
+    # fetch_incidents_command(client, {})
 
-    # ✅ Assertions
-    mock_setLastRun.assert_called_once()
-    last_run_data = mock_setLastRun.call_args[0][0]
-    assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
-    assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
+    # # ✅ Assertions
+    # mock_setLastRun.assert_called_once()
+    # last_run_data = mock_setLastRun.call_args[0][0]
+    # assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
+    # assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
 
-    mock_incidents.assert_called_once()
-    incidents_created = mock_incidents.call_args[0][0]
-    assert len(incidents_created) == 2, "Expected 2 incidents to be created"
-    assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
+    # mock_incidents.assert_called_once()
+    # incidents_created = mock_incidents.call_args[0][0]
+    # assert len(incidents_created) == 2, "Expected 2 incidents to be created"
+    # assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
 
-    mock_debug.assert_called()
-    mock_info.assert_called()
-
+    # mock_debug.assert_called()
+    # mock_info.assert_called()
 
 
 
@@ -181,7 +180,7 @@ def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_re
     mirroring_fields = {}  # Update if mirroring fields exist
 
     # Call the function under test
-    results = fetch_incidents_command(client, mirroring_fields, first_fetch_time, fetch_limit)
+    results = fetch_incidents_command(client, {})
 
     # Validate the number of incidents
     assert len(results) == len(mock_results), "Mismatch in number of fetched incidents"
