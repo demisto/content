@@ -141,7 +141,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def request_with_pagination_fetch_held_messages(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
+def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
                                                 dedup_messages: list = [], current_next_page: str = ''):
     """
 
@@ -2185,7 +2185,7 @@ def fetch_held_messages(last_run: dict,
         'start': last_fetch_held_messages_date_time,
         'admin': True
     }
-    held_messages, _, next_page = request_with_pagination_fetch_held_messages(api_endpoint='/api/gateway/get-hold-message-list',
+    held_messages, _, next_page = fetch_held_messages_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
                                                             data=[search_params],
                                                             limit=MAX_FETCH,
                                                             dedup_messages=dedup_held_messages,
