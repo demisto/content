@@ -39,7 +39,12 @@
                     ]
                   }
                 ]
-              }
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
         ]    
     }
   }
