@@ -1534,8 +1534,8 @@ Get the CIE user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.CIE.User.Common-Name | String | The common name. | 
-| PrismaSase.CIE.User.Distinguished Name | String | The distinguished name. | 
-| PrismaSase.CIE.User.Manager | String | The manager. | 
-| PrismaSase.CIE.User.Name | String | The name. | 
-| PrismaSase.CIE.User.Unique Identifier | String | The unique identifier. | 
+| PrismaSase.CIE.User.common_name | String | The common name. | 
+| PrismaSase.CIE.User.distinguished_name | String | The distinguished name. | 
+| PrismaSase.CIE.User.manager | String | The manager. | 
+| PrismaSase.CIE.User.name | String | The name. | 
+| PrismaSase.CIE.User.unique_identifier | String | The unique identifier. | 

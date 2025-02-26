@@ -1499,19 +1499,19 @@ script:
           required: false
       description: Get the CIE user.
       outputs:
-      - contextPath: PrismaSase.CIE.User.Common-Name
+      - contextPath: PrismaSase.CIE.User.common_name
         description: The common name.
         type: String
-      - contextPath: PrismaSase.CIE.User.Distinguished Name
+      - contextPath: PrismaSase.CIE.User.distinguished_name
         description: The distinguished name.
         type: String
-      - contextPath: PrismaSase.CIE.User.Manager
+      - contextPath: PrismaSase.CIE.User.manager
         description: The manager.
         type: String
-      - contextPath: PrismaSase.CIE.User.Name
+      - contextPath: PrismaSase.CIE.User.name
         description: The name.
         type: String
-      - contextPath: PrismaSase.CIE.User.Unique Identifier
+      - contextPath: PrismaSase.CIE.User.unique_identifier
         description: The unique identifier.
         type: String
       name: prisma-sase-cie-user-get
