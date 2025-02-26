@@ -3832,7 +3832,6 @@ def main():
             'sentinelone-get-installed-applications': get_installed_applications,
             'sentinelone-initiate-endpoint-scan': initiate_endpoint_scan,
             'get-modified-remote-data': get_modified_remote_data_command,
-            'get-mapping-fields': get_mapping_fields_command,
             'update-remote-system': update_remote_system_command,
         },
         '2.0': {
@@ -3876,6 +3875,10 @@ def main():
         'commands_with_params': {
             'get-remote-data': get_remote_data_command,
         },
+        'commands_without_params': {
+            'get-mapping-fields': get_mapping_fields_command,
+        },
+            
     }
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -3918,6 +3921,8 @@ def main():
                 return_results(commands[api_version][command](client, demisto.args()))
             elif command in commands['commands_with_params']:
                 return_results(commands['commands_with_params'][command](client, demisto.args(), params))
+            elif command in commands['commands_without_params']:
+                return_results(commands['commands_without_params'][command]())
             else:
                 raise NotImplementedError(f'The {command} command is not supported for API version {api_version}')
 
