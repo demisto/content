@@ -175,8 +175,6 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
             response_data = response.get('data', [])
         for entry in response_data:
             entry_id = entry.get('id')
-            if len_of_results == limit: # limit was reached page did not ended yet
-                return results, len_of_results, next_page
             if not entry_id or entry_id not in dedup_messages: # dedup for fetch
                 len_of_results += 1
                 results.append(entry)
