@@ -1,0 +1,54 @@
+commonfields:
+  id: SetMultipleValues
+  version: -1
+name: SetMultipleValues
+script: >
+  register_module_line('SetMultipleValues', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def main():
+      keys = [k.strip() for k in demisto.args()['keys'].split(',')]
+      values_str = demisto.args()['values']
+      if '[' in values_str and ']' in values_str:
+          values_str = f'[{values_str}]'
+      values = argToList(values_str)
+
+      ec = {demisto.args()['parent'] + '(true)': dict(zip(keys, values))}
+      demisto.results({'Type': entryTypes['note'], 'Contents': ec, 'ContentsFormat': formats['json'],
+                       'HumanReadable': 'Keys ' + ','.join(keys) + ' set', 'EntryContext': ec})
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+      main()
+
+  register_module_line('SetMultipleValues', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Set multiple keys/values to the context.
+enabled: true
+args:
+- name: parent
+  required: true
+  default: true
+  description: The parent key to which we append all the other keys.
+- name: keys
+  required: true
+  description: Comma separated list of keys.
+- name: values
+  required: true
+  description: Comma separated list of values.
+scripttarget: 0
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.115186
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

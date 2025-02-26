@@ -1,0 +1,54 @@
+commonfields:
+  id: LinkIncidentsWithRetry
+  version: -1
+name: LinkIncidentsWithRetry
+script: >
+  register_module_line('LinkIncidentsWithRetry', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  args = demisto.args()
+
+  linkedIncidentIDs = args.get("linkedIncidentIDs")
+
+
+  counter = int(args.get("retryLimit"))
+
+
+  res = demisto.executeCommand("linkIncidents", {"linkedIncidentIDs": linkedIncidentIDs})
+
+
+  while isError(res[0]) and counter > 0 and ("DB Version" in res[0].get("Contents")):
+      time.sleep(2)
+      demisto.error(f"{counter} retry linkIncidents:{linkedIncidentIDs}")
+      res = demisto.executeCommand("linkIncidents", {"linkedIncidentIDs": linkedIncidentIDs})
+      counter -= 1
+  return_results(res)
+
+
+  register_module_line('LinkIncidentsWithRetry', 'end', __line__())
+type: python
+subtype: python3
+tags: []
+enabled: true
+args:
+- name: linkedIncidentIDs
+  required: true
+  description: A CSV list of related incident IDs.
+- name: retryLimit
+  description: Number of retries to perform after a failure.
+  defaultValue: '5'
+scripttarget: 0
+comment: Use this script to avoid DB version errors when simultaneously running multiple linked incidents.
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.113941
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+nativeimage:
+- '8.8'
+- '8.6'

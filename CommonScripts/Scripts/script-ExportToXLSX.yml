@@ -1,0 +1,158 @@
+args:
+- description: The output file name (for example "Report.xlsx").
+  name: file_name
+  required: true
+- description: 'The data to export. Accepts a context key of a dictionary or a list of dictionaries for a single sheet file (${data}). Separate multiple sheet files using a comma ",". For example, if you are exporting multiple sheet files, the argument would be: ${data1},${data2}.'
+  isArray: true
+  name: data
+  required: true
+- description: The sheet name. Separate multiple sheet names using a comma ",", for example, sheet1,sheet2.
+  isArray: true
+  name: sheet_name
+  required: true
+- description: 'A comma-separated list of headers. The order that you pass the headers determines how they display in the exported sheet(s). Separated multiple sheets using a semicolon. For example, if you are exporting two sheets that includes two headers each, the argument would be: "header1,header2;header3,header4".'
+  name: headers
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: Whether table headers should be bold. If this argument is set to "true", table headers are bold. Default is "true".
+  name: bold
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: Whether borders should be added to table cells. If this argument is set to "true", borders are added to table cells. Default is "true".
+  name: border
+  predefined:
+  - 'true'
+  - 'false'
+comment: Exports context data to a Microsoft Excel Open XML Spreadsheet (XLSX) file.
+commonfields:
+  id: ExportToXLSX
+  version: -1
+enabled: true
+name: ExportToXLSX
+script: >
+  register_module_line('ExportToXLSX', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  from typing import List, Optional, Union
+
+
+  from xlsxwriter import Workbook
+
+  from xlsxwriter.format import Format
+
+
+
+  def write_data(sheet: str, data_item: Union[dict, list], data_headers: Optional[list], workbook: Workbook, bold: Format,
+                 border: Format):
+      if not isinstance(data_item, list):
+          data_item = [data_item]
+
+      if not data_headers:
+          data_headers = list(data_item[0].keys())
+
+      worksheet = workbook.add_worksheet(sheet)
+      row = 0
+      col = 0
+
+      for key in data_headers:
+          worksheet.write(row, col, key, bold)
+          col += 1
+
+      for item in data_item:
+          if item and isinstance(item, dict):
+              col = 0
+              row += 1
+              for header in data_headers:
+                  item_value = item.get(header)
+                  if item_value:
+                      if isinstance(item_value, list):
+                          worksheet.write(row, col, ', '.join(item_value), border)
+                      else:
+                          worksheet.write(row, col, str(item_value), border)
+                  col += 1
+
+
+  def parse_data(data: Union[str, dict, list], sheets: list):
+      if isinstance(data, str):  # Indicates that the data is a comma-separated list of context keys.
+          data_list = json.loads("[" + data + "]")
+          if len(sheets) != len(data_list):
+              raise ValueError("Number of sheet names should be equal to the number of data items.")
+
+          return data_list
+      else:
+          if len(sheets) != 1:
+              raise ValueError("Number of sheet names should be equal to the number of data items.")
+      return [data]
+
+
+  def prepare_bold_and_border(workbook: Workbook, is_bold: bool, is_border: bool):
+      bold_value = 1 if is_bold else 0
+      border_value = 1 if is_border else 0
+
+      bold = workbook.add_format({"bold": bold_value, "border": border_value})
+      border = workbook.add_format({"border": border_value})
+
+      return bold, border
+
+
+  def main():
+      try:
+          args = demisto.args()
+          data = args.get("data")
+          file_name = args.get("file_name")
+          if not is_filename_valid(file_name):  # pragma: no cover
+              raise DemistoException('The file name contains invalid characters')
+          sheet_name = args.get("sheet_name")
+          headers = args.get("headers")
+          is_bold = argToBoolean(args.get("bold", "true"))
+          is_border = argToBoolean(args.get("border", "true"))
+
+          sheets = argToList(sheet_name)
+          data = parse_data(data, sheets)
+
+          if headers:
+              headers_list = argToList(headers, separator=";")
+
+              if len(sheets) != len(headers_list):
+                  raise ValueError("Number of sheet headers should be equal to the number of sheet names")
+          else:
+              headers_list = None
+
+          with Workbook(file_name) as workbook:
+
+              bold, border = prepare_bold_and_border(workbook, is_bold, is_border)
+
+              multi_header_list: List[Optional[List]] = []
+              if headers_list:  # Can be 1 item in case there is one sheet, or multiple items in case there are multiple
+                  # sheets
+                  for header_list in headers_list:
+                      multi_header_list.append(header_list.split(","))
+              else:
+                  multi_header_list = [None] * len(sheets)
+              for sheet, data_item, headers_list in zip(sheets, data, multi_header_list):
+                  write_data(sheet, data_item, headers_list, workbook, bold, border)
+
+          return_results(file_result_existing_file(file_name))
+
+      except Exception as ex:
+          return_error(f'Failed to execute ExportToXLSX script. Error: {str(ex)}')
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('ExportToXLSX', 'end', __line__())
+subtype: python3
+timeout: '0'
+type: python
+dockerimage: demisto/xslxwriter:1.0.0.117330
+runas: DBotWeakRole
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

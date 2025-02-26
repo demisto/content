@@ -1,0 +1,62 @@
+commonfields:
+  id: FileReputation
+  version: -1
+name: FileReputation
+script: >
+  register_module_line('FileReputation', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def file_reputation():
+      results = demisto.executeCommand('file', {'file': demisto.get(demisto.args(), 'file')})
+
+      for item in results:
+          if isError(item):
+              if is_offset_error(item):  # call to is_offset_error is a temporary fix to ignore offset 1 error
+                  results.remove(item)
+              else:
+                  item['Contents'] = item['Brand'] + ' returned an error.\n' + str(item['Contents'])
+
+      demisto.results(results)
+
+
+  def is_offset_error(item) -> bool:
+      '''error msg: 'Offset: 1' will not be displayed to Users
+         This method is temporary and will be removed
+         once XSUP-18208 issue is fixed.'''
+      if item['Contents'] and 'Offset' in item['Contents']:
+          return True
+      return False
+
+
+  def main():
+      file_reputation()
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+      main()
+
+  register_module_line('FileReputation', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- enhancement
+comment: A context script for hash entities.
+enabled: true
+args:
+- name: file
+  required: true
+  default: true
+  description: File hash to look up - supports MD5, SHA1 and SHA256.
+scripttarget: 0
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.115186
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

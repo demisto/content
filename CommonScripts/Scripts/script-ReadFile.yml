@@ -1,0 +1,159 @@
+args:
+- default: true
+  description: War Room entryID of the file to read.
+  name: entryID
+  required: true
+- description: Maximal file size to load, in bytes. Default is 1MB.
+  name: maxFileSize
+- auto: PREDEFINED
+  description: The character encoding of the file.
+  name: input_encoding
+  predefined:
+  - binary
+  - utf-8
+  - utf-16
+  - ascii
+  - gbk
+- name: output_data_type
+  auto: PREDEFINED
+  predefined:
+  - raw
+  - base64
+  - json
+  description: The data type to which the output data is converted.
+  defaultValue: raw
+- name: output_metadata
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Set true in order to output additional metadata on the file, to context.
+  defaultValue: 'false'
+comment: Load the contents of a file into context.
+commonfields:
+  id: ReadFile
+  version: -1
+enabled: true
+name: ReadFile
+outputs:
+- contextPath: FileData
+  description: Data read from the War Room file.
+  type: Unknown
+- contextPath: ReadFile.Data
+  description: Data read from the War Room file.
+  type: Unknown
+- contextPath: ReadFile.EntryID
+  description: File entry ID.
+  type: string
+- contextPath: ReadFile.FileSize
+  description: File size.
+  type: number
+- contextPath: ReadFile.EOF
+  description: Whether the file has reached end-of-file.
+  type: boolean
+script: >
+  register_module_line('ReadFile', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  import base64
+
+  import os
+
+
+
+
+  def read_file(args):
+      max_file_size = demisto.get(args, 'maxFileSize')
+      if max_file_size:
+          max_file_size = int(max_file_size)
+      else:
+          max_file_size = 1024 ** 2
+
+      entry_id = args.get('entryID')
+      input_encoding = args.get('input_encoding')
+      output_data_type = args.get('output_data_type', 'raw')
+      output_metadata = argToBoolean(args.get('output_metadata', 'false'))
+
+      file_path = execute_command('getFilePath', {'id': entry_id})['path']
+      file_size = os.path.getsize(file_path)
+
+      try:
+          with open(file_path,
+                    'rb' if input_encoding == 'binary' else 'r',
+                    encoding=None if input_encoding == 'binary' else input_encoding) as f:
+              data = f.read(max_file_size)
+              eof = len(f.read(1)) == 0
+      except Exception as e:
+          raise DemistoException(f'There was a problem opening or reading the file.\nError is: {e}')
+
+      if not output_metadata and len(data) == 0:
+          raise DemistoException('No data could be read.')
+
+      message = f'Read {len(data)} bytes from file'
+
+      if output_data_type == 'raw':
+          if isinstance(data, bytes):
+              try:
+                  data = data.decode()
+              except UnicodeDecodeError as e:
+                  raise DemistoException(f'Failed to decode binary data to utf-8 - {e}')
+      elif output_data_type == 'base64':
+          if isinstance(data, str):
+              data = data.encode(input_encoding or 'utf-8')
+          data = base64.b64encode(data).decode()
+      elif output_data_type == 'json':
+          if isinstance(data, bytes):
+              try:
+                  data = data.decode()
+              except UnicodeDecodeError as e:
+                  raise DemistoException(f'Failed to decode binary data to utf-8 - {e}')
+          data = json.loads(data)
+      else:
+          raise DemistoException(f'Invalid data encoding name: {output_data_type}')
+
+      if output_metadata:
+          return_results(CommandResults(outputs_prefix='ReadFile(obj.EntryID===val.EntryID)',
+                                        outputs={
+                                            'Data': data,
+                                            'EntryID': entry_id,
+                                            'FileSize': file_size,
+                                            'EOF': eof
+                                        },
+                                        readable_output=message + ":\n" + str(data)))
+      else:
+          demisto.results({'Type': entryTypes['note'],
+                           'ContentsFormat': formats['text'],
+                           'Contents': {'FileData': data},
+                           'HumanReadable': message + ":\n" + str(data),
+                           'EntryContext': {'FileData': data}
+                           })
+
+
+  def main():
+      try:
+          read_file(demisto.args())
+      except Exception as e:
+          return_error(f'Failed to run script - {e}')
+
+
+  if __name__ in ['__main__', 'builtin', 'builtins']:
+      main()
+
+  register_module_line('ReadFile', 'end', __line__())
+tags:
+- Utility
+- ingestion
+timeout: '0'
+type: python
+subtype: python3
+runas: DBotWeakRole
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.115186
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

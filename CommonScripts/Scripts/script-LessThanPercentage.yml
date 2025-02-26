@@ -1,0 +1,47 @@
+commonfields:
+  id: LessThanPercentage
+  version: -1
+name: LessThanPercentage
+script: >
+  // pack version: 1.19.29
+
+  first = parseFloat(args.firstPercentage);
+
+  if (!first) {
+      throw 'firstPercentage is not valid: '+args.firstPercentage;
+  }
+
+  second = parseFloat(args.secondPercentage);
+
+  if (!second) {
+      throw 'firstPercentage is not valid: '+args.secondPercentage;
+  }
+
+  if (first < second) {
+      return 'less';
+  } else {
+      return 'more';
+  }
+type: javascript
+tags:
+- Utility
+- Condition
+comment: "Checks if one percentage is less than another\nReturns less: if firstPercentage < secondPercentage\nReturns more: if firstPercentage >= secondPercentage\nReturns exception if one of the inputs is not a float"
+enabled: true
+outputs:
+- contextPath: less
+  description: if firstPercentage < secondPercentage
+- contextPath: more
+  description: if firstPercentage >= secondPercentage
+args:
+- name: firstPercentage
+  description: First percentage.
+  required: true
+  default: true
+- name: secondPercentage
+  description: Second percentage.
+  required: true
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

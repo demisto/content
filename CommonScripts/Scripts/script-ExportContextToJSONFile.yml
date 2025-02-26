@@ -1,0 +1,52 @@
+args:
+- defaultValue: context
+  description: Name of the file to create in the war room, defaults to context.json.
+  name: filename
+comment: Exports the Context for the current Incident to a JSON file in the war room.
+commonfields:
+  id: ExportContextToJSONFile
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.113941
+enabled: true
+name: ExportContextToJSONFile
+runas: DBotWeakRole
+script: >
+  register_module_line('ExportContextToJSONFile', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  # get the incident id
+
+  incident_id = demisto.incident().get('id')
+
+
+  # get the filename
+
+  file_name = f"{demisto.args().get('filename')}.json"
+
+
+  # get the data from context and return the file to the war room.
+
+  data = demisto.executeCommand("getContext", {"id": incident_id})
+
+  demisto.results(fileResult(file_name, json.dumps(data[0].get('Contents', {}).get('context', {}))))
+
+
+  register_module_line('ExportContextToJSONFile', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

@@ -1,0 +1,67 @@
+{
+    "name": "Common Scripts",
+    "description": "Frequently used scripts pack.",
+    "support": "xsoar",
+    "currentVersion": "1.19.29",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-05-14T08:33:25Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+        "Core"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "DemistoRESTAPI": {
+            "mandatory": true,
+            "display_name": "Demisto REST API"
+        },
+        "FeedMitreAttackv2": {
+            "mandatory": false,
+            "display_name": "MITRE ATT&CK v2"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "RemoteAccess": {
+            "mandatory": false,
+            "display_name": "RemoteAccess v2"
+        }
+    },
+    "excludedDependencies": [
+        "GoogleMaps",
+        "Slack"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "X0",
+        "X1",
+        "X3"
+    ]
+}

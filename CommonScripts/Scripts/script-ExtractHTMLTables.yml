@@ -1,0 +1,91 @@
+commonfields:
+  id: ExtractHTMLTables
+  version: -1
+name: ExtractHTMLTables
+script: >
+  register_module_line('ExtractHTMLTables', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+  from bs4 import BeautifulSoup
+
+
+
+
+  def extract_html_table(html, indexes):
+      soup = BeautifulSoup(html, 'html.parser')
+      tables = []
+      for index, tab in enumerate(soup.find_all('table')):
+          if len(indexes) > 0 and index not in indexes and str(index) not in indexes:
+              continue
+          table = []
+          headers = []
+          # Check if there are headers and use them
+          for th in tab.find_all('th'):
+              headers.append(th.text)
+          for tr in tab.find_all('tr'):
+              tds = tr.find_all('td')
+              # This is a data row and not header row
+              if len(tds) > 0:
+                  # Single value in a table - just create an array of strings ignoring header
+                  if len(tds) == 1:
+                      table.append(tds[0].text)
+                  # If there are 2 columns and no headers, treat as key-value (might override values if same key in first column)
+                  elif len(tds) == 2 and len(headers) == 0:
+                      if type(table) is list:
+                          table = {}  # type: ignore
+                      table[tds[0].text] = tds[1].text
+                  else:
+                      row = {}
+                      if len(headers) > 0:
+                          for i, td in enumerate(tds):
+                              row[headers[i]] = td.text
+                      else:
+                          for i, td in enumerate(tds):
+                              row['cell' + str(i)] = td.text
+                      table.append(row)
+          if len(table) > 0:
+              tables.append(table)
+      if len(tables) > 0:
+          return ({
+              'Type': entryTypes['note'],
+              'Contents': 'Found {} tables in HTML.'.format(len(tables)),
+              'ContentsFormat': formats['text'],
+              'EntryContext': {'HTMLTables': tables if len(tables) > 1 else tables[0]}
+          })
+      else:
+          return 'Did not find tables in HTML.'
+
+
+  def main():
+      html = demisto.getArg('html')
+      indexes = argToList(demisto.getArg('indexes'))
+      demisto.results(extract_html_table(html, indexes))
+
+
+  if __name__ in ['__main__', 'builtin', 'builtins']:
+      main()
+
+  register_module_line('ExtractHTMLTables', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- Utility
+comment: "Find tables inside HTML and extract the contents into objects using the following logic:\n- If table has a single column, just create an array of strings from the values\n- If table has 2 columns and has no header row, treat the first column as key and second as value and create a table of key/value\n- If table has a header row, create a table of objects where attribute names are the headers\n- If table does not have a header row, create table of objects where attribute names are cell1, cell2, cell3..."
+enabled: true
+args:
+- name: html
+  required: true
+  default: true
+  description: The HTML to extract tables from.
+- name: indexes
+  description: Extract only the tables with given indexes - 0 based.
+outputs:
+- contextPath: HTMLTables
+  description: The extracted HTML tables.
+scripttarget: 0
+dockerimage: demisto/bs4-py3:1.0.0.117152
+fromversion: 5.0.0
+tests:
+- TestExtractHTMLTables

@@ -1,0 +1,47 @@
+commonfields:
+  id: commentsToContext
+  version: -1
+name: commentsToContext
+script: >
+  // pack version: 1.19.29
+
+  var entry = executeCommand("getEntry", {"id":args.entryId});
+
+  var key=args.contextKey;
+
+  var comments=entry[0].Contents;
+
+
+  var md =  'Comments set to context - '+key+':' + comments + '\n';
+
+  var ec={};
+
+  if (args.listSeperator) {
+      ec[key]=[];
+      var list = comments.split(args.listSeperator);
+      for (var i=0;i<list.length;i++) {
+          ec[key].push(list[i].trim());
+      }
+  } else {
+      ec[key]=comments;
+  }
+
+
+  return {Type: entryTypes.note, Contents: entry, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+type: javascript
+tags:
+- Utility
+comment: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
+enabled: true
+args:
+- name: entryId
+  required: true
+  default: true
+  description: Entry ID to get the comments from
+- name: contextKey
+  required: true
+  description: Context key to store comments into
+- name: listSeperator
+  description: If value is list - provide list seperator
+scripttarget: 0
+fromversion: 5.0.0

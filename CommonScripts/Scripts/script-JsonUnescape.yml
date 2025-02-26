@@ -1,0 +1,73 @@
+args:
+- description: JSON object
+  name: value
+comment: Recursively un-escapes JSON data if escaped JSON is found
+commonfields:
+  id: JsonUnescape
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3-deb:3.11.10.114849
+enabled: true
+name: JsonUnescape
+outputs:
+- contextPath: JsonUnescape
+  description: Unescaped JSON Data
+runas: DBotWeakRole
+script: >
+  register_module_line('JsonUnescape', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  import json
+
+  import traceback
+
+  from typing import Dict, List, Union
+
+
+
+  def hook(obj: Dict) -> Dict:
+      """ Hook to convert string to json if possible """
+      new_obj = {}
+      for k, v in obj.items():
+          try:
+              new_obj[k] = json.loads(v)
+          except Exception:
+              new_obj[k] = v
+      return new_obj
+
+
+  def unescape(args: Dict) -> Union[Dict, List]:
+      """ Unescape json string """
+      json_str = json.dumps(args.get("value"))
+      return json.loads(json_str, object_hook=hook)
+
+
+  def main():  # noqa: F841
+      args = demisto.args()
+      try:
+          return_results(unescape(args))
+      except Exception as ex:
+          demisto.error(traceback.format_exc())
+          return_error(f"Error: {str(ex)}")
+
+
+  if __name__ in ("__main__", "__builtin__", "builtins"):
+      main()
+
+  register_module_line('JsonUnescape', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

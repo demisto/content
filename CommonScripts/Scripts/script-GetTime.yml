@@ -1,0 +1,138 @@
+commonfields:
+  id: GetTime
+  version: -1
+name: GetTime
+script: >
+  // pack version: 1.19.29
+
+  var d = new Date();
+
+  if (args.date){
+      if (args.date.length > 0){
+          // args.date is string
+          d =  new Date(args.date);
+      } else {
+          // args.date is object (Time.time in Go)
+          d =  new Date(args.date.Unix()*1000);
+      }
+  }
+
+  if (args.minutesAgo){
+      d.setMinutes(d.getMinutes() - args.minutesAgo);
+  }
+
+  if (args.hoursAgo){
+      d.setHours(d.getHours() - args.hoursAgo);
+  }
+
+  if (args.daysAgo){
+      d.setDate(d.getDate() - args.daysAgo);
+  }
+
+  if (args.monthsAgo){
+      d.setMonth(d.getMonth() - args.monthsAgo);
+  }
+
+  if (args.yearsAgo){
+      d.setFullYear(d.getFullYear() - args.yearsAgo);
+  }
+
+
+  prefix = '';
+
+  if (args.contextKey) {
+      prefix = args.contextKey;
+  }
+
+  var timeStr = String(d);
+
+  if ((args.dateFormat) && (args.dateFormat.length > 0)){
+      switch(args.dateFormat.toLowerCase()) {
+          case 'iso':
+              timeStr = d.toISOString();
+              break;
+          case 'gmt':
+          case 'utc':
+              timeStr = d.toUTCString();
+              break;
+          case 'locale':
+              timeStr = d.toLocaleString();
+              break;
+          case 'date':
+              timeStr = d.toDateString();
+              break;
+          case 'year':
+              timeStr = d.getFullYear();
+              break;
+          case 'month':
+              timeStr = d.getMonth();
+              break;
+          case 'day':
+              timeStr = d.getDate();
+              break;
+          case 'dayinweek':
+              timeStr = d.getDay();
+              break;
+          case 'hours':
+              timeStr = d.getHours();
+              break;
+          case 'utchours':
+              timeStr = d.getUTCHours();
+              break;
+          case 'minutes':
+              timeStr = d.getMinutes();
+              break;
+
+
+          default:
+              throw 'Unsupported date format: '+args.dateFormat
+      }
+  }
+
+
+  context = {};
+
+  context[prefix+'TimeNowUnix'] = d.getTime();
+
+  context[prefix+'TimeNow'] = timeStr;
+
+  return {
+      Type : entryTypes.note,
+      Contents : timeStr,
+      ContentsFormat : formats.text,
+      HumanReadable : timeStr,
+      EntryContext : context
+  };
+type: javascript
+tags:
+- Utility
+comment: "Retrieves the current date and time.\n"
+enabled: true
+args:
+- name: date
+  default: true
+  description: The date to use in the object
+- name: dateFormat
+  description: "The date format for the result, can be ISO/GMT/UTC/Locale/Date/Year/Month/Day/DayInWeek/Hours.\nNote that the response will start from 0, E.G. if the current month is October\n(the 10th month) the result will be 9.\nNote:\nIn XSOAR versions 6.11.0 or later, or 8.1.0 or later, the time format returned when UTC or GMT is given has changed.\nInstead of 'Wed Jan 18 2023 12:59:12 GMT+0000 (UTC)', The output will be 'Wed, 18 Jan 2023 15:04:41 GMT'."
+- name: contextKey
+  description: prefix the keys in the context for the results
+- name: minutesAgo
+  description: Will subtract minutesAgo minutes from current time
+- name: hoursAgo
+  description: Will subtract hoursAgo hours from current time
+- name: daysAgo
+  description: Will subtract daysAgo days from current time
+- name: monthsAgo
+  description: Will subtract monthsAgo months from current time
+- name: yearsAgo
+  description: Will subtract yearsAgo years from current time
+outputs:
+- contextPath: TimeNowUnix
+  description: number of milliseconds since 1970/01/01
+- contextPath: TimeNow
+  description: current time in ISO format
+scripttarget: 0
+tests:
+- GetTime-Test
+- GetTime-ObjectVsStringTest
+fromversion: 5.0.0

@@ -1,0 +1,57 @@
+commonfields:
+  id: PrintContext
+  version: -1
+name: PrintContext
+script: >
+  register_module_line('PrintContext', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def print_context(fmt, ctx):
+      if ctx:
+          if fmt == 'table':
+              demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': [
+                  {'Context key': d, 'Value': formatCell(ctx[d])} for d in ctx]})
+          elif fmt == 'json':
+              demisto.results(ctx)
+          else:
+              md = "**Context data**:\n```\n" + json.dumps(ctx, indent=4) + '\n```'
+              demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md})
+      else:
+          demisto.results('Context empty.')
+
+
+  def main():  # pragma: no cover
+      fmt = demisto.get(demisto.args(), 'outputformat')
+      ctx = demisto.context()
+      print_context(fmt, ctx)
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+      main()
+
+  register_module_line('PrintContext', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Pretty-print the contents of the playbook context.
+system: true
+args:
+- name: outputformat
+  default: true
+  description: Output format - table, json or markdown. If omitted, default is markdown.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.115186
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

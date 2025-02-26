@@ -1,0 +1,93 @@
+args:
+- default: true
+  defaultValue: ''
+  description: Address to ping.
+  name: address
+  predefined: []
+  required: true
+comment: Pings an IP or url address, to verify it's up. Note - On Cortex XSOAR 8 and Cortex XSIAM, the script can run only on a custom engine.
+commonfields:
+  id: Ping
+  version: -1
+enabled: true
+name: Ping
+outputs:
+- contextPath: Ping.ret_code
+  description: Ping return code.
+  type: number
+- contextPath: Ping.destination
+  description: Ping destination address.
+  type: string
+- contextPath: Ping.max_rtt
+  description: Ping max round trip time.
+  type: number
+- contextPath: Ping.avg_rtt
+  description: Ping average round trip time.
+  type: number
+- contextPath: Ping.min_rtt
+  description: Ping minimum round trip time.
+  type: number
+- contextPath: Ping.destination_ip
+  description: Ping destination IP.
+  type: string
+script: >
+  register_module_line('Ping', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  import subprocess
+
+  import re
+
+
+
+  def main():
+      try:
+          dest = demisto.args()['address']
+          ping_out = subprocess.check_output(
+              ['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT, universal_newlines=True
+          )
+          s = re.search(r"PING.*?\((.+?)\)", ping_out)
+          res = {}
+          if s:
+              res['destination_ip'] = s.group(1)
+          s = re.search(r"rtt min/avg/max/mdev = (.+)/(.+)/(.+)/(.+)\s+ms", ping_out)
+          if not s:
+              raise ValueError("Couldn't parse ping statistics:\n" + ping_out)
+          res['ret_code'] = '0'
+          res['destination'] = dest
+          res['min_rtt'] = s.group(1)
+          res['avg_rtt'] = s.group(2)
+          res['max_rtt'] = s.group(3)
+          res['mdev_rtt'] = s.group(4)
+          return_outputs(readable_output=tableToMarkdown("Ping Results", res), outputs={"Ping": res}, raw_response=res)
+      except Exception as e:
+          if isinstance(e, subprocess.CalledProcessError):
+              msg = e.output  # pylint: disable=no-member
+          else:
+              msg = str(e)
+          if not is_xsoar_on_prem() and "ping: socket: Operation not permitted" in msg:
+              msg = "The Ping script can be executed only on custom engines"
+          return_error(msg)
+
+
+  # python2 uses __builtin__ python3 uses builtins
+
+  if __name__ == "__builtin__" or __name__ == "builtins":
+      main()
+
+  register_module_line('Ping', 'end', __line__())
+tags:
+- Utility
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/netutils:1.0.0.118055
+tests:
+- Ping Test Playbook
+fromversion: 5.0.0
+nativeimage:
+- '8.8'
+- '8.6'

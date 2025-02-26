@@ -1,0 +1,56 @@
+args:
+- description: The indicators to which to add the reputation.
+  isArray: true
+  name: input
+  required: true
+comment: This script adds the reputation to Onion URL indicators. The script is automatically triggered when a Onion URL indicator is auto-extracted. For instance, if you run a Cortex XSOAR CLI on a valid Onion URL, the indicators are extracted automatically and this script is triggered for the extracted indicators.
+commonfields:
+  id: OnionURLReputation
+  version: -1
+enabled: true
+name: OnionURLReputation
+script: >
+  register_module_line('OnionURLReputation', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def main():
+      url_list = argToList(demisto.args().get('input'))
+      entry_list = []
+
+      for url in url_list:
+          entry_list.append({
+              'Type': entryTypes['note'],
+              'ContentsFormat': formats['json'],
+              'Contents': 2,
+              'EntryContext': {
+                  'DBotScore': {
+                      'Indicator': url,
+                      'Type': 'Onion URL',
+                      'Score': 2,  # suspicious
+                      'Vendor': 'DBot'
+                  }
+              }
+          })
+
+      demisto.results(entry_list)
+
+
+  if __name__ in ('__main__', 'builtin', 'builtins'):
+      main()
+
+  register_module_line('OnionURLReputation', 'end', __line__())
+subtype: python3
+tags:
+- reputation
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.11.10.115186
+fromversion: 5.0.0
+nativeimage:
+- '8.8'
+- '8.6'

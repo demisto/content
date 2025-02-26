@@ -1,0 +1,100 @@
+commonfields:
+  id: SendEmailOnSLABreach
+  version: -1
+name: SendEmailOnSLABreach
+script: >
+  register_module_line('SendEmailOnSLABreach', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  """
+
+  This script is used to send an email about a breached SLA. The script, by default, sends the email to the assignee of the
+
+  incident. The email is sent using the send-email command, using all enabled integrations that support the command.
+
+  """
+
+
+
+  def get_owner_email():
+      owner_username = demisto.incidents()[0].get("owner")
+      if owner_username:
+          try:
+              owner_info = demisto.executeCommand('getUserByUsername', {"username": owner_username})[0]
+              owner_email = owner_info.get("EntryContext").get("UserByUsername").get("email")
+              return owner_email
+          except Exception as ex:
+              demisto.results({
+                  "Type": entryTypes["error"],
+                  "ContentsFormat": formats["text"],
+                  "Contents": "Could not retrieve user email. Maybe the user has no associated email to it.\
+              Error: {}".format(ex)
+
+              })
+              return
+      else:
+          demisto.results({
+              "Type": entryTypes["error"],
+              "ContentsFormat": formats["text"],
+              "Contents": "An email can't be sent to the owner of the incident, because no owner was assigned."
+          })
+
+
+  def get_subject():
+      incident_name = demisto.incidents()[0].get("name")
+      incident_id = demisto.incidents()[0].get("id")
+      subject = "SLA Breached in incident \"{}\" #{}".format(incident_name, incident_id)
+      return subject
+
+
+  def send_email(to, subject, body):
+      demisto.results(demisto.executeCommand('send-mail', {
+          "to": to,
+          "subject": subject,
+          "body": body}))
+
+
+  def get_body():
+      field_name = demisto.args().get("field").get("cliName")
+      sla = demisto.args().get("fieldValue").get("sla")
+      start_date = demisto.args().get("fieldValue").get("startDate")
+      body = "We have detected a breach in your SLA \"{}\".\nThe SLA was set to {} minute and was started on {}.".format(
+          field_name, sla, start_date.split(".")[0])
+      return body
+
+
+  def main():
+      email_to = get_owner_email()
+      email_subject = get_subject()
+      email_body = get_body()
+
+      if email_to:
+          send_email(email_to, email_subject, email_body)
+
+
+  if __name__ == "__builtin__" or __name__ == "builtins":
+      main()
+
+  register_module_line('SendEmailOnSLABreach', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- sla
+- example
+comment: "Sends an email informing the user of an SLA breach. The email is sent to the user who is assigned to the incident. It includes the incident name, ID, name of the SLA field that was breached, duration of that SLA field, and the date and time when that SLA was started.\nIn order to run successfully, the script should be configured to trigger on SLA breach, through field edit mode."
+enabled: true
+scripttarget: 0
+runas: DBotWeakRole
+tests:
+- No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted.
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+dockerimage: demisto/python3:3.11.10.115186
+nativeimage:
+- '8.8'
+- '8.6'

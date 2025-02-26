@@ -1,0 +1,79 @@
+commonfields:
+  id: MaliciousRatioReputation
+  version: -1
+name: MaliciousRatioReputation
+fromversion: 6.5.0
+script: >
+  register_module_line('MaliciousRatioReputation', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def get_indicator_from_value(indicator_value):
+      try:
+          res = demisto.executeCommand("findIndicators", {'value': indicator_value})
+          indicator = res[0]['Contents'][0]
+          return indicator
+      except Exception:
+          pass
+
+
+  def get_indicator_result(indicator):
+      res = demisto.executeCommand("maliciousRatio", {'value': indicator['value']})
+
+      mr_score = res[0]['Contents'][0]['maliciousRatio']
+      if mr_score > float(demisto.args()['threshold']):
+          ec = {}
+          ec['DBotScore'] = {
+              'Type': indicator['indicator_type'].lower(),
+              'Score': 2,  # suspicious
+              'Vendor': 'DBot-MaliciousRatio',
+              'Indicator': indicator['value']
+          }
+          entry = {
+              'Type': entryTypes['note'],
+              'EntryContext': ec,
+              'Contents': ec['DBotScore']['Score'],
+              'ContentsFormat': formats['text'],
+              'HumanReadable': 'Malicious ratio for %s is %.2f' % (indicator['value'], mr_score),
+              'ReadableContentsFormat': formats['markdown']
+          }
+          return entry
+
+
+  def main():
+      indicator_value = demisto.args().get('input')
+      indicator = get_indicator_from_value(indicator_value)
+      if indicator:
+          try:
+              demisto.results(get_indicator_result(indicator))
+          except Exception:
+              pass
+
+
+  if __name__ == "__builtin__" or __name__ == "builtins":
+      main()
+
+  register_module_line('MaliciousRatioReputation', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- reputation
+comment: "Set indicator reputation to \"suspicious\" when malicious ratio is above threshold.\nMalicious ratio is the ration between number of \"bad\" incidents to total number of incidents the indicator appears in."
+enabled: true
+args:
+- name: input
+  description: Value of the indicator.
+- name: threshold
+  description: 'Malicious ratio threshold to set indicator as suspicious. '
+  defaultValue: '0.3'
+scripttarget: 0
+dockerimage: demisto/python3:3.11.10.115186
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

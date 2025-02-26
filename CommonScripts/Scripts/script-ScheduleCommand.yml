@@ -1,0 +1,31 @@
+commonfields:
+  id: ScheduleCommand
+  version: -1
+name: ScheduleCommand
+script: >
+  // pack version: 1.19.29
+
+  return executeCommand("scheduleEntry", args);
+type: javascript
+tags:
+- Utility
+comment: Schedule a command to run inside the war room at a future time (once or reoccurring)
+system: true
+args:
+- name: command
+  required: true
+  default: true
+  description: The command to schedule
+- name: cron
+  required: true
+  description: The scheduled time to run
+- name: endDate
+  description: When should we end the schedule. Will be only relevant if times is not provided. Optional. Format is 'Mon, 02 Jan 2006 15:04:05 MST'
+- name: times
+  description: The number of times to run. Optional.
+- name: scheduledEntryGuid
+  description: The GUID of the scheduled entry that runs the polling command.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

@@ -1,0 +1,72 @@
+commonfields:
+  id: AddEvidence
+  version: -1
+name: AddEvidence
+fromversion: 5.0.0
+script: >
+  // pack version: 1.19.29
+
+  if (!args.entryIDs) {
+      throw 'Missing argument values for command AddEvidenceJS are : entryIDs';
+  }
+
+  var entryIDs = args.entryIDs;
+
+  var entryTags = args.tags;
+
+  var desc = (args.description) ? args.description : args.desc ? args.desc : 'Evidence added by DBot';
+
+  entryIDs = (Array.isArray(entryIDs)) ? entryIDs : [entryIDs];
+
+  entryTags = (Array.isArray(entryTags)) ? entryTags.join(',') : entryTags;
+
+
+  for (var i=0;i<entryIDs.length;i++) {
+      var entryID = entryIDs[i];
+      entries = executeCommand('getEntry', {'id': entryID});
+      if (isValidRes(entries)) {
+          for (var j=0;j<entries.length;j++){
+              var ent=entries[j];
+              var obj = { 'id': entryID, 'description': desc};
+              if (args.occurred) {
+                obj.when = args.occurred;
+              }
+              if (entryTags) {
+                obj.tags = entryTags;
+              }
+              var res = executeCommand('markAsEvidence', obj);
+              if (!isValidRes(res)) {
+                  return res;
+              }
+          }
+      } else {
+          return entries;
+      }
+
+  }
+
+
+  return "Entry ID " + entryIDs + " added to evidence";
+type: javascript
+tags:
+- Utility
+comment: "Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)\n"
+enabled: true
+args:
+- name: entryIDs
+  description: Entry IDs to add its output to Evidence Board
+  defaultValue: ${lastCompletedTaskEntries}
+  required: true
+  default: true
+- name: desc
+  description: Description to add to Evidence Board
+  deprecated: true
+- name: description
+  description: Description to add to Evidence Board
+- name: occurred
+  description: 'Occurred time of the evidence (time format: 2008-01-02T15:04:05)'
+- name: tags
+  description: Evidence tags
+scripttarget: 0
+tests:
+- No tests

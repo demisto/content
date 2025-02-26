@@ -1,0 +1,62 @@
+commonfields:
+  id: UtilAnyResults
+  version: -1
+name: UtilAnyResults
+script: >
+  register_module_line('UtilAnyResults', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def util_any_results(args):
+      try:
+          res = []
+          data = demisto.get(args, 'data')
+          if isinstance(data, list) and data:
+              res.append("yes")
+          elif isinstance(data, str) and data:
+              if data[0] in ['[', '{']:
+                  data = data[1:]
+              if data[-1] in [']', '}']:
+                  data = data[:-1]
+              # If data resembles one of ",,," or "[,,]" or "[]" it is considered empty of results.
+              res.append('yes' if data.replace(',', '') else 'no')
+          else:
+              res.append("no")
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing data. Exception info:\n" + str(
+                          ex) + "\n\nInvalid data:\n" + str(data)})  # type: ignore
+      return res
+
+
+  def main():
+      args = demisto.args()
+      demisto.results(util_any_results(args))
+
+  register_module_line('UtilAnyResults', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- Utility
+- Condition
+comment: Utility script to use in playbooks - returns "yes" if the input is non-empty.
+system: true
+args:
+- name: data
+  required: true
+  default: true
+  description: Data to check - can be a list or a string. Strings containing only commas are considered empty results.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.115186
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

@@ -1,0 +1,122 @@
+args:
+- description: IP/CIDR, e.g. 192.168.0.0/24
+  name: cidr
+  required: true
+commonfields:
+  id: IPNetwork
+  version: -1
+name: IPNetwork
+comment: "Gather information regarding CIDR -\n    1. Broadcast_address\n    2. CIDR\n    3. First_address\n    4. Last address\n    5. Max prefix len\n    6. Num addresses\n    7. Private\n    8. Version\n"
+outputs:
+- contextPath: Network.CIDR
+  description: Network CIDR.
+  type: String
+- contextPath: Network.Num_addresses
+  description: Number of availble addresses in the CIDR.
+  type: Number
+- contextPath: Network.First_address
+  description: First address in the network CIDR.
+  type: String
+- contextPath: Network.Last_address
+  description: Last address in the network CIDR.
+  type: String
+- contextPath: Network.Version
+  description: Version of IP.
+  type: Number
+- contextPath: Network.Private
+  description: True if IP is private.
+  type: Boolean
+- contextPath: Network.Max_prefix_len
+  description: Max prefix length of CIDR.
+  type: Number
+- contextPath: Network.Broadcast_address
+  description: Broadcast address of CIDR.
+  type: String
+script: >
+  register_module_line('IPNetwork', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  # STD imports
+
+  import ipaddress
+
+  from typing import Dict
+
+
+
+  # Local imports
+
+
+
+  def ip_cidr(cidr: str) -> Dict[str, str]:
+      """ Gather info regarding the supplied network
+
+      Args:
+          cidr(str): IPv4/CIDR or IPv6/CIDR
+
+      Returns:
+          dict: Entry context of single network
+      """
+      try:
+          ip_network = ipaddress.ip_network(cidr, strict=False)
+          internal_ec = {
+              'CIDR': cidr,
+              'Version': ip_network.version,
+              'Private': ip_network.is_private,
+              'Max_prefix_len': ip_network.max_prefixlen,
+              'Num_addresses': ip_network.num_addresses,
+              'Broadcast_address': str(ip_network.broadcast_address),
+              'First_address': str(ip_network[0]),
+              'Last_address': str(ip_network[-1])
+          }
+          return internal_ec  # type: ignore
+      except ValueError:
+          return {}
+
+
+  def cidr_command(args: Dict[str, str]) -> CommandResults:
+      """ Perform command on given IP/CIDR
+
+      Args:
+          args: argument from command runnning in demisto
+
+      Returns:
+
+      """
+      cidr_list = argToList(args.get('cidr'))
+      ec = [ip_cidr(cidr) for cidr in cidr_list]
+      markdown = tableToMarkdown(name=f'CIDR - {args.get("cidr")}',
+                                 t=ec,
+                                 removeNull=True)
+      return CommandResults(
+          outputs_prefix='Network',
+          outputs=ec,
+          readable_output=markdown
+      )
+
+
+  def main():
+      try:
+          return_results(cidr_command(demisto.args()))
+      except Exception as ex:
+          return_error(f'Failed to execute IPNetwork script. Error: {str(ex)}')
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('IPNetwork', 'end', __line__())
+subtype: python3
+tags:
+- ip
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.12.66339
+runas: DBotWeakRole
+fromversion: 5.0.0
+nativeimage:
+- '8.8'
+- '8.6'

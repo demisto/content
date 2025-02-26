@@ -1,0 +1,60 @@
+commonfields:
+  id: EncodeToAscii
+  version: -1
+name: EncodeToAscii
+script: >
+  register_module_line('EncodeToAscii', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  ''' MAIN FUNCTION '''
+
+
+
+  def main():
+      # Grab 'data' from Demisto Arguments
+      data = demisto.args()['data']
+
+      # Encode the data, ignoring characters
+      try:
+          encoded_data = data.encode('ascii', 'ignore').decode("utf-8")
+      except Exception as e:
+          return_error(f'There was an error encoding the data.\nError:\n{str(e)}')
+
+      # Output the data and add results to war room
+      return_results(CommandResults(
+          readable_output=f'Success: {encoded_data}',
+          outputs_prefix='asciiencode.encoded',
+          outputs=encoded_data))
+
+
+  ''' ENTRY POINT '''
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('EncodeToAscii', 'end', __line__())
+type: python
+subtype: python3
+tags: []
+comment: Input Text Data to Encode as ASCII (Ignores any chars that aren't interpreted as ASCII)
+enabled: true
+args:
+- name: data
+  required: true
+  description: Data to be encoded
+outputs:
+- contextPath: asciiencode.encoded
+  description: Data encoded in ASCII
+  type: string
+scripttarget: 0
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.113941
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

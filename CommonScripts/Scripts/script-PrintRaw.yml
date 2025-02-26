@@ -1,0 +1,39 @@
+commonfields:
+  id: PrintRaw
+  version: -1
+name: PrintRaw
+script: >
+  register_module_line('PrintRaw', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  def main():
+      value = demisto.args().get('value')
+      demisto.results(repr(value))
+
+
+  if __name__ in ["__builtin__", "builtins"]:
+      main()
+
+  register_module_line('PrintRaw', 'end', __line__())
+type: python
+tags: []
+comment: Prints a raw representation of a string or object, visualising things likes tabs and newlines.  For instance, '\n' will be displayed instead of a newline character, or a Windows CR will be displayed as '\r\n'.  This is useful for debugging issues where things aren't behaving as expected, such as when parsing a string with a regular expression.
+enabled: true
+args:
+- name: value
+  required: true
+  description: The value to be represented.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+tests:
+- No test - unit test
+fromversion: 5.0.0
+nativeimage:
+- '8.8'
+- '8.6'

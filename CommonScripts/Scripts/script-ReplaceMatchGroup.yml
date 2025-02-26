@@ -1,0 +1,67 @@
+commonfields:
+  id: ReplaceMatchGroup
+  version: -1
+name: ReplaceMatchGroup
+script: >
+  register_module_line('ReplaceMatchGroup', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  import re
+
+
+
+  def main(args):
+      value = args['value']
+      replace_with = args['replace_with']
+      output = list()
+      start = 0
+
+      try:
+          regex = re.compile(args['regex'])
+      except (re.error, TypeError):
+          raise DemistoException('Could not compile regex.')
+
+      for match in regex.finditer(value):
+          for index, _ in enumerate(match.groups(), start=1):
+              end = match.start(index)
+              output.append(value[start:end])
+              output.append(replace_with)
+              start = match.end(index)
+      output.append(value[start:])  # Handling the tail of the string
+
+      return ''.join(output)
+
+
+  if __name__ in ["__builtin__", "builtins", "__main__"]:
+      result = main(demisto.args())
+      demisto.results(result)
+
+  register_module_line('ReplaceMatchGroup', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- transformer
+comment: Returns a string with all matches of a regex pattern groups replaced by a replacement.
+enabled: true
+args:
+- name: value
+  required: true
+  description: An array of email addresses to be filtered by domain.
+- name: regex
+  required: true
+  description: A regex pattern who's groups to be replaced by the replaceWith argument.
+- name: replace_with
+  required: true
+  description: The replacement string.
+scripttarget: 0
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+tests:
+- No test - unit test
+fromversion: 5.0.0
+nativeimage:
+- '8.8'
+- '8.6'

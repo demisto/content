@@ -1,0 +1,72 @@
+commonfields:
+  id: ConvertXmlFileToJson
+  version: -1
+name: ConvertXmlFileToJson
+script: >
+  register_module_line('ConvertXmlFileToJson', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  import xmltodict
+
+
+
+  def convert_file(entry_id: str, verbose: bool, context_key: str) -> None:
+      """
+      Converts file content from XML to Json
+      Args:
+          entry_id: The entry id represents the file.
+          verbose: Whether to print the json result to the warroom.
+          context_key: The key to insert the json data to.
+      """
+      xml_file = demisto.getFilePath(entry_id).get("path", "")
+      with open(xml_file, 'rb') as xml:
+          xml_json = xmltodict.parse(xml)
+      if verbose:
+          return_results(xml_json)
+      if context_key:
+          appendContext(key=context_key, data=xml_json)
+
+
+  def main():  # pragma: no cover
+      args = demisto.args()
+      entry_id = args.get("entryID", "")
+      verbose = argToBoolean(args.get("verbose", False))
+      context_key = args.get("contextKey", "")
+      try:
+          convert_file(entry_id, verbose, context_key)
+      except Exception as e:
+          return_error(f"Convert XML File to Json Failed: Error: {str(e)}")
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('ConvertXmlFileToJson', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Converts XML file entry to JSON format
+enabled: true
+args:
+- name: entryID
+  required: true
+  default: true
+  description: Entry ID of a valid xml file to convert to json format.
+- name: contextKey
+  description: The context key to push json result to.
+- name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'True'
+  - 'False'
+  description: Print json result to warrom.
+  defaultValue: 'True'
+scripttarget: 0
+fromversion: 5.0.0
+dockerimage: demisto/xml-feed:1.0.0.116765
+tests:
+- No tests (auto formatted)

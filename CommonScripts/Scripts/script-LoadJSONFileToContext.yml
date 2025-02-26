@@ -1,0 +1,74 @@
+args:
+- description: The Entry ID of the JSON file to load into context.
+  name: entryID
+  required: true
+- defaultValue: JSON
+  description: The context key to put the loaded JSON under, default is JSON.
+  name: contextKey
+comment: Loads a JSON file from the war room to context.
+commonfields:
+  id: LoadJSONFileToContext
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.113941
+enabled: true
+name: LoadJSONFileToContext
+runas: DBotWeakRole
+script: >
+  register_module_line('LoadJSONFileToContext', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  file_id = demisto.args().get("entryID")
+
+  context_key = demisto.args().get("contextKey")
+
+
+  # get the file path, for the above file.
+
+  res = demisto.getFilePath(file_id)
+
+  if not res:
+      return_error(f"Entry {file_id} not found")
+
+  file_path = res.get('path')
+
+
+  # open the file, and try and load the JSON, error if it's invalid.
+
+  with open(file_path, 'r') as f:
+      try:
+          data = json.load(f)
+      except ValueError as e:
+          return_error(f"File is not valid JSON: {e}")
+      except Exception:
+          return_error("Something else went wrong...")
+
+  # return the results to context
+
+  results = CommandResults(
+      readable_output=f"Loaded JSON to context key: {context_key} from file.",
+      outputs_prefix=context_key,
+      outputs=data,
+      ignore_auto_extract=True)
+
+  return_results(results)
+
+
+  register_module_line('LoadJSONFileToContext', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

@@ -1,0 +1,65 @@
+comment: This widget displays the incident verdict or the alert verdict based on the 'incident.verdict' or 'alert.verdict' field.
+commonfields:
+  id: VerdictResult
+  version: -1
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+engineinfo: {}
+name: VerdictResult
+runas: DBotWeakRole
+runonce: false
+script: >
+  register_module_line('VerdictResult', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  RED_HTML_STYLE = "color:#FF1744;text-align:center;font-size:300%;padding-top:1em>"
+
+  GREEN_HTML_STYLE = "color:#00CD33;text-align:center;font-size:300%;padding-top:1em>"
+
+  ORANGE_HTML_STYLE = "color:#FF9000;text-align:center;font-size:300%;padding-top:1em>"
+
+  GREY_HTML_STYLE = "color:#808080;text-align:center;font-size:300%;padding-top:1em>"
+
+
+
+  def main():
+      investigationverdict = demisto.incidents()[0].get('CustomFields').get('verdict')
+
+      if investigationverdict == 'Malicious':
+          html = f"<h1 style={RED_HTML_STYLE}Malicious</h1>"
+
+      elif investigationverdict == 'Suspicious':
+          html = f"<h1 style={ORANGE_HTML_STYLE}Suspicious</h1>"
+
+      elif investigationverdict == 'Non-Malicious':
+          html = f"<h1 style={GREEN_HTML_STYLE}Non-Malicious</h1>"
+
+      else:
+          html = f"<h1 style={GREY_HTML_STYLE}Not Determined</h1>"
+
+      demisto.results({
+          'ContentsFormat': formats['html'],
+          'Type': entryTypes['note'],
+          'Contents': html
+      })
+
+
+  if __name__ in ["__main__", "builtin", "builtins"]:
+      main()
+
+  register_module_line('VerdictResult', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

@@ -1,0 +1,25 @@
+commonfields:
+  id: PCAPMiner
+  version: -1
+name: PCAPMiner
+script: "#!/usr/bin/env python2.7\n# -*- coding: utf8 -*-\n\nimport os\nimport dpkt\nimport cymruwhois\nimport simplejson as json\nimport glob\nimport os\n\npath = \"/app/pcapminey/\"\nif path not in sys.path:\n    sys.path.append(path)\n\nfrom core.Dispatcher import Dispatcher\nfrom minepcaps import pcap_miner\nfrom shutil import copyfile\n\nos.popen('rm -f ./output/*')\nfilePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryId'] })\nreadyPath = filePath[0][\"Contents\"][\"path\"]\nret = []\nfilename = filePath[0][\"Contents\"][\"name\"]\nminer = pcap_miner(readyPath)\njsonResults = miner.summary2json()\npyResults = json.loads(jsonResults)\ndispatcher = Dispatcher(readyPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)\nresults = dispatcher.run()\npyResults['files_found'] = results.filenamelist\nlistdir = os.listdir('./output')\nouputPath = './output/*'\nfiles=glob.glob(ouputPath)\n\nif(pyResults[\"counts\"]):\n    displayData = tableToMarkdown('PCAP Data Frequency Counts', pyResults[\"counts\"])\nif(pyResults[\"destination_ip_details\"]):\n    displayData += tableToMarkdown('Destination IP Details', pyResults[\"destination_ip_details\"])\nif(pyResults[\"dns_data\"]):\n    displayData += tableToMarkdown('DNS Details', pyResults[\"dns_data\"])\nif(pyResults[\"http_requests\"]):\n    displayData += tableToMarkdown('Http Requests', pyResults[\"http_requests\"])\nif(pyResults[\"flows\"]):\n    displayData += tableToMarkdown('Flow Data', pyResults[\"flows\"])\nif(pyResults[\"files_found\"]):\n    mdTableList = []\n    for fileFound in pyResults[\"files_found\"]:\n        mdTableList.append({'Files Found': fileFound})\n\n    displayData += tableToMarkdown('Files Add', mdTableList)\n\nfor file in files:\n    filename = file.replace(\"./output/\",\"\")\n    demisto.results(file_result_existing_file(file, filename))\n\ndemisto.results({'Type': entryTypes['note'], 'Contents': pyResults, 'EntryContext': {'pcap_results': pyResults}, 'ContentsFormat': formats['json'], 'HumanReadable': displayData})\n"
+type: python
+subtype: python2
+tags:
+- Utility
+- file
+- pcap
+comment: Deprecated. Use PCAPMinerV2 instead. PCAPMiner is a tool to parse PCAP files and will return things like extracted files that are found, HTTP flows, and a variety of other information. It is uses a docker instance located on docker hub trorabaugh/dempcap:1.0.  To use simply upload a PCAP file and then run PCAPMiner entryId="<your_entry_id>". To get the entry id click on the link on the top right hand corner of a file attachment.
+enabled: true
+args:
+- name: entryId
+  required: true
+  default: true
+  description: Enter the EntryID of the file
+- name: demistoLibLocation
+  description: Demisto lib location, default is "/var/lib/demisto/"
+  defaultValue: /var/lib/demisto/
+scripttarget: 0
+deprecated: true
+dockerimage: demisto/dempcap:1.0.0.14059
+fromversion: 5.0.0

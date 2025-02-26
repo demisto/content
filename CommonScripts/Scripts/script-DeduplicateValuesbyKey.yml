@@ -1,0 +1,100 @@
+args:
+- description: List of objects (dictionaries).
+  isArray: true
+  name: object_list
+  required: true
+- description: String representing key from which unique values should be retrieved. Use dot notation to access subkeys (e.g. 'key.subkey').
+  name: key_of_interest
+  required: true
+- auto: PREDEFINED
+  default: true
+  defaultValue: 'False'
+  description: Default is False. If set to True, will return None in the unique list if the key is not found.
+  name: keep_none
+  predefined:
+  - 'True'
+  - 'False'
+comment: 'Given a list of objects and a key found in each of those objects, return a unique list of values associated with that key. Returns error if the objects provided do not contain the key of interest. '
+commonfields:
+  id: DeduplicateValuesbyKey
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+name: DeduplicateValuesbyKey
+outputs:
+- contextPath: DeduplicatedValues
+  description: List of unique values for the specified key.
+runas: DBotWeakRole
+script: >
+  register_module_line('DeduplicateValuesbyKey', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def generate_unique_values_from_objects(object_list, key, keep_none):
+      """Given a list of objects (dictionaries) and a key,
+      generate a list of unique values of that key in the list of objects
+      and return the unique values list.
+
+
+      Args:
+          object_list (List[Dict]): list of objects (dictionaries)
+          key (Object): key of interest
+          keep_none (bool): whether to keep None values
+      """
+      values = set()
+
+      for obj in object_list:
+          # Initially attempt to retrieve value using built-in object get method.
+          # This accounts for keys that may contain dots that are NOT intended
+          # to be retrieved from sub-keys.
+          if key in obj:
+              values.add(obj[key])
+          # Otherwise, use demisto.get to access values.
+          else:
+              values.add(demisto.get(obj, key))
+
+      if not keep_none:
+          values.difference_update({None})
+
+      # If no values were found, return error
+      if not values:
+          return_error("The objects provided did not contain the key of interest.")
+
+      return list(values)
+
+
+  def main():  # pragma: no cover
+      args = demisto.args()
+      object_list = args.get("object_list")
+      key = args.get("key_of_interest")
+      keep_none = argToBoolean(args.get("keep_none"))
+
+      values = generate_unique_values_from_objects(object_list, key, keep_none)
+
+      return_results(CommandResults(
+          outputs_prefix="unique_values",
+          outputs_key_field="unique_values",
+          outputs={"unique_values": values}))
+
+
+  if __name__ in ("__main__", "__builtin__", "builtins"):
+      main()
+
+  register_module_line('DeduplicateValuesbyKey', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

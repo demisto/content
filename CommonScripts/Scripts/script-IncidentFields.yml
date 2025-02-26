@@ -1,0 +1,113 @@
+commonfields:
+  id: IncidentFields
+  version: -1
+name: IncidentFields
+script: >
+  register_module_line('IncidentFields', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def build_field_context_data(field):
+      field_context_data = {
+          'name': field['name'],
+          'shortName': field['cliName'],
+          'type': field['type'],
+          'associatedToAll': field['associatedToAll']
+      }
+
+      if not field_context_data['associatedToAll']:
+          if len(field.get('associatedTypes') or []) != 0:
+              field_context_data['associatedTypes'] = field['associatedTypes']
+          else:
+              field_context_data['associatedTypes'] = None
+      else:
+          field_context_data['associatedTypes'] = 'all'
+
+      return field_context_data
+
+
+  def main():
+      # get incident fields
+      res = demisto.executeCommand('core-api-get', {'uri': '/incidentfields'})
+      if is_error(res):
+          return_error(res[0]['Contents'])
+
+      fields = res[0]['Contents']['response']
+
+      # 'fields' contains non-incident fields (evidence and indicator), as well, so let's make a version
+      #  containing only incident fields
+      incident_fields = [field for field in fields if field['id'].startswith('incident_')]
+
+      # get arguments
+      args = demisto.args()
+
+      exclude_system_fields = False
+      if 'exclude_system_fields' in args and argToBoolean(args['exclude_system_fields']):
+          exclude_system_fields = True
+
+      use_short_name = False
+      if 'short_names' in args and argToBoolean(args['short_names']):
+          use_short_name = True
+
+      # build a dict of all field and their associated case types
+      output_fields = {}
+      for field in incident_fields:
+
+          if exclude_system_fields and field['system']:
+              continue
+
+          field_name = field['name']
+          if use_short_name:
+              field_name = field['cliName']
+
+          output_fields[field_name] = build_field_context_data(field)
+
+      # output results
+      demisto.results(output_fields)
+
+
+  if __name__ in ["__builtin__", "builtins"]:
+      main()
+
+  register_module_line('IncidentFields', 'end', __line__())
+type: python
+tags: []
+comment: Returns a dict of all incident fields that exist in the system.
+enabled: true
+args:
+- name: exclude_system_fields
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Whether to only return non-system fields. If "true", will only output non-system fields. The default value is "false".
+  defaultValue: 'false'
+- name: short_names
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Whether to shorten the incident field names. If "true", will cause output to use shortened field names. The default value is "true".
+  defaultValue: 'true'
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - '|||core-api-get'
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+tests:
+- No test - unit test
+fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+nativeimage:
+- '8.8'
+- '8.6'

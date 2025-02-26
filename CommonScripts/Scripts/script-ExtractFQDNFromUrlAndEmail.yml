@@ -1,0 +1,159 @@
+args:
+- default: true
+  description: The URLs or emails to process.
+  isArray: true
+  name: input
+comment: Extracts FQDNs from URLs and emails.
+commonfields:
+  id: ExtractFQDNFromUrlAndEmail
+  version: -1
+enabled: true
+name: ExtractFQDNFromUrlAndEmail
+script: >
+  register_module_line('ExtractFQDNFromUrlAndEmail', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  from tld import get_tld, Result
+
+  from validate_email import validate_email
+
+  from urllib.parse import urlparse, parse_qs, unquote
+
+  import re
+
+
+  # ============================================================================================================== #
+
+  # This script is highly similar to 'ExtractDomainFromUrlFormat', they are not unified due to run time performance.
+
+  # Please change both scripts respectively.
+
+  # ============================================================================================================== #
+
+
+  PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=']
+
+  ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url='
+
+
+
+  def atp_get_original_url(safe_url):
+      split_url = urlparse(safe_url)
+      query = split_url.query
+      query_dict = parse_qs(query)
+      encoded_url_list = query_dict.get('url', [])
+      encoded_url = encoded_url_list[0] if len(encoded_url_list) >= 1 else None
+      if not encoded_url:
+          error_msg = 'Could not decode ATP Safe Link. Returning original URL.'
+          demisto.info(error_msg)
+          return safe_url
+      decoded_url = unquote(encoded_url)
+      return decoded_url
+
+
+  def proofpoint_get_original_url(safe_url):
+      regex = r'&.*$'
+      split_url = urlparse(safe_url)
+      query = split_url.query
+      query_dict = parse_qs(query)
+      encoded_url_list = query_dict.get('u', [])
+      encoded_url = encoded_url_list[0] if len(encoded_url_list) >= 1 else None
+      clean = encoded_url.replace('-', '%').replace('_', '/').replace(regex, '') if encoded_url else None
+      clean = unquote(clean) if clean else None
+      return clean
+
+
+  def unescape_url(escaped_url):
+      # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
+      url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')\
+          .replace('http:\\\\', 'http://')
+      # Normalize the URL with http prefix
+      if url.find('http:') == 0 and url.find('http://') == -1:
+          url = url.replace('http:', 'http://')
+      if url.find('http') != 0 and url.find('ftp') != 0:
+          return 'http://' + url
+      return url
+
+
+  def get_fqdn(input_url: str) -> str | None:
+      fqdn = None
+      domain_info = get_tld(input_url, fail_silently=True, as_object=True)
+
+      if domain_info:
+          if not isinstance(domain_info, Result):
+              raise TypeError(f"Expected to get a Result object but got {type(domain_info)}")
+          subdomain = domain_info.subdomain
+          if subdomain:
+              fqdn = f"{subdomain}.{domain_info.fld}"
+
+      return fqdn
+
+
+  def extract_fqdn(the_input):
+      is_url = None
+      domain_from_mail = None
+      is_email = validate_email(the_input)
+      if is_email:
+          # Take the entire part after the @ of the email
+          domain_from_mail = the_input.split('@')[1]
+      else:
+          # Test if URL, else proceed as domain
+
+          # Check if it is a Microsoft ATP Safe Link
+          if re.match(ATP_LINK_REG, the_input):
+              the_input = atp_get_original_url(the_input)
+          # Check if it is a Proofpoint URL
+          elif the_input.find(PROOFPOINT_PREFIXES[0]) == 0 or the_input.find(PROOFPOINT_PREFIXES[1]) == 0:
+              the_input = proofpoint_get_original_url(the_input)
+          # Not ATP Link or Proofpoint URL so just unescape
+          else:
+              the_input = unescape_url(the_input)
+          is_url = fqdn = get_fqdn(the_input)
+
+      # Extract domain itself from a potential subdomain
+      if domain_from_mail or not is_url:
+          full_domain = 'https://'
+          full_domain += domain_from_mail if domain_from_mail else the_input
+          # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
+          fqdn = get_fqdn(full_domain)
+
+      # convert None to empty string if needed
+      fqdn = fqdn if fqdn else ''
+      return fqdn
+
+
+  def main():
+      fqdns = []
+      the_input = demisto.args().get('input')
+
+      # argToList returns the argument as is if it's already a list so no need to check here
+      the_input = argToList(the_input)
+
+      # Otherwise assumes it's already an array
+      for item in the_input:
+          fqdns.append(extract_fqdn(item))
+      demisto.results(fqdns)
+
+
+  # python2 uses __builtin__ python3 uses builtins
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('ExtractFQDNFromUrlAndEmail', 'end', __line__())
+tags:
+- indicator-format
+timeout: '0'
+type: python
+dockerimage: demisto/py3-tools:1.0.0.114656
+runas: DBotWeakRole
+subtype: python3
+tests:
+- ExtractFQDNFromUrlAndEmail-Test
+fromversion: 5.0.0
+nativeimage:
+- '8.8'
+- '8.6'

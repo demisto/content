@@ -1,0 +1,77 @@
+args:
+- description: The indicator value (ex 1.1.1.1)
+  name: indicator
+  required: true
+- description: The indicator type (ex ip, url, email, domain)
+  name: indicatorType
+  required: true
+- description: The indicator score
+  name: score
+  required: true
+- description: The vendor to assign to this DBotScoreEntry
+  name: vendor
+  required: true
+- auto: PREDEFINED
+  description: The reputation reliability
+  name: reliability
+  predefined:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+comment: Add DBot score to context for indicators with custom vendor, score, reliability, and type.
+commonfields:
+  id: AddDBotScoreToContext
+  version: -1
+dockerimage: demisto/python3:3.11.10.113941
+enabled: true
+name: AddDBotScoreToContext
+runas: DBotWeakRole
+script: >
+  register_module_line('AddDBotScoreToContext', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def main():
+      indicator = demisto.args().get("indicator")
+      indicatorType = demisto.args().get("indicatorType")
+      score = int(demisto.args().get("score"))
+      vendor = demisto.args().get("vendor")
+      reliability = demisto.args().get("reliability", None)
+
+      dbotscore = {
+          "Indicator": indicator,
+          "Type": indicatorType,
+          "Vendor": vendor,
+          "Score": score,
+          "Reliability": reliability
+      }
+
+      command_results = CommandResults(
+          outputs_prefix='DBotScore',
+          outputs=dbotscore
+      )
+      return_results(command_results)
+
+
+  if __name__ == "__builtin__" or __name__ == "builtins":
+      main()
+
+  register_module_line('AddDBotScoreToContext', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

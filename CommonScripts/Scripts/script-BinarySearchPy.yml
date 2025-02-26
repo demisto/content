@@ -1,0 +1,24 @@
+commonfields:
+  id: BinarySearchPy
+  version: -1
+name: BinarySearchPy
+script: "# Look for various hashes in the incident\n# Inspect labels and attachments for hashes and check if we have this process running anywhere using Carbon Black\nimport re\n# Iterate on all the labels and see which one has hashes\nhashRe = re.compile(r'\\b[a-fA-F\\d]{32}\\b', re.I)\nhashes = set()\nfor t in demisto.incidents()[0]['labels']:\n    for h in hashRe.finditer(t['value']):\n        hashes.add(h.group(0))\n# Find hashes in the details\nfor h in hashRe.finditer(demisto.incidents()[0]['details']):\n    hashes.add(h.group(0))\n# Get also hashes from files in entries\nentries = demisto.executeCommand('getEntries', {})\nfor entry in entries:\n    if entry['File'] and demisto.get(entry, 'FileMetadata.md5'):\n        hashes.add(demisto.get(entry, 'FileMetadata.md5'))\nres = []\nfor h in hashes:\n    processes = demisto.executeCommand('cb-process', {'query': 'md5:' + h})\n    if len(processes) > 0 and processes[0]['Type'] == entryTypes['note'] and processes[0]['ContentsFormat'] == formats['json']:\n        process = demisto.get(processes[0], 'Contents.results')\n        if process:\n            res.append({\n                '1. MD5': h,\n                '2. Name': demisto.get(process, 'process_name'),\n                '3. Hostname': demisto.get(process, 'hostname'),\n                '4. Path': demisto.get(process, 'path'),\n                '5. Updated': demisto.get(process, 'last_update'),\n                '6. Terminated': demisto.get(process, 'terminated')})\nif len(res) > 0:\n    demisto.results(['yes', {'Type': entryTypes['note'], 'ContentsFormat': formats['table'], 'Contents': res}])\nelse:\n    demisto.results(['no', {'Type': entryTypes['note'], 'ContentsFormat': formats['text'], 'Contents': 'No process hashes found'}])"
+type: python
+subtype: python2
+tags:
+- hash
+- server
+- endpoint
+- carbon-black
+comment: Deprecated. No available replacement. Search for a binary on an endpoint using Carbon Black
+deprecated: true
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - cb-process
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24398
+tests:
+- No tests (auto formatted)

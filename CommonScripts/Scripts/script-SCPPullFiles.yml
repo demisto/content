@@ -1,0 +1,65 @@
+commonfields:
+  id: SCPPullFiles
+  version: -1
+name: SCPPullFiles
+script: >
+  register_module_line('SCPPullFiles', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def scp_pull_files(args):
+      res = []  # type: ignore
+      s2f = demisto.get(args, 'systems2files')
+      if s2f:
+          s2f = json.loads(s2f)
+          if not isinstance(s2f, dict):
+              res = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],  # type: ignore
+                     "Contents": "Wrong argument provided. Not a dict. Dump of args: " + json.dumps(
+                         args, indent=4)}
+          else:
+              for k in s2f:
+                  res += demisto.executeCommand("copy-from", {'using': k, 'file': s2f[k]})
+                  demisto.info('Copying file ' + s2f[k] + ' from device ' + k)
+      return res
+
+
+  def main():
+      args = demisto.args()
+      demisto.results(scp_pull_files(args))
+
+
+  if __name__ in ['__main__', 'builtin', 'builtins']:
+      main()
+
+  register_module_line('SCPPullFiles', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Take a list of devices and pull a specific file (given by path) from each using SCP.
+system: true
+args:
+- name: systems2files
+  required: true
+  default: true
+  description: A JSON object mapping RemoteAccess instances to filepaths.
+scripttarget: 0
+dependson:
+  must:
+  - copy-from
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.12.8.1983910
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+nativeimage:
+- '8.8'
+- '8.6'

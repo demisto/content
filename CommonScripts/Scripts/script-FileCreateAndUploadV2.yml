@@ -1,0 +1,148 @@
+commonfields:
+  id: FileCreateAndUploadV2
+  version: -1
+name: FileCreateAndUploadV2
+script: >
+  register_module_line('FileCreateAndUploadV2', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+  import base64
+
+  from pathlib import Path
+
+  from typing import Any
+
+
+
+
+
+
+  def get_data_from_file(entry_id: str) -> bytes:
+      """Reads the file associated with the entry_id and returns its data as bytes."""
+      try:
+          return Path(demisto.getFilePath(entry_id)["path"]).read_bytes()
+      except Exception as e:
+          raise DemistoException(f'There was a problem opening or reading the file.\nError is: {e}')
+
+
+  def get_entry_metadata(entry_id: str) -> dict:  # pragma: no cover
+      res = demisto.executeCommand("getEntry", {"id": entry_id})
+      if is_error(res):
+          raise DemistoException(get_error(res))
+      return res[0]
+
+
+  def get_data_entry(entry_metadata: dict) -> Any:
+      """Retrieves the data associated with an entry based on its type."""
+      entry_type: int = entry_metadata["Type"]
+      match entry_type:
+          case (
+              EntryType.FILE
+              | EntryType.IMAGE
+              | EntryType.ENTRY_INFO_FILE
+              | EntryType.VIDEO_FILE
+          ):
+              return get_data_from_file(entry_metadata["ID"])
+          case _:
+              return entry_metadata["Contents"]
+
+
+  def decode_data(data: Any, data_encoding: str) -> bytes | Any:
+      """Given data and its encoding, this function decodes the data according to the provided encoding and returns it."""
+      match data_encoding:
+          case "base64":
+              return base64.b64decode(data)
+          case "raw":
+              return data
+          case _:
+              raise ValueError(f'Invalid data encoding value: {data_encoding}, must be either `base64` or `raw`')
+
+
+  def main() -> None:
+      args = demisto.args()
+      filename = args["filename"]
+      data = args.get("data")
+      data_encoding = args.get("data_encoding", "raw")
+      entry_id = args.get("entryId")
+
+      try:
+          if entry_id:
+              entry_metadata = get_entry_metadata(entry_id)
+              data = get_data_entry(entry_metadata)
+          data = decode_data(data, data_encoding)
+
+          return_results(fileResult(filename, data))
+      except Exception as e:
+          return_error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
+
+
+  if __name__ in ("__builtin__", "builtins", "__main__"):
+      main()
+
+  register_module_line('FileCreateAndUploadV2', 'end', __line__())
+type: python
+tags:
+- Utility
+comment: "Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.\n"
+enabled: true
+args:
+- name: filename
+  required: true
+  default: true
+  description: The name of the file to be created.
+- name: data
+  description: Input data to write to the file.
+- name: entryId
+  description: Entry ID contents to write in the file.
+- name: data_encoding
+  auto: PREDEFINED
+  predefined:
+  - raw
+  - base64
+  description: Encoding type of the input data or contents.
+  defaultValue: raw
+outputs:
+- contextPath: File.Size
+  description: The size of the file.
+  type: Number
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.Name
+  description: The name of the file.
+  type: String
+- contextPath: File.SSDeep
+  description: The SSDeep hash of the file.
+  type: String
+- contextPath: File.EntryID
+  description: The entry ID of the file.
+  type: String
+- contextPath: File.Info
+  description: File information.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.Extension
+  description: The file extension.
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- FileCreateAndUploadV2-Test
+nativeimage:
+- '8.8'
+- '8.6'

@@ -1,0 +1,69 @@
+commonfields:
+  id: ContextContains
+  version: -1
+name: ContextContains
+script: >
+  register_module_line('ContextContains', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def search(context, path, value):
+      """
+      searches a value in a context path.
+      @param context - context tree to search in
+      @param path - a path to search in the context
+      @value - value to search
+      """
+
+      if isinstance(context, dict):
+          if len(path) > 0 and path[0] in context:
+              return search(context[path[0]], path[1:], value)
+          else:
+              return False
+      elif isinstance(context, list):
+          # in case current context has multiple objects, search them all.
+          return any(search(c, path, value) for c in context)
+      else:
+          # if we got to a leaf in the context
+          return len(path) == 0 and context == value
+
+
+  path = demisto.args().get('path', '')
+
+  value = demisto.args().get('value')
+
+
+  results = {
+      True: 'yes',
+      False: 'no',
+  }
+
+
+  demisto.results(results[search(demisto.context(), path.split('.'), value)])
+
+
+  register_module_line('ContextContains', 'end', __line__())
+type: python
+subtype: python3
+tags: []
+comment: This script searches for a value in a context path.
+enabled: true
+args:
+- name: path
+  description: Path in the context
+- name: value
+  required: true
+  default: true
+  description: Value to search
+scripttarget: 0
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.113941
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

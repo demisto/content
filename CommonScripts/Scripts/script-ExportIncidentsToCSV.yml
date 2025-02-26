@@ -1,0 +1,103 @@
+args:
+- description: The query for the Incidents that you want to export. (e.g. status:closed -category:job). You can and should generate the query from the Incidents search screen.
+  name: query
+  required: true
+- defaultValue: '7'
+  description: Number of days you want to fetch back for (default is 7).  Needs to be a number.
+  name: fetchdays
+- description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,name,type,severity,status,owner,roles,playbookId,occurred,created,modified,closed).'
+  name: columns
+comment: This automation uses the Core REST API Integration to batch export Incidents to CSV and return the resulting CSV file to the war room.
+commonfields:
+  id: ExportIncidentsToCSV
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dependson:
+  must:
+  - core-api-post
+  - core-api-get
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+name: ExportIncidentsToCSV
+runas: DBotWeakRole
+script: >
+  register_module_line('ExportIncidentsToCSV', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def main():
+      incident_query = demisto.args().get("query")
+      incident_fetch_back_days = int(demisto.args().get("fetchdays"))
+
+      if demisto.args().get("columns"):
+          incident_columns = [x.strip() for x in demisto.args().get("columns").split(",")]
+      else:
+          incident_columns = ["id", "name", "type", "severity", "status", "owner",
+                              "roles", "playbookId", "occurred", "created", "modified", "closed"]
+
+      # body for the incident request
+      incident_body = {
+          "all": True,
+          "filter": {
+              "query": incident_query,
+              "sort": [{
+                  "field": "id",
+                  "asc": False
+              }],
+              "period": {
+                  "by": "day",
+                  "fromValue": incident_fetch_back_days
+              }
+          },
+          "columns": incident_columns
+      }
+
+      # generate the file
+      export_to_csv_result = demisto.executeCommand(
+          "core-api-post", {"uri": "/incident/batch/exportToCsv", "body": incident_body}
+      )
+      demisto.debug(f'{export_to_csv_result=}')
+      if is_error(export_to_csv_result):
+          demisto.error(
+              f'Error {get_error(export_to_csv_result)} when trying to export incident(s) with query {incident_query} to CSV'
+          )
+
+      csv_file_name = export_to_csv_result[0]["Contents"]["response"]
+
+      # download the file and return to the war room
+      incident_csv_result = demisto.executeCommand("core-api-get", {"uri": f"/incident/csv/{csv_file_name}"})
+      demisto.debug(f'{incident_csv_result=}')
+      if is_error(incident_csv_result):
+          demisto.error(
+              f'Error {get_error(incident_csv_result)} when trying to retrieve the CSV'
+          )
+
+      file = incident_csv_result[0]["Contents"]["response"]
+      demisto.results(fileResult(csv_file_name, file))
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('ExportIncidentsToCSV', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

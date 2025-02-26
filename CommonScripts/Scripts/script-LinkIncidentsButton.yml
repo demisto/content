@@ -1,0 +1,48 @@
+args:
+- name: linkedIncidentIDs
+  required: true
+  description: Incident ID to link to, or a comma separated list of related Incident IDs.
+- name: action
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - link
+  - unlink
+  description: Action to perform - Link or Unlink Incidents
+comment: "Incident action button script to link or unlink Incidents from an Incident\n"
+commonfields:
+  id: LinkIncidentsButton
+  version: -1
+dockerimage: demisto/python3:3.11.10.113941
+enabled: true
+name: LinkIncidentsButton
+runas: DBotWeakRole
+script: >
+  register_module_line('LinkIncidentsButton', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  action = demisto.getArg('action')
+
+  if action not in ['link', 'unlink']:
+      action = 'link'
+
+  demisto.results(demisto.executeCommand("linkIncidents", {"linkedIncidentIDs": demisto.getArg("linkedIncidentIDs"),
+                                                           "action": action}))
+
+  register_module_line('LinkIncidentsButton', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- incident-action-button
+type: python
+fromversion: 5.0.0
+tests:
+- No test
+nativeimage:
+- '8.8'
+- '8.6'

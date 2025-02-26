@@ -1,0 +1,117 @@
+commonfields:
+  id: ShowScheduledEntries
+  version: -1
+name: ShowScheduledEntries
+script: >
+  // pack version: 1.19.29
+
+  var incidentId = args.incidentId;
+
+
+  var entries = executeCommand("getEntries", { id: incidentId });
+
+
+  var header = 'Scheduled entries for current incident:';
+
+  if (incidentId) {
+      header = 'Scheduled entries for incident #' + incidentId + ':';
+  }
+
+
+  var warRoomUrl = demistoUrls().warRoom;
+
+  var md = '### ' + header + '\n';
+
+  md += 'Entry ID|Command\n';
+
+  md += '-|-\n';
+
+
+  var scheduledEntries = [];
+
+  entries.forEach(function (entry) {
+      if (entry.Metadata !== null && entry.Metadata.Recurrent && entry.Metadata.Schedule.Scheduled) {
+          md += '['+ entry.ID + '](' + warRoomUrl + '/' + entry.ID + ')' + '|' + entry.Contents + '\n';
+          scheduledEntries.push({
+              id: entry.ID,
+              brand: entry.Brand,
+              type: entry.Type,
+              contents: entry.Contents,
+              contentsFormat: entry.ContentsFormat,
+              note: entry.Note,
+              evidence: entry.Evidence,
+              tags: entry.Tags,
+              investigationID: entry.Metadata.InvestigationID,
+              schedule: entry.Metadata.Schedule
+          });
+      } else {
+          logDebug("unexpected entry structure:");
+          logDebug(entry);
+      }
+  });
+
+
+  if (!scheduledEntries || scheduledEntries.length === 0) {
+      if (incidentId) {
+          return 'There are no scheduled entries for incident #' + incidentId + '.';
+      }
+      return 'There are no scheduled entries for current incident.';
+  }
+
+
+  entryResult = {
+      Type: entryTypes.note,
+      Contents: scheduledEntries,
+      ContentsFormat: formats.json,
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: md,
+      EntryContext: {
+          ScheduledEntries: scheduledEntries
+      }
+  };
+
+
+  return entryResult;
+type: javascript
+tags:
+- Utility
+comment: Show all scheduled entries for specific incident.
+enabled: true
+args:
+- name: incidentId
+  default: true
+  description: Incident ID to get tasks from
+outputs:
+- contextPath: ScheduledEntries
+  description: Entire scheduled entry object
+- contextPath: ScheduledEntries.id
+  description: Entry ID
+  type: string
+- contextPath: ScheduledEntries.contents
+  description: Entry contents (the scheduled command)
+  type: string
+- contextPath: ScheduledEntries.type
+  description: Entry type
+  type: number
+- contextPath: ScheduledEntries.investigationID
+  description: Entry's investigation ID
+  type: string
+- contextPath: ScheduledEntries.schedule.startDate
+  description: Entry schedule start date
+- contextPath: ScheduledEntries.schedule.EndingType
+  description: Entry schedule ending type (by / after)
+- contextPath: ScheduledEntries.schedule.Times
+  description: Entry schedule times until ends (when ending type is 'by')
+  type: number
+- contextPath: ScheduledEntries.schedule.EndingDate
+  description: Entry schedule end time (when ending type is 'after')
+- contextPath: ScheduledEntries.schedule.cron
+  description: Entry schedule cron
+  type: string
+- contextPath: ScheduledEntries.schedule.HumanCron
+  description: Entry schedule settings
+scripttarget: 0
+sensitive: true
+fromversion: 5.0.0
+tests:
+- TestShowScheduledEntries

@@ -1,0 +1,30 @@
+commonfields:
+  id: Base64Encode
+  version: -1
+name: Base64Encode
+script: >
+  // pack version: 1.19.29
+
+  var result = Base64.encode(args.input);
+
+  return {Type: entryTypes.note,
+      Contents: result,
+      ContentsFormat: formats.note,
+      HumanReadable: result,
+      EntryContext: {"Base64.encoded": result}
+  };
+type: javascript
+tags:
+- Utility
+comment: Will encode an input using Base64 format.
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: to encode in Base64 format
+outputs:
+- contextPath: Base64.encoded
+  description: input encoded as Base64 format
+scripttarget: 0
+fromversion: 5.0.0

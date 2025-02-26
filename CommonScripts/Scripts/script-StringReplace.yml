@@ -1,0 +1,89 @@
+commonfields:
+  id: StringReplace
+  version: -1
+name: StringReplace
+script: >
+  // pack version: 1.19.29
+
+  if ((typeof args.data) !== 'string') {
+      return {
+          Type: entryTypes.error,
+          ContentsFormat: formats.text,
+          Contents: 'Invalid input - please make sure \'data\' is of type string'
+      }
+  }
+
+
+  var arr = [];
+
+  if (args.replaceAll === 'true') {
+      arr.push('g');
+  }
+
+  if (args.caseInsensitive === 'true') {
+      arr.push('i');
+  }
+
+  if (args.multiLine === 'true') {
+      arr.push('m');
+  }
+
+
+  var newValue = args.newValue === "''" ? "" : args.newValue;
+
+  var r = new RegExp(args.regex, arr.join(''));
+
+  var val = args.data.replace(r, newValue);
+
+
+  //if no match found - return the original string
+
+  setContext('StringReplace.Result', val);
+
+  return {
+      Type: entryTypes.note,
+      Contents: val,
+      ContentsFormat: formats.text
+  };
+type: javascript
+tags:
+- Utility
+comment: "Replaces regex match/es in string.\nReturns the string after replace was preformed."
+enabled: true
+args:
+- name: data
+  required: true
+  default: true
+  description: The string to preform replace on
+- name: regex
+  required: true
+  description: The regex to find matches to be replaced with a new value
+- name: newValue
+  required: true
+  description: The new value to replace the regex match. Pass '' to remove regex match.
+- name: replaceAll
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Pass true to replace all matches, false to replace only the first occurrence.
+  defaultValue: 'true'
+- name: caseInsensitive
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Pass True to preform case-insensitive search and replace, false for case-sensitive.
+  defaultValue: 'true'
+- name: multiLine
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Pass true to indicate 'data'  is a multi-line string, false otherwise.
+  defaultValue: 'true'
+outputs:
+- contextPath: StringReplace.Result
+  description: The string after replace was preformed
+scripttarget: 0
+fromversion: 5.0.0

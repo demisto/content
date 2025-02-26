@@ -1,0 +1,37 @@
+commonfields:
+  id: ExposeIncidentOwner
+  version: -1
+name: ExposeIncidentOwner
+script: >
+  // pack version: 1.19.29
+
+  var owner = incidents[0].owner;
+
+  owner = owner.replace(/\\/g,'\\\\');
+
+  var users = executeCommand('getUsers', {});
+
+  var ownerJSON = dq(users,'Contents(val.username==="' + owner + '")');
+
+  if (ownerJSON) {
+      setContext('IncidentOwner',ownerJSON);
+      return 'Incident owner set in IncidentOwner context key';
+  } else {
+      return 'Incident has no owner';
+  }
+type: javascript
+tags:
+- Utility
+comment: Expose the incident owner into IncidentOwner context key
+enabled: true
+outputs:
+- contextPath: IncidentOwner.name
+  description: Incident owner full name
+- contextPath: IncidentOwner.email
+  description: Incident owner email address
+- contextPath: IncidentOwner.phone
+  description: Incident owner phone number
+- contextPath: IncidentOwner.roles
+  description: Incident owner roles
+scripttarget: 0
+fromversion: 5.0.0

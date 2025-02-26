@@ -1,0 +1,124 @@
+commonfields:
+  id: JSONtoCSV
+  version: -1
+name: JSONtoCSV
+script: >
+  register_module_line('JSONtoCSV', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  import io
+
+  import csv
+
+  import sys
+
+
+
+  def main():
+      args = demisto.args()
+      entry_id = args.get("entryid")
+
+      if isinstance(entry_id, list):
+          entry_id = entry_id[0]
+
+      dictlist = demisto.executeCommand("getEntry", {"id": entry_id})[0]["Contents"]
+      csv_final = json_to_csv(dictlist)
+
+      if "filename" in args:
+          # Send CSV as file in War Room
+          demisto.results(fileResult(args.get("filename"), csv_final))
+
+      else:
+          # Send CSV to War Room
+          demisto.results(csv_final)
+
+
+  def json_to_csv(data: list):
+      """
+      Takes a list of dictionaries and parses them into CSV format.
+      JSON should be only a list that contains dictionaries.
+
+      json:
+          [
+              {
+                  "dn": "DC=demisto,DC=int",
+                  "provider": "activedir"
+              },
+              {
+                  "dn": "CN=Users,DC=demisto,DC=int",
+                  "provider": "activedir"
+              }
+          ]
+
+      csv:
+          "dn", "provider"
+          "DC=demisto,DC=int" , "activedir"
+          "CN=Users,DC=demisto, DC=int" ,"activedir"
+      """
+      result = io.StringIO()
+      csv_data = csv.writer(result)
+
+      try:
+          keys = list(data[0].keys())
+
+      except KeyError:
+          demisto.debug("The given JSON is not an iterable list.")
+          sys.exit(0)
+
+      csv_data.writerow(keys)
+
+      for d in data:
+          val_lst = []
+          for k in keys:
+              val_lst.append(d[k])
+
+          csv_data.writerow(val_lst)
+
+      return result.getvalue().strip()
+
+
+  if __name__ in ["__builtin__", "builtins", "__main__"]:
+      main()
+
+  register_module_line('JSONtoCSV', 'end', __line__())
+type: python
+subtype: python3
+tags: []
+comment: Convert a JSON War Room output via EntryID to a CSV file.
+enabled: true
+args:
+- name: entryid
+  required: true
+  description: Entry id of json
+  isArray: true
+- name: delimiter
+  default: true
+  description: CSV Delimiter.
+  defaultValue: '|'
+- name: filename
+  description: If provided will output CSV to file. Default output is to War Room.
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+scripttarget: 0
+tests:
+- JSONtoCSV-Test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.115186
+nativeimage:
+- '8.8'
+- '8.6'

@@ -1,0 +1,63 @@
+comment: Uses the ssh integration to grab the host server logs.
+commonfields:
+  id: ServerLogs
+  version: -1
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+name: ServerLogs
+runas: DBotWeakRole
+script: >
+  register_module_line('ServerLogs', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  import re
+
+
+
+  def execute_ssh_command():
+      """Execute the `ssh` command to get the server logs and return the result to the war room.
+      """
+      file = '/var/log/demisto/server.log'
+      res = demisto.executeCommand('ssh', {'cmd': f'tail {file}', 'using': 'localhost'})
+
+      output = f'File: {file}\n'
+      output += res[0].get('Contents').get('output')
+      output = re.sub(r' \(source: .*\)', '', output)
+
+      return_results(output)
+
+
+  def main():
+      try:
+          execute_ssh_command()
+      except ValueError as e:
+          demisto.error(str(e))
+          return_error('The script could not execute the `ssh` command. Please create an instance of the'
+                       '`RemoteAccess` integration and try to run the script again.')
+
+
+  if __name__ in ('__builtin__', 'builtins', '__main__'):
+      main()
+
+  register_module_line('ServerLogs', 'end', __line__())
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - remoteaccess|||ssh
+tags:
+- widget
+type: python
+fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

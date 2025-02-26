@@ -1,0 +1,83 @@
+commonfields:
+  id: ExtractAttackPattern
+  version: -1
+name: ExtractAttackPattern
+comment: Extract Attack Pattern Threat Intel Object. After auto extract extracts the Attack Pattern IDs, this script is executed and extracts the value (name) of the Attack Pattern.
+script: >
+  register_module_line('ExtractAttackPattern', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  import urllib3
+
+
+  # Disable insecure warnings
+
+  urllib3.disable_warnings()
+
+
+
+  def get_mitre_results(items):
+      return execute_command('mitre-get-indicator-name', {'attack_ids': items})
+
+
+  def is_valid_attack_pattern(items) -> list:
+      try:
+          results = get_mitre_results(items)
+          values = [content.get('value') for content in results]
+          return values if values else []
+
+      except ValueError as e:
+          if 'verify you have proper integration enabled to support it' in str(e):
+              demisto.info('Unsupported Command : mitre-get-indicator-name, '
+                           'verify you have proper integration (MITRE ATTACK v2) enabled to support it. '
+                           'This Is needed in order to auto extract MITRE IDs and translate them to Attack Pattern IOCs')
+          else:
+              demisto.info(f'MITRE Attack formatting script, {str(e)}')
+          return []
+      except Exception as e:
+          demisto.info(f'MITRE Attack formatting script, {str(e)}')
+          return []
+
+
+  def main():
+      the_input = demisto.args().get('input')
+
+      entries_list = is_valid_attack_pattern(the_input)
+
+      if entries_list:
+          return_results(entries_list)
+      else:
+          return_results('')
+
+
+  if __name__ in ("__builtin__", "builtins"):
+      main()
+
+  register_module_line('ExtractAttackPattern', 'end', __line__())
+type: python
+tags:
+- indicator-format
+enabled: true
+args:
+- name: input
+  description: A comma-separated list of Attack Pattern IDs.
+  default: true
+  isArray: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.8.1983910
+runas: DBotWeakRole
+tests:
+- ExtractAttackPattern-Test
+fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+nativeimage:
+- '8.8'
+- '8.6'

@@ -1,0 +1,64 @@
+commonfields:
+  id: IncreaseIncidentSeverity
+  version: -1
+name: IncreaseIncidentSeverity
+script: >
+  // pack version: 1.19.29
+
+  const SEVERITY_VALUES = {
+    "unknown": 0,
+    "informational": 0.5,
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+    "critical": 4,
+    "0": 0,
+    "0.5": 0.5,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+  };
+
+
+  const severity_str = `${args.severity}`.toLowerCase();
+
+  const severity = SEVERITY_VALUES[severity_str];
+
+  const current_incident_severity = incidents[0].severity;
+
+
+  if (severity > current_incident_severity) {
+      executeCommand('setIncident', { severity } );
+      return `Severity increased to ${severity}`;
+  }
+
+
+  return "Severity not increased";
+type: javascript
+tags: []
+comment: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+enabled: true
+args:
+- name: severity
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Unknown
+  - Informational
+  - Low
+  - Medium
+  - High
+  - Critical
+  - '0'
+  - '0.5'
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  description: The incident severity to increase the incident to. Can be "Unknown", "Informational", "Low", "Medium", "High", "Critical", "0", "0.5", "1", "2", "3", or "4".
+scripttarget: 0
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- IncreaseIncidentSeverity-Test

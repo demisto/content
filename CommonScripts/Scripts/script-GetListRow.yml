@@ -1,0 +1,149 @@
+args:
+- description: Value to search for. If you supply a value, you need to supply the "header" argument also.
+  name: value
+- description: Header to filter lines by. If you supply a header, you need to supply the "value" argument.
+  name: header
+- description: The list name in which to search.
+  name: list_name
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: If "True", parses the entire list into the context. Can be "True" or "False". Default is "False".
+  name: parse_all
+  predefined:
+  - 'True'
+  - 'False'
+- defaultValue: ','
+  description: Separator to split the list by (use \\t in case of tab separated list).
+  name: list_separator
+comment: Parses a list by header and value.
+commonfields:
+  id: GetListRow
+  version: -1
+enabled: true
+name: GetListRow
+outputs:
+- contextPath: GetListRow.Header
+  description: Header in which the search was performed.
+  type: String
+- contextPath: GetListRow.Value
+  description: Value to search for.
+  type: String
+- contextPath: GetListRow.ListName
+  description: The name of the list that was searched..
+  type: String
+- contextPath: GetListRow.ParseAll
+  description: If "True", the entire list was parsed into the context.
+  type: String
+- contextPath: GetListRow.Results
+  description: All parse results of the list.
+  type: UnKnown
+script: >
+  register_module_line('GetListRow', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def validate_args(parse_all, header, value):
+      if parse_all.lower() != 'true' and (not header or not value):
+          return_error("Error: If parse_all is false, both header and value must be specified.")
+
+
+  def validate_list_exists(list_data):
+      if not list_data or "Item not found" in list_data:
+          return_error("Error: The supplied list name was not found.")
+
+
+  def validate_header_exists(headers, header):
+      if header not in headers:
+          return_error("Error: The supplied header name was not found.")
+
+
+  def list_to_headers_and_lines(list_data: str, list_separator: str):
+      list_data = list_data.strip()
+      lines_and_headers = [(line.replace("\r", "") if line.endswith("\r") else line).split(list_separator)
+                           for line in list_data.split('\n')]
+      headers = lines_and_headers[0]
+      return headers, lines_and_headers[1:]
+
+
+  def lines_to_context_format(list_lines, headers):
+      lines_context = []
+      for line in list_lines:
+          line_context = {headers[item]: line[item] for item in range(len(line))}
+          lines_context.append(line_context)
+      return lines_context
+
+
+  def parse_relevant_rows(headers, lines, header, value, context, parse_all=False):
+      outputs_key_field = ['list_name', 'parse_all']
+      if parse_all:
+          lines_context = lines_to_context_format(lines, headers)
+      else:
+          header_location = headers.index(header)
+          specific_lines_to_parse = [line for line in lines if line[header_location] == value]
+          lines_context = lines_to_context_format(specific_lines_to_parse, headers)
+          outputs_key_field.extend(['header', 'value'])
+      if not lines_context:
+          return CommandResults(
+              readable_output="No results found"
+          )
+      context["Results"] = lines_context
+      human_readable = tableToMarkdown('List Result', lines_context, headers=headers, removeNull=True)
+      return CommandResults(
+          outputs_prefix='GetListRow',
+          outputs_key_field=outputs_key_field,
+          outputs=context,
+          readable_output=human_readable
+      )
+
+
+  def parse_list(parse_all, header, value, list_name, list_separator: str):
+      validate_args(parse_all, header, value)
+      list_data = demisto.executeCommand("getList", {'listName': list_name})[0]['Contents']
+      context = {
+          "ListName": list_name,
+          "Header": header,
+          "Value": value,
+          "ParseAll": parse_all
+      }
+      validate_list_exists(list_data)
+      headers, lines = list_to_headers_and_lines(list_data, list_separator)
+      if parse_all.lower() == 'true':
+          command_results = parse_relevant_rows(headers, lines, header, value, context, parse_all=True)
+      else:
+          validate_header_exists(headers, header)
+          command_results = parse_relevant_rows(headers, lines, header, value, context)
+      return command_results
+
+
+  def main():
+      args = demisto.args()
+      list_name = args['list_name']
+      parse_all = args['parse_all']
+      header = args.get('header', '')
+      value = args.get('value', '')
+      list_separator = args.get('list_separator', ',') or ','
+      list_separator = list_separator.replace('\\t', '\t')
+
+      return_results(parse_list(parse_all, header, value, list_name, list_separator))
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('GetListRow', 'end', __line__())
+subtype: python3
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
+nativeimage:
+- '8.8'
+- '8.6'

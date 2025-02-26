@@ -1,0 +1,64 @@
+commonfields:
+  id: LanguageDetect
+  version: -1
+name: LanguageDetect
+script: >
+  register_module_line('LanguageDetect', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  from langdetect import detect_langs
+
+
+
+  def detect_language(text):
+      res = detect_langs(text)
+
+      md = "### Detected languages (probability):\n"
+      langs = []
+
+      for line in res:
+          lang = str(line).split(':')[0]
+          prob = float(str(line).split(':')[1])
+          langs.append({"lang": lang, "probability": prob})
+          md += "- " + lang + " (" + str(prob) + ")\n"
+
+      demisto.results({"ContentsFormat": formats["json"], "Type": entryTypes["note"],
+                       "Contents": langs, "HumanReadable": md, "EntryContext": {"langDetect": langs}})
+
+
+  def main():
+      text = demisto.args().get('text')
+      detect_language(text)
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('LanguageDetect', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Language detection based on Google's language-detection.
+enabled: true
+args:
+- name: text
+  required: true
+  default: true
+  description: Text to analyse for language detection.
+outputs:
+- contextPath: langDetect.lang
+  description: Language detection.
+- contextPath: langDetect.probability
+  description: Probability of language detection.
+scripttarget: 0
+dockerimage: demisto/py3-tools:1.0.0.114656
+fromversion: 5.0.0
+tests:
+- LanguageDetect-Test
+nativeimage:
+- '8.8'
+- '8.6'

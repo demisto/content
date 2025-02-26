@@ -1,0 +1,58 @@
+args:
+- default: true
+  isArray: true
+  name: value
+  description: An array of strings input
+comment: Converts a simple Array into a textual comma separated string
+commonfields:
+  id: ArrayToCSV
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+enabled: true
+name: ArrayToCSV
+runas: DBotWeakRole
+script: >
+  register_module_line('ArrayToCSV', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  from traceback import format_exc
+
+
+
+  def arr_to_csv_command(array: list[str] | str) -> str:
+      csv = ','.join(array)
+      return csv
+
+
+  def main():     # pragma: no cover
+      args = demisto.args()
+      array = argToList(args.get('value'))
+      try:
+          return_results(arr_to_csv_command(array=array))
+      except Exception as e:
+          demisto.error(format_exc())
+          return_error(f'ArrToCSV command failed. Error: {e}')
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('ArrayToCSV', 'end', __line__())
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+tags:
+- transformer
+- general
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

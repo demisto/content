@@ -1,0 +1,59 @@
+args:
+- description: The input to encode using Base64 format.
+  name: input
+  required: true
+comment: Encodes an input to Base64 format.
+commonfields:
+  id: Base64EncodeV2
+  version: -1
+name: Base64EncodeV2
+outputs:
+- contextPath: Base64.encoded
+  description: The input encoded as Base64 format.
+  type: string
+script: >
+  register_module_line('Base64EncodeV2', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  import base64
+
+
+
+  def encode(input):
+      input_bytes = input.encode('utf-8')
+      res = str(base64.b64encode(input_bytes))
+      res = res.split('\'')[1]
+      outputs = {
+          'Base64': {
+              'encoded': res
+          }
+      }
+      return res, outputs
+
+
+  if __name__ in ('__main__', 'builtins', '__builtin__'):
+      try:
+          input = demisto.args().get('input')
+          return_outputs(*encode(input))
+      except Exception as e:
+          return_error('Error occurred while running the command. Exception info:\n' + str(e))
+
+  register_module_line('Base64EncodeV2', 'end', __line__())
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+tags:
+- Utility
+- incident-action-button
+timeout: '0'
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

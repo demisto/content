@@ -1,0 +1,131 @@
+commonfields:
+  id: MathUtil
+  version: -1
+name: MathUtil
+script: >
+  // pack version: 1.19.29
+
+  var lh = args.lh;
+
+  var rh = args.rh;
+
+  var action = args.action;
+
+  var lhRegex = args.lhRegex;
+
+  var rhRegex = args.rhRegex;
+
+  var lRadix = args.lhRadix ? args.lRadix : 10;
+
+  var rRadix = args.rhRadix ? args.rRadix : 10;
+
+  var supportedActions = {
+      '+': function() { return lh + rh; },
+      '-': function() { return lh - rh; },
+      '>': function() { return lh > rh; },
+      '<': function() { return lh < rh; },
+      '*': function() { return lh * rh; },
+      '/': function() { return lh / rh; },
+      '%': function() { return lh % rh; },
+      '==': function() { return lh == rh; }
+  }
+
+
+  actionKeys = Object.keys(supportedActions);
+
+
+  //verfiy action is supported
+
+  if (!action || actionKeys.indexOf(action) < 0 ) {
+    return {ContentsFormat: formats.markdown, Type: entryTypes.error, Contents: '**[' + action + ']** is not a supported action, only ' + actionKeys.join() + ' are supported'};
+  }
+
+
+
+  //parse lh according to regex
+
+  if (lhRegex) {
+      var lr = new RegExp(lhRegex, 'i');
+      lh = lh.match(lr);
+      if (!lh) {
+          return {ContentsFormat: formats.markdown, Type: entryTypes.error, Contents: 'lh - parsed to be an empty value from regex **[' + lhRegex + ']**, on value **[' + args.lh + ']**'};
+      }
+  }
+
+
+  //parse rh according to regex
+
+  if (rhRegex) {
+      var rr = new RegExp(rhRegex, 'i');
+      rh = rh.match(rr);
+      if (!rh) {
+          return {ContentsFormat: formats.markdown, Type: entryTypes.error, Contents: 'rh - parsed to be an empty value from regex **[' + rhRegex + ']**, on value **[' + args.rh + ']**'};
+      }
+  }
+
+
+  if (isNaN(lh)) {
+      return {ContentsFormat: formats.markdown, Type: entryTypes.error, Contents: '**[' + lh + ']** is not a number'};
+  }
+
+
+  if (isNaN(rh)) {
+      return {ContentsFormat: formats.markdown, Type: entryTypes.error, Contents: '**[' + rh + ']** is not a number'};
+  }
+
+
+  lh = parseInt(lh, lRadix)
+
+  rh = parseInt(rh, rRadix)
+
+
+  //do action on params
+
+  var res = supportedActions[action]();
+
+
+  // We need to override the context value so we use setContext
+
+  if (args.contextKey) {
+      setContext(args.contextKey, res);
+  } else {
+      setContext('MathResult', res);
+  }
+
+
+  return {ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: lh + ' ' + action + ' ' + rh + ' = ' + res};
+type: javascript
+tags:
+- Utility
+comment: "Script will run the provided mathematical action on 2 provided values and produce a result.\nThe result can be stored on the context using the contextKey argument\n"
+enabled: true
+args:
+- name: lh
+  required: true
+  default: true
+  description: Left hand parameter.
+- name: rh
+  required: true
+  description: Right hand parameter.
+- name: action
+  required: true
+  description: Math expression (+, -, >, <, ==, *, /, %).
+- name: rhRegex
+  description: Regex to filter only a specific part of the right hand argument.
+- name: lhRegex
+  description: Regex to filter only a specific part of the left hand argument.
+- name: lhRadix
+  description: Radix for left hand value, defaults to 10.
+- name: rhRadix
+  description: Radix for right hand value, defaults to 10.
+- name: contextKey
+  description: Path where to store result.
+outputs:
+- contextPath: MathResult
+  description: The result of the *last* math action. Might be overriden by contextKey.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

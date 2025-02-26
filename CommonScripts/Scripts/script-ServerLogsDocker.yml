@@ -1,0 +1,44 @@
+comment: Uses the ssh integration to grab the host server logs.
+commonfields:
+  id: ServerLogs_docker
+  version: -1
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+name: ServerLogs_docker
+runas: DBotWeakRole
+script: >
+  register_module_line('ServerLogs_docker', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def main():
+      res = demisto.executeCommand('ssh', {'cmd': 'cat /var/log/demisto/docker.log', 'using': 'localhost'})
+      output = 'File: /var/log/demisto/docker.log\n'
+      output += res[0].get('Contents').get('output')
+
+      return_results(output)
+
+
+  if __name__ in ('__builtin__', 'builtins', '__main__'):
+      main()
+
+  register_module_line('ServerLogs_docker', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+type: python
+fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

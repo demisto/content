@@ -1,0 +1,245 @@
+args:
+- default: true
+  description: A comma-separated list of incident IDs by which to filter the results.
+  isArray: true
+  name: id
+- description: A comma-separated list of incident names by which to filter the results.
+  isArray: true
+  name: name
+- description: 'A comma-separated list of incident statuses by which to filter the results. For example: assigned.'
+  isArray: true
+  name: status
+- description: 'A comma-separated list of incident statuses to exclude from the results.  For example: assigned.'
+  isArray: true
+  name: notstatus
+- description: A comma-separated list of incident close reasons by which to filter the results.
+  isArray: true
+  name: reason
+- defaultValue: 30 days ago
+  description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z), default is "30 days ago"
+  name: fromdate
+- description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: todate
+- description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: fromclosedate
+- description: Filter by to close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: toclosedate
+- description: Filter by from due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: fromduedate
+- description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: toduedate
+- description: Filter by Severity
+  isArray: true
+  name: level
+- description: Filter by incident owners
+  isArray: true
+  name: owner
+- description: Filter by incident details
+  name: details
+- description: Filter by incident type
+  isArray: true
+  name: type
+- description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
+  name: query
+- description: Filter by the page number
+  name: page
+- defaultValue: '0'
+  description: "The number of events to return from the alert JSON. The default is 0, which returns all events.\nNote that the count is from the head of the list, regardless of event time or other properties."
+  name: trimevents
+- description: Number of incidents per page (per fetch)
+  name: size
+- description: Sort in format of field.asc,field.desc,...
+  name: sort
+- description: If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.
+  name: searchresultslabel
+- description: 'A comma seperated list of fields to return to the context, (default: id,name,type,severity,status,owner,created,closed)'
+  name: add_fields_to_context
+comment: "Searches Cortex XSOAR Incidents and returnrs the most relevant fields. Default search range is the last 30 days, if you want to change this, use the fromDate argument. \n\nReturns the id, name, type, severity, status, owner, and created/closed times to context.  You can add additional fields using the add_field_to_context argument.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.  Based on the SearchIncidentsV2 from the Common Scripts pack, but more efficient."
+commonfields:
+  id: SearchIncidentsSummary
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+name: SearchIncidentsSummary
+outputs:
+- contextPath: foundIncidents.id
+  description: A list of incident IDs returned from the query.
+  type: Unknown
+- contextPath: foundIncidents.name
+  description: A list of incident names returned from the query.
+  type: Unknown
+- contextPath: foundIncidents.severity
+  description: A list of incident severities returned from the query.
+  type: Unknown
+- contextPath: foundIncidents.status
+  description: A list of incident statuses returned from the query.
+  type: Unknown
+- contextPath: foundIncidents.owner
+  description: A list of incident owners returned from the query.
+  type: Unknown
+- contextPath: foundIncidents.created
+  description: A list of the incident create date returned from the query.
+  type: Unknown
+- contextPath: foundIncidents.closed
+  description: A list of incident close dates returned from the query.
+  type: Unknown
+- contextPath: foundIncidents.incidentLink
+  description: A list with links to the incidents returned from the query.
+  type: Unknown
+- contextPath: foundIncidents.searchResultsLabel
+  description: The value provided in the searchresultslabel argument.
+  type: String
+runas: DBotWeakRole
+script: >
+  register_module_line('SearchIncidentsSummary', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  from typing import Dict, List
+
+
+
+  special = ['n', 't', '\\', '"', '\'', '7', 'r']
+
+
+
+  def check_if_found_incident(res: List):
+      if res and isinstance(res, list) and isinstance(res[0].get('Contents'), dict):
+          if 'data' not in res[0]['Contents']:
+              raise DemistoException(res[0].get('Contents'))
+          elif res[0]['Contents']['data'] is None:
+              return False
+          return True
+      else:
+          raise DemistoException(f'failed to get incidents from xsoar.\nGot: {res}')
+
+
+  def is_valid_args(args: Dict):
+      array_args: List[str] = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'owner', 'type', 'query']
+      error_msg: List[str] = []
+      for _key, value in args.items():
+          if _key in array_args:
+              try:
+                  if _key == 'id':
+                      if not isinstance(value, (int, str, list)):
+                          error_msg.append(
+                              f'Error while parsing the incident id with the value: {value}. The given type: '
+                              f'{type(value)} is not a valid type for an ID. The supported id types are: int, list and str')
+                      elif isinstance(value, str):
+                          _ = bytes(value, "utf-8").decode("unicode_escape")
+                  else:
+                      _ = bytes(value, "utf-8").decode("unicode_escape")
+              except UnicodeDecodeError as ex:
+                  error_msg.append(f'Error while parsing the argument: "{_key}" '
+                                   f'\nError:\n- "{str(ex)}"')
+
+      if len(error_msg) != 0:
+          raise DemistoException('\n'.join(error_msg))
+
+      return True
+
+
+  def apply_filters(incidents: List, args: Dict):
+      names_to_filter = set(argToList(args.get('name')))
+      types_to_filter = set(argToList(args.get('type')))
+      filtered_incidents = []
+      fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed']
+      if args.get("add_fields_to_context"):
+          fields = fields + args.get("add_fields_to_context", '').split(",")
+          fields = [x.strip() for x in fields]  # clear out whitespace
+      for incident in incidents:
+          if names_to_filter and incident['name'] not in names_to_filter:
+              continue
+          if types_to_filter and incident['type'] not in types_to_filter:
+              continue
+
+          style_incident = {}
+          for field in fields:
+              style_incident[field] = incident.get(field, incident["CustomFields"].get(field, "n/a"))
+          filtered_incidents.append(style_incident)
+
+      return filtered_incidents
+
+
+  def add_incidents_link(data: List):
+      server_url = demisto.demistoUrls().get('server')
+      for incident in data:
+          incident_link = urljoin(server_url, f'#/Details/{incident.get("id")}')
+          incident['incidentLink'] = incident_link
+      return data
+
+
+  def search_incidents(args: Dict):   # pragma: no cover
+      if not is_valid_args(args):
+          return
+
+      if fromdate := arg_to_datetime(args.get('fromdate')):
+          from_date = fromdate.isoformat()
+          args['fromdate'] = from_date
+      if todate := arg_to_datetime(args.get('todate')):
+          to_date = todate.isoformat()
+          args['todate'] = to_date
+
+      if args.get('trimevents') == '0':
+          args.pop('trimevents')
+
+      # handle list of ids
+      if args.get('id'):
+          args['id'] = ','.join(argToList(args.get('id'), transform=str))
+
+      res: List = execute_command('getIncidents', args, extract_contents=False)
+      incident_found: bool = check_if_found_incident(res)
+      if incident_found is False:
+          return 'Incidents not found.', {}, {}
+
+      data = apply_filters(res[0]['Contents']['data'], args)
+      data = add_incidents_link(data)
+      headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
+      if args.get("add_fields_to_context"):
+          add_headers: List[str] = args.get("add_fields_to_context", '').split(",")
+          headers = headers + add_headers
+      md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
+      return md, data, res
+
+
+  def main():  # pragma: no cover
+      args: Dict = demisto.args()
+      try:
+          readable_output, outputs, raw_response = search_incidents(args)
+          if search_results_label := args.get('searchresultslabel'):
+              for output in outputs:
+                  output['searchResultsLabel'] = search_results_label
+          results = CommandResults(
+              outputs_prefix='foundIncidents',
+              outputs_key_field='id',
+              readable_output=readable_output,
+              outputs=outputs,
+              raw_response=raw_response,
+              ignore_auto_extract=True
+          )
+          return_results(results)
+      except DemistoException as error:
+          return_error(str(error), error)
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+      main()
+
+  register_module_line('SearchIncidentsSummary', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+- Documentation and metadata improvements.
+nativeimage:
+- '8.8'
+- '8.6'

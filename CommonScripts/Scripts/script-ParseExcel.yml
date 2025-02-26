@@ -1,0 +1,85 @@
+commonfields:
+  id: ParseExcel
+  version: -1
+name: ParseExcel
+script: >
+  register_module_line('ParseExcel', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+  import xlrd
+
+
+
+  # Fixed xlrd known issue
+
+  xlrd.xlsx.ensure_elementtree_imported(False, None)
+
+  xlrd.xlsx.Element_has_iter = True
+
+
+
+  def parse_excel(file_entry_id):
+
+      res = demisto.getFilePath(file_entry_id)
+      file_path = res['path']
+
+      workbook = xlrd.open_workbook(file_path, on_demand=True)
+      sheet_names = workbook.sheet_names()
+      sheets = []
+      context = {}
+
+      for sheetnum in range(workbook.nsheets):
+          worksheet = workbook.sheet_by_index(sheetnum)
+          first_row = []
+          for col in range(worksheet.ncols):
+              first_row.append(str(worksheet.cell_value(0, col)))
+          data = []
+          for row in range(1, worksheet.nrows):
+              elm = {}
+              for col in range(worksheet.ncols):
+                  elm[first_row[col]] = worksheet.cell_value(row, col)
+              data.append(elm)
+          sheets.append(data)
+          context["ParseExcel"] = sheets
+          demisto.results({
+              'Type': entryTypes['note'],
+              'Contents': data,
+              'ContentsFormat': formats['json'],
+              'HumanReadable': tableToMarkdown(sheet_names[sheetnum], data, first_row),
+              'EntryContext': context
+          })
+
+
+  def main():
+      file_entry_id = demisto.args()['entryId']
+      parse_excel(file_entry_id)
+
+
+  # python2 uses __builtin__ python3 uses builtins
+
+  if __name__ == "__builtin__" or __name__ == "builtins":
+      main()
+
+  register_module_line('ParseExcel', 'end', __line__())
+type: python
+subtype: python3
+tags: []
+comment: The automation takes Excel file (entryID) as an input and parses its content to the war room and context.
+enabled: true
+args:
+- name: entryId
+  required: true
+  description: The entry id of the excel file.
+outputs:
+- contextPath: ParseExcel
+  description: ParseExcel.
+scripttarget: 0
+dockerimage: demisto/py3-tools:1.0.0.114656
+tests:
+- ParseExcel-test
+fromversion: 5.0.0
+nativeimage:
+- '8.8'
+- '8.6'

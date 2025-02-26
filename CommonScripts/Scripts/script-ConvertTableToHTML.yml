@@ -1,0 +1,46 @@
+commonfields:
+  id: ConvertTableToHTML
+  version: -1
+name: ConvertTableToHTML
+script: >
+  // pack version: 1.19.29
+
+  headers = args.headers ? args.headers.split(",") : [];
+
+  if (args.table) {
+      ec = {};
+      ec[args.context_key || 'HTMLTable'] = tableToHTML(args.title, args.table, headers);
+      return {
+          Type: entryTypes.note, Contents: '', ContentsFormat: formats.text,
+          HumanReadable: tableToMarkdown(args.title, args.table, headers),
+          EntryContext: ec
+      };
+  }
+
+  return 'Data does not exist';
+type: javascript
+tags:
+- Utility
+comment: Converts a given array to an HTML table
+system: true
+enabled: true
+args:
+- name: table
+  default: true
+  description: The table to convert to HTML
+  isArray: true
+- name: context_key
+  defaultValue: HTMLTable
+  description: 'The context key for the converted HTML table (default is: HTMLTable).'
+- name: title
+  description: The optional title for the table
+- name: headers
+  description: The headers for the HTML table.
+  isArray: true
+outputs:
+- contextPath: HTMLTable
+  description: The HTML table we created from the array
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- ConvertTableToHTML - TEST

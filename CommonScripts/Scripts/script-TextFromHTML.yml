@@ -1,0 +1,139 @@
+commonfields:
+  id: TextFromHTML
+  version: -1
+name: TextFromHTML
+script: >
+  register_module_line('TextFromHTML', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  import re
+
+
+
+  def get_plain_text(html: str, replace_line_breaks: bool, trim_result: bool):
+      data = ''
+      if html:
+          data = re.sub(r'<\/?br\s?\/?>', '\n', html, flags=re.I) if replace_line_breaks else html
+
+          data = re.sub(r'<.*?>', '', data)
+          entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ',
+                      'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
+          for e in entities:
+              data = data.replace(f'&{e};', entities[e])
+
+          if trim_result:
+              data = re.sub(r'[ \t]{2,}', ' ', data)
+              data = re.sub(r'(\s*\r?\n){3,}', '\n\n', data)
+              data = data.strip()
+      return data
+
+
+  def get_body(html: str, html_tag: str, allow_fallback: bool = False):
+      if html and html_tag:
+          body = re.search(fr'<{html_tag}.*/{html_tag}>', html, re.M + re.S + re.I + re.U)
+
+          if body and body.group(0):
+              return body.group(0)
+          elif allow_fallback and html_tag.lower() == 'body':
+              return html
+      return ''
+
+
+  def main():  # pragma: no cover
+      try:
+          args = demisto.args()
+          html = args['html']
+          html_tag = args.get('html_tag', 'body')
+          allow_fallback = argToBoolean(args.get('allow_body_fallback', 'false'))
+          replace_line_breaks = argToBoolean(args.get('replace_line_breaks', 'false'))
+          trim_result = argToBoolean(args.get('trim_result', 'false'))
+          context_path = argToBoolean(demisto.args().get('output_to_context', 'false'))
+
+          body = get_body(html, html_tag, allow_fallback)
+          text = get_plain_text(body, replace_line_breaks, trim_result)
+          text = text if text != '' else 'Could not extract text'
+
+          result = CommandResults(
+              outputs_prefix='TextFromHTML',
+              outputs=text if context_path else None,
+              raw_response=text,
+              readable_output=text,
+          )
+
+          return_results(result)
+      except Exception as ex:
+          return_error(message="Failed to extract text", error=ex)
+
+
+  if __name__ in ["__builtin__", "builtins"]:
+      main()
+
+  register_module_line('TextFromHTML', 'end', __line__())
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Extract regular text from the given HTML.
+enabled: true
+args:
+- name: html
+  required: true
+  default: true
+  description: The HTML to strip tags from.
+- name: html_tag
+  default: true
+  defaultValue: body
+  description: Specify HTML tag to extract the text from within.
+- name: allow_body_fallback
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Allow using the input HTML as a fallback for the body, if no body tag is found. This only applies, if html_tag is set to body.
+  defaultValue: 'false'
+- name: replace_line_breaks
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Replace `br` in `html` with linebreaks in the output.
+  defaultValue: 'false'
+- name: trim_result
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Trim the extracted result. When set to true, leading and trailing whitespaces are removed and blocks of more than 3 consecutive whitespaces are collapsed to two.
+  defaultValue: 'false'
+- name: output_to_context
+  description: Store the extracted text in context.
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+scripttarget: 0
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.11.10.115186
+tests:
+- TextFromHTML_test_playbook
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+runas: DBotWeakRole
+outputs:
+- contextPath: TextFromHTML
+  description: The Text extracted from the given HTML.
+  type: string
+nativeimage:
+- '8.8'
+- '8.6'

@@ -1,0 +1,75 @@
+commonfields:
+  id: ZipStrings
+  version: -1
+name: ZipStrings
+script: >
+  register_module_line('ZipStrings', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+  ''' COMMAND FUNCTION '''
+
+
+
+  def mapper_command(args: Dict[str, Any]) -> CommandResults:
+      format = str(args.get('format', '{1}-{2}'))
+      list1 = argToList(args.get('list1', []))
+      list2 = argToList(args.get('list2', []))
+
+      res = [format.replace('{1}', x).replace('{2}', y) for x, y in zip(list1, list2)]
+
+      return CommandResults(outputs={
+          'zipped_list': res
+      })
+
+
+  ''' MAIN FUNCTION '''
+
+
+
+  def main():  # pragma: no cover
+      try:
+          return_results(mapper_command(demisto.args()))
+      except Exception as ex:
+          demisto.error(traceback.format_exc())  # print the traceback
+          return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+
+
+  ''' ENTRY POINT '''
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('ZipStrings', 'end', __line__())
+type: python
+tags: []
+enabled: true
+args:
+- name: list1
+  isArray: true
+  required: true
+  description: The first list. list1 must be the same size as list2.
+- name: format
+  description: "The format to join the lists by. For example, {1}-{2} joins the values for the same index in both lists, \nwhere {1} is replaced with the value from list1 and {2} is replaced with the value from list2."
+- name: list2
+  isArray: true
+  required: true
+  description: The second list. list2 must be the same size as list1.
+outputs:
+- contextPath: zipped_list
+  description: A list of joined values as defined by the format.
+  type: string
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+fromversion: 6.0.0
+comment: Joins values from two lists by index according to a given format.
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

@@ -1,0 +1,83 @@
+args:
+- default: true
+  description: Time in UTC in the format specified
+  name: value
+  required: true
+- defaultValue: '%Y-%m-%d %H:%M:%S'
+  description: "The format of the time to convert and the converted time. (i.e \"%Y-%m-%d%H:%M:%S\")\n"
+  name: format
+- description: Timezone to be converted to (i.e. 'US/Eastern', 'Etc/Greenwich','Canada/Eastern'). Review documentation on http://pytz.sourceforge.net/#helpers for what timezones are available.
+  name: timezone
+  required: true
+comment: Takes UTC and converts it to the specified timezone. Format must match the UTC date's format and output will be the same format. Can use in conjunction with ConvertDateToString
+commonfields:
+  id: ConvertTimezoneFromUTC
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+name: ConvertTimezoneFromUTC
+runas: DBotWeakRole
+script: >
+  register_module_line('ConvertTimezoneFromUTC', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  import pytz
+
+  from traceback import format_exc
+
+
+
+  def determine_correct_format(time: str, fmt: str) -> datetime:
+      time_as_datetime = datetime.strptime(time, fmt)
+      return time_as_datetime
+
+
+  def convert_UTC_Timezone_command(time: datetime, timezone: str, fmt: str) -> str:
+      desired_timezone = pytz.timezone(timezone)
+
+      # convert me to desired timezone
+      desired_time = time.astimezone(desired_timezone).strftime(fmt)
+      return desired_time
+
+
+  def main():     # pragma: no cover
+      try:
+          # Get Args
+          args = demisto.args()
+          str_utc_time = args.get('value')
+          requested_timezone = args.get('timezone')
+          fmt = args.get('format')
+
+          # Convert UTC time string to a datetime type
+          utc_time = determine_correct_format(time=str_utc_time, fmt=fmt)
+
+          # Convert to requested Timezone and format
+          return_results(convert_UTC_Timezone_command(time=utc_time, timezone=requested_timezone, fmt=fmt))
+
+      except Exception as e:
+          demisto.error(format_exc())
+          return_error(f'ConvertTimezone command failed. Error: {e}')
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('ConvertTimezoneFromUTC', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- date
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

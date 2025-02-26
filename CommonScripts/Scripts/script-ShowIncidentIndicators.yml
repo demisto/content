@@ -1,0 +1,74 @@
+commonfields:
+  id: ShowIncidentIndicators
+  version: -1
+name: ShowIncidentIndicators
+script: >
+  register_module_line('ShowIncidentIndicators', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+
+
+  def group_by_type(indicators):
+      """
+      Gets the indicators of the current incident.
+
+      Returns:
+          A list of the indicator types followed by the corresponding indicator values.
+      """
+
+      grouped = {}
+      if indicators and 'Contents' in indicators[0]:
+          indicators_res: dict = indicators[0]['Contents']
+      else:
+          indicators_res = {}
+
+      for indicator in indicators_res:
+          if indicator['indicator_type'] not in grouped:
+              grouped[indicator['indicator_type']] = [indicator['value']]
+          else:
+              grouped[indicator['indicator_type']].append(indicator['value'])
+      result = []
+      for indicator_header, indicator_values in grouped.items():
+          result.append("--- " + indicator_header + " ---")
+          result.extend(indicator_values)
+          result.append('')
+      return result
+
+
+  def get_indicators_from_incident():
+      """
+      Returns:
+          List of the indicators from the incident.
+      """
+      incident_id = demisto.incident()['id']
+      indicators_query = "investigationIDs:" + str(incident_id)
+      all_indicator_data = demisto.executeCommand('findIndicators', {'query': indicators_query, 'size': 200})
+      return {"hidden": False, "options": group_by_type(all_indicator_data)}
+
+
+  def main():  # pragma: no cover
+      return_results(get_indicators_from_incident())
+
+
+  if __name__ in ("__main__", "__builtin__", "builtins"):
+      main()
+
+  register_module_line('ShowIncidentIndicators', 'end', __line__())
+type: python
+tags:
+- field-display
+comment: "This script is used to display the indicators of an incident in an incident field of type Array. It can be used to select indicators from the incident in order to later perform some actions, like tagging the indicators for blocking via EDL.\nThis script is a field-display script, so it needs to be configured as such, when editing the incident field that will be used to display the indicators."
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
+nativeimage:
+- '8.8'
+- '8.6'

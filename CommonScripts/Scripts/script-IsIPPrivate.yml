@@ -1,0 +1,157 @@
+commonfields:
+  id: IsIPPrivate
+  version: -1
+name: IsIPPrivate
+script: >
+  register_module_line('IsIPPrivate', 'start', __line__())
+
+  demisto.debug('pack name = Common Scripts, pack version = 1.19.29')
+
+
+
+  from ipaddress import IPv4Address, IPv4Network
+
+
+
+  DELIMITER = ","
+
+
+
+  def is_ip_internal(ip: str, ranges: List[str]) -> bool:
+      try:
+          return any((IPv4Address(ip) in IPv4Network(cidr.split(DELIMITER)[0] if DELIMITER in cidr else cidr) for cidr in ranges))
+      except ValueError as ve:
+          return return_error(f"One or more IP ranges or IPs are invalid. Please make sure the list is in the correct structure."
+                              f"Error: {ve}")
+
+
+  def get_ip_tag(ip: str, ranges: List[str]) -> str:
+      for cidr in ranges:
+          tag = None
+          if DELIMITER in cidr:
+              cidr, tag = cidr.split(DELIMITER)[0], cidr.split(DELIMITER)[1].strip()
+          try:
+              if IPv4Address(ip) in IPv4Network(cidr):
+                  return tag or ''
+          except ValueError:
+              if ip == cidr:
+                  return tag or ''
+      return ''
+
+
+  def main():
+      args = demisto.args()
+      ranges_list_name = args.get("PrivateIPsListName", "PrivateIPs")
+      ip_addresses_to_check = argToList(args.get("IPAddresses"))
+
+      # Get the list of private IP ranges from the XSOAR list:
+      private_ranges = demisto.executeCommand("getList", {"listName": ranges_list_name})[0]['Contents']
+      if "Item not found" in private_ranges:
+          return_error(f"The list name {ranges_list_name} does not exist.")
+
+      # Split ranges from XSOAR list to be a list:
+      if private_ranges:
+          try:
+              private_ranges = private_ranges.split("\n")
+          except Exception:
+              return_error(
+                  "Could not parse the private ranges list. "
+                  "Please make sure that the list contains ranges written in CIDR notation, separated by new lines.")
+      else:
+          private_ranges = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]  # No ranges in list, use default ranges
+          demisto.debug(f"The list {ranges_list_name} was empty. Using the default private ranges as fall-back.")
+
+      # Create list of IPs with private property and tag
+      ip_list = [{"Address": ip, "Private": is_ip_internal(ip, private_ranges), "Tag": get_ip_tag(ip, private_ranges)} for
+                 ip in ip_addresses_to_check]
+
+      # Create entry context and human-readable results
+      entry_context = {"IP(val.Address == obj.Address)": ip_list}
+      md_table = tableToMarkdown(name="IP Addresses", t=ip_list, headers=["Address", "Private", "Tag"])
+      entry_to_return = {
+          "Type": entryTypes['note'],
+          "Contents": ip_list,
+          "ContentsFormat": "text",
+          "HumanReadable": md_table,
+          "EntryContext": entry_context,
+          "Tags": ['IP_Private_Ranges']
+      }
+
+      for ip in ip_list:
+          address = ip.get("Address")
+          private = ip.get("Private")
+          args_exists_check = {
+              "indicator": address
+          }
+          args_create_new_indicator = {
+              "value": ip.get("Address"),
+              "internal": ip.get("Private"),
+              "customFields": {
+                  "tags": [ip.get("Tag", "")],
+              }
+          }
+          args_set_existing_indicator = {
+              "value": address,
+              "internal": private
+          }
+          args_append_tag = {
+              "field": "tags",
+              "indicatorsValues": address,
+              "fieldValue": ip.get("Tag", "")
+          }
+
+          # Check if indicator exists:
+          is_exist_res = demisto.executeCommand("CheckIndicatorValue", args_exists_check)
+          indicator_exists = is_exist_res[0].get("Contents", {})[0].get("Exists")
+
+          # If indicator doesn't exist, create it:
+          if indicator_exists:
+              # Update it with internal property:
+              demisto.executeCommand("setIndicator", args_set_existing_indicator)
+              # Append new tag:
+              # The reason we don't add tags in the setIndicator funtion is because we don't want to override existing tags.
+              demisto.executeCommand("appendIndicatorField", args_append_tag)
+          else:
+              demisto.executeCommand("createNewIndicator", args_create_new_indicator)
+
+      # Return results
+      return_results(entry_to_return)
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('IsIPPrivate', 'end', __line__())
+type: python
+tags: []
+comment: "The script takes one or more IP addresses and checks whether they're in the private IP ranges defined in the PrivateIPsListName argument. By default, the PrivateIPsListName argument will use the Cortex XSOAR list called \"PrivateIPs\".\nThe list can be modified, and by default uses the ranges defined by the Internet Assigned Numbers Authority (IANA). The following are the default CIDR ranges for private IPv4 addresses:\n- 10.0.0.0/8 (range: 10.0.0.0 to 10.255.255.255)\n- 172.16.0.0/12 (range: 172.16.0.0 to 172.31.255.255)\n- 192.168.0.0/16 (range: 192.168.0.0 to 192.168.255.255)\nIn addition to ranges, it's also possible to add specific IP addresses to the list. You may also tag IPs or IP ranges by adding a comma after the IP or range, and then adding the tag that you want to tag the corresponding IP indicators with."
+enabled: true
+args:
+- name: PrivateIPsListName
+  description: The name of the Cortex XSOAR list that holds the private IP ranges or specific IPs in the organization. If no list is specified, the script will use the ranges defined by the IANA, which are 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16.
+  defaultValue: PrivateIPs
+- name: IPAddresses
+  required: true
+  description: An IPv4 address or a list of addresses to check for being private or public, against the specified list of private ranges.
+  isArray: true
+outputs:
+- contextPath: IP.Address
+  description: The IPv4 Address.
+  type: string
+- contextPath: IP.Private
+  description: Whether the IP address is private or public, according to the ranges defined in the Cortex XSOAR list, which is provided in the PrivateIPRangeList argument.
+  type: boolean
+- contextPath: IP.Tag
+  description: Any tags that were added to the indicator. The tags are added by this script if they were specified for the IP or IP range in the Cortex XSOAR list.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.11.10.113941
+runas: DBotWeakRole
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+tests:
+- IsIPPrivate - Test
+nativeimage:
+- '8.8'
+- '8.6'
