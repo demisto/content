@@ -86,7 +86,8 @@ def test_test_module(mocker):
         - The function should return 'ok' if the API request is successful
     """
     # Mock Client
-    mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
+    mock_data = util_load_json('test_data/get-all-alerts.json')
+    mocker.patch.object(client, 'get_alerts', return_value=mock_data)
     result = test_module(client, args="")
     assert result == 'ok'
 
