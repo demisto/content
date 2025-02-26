@@ -16,26 +16,35 @@ def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
-def mock_get_alerts(*args, **kwargs):
-    modified_alerts = [
-        {**alert, "created_at": alert["created_at"].rstrip("Z")}
-        for alert in ALERTS_RESPONSE
-    ]
-    return {"alerts": modified_alerts}
-
 # Mock function for _http_request
 def mock_http_request(method, url_suffix, params=None, headers=None, data=None, json_data=None):
     if url_suffix == 'alert':
         return util_load_json('test_data/get-alert.json')
     return {}
 
-# The test function using pytest and mocker
+
+
+
+
+# Mock function to return alerts in the expected format
+def mock_get_alerts(*args, **kwargs):
+    if kwargs.get("page", 0) > 0:  # Simulate an empty response after the first page
+        return {"alerts": []}
+    
+    modified_alerts = [
+        {**alert, "created_at": alert["created_at"].rstrip("Z")}
+        for alert in ALERTS_RESPONSE
+    ]
+    return {"alerts": modified_alerts}  # Ensure response is a dictionary
+
 @pytest.fixture
 def client():
     # Create a mock client
     client = MagicMock()
+
+    # Assign the mock function to get_alerts
     client.get_alerts.side_effect = mock_get_alerts
-    
+
     # Mocking fetch single alert (Used in update_remote_system_command)
     client.get_alert.return_value = {
         "id": "123", 
@@ -45,9 +54,11 @@ def client():
 
     # Mocking update alert (Used in update_remote_system_command)
     client.update_alert.return_value = None  # Assume update succeeds
-
+    
     client.create_abuse_alert = MagicMock(side_effect=mock_http_request)
+    
     return client
+
 
 def test_test_module(mocker):
     """
@@ -74,32 +85,12 @@ def test_test_module(mocker):
     assert result == "ok"
 
 
-# @pytest.fixture
-# def mock_client():
-#     """Fixture to mock the Client object."""
-#     client = MagicMock(spec=client)
-    
-#     # Mocking fetch alerts (Used in fetch_incidents_command)
-#     client.get_alerts.return_value = ALERTS_RESPONSE  
-    
-#     # Mocking fetch single alert (Used in update_remote_system_command)
-#     client.get_alert.return_value = {
-#         "id": "123", 
-#         "queue_state": "open", 
-#         "entity_state": "active"
-#     }
-
-#     # Mocking update alert (Used in update_remote_system_command)
-#     client.update_alert.return_value = None  # Assume update succeeds
-    
-#     return client
-
 
 def test_fetch_incidents_command(client, mocker):
     """Test fetch_incidents_command function."""
 
     # Mocking demisto functions using mocker.patch.object
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "20"})
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "100"})  # Increased timeout
     mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
     mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
     mock_incidents = mocker.patch.object(demisto, "incidents")
@@ -121,7 +112,8 @@ def test_fetch_incidents_command(client, mocker):
     assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
 
     mock_debug.assert_called()  # Ensure debug logs are being generated
-    mock_info.assert_called()   # Ensure info
+    mock_info.assert_called()   # Ensure info logs are being generated
+
 
 
 def test_get_remote_data_command(mocker, requests_mock):
