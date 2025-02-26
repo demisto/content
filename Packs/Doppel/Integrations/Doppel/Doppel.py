@@ -559,6 +559,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
 
 def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
     try:
+        remote_updated_incident_data: Dict[str, Any] = {}
         mirrored_object: Dict[str, Any] = {}
         demisto.debug(f'Calling the "get-remote-data" for {args["id"]}')
         parsed_args = GetRemoteDataArgs(args)
