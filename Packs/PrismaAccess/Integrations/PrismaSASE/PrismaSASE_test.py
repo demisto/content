@@ -870,13 +870,15 @@ def test_get_cie_user_prepare_args():
             'value_for_filter': 'CN=Test,UID=TestID,DC=example,DC=com'}
 
     expected_result = {'domain': 'example.com',
-                       'attrs': ['Unique Identifier', 'Common-Name', 'Distinguished Name', 'User Principal Name', 'Name',
+                       'attrs': ['Unique Identifier', 'Common-Name',
+                                 'Distinguished Name', 'User Principal Name', 'Name',
                                  'Manager'], 'name': {
-            'attrNameOR': ['Distinguished Name', 'Unique Identifier', 'Common-Name', 'Name', 'User Principal Name'],
-            'attrValue': 'CN=Test,UID=TestID,DC=example,DC=com', 'match': 'equal'}, 'useNormalizedAttrs': 'True'}
+                           'attrNameOR': ['Distinguished Name', 'Unique Identifier',
+                                          'Common-Name', 'Name', 'User Principal Name'],
+                           'attrValue': 'CN=Test,UID=TestID,DC=example,DC=com', 'match': 'equal'}, 'useNormalizedAttrs': 'True'}
     res = cie_user_prepare_args(args)
     for key, value in res.items():
-        if type(value) == list:
+        if isinstance(value, list):
             value.sort()
             expected_result.get(key).sort()
         assert value == expected_result.get(key)

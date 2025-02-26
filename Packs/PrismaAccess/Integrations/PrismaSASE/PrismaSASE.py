@@ -251,7 +251,7 @@ class Client(BaseClient):
         )
 
     def push_candidate_config(self, folders: list, tsg_id: str | None, description: str | None = None) \
-        -> dict:  # pragma: no cover
+            -> dict:  # pragma: no cover
         """Push candidate configuration
         Args:
             folders: Target Prisma SASE Folders for the configuration commit
@@ -430,7 +430,7 @@ class Client(BaseClient):
         )
 
     def get_address_group_by_id(self, query_params: dict, group_id: str, tsg_id: str | None) \
-        -> dict:  # pragma: no cover
+            -> dict:  # pragma: no cover
         """Get a specific address group
         Args:
             query_params: folder param
@@ -484,7 +484,7 @@ class Client(BaseClient):
         )
 
     def create_address_group(self, query_params: dict, address_group: dict, tsg_id: str | None) \
-        -> dict:  # pragma: no cover
+            -> dict:  # pragma: no cover
         """Create new address group
         Args:
             address_group: address group dictionary
@@ -520,7 +520,7 @@ class Client(BaseClient):
         )
 
     def get_custom_url_category_by_id(self, query_params: dict, url_category_id: str, tsg_id: str | None) \
-        -> dict:  # pragma: no cover
+            -> dict:  # pragma: no cover
         """Get a specific custom URL category
         Args:
             query_params: folder param
@@ -556,7 +556,7 @@ class Client(BaseClient):
         )
 
     def update_custom_url_category(self, custom_url_category: dict, url_category_id: str, tsg_id: str | None) \
-        -> dict:  # pragma: no cover
+            -> dict:  # pragma: no cover
         """Update an existing custom url category
         Args:
             custom_url_category: custom url category dictionary
@@ -575,7 +575,7 @@ class Client(BaseClient):
         )
 
     def create_custom_url_category(self, query_params: dict, custom_url_category: dict, tsg_id: str | None) \
-        -> dict:  # pragma: no cover
+            -> dict:  # pragma: no cover
         """Create new custom url category
         Args:
             custom_url_category: custom url category dictionary
@@ -611,7 +611,7 @@ class Client(BaseClient):
         )
 
     def get_external_dynamic_list_by_id(self, query_params: dict, external_dynamic_list_id: str, tsg_id: str | None) \
-        -> dict:  # pragma: no cover
+            -> dict:  # pragma: no cover
         """Get a specific external dynamic list
         Args:
             query_params: folder param
@@ -647,7 +647,7 @@ class Client(BaseClient):
         )
 
     def update_external_dynamic_list(self, external_dynamic_list: dict, dynamic_list_id: str, tsg_id: str | None) \
-        -> dict:  # pragma: no cover
+            -> dict:  # pragma: no cover
         """Update an existing external dynamic list
         Args:
             external_dynamic_list: external dynamic list dictionary
@@ -666,7 +666,7 @@ class Client(BaseClient):
         )
 
     def create_external_dynamic_list(self, query_params: dict, external_dynamic_list: dict, tsg_id: str | None) \
-        -> dict:  # pragma: no cover
+            -> dict:  # pragma: no cover
         """Create new external dynamic list
         Args:
             external_dynamic_list: external dynamic list dictionary
@@ -2051,12 +2051,12 @@ def cie_user_prepare_args(args: Dict[str, Any]) -> Dict[str, Any]:
                 "attrNameOR": argToList(args.get("attributes_to_filter_by", "")),
                 "attrValue": args.get("value_for_filter"),
                 "match": operator_mapping.get(args.get('operator', 'Equal'))
-            },
+        },
         "useNormalizedAttrs": "True"
     }
 
 
-def parse_cie_user_response(args: Dict[str, Any] , raw_response: Dict[str, Any]) -> Dict[str, Any]:
+def parse_cie_user_response(args: Dict[str, Any], raw_response: Dict[str, Any]) -> Dict[str, Any]:
     """
         Parse the raw response from the API call.
     Args:
