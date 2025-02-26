@@ -2151,9 +2151,17 @@ def fetch_incidents():
                 demisto.debug(
                     f"Did not appended impersonation_logs with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
     if FETCH_HELD_MESSAGES:
-        next_page, next_dedup_held_messages, last_fetch_held_messages = fetch_held_messages(last_run,
-                                                                                            last_fetch_held_messages_date_time,
+        # Added dedup mechanism only to held_messages due to a bug
+        dedup_held_messages = last_run.get('dedup_held_messages', [])
+        if not isinstance(dedup_held_messages, List):
+            raise DemistoException(f"dedup_held_messages is of type {type(dedup_held_messages)}")
+        current_next_page = last_run.get('held_message_next_page', '')
+        demisto.debug(f"{current_next_page=}")
+        demisto.debug(f"{dedup_held_messages=}")
+        next_page, next_dedup_held_messages, last_fetch_held_messages = fetch_held_messages(last_fetch_held_messages_date_time,
                                                                                             current_fetch_held_message,
+                                                                                            dedup_held_messages,
+                                                                                            current_next_page,
                                                                                             incidents)
 
     time = last_fetch.isoformat().split('.')[0] + 'Z'
@@ -2169,17 +2177,11 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
-def fetch_held_messages(last_run: dict,
-                        last_fetch_held_messages_date_time: str,
-                        current_fetch_held_message: datetime,
-                        incidents: list):
-    # Added dedup mechanism only to held_messages due to a bug
-    next_dedup_held_messages = dedup_held_messages = last_run.get('dedup_held_messages', [])
-    if not isinstance(dedup_held_messages, List):
-        raise DemistoException(f"dedup_held_messages is of type {type(dedup_held_messages)}")
-    current_next_page = last_run.get('held_message_next_page', '')
-    demisto.debug(f"{current_next_page=}")
-    demisto.debug(f"{dedup_held_messages=}")
+def fetch_held_messages(last_fetch_held_messages_date_time,
+                        current_fetch_held_message,
+                        dedup_held_messages,
+                        current_next_page,
+                        incidents):
     search_params = {
         'start': last_fetch_held_messages_date_time,
         'admin': True
