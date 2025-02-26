@@ -7,6 +7,6 @@ cybelangel-archive-report-by-id-get report_id=4751c0bf-5cb5-4e21-b677-5ce9c1b5de
 cybelangel-report-status-update report_ids=513c10f3-969b-4833-a965-229ae1cb8b30 status=open
 cybelangel-report-status-update report_ids=513c10f3-969b-4833-a965-229ae1cb8b30,4751c0bf-5cb5-4e21-b677-5ce9c1b5de89 status=resolved
 cybelangel-report-comments-get report_id=513c10f3-969b-4833-a965-229ae1cb8b30
-cybelangel-report-comment-create report_id=513c10f3-969b-4833-a965-229ae1cb8b30 content=Demo Test
+cybelangel-report-comment-create report_id=513c10f3-969b-4833-a965-229ae1cb8b30 content="Test Comment"
 cybelangel-report-attachment-get report_id=062aba24-e44b-4e96-98b9-a65c63e93b6c attachment_id=9c166e86-66f9-4e9f-9523-161ab7f153da
-cybelangel-report-remediation-request-create report_id=4751c0bf-5cb5-4e21-b677-5ce9c1b5de89 requestor_email=azonenfeld@paloaltonetworks.com requestor_fullname="Aaron Sonnenfeld"
+cybelangel-report-remediation-request-create report_id=4751c0bf-5cb5-4e21-b677-5ce9c1b5de89 requestor_email=test@paloaltonetworks.com requestor_fullname="Example Test"

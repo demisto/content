@@ -211,8 +211,7 @@ Retrieve reports from CybelAngel.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybelAngel.Report | unknown | The retrieved report\(s\). | 
-| File.EntryID | String | Entry ID of the saved PDF file. | 
+| CybelAngel.Report | unknown | The retrieved reports. | 
 
 ### cybelangel-report-remediation-request-create
 

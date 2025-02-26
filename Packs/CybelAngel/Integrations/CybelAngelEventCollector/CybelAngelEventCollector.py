@@ -162,8 +162,7 @@ class Client(BaseClient):
             start_date (str) and end_date (str)
 
         Returns:
-            dict[str, Any] | Response: A dictionary containing the list of reports, 
-            or an empty list if no reports are found.
+            List: List of reports, or an empty list if no reports are found.
         """
         return self.http_request(method='GET', url_suffix="/api/v2/reports",
                                  params=params).get("reports") or []  # type: ignore
@@ -293,6 +292,7 @@ def cybelangel_report_list_command(client: Client, args) -> CommandResults:
     response = client.get_reports_list({"start-date": start_date, "end-date": end_date})
     return CommandResults(
         outputs_prefix="CybelAngel.Report",
+        outputs_key_field="id",
         outputs=response,
         readable_output="All reports retrieved.",
     )
@@ -329,7 +329,11 @@ def cybelangel_mirror_report_get_command(client: Client, args) -> CommandResults
             return_error(f"Mirror details not found for this report ID: {report_id}.")
 
     if csv:
-        return fileResult(f"cybelangel_mirror_report_{report_id}.csv", response.content, file_type=EntryType.ENTRY_INFO_FILE)  # type: ignore
+        return fileResult(
+            f"cybelangel_mirror_report_{report_id}.csv",
+            response.content,  # type: ignore
+            file_type=EntryType.ENTRY_INFO_FILE,
+        )
 
     return CommandResults(
         outputs_prefix="CybelAngel.ReportMirror",
