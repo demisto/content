@@ -176,33 +176,44 @@ def test_test_module(mocker, client):
 def test_fetch_incidents_command(client, mocker):
     """Test fetch_incidents_command function."""
 
-    # Mock `demisto` functions
+    # ✅ Mock `demisto` functions
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})
     mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
-    
+    mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
+    mock_incidents = mocker.patch.object(demisto, "incidents")
+    mock_debug = mocker.patch.object(demisto, "debug")
+    mock_info = mocker.patch.object(demisto, "info")
+
+    # ✅ Mock `_paginated_call_to_get_alerts` to return test data
     test_alerts = [
         {"id": "1", "created_at": "2024-11-27T06:51:50.357664"},
         {"id": "2", "created_at": "2024-11-28T06:51:50.357664"},
     ]
-    
-    mocker.patch.object(demisto, 'args', return_value=test_alerts)
-    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-
-    # ✅ Mock `_paginated_call_to_get_alerts` to return test data   
     mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=test_alerts)
 
     # ✅ Mock `_get_mirroring_fields` to prevent errors
     mocker.patch("Doppel._get_mirroring_fields", return_value={})
 
-    
-    main()
+    # ✅ Call the function
+    fetch_incidents_command(client, {})
 
-    assert demisto.incidents.call_count == 1
-    incidents = demisto.incidents.call_args[0][0]
-    assert len(incidents) == 2
-    assert incidents[0]['occurred'] == '2019-09-15T12:05:49.095889Z'
-    assert incidents[1]['occurred'] == '2019-09-15T12:14:42.440985Z'
-    assert test_alerts == incidents
+    # ✅ Assertions
+    mock_setLastRun.assert_called_once()
+    last_run_data = mock_setLastRun.call_args[0][0]
+    assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
+    assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
+
+    mock_incidents.assert_called_once()
+    incidents_created = mock_incidents.call_args[0][0]
+    assert len(incidents_created) == 2, "Expected 2 incidents to be created"
+    
+    # ✅ Fix the `occurred` assertion
+    assert incidents_created[0]['occurred'] == "2024-11-27T06:51:50Z"
+    assert incidents_created[1]['occurred'] == "2024-11-28T06:51:50Z"
+
+    mock_debug.assert_called()
+    mock_info.assert_called()
+
 
 
 
