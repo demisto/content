@@ -133,6 +133,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
                 response_data = response.get('data', [])
             for entry in response_data:
                 # If returning this log will not exceed the specified limit
+                # For held message fetch- and it did not already was fetched
                 entry_id = entry.get('id')
                 if ((not limit or len_of_results < limit)
                     and (not entry_id or entry_id not in dedup_messages)): # dedup for fetch
