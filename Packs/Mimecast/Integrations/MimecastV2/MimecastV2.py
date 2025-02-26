@@ -153,18 +153,20 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
     results = []
     if data and data != [{}]:
         payload['data'] = data
+    if current_next_page:
+        demisto.debug(f"current_next_page exists with value {current_next_page}")
+        next_page = current_next_page
+        current_next_page = ''
     while True:
-        if not current_next_page:
+        if not next_page:
             demisto.debug("No current_next_page")
             pagination = {'pageSize': limit}
             payload['meta']['pagination'] = pagination
         else:
-            next_page = current_next_page
-            current_next_page = ''
-            pagination = {'page_size': limit,
+            demisto.debug(f"next_page exists with value {next_page}")
+            pagination = {'pageSize': limit,
                           'pageToken': next_page}
             payload['meta']['pagination'] = pagination
-            demisto.debug(f"current_next_page exists with value {current_next_page}")
         response = http_request('POST', api_endpoint, payload, headers=headers)
         if response.get('fail'):
             raise Exception(json.dumps(response.get('fail')[0].get('errors')))
