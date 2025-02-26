@@ -85,8 +85,8 @@ class Client(BaseClient):
             else:
                 raise
         except requests.exceptions.ReadTimeout as e:
-            demisto.debug(f"An error was raised {e=}")
-            result = 404
+            demisto.error(f"An error was raised {e=}")
+            result = ''
 
 ''' HELPER FUNCTIONS '''
 
