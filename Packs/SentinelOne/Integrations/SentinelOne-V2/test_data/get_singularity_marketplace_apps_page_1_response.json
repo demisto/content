@@ -31,7 +31,7 @@
         }
     ],
     "pagination": {
-        "nextCursor": "",
+        "nextCursor": "1234",
         "totalItems": 1
     }
 }
