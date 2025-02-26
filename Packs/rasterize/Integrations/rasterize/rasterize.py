@@ -23,7 +23,7 @@ from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
 
-# Itamar
+# Itamar is the best!!
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
