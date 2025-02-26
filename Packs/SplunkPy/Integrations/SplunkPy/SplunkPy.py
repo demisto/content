@@ -2778,7 +2778,9 @@ def splunk_submit_event_command(service: client.Service, args: dict):
 
 def validate_indexes(indexes, service):
     """Validates that all provided Splunk indexes exist within the Splunk service instance."""
+    demisto.debug("calling service.indexes")
     real_indexes = service.indexes
+    demisto.debug("Finished service.indexes")
     for index in indexes:
         if index not in real_indexes:
             demisto.debug(f"Index {index} not found in Splunk instance, the related event will be skipped.")
@@ -2907,6 +2909,11 @@ def splunk_submit_event_hec(
         verify=VERIFY_CERTIFICATE,
     )
 
+'{"event": {"CustomFields": null, "account": "", "attachment": null, "autime": 1730312690962428468, "cacheVersn": 0, "canvases": null, "category": "", "closeNotes": "", "closeReason": "", "closed": "0001-01-01T00:00:00Z", "closingUserId": "", "created": "2024-10-30T18:24:50.962428468Z", "custom_status": "Under Investigation", "dbotCurrentDirtyFields": null, "dbotDirtyFields": null, "dbotMirrorDirection": "", "dbotMirrorId": "", "dbotMirrorInstance": "", "dbotMirrorLastSync": "0001-01-01T00:00:00Z", "dbotMirrorTags": null, "details": "", "droppedCount": 0, "feedBased": false, "id": "51fe2ecd-92bd-456d-846d-30390ba8879e", "investigationId": "51fe2ecd-92bd-456d-846d-30390ba8879e", "isDebug": false, "isPlayground": true, "labels": null, "lastJobRunTime": "0001-01-01T00:00:00Z", "lastOpen": "0001-01-01T00:00:00Z", "linkedCount": 0, "linkedIncidents": null, "modified": "2024-10-30T18:24:50.962432958Z", "name": "Playground", "notifyTime": "0001-01-01T00:00:00Z", "occurred": "2024-10-30T18:24:50.96242853Z", "openDuration": 0, "owner": "alina.dejeu@ge.com", "parent": "", "parentXDRIncident": "", "phase": "", "playbookId": "", "primaryTerm": 1, "rawCategory": "", "rawCloseReason": "", "rawJSON": "", "rawName": "Playground", "rawPhase": "", "rawType": "Unclassified", "reason": "", "resolution_status": "Under Investigation", "retained": false, "runStatus": "", "sequenceNumber": 8229, "severity": 1, "severityStr": "Low", "sla": 0, "sourceBrand": "", "sourceInstance": "", "status": 1, "type": "Unclassified", "version": 1},
+    "host": "demisto",
+    "fields": {"Escalated": ""},
+    "index": "last_chance_predix",
+    "sourcetype": "demisto:incident"}'
 
 def splunk_submit_event_hec_command(params: dict, service, args: dict):
     hec_token = params.get('cred_hec_token', {}).get('password') or params.get('hec_token')
