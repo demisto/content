@@ -2049,7 +2049,7 @@ def get_cie_user_command(client: Client, args: Dict[str, Any]) -> CommandResults
         if errors:
             raise ValueError(f"The following arguments are empty: {', '.join(errors)}")
 
-        # Ensure "Unique Identifier" is always in the list
+        # Ensure "Unique Identifier" is always in the list for the deduplication process
         attributes_to_return = list(set(argToList(args.get("attributes_to_return", ""))) | {"Unique Identifier"})
         args["attributes_to_return"] = attributes_to_return
 
