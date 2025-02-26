@@ -1756,6 +1756,9 @@ script:
   type: python
 tests:
 - JiraV3 Test
+supportedModules:
+  - "ENT_PLUS"
+  - "X5"
 defaultmapperin: classifier-mapper-incoming-JiraV3
 defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 6.8.0

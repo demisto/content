@@ -4,3 +4,6 @@ name: Armis Security Modeling Rule
 rules: ''
 schema: ''
 tags: security
+supportedModules:
+  - C1
+  - C3

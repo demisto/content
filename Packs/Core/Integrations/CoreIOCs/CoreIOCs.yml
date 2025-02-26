@@ -95,4 +95,7 @@ script:
 tests:
 - No tests
 fromversion: 5.5.0
+supportedModules:
+  - X0
 defaultEnabled: true
+
