@@ -1,6 +1,6 @@
 {
-    "contextPath": "AttackPattern(val.value \u0026\u0026 val.value === obj.value)",
-    "contextValue": "value",
+    "contextPath": "AttackPattern(val.Value \u0026\u0026 val.value === obj.Value)",
+    "contextValue": "Value",
     "details": "Attack Pattern",
     "legacyNames": [
         "STIX Attack Pattern"
