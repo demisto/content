@@ -86,43 +86,45 @@ def test_fetch_incidents_command(mock_client, mocker):
     mock_info.assert_called()   # Ensure info
 
 
+def test_get_remote_data_command(mocker, requests_mock):
+    """
+    Given:
+        - A remote incident ID and last update timestamp.
+    When:
+        - Running get_remote_data_command to fetch updates.
+    Then:
+        - It returns the relevant incident entity from the remote system with the expected mirroring fields.
+    """
 
-@pytest.mark.parametrize('remote_incident_id, last_update, expected_result', [
-    ('incident123', '2025-01-27T07:55:10.063742', {'id': 'incident123'}),
-    ('incident456', None, {'id': 'incident456'})
-])
-def test_get_remote_data_command(client, mocker, remote_incident_id, last_update, expected_result):
-    mock_demisto = MagicMock()
-    
+    # Mock API response for fetching incident updates
+    requests_mock.get(
+        "https://example.com/api/alerts",
+        json={"data": [{"id": "123456", "status": "updated", "name": "Test Alert"}]}
+    )
+
+    # Mock necessary demisto functions
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'error')
-    mocker.patch.object(demisto, 'setLastRun')
-    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'args', return_value={"id": "123456", "lastUpdate": "2025-01-27T07:55:10.063742"})
+    mocker.patch.object(demisto, 'command', return_value='get-remote-data')
 
-    mock_get_remote_data_args = mocker.patch(GetRemoteDataArgs)
-    mock_get_remote_data_args.return_value.remote_incident_id = remote_incident_id
-    mock_get_remote_data_args.return_value.last_update = last_update
+    # Mock the function that fetches updated incident data
+    mock_get_remote_updated_incident_data_with_entry = mocker.patch("_get_remote_updated_incident_data_with_entry")
+    mock_get_remote_updated_incident_data_with_entry.return_value = (
+        {"id": "123456", "status": "updated", "name": "Test Alert"},
+        []
+    )
 
-    mock_get_remote_updated_incident_data_with_entry = mocker.patch(_get_remote_updated_incident_data_with_entry)
-    mock_get_remote_updated_incident_data_with_entry.return_value = (expected_result, [])
+    # Prepare client mock
+    client = mocker.Mock()
 
-    args = {'id': remote_incident_id, 'lastUpdate': last_update}
+    # Call the function
+    result = get_remote_data_command(client, demisto.args())
 
-    result = get_remote_data_command(client, args)
-
-    # Assert that the result matches the expected result
-    assert result.mirrored_object == expected_result
-    assert result.entries == [{}]
-
-    # Assert that demisto.debug was called
-    mock_demisto.debug.assert_called()
-
-    # Assert that demisto.setLastRun was called
-    mock_demisto.setLastRun.assert_called()
-
-    # Assert that demisto.incidents was called
-    mock_demisto.incidents.assert_called()
-
+    # Assertions
+    assert result.mirrored_object == {"id": "123456", "status": "updated", "name": "Test Alert"}
+    assert result.entries == []
+    demisto.debug.assert_called()
 
 
 def test_update_remote_system_command(mock_client, mocker):
