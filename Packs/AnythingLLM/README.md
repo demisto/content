@@ -133,7 +133,7 @@ The **AI Playground** tab is where prompts are developed against a workspace and
 * Be aware of the context window size of your LLM model and how it relates to the data you are adding to the conversation context either via similarity search, text search, or pinning an embedded document to a workspace. Filling the context window causes incomplete results
 * Context windows are usually specified in tokens and each token may be a character or a word in size. So an 8K context window may support approximately 16K characters
 * Larger context windows increases VRAM memory requirements and the time it takes to answer a question
-* When searching structured text like YAML or JSON where you need only a set of lines, a regex pattern such as **(?s)\d(?<=[\d\[\].])(.*?:TLS)** helps minimize text added to the conversation context. This is a simple pattern example to: find all the lines starting with either a defanged IP or domain and finishing with a line with ":TLS"
+* When searching structured text like YAML or JSON where you need only a set of lines, a regex pattern such as `(?s)\d(?<=[\d\[\].])(.*?:TLS)` helps minimize text added to the conversation context. This is a simple pattern example to: find all the lines starting with either a defanged IP or domain and finishing with a line with ":TLS"
 
 ## Example Automation
 

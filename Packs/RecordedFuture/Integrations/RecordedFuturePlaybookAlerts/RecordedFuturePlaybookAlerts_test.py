@@ -970,7 +970,7 @@ class TestMain:
 
         mock_params = {
             "server_url": "https://api.recordedfuture.com/gw/xsoar/",
-            "unsecure": False,
+            "insecure": False,
             "token": {"password": None},
         }
         mocker.patch.object(demisto, "params", return_value=mock_params)
@@ -1013,12 +1013,12 @@ def test_get_client_with_proxy(mocker):
 
     server_url = "https://api.recordedfuture.com/gw/xsoar/"
 
-    unsecure = False
-    verify_ssl = not unsecure
+    insecure = False
+    verify_ssl = not insecure
 
     mock_params = {
         "server_url": server_url,
-        "unsecure": unsecure,
+        "insecure": insecure,
         "token": {"password": "example"},
         "proxy": True,
     }
@@ -1046,12 +1046,12 @@ def test_get_client_without_proxy(mocker):
 
     server_url = "https://api.recordedfuture.com/gw/xsoar/"
 
-    unsecure = False
-    verify_ssl = not unsecure
+    insecure = False
+    verify_ssl = not insecure
 
     mock_params = {
         "server_url": server_url,
-        "unsecure": unsecure,
+        "insecure": insecure,
         "token": {"password": "example"},
         "proxy": False,
     }
