@@ -1,3 +1,4 @@
+import functools
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
@@ -100,30 +101,39 @@ class Client(BaseClient):
             new_offset = str(from_epoch)
         return events, new_offset
 
-    def get_events_with_offset(
-        self,
-        config_ids: str,
-        offset: str | None = '',
-        limit: int = 20,
-        from_epoch: str = ''
-    ) -> tuple[list[str], str | None]:
-        params: dict[str, int | str] = {
-            'limit': limit
-        }
-        if offset:
-            demisto.info(f"received {offset=} will run an offset based request.")
-            params["offset"] = offset
-        else:
-            from_param = int(from_epoch)
-            params["from"] = from_param
-            demisto.info(f"did not receive an offset. will run a time based request with {from_param=}")
+    def execute_get_events_request(self, params: dict[str, int | str], config_ids: str, prefix_msg: str = ""):
+        demisto.info(f"{prefix_msg}Init session and sending request.")
         raw_response: str = self._http_request(
             method='GET',
             url_suffix=f'/{config_ids}',
             params=params,
             resp_type='text',
         )
-        demisto.info("Finished executing request to Akamai, processing")
+        demisto.info(f"{prefix_msg}Finished executing request to Akamai, processing")
+        return raw_response
+
+    def prepare_params(self, limit, offset, from_epoch, prefix_msg: str = "") -> dict[str, int | str]:
+        params: dict[str, int | str] = {
+            'limit': limit
+        }
+        if offset:
+            demisto.info(f"{prefix_msg}received {offset=} will run an offset based request.")
+            params["offset"] = offset
+        else:
+            from_param = int(from_epoch)
+            params["from"] = from_param
+            demisto.info(f"{prefix_msg}didn't receive offset. will run a time based request with {from_param=}.")
+        return params
+
+    def get_events_with_offset(
+        self,
+        config_ids: str,
+        offset: str | None = '',
+        limit: int = 20,
+        from_epoch: str = '',
+    ) -> tuple[list[str], str | None]:
+        params = self.prepare_params(offset=offset, limit=limit, from_epoch=from_epoch)
+        raw_response = self.execute_get_events_request(params, config_ids)
         events: list[str] = raw_response.split('\n')
         offset = None
         try:
@@ -135,6 +145,45 @@ class Client(BaseClient):
         except Exception as e:
             demisto.error(f"couldn't decode offset with {offset_context=}, reason {e}")
         return events, offset
+
+    async def get_events_concurrently(
+        self,
+        config_ids: str,
+        offset: str | None = '',
+        limit: int = 200000,
+        from_epoch: str = '',
+        counter: int = 0
+    ) -> tuple[list[str], str | None]:
+        """Send request to get events from Akamai.
+
+        Args:
+            config_ids (str): security configuration ids to fetch, e.g. `51000;56080`.
+            offset (str | None): The offset (hash) to use for offset based mechanism.
+            limit (int, optional): The number of events to limit for every request.
+            from_epoch (str): From when to fetch if first time.
+            counter (int, optional): The execution number.
+
+        Returns:
+            tuple[list[str], str | None]: The events and offset obtained from last request.
+        """
+        params = self.prepare_params(offset=offset, limit=limit, from_epoch=from_epoch,
+                                     prefix_msg=f"Running in interval = {counter}. ")
+        loop = asyncio.get_event_loop()
+        raw_response = await loop.run_in_executor(None, functools.partial(self.execute_get_events_request,
+                                                                          config_ids=config_ids,
+                                                                          params=params,
+                                                                          prefix_msg=f"Running in interval = {counter}. "
+                                                                          ))
+        events: list[str] = raw_response.split('\n')
+        new_offset = None
+        try:
+            offset_context = events.pop()
+            loaded_offset_context = json.loads(offset_context)
+            new_offset = loaded_offset_context.get("offset")
+        except Exception as e:
+            demisto.error(f"Running in interval = {counter}. Couldn't decode offset with {offset_context=}, reason {e}")
+            new_offset = offset
+        return events, new_offset
 
 
 '''HELPER FUNCIONS'''
@@ -575,64 +624,6 @@ BETA_FETCH_EVENTS_MAX_PAGE_SIZE = 600000  # Allowed events limit per request.
 MAX_ALLOWED_CONCURRENT_TASKS = 10000
 
 
-async def get_events_with_offset_aiohttp(
-    client: Client,
-    config_ids: str,
-    offset: str | None = '',
-    limit: int = 200000,
-    from_epoch: str = '',
-    counter: int = 0
-) -> tuple[list[str], str | None]:
-    """Send request to get events from Akamai.
-
-    Args:
-        client: Client object with request.
-        config_ids (str): security configuration ids to fetch, e.g. `51000;56080`.
-        offset (str | None): The offset (hash) to use for offset based mechanism.
-        limit (int, optional): The number of events to limit for every request.
-        from_epoch (str): From when to fetch if first time.
-        counter (int, optional): The execution number.
-
-    Returns:
-        tuple[list[str], str | None]: The events and offset obtained from last request.
-    """
-    params: dict[str, int | str] = {
-        'limit': limit
-    }
-    if offset:
-        demisto.info(f"Running in interval = {counter}. received {offset=} will run an offset based request.")
-        params["offset"] = offset
-    else:
-        from_param = int(from_epoch)
-        params["from"] = from_param
-        demisto.info(f"Running in interval = {counter}. didn't receive offset. will run a time based request with {from_param=}.")
-
-    url = f"{client._base_url}/"
-    demisto.info(f"Running in interval = {counter}. Init session and sending request.")
-
-    async with aiohttp.ClientSession(base_url=url,
-                                     trust_env=True) as session, session.get(url=config_ids,
-                                                                             params=params,
-                                                                             auth=client._auth,
-                                                                             ssl=client._verify) as response:
-        try:
-            response.raise_for_status()  # Check for any HTTP errors
-            raw_response = await response.text()
-        except aiohttp.ClientResponseError as e:
-            raise DemistoException(f"Running in interval = {counter}. Error occurred when fetching from Akamai: {e.message}")
-    demisto.info(f"Running in interval = {counter}. Finished executing request to Akamai, processing")
-    events: list[str] = raw_response.split('\n')
-    new_offset = None
-    try:
-        offset_context = events.pop()
-        loaded_offset_context = json.loads(offset_context)
-        new_offset = loaded_offset_context.get("offset")
-    except Exception as e:
-        demisto.error(f"Running in interval = {counter}. Couldn't decode offset with {offset_context=}, reason {e}")
-        new_offset = offset
-    return events, new_offset
-
-
 ''' COMMANDS '''
 
 
@@ -763,7 +754,8 @@ async def get_events_from_akamai(client: Client,
             demisto.info(f"Running in interval = {counter}. Testing for possible tasks qt overflow.")
             await wait_until_tasks_load_decrease(counter, max_concurrent_tasks)
             demisto.info(f"Running in interval = {counter}. Finished testing for possible tasks qt overflow.")
-            get_events_task = get_events_with_offset_aiohttp(client, config_ids, offset, page_size, from_epoch, counter=counter)
+            get_events_task = client.get_events_concurrently(
+                config_ids, offset, page_size, from_epoch, counter=counter)
             events, offset = None, None
             events, offset = await get_events_task
             demisto.info(f"Running in interval = {counter}. got {len(events)} events and {offset=}.")
@@ -771,10 +763,10 @@ async def get_events_from_akamai(client: Client,
             demisto.error(f"{e.message}")
             err = str(e)
             if "Requested Range Not Satisfiable" in err:
-                err = f"Running in interval = {counter}. Got offset out of range error when attempting to fetch events from" \
-                    "Akamai. \nThis occurred due to offset pointing to events older than 12 hours which isn't supported by " \
+                err = f"Running in interval = {counter}. Got offset out of range error when attempting to fetch events from " \
+                    "Akamai.\nThis occurred due to offset pointing to events older than 12 hours which isn't supported by " \
                     f"akamai.\nRestarting fetching events to start from {from_time} ago." \
-                    'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
+                    ' For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{err}]'
                 offset = None
             demisto.updateModuleHealth(err, is_error=True)
