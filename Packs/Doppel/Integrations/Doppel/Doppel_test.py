@@ -16,6 +16,13 @@ def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
+def mock_get_alerts(*args, **kwargs):
+    modified_alerts = [
+        {**alert, "created_at": alert["created_at"].rstrip("Z")}
+        for alert in ALERTS_RESPONSE
+    ]
+    return {"alerts": modified_alerts}
+
 # Mock function for _http_request
 def mock_http_request(method, url_suffix, params=None, headers=None, data=None, json_data=None):
     if url_suffix == 'alert':
@@ -27,7 +34,7 @@ def mock_http_request(method, url_suffix, params=None, headers=None, data=None, 
 def client():
     # Create a mock client
     client = MagicMock()
-    client.get_alerts.return_value = {"alerts": ALERTS_RESPONSE}
+    client.get_alerts.side_effect = mock_get_alerts
     
     # Mocking fetch single alert (Used in update_remote_system_command)
     client.get_alert.return_value = {
