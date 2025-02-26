@@ -1,2 +1,0 @@
-{"breakingChanges":true,"breakingChangesNotes":"The scripts: ConvertKeysToTableFieldFormat, ConvertToSingleElementArray, Cut, DateToISOFormat, DT moved to **FiltersAndTransformers** pack. Make sure to update the **FiltersAndTransformers** pack to the latest version in order to use these scripts."}
-

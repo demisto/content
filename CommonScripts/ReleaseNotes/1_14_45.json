@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The ***SendEmailOnSLABreach*** script is no longer available on Cortex XSIAM."
-}

@@ -1,1 +1,0 @@
-{"breakingChanges":true,"breakingChangesNotes":"The scripts: GetRange, GetValuesOfMultipleFields, If-Then-Else, IgnoreFieldsFromJson moved to **FiltersAndTransformers** pack. Make sure to update the **FiltersAndTransformers** pack to the latest version in order to use these scripts."}
