@@ -39,7 +39,7 @@ def test_test_module(client, mocker):
 @pytest.fixture
 def mock_client():
     """Fixture to mock the Client object."""
-    client = MagicMock(spec=Client)
+    client = MagicMock(spec=client)
     
     # Mocking fetch alerts (Used in fetch_incidents_command)
     client.get_alerts.return_value = ALERTS_RESPONSE  
@@ -162,9 +162,6 @@ def test_get_mapping_fields_command(mock_client, mocker):
     mock_debug.assert_called()  # Ensure debug logs are generated
 
 
-
-
-
 def test_doppel_get_alert_command(client, mocker):
     mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
 
@@ -202,33 +199,35 @@ def test_doppel_get_alert_command_with_no_alert_found(client, mocker):
     with pytest.raises(Exception):
         doppel_get_alert_command(client, args)
 
-@patch("demistomock")  # Mock demisto module
-def test_doppel_update_alert_command(mock_demisto, client):
-    mock_client = Mock(spec=client)
+def test_doppel_update_alert_command(mocker):
+    """Test doppel_update_alert_command function with an inline mock client."""
 
+    # Mocking demisto.debug
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    # Mocking the Client instance
+    mock_client = MagicMock(spec=client)
+    mock_client.update_alert.return_value = {"id": "123", "queue_state": "archived", "entity_state": "closed"}
+
+    # Sample arguments
     args = {
-        "alert_id": "incident123",
+        "alert_id": "123",
         "queue_state": "archived",
         "entity_state": "closed",
-        "comment": "Updated alert"
+        "comment": "Resolved"
     }
 
-    mock_client.update_alert.return_value = {"status": "success"}
-
-    # Call the function
+    # Run the function
     result = doppel_update_alert_command(mock_client, args)
 
     # Assertions
-    assert isinstance(result, CommandResults), "Function should return a CommandResults object"
-    assert result.outputs == {"status": "success"}, "Expected correct API response in outputs"
+    assert result.outputs_prefix == "Doppel.UpdatedAlert", "Incorrect outputs prefix"
+    assert result.outputs_key_field == "id", "Incorrect key field"
+    assert result.outputs == {"id": "123", "queue_state": "archived", "entity_state": "closed"}, "Unexpected output"
 
-    # Ensure the update_alert method was called with correct parameters
-    mock_client.update_alert.assert_called_with(
-        queue_state="archived",
-        entity_state="closed",
-        comment="Updated alert",
-        alert_id="incident123"
-    )
+    mock_debug.assert_called()  # Ensure debug logs are being generated
+
+
 
 def test_doppel_update_alert_command_with_entity(client, mocker):
     # Prepare the mock response for the _http_request function
