@@ -86,19 +86,9 @@ def test_test_module(mocker):
         - The function should return 'ok' if the API request is successful
     """
     # Mock Client
-    client = mocker.Mock()
-
-    # Mock `client.get_alerts` to return a successful response
-    mocker.patch.object(client, 'get_alerts', return_value={"data": []})
-
-    # Define empty args (not used in function)
-    args = {}
-
-    # Call the function
-    result = test_module(client, args)
-
-    # Assertions
-    assert result == "ok"
+    mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
+    result = test_module(client, args="")
+    assert result == 'ok'
 
 
 # def test_fetch_incidents_command(client, mocker):
