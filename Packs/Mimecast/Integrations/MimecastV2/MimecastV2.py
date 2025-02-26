@@ -151,6 +151,7 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
     payload = {}
     len_of_results = 0
     results = []
+    dropped = 0
     if data and data != [{}]:
         payload['data'] = data
     if current_next_page:
@@ -158,7 +159,7 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
     next_page = current_next_page or ''
     while True:
         if not next_page:
-            demisto.debug("No current_next_page")
+            demisto.debug("No next_page")
             pagination = {'pageSize': limit}
             payload['meta']['pagination'] = pagination
         else:
@@ -179,11 +180,13 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
                 len_of_results += 1
                 results.append(entry)
             elif entry_id in dedup_messages:
+                dropped += 1
                 demisto.debug(f"Dropped {entry_id} as it already exists.")
         # If limit is reached or there are no more pages
         next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
         if not next_page or (limit and len_of_results >= limit):
             break
+    demisto.debug(f"Dropped {dropped} incidents.")
     return results, len_of_results, next_page
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
@@ -2186,7 +2189,6 @@ def fetch_held_messages(last_run: dict,
                                                             dedup_messages=dedup_held_messages,
                                                             current_next_page=current_next_page)
     demisto.debug(f"Fetched {len_of_results} held messages")
-    current_held_message_count = 0
     for held_message in held_messages:
         incident = held_to_incident(held_message)
         held_message_id = held_message.get('id')
@@ -2206,12 +2208,11 @@ def fetch_held_messages(last_run: dict,
                 demisto.debug(f"Next_dedup_held_messages is not of type List but of type "
                                 f"{type(next_dedup_held_messages)}.")
         else:
-            demisto.debug(f"In the else for held messages with id {held_message_id} as {temp_date=} < "
-                            f"{last_fetch_held_messages=}")
+            demisto.debug("next_dedup_held_messages and last_fetch_held_messages remain the same for"
+                          f"{held_message_id} as {temp_date=} < {last_fetch_held_messages=}")
         # avoid duplication due to weak time query
         if temp_date >= current_fetch_held_message:
             incidents.append(incident)
-            current_held_message_count += 1
         else:
             demisto.debug(f"Did not append held_message with id {held_message_id} since {temp_date=} < "
                             f"{current_fetch_held_message=}.")
