@@ -7,8 +7,8 @@ from Doppel import test_module, fetch_incidents_command, _get_last_fetch_datetim
 from Packs.Base.Scripts.CommonServerPython.CommonServerPython import *
 
 ALERTS_RESPONSE = [
-    {"id": "1", "created_at": "2025-02-01T12:00:00Z"},
-    {"id": "2", "created_at": "2025-02-01T12:05:00Z"}
+    {"id": "1", "created_at": "2025-02-01T12:00:00.000000Z"},
+    {"id": "2", "created_at": "2025-02-01T12:05:00.000000Z"}
 ]
 
 def util_load_json(path):
