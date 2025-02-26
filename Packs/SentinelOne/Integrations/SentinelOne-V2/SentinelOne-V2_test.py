@@ -816,9 +816,15 @@ def test_list_installed_singularity_mark_apps(mocker, requests_mock):
     Then
         - returns a table of result had the list of installed singularity marketplace applications
     """
-    json_output = util_load_json('test_data/get_singularity_marketplace_apps_response.json')
+    json_page_1 = util_load_json('test_data/get_singularity_marketplace_apps_page_1_response.json')
+
+    json_page_2 = util_load_json('test_data/get_singularity_marketplace_apps_page_2_response.json')
+
     requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/singularity-marketplace/applications",
-                      json=json_output)
+                      json=json_page_1)
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/singularity-marketplace/applications?cursor=1234",
+                      json=json_page_2)
+
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1',
@@ -832,7 +838,53 @@ def test_list_installed_singularity_mark_apps(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{'ID': '123456', 'Account': 'SentinelOne', 'AccountId': '1234567890', 'ApplicationCatalogId': '90909090909090', 'ApplicationCatalogName': 'SentinelOne Threat Intelligence IOC Ingestion', 'AlertMessage': '', 'CreatedAt': '2025-01-23T13:11:23.12758', 'Creator': 'admin@user.sentinelone.net', 'CreatorId': '212212121211212', 'DesiredStatus': 'active', 'HasAlert': False, 'LastEntityCreatedAt': '2025-01-23T13:11:23.127579', 'Modifier': 'admin@user.sentinelone.net', 'ModifierId': '212212121211212', 'ScopeId': '1230123012301230', 'ScopeLevel': 'account', 'Status': 'active', 'UpdatedAt': '2025-01-23T13:11:25.96604', 'ApplicationInstanceName': 'SentinelOne Threat Intelligence IOC Ingestion'}]  # noqa
+
+    expected_outputs = expected_outputs = [
+        {
+            'ID': '123456',
+            'Account': 'SentinelOne',
+            'AccountId': '1234567890',
+            'ApplicationCatalogId': '90909090909090',
+            'ApplicationCatalogName': 'SentinelOne Threat Intelligence IOC Ingestion',
+            'AlertMessage': '',
+            'CreatedAt': '2025-01-23T13:11:23.12758',
+            'Creator': 'admin@user.sentinelone.net',
+            'CreatorId': '212212121211212',
+            'DesiredStatus': 'active',
+            'HasAlert': False,
+            'LastEntityCreatedAt': '2025-01-23T13:11:23.127579',
+            'Modifier': 'admin@user.sentinelone.net',
+            'ModifierId': '212212121211212',
+            'ScopeId': '1230123012301230',
+            'ScopeLevel': 'account',
+            'Status': 'active',
+            'UpdatedAt': '2025-01-23T13:11:25.96604',
+            'ApplicationInstanceName': 'SentinelOne Threat Intelligence IOC Ingestion'
+        },
+        {
+            'ID': '123457',
+            'Account': 'SentinelOne',
+            'AccountId': '1234567890',
+            'ApplicationCatalogId': '90909090909090',
+            'ApplicationCatalogName': 'SentinelOne Threat Intelligence IOC Ingestion',
+            'AlertMessage': '',
+            'CreatedAt': '2025-01-23T13:11:23.12758',
+            'Creator': 'admin@user.sentinelone.net',
+            'CreatorId': '212212121211212',
+            'DesiredStatus': 'active',
+            'HasAlert': False,
+            'LastEntityCreatedAt': '2025-01-23T13:11:23.127579',
+            'Modifier': 'admin@user.sentinelone.net',
+            'ModifierId': '212212121211212',
+            'ScopeId': '1230123012301230',
+            'ScopeLevel': 'account',
+            'Status': 'active',
+            'UpdatedAt': '2025-01-23T13:11:25.96604',
+            'ApplicationInstanceName': 'SentinelOne Threat Intelligence IOC Ingestion'
+        }
+    ]
+    assert command_results.outputs == expected_outputs
+    assert requests_mock.call_count == 2, f"Expected 2 API calls, but got {requests_mock.call_count}"
 
 
 def test_get_service_users(mocker, requests_mock):
@@ -844,9 +896,12 @@ def test_get_service_users(mocker, requests_mock):
     Then
         - returns a table of result had the list of service users
     """
-    json_output = util_load_json('test_data/get_service_users_response.json')
+    json_page_1 = util_load_json('test_data/get_service_users_page_1_response.json')
+    json_page_2 = util_load_json('test_data/get_service_users_page_2_response.json')
     requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/service-users",
-                      json=json_output)
+                      json=json_page_1)
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/service-users?cursor=1234",
+                      json=json_page_2)
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1',
@@ -860,7 +915,49 @@ def test_get_service_users(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{'ID': '123456', 'ApiTokenCreatedAt': '2025-01-30T10:12:09.458490Z', 'ApiTokenExpiresAt': '2025-03-01T10:12:08Z', 'CreatedAt': '2025-01-30T10:12:09.407923Z', 'CreatedById': '123456789099', 'CreatedByName': 'sentinelone', 'Description': None, 'LastActivation': '2025-02-04T10:00:07.637184Z', 'Name': 'Service user for SentinelOne Alert Ingestion app for 0101010101010 site id', 'Scope': 'site', 'UpdatedAt': '2025-01-30T10:12:09.405748Z', 'UpdatedById': '2323232323232323', 'UpdatedByName': 'sentinelone', 'ScopeRolesRoleId': '999999999', 'ScopeRolesRoleName': 'Admin', 'ScopeRolesAccountName': 'SentinelOne', 'ScopeRolesId': '0101010101010'}]  # noqa
+    expected_outputs = [
+        {
+            'ID': '123456',
+            'ApiTokenCreatedAt': '2025-01-30T10:12:09.458490Z',
+            'ApiTokenExpiresAt': '2025-03-01T10:12:08Z',
+            'CreatedAt': '2025-01-30T10:12:09.407923Z',
+            'CreatedById': '123456789099',
+            'CreatedByName': 'sentinelone',
+            'Description': None,
+            'LastActivation': '2025-02-04T10:00:07.637184Z',
+            'Name': 'Service user for SentinelOne Alert Ingestion app for 0101010101010 site id',
+            'Scope': 'site',
+            'UpdatedAt': '2025-01-30T10:12:09.405748Z',
+            'UpdatedById': '2323232323232323',
+            'UpdatedByName': 'sentinelone',
+            'ScopeRolesRoleId': '999999999',
+            'ScopeRolesRoleName': 'Admin',
+            'ScopeRolesAccountName': 'SentinelOne',
+            'ScopeRolesId': '0101010101010'
+        },
+        {
+            'ID': '123457',
+            'ApiTokenCreatedAt': '2025-01-30T10:12:09.458490Z',
+            'ApiTokenExpiresAt': '2025-03-01T10:12:08Z',
+            'CreatedAt': '2025-01-30T10:12:09.407923Z',
+            'CreatedById': '123456789099',
+            'CreatedByName': 'sentinelone',
+            'Description': None,
+            'LastActivation': '2025-02-04T10:00:07.637184Z',
+            'Name': 'Service user for SentinelOne Alert Ingestion app for 0101010101010 site id',
+            'Scope': 'site',
+            'UpdatedAt': '2025-01-30T10:12:09.405748Z',
+            'UpdatedById': '2323232323232323',
+            'UpdatedByName': 'sentinelone',
+            'ScopeRolesRoleId': '999999999',
+            'ScopeRolesRoleName': 'Admin',
+            'ScopeRolesAccountName': 'SentinelOne',
+            'ScopeRolesId': '0101010101010'
+        }
+    ]
+
+    assert command_results.outputs == expected_outputs
+    assert requests_mock.call_count == 2, f"Expected 2 API calls, but got {requests_mock.call_count}"
 
 
 def test_get_modified_remote_data_command(mocker, requests_mock):

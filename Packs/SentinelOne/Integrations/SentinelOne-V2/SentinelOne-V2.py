@@ -3448,13 +3448,13 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
     installed_applications = []
     # Get arguments
     query_params = assign_params(
-        accountIds=args.get('account_ids'),
+        accountIds=argToList(args.get('account_ids')),
         applicationCatalogId=args.get('application_catalog_id'),
         creator__contains=args.get('creator_contains'),
-        id=args.get('id'),
+        id=argToList(args.get('id')),
         limit=1000,
         name__contains=args.get('name_contains'),
-        siteIds=args.get('site_ids')
+        siteIds=argToList(args.get('site_ids'))
     )
 
     # Make request and get raw response
@@ -3475,12 +3475,10 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
     all_scopes = []
     if installed_applications:
         for each_app in installed_applications:
-            scopes = each_app.get("scopes")
-            if scopes is not None and len(scopes) > 0:
-                for scope in scopes:
-                    scope["applicationCatalogId"] = each_app["applicationCatalogId"]
-                    scope["applicationCatalogName"] = each_app["name"]
-                    all_scopes.append(scope)
+            for scope in each_app.get("scopes", []):
+                scope["applicationCatalogId"] = each_app["applicationCatalogId"]
+                scope["applicationCatalogName"] = each_app["name"]
+                all_scopes.append(scope)
         meta = "Provides summary information and details for all the installed applications that matched specified filter values"
     else:
         meta = "The search filters provided are returning no results. Please review and adjust them accordingly."
@@ -3531,11 +3529,11 @@ def get_service_users_command(client: Client, args: dict) -> CommandResults:
     service_users = []
     # Get arguments
     query_params = assign_params(
-        accountIds=args.get('account_ids'),
-        roleIds=args.get('role_ids'),
+        accountIds=argToList(args.get('account_ids')),
+        roleIds=argToList(args.get('role_ids')),
         ids=args.get('ids'),
         limit=1000,
-        siteIds=args.get('site_ids')
+        siteIds=argToList(args.get('site_ids'))
     )
     # Make request and get raw response
     service_users_page, pagination = client.get_service_users_request(query_params)
