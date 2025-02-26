@@ -181,7 +181,7 @@ def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_re
     mirroring_fields = {}  # Update if mirroring fields exist
 
     # Call the function under test
-    results = fetch_incidents(client, mirroring_fields, first_fetch_time, fetch_limit)
+    results = fetch_incidents_command(client, mirroring_fields, first_fetch_time, fetch_limit)
 
     # Validate the number of incidents
     assert len(results) == len(mock_results), "Mismatch in number of fetched incidents"
@@ -200,7 +200,7 @@ def test_fetch_incidents(client, mocker):
 
     # Load mock data
     mock_data = util_load_json('test_data/get-all-alerts.json')
-    mock_results = util_load_json('test_data/fetch_results.json')
+    mock_results = util_load_json('test_data/fetch_result.json')
 
     # Mock API response for fetching alerts (with pagination if needed)
     mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[
