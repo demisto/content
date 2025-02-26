@@ -3326,6 +3326,10 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
 
         # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
         if set_new_limit or check_fetch_assets_duration_time_exceeded(EXECUTION_START_TIME):
+            demisto.debug(
+                f'Reducing limit for assets next run due to timeout. Set new limit: {set_new_limit}. '
+                f'Elapsed time: {time.time() - EXECUTION_START_TIME}.'
+            )
             new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
         else:
             cumulative_assets_count: int = new_last_run["total_assets"]
@@ -3366,6 +3370,10 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
 
     # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
     if set_new_limit or check_fetch_assets_duration_time_exceeded(EXECUTION_START_TIME):
+        demisto.debug(
+            f'Reducing limit for assets next run due to timeout. Set new limit: {set_new_limit}. '
+            f'Elapsed time: {time.time() - EXECUTION_START_TIME}.'
+        )
         new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
     else:
         cumulative_assets_count: int = new_last_run['total_assets']
