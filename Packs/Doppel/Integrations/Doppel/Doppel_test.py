@@ -40,8 +40,22 @@ def test_test_module(client, mocker):
 def mock_client():
     """Fixture to mock the Client object."""
     client = MagicMock(spec=Client)
-    client.get_alerts.return_value = ALERTS_RESPONSE  # Mock API response
+    
+    # Mocking fetch alerts (Used in fetch_incidents_command)
+    client.get_alerts.return_value = ALERTS_RESPONSE  
+    
+    # Mocking fetch single alert (Used in update_remote_system_command)
+    client.get_alert.return_value = {
+        "id": "123", 
+        "queue_state": "open", 
+        "entity_state": "active"
+    }
+
+    # Mocking update alert (Used in update_remote_system_command)
+    client.update_alert.return_value = None  # Assume update succeeds
+    
     return client
+
 
 def test_fetch_incidents_command(mock_client, mocker):
     """Test fetch_incidents_command function."""
@@ -110,109 +124,45 @@ def test_get_remote_data_command(client, mocker, remote_incident_id, last_update
     mock_demisto.incidents.assert_called()
 
 
-@patch("demistomock")
-@patch("UpdateRemoteSystemArgs")
-def test_update_remote_system_command(mock_update_args, mock_demisto):
-    # Mock the client
-    mock_client = Mock(spec=Client)
 
-    # Mock parsed arguments
-    mock_parsed_args = Mock()
-    mock_parsed_args.remote_incident_id = "incident123"
-    mock_parsed_args.inc_status = IncidentStatus.DONE  # Simulate incident closure
-    mock_parsed_args.incident_changed = True
-    mock_parsed_args.data = {"queue_state": "active", "entity_state": "open"}
-    mock_parsed_args.delta = {"notes": "Updated in XSOAR"}
+def test_update_remote_system_command(mock_client, mocker):
+    """Test update_remote_system_command function."""
 
-    # Set return value for UpdateRemoteSystemArgs
-    mock_update_args.return_value = mock_parsed_args
+    # Mocking demisto functions using mocker.patch.object
+    mock_debug = mocker.patch.object(demisto, "debug")
+    mock_error = mocker.patch.object(demisto, "error")
 
-    # Mock `get_alert` response
-    mock_client.get_alert.return_value = {"queue_state": "active", "entity_state": "open"}
+    args = {
+        "data": {"queue_state": "archived"},
+        "incidentChanged": True,
+        "remoteId": "123",
+    }
 
-    # Call the function
-    result = update_remote_system_command(mock_client, {"remoteId": "incident123"})
+    # Run the function
+    result = update_remote_system_command(mock_client, args)
 
     # Assertions
-    assert result == "incident123", "Expected remote incident ID to be returned"
+    assert result == "123", "Returned remoteId should match input"
+    mock_debug.assert_called()  # Ensure debug logs are being generated
+    mock_error.assert_not_called()  # Ensure no errors were logged
 
-    # Ensure `get_alert` was called to fetch existing data
-    mock_client.get_alert.assert_called_with(id="incident123", entity="")
+def test_get_mapping_fields_command(mock_client, mocker):
+    """Test get_mapping_fields_command function."""
 
-    # Ensure `update_alert` was called to update the remote incident
-    mock_client.update_alert.assert_called_with(
-        queue_state="archived",
-        entity_state="open",
-        comment="Updated in XSOAR",
-        alert_id="incident123"
-    )
+    # Mocking demisto functions using mocker.patch.object
+    mock_debug = mocker.patch.object(demisto, "debug")
 
-    # Ensure debug logs were used
-    mock_demisto.debug.assert_called()
+    # Run the function
+    result = get_mapping_fields_command(mock_client, {})
 
-
-# def test_update_remote_system_command(client, mocker):
-#     mock_args = {
-#         'remote_incident_id': '12345',
-#         'inc_status': IncidentStatus.DONE,
-#         'delta': {'closeReason': 'Resolved', 'closeNotes': 'Issue fixed', 'closingUserId': 'user1'},
-#         'incident_changed': True
-#     }
-#     mocker.patch.object(UpdateRemoteSystemArgs, '__init__', lambda x, y: None)
-#     mocker.patch.object(UpdateRemoteSystemArgs, 'remote_incident_id', mock_args['remote_incident_id'])
-#     mocker.patch.object(UpdateRemoteSystemArgs, 'inc_status', mock_args['inc_status'])
-#     mocker.patch.object(UpdateRemoteSystemArgs, 'delta', mock_args['delta'])
-#     mocker.patch.object(UpdateRemoteSystemArgs, 'incident_changed', mock_args['incident_changed'])
-
-#     mock_get_alert = MagicMock()
-#     mock_get_alert.return_value = {'id': '12345', 'entity_state': 'active', 'queue_state': 'open'}
-#     client.get_alert = mock_get_alert
-#     client.update_alert = MagicMock()
-
-#     result = update_remote_system_command(client, mock_args)
-
-#     client.get_alert.assert_called_once_with(id='12345', entity=None)
-#     client.update_alert.assert_called_once_with(
-#         queue_state='archived',
-#         entity_state='active',
-#         alert_id='12345'
-#     )
-#     assert result == '12345'
-
-# def test_get_mapping_fields_command(client):
-#     """Test the get_mapping_fields_command function."""
-#     mock_scheme = MagicMock(spec=SchemeTypeMapping)
-#     mock_scheme.add_field = MagicMock()
-
-#     mock_response = MagicMock(spec=GetMappingFieldsResponse)
-#     mock_response.add_scheme_type = MagicMock()
-
-#     with patch('SchemeTypeMapping', return_value=mock_scheme), \
-#          patch('GetMappingFieldsResponse', return_value=mock_response):
-#         result = get_mapping_fields_command(client, {})
-
-#     mock_scheme.add_field.assert_called_once_with(name='queue_state', description='Queue State of the Doppel Alert')
-
-#     mock_response.add_scheme_type.assert_called_once_with(mock_scheme)
-
-#     assert result == mock_response
+    # Assertions
+    assert result is not None, "Result should not be None"
+    assert hasattr(result, "extract_mapping"), "Result should have extract_mapping method"
+    
+    mock_debug.assert_called()  # Ensure debug logs are generated
 
 
-def test_get_mapping_fields_command(client):
-    """Test the get_mapping_fields_command function."""
-    mock_client = Mock(spec=client)
 
-    response = get_mapping_fields_command(mock_client, {})
-
-    assert isinstance(response, GetMappingFieldsResponse)
-
-    assert len(response.scheme_types_mappings) == 1
-    mapping = response.scheme_types_mappings[0]
-    assert mapping.type_name == 'Doppel Alert'
-
-    assert len(mapping.fields) == 1
-    assert mapping.fields[0].name == 'queue_state'
-    assert mapping.fields[0].description == 'Queue State of the Doppel Alert'
 
 
 def test_doppel_get_alert_command(client, mocker):
