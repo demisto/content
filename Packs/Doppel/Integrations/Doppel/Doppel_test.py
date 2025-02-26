@@ -6,6 +6,11 @@ from datetime import datetime
 from Doppel import test_module, fetch_incidents_command, _get_last_fetch_datetime, _get_mirroring_fields, _paginated_call_to_get_alerts, _get_remote_updated_incident_data_with_entry, get_remote_data_command, update_remote_system_command, get_mapping_fields_command, doppel_get_alert_command, doppel_update_alert_command, doppel_get_alerts_command, doppel_create_alert_command, doppel_create_abuse_alert_command
 from Packs.Base.Scripts.CommonServerPython.CommonServerPython import *
 
+ALERTS_RESPONSE = [
+    {"id": "1", "created_at": "2025-02-01T12:00:00Z"},
+    {"id": "2", "created_at": "2025-02-01T12:05:00Z"}
+]
+
 def util_load_json(path):
     """Helper function to load JSON data from a file."""
     with open(path, encoding='utf-8') as f:
@@ -31,75 +36,41 @@ def test_test_module(client, mocker):
     result = test_module(client, {})
     assert result == 'ok'
 
-# @pytest.mark.parametrize('fetch_timeout, max_fetch', [(30, 10)])
-# def test_fetch_incidents_command(client, mocker, fetch_timeout, max_fetch):
-#     mock_demisto = MagicMock()
-#     mocker.patch('demisto.debug')
-#     mocker.patch('demisto.setLastRun')
-#     mocker.patch('demisto.incidents')
+@pytest.fixture
+def mock_client():
+    """Fixture to mock the Client object."""
+    client = MagicMock(spec=Client)
+    client.get_alerts.return_value = ALERTS_RESPONSE  # Mock API response
+    return client
 
-#     mock_get_last_fetch_datetime = mocker.patch(_get_last_fetch_datetime)
-#     mock_get_last_fetch_datetime.return_value = (datetime.now(), [])
+def test_fetch_incidents_command(mock_client, mocker):
+    """Test fetch_incidents_command function."""
 
-#     mock_paginated_call = mocker.patch(_paginated_call_to_get_alerts)
-#     mock_paginated_call.return_value = [{'created_at': datetime.now().isoformat()}]
+    # Mocking demisto functions using mocker.patch.object
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "10"})
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
+    mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
+    mock_incidents = mocker.patch.object(demisto, "incidents")
+    mock_debug = mocker.patch.object(demisto, "debug")
+    mock_info = mocker.patch.object(demisto, "info")
 
-#     mock_get_mirroring_fields = mocker.patch(_get_mirroring_fields)
-#     mock_get_mirroring_fields.return_value = {'mirroring_field': 'value'}
-
-#     args = {}
-
-#     fetch_incidents_command(client, args)
-
-#     mock_demisto.debug.assert_called()
-
-#     mock_demisto.setLastRun.assert_called()
-
-#     mock_demisto.incidents.assert_called()
-
-
-
-@patch("demistomock")
-@patch("_get_last_fetch_datetime")
-@patch("_paginated_call_to_get_alerts")
-@patch("_get_mirroring_fields")
-def test_fetch_incidents_command(mock_get_mirroring_fields, mock_paginated_call_to_get_alerts, mock_get_last_fetch_datetime, mock_demisto):
-    
-    mock_demisto.params.return_value = {"fetch_timeout": 30, "max_fetch": 10}
-    mock_demisto.getLastRun.return_value = {"last_run": None, "incidents_queue": []}
-
-    test_last_fetch = datetime.utcnow() - timedelta(days=1)
-    mock_get_last_fetch_datetime.return_value = test_last_fetch
-
-    mock_get_mirroring_fields.return_value = {"mirror_direction": "Both"}
-
-    mock_alerts = [
-        {
-            "id": str(uuid.uuid4()),
-            "created_at": test_last_fetch.strftime(DOPPEL_PAYLOAD_DATE_FORMAT)
-        }
-    ]
-    mock_paginated_call_to_get_alerts.side_effect = [mock_alerts, []]  # Simulate one page of alerts
-
-    # Mock incidents and setLastRun
-    mock_demisto.incidents = Mock()
-    mock_demisto.setLastRun = Mock()
-
-    # Call the function
-    fetch_incidents_command(Mock(spec=Client), {})
+    # Run the function
+    fetch_incidents_command(mock_client, {})
 
     # Assertions
-    mock_demisto.debug.assert_called()  # Ensure debug logging is used
-    mock_demisto.incidents.assert_called()  # Ensure incidents are created
-    mock_demisto.setLastRun.assert_called()  # Ensure last run is updated
+    mock_setLastRun.assert_called_once()
+    last_run_data = mock_setLastRun.call_args[0][0]
+    assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
+    assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
 
-    # Validate incidents format
-    incidents_created = mock_demisto.incidents.call_args[0][0]
-    assert len(incidents_created) == 1, "Should create one incident"
-    assert incidents_created[0]["type"] == DOPPEL_ALERT, "Incident type mismatch"
-    assert "occurred" in incidents_created[0], "Incident should have an 'occurred' field"
-    assert "dbotMirrorId" in incidents_created[0], "Incident should have 'dbotMirrorId'"
-    assert "rawJSON" in incidents_created[0], "Incident should have 'rawJSON'"
+    mock_incidents.assert_called_once()
+    incidents_created = mock_incidents.call_args[0][0]
+    assert len(incidents_created) == 2, "Expected 2 incidents to be created"
+    assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
+
+    mock_debug.assert_called()  # Ensure debug logs are being generated
+    mock_info.assert_called()   # Ensure info
+
 
 
 @pytest.mark.parametrize('remote_incident_id, last_update, expected_result', [

@@ -103,7 +103,7 @@ class Client(BaseClient):
         if alert_id is not None:
             params["id"] = alert_id
         elif entity is not None:
-            params["entity"] = entit
+            params["entity"] = entity
         payload = {"queue_state": queue_state, "entity_state": entity_state, "comment" :comment}
 
         response_content = self._http_request(
