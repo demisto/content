@@ -1,7 +1,6 @@
 from CommonServerPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Union
 import urllib3
 
 # Disable insecure warnings
@@ -35,7 +34,7 @@ class Client(BaseClient):
         self.default_threshold = default_threshold
         self.max_indicator_relationships = 0 if not max_indicator_relationships else max_indicator_relationships
 
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
@@ -43,7 +42,7 @@ class Client(BaseClient):
         """
         return self.query(section='IPv4', argument='8.8.8.8')
 
-    def query(self, section: str, argument: str = None, sub_section: str = 'general', params: dict = None) -> Dict:
+    def query(self, section: str, argument: str = None, sub_section: str = 'general', params: dict = None) -> dict:
         """Query the specified kwargs.
 
         Args:
@@ -88,10 +87,11 @@ class Client(BaseClient):
             demisto.error(f"An error was raised {e=}")
             result = ''
 
+
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_dbot_score(client: Client, raw_response: Union[dict, None]) -> float:
+def calculate_dbot_score(client: Client, raw_response: dict | None) -> float:
     """
     calculate DBot score for query
 
@@ -269,7 +269,7 @@ def create_relationships(client: Client, relevant_field: list, entity_a: str,
     return relationships
 
 
-def delete_duplicated_entities(entities_list: List[Dict], field_name: str):
+def delete_duplicated_entities(entities_list: List[dict], field_name: str):
     """delete duplicated results from a response
 
     Args:
@@ -279,14 +279,14 @@ def delete_duplicated_entities(entities_list: List[Dict], field_name: str):
     Returns:
         a list without duplicated entities.
     """
-    unique_dict: Dict = {}
+    unique_dict: dict = {}
     for entity_dict in entities_list:
-        if isinstance(entity_dict, dict) and (ind_value := entity_dict.get(field_name)) not in unique_dict.keys():
+        if isinstance(entity_dict, dict) and (ind_value := entity_dict.get(field_name)) not in unique_dict:
             unique_dict[ind_value] = entity_dict
     return list(unique_dict.values())
 
 
-def validate_string_is_not_url(entities_list: List[Dict], field_name: str):
+def validate_string_is_not_url(entities_list: List[dict], field_name: str):
     """delete url type entities from a given list.
 
     Args:
@@ -296,7 +296,7 @@ def validate_string_is_not_url(entities_list: List[Dict], field_name: str):
     Returns:
         a list without url type entities.
     """
-    return [dict for dict in entities_list if not auto_detect_indicator_type(dict.get(field_name)) == "URL"]
+    return [dict for dict in entities_list if auto_detect_indicator_type(dict.get(field_name)) != 'URL']
 
 
 def lowercase_protocol_callback(pattern: re.Match) -> str:
@@ -307,7 +307,7 @@ def lowercase_protocol_callback(pattern: re.Match) -> str:
 
 
 @logger
-def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
+def test_module_command(client: Client, *_) -> tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -599,7 +599,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
 
 @logger
-def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[str, Dict, Dict]:
+def alienvault_search_hostname_command(client: Client, hostname: str) -> tuple[str, dict, dict]:
     """Search for hostname details
 
     Args:
@@ -641,7 +641,7 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
 
 
 @logger
-def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dict, Dict]:
+def alienvault_search_cve_command(client: Client, cve_id: str) -> tuple[str, dict, dict]:
     """Get Common Vulnerabilities and Exposures by id
 
     Args:
@@ -682,7 +682,7 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
 @logger
 def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str,
                                                      limit: str = '') \
-        -> Tuple[str, Dict, Dict]:
+        -> tuple[str, dict, dict]:
     """Get related urls by indicator (IPv4,IPv6,domain,hostname,url)
 
     Args:
@@ -719,7 +719,7 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
 @logger
 def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str,
                                                        limit: str = '') \
-        -> Tuple[str, Dict, Dict]:
+        -> tuple[str, dict, dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
        Args:
@@ -757,7 +757,7 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
 
 @logger
 def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str,
-                                                         limit: str = '') -> Tuple[str, Dict, Dict]:
+                                                         limit: str = '') -> tuple[str, dict, dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
        Args:
@@ -796,7 +796,7 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicat
 
 
 @logger
-def alienvault_search_pulses_command(client: Client, page: str) -> Tuple[str, Dict, Dict]:
+def alienvault_search_pulses_command(client: Client, page: str) -> tuple[str, dict, dict]:
     """Get pulse page by number of the page
 
     Args:
@@ -827,7 +827,7 @@ def alienvault_search_pulses_command(client: Client, page: str) -> Tuple[str, Di
 
 
 @logger
-def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple[str, Dict, Dict]:
+def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> tuple[str, dict, dict]:
     """Get pulse by ID
 
     Args:
