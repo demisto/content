@@ -2130,8 +2130,74 @@ def fetch_incidents_command() -> List[dict]:
     Returns:
         (List[Dict]): List of incidents samples.
     """
-    ctx = get_integration_context()
-    return ctx.get('samples', [])
+    # ctx = get_integration_context()
+    # return ctx.get('samples', [])
+    offense = {
+            "username_count": 1,
+            "description": "Session Closed\n",
+            "rules": [
+                {
+                    "id": 100405,
+                    "type": "CRE_RULE"
+                }
+            ],
+            "event_count": 3,
+            "flow_count": 0,
+            "assigned_to": None,
+            "security_category_count": 1,
+            "follow_up": False,
+            "source_address_ids": [
+                10
+            ],
+            "source_count": 1,
+            "inactive": True,
+            "protected": False,
+            "closing_user": None,
+            "destination_networks": [
+                "Net-16-182-192.Net_182_10_0_0"
+            ],
+            "source_network": "other",
+            "category_count": 1,
+            "close_time": None,
+            "remote_destination_count": 0,
+            "start_time": 1613399051536,
+            "magnitude": 1,
+            "last_updated_time": 1613399051536,
+            "credibility": 2,
+            "id": 16,
+            "categories": [
+                "Session Closed"
+            ],
+            "severity": 2,
+            "policy_category_count": 0,
+            "log_sources": [
+                {
+                    "type_name": "WindowsAuthServer",
+                    "type_id": 12,
+                    "name": "WindowsAuthServer @ 192.168.1.3",
+                    "id": 112
+                }
+            ],
+            "closing_reason_id": None,
+            "device_count": 1,
+            "offense_type": 0,
+            "relevance": 0,
+            "domain_id": 0,
+            "offense_source": "192.168.1.3",
+            "local_destination_address_ids": [
+                1
+            ],
+            "local_destination_count": 1,
+            "status": "OPEN",
+            "test": "Hayun test"
+        }
+    return [{
+        # NOTE: incident name will be updated in mirroring also with incoming mapper.
+        'name': f'''{offense.get('id')} {offense.get('description', '')}''',
+        'rawJSON': json.dumps(offense),
+        'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
+        'type': "typeee",
+        "haIntegrationEventID": str(offense.get("id"))}]
 
 
 def create_search_with_retry(client: Client,
@@ -5153,7 +5219,12 @@ def main() -> None:  # pragma: no cover
             return_results(test_module_command(client, params))
 
         elif command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents_command())
+            demisto.info("[test] starting to get incidents.")
+            incident = fetch_incidents_command()
+            demisto.info(f"[test] sending incident {incident=}.")
+            demisto.incidents(incident)
+            demisto.info("[test] sent incident.")
+            # demisto.incidents(fetch_incidents_command())
 
         elif command == 'long-running-execution':
             validate_integration_context()
