@@ -108,15 +108,12 @@ def test_get_remote_data_command(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={"id": "123456", "lastUpdate": "2025-01-27T07:55:10.063742"})
     mocker.patch.object(demisto, 'command', return_value='get-remote-data')
 
-    # Mock the function that fetches updated incident data
-    # mock_get_remote_updated_incident_data_with_entry = mocker.patch("_get_remote_updated_incident_data_with_entry")
     mock_get_remote_updated_incident_data_with_entry = mocker.patch(
-        "Packs.Doppel.Integrations.Doppel.Doppel._get_remote_updated_incident_data_with_entry"
-    )
-
-    mock_get_remote_updated_incident_data_with_entry.return_value = (
-        {"id": "123456", "status": "updated", "name": "Test Alert"},
-        []
+        "Packs.Doppel.Integrations.Doppel._get_remote_updated_incident_data_with_entry",
+        return_value=(
+            {"id": "123456", "status": "updated", "name": "Test Alert"},
+            []
+        )
     )
 
     # Prepare client mock
@@ -125,10 +122,11 @@ def test_get_remote_data_command(mocker, requests_mock):
     # Call the function
     result = get_remote_data_command(client, demisto.args())
 
-    # Assertions
     assert result.mirrored_object == {"id": "123456", "status": "updated", "name": "Test Alert"}
     assert result.entries == []
+
     demisto.debug.assert_called()
+
 
 
 def test_update_remote_system_command(mock_client, mocker):
