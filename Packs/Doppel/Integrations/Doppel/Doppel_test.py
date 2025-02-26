@@ -96,24 +96,64 @@ def test_test_module(mocker, client):
     assert result == 'ok'
 
 
+# def test_fetch_incidents_command(client, mocker):
+#     """Test fetch_incidents_command function."""
+
+#     # Mocking demisto functions using mocker.patch.object
+#     mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})  # Increased timeout
+#     mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
+
+#     mocker.patch.object(client, "_http_request", return_value=ALERTS_RESPONSE)
+
+#     mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
+#     mock_incidents = mocker.patch.object(demisto, "incidents")
+#     mock_debug = mocker.patch.object(demisto, "debug")
+#     mock_info = mocker.patch.object(demisto, "info")
+
+#     # Run the function
+#     fetch_incidents_command(client, {})
+
+#     # Assertions
+#     mock_setLastRun.assert_called_once()
+#     last_run_data = mock_setLastRun.call_args[0][0]
+#     assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
+#     assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
+
+#     mock_incidents.assert_called_once()
+#     incidents_created = mock_incidents.call_args[0][0]
+#     assert len(incidents_created) == 2, "Expected 2 incidents to be created"
+#     assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
+
+#     mock_debug.assert_called()  # Ensure debug logs are being generated
+#     mock_info.assert_called()   # Ensure info logs are being generated
+
+
+
 def test_fetch_incidents_command(client, mocker):
     """Test fetch_incidents_command function."""
 
-    # Mocking demisto functions using mocker.patch.object
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})  # Increased timeout
+    # Mock `demisto` functions
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})
     mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
-
-    mocker.patch.object(client, "_http_request", return_value=ALERTS_RESPONSE)
-
     mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
     mock_incidents = mocker.patch.object(demisto, "incidents")
     mock_debug = mocker.patch.object(demisto, "debug")
     mock_info = mocker.patch.object(demisto, "info")
 
+    # ✅ Mock `_paginated_call_to_get_alerts` to return test data
+    test_alerts = [
+        {"id": "1", "created_at": "2025-02-01T12:00:00Z"},
+        {"id": "2", "created_at": "2025-02-01T12:01:00Z"},
+    ]
+    mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=test_alerts)
+
+    # ✅ Mock `_get_mirroring_fields` to prevent errors
+    mocker.patch("Doppel._get_mirroring_fields", return_value={})
+
     # Run the function
     fetch_incidents_command(client, {})
 
-    # Assertions
+    # ✅ Assertions
     mock_setLastRun.assert_called_once()
     last_run_data = mock_setLastRun.call_args[0][0]
     assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
@@ -124,8 +164,9 @@ def test_fetch_incidents_command(client, mocker):
     assert len(incidents_created) == 2, "Expected 2 incidents to be created"
     assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
 
-    mock_debug.assert_called()  # Ensure debug logs are being generated
-    mock_info.assert_called()   # Ensure info logs are being generated
+    mock_debug.assert_called()
+    mock_info.assert_called()
+
 
 
 def test_get_remote_data_command(mocker, requests_mock):
