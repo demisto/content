@@ -2,7 +2,7 @@
     "name": "RTIR",
     "description": "Request Tracker for Incident Response is a ticketing system which provides pre-configured queues and workflows designed for incident response teams.",
     "support": "xsoar",
-    "currentVersion": "1.0.22",
+    "currentVersion": "1.0.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

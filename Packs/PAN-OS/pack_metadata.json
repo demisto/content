@@ -2,7 +2,7 @@
     "name": "PAN-OS by Palo Alto Networks",
     "description": "Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information see Panorama documentation.",
     "support": "xsoar",
-    "currentVersion": "2.3.4",
+    "currentVersion": "2.3.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
