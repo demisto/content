@@ -4,15 +4,7 @@
 	"description": "Doppel-XSOAR integration classifier to classify the fetched incidents to Doppel_Incident_Test.",
 	"feed": false,
 	"id": "Doppel_Incident_Classifier",
-	"keyTypeMap": {
-		"crypto": "Doppel Alert Crypto",
-		"domains": "Doppel Alert Domains",
-		"ecommerce": "Doppel Alert Ecommerce",
-		"email": "Doppel Alert Email",
-		"mobile_apps": "Doppel Alert Mobile_Apps",
-		"paid_ads": "Doppel Alert Paid_Ads",
-		"social_media": "Doppel Alert Social_Media"
-	},
+	"keyTypeMap": {},
 	"name": "Doppel_Incident_Classifier",
 	"propagationLabels": [
 		"all"

@@ -18,6 +18,7 @@ from Doppel import (
     doppel_get_alerts_command,
     doppel_create_alert_command,
     doppel_create_abuse_alert_command,
+    main
 )
 
 from CommonServerPython import *
@@ -129,11 +130,11 @@ def test_test_module(mocker, client):
 
 
 
-def test_fetch_incidents_command(client, mocker):
+# def test_fetch_incidents_command(client, mocker):
     """Test fetch_incidents_command function."""
 
     # Mock `demisto` functions
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "50"})
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "30"})
     mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
     mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
     mock_incidents = mocker.patch.object(demisto, "incidents")
@@ -167,6 +168,45 @@ def test_fetch_incidents_command(client, mocker):
 
     mock_debug.assert_called()
     mock_info.assert_called()
+
+
+
+
+
+def test_fetch_incidents_command(client, mocker):
+    """Test fetch_incidents_command function."""
+
+    # Mock `demisto` functions
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
+    
+    test_alerts = [
+        {"id": "1", "created_at": "2024-11-27T06:51:50.357664"},
+        {"id": "2", "created_at": "2024-11-28T06:51:50.357664"},
+    ]
+    
+    mocker.patch.object(demisto, 'args', return_value=test_alerts)
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+
+    # ✅ Mock `_paginated_call_to_get_alerts` to return test data   
+    mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=test_alerts)
+
+    # ✅ Mock `_get_mirroring_fields` to prevent errors
+    mocker.patch("Doppel._get_mirroring_fields", return_value={})
+
+    
+    main()
+
+    assert demisto.incidents.call_count == 1
+    incidents = demisto.incidents.call_args[0][0]
+    assert len(incidents) == 2
+    assert incidents[0]['occurred'] == '2019-09-15T12:05:49.095889Z'
+    assert incidents[1]['occurred'] == '2019-09-15T12:14:42.440985Z'
+    assert test_alerts == incidents
+
+
+
+
 
 
 
