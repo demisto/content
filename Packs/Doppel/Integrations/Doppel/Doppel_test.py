@@ -170,13 +170,14 @@ def test_test_module(mocker, client):
     # mock_info.assert_called()
 
 
+
 def test_fetch_incidents_command(mocker):
     """
-    Test the `fetch_incidents_command` function for multiple fetch cycles. 
+    Test the `fetch_incidents_command` function with max_fetch=1.
     """
 
     # Mocking demisto functions
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "30"})
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
@@ -184,9 +185,8 @@ def test_fetch_incidents_command(mocker):
 
     # Load mock data
     mock_alerts = util_load_json("test_data/get-all-alerts.json")  # List of alerts from Doppel
-    mock_results = util_load_json("test_data/fetch_result.json")  # Expected fetch results
 
-    # Mock `_paginated_call_to_get_alerts` to simulate API responses in different cycles
+    # Mock `_paginated_call_to_get_alerts` to simulate API responses
     mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[
         mock_alerts['alerts'][:50],  # First fetch - fill queue
         mock_alerts['alerts'][50:100],  # Second fetch - next batch
@@ -195,32 +195,39 @@ def test_fetch_incidents_command(mocker):
     ])
 
     # Define fetch parameters
-    first_fetch_time = "3 days"
-    max_fetch = 2
-
-    # Run test cycles
     last_run = None
     incidents_queue = []
 
-    # for current_flow in ['first', 'second', 'third', 'forth']:
+    # Run multiple fetch cycles to test queue processing
+    for _ in range(4):
         # Mock last run data
-    mocker.patch.object(demisto, "getLastRun", return_value={'last_run': last_run, 'incidents_queue': incidents_queue})
+        mocker.patch.object(demisto, "getLastRun", return_value={'last_run': last_run, 'incidents_queue': incidents_queue})
 
-    # Call function
-    fetch_incidents_command(client=None, args={})
+        # Call function
+        fetch_incidents_command(client=None, args={})
 
-    # Verify incidents pushed to XSOAR
-    incidents_pushed = demisto.incidents.call_args[0][0]
-    assert len(incidents_pushed) == len(mock_results), f"Mismatch in incidents"
+        # Verify incidents pushed to XSOAR
+        incidents_pushed = demisto.incidents.call_args[0][0]
 
-    # Verify last run update
-    last_run_data = demisto.setLastRun.call_args[0][0]
-    assert "last_run" in last_run_data, f"last_run not updated"
-    
-    # Update last run and queue for next cycle
-    last_run = last_run_data["last_run"]
-    incidents_queue = last_run_data["incidents_queue"]
+        # ✅ Ensure only 1 incident is fetched per cycle
+        assert len(incidents_pushed) == 1, f"Expected 1 incident, but got {len(incidents_pushed)}"
 
+        # ✅ Check incident structure
+        incident = incidents_pushed[0]
+        assert "name" in incident
+        assert "type" in incident
+        assert "dbotMirrorId" in incident
+        assert "rawJSON" in incident
+        assert incident["name"].startswith("Doppel Incident"), "Incident name format mismatch"
+        assert incident["occurred"] != "", "Occurred timestamp should not be empty"
+
+        # Verify last run update
+        last_run_data = demisto.setLastRun.call_args[0][0]
+        assert "last_run" in last_run_data, "last_run not updated"
+
+        # Update last run and queue for next cycle
+        last_run = last_run_data["last_run"]
+        incidents_queue = last_run_data["incidents_queue"]
 
 
 
