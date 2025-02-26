@@ -731,8 +731,14 @@ def main() -> None:
             api_key=api_key)
 
         if current_command in supported_commands:
+            command_function = supported_commands[current_command]
+            if current_command == 'test-module':  # Special case for test_module
+                result = command_function(client)
+            else:
+                result = command_function(client, demisto.args())
+
             demisto.info(f'Command run successful: {current_command}')
-            return_results(supported_commands[current_command](client, demisto.args()))
+            return_results(result)
         else:
             demisto.error(f'Command is not implemented: {demisto.command()}')
             raise NotImplementedError(f'The {current_command} command is not supported')

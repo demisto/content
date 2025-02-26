@@ -85,7 +85,7 @@ def test_test_module(mocker, client):
     Then:
         - The function should return 'ok' if the API request is successful
     """
-    
+
     # Mock the _http_request method
     mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
 
@@ -96,33 +96,33 @@ def test_test_module(mocker, client):
     assert result == 'ok'
 
 
-# def test_fetch_incidents_command(client, mocker):
-#     """Test fetch_incidents_command function."""
+def test_fetch_incidents_command(client, mocker):
+    """Test fetch_incidents_command function."""
 
-#     # Mocking demisto functions using mocker.patch.object
-#     mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "100"})  # Increased timeout
-#     mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
-#     mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
-#     mock_incidents = mocker.patch.object(demisto, "incidents")
-#     mock_debug = mocker.patch.object(demisto, "debug")
-#     mock_info = mocker.patch.object(demisto, "info")
+    # Mocking demisto functions using mocker.patch.object
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "100"})  # Increased timeout
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
+    mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
+    mock_incidents = mocker.patch.object(demisto, "incidents")
+    mock_debug = mocker.patch.object(demisto, "debug")
+    mock_info = mocker.patch.object(demisto, "info")
 
-#     # Run the function
-#     fetch_incidents_command(client, {})
+    # Run the function
+    fetch_incidents_command(client, {})
 
-#     # Assertions
-#     mock_setLastRun.assert_called_once()
-#     last_run_data = mock_setLastRun.call_args[0][0]
-#     assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
-#     assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
+    # Assertions
+    mock_setLastRun.assert_called_once()
+    last_run_data = mock_setLastRun.call_args[0][0]
+    assert "last_run" in last_run_data, "last_run key should be in setLastRun data"
+    assert isinstance(last_run_data["incidents_queue"], list), "incidents_queue should be a list"
 
-#     mock_incidents.assert_called_once()
-#     incidents_created = mock_incidents.call_args[0][0]
-#     assert len(incidents_created) == 2, "Expected 2 incidents to be created"
-#     assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
+    mock_incidents.assert_called_once()
+    incidents_created = mock_incidents.call_args[0][0]
+    assert len(incidents_created) == 2, "Expected 2 incidents to be created"
+    assert incidents_created[0]["name"].startswith("Doppel Incident"), "Incident name should start with 'Doppel Incident'"
 
-#     mock_debug.assert_called()  # Ensure debug logs are being generated
-#     mock_info.assert_called()   # Ensure info logs are being generated
+    mock_debug.assert_called()  # Ensure debug logs are being generated
+    mock_info.assert_called()   # Ensure info logs are being generated
 
 
 def test_get_remote_data_command(mocker, requests_mock):
@@ -219,7 +219,7 @@ def test_doppel_get_alert_command(client, mocker):
         "name": "Test Alert"
     })
 
-    args = {'id': 'TET-1953443'}  
+    args = {'id': 'TET-1953443'}
     result = doppel_get_alert_command(client, args)
 
     assert isinstance(result, CommandResults), f"Expected CommandResults but got {type(result)}"
@@ -281,6 +281,8 @@ def test_doppel_update_alert_command(mocker):
     assert result.outputs_key_field == "id", "Incorrect key field"
     assert result.outputs == {"id": "123", "queue_state": "archived", "entity_state": "closed"}, "Unexpected output"
 
+    mock_debug.assert_called()  # Ensure debug logs are generated
+
 
 def test_doppel_update_alert_command_with_entity(client, mocker):
     # Prepare the mock response for the _http_request function
@@ -310,8 +312,9 @@ def test_doppel_update_alert_command_with_entity(client, mocker):
     assert result.outputs_key_field == 'id'  # Ensure the key field is correct
     assert result.outputs == mock_response  # Ensure the correct output is returned
 
+
 def test_doppel_get_alerts_command(client, mocker):
-    
+
     mock_data = util_load_json('test_data/get-all-alerts.json')
     mocker.patch.object(client, 'get_alerts', return_value=mock_data)
 
@@ -355,7 +358,7 @@ def test_doppel_create_alert_command(client, mocker):
     assert result.outputs == test_response  # Check if the result matches the mocked response
 
     assert "Alert Summary" in result.readable_output
-    
+
 
 def test_doppel_create_alert_command_missing_entity(client):
     """Test case when 'entity' is missing in the arguments."""
