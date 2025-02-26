@@ -85,10 +85,16 @@ def test_test_module(mocker):
     Then:
         - The function should return 'ok' if the API request is successful
     """
-    # Mock Client
-    mock_data = util_load_json('test_data/get-all-alerts.json')
-    mocker.patch.object(client, 'get_alerts', return_value=mock_data)
-    result = test_module(client, args="")
+    # Create a mock Client instance
+    client = MagicMock()
+
+    # Mock the _http_request method
+    mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
+
+    # Pass an empty dictionary `{}` as `args`, not a string
+    result = test_module(client, args={})
+
+    # Assert the expected output
     assert result == 'ok'
 
 
