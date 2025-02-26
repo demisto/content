@@ -153,7 +153,7 @@ script:
       type: unknown
     - name: threat_feedback_reported_at_limit
       required: true
-      description: Datetime limit as a iso string (e.g. "2024-10-30T08:37:42.359Z").
+      description: Datetime limit. Accepts (<number> <time unit>), e.g "7 days", "one month" or a iso string (e.g. "2024-10-30T08:37:42.359Z").
       type: unknown
     outputs:
     - contextPath: Hoxhunt.sendIncidentSocFeedback
