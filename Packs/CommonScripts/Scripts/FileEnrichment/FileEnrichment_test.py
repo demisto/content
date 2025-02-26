@@ -1,7 +1,7 @@
 import json
 import pytest
 from pytest_mock import MockerFixture
-from FileEnrichment import Command, Brands
+from FileEnrichment import Brands, Command, CommandResults, ContextPaths, EntryType
 
 
 """ TEST CONSTANTS """
@@ -465,3 +465,94 @@ def test_run_external_enrichment(mocker: MockerFixture):
 
     assert hash_analytics_command.name == "core-get-hash-analytics-prevalence"
     assert hash_analytics_command.args == {"sha256": SHA_256_HASH}
+
+
+def test_summarize_command_results_successful_commands(mocker: MockerFixture):
+    """
+    Given:
+        - Per-command entry context with "_File" and "_DBotScores" keys and verbose command results with "NOTE" entry type.
+
+    When:
+        - Calling `summarize_command_results`.
+
+    Assert:
+        - Ensure summarized human-readable output has correct values of "Status", "Result", and "Message".
+        - Ensure final (aggregated) context output has correct "File" indicator "DBotScore" context.
+    """
+    from FileEnrichment import summarize_command_results
+
+    mock_table_to_markdown = mocker.patch("FileEnrichment.tableToMarkdown")
+
+    vt_score = {"Indicator": SHA_256_HASH, "Score": 1, "Reliability": "B - Reliable", "Vendor": Brands.VIRUS_TOTAL_V3.value}
+    wf_score = {"Indicator": SHA_256_HASH, "Score": 3, "Reliability": "B - Reliable", "Vendor": Brands.WILDFIRE_V2.value}
+
+    per_command_context = {
+        "file": {
+            "_File": {"SHA256": SHA_256_HASH, "VTVerdict": "Benign"},
+            "_DBotScore": [vt_score]
+        },
+        "wildfire-report": {
+            "_File": {"SHA256": SHA_256_HASH, "WFReport": "Success"},
+            "_DBotScore": [wf_score]
+        }
+    }
+
+    summary_command_results = summarize_command_results(
+        file_hash=SHA_256_HASH,
+        per_command_context=per_command_context,
+        verbose_command_results=[
+            CommandResults(readable_output="This is hash scan result", entry_type=EntryType.NOTE)
+        ],
+        external_enrichment=True,
+    )
+
+    table_to_markdown_kwargs = mock_table_to_markdown.call_args.kwargs
+    assert table_to_markdown_kwargs["name"] == f"File Enrichment result for {SHA_256_HASH}"
+    assert table_to_markdown_kwargs["t"] == {
+        "File": SHA_256_HASH,
+        "Status": "Done",  # Got "File" context from two commands
+        "Result": "Success",  # No error entries in command results
+        "Message": "Found data on file from 2 sources.",
+    }
+
+    assert summary_command_results.outputs == {
+        ContextPaths.FILE.value: {"SHA256": SHA_256_HASH, "VTVerdict": "Benign", "WFReport": "Success"},
+        ContextPaths.DBOT_SCORE.value: [vt_score, wf_score]
+    }
+
+
+def test_summarize_command_results_failed_commands(mocker: MockerFixture):
+    """
+    Given:
+        - Empty per-command entry context and verbose command results with "ERROR" entry type.
+
+    When:
+        - Calling `summarize_command_results` with `external_enrichment set` to False.
+
+    Assert:
+        - Ensure summarized human-readable output has correct values of "Status", "Result", and "Message".
+        - Ensure final (aggregated) context output is empty - consistent with the per-command context.
+    """
+    from FileEnrichment import summarize_command_results
+
+    mock_table_to_markdown = mocker.patch("FileEnrichment.tableToMarkdown")
+
+    summary_command_results = summarize_command_results(
+        file_hash=SHA_256_HASH,
+        per_command_context={},
+        verbose_command_results=[
+            CommandResults(readable_output="This is an error message!", entry_type=EntryType.ERROR)
+        ],
+        external_enrichment=False,
+    )
+
+    table_to_markdown_kwargs = mock_table_to_markdown.call_args.kwargs
+    assert table_to_markdown_kwargs["name"] == f"File Enrichment result for {SHA_256_HASH}"
+    assert table_to_markdown_kwargs["t"] == {
+        "File": SHA_256_HASH,
+        "Status": "Not Found",  # No "File" context from any command
+        "Result": "Failed",  # Error entry in command results
+        "Message": "Could not find data on file. Consider setting external_enrichment=true.",
+    }
+
+    assert summary_command_results.outputs == {}

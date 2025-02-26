@@ -642,7 +642,7 @@ def summarize_command_results(
         output[ContextPaths.FILE.value].update(value.get("_File", {}))
         output[ContextPaths.DBOT_SCORE.value].extend(value.get("_DBotScore", []))
 
-    return CommandResults(readable_output=table, outputs=output)
+    return CommandResults(readable_output=table, outputs=assign_params(**output))
 
 
 """ MAIN FUNCTION """
