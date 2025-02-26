@@ -74,10 +74,7 @@ script:
       required: true
     outputs:
     - contextPath: CybelAngel.Report
-      description: 'The retrieved report(s).'
-    - contextPath: File.EntryID
-      description: 'Entry ID of the saved PDF file.'
-      type: String
+      description: 'The retrieved reports.'
   - name: cybelangel-report-get
     description: 'Retrieve reports from CybelAngel.'
     arguments:
@@ -86,7 +83,7 @@ script:
       required: true
     - name: pdf
       description: 'If true, retrieves the report as a PDF file.'
-      defaultValue: false
+      defaultValue: False
       required: false
       auto: PREDEFINED
       predefined:
@@ -99,7 +96,7 @@ script:
       description: 'Entry ID of the saved PDF file.'
       type: String
   - name: cybelangel-mirror-report-get
-    description: 'Retrieve mirror details for a report.'
+    description: 'Retrieve the mirror details for the specified report.'
     arguments:
     - name: report_id
       description: 'The ID of the report.'
@@ -135,9 +132,8 @@ script:
       required: true
     - auto: PREDEFINED
       name: status
-      description: 'New status of the reports.'
+      description: 'The new status of the reports.'
       required: true
-      defaultValue: 'False'
       predefined:
       - 'draft'
       - 'open'
@@ -166,7 +162,7 @@ script:
       description: 'The ID of the parent comment (for replies).'
       required: false
     - name: assigned
-      description: 'Whether the comment is assigned to analysts.'
+      description: 'Specifies if the comment is assigned to analysts (true/false).'
       defaultValue: false
       required: false
     outputs:

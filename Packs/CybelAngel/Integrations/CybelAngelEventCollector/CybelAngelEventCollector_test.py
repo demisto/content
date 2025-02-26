@@ -596,5 +596,59 @@ def test_cybelangel_report_get_command(mocker):
         },
     )
     result = cybelangel_report_get_command(client, args)
+    assert isinstance(result, dict)
 
+
+def test_cybelangel_mirror_report_get_command(mocker):
+    from CybelAngelEventCollector import cybelangel_mirror_report_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("mirror-report.json"),
+    )
+    args = {"csv": "false", "report_id": "test"}
+
+    result = cybelangel_mirror_report_get_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "CybelAngel.ReportMirror"
+    assert result.outputs is not None
+    assert "Mirror details for Report ID" in result.readable_output
+
+    args = {"report_id": "test", "csv": "true"}
+    mocker.patch(
+        "CybelAngelEventCollector.fileResult",
+        return_value={
+            "Contents": "",
+            "ContentsFormat": "text",
+            "Type": 9,
+            "File": "cybelangel_mirror_report_<report_id>.csv",
+            "FileID": "<report_id>",
+        },
+    )
+    result = cybelangel_mirror_report_get_command(client, args)
+    assert isinstance(result, dict)
+
+
+def test_cybelangel_archive_report_by_id_get_command(mocker):
+    from CybelAngelEventCollector import cybelangel_archive_report_by_id_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("mirror-report.json"),
+    )
+    args = {"report_id": "test"}
+    mocker.patch(
+        "CybelAngelEventCollector.fileResult",
+        return_value={
+            "Contents": "",
+            "ContentsFormat": "text",
+            "Type": 9,
+            "File": "cybelangel_archive_report_<report_id>.zip",
+            "FileID": "<report_id>",
+        },
+    )
+    result = cybelangel_archive_report_by_id_get_command(client, args)
     assert isinstance(result, dict)
