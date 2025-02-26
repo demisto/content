@@ -1,0 +1,33 @@
+{
+	"id": "incident_cybelangeldetectedat",
+	"version": -1,
+	"name": "CybelAngel Detected At",
+	"ownerOnly": false,
+	"type": "shortText",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"useAsKpi": false,
+	"caseInsensitive": true,
+	"sla": 0,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": true,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"openEnded": false,
+	"description": "Date the incident was detected by scanners",
+	"cliName": "cybelangeldetectedat",
+	"threshold": 72,
+	"placeholder": "",
+	"selectValues": [],
+	"columns": null,
+	"defaultRows": null,
+	"fromVersion": "6.2.0"
+}
