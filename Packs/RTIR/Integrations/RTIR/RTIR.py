@@ -254,6 +254,10 @@ def create_ticket():
         raw_ticket_res = create_ticket_attachments_request(encoded, files_data)
     else:
         raw_ticket_res = create_ticket_request(encoded)
+
+    if "409 Syntax Error" in raw_ticket_res.text:
+        raise DemistoException(f"Ticket creation failed. Response: {raw_ticket_res.text}")
+
     ticket_id = re.findall(r'\d+', raw_ticket_res.text)[-1]
     demisto.debug(f"got ticket with id: {ticket_id}")
     if ticket_id == -1:
