@@ -154,6 +154,9 @@ def test_get_remote_data_command(mocker, requests_mock):
     assert result.mirrored_object == {"id": "123456", "status": "updated", "name": "Test Alert"}
     assert result.entries == []
 
+    mock_get_remote_updated_incident_data_with_entry.assert_called_once()
+
+
     demisto.debug.assert_called()
 
 
