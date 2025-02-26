@@ -4,7 +4,6 @@
 	"description": "Doppel-XSOAR integration classifier to classify the fetched incidents to Doppel_Incident_Test.",
 	"feed": false,
 	"id": "Doppel_Incident_Classifier",
-	"incidentSamples": null,
 	"keyTypeMap": {
 		"crypto": "Doppel Alert Crypto",
 		"domains": "Doppel Alert Domains",

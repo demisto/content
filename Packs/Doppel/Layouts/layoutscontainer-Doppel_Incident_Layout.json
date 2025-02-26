@@ -375,51 +375,6 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "brand",
-								"height": 26,
-								"id": "5f7dc687-7405-4465-a603-fbab6c1e4686",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "entitystate",
-								"height": 26,
-								"id": "dbd066f4-285b-4a9a-9467-50671f5a2915",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "queuestate",
-								"height": 26,
-								"id": "27e8a019-7828-4406-93b9-dbf951f71a7a",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "product",
-								"height": 26,
-								"id": "079c3ec9-f0a9-4673-8aa5-4e4c9e9e79cf",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "platform",
-								"height": 26,
-								"id": "d2ad1638-1c98-4e96-a52e-561c72297fa6",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
 								"fieldId": "doppellink",
 								"height": 26,
 								"id": "128d659a-5c63-458c-a96b-0240bbeae842",
@@ -615,15 +570,6 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "entitycontentrootdomainregistrar",
-								"height": 26,
-								"id": "f9107076-5e95-4c45-83ef-9c014570de24",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
 								"fieldId": "doppelentity",
 								"height": 26,
 								"id": "1bfc1bbf-f0cd-4b97-af72-0c2dc7db87e6",
@@ -667,17 +613,7 @@
 						"h": 4,
 						"hideName": false,
 						"i": "chtyrfjhpp-07b54ffa-28e8-4216-b4d2-1d0590a0affe",
-						"items": [
-							{
-								"endCol": 4,
-								"fieldId": "doppelauditlogs",
-								"height": 106,
-								"id": "e211b223-1b57-4d29-b3cb-1bd7b7fd6475",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
+						"items": [],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,

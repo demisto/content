@@ -100,8 +100,11 @@ def test_fetch_incidents_command(client, mocker):
     """Test fetch_incidents_command function."""
 
     # Mocking demisto functions using mocker.patch.object
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "10"})  # Increased timeout
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 2, "fetch_timeout": "30"})  # Increased timeout
     mocker.patch.object(demisto, "getLastRun", return_value={"last_run": "2025-02-01T11:50:00Z", "incidents_queue": []})
+
+    mocker.patch.object(client, "_http_request", return_value=ALERTS_RESPONSE)
+
     mock_setLastRun = mocker.patch.object(demisto, "setLastRun")
     mock_incidents = mocker.patch.object(demisto, "incidents")
     mock_debug = mocker.patch.object(demisto, "debug")
