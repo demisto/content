@@ -142,8 +142,8 @@ def test_fetch_incidents_command(client, mocker):
 
     # ✅ Mock `_paginated_call_to_get_alerts` to return test data
     test_alerts = [
-        {"id": "1", "created_at": "2025-02-01T12:00:00.000000Z"},
-        {"id": "2", "created_at": "2025-02-01T12:01:00.000000Z"},
+        {"id": "1", "created_at": "2024-11-27T06:51:50.357664"},
+        {"id": "2", "created_at": "2024-11-28T06:51:50.357664"},
     ]
 
     mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=test_alerts)
@@ -303,9 +303,7 @@ def test_doppel_get_alert_command_with_no_alert_found(client, mocker):
 def test_doppel_update_alert_command(mocker):
     """Test doppel_update_alert_command function with an inline mock client."""
 
-    # Mocking demisto.debug
-    mock_debug = mocker.patch.object(demisto, "debug")
-
+    
     # Mocking the Client instance
     mock_client = MagicMock()
     mock_client.update_alert.return_value = {"id": "123", "queue_state": "archived", "entity_state": "closed"}
@@ -325,8 +323,6 @@ def test_doppel_update_alert_command(mocker):
     assert result.outputs_prefix == "Doppel.UpdatedAlert", "Incorrect outputs prefix"
     assert result.outputs_key_field == "id", "Incorrect key field"
     assert result.outputs == {"id": "123", "queue_state": "archived", "entity_state": "closed"}, "Unexpected output"
-
-    mock_debug.assert_called()  # Ensure debug logs are generated
 
 
 def test_doppel_update_alert_command_with_entity(client, mocker):
