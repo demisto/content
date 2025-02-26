@@ -2193,7 +2193,6 @@ def fetch_held_messages(last_fetch_held_messages_date_time,
         dedup_messages=dedup_held_messages,
         current_next_page=current_next_page
     )
-    next_dedup_held_messages = dedup_held_messages
     demisto.debug(f"Fetched {len_of_results} held messages")
     for held_message in held_messages:
         incident = held_to_incident(held_message)
@@ -2203,18 +2202,18 @@ def fetch_held_messages(last_fetch_held_messages_date_time,
         if temp_date > last_fetch_held_messages:
             demisto.debug(f"Increasing last_fetch since {temp_date=} > {last_fetch_held_messages=}")
             last_fetch_held_messages = temp_date
-            next_dedup_held_messages = [held_message.get('id')]
+            dedup_held_messages = [held_message.get('id')]
             demisto.debug(f"Increased last_fetch to {last_fetch_held_messages}")
         elif temp_date == last_fetch_held_messages:
-            if isinstance(next_dedup_held_messages, List):
-                next_dedup_held_messages.append(held_message_id)
+            if isinstance(dedup_held_messages, List):
+                dedup_held_messages.append(held_message_id)
                 demisto.debug(f"Appended a held message {held_message_id} to dedup as temp_date=last_fetch_held_messages"
                               f"={last_fetch_held_messages}")
             else:
-                demisto.debug(f"Next_dedup_held_messages is not of type List but of type "
-                              f"{type(next_dedup_held_messages)}.")
+                demisto.debug(f"dedup_held_messages is not of type List but of type "
+                              f"{type(dedup_held_messages)}.")
         else:
-            demisto.debug("next_dedup_held_messages and last_fetch_held_messages remain the same for"
+            demisto.debug("dedup_held_messages and last_fetch_held_messages remain the same for"
                           f"{held_message_id} as {temp_date=} < {last_fetch_held_messages=}")
         # avoid duplication due to weak time query
         if temp_date >= current_fetch_held_message:
@@ -2223,7 +2222,7 @@ def fetch_held_messages(last_fetch_held_messages_date_time,
             demisto.debug(f"Did not append held_message with id {held_message_id} since {temp_date=} < "
                           f"{current_fetch_held_message=}.")
     demisto.debug(f"Filtered the messages, saving {len(held_messages)} held messages.")
-    return next_page, next_dedup_held_messages, last_fetch_held_messages
+    return next_page, dedup_held_messages, last_fetch_held_messages
 
 
 def url_to_incident(url_log):
