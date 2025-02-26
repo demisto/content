@@ -180,7 +180,8 @@ class Command:
 
         return entry_context, readable_command_results
 
-    def __str__(self) -> str:
+    @property
+    def as_formatted_string(self) -> str:
         """
         Formats the command and its argument names and values.
 
@@ -194,6 +195,14 @@ class Command:
                     value = json.dumps(value).replace('"', '\\\\"')
                 formatted_args.append(f'{arg}="{value}"')
         return f"!{self.name} {' '.join(formatted_args)}"
+
+    def __str__(self) -> str:
+        """Formatted string representation for logging"""
+        return self.as_formatted_string
+
+    def __repr__(self) -> str:
+        """Raw string representation for debugging"""
+        return f"Command: {self.as_formatted_string} with brand: '{self.brand.value}'"
 
 
 """ HELPER FUNCTIONS """
@@ -464,7 +473,7 @@ def enrich_with_command(
     execution_function = command_execution_function_mapping.get(command.name)
 
     if not execution_function:
-        raise ValueError(f"Unknown command {command.name}")
+        raise ValueError(f"Unknown command: {command.name}")
 
     context, readable_command_results = execution_function(command)
 
@@ -531,7 +540,7 @@ def run_external_enrichment(
     brands_to_run: list[str],
     per_command_context: dict[str, Any],
     verbose_command_results: list,
-):
+) -> None:
     """
     Runs the external file enrichment flow by executing the relevant commands from multiple source brands.
 
@@ -693,5 +702,5 @@ def main():
 """ ENTRY POINT """
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

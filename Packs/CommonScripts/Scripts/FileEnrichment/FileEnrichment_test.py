@@ -40,7 +40,7 @@ COMMAND_SHOULD_BRAND_RUN_PARAMS = [  # command, expected_should_brand_run
     ),
 ]
 
-COMMAND_PREPARE_HUMAN_READABLE_PARAMS = [
+COMMAND_PREPARE_HUMAN_READABLE_PARAMS = [   # original_human_readable, is_error, expected_readable_output
     pytest.param(
         "This is a regular message",
         False,
@@ -95,17 +95,17 @@ def test_command_should_brand_run(command: Command, expected_should_brand_run: b
         - Ensure value is True if an integration instance of the brand is active. Otherwise, False.
     """
     modules = {
-        "instance_1": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
-        "instance_2": {"brand": Brands.CORE_IR.value, "state": "disabled"},
-        "instance_3": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "disabled"},
+        "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
+        "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
+        "instance_vt": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "disabled"},
     }
     brands_to_run = Brands.values()  # all brands
 
     assert command._should_brand_run(modules, brands_to_run) == expected_should_brand_run
 
 
-@pytest.mark.parametrize("inputted_human_readable, is_error, expected_readable_output", COMMAND_PREPARE_HUMAN_READABLE_PARAMS)
-def test_command_prepare_human_readable(inputted_human_readable: str, is_error: bool, expected_readable_output: str):
+@pytest.mark.parametrize("original_human_readable, is_error, expected_readable_output", COMMAND_PREPARE_HUMAN_READABLE_PARAMS)
+def test_command_prepare_human_readable(original_human_readable: str, is_error: bool, expected_readable_output: str):
     """
     Given:
         - Command objects with source brand and arguments dictionaries.
@@ -118,7 +118,7 @@ def test_command_prepare_human_readable(inputted_human_readable: str, is_error: 
     """
     command = Command(Brands.WILDFIRE_V2, "wildfire-upload-url", {"upload": "http://www.example.com"})
 
-    human_readable_command_results = command.prepare_human_readable(inputted_human_readable, is_error)
+    human_readable_command_results = command.prepare_human_readable(original_human_readable, is_error)
 
     assert human_readable_command_results.readable_output == expected_readable_output
 
@@ -248,13 +248,13 @@ def test_add_source_brand_to_values():
 def test_execute_file_reputation(mocker: MockerFixture):
     """
     Given:
-        - ...
+        - The '!file' command with a SHA256 file hash.
 
     When:
         - Calling `execute_file_reputation`.
 
     Assert:
-        - ...
+        - Ensure correct context output and human-readable output.
     """
     from FileEnrichment import execute_file_reputation
 
@@ -274,13 +274,13 @@ def test_execute_file_reputation(mocker: MockerFixture):
 def test_execute_execute_wildfire_report(mocker: MockerFixture):
     """
     Given:
-        - ...
+        - The '!wildfire-report' command with a SHA256 file hash.
 
     When:
         - Calling `execute_wildfire_report`.
 
     Assert:
-        - ...
+        - Ensure correct context output and human-readable output.
     """
     from FileEnrichment import execute_wildfire_report
 
@@ -300,13 +300,13 @@ def test_execute_execute_wildfire_report(mocker: MockerFixture):
 def test_execute_ir_hash_analytics(mocker: MockerFixture):
     """
     Given:
-        - ...
+        - The '!core-get-hash-analytics-prevalence' command with a SHA256 file hash.
 
     When:
         - Calling `execute_ir_hash_analytics`.
 
     Assert:
-        - ...
+        - Ensure correct context output and human-readable output.
     """
     from FileEnrichment import execute_ir_hash_analytics
 
@@ -320,3 +320,148 @@ def test_execute_ir_hash_analytics(mocker: MockerFixture):
     expected_output = util_load_json("test_data/ir_hash_analytics_command_expected.json")
     assert context_output["_File"] == expected_output["File"]
     assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
+
+
+def test_enrich_with_command_known_command(mocker: MockerFixture):
+    """
+    Given:
+        - The known '!core-get-hash-analytics-prevalence' command with a SHA256 hash and an active instance of the source brand.
+
+    When:
+        - Calling `enrich_with_command`.
+
+    Assert:
+        - Ensure the known file enrichment command is executed.
+    """
+    from FileEnrichment import enrich_with_command
+
+    mock_execution_function = mocker.patch("FileEnrichment.execute_ir_hash_analytics", return_value=("", ""))
+
+    command = Command(Brands.CORE_IR, "core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH})
+    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"}}
+    brands_to_run = Brands.values()
+
+    enrich_with_command(
+        command=command,
+        modules=modules,
+        brands_to_run=brands_to_run,
+        per_command_context={},
+        verbose_command_results=[],
+    )
+
+    assert mock_execution_function.call_count == 1
+
+
+def test_enrich_with_command_unknown_command():
+    """
+    Given:
+        - The unknown '!core-get-endpoints' command with a limit and an active instance of the source brand.
+
+    When:
+        - Calling `enrich_with_command`.
+
+    Assert:
+        - Ensure a `ValueError` is raised with the appropriate error message.
+    """
+    from FileEnrichment import enrich_with_command
+
+    command = Command(Brands.CORE_IR, "core-get-endpoints", {"limit": "10"})
+    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"}}
+    brands_to_run = Brands.values()
+
+    with pytest.raises(ValueError, match="Unknown command: core-get-endpoints"):
+        enrich_with_command(
+            command=command,
+            modules=modules,
+            brands_to_run=brands_to_run,
+            per_command_context={},
+            verbose_command_results=[],
+        )
+
+
+def test_enrich_with_command_cannot_run(mocker: MockerFixture):
+    """
+    Given:
+        - The known '!file' command with a SHA256 hash and a disabled instance of the source brand.
+
+    When:
+        - Calling `enrich_with_command`.
+
+    Assert:
+        - Ensure the command is not executed since there is no active instance of the source brand.
+    """
+    from FileEnrichment import enrich_with_command
+
+    mock_execution_function = mocker.patch("FileEnrichment.execute_file_reputation")
+
+    command = Command(Brands.VIRUS_TOTAL_V3, "file", {"file": SHA_256_HASH})
+    modules = {"instance_vt": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "disabled"}}
+    brands_to_run = Brands.values()
+
+    enrich_with_command(
+        command=command,
+        modules=modules,
+        brands_to_run=brands_to_run,
+        per_command_context={},
+        verbose_command_results=[],
+    )
+
+    assert mock_execution_function.call_count == 0
+
+
+def test_run_external_enrichment(mocker: MockerFixture):
+    """
+    Given:
+        - A SHA256 file hash and enabled instances of all source brands.
+
+    When:
+        - Calling `run_external_enrichment`.
+
+    Assert:
+        - Ensure all the commands from all the source brands run with the correct arguments.
+    """
+    from FileEnrichment import run_external_enrichment
+
+    modules = {
+        "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
+        "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
+        "instance_vt": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "active"},
+    }
+    brands_to_run = Brands.values()
+
+    mock_enrich_with_command = mocker.patch("FileEnrichment.enrich_with_command")
+
+    run_external_enrichment(
+        file_hash=SHA_256_HASH,
+        hash_type="sha256",
+        modules=modules,
+        brands_to_run=brands_to_run,
+        per_command_context={},
+        verbose_command_results=[],
+    )
+
+    assert mock_enrich_with_command.call_count == 4
+
+    # A. Run file reputation command
+    file_reputation_command = mock_enrich_with_command.call_args_list[0][0][0]
+
+    assert file_reputation_command.name == "file"
+    assert file_reputation_command.args == {"file": SHA_256_HASH, "using-brand": ",".join(brands_to_run)}
+
+    # B. Run Wildfire Report command
+    wildfire_report_command = mock_enrich_with_command.call_args_list[1][0][0]
+
+    assert wildfire_report_command.name == "wildfire-report"
+    assert wildfire_report_command.args == {"sha256": SHA_256_HASH}
+
+    # C. Run Wildfire Verdict command
+    wildfire_verdict_command = mock_enrich_with_command.call_args_list[2][0][0]
+
+    assert wildfire_verdict_command.name == "wildfire-get-verdict"
+    assert wildfire_verdict_command.args == {"hash": SHA_256_HASH}
+
+    # D. Run Core IR Hash Analytics command
+    hash_analytics_command = mock_enrich_with_command.call_args_list[3][0][0]
+
+    assert hash_analytics_command.name == "core-get-hash-analytics-prevalence"
+    assert hash_analytics_command.args == {"sha256": SHA_256_HASH}
