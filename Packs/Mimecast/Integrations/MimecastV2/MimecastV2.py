@@ -151,11 +151,11 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
     payload = {}
     len_of_results = 0
     results = []
+    if data and data != [{}]:
+        payload['data'] = data
     if current_next_page:
         demisto.debug(f"current_next_page exists with value {current_next_page}")
     next_page = current_next_page or ''
-    if data and data != [{}]:
-        payload['data'] = data
     while True:
         if not next_page:
             demisto.debug("No current_next_page")
