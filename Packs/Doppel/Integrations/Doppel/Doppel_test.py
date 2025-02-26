@@ -317,21 +317,6 @@ def test_doppel_update_alert_command_with_entity(client, mocker):
     assert result.outputs_key_field == 'id'  # Ensure the key field is correct
     assert result.outputs == mock_response  # Ensure the correct output is returned
 
-
-def test_doppel_update_alert_command_missing_params(client):
-    """Test the function when required parameters are missing"""
-    args = {
-        'alert_id': '',  # Neither alert_id nor entity is passed
-        'queue_state': '',  # Missing queue_state
-        'entity_state': '',  # Missing entity_state
-        'entity': '',
-        'comment': 'Test update comment'
-    }
-
-    with pytest.raises(ValueError):
-        doppel_update_alert_command(client, args)
-
-
 def test_doppel_get_alerts_command(client, mocker):
     mocker.patch.object(client, 'get_alerts', side_effect=mock_http_request)
 

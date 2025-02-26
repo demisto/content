@@ -368,17 +368,23 @@ def format_datetime(timestamp_str):
     :param timestamp_str: A string representing the datetime, which may or may not be in ISO 8601 format.
     :return: A formatted datetime string in ISO 8601 format (YYYY-MM-DDTHH:MM:SS).
     """
+    if not timestamp_str:
+        return None  # Return None if no timestamp is provided
 
     try:
+        # Replace 'Z' with '+00:00' to make it compatible with fromisoformat()
+        if timestamp_str.endswith('Z'):
+            timestamp_str = timestamp_str.replace('Z', '+00:00')
+
         # Attempt to parse the string in ISO 8601 format
         datetime.fromisoformat(timestamp_str)
-        return timestamp_str  # If parsing succeeds, it's in ISO format
+        return timestamp_str  # Already in ISO format
     except ValueError:
         datetime_obj = arg_to_datetime(timestamp_str)
         # Convert datetime object to string
         date_str = datetime_to_string(datetime_obj)
         # Convert to datetime object
-        dt_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S.%f")
+        dt_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S.%f%z")
         # Convert to ISO 8601 format
         iso_format_truncated = dt_obj.isoformat(timespec='seconds')
         return iso_format_truncated
