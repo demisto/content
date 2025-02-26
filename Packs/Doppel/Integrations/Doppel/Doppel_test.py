@@ -27,7 +27,7 @@ def mock_http_request(method, url_suffix, params=None, headers=None, data=None, 
 def client():
     # Create a mock client
     client = MagicMock()
-    client.get_alerts.return_value = ALERTS_RESPONSE
+    client.get_alerts.return_value = {"alerts": ALERTS_RESPONSE}
     
     # Mocking fetch single alert (Used in update_remote_system_command)
     client.get_alert.return_value = {
@@ -38,7 +38,7 @@ def client():
 
     # Mocking update alert (Used in update_remote_system_command)
     client.update_alert.return_value = None  # Assume update succeeds
-    
+
     client.create_abuse_alert = MagicMock(side_effect=mock_http_request)
     return client
 
