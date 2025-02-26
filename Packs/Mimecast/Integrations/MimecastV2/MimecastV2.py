@@ -2157,7 +2157,7 @@ def fetch_incidents():
                     'time_held_messages': time_held_messages}
     if next_page:
         new_last_run["nextTrigger"] = "0"
-        new_last_run['next_page'] = next_page
+        new_last_run['held_message_next_page'] = next_page
     demisto.setLastRun(new_last_run)
     demisto.debug(f"Changed last_run to {new_last_run=}")
     demisto.incidents(incidents)
@@ -2171,7 +2171,7 @@ def fetch_held_messages(last_run: dict,
     next_dedup_held_messages = dedup_held_messages = last_run.get('dedup_held_messages', [])
     if not isinstance(dedup_held_messages, List):
         raise DemistoException(f"dedup_held_messages is of type {type(dedup_held_messages)}")
-    current_next_page = last_run.get('next_page')
+    current_next_page = last_run.get('held_message_next_page')
     demisto.debug(f"{current_next_page=}")
     demisto.debug(f"{dedup_held_messages=}")
     search_params = {
