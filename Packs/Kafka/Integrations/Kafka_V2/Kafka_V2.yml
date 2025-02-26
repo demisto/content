@@ -78,36 +78,36 @@ script:
     name: kafka-print-topics
     outputs:
     - contextPath: Kafka.Topic.Name
-      description: Kafka topic name
+      description: Kafka topic name.
       type: String
     - contextPath: Kafka.Topic.Partitions.ID
-      description: Topic partition ID
+      description: Topic partition ID.
       type: Number
     - contextPath: Kafka.Topic.Partitions.EarliestOffset
-      description: Topic partition earliest offset
+      description: Topic partition earliest offset.
       type: Number
     - contextPath: Kafka.Topic.Partitions.LatestOffset
-      description: Topic partition latest offset
+      description: Topic partition latest offset.
       type: Number
   - arguments:
-    - description: A topic to filter messages by
+    - description: A topic to filter messages by.
       name: topic
       required: true
-    - description: Message value (string)
+    - description: Message value (string).
       name: value
       required: true
-    - description: Message partition key (number)
+    - description: Message partition key (number).
       name: partitioning_key
     description: Publishes a message to Kafka.
     name: kafka-publish-msg
   - arguments:
-    - description: A topic to filter by
+    - description: A topic to filter by.
       name: topic
       required: true
     - defaultValue: Earliest
       description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number.
       name: offset
-    - description: Partition (number)
+    - description: Partition (number).
       name: partition
     description: Consumes a single Kafka message.
     name: kafka-consume-msg
@@ -122,7 +122,7 @@ script:
       description: Offset of the value in the topic.
       type: number
   - arguments:
-    - description: A topic to filter by
+    - description: A topic to filter by.
       name: topic
     description: Fetch partitions for a topic.
     name: kafka-fetch-partitions
