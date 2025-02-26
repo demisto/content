@@ -190,7 +190,7 @@ def test_fetch_incidents_command(mocker):
 
     # Load mock data
     mock_alerts = util_load_json("test_data/get-all-alerts.json")  # List of alerts from Doppel
-    mock_results = util_load_json("test_data/fetch_results.json")  # Expected fetch results
+    mock_results = util_load_json("test_data/fetch_result.json")  # Expected fetch results
 
     # Mock `_paginated_call_to_get_alerts` to simulate API responses in different cycles
     mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[
