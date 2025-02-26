@@ -154,5 +154,5 @@ tests:
 - No tests (auto formatted)
 category: "Data Enrichment & Threat Intelligence"
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect

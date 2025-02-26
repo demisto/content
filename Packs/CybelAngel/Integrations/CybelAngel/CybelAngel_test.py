@@ -324,7 +324,7 @@ def test_client_initialization():
     client1 = Client(client_id="test_id", client_secret="test_secret")
     assert client1.client_id == "test_id"
     assert client1.client_secret == "test_secret"
-    assert client1.token is None
+    assert client1.token == ""
 
     # Test with all parameters
     client2 = Client(

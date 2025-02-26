@@ -25,6 +25,7 @@
 	"sla": 0,
 	"system": false,
 	"threshold": 72,
+	"group": 0,
 	"type": "shortText",
 	"unmapped": false,
 	"unsearchable": true,

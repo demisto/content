@@ -30,5 +30,6 @@
 	"unsearchable": true,
 	"useAsKpi": false,
 	"version": -1,
+	"group": 0,
 	"fromVersion": "6.2.0"
 }

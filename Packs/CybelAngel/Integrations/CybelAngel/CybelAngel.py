@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import datetime, timedelta, UTC
-import requests #type: ignore
+import requests  # type: ignore
 import json
 from typing import Any
 
@@ -29,7 +29,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client(BaseClient):
 
-    def __init__(self, client_id: str, client_secret: str, auth_token: str = None, token_time=None):
+    def __init__(self, client_id: str, client_secret: str, auth_token: str = "", token_time=None):
         self.base_url = "https://platform.cybelangel.com/"
         self.auth_url = "https://auth.cybelangel.com/oauth/token"
         self.client_id = client_id
@@ -55,7 +55,7 @@ class Client(BaseClient):
             return {"msg": f"Error fetching token: {str(e)}"}
 
     def check_token(self):
-        if self.token_time is None:
+        if not self.token_time:
             self.fetch_token()
             self.token_time = datetime.now(UTC)
             return
