@@ -99,7 +99,11 @@ class Client(BaseClient):
 
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
-        params = {"id": alert_id} if alert_id is not None else {"entity": entity}
+        params = {}
+        if alert_id is not None:
+            params["id"] = alert_id
+        elif entity is not None:
+            params["entity"] = entit
         payload = {"queue_state": queue_state, "entity_state": entity_state, "comment" :comment}
 
         response_content = self._http_request(
@@ -555,7 +559,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
 
 def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
     try:
-        mirrored_object={}
+        mirrored_object: Dict[str, Any] = {}
         demisto.debug(f'Calling the "get-remote-data" for {args["id"]}')
         parsed_args = GetRemoteDataArgs(args)
         remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(client, parsed_args.remote_incident_id, parsed_args.last_update)

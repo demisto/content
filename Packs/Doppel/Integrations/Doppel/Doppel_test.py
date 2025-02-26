@@ -59,7 +59,7 @@ def test_test_module(client, mocker):
 
 
 
-@patch("demisto")
+@patch("demistomock")
 @patch("_get_last_fetch_datetime")
 @patch("_paginated_call_to_get_alerts")
 @patch("_get_mirroring_fields")
@@ -139,7 +139,7 @@ def test_get_remote_data_command(client, mocker, remote_incident_id, last_update
     mock_demisto.incidents.assert_called()
 
 
-@patch("demisto")
+@patch("demistomock")
 @patch("UpdateRemoteSystemArgs")
 def test_update_remote_system_command(mock_update_args, mock_demisto):
     # Mock the client
@@ -281,7 +281,7 @@ def test_doppel_get_alert_command_with_no_alert_found(client, mocker):
     with pytest.raises(Exception):
         doppel_get_alert_command(client, args)
 
-@patch("demisto")  # Mock demisto module
+@patch("demistomock")  # Mock demisto module
 def test_doppel_update_alert_command(mock_demisto, client):
     mock_client = Mock(spec=client)
 
