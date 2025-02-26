@@ -1511,3 +1511,32 @@ There is no context output for this command.
 >|---|
 >| test_host |
 >
+### prisma-sase-cie-user-get
+
+***
+Get the CIE user.
+
+#### Base Command
+
+`prisma-sase-cie-user-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain of the directory-sync connected to the CIE. | Required | 
+| value_for_filter | The attribute value for the filter. | Required | 
+| attributes_to_return | The attributes to return. Default is Common-Name, Unique Identifier, Manager, User Principal Name, Name, Distinguished Name. | Optional | 
+| attributes_to_filter_by | The attributes to filter by. Default is Distinguished Name, Unique Identifier, Common-Name, Name, User Principal Name. | Optional | 
+| operator | The operator. Possible values are: Equal, Starts With, Ends With, Contain, Text Search. Default is Equal. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.CIE.User.Common-Name | String | The common name. | 
+| PrismaSase.CIE.User.Distinguished Name | String | The distinguished name. | 
+| PrismaSase.CIE.User.Manager | String | The manager. | 
+| PrismaSase.CIE.User.Name | String | The name. | 
+| PrismaSase.CIE.User.Unique Identifier | String | The unique identifier. | 
+
