@@ -92,7 +92,7 @@ default_query_xml = "<?xml version=\"1.0\"?> \n\
 def request_with_pagination(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
                             page: int = None,
                             page_size: int = None, use_headers: bool = False, is_file: bool = False,
-                            dedup_held_messages: list = [], current_next_page: str = ''):
+                            dedup_messages: list = [], current_next_page: str = ''):
     """
 
     Creates paging response for relevant commands.
@@ -124,6 +124,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     while True:
         demisto.debug("Another loop")
         if not current_next_page:
+            demisto.debug("Do not have current_next_page")
             if response.get('fail'):
                 raise Exception(json.dumps(response.get('fail')[0].get('errors')))
             if response_param:
@@ -134,9 +135,11 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
                 # If returning this log will not exceed the specified limit
                 entry_id = entry.get('id')
                 if ((not limit or len_of_results < limit)
-                    and (not entry_id or entry_id not in dedup_held_messages)): # dedup for fetch
+                    and (not entry_id or entry_id not in dedup_messages)): # dedup for fetch
                     len_of_results += 1
                     results.append(entry)
+                elif entry_id in dedup_messages:
+                    demisto.debug(f"Dropped {entry_id} as it already exists.")
             # If limit is reached or there are no more pages
             if not next_page or (limit and len_of_results >= limit):
                 break
@@ -146,6 +149,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
         response = http_request('POST', api_endpoint, payload, headers=headers)
         next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
         if current_next_page:
+            demisto.debug(f"Set {current_next_page} to null")
             current_next_page = ''
     # returning next_page is only required for fetch mechanism
     if page and page_size:
