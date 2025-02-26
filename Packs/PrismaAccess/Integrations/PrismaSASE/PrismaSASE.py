@@ -2065,13 +2065,13 @@ def get_cie_user_command(client: Client, args: Dict[str, Any]) -> CommandResults
             "useNormalizedAttrs": "True"
         }
 
-    def parse_cie_response(raw_response: dict) -> dict:
+    def parse_cie_response(raw_response: Dict[str, Any]) -> Dict[str, Any]:
         """
             Parse the raw response from the API call.
         Args:
             raw_response: dict - The raw response from the API call
         Returns:
-            list - The parsed response objects
+            Dict[str, Any] - The parsed response
         """
         default_error_msg = "The get_cie_user_command failed. Please verify the arguments and try again."
         result_response = raw_response.get("result", {})
