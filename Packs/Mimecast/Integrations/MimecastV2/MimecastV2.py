@@ -2180,11 +2180,12 @@ def fetch_held_messages(last_run: dict,
         'start': last_fetch_held_messages_date_time,
         'admin': True
     }
-    held_messages, _, next_page = fetch_held_messages_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
+    held_messages, len_of_results, next_page = fetch_held_messages_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
                                                             data=[search_params],
                                                             limit=MAX_FETCH,
                                                             dedup_messages=dedup_held_messages,
                                                             current_next_page=current_next_page)
+    demisto.debug(f"Fetched {len_of_results} held messages")
     current_held_message_count = 0
     for held_message in held_messages:
         incident = held_to_incident(held_message)
@@ -2214,7 +2215,7 @@ def fetch_held_messages(last_run: dict,
         else:
             demisto.debug(f"Did not append held_message with id {held_message_id} since {temp_date=} < "
                             f"{current_fetch_held_message=}.")
-    demisto.debug(f"Pulled {len(held_messages)} held messages.")
+    demisto.debug(f"Filtered the messages, saving {len(held_messages)} held messages.")
     return next_page, next_dedup_held_messages, last_fetch_held_messages
 
 def url_to_incident(url_log):
