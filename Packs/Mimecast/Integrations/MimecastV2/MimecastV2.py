@@ -2193,6 +2193,7 @@ def fetch_held_messages(last_fetch_held_messages_date_time,
         dedup_messages=dedup_held_messages,
         current_next_page=current_next_page
     )
+    next_dedup_held_messages = dedup_held_messages
     demisto.debug(f"Fetched {len_of_results} held messages")
     for held_message in held_messages:
         incident = held_to_incident(held_message)
