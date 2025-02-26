@@ -12,6 +12,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'google'
 PRODUCT = 'apigee'
 DEFAULT_LIMIT = 5000
+MILLISECOENDS_CONVERT = 1000
 
 ''' CLIENT CLASS '''
 
@@ -27,10 +28,13 @@ class Client(BaseClient):
     :param password (str): Password.
     :param verify (bool): specifies whether to verify the SSL certificate or not.
     :param proxy (bool): specifies if to use XSOAR proxy settings.
+    :param org_name (str): the organization name
+    :param zone (str): the zone name
+    :param limit (int): the maximum logs to return per fetch call
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool,
-                 org_name: str, zone: str, limit: int=DEFAULT_LIMIT, **kwargs):
+                 org_name: str, zone: str, limit: int = DEFAULT_LIMIT, **kwargs):
         self.username = username
         self.password = password
         self.org_name = org_name
@@ -54,8 +58,7 @@ class Client(BaseClient):
         """
        Obtains access and refresh token from server.
        Access token is used and stored in the integration context until expiration time.
-       After expiration, new refresh token and access token are obtained and stored in the
-       integration context.
+       After expiration, new access token are obtained and stored in the integration context.
 
         Returns:
             str: the access token.
@@ -70,7 +73,7 @@ class Client(BaseClient):
             token_expiration_seconds=float(token_expiration_seconds)
         ):
             return access_token
-
+        # TODO: add refresh to token?
         # There's no token or it is expired
         access_token, token_expiration_seconds = self.get_token_request()
         integration_context = {
@@ -133,36 +136,37 @@ class Client(BaseClient):
         )
         return res
 
+
 def search_events(client, last_run: Dict[str, float]) -> tuple[List[Dict[str, Any]], Dict[str, float]]:
     """
     Searches for logs using the '/<url_suffix>' API endpoint.
+    Note: it seems that this API use timestamp as ID (we still handle duplicate timestamp situation)
     Args:
-        last_time: datetime, The datetime of the last event fetched.
+        client (Client): client to interact with the service API
+        last_run (Dict): A list containing the time of the last run and the amount of events of this time
         limit: int, the limit of the results to return. (is received only in zoom-get-events command)
     Returns:
         Tuple:
-            str: The time of the latest event fetched.
             List: A list containing the events.
+            List: A dict containing the time of the last run and the amount of events of this time
     """
-    # add comment - timestamp is id
     last_fetch = last_run.get('last_fetch')
-    to_time = int(time.time())
-    events = []
+    to_time = int(time.time()) * MILLISECOENDS_CONVERT
     events_count = 0
     logs_response = client.get_logs(last_fetch, to_time)
     logs = logs_response.get('auditRecord', [])
     if not logs:
-        return events, {'last_fetch': to_time, 'events_amount': events_count}
+        return [], {'last_fetch': to_time, 'events_amount': events_count}
     events_amount = last_run.get('events_amount', 0)
-    event_to_reduce = 0
-    for event in logs:
+    for event in reversed(logs):
         if event.get('timeStamp') == last_fetch and events_amount > 0:
             events_amount -= 1
-            event_to_reduce += 1
+            logs.pop()
         else:
             break
-    events = logs[event_to_reduce : event_to_reduce + client.max_fetch]
-    time_stamp = events[-1].get('timeStamp') if events else 0
+    limit = 0 if len(logs) <= client.max_fetch else -client.max_fetch
+    events = logs[limit:]
+    time_stamp = events[1].get('timeStamp') if events else 0
     if len(events) == client.max_fetch:
         to_time = time_stamp
     # could be less than limit and still same
@@ -179,15 +183,13 @@ def test_module(client: Client) -> str:
     Raises exceptions if something goes wrong.
 
     Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-
+        client (Client): client to interact with the service API
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.g
     """
 
     try:
-        from_time = int(time.time()) - 10000
+        from_time = int(time.time() * MILLISECOENDS_CONVERT) - 10000
         search_events(client, last_run={'last_fetch': from_time})
 
     except Exception as e:
@@ -200,7 +202,18 @@ def test_module(client: Client) -> str:
 
 
 def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
-    from_date = arg_to_number(args.get('from_date')) or int(time.time())
+    """
+    get fetched events
+    Args:
+        client (Client): client to interact with the service API
+        args (dict): function arguments
+
+    Returns:
+         Tuple:
+            List: A list containing the events.
+            CommandResults: A readable ontaining the events and raw response of the logs
+    """
+    from_date = arg_to_number(args.get('from_date')) or int(time.time() * MILLISECOENDS_CONVERT)
     events, _ = search_events(client, {'last_fetch': from_date})
     hr = tableToMarkdown(name='Audit Logs', t=events)
     return events, CommandResults(readable_output=hr, raw_response=events)
@@ -209,14 +222,14 @@ def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
 def fetch_events(client: Client, last_run: Dict[str, float]) -> tuple[Dict[str, float], List[Dict]]:
     """
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        max_events_per_fetch (int): number of events per fetch
+        client (Client): client to interact with the service API
+        last_run (dict): A list containing the time of the last run and the amount of events of this time
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        Dict: A dict containing the time of the last run and the amount of events of this time
+        List: list of events that will be created in XSIAM.
     """
     events, next_fetch = search_events(client, last_run)
+    demisto.debug(f'fetch: {next_fetch}')
     return next_fetch, events
 
 
@@ -228,8 +241,6 @@ def call_send_events_to_xsiam(events: List[Dict] = []):
     Adds the _time key to the events.
     Args:
         events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
     """
     for event in events:
         create_time = arg_to_datetime(arg=event.get('timeStamp'), is_utc=True)
@@ -238,10 +249,6 @@ def call_send_events_to_xsiam(events: List[Dict] = []):
 
 
 def main() -> None:  # pragma: no cover
-    """
-    main function, parses params and runs command functions
-    """
-
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
