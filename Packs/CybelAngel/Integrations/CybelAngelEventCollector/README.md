@@ -38,3 +38,768 @@ Send events from CybelAngel to XSIAM. Used mainly for debugging.
 #### Context Output
 
 There is no context output for this command.
+### cybelangel-report-status-update
+
+***
+Update the status of one or multiple reports.
+
+#### Base Command
+
+`cybelangel-report-status-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_ids | List of report IDs to update. | Required | 
+| status | The new status of the reports. Possible values are: draft, open, in_progress, resolved, discarded. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybelangel-report-status-update report_ids=1234 status=open```
+#### Human Readable Output
+
+>Status of 1234 was successfully updated.
+
+#### Command example
+```!cybelangel-report-status-update report_ids=1234,5678 status=resolved```
+#### Human Readable Output
+
+>Status of 1234,5678 was successfully updated.
+
+### cybelangel-report-get
+
+***
+Retrieve reports from CybelAngel.
+
+#### Base Command
+
+`cybelangel-report-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | The ID of the report to retrieve. | Required | 
+| pdf | If true, retrieves the report as a PDF file. Possible values are: True, False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CybelAngel.Report | unknown | The retrieved report\(s\). | 
+| File.EntryID | String | Entry ID of the saved PDF file. | 
+
+#### Command example
+```!cybelangel-report-get report_id=1234```
+#### Context Example
+```json
+{
+    "CybelAngel": {
+        "Report": {
+            "abstract": "Example Output.",
+            "abuse_email": "",
+            "analysis": "Example Output.",
+            "asset_urls": [],
+            "attachments": [
+                {
+                    "attached_to": "report_id",
+                    "id": "1234",
+                    "name": "Example Output.csv"
+                }
+            ],
+            "board": "",
+            "category": "leak",
+            "city": "",
+            "country_code": "",
+            "created_at": "2000-11-26T13:25:16.116453",
+            "detected_at": "2000-11-26T10:45:05+00:00",
+            "domain_registered_at": null,
+            "hostnames": [],
+            "id": "1234",
+            "incident_id": "1234",
+            "incident_type": "Test",
+            "investigation_id": "1234:1234",
+            "ip": "",
+            "keywords": [
+                {
+                    "id": "1234",
+                    "name": "aa.net"
+                }
+            ],
+            "liveness": {
+                "last_checked_at": "2000-11-26T13:25:15.716702+00:00",
+                "online": true
+            },
+            "location": "",
+            "machine_name": null,
+            "malware_location": null,
+            "malware_name": null,
+            "module": "account_Test",
+            "mx_servers": [],
+            "ns_servers": [],
+            "origins": [
+                {
+                    "type": "malicious_actor",
+                    "value": ""
+                }
+            ],
+            "port": null,
+            "registrant_email": "",
+            "registrar_name": "",
+            "report_content": "Example Output.",
+            "report_type": "incident_detection",
+            "risks": [
+                {
+                    "message": "Example Output.",
+                    "type": "account_takeover"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "spear_phishing"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "social_engineering"
+                }
+            ],
+            "samples": [
+                {
+                    "sample": "See attachment",
+                    "type": "other"
+                }
+            ],
+            "screenshots": [],
+            "sender": "Example Output@cybelangel.com",
+            "sender_tenant_id": "cybelangel",
+            "sent_at": "20200-11-26T13:25:57+00:00",
+            "severity": 1,
+            "source": "Example platform",
+            "status": "resolved",
+            "stream": "1234",
+            "suggestions": [
+                {
+                    "message": "Example Output.",
+                    "type": "other"
+                }
+            ],
+            "tags": [],
+            "threat": null,
+            "title": "Example Output. platform",
+            "updated_at": "2000-02-23T13:07:17.214040",
+            "url": "https://platform.cybelangel.com/reports/1234",
+            "user_session": null,
+            "usergroups": [
+                "Example Output.",
+                "TVMExample Output.SOC"
+            ],
+            "volume": {
+                "bins": null,
+                "documents": null,
+                "domain": null,
+                "emails": 1,
+                "ips": null,
+                "passwords": 1
+            },
+            "whois": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Report ID 1234 retrieved.
+
+#### Command example
+```!cybelangel-report-get report_id=1234 pdf=true```
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "1234",
+        "Extension": "pdf",
+        "Info": "application/pdf",
+        "Name": "cybelangel_report_1234.pdf",
+        "Size": 127719,
+        "Type": "PDF document, version 1.4"
+    }
+}
+```
+
+#### Human Readable Output
+
+
+
+### cybelangel-report-remediation-request-create
+
+***
+Create a remediation request for a report.
+
+#### Base Command
+
+`cybelangel-report-remediation-request-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | The ID of the report. | Required | 
+| requestor_email | Email of the requestor. | Required | 
+| requestor_fullname | Full name of the requestor. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybelangel-report-remediation-request-create report_id=1234 requestor_email=test@paloaltonetworks.com requestor_fullname="Example Test"```
+#### Context Example
+```json
+{
+    "CybelAngel": {
+        "Report": {
+            "RemediationRequest": {
+                "report_id": "1234"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Remediation request was created for 1234.
+
+### cybelangel-report-attachment-get
+
+***
+Retrieve an attachment from a report.
+
+#### Base Command
+
+`cybelangel-report-attachment-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | The ID of the report. | Required | 
+| attachment_id | The ID of the attachment. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.EntryID | unknown | Entry ID of the retrieved file. | 
+
+#### Command example
+```!cybelangel-report-attachment-get report_id=1234 attachment_id=5678```
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "1111",
+        "Extension": "csv",
+        "Info": "text/csv; charset=utf-8",
+        "Name": "cybelangel_report_1234_attachment_5678.csv",
+        "Size": 210,
+        "Type": "ASCII text"
+    }
+}
+```
+
+#### Human Readable Output
+
+
+
+### cybelangel-archive-report-by-id-get
+
+***
+Retrieve an archived report by ID.
+
+#### Base Command
+
+`cybelangel-archive-report-by-id-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | The ID of the archived report. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CybelAngel.ArchiveReport | unknown | The archived report details. | 
+
+#### Command example
+```!cybelangel-archive-report-by-id-get report_id=1234```
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "1111",
+        "Extension": "zip",
+        "Info": "application/zip",
+        "Name": "cybelangel_archive_report_1234.zip",
+        "Size": 15604,
+        "Type": "Zip archive data, at least v2.0 to extract"
+    }
+}
+```
+
+#### Human Readable Output
+
+
+
+### cybelangel-mirror-report-get
+
+***
+Retrieve the mirror details for the specified report.
+
+#### Base Command
+
+`cybelangel-mirror-report-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | The ID of the report. | Required | 
+| csv | If true, retrieves the mirror report in CSV format. Possible values are: True, False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CybelAngel.ReportMirror | unknown | Mirror details of the report. | 
+| CybelAngel.ReportMirror.CSV | unknown | CSV file with mirror details. | 
+
+#### Command example
+```!cybelangel-mirror-report-get report_id=1234```
+#### Context Example
+```json
+{
+    "CybelAngel": {
+        "ReportMirror": {
+            "available_files_count": 1,
+            "created_at": "2000-07-11T12:50:20Z",
+            "files_count": 1,
+            "files_volume": 6871,
+            "report_id": "1234",
+            "status": "expired",
+            "stream_id": "1234",
+            "updated_at": "2000-01-12T03:26:49Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Mirror details for Report ID 1234 retrieved.
+
+#### Command example
+```!cybelangel-mirror-report-get report_id=1234 csv=true```
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "1111",
+        "Extension": "csv",
+        "Info": "text/csv; charset=utf-8",
+        "Name": "cybelangel_mirror_report_1234.csv",
+        "Size": 212,
+        "Type": "ASCII text"
+    }
+}
+```
+
+#### Human Readable Output
+
+
+
+### cybelangel-report-comment-create
+
+***
+Create a new comment on a report.
+
+#### Base Command
+
+`cybelangel-report-comment-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | The ID of the report. | Required | 
+| content | The content of the comment. | Required | 
+| parent_id | The ID of the parent comment (for replies). | Optional | 
+| assigned | Specifies if the comment is assigned to analysts (true/false). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CybelAngel.Report.Comments | unknown | Updated comment list with the new comment included. | 
+
+#### Command example
+```!cybelangel-report-comment-create report_id=1234 content="Test Comment"```
+#### Context Example
+```json
+{
+    "CybelAngel": {
+        "Report": {
+            "Comments": {
+                "assigned": false,
+                "author": "example@clients",
+                "content": "Test Comment",
+                "created_at": "20200-02-26T10:20:32.453309",
+                "discussion_id": "1234:1234",
+                "external_author": null,
+                "id": "1234",
+                "last_updated_at": "2000-02-26T10:20:32.453309",
+                "parent_id": null,
+                "viewers": [
+                    "example@clients"
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Comment added to Report ID 1234.
+
+### cybelangel-report-list
+
+***
+Retrieve reports from CybelAngel.
+
+#### Base Command
+
+`cybelangel-report-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_date | Get reports from a specific start date formatted with ISO 8601. | Required | 
+| end_date | Get reports until a specific end date formatted with ISO 8601. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CybelAngel.Report | unknown | The retrieved reports. | 
+
+#### Command example
+```!cybelangel-report-list start_date="19 hours ago" end_date="now"```
+#### Context Example
+```json
+{
+    "CybelAngel": {
+        "Report": {
+            "reports": [
+                {
+            "abstract": "Example Output.",
+            "abuse_email": "",
+            "analysis": "Example Output.",
+            "asset_urls": [],
+            "attachments": [
+                {
+                    "attached_to": "report_id",
+                    "id": "1234",
+                    "name": "Example Output.csv"
+                }
+            ],
+            "board": "",
+            "category": "leak",
+            "city": "",
+            "country_code": "",
+            "created_at": "2000-11-26T13:25:16.116453",
+            "detected_at": "2000-11-26T10:45:05+00:00",
+            "domain_registered_at": null,
+            "hostnames": [],
+            "id": "1234",
+            "incident_id": "1234",
+            "incident_type": "Test",
+            "investigation_id": "1234:1234",
+            "ip": "",
+            "keywords": [
+                {
+                    "id": "1234",
+                    "name": "aa.net"
+                }
+            ],
+            "liveness": {
+                "last_checked_at": "2000-11-26T13:25:15.716702+00:00",
+                "online": true
+            },
+            "location": "",
+            "machine_name": null,
+            "malware_location": null,
+            "malware_name": null,
+            "module": "account_Test",
+            "mx_servers": [],
+            "ns_servers": [],
+            "origins": [
+                {
+                    "type": "malicious_actor",
+                    "value": ""
+                }
+            ],
+            "port": null,
+            "registrant_email": "",
+            "registrar_name": "",
+            "report_content": "Example Output.",
+            "report_type": "incident_detection",
+            "risks": [
+                {
+                    "message": "Example Output.",
+                    "type": "account_takeover"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "spear_phishing"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "social_engineering"
+                }
+            ],
+            "samples": [
+                {
+                    "sample": "See attachment",
+                    "type": "other"
+                }
+            ],
+            "screenshots": [],
+            "sender": "Example Output@cybelangel.com",
+            "sender_tenant_id": "cybelangel",
+            "sent_at": "20200-11-26T13:25:57+00:00",
+            "severity": 1,
+            "source": "Example platform",
+            "status": "resolved",
+            "stream": "1234",
+            "suggestions": [
+                {
+                    "message": "Example Output.",
+                    "type": "other"
+                }
+            ],
+            "tags": [],
+            "threat": null,
+            "title": "Example Output. platform",
+            "updated_at": "2000-02-23T13:07:17.214040",
+            "url": "https://platform.cybelangel.com/reports/1234",
+            "user_session": null,
+            "usergroups": [
+                "Example Output.",
+                "TVMExample Output.SOC"
+            ],
+            "volume": {
+                "bins": null,
+                "documents": null,
+                "domain": null,
+                "emails": 1,
+                "ips": null,
+                "passwords": 1
+            },
+            "whois": ""
+        },
+        {
+            "abstract": "Example Output.",
+            "abuse_email": "",
+            "analysis": "Example Output.",
+            "asset_urls": [],
+            "attachments": [
+                {
+                    "attached_to": "report_id",
+                    "id": "1234",
+                    "name": "Example Output.csv"
+                }
+            ],
+            "board": "",
+            "category": "leak",
+            "city": "",
+            "country_code": "",
+            "created_at": "2000-11-26T13:25:16.116453",
+            "detected_at": "2000-11-26T10:45:05+00:00",
+            "domain_registered_at": null,
+            "hostnames": [],
+            "id": "1234",
+            "incident_id": "1234",
+            "incident_type": "Test",
+            "investigation_id": "1234:1234",
+            "ip": "",
+            "keywords": [
+                {
+                    "id": "1234",
+                    "name": "aa.net"
+                }
+            ],
+            "liveness": {
+                "last_checked_at": "2000-11-26T13:25:15.716702+00:00",
+                "online": true
+            },
+            "location": "",
+            "machine_name": null,
+            "malware_location": null,
+            "malware_name": null,
+            "module": "account_Test",
+            "mx_servers": [],
+            "ns_servers": [],
+            "origins": [
+                {
+                    "type": "malicious_actor",
+                    "value": ""
+                }
+            ],
+            "port": null,
+            "registrant_email": "",
+            "registrar_name": "",
+            "report_content": "Example Output.",
+            "report_type": "incident_detection",
+            "risks": [
+                {
+                    "message": "Example Output.",
+                    "type": "account_takeover"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "spear_phishing"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "social_engineering"
+                }
+            ],
+            "samples": [
+                {
+                    "sample": "See attachment",
+                    "type": "other"
+                }
+            ],
+            "screenshots": [],
+            "sender": "Example Output@cybelangel.com",
+            "sender_tenant_id": "cybelangel",
+            "sent_at": "20200-11-26T13:25:57+00:00",
+            "severity": 1,
+            "source": "Example platform",
+            "status": "resolved",
+            "stream": "1234",
+            "suggestions": [
+                {
+                    "message": "Example Output.",
+                    "type": "other"
+                }
+            ],
+            "tags": [],
+            "threat": null,
+            "title": "Example Output. platform",
+            "updated_at": "2000-02-23T13:07:17.214040",
+            "url": "https://platform.cybelangel.com/reports/1234",
+            "user_session": null,
+            "usergroups": [
+                "Example Output.",
+                "TVMExample Output.SOC"
+            ],
+            "volume": {
+                "bins": null,
+                "documents": null,
+                "domain": null,
+                "emails": 1,
+                "ips": null,
+                "passwords": 1
+            },
+            "whois": ""
+        }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>All reports retrieved.
+
+### cybelangel-report-comments-get
+
+***
+Retrieve comments from a report.
+
+#### Base Command
+
+`cybelangel-report-comments-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | The ID of the report. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CybelAngel.Report.Comments | unknown | The list of comments for the report. | 
+
+#### Command example
+```!cybelangel-report-comments-get report_id=1234```
+#### Context Example
+```json
+{
+    "CybelAngel": {
+        "Report": {
+            "Comments": {
+                "comments": [
+                    {
+                        "assigned": false,
+                        "author": {
+                            "firstname": "Example",
+                            "id": "1234",
+                            "lastname": "Test"
+                        },
+                        "content": "Test Comment 2",
+                        "created_at": "2000-07-11T15:29:05Z",
+                        "discussion_id": "1234:5678",
+                        "discussion_tenant_name": "Test",
+                        "id": "1234",
+                        "isNew": false,
+                        "last_updated_at": "2000-07-11T15:29:05Z"
+                    },
+                    {
+                        "assigned": false,
+                        "author": {
+                            "firstname": "Example",
+                            "id": "1234",
+                            "lastname": "Test"
+                        },
+                        "content": "Test Comment 2",
+                        "created_at": "2000-07-11T15:29:05Z",
+                        "discussion_id": "1234:5678",
+                        "discussion_tenant_name": "Test",
+                        "id": "1234",
+                        "isNew": false,
+                        "last_updated_at": "2000-07-11T15:29:05Z"
+                    }
+                ],
+                "new": 0,
+                "total": 2
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Comments for Report ID 1234 retrieved.
+

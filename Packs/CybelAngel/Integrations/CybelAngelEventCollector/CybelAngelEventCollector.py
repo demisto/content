@@ -337,6 +337,7 @@ def cybelangel_mirror_report_get_command(client: Client, args) -> CommandResults
 
     return CommandResults(
         outputs_prefix="CybelAngel.ReportMirror",
+        outputs_key_field="report_id",
         outputs=response,
         readable_output=f"Mirror details for Report ID {report_id} retrieved.",
     )

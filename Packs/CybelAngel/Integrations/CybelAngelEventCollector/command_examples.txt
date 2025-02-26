@@ -1,12 +1,12 @@
-cybelangel-report-list start_date=2024-10-18T13:45:30 end_date=2025-01-15T13:45:30
-cybelangel-report-get report_id=8df67b49-47df-40f6-a5f8-83bd6053a31b
-cybelangel-report-get report_id=8df67b49-47df-40f6-a5f8-83bd6053a31b pdf=true
-cybelangel-mirror-report-get report_id=513c10f3-969b-4833-a965-229ae1cb8b30
-cybelangel-mirror-report-get report_id=513c10f3-969b-4833-a965-229ae1cb8b30 csv=true
-cybelangel-archive-report-by-id-get report_id=4751c0bf-5cb5-4e21-b677-5ce9c1b5de89
-cybelangel-report-status-update report_ids=513c10f3-969b-4833-a965-229ae1cb8b30 status=open
-cybelangel-report-status-update report_ids=513c10f3-969b-4833-a965-229ae1cb8b30,4751c0bf-5cb5-4e21-b677-5ce9c1b5de89 status=resolved
-cybelangel-report-comments-get report_id=513c10f3-969b-4833-a965-229ae1cb8b30
-cybelangel-report-comment-create report_id=513c10f3-969b-4833-a965-229ae1cb8b30 content="Test Comment"
-cybelangel-report-attachment-get report_id=062aba24-e44b-4e96-98b9-a65c63e93b6c attachment_id=9c166e86-66f9-4e9f-9523-161ab7f153da
-cybelangel-report-remediation-request-create report_id=4751c0bf-5cb5-4e21-b677-5ce9c1b5de89 requestor_email=test@paloaltonetworks.com requestor_fullname="Example Test"
+!cybelangel-report-list start_date="19 hours ago" end_date="now"
+!cybelangel-report-get report_id=1234
+!cybelangel-report-get report_id=1234 pdf=true
+!cybelangel-mirror-report-get report_id=1234
+!cybelangel-mirror-report-get report_id=1234 csv=true
+!cybelangel-archive-report-by-id-get report_id=1234
+!cybelangel-report-status-update report_ids=1234 status=open
+!cybelangel-report-status-update report_ids=1234,1234 status=resolved
+!cybelangel-report-comments-get report_id=1234
+!cybelangel-report-comment-create report_id=1234 content="Test Comment"
+!cybelangel-report-attachment-get report_id=1234 attachment_id=5678
+!cybelangel-report-remediation-request-create report_id=1234 requestor_email=test@paloaltonetworks.com requestor_fullname="Example Test"
