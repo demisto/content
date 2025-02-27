@@ -346,7 +346,7 @@ def test_get_remote_data_command_rate_limit_exception(mocker):
     mocker.patch.object(demisto, 'command', return_value='get-remote-data')
 
     mock_get_remote_updated_incident_data_with_entry = mocker.patch(
-        "__main__._get_remote_updated_incident_data_with_entry",
+        "Doppel._get_remote_updated_incident_data_with_entry",
         side_effect=Exception("Rate limit exceeded"),
     )
 
