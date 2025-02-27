@@ -991,3 +991,53 @@ def test_get_mirroring_fields():
     }
     
     assert _get_mirroring_fields() == expected_result
+
+
+import pytest
+from datetime import datetime
+from unittest.mock import MagicMock
+from Doppel import _get_remote_updated_incident_data_with_entry
+
+def test_get_remote_updated_incident_data_with_entry():
+    """Test _get_remote_updated_incident_data_with_entry with mock data."""
+
+    # Mock client
+    mock_client = MagicMock()
+
+    # Test data
+    doppel_alert_id = "12345"
+    last_update_str = "2025-02-24T14:30:00.12Z"
+
+    # Mock API response
+    mock_client.get_alert.return_value = {
+        "id": doppel_alert_id,
+        "audit_logs": [
+            {"timestamp": "2025-01-01T00:00:00Z", "action": "Updated"},
+            {"timestamp": "2025-01-02T00:00:00Z", "action": "Created"}
+        ]
+    }
+
+    # Call function
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, doppel_alert_id, last_update_str)
+
+    # Assertions
+    assert updated_alert is not None  # Ensure updated alert is returned
+    assert updated_alert["id"] == doppel_alert_id  # Ensure ID is set correctly
+    assert len(entries) == 1  # Ensure an entry was created
+    assert "Contents" in entries[0]  # Ensure entry contains audit log
+    assert entries[0]["Contents"]["action"] == "Updated"  # Ensure latest audit log is used
+
+    # Case: No audit logs
+    mock_client.get_alert.return_value = {"id": doppel_alert_id, "audit_logs": []}
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, doppel_alert_id, last_update_str)
+    assert updated_alert is None  # Ensure no update occurs
+    assert entries == []  # Ensure no entries are returned
+
+    # Case: No recent updates
+    mock_client.get_alert.return_value = {
+        "id": doppel_alert_id,
+        "audit_logs": [{"timestamp": "2025-02-20T10:00:00.000000Z", "action": "Created"}]
+    }
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, doppel_alert_id, last_update_str)
+    assert updated_alert is None  # Ensure no update occurs
+    assert entries == []  # Ensure no entries are returned
