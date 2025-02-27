@@ -12,7 +12,8 @@ from Doppel import (
     doppel_update_alert_command,
     doppel_get_alerts_command,
     doppel_create_alert_command,
-    doppel_create_abuse_alert_command
+    doppel_create_abuse_alert_command,
+    get_modified_remote_data_command
 )
 
 from CommonServerPython import *
@@ -410,3 +411,18 @@ def test_doppel_create_abuse_alert_command_missing_entity(client):
 
     with pytest.raises(ValueError, match="Entity must be specified to create an abuse alert."):
         doppel_create_abuse_alert_command(client, args)
+
+import pytest
+
+def test_get_modified_remote_data_command(mocker):
+    """
+    Test that `get_modified_remote_data_command` raises NotImplementedError.
+    """
+
+    # Mock the required arguments
+    mock_client = mocker.Mock()
+    args = {}
+
+    # Assert that the function raises NotImplementedError
+    with pytest.raises(NotImplementedError, match='The command "get-modified-remote-data" is not implemented'):
+        get_modified_remote_data_command(mock_client, args)
