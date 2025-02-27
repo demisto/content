@@ -4,13 +4,18 @@
         "CommonPlaybooks",
         "CommonScripts",
         "Core",
-        "FiltersAndTransformers"
+        "FiltersAndTransformers",
+        "DemistoRESTAPI",
+        "rasterize"
     ],
     "update_core_packs_list": [
         "Base",
         "CommonPlaybooks",
         "CommonScripts",
         "Core",
-        "FiltersAndTransformers"
+        "FiltersAndTransformers",
+        "DemistoRESTAPI",
+        "rasterize"
+
     ]
   }
