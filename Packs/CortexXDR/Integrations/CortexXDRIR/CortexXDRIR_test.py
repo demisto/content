@@ -1,14 +1,14 @@
 import copy
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from freezegun import freeze_time
 
 import demistomock as demisto
-from CommonServerPython import urljoin, DemistoException
+from CommonServerPython import CommandResults, urljoin, DemistoException
 from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR, XSOAR_RESOLVED_STATUS_TO_XDR
-from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR, get_xsoar_close_reasons
+from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR, get_xsoar_close_reasons, XDR_OPEN_STATUS_TO_XSOAR
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -412,7 +412,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries == []
+    assert response.entries[0].get('Contents') == {'dbotIncidentReopen': True}
 
 
 def test_get_remote_data_command_with_rate_limit_exception(mocker):
@@ -603,7 +603,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries == []
+    assert response.entries[0].get('Contents') == {'dbotIncidentReopen': True}
 
 
 @pytest.mark.parametrize('last_update',
@@ -1003,7 +1003,7 @@ def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mappin
     Then
         - The resolved XSOAR statuses match the expected statuses for all possible XDR close-reasons.
     """
-    from CortexXDRIR import handle_incoming_closing_incident
+    from CortexXDRIR import handle_incoming_incident
     mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
                                                          "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
 
@@ -1017,7 +1017,7 @@ def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 
         # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
         with capfd.disabled():
-            close_entry = handle_incoming_closing_incident(incident_data)
+            close_entry = handle_incoming_incident(incident_data)
         assert close_entry["Contents"]["closeReason"] == expected_resolved_status[i]
 
 
@@ -1959,3 +1959,342 @@ def test_mirror_in_wrong_last_update(mocker):
         )
 
     assert e.value.message == "Failed to parse last_update='abcdefg' got last_update_utc=None"
+
+
+def test_get_distribution_url_command_without_download():
+    """
+    Given:
+        - `download_package` argument set to False.
+    When:
+        - Calling `get_distribution_url_command` without downloading the package.
+    Then:
+        - Should return a CommandResults object with the distribution URL and no file download.
+    """
+    from CoreIRApiModule import get_distribution_url_command
+    client = MagicMock()
+    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+
+    args = {
+        "distribution_id": "12345",
+        "package_type": "x64",
+        "download_package": "false",
+        "integration_context_brand": "PaloAltoNetworksXDR"
+    }
+
+    result = get_distribution_url_command(client, args)
+    client.get_distribution_url.assert_called_once_with("12345", "x64")
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
+    assert result.outputs_prefix == "PaloAltoNetworksXDR.Distribution"
+    assert result.outputs_key_field == "id"
+    assert "[Distribution URL](https://example.com/distribution)" in result.readable_output
+
+
+def test_get_distribution_url_command_with_download(mocker):
+    """
+    Given:
+        - `download_package` set to True.
+    When:
+        - Calling `get_distribution_url_command` with downloading the package.
+    Then:
+        - Should return a list with CommandResults for the distribution URL and the downloaded file information.
+    """
+    from CoreIRApiModule import get_distribution_url_command
+    client = MagicMock()
+    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+    client._http_request = MagicMock(return_value=b"mock_binary_data")
+
+    args = {
+        "distribution_id": "12345",
+        "package_type": "x64",
+        "download_package": "true",
+        "integration_context_brand": "PaloAltoNetworksXDR"
+    }
+    mocker.patch('CortexXDRIR.fileResult', return_value={
+        'Contents': '',
+        'ContentsFormat': 'text',
+        'Type': 3,
+        'File': 'xdr-agent-install-package.msi',
+        'FileID': '11111'
+    })
+    result = get_distribution_url_command(client, args)
+    client.get_distribution_url.assert_called_once_with("12345", "x64")
+    client._http_request.assert_called_once_with(
+        method="GET", full_url="https://example.com/distribution", resp_type="content"
+    )
+    assert isinstance(result, list)
+    assert len(result) == 2
+    command_result = result[1]
+    assert isinstance(command_result, CommandResults)
+    assert command_result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
+    assert command_result.outputs_prefix == "PaloAltoNetworksXDR.Distribution"
+    assert command_result.outputs_key_field == "id"
+    assert "Installation package downloaded successfully." in command_result.readable_output
+
+
+def test_get_distribution_url_command_without_download_not_supported_type():
+    """
+    Given:
+        - `download_package` argument set to True but package_type is not x64 or x86.
+    When:
+        - Calling `get_distribution_url_command` without downloading the package.
+    Then:
+        - Should raise a demisto error.
+    """
+    from CoreIRApiModule import get_distribution_url_command
+    client = MagicMock()
+    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+
+    args = {
+        "distribution_id": "12345",
+        "package_type": "sh",
+        "download_package": "true",
+        "integration_context_brand": "PaloAltoNetworksXDR"
+    }
+    with pytest.raises(DemistoException) as e:
+        get_distribution_url_command(client, args)
+    client.get_distribution_url.assert_called_once_with("12345", "sh")
+    assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
+
+
+def test_handle_incoming_incident(capfd, mocker):
+    """
+    Given:
+        - incident data of resolved incident
+    When
+        - Handling incoming closing-incident (handle_incoming_closing_incident(...) executed).
+    Then
+        - a resolved entry is being added
+    """
+    from CortexXDRIR import handle_incoming_incident
+    from CommonServerPython import EntryType, EntryFormat
+    custom_mapping = ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
+                      "True Positive=Resolved,Security Testing=Other,Other=Other")
+    mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
+                                                         "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
+
+    for xdr_reopen_reason in XDR_OPEN_STATUS_TO_XSOAR:
+        incident_data = load_test_data('./test_data/resolved_incident_data.json')
+        # Set incident status to be tested reopen-reason.
+        incident_data["status"] = xdr_reopen_reason
+
+        # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+        with capfd.disabled():
+            reopen_entry = handle_incoming_incident(incident_data)
+        assert reopen_entry == {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentReopen': True
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }
+
+
+def test_get_remote_data_command_exclude_fields(mocker):
+    """
+    Given:
+        - An XDR client with base URL, headers, and mock HTTP requests
+        - Arguments (`id` set to 1 and `lastUpdate` set to 0, which is lower than incident modification time)
+    When:
+        - Running `get_remote_data_command` with different combinations of `exclude_artifacts`,
+        `excluded_alert_fields`, and `remove_nulls_from_alerts` arguments
+    Then:
+        - The correct `POST` request is made to the `/incidents/get_multiple_incidents_extra_data/`
+        endpoint with the appropriate parameters
+        - The request data contains correct filters, exclusions, and sorting options based on the provided arguments
+    """
+    from CortexXDRIR import get_remote_data_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v2', verify=False, timeout=120, proxy=False)
+    args = {
+        'id': 1,
+        'lastUpdate': 0
+    }
+    mocker.patch.object(Client, 'headers', return_value={"Authorization": "Bearer test_token"})
+    # make sure get-extra-data is returning an incident
+    mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
+    mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
+    mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
+    client._http_request = MagicMock()
+
+    # Test case 1: no excluded data
+    get_remote_data_command(client, args)
+    client._http_request.assert_called_with(
+        method='POST',
+        url_suffix='/incidents/get_multiple_incidents_extra_data/',
+        json_data={'request_data':
+                   {'search_to': 100, 'sort':
+                    {'field': 'creation_time', 'keyword': 'asc'},
+                    'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
+        headers=client.headers,
+        timeout=120
+    )
+
+    # Test case 2: With excluded_alert_fields
+    excluded_alert_fields = ["fieldA", "fieldB"]
+    get_remote_data_command(client, args, excluded_alert_fields=excluded_alert_fields)
+    client._http_request.assert_called_with(
+        method='POST',
+        url_suffix='/incidents/get_multiple_incidents_extra_data/',
+        json_data={'request_data':
+                   {'search_to': 100, 'sort':
+                    {'field': 'creation_time', 'keyword': 'asc'},
+                       'alert_fields_to_exclude': ['fieldA', 'fieldB'],
+                       'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
+        headers=client.headers,
+        timeout=120
+    )
+
+    # Test case 3: With remove_nulls_from_alerts
+    get_remote_data_command(client, args, remove_nulls_from_alerts=True)
+    client._http_request.assert_called_with(
+        method='POST',
+        url_suffix='/incidents/get_multiple_incidents_extra_data/',
+        json_data={'request_data':
+                   {'search_to': 100, 'sort':
+                    {'field': 'creation_time', 'keyword': 'asc'},
+                       'drop_nulls': True,
+                       'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
+        headers=client.headers,
+        timeout=120
+    )
+
+    # Test case 5: With remove_nulls_from_alerts, excluded_alert_fields
+    get_remote_data_command(client, args, remove_nulls_from_alerts=True,
+                            excluded_alert_fields=excluded_alert_fields)
+    client._http_request.assert_called_with(
+        method='POST',
+        url_suffix='/incidents/get_multiple_incidents_extra_data/',
+        json_data={'request_data':
+                   {'search_to': 100, 'sort':
+                    {'field': 'creation_time', 'keyword': 'asc'},
+                       'alert_fields_to_exclude': ['fieldA', 'fieldB'],
+                       'drop_nulls': True,
+                       'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
+        headers=client.headers,
+        timeout=120
+    )
+
+
+@pytest.fixture
+def mock_client():
+    from CortexXDRIR import Client
+    mock = MagicMock(Client)
+    mock.get_multiple_incidents_extra_data = MagicMock()
+    return mock
+
+
+def test_fetch_incidents_multiple_incidents_extra_data_with_excluded_fields(mock_client):
+    """
+    Given:
+        - An XDR client.
+        - Parameters for fetching incidents including `exclude_artifacts`, `excluded_alert_fields`,
+          and `remove_nulls_from_alerts`.
+    When:
+        - Running `fetch_incidents` to fetch multiple incidents with provided parameters.
+    Then:
+        - The correct call is made to `get_multiple_incidents_extra_data` with expected arguments.
+        - The call parameters correctly reflect the input values, such as filters, exclusions,
+          and sorting options.
+    """
+    from CortexXDRIR import fetch_incidents
+    # Prepare test inputs
+    first_fetch_time = "2023-01-01T00:00:00Z"
+    integration_instance = "test_integration"
+    last_run = {
+        'time': 0,
+        'incidents_from_previous_run': [],
+        'dedup_incidents': []
+    }
+    statuses = ['open']
+    starred = False
+    starred_incidents_fetch_window = None
+    excluded_alert_fields = ['fieldA', 'fieldB']
+    remove_nulls_from_alerts = True
+    max_fetch = 10
+
+    fetch_incidents(mock_client, first_fetch_time=first_fetch_time,
+                    integration_instance=integration_instance, last_run=last_run,
+                    exclude_artifacts=False,
+                    max_fetch=max_fetch, statuses=statuses,
+                    starred=starred, starred_incidents_fetch_window=starred_incidents_fetch_window,
+                    excluded_alert_fields=excluded_alert_fields, remove_nulls_from_alerts=remove_nulls_from_alerts)
+    mock_client.get_multiple_incidents_extra_data.assert_called_with(
+        gte_creation_time_milliseconds=0,
+        statuses=statuses,
+        limit=max_fetch + len(last_run['dedup_incidents']),
+        starred=starred,
+        starred_incidents_fetch_window=None,
+        exclude_artifacts=False,
+        excluded_alert_fields=excluded_alert_fields,
+        remove_nulls_from_alerts=remove_nulls_from_alerts
+    )
+
+
+def test_fetch_incidents_incidents_extra_datat_with_excluded_fields(mocker):
+    """
+    Given:
+        - An XDR client.
+        - Parameters for fetching incidents including `exclude_artifacts`, `excluded_alert_fields`,
+          and `remove_nulls_from_alerts`.
+    When:
+        - Running `fetch_incidents` to fetch multiple incidents with provided parameters.
+    Then:
+        - The correct call is made to `get_multiple_incidents_extra_data` with expected arguments.
+        - The call parameters correctly reflect the input values, such as filters, exclusions,
+          and sorting options.
+    """
+    from CortexXDRIR import Client, fetch_incidents
+    mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
+    client = Client(base_url=f'{XDR_URL}/public_api/v2', verify=False, timeout=120, proxy=False)
+    first_fetch_time = "2023-01-01T00:00:00Z"
+    integration_instance = "test_integration"
+    last_run = {
+        'time': 0,
+        'incidents_from_previous_run': [],
+        'dedup_incidents': []
+    }
+    statuses = ['open']
+    starred = False
+    starred_incidents_fetch_window = None
+    excluded_alert_fields = ['fieldA', 'fieldB']
+    remove_nulls_from_alerts = True
+    max_fetch = 10
+
+    raw_incident = load_test_data('./test_data/get_multiple_incidents_extra_data.json').get('reply', {}).get('incidents')[0]
+    raw_incident['incident']['alert_count'] = 10000
+    raw_incident['incident']['incident_id'] = 11
+
+    mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=[raw_incident])
+    mock_get_incident_extra_data = mocker.patch.object(Client, 'get_incident_extra_data', return_value=raw_incident)
+    fetch_incidents(client, first_fetch_time=first_fetch_time,
+                    integration_instance=integration_instance, last_run=last_run,
+                    exclude_artifacts=False,
+                    max_fetch=max_fetch, statuses=statuses,
+                    starred=starred, starred_incidents_fetch_window=starred_incidents_fetch_window,
+                    excluded_alert_fields=excluded_alert_fields, remove_nulls_from_alerts=remove_nulls_from_alerts)
+    # Assume the alert count is above ALERTS_LIMIT_PER_INCIDENTS
+    mock_get_incident_extra_data.assert_called_with(
+        incident_id=11,
+        exclude_artifacts=False,
+        excluded_alert_fields=excluded_alert_fields,
+        remove_nulls_from_alerts=remove_nulls_from_alerts
+    )
+
+
+def test_handle_excluded_data_param_old_param():
+    """
+    Given:
+        - The `excluded_data_from_alerts` parameter with various combinations of fields to exclude.
+    When:
+        - Calling the `handle_excluded_data_from_alerts_param` function.
+    Then:
+        - Ensure that the function correctly separates `null_values` from the rest of the exclusions.
+        - Verify that the returned tuple matches the expected exclusions list and boolean value for `null_values`.
+    """
+    from CortexXDRIR import handle_excluded_data_from_alerts_param
+    excluded_data_from_alerts = ['a', 'b']
+    assert handle_excluded_data_from_alerts_param(excluded_data_from_alerts) == (['a', 'b'], False)
+    excluded_data_from_alerts = ['null_values', 'b']
+    assert handle_excluded_data_from_alerts_param(excluded_data_from_alerts) == (['b'], True)

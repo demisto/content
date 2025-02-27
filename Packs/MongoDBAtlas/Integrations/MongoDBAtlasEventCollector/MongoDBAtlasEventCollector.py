@@ -385,7 +385,7 @@ def first_time_fetching_events(client: Client, fetch_limit: int) -> tuple[list, 
         enrich_event(event, event_type='events')
     last_fetched_event = results[0] if results else None
     new_min_time = last_fetched_event.get('created') if last_fetched_event else None
-    return results, new_min_time
+    return results, new_min_time  # type: ignore[return-value]
 
 
 def fetch_events_command(client: Client, fetch_limit: int, last_run: dict) -> tuple[list, dict]:

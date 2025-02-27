@@ -1,0 +1,33 @@
+{
+  "trigger_id": "4a90702e6a1e31ff82c4a5b8e27360cd",
+  "playbook_id": "A successful SSO sign-in from TOR",
+  "suggestion_reason": "Recommended for 'A successful SSO sign-in from TOR' and 'A successful SSO sign-in from TOR via a mobile device' alerts",
+  "description": "This trigger is responsible for handling the 'A successful SSO sign-in from TOR' and the 'A successful SSO sign-in from TOR via a mobile device' alerts",
+  "trigger_name": "A successful SSO sign-in from TOR",
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "A successful SSO sign-in from TOR"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "A successful SSO sign-in from TOR via a mobile device"
+                }
+                ]
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]
+    }
+  }
+}
+

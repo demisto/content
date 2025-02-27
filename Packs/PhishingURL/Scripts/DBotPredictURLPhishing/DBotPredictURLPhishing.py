@@ -690,7 +690,8 @@ def get_urls_to_run(
         return_results(MSG_NO_URL_GIVEN)
         return [], msg_list
     urls = get_final_urls(urls, max_urls, model)
-    urls = [res['Contents'] for res in demisto.executeCommand("UnEscapeURLs", {"input": urls})]  # type: ignore
+    unescaped_urls = demisto.executeCommand("UnEscapeURLs", {"input": urls}) or []
+    urls = [res['Contents'] for res in unescaped_urls]  # type: ignore
     if debug:
         return_results(urls)
     return urls, msg_list
@@ -739,7 +740,6 @@ def update_and_load_model(
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
         msg_list.append(MSG_UPDATE_LOGO.format(MAJOR_VERSION, model_docker_minor, model.major, model.minor))
-        model = load_demisto_model()
     else:
         msg_list.append(MSG_WRONG_CONFIG_MODEL)
         raise DemistoException(MSG_WRONG_CONFIG_MODEL)
@@ -784,6 +784,8 @@ def main():
                     return_results(msg_list)
                 return general_summary, detailed_summary, msg_list
             return_results('All URLs failed to be rasterized. Skipping prediction.')
+        else:
+            return_results('No URLs for prediction.')
     except Exception as e:
         return_error(f'Failed to execute URL Phishing script. Error: {e}')
 

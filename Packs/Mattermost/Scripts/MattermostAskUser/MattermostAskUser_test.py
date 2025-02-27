@@ -20,7 +20,7 @@ def test_MattermostAskUser_with_error(mocker):
         main()
     results = results_mock.call_args[0][0]
     assert results == execute_command_res
-    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.type is SystemExit
     assert pytest_wrapped_e.value.code == 0
 
 

@@ -5,4 +5,4 @@ ignore=PA125
 ignore=BA110
 
 [file:BaseScript.yml]
-ignore=BA110
+ignore=BA110,DS108

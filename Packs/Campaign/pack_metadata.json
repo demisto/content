@@ -2,7 +2,7 @@
     "name": "Phishing Campaign",
     "description": "This pack can help you find related phishing, spam or other types of email incidents and characterize campaigns.",
     "support": "xsoar",
-    "currentVersion": "3.4.13",
+    "currentVersion": "3.4.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

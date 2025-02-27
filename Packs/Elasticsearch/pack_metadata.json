@@ -2,7 +2,7 @@
     "name": "Elasticsearch",
     "description": "Search for and analyze data in real time. \n Supports version 6 and later.",
     "support": "xsoar",
-    "currentVersion": "1.3.25",
+    "currentVersion": "1.3.28",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

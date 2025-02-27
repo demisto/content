@@ -1076,7 +1076,7 @@ def test_client_creation_no_headers():
     from Traceable import Client
 
     client = Client("https://mock.url")
-    assert type(client.headers) == dict
+    assert type(client.headers) is dict
     assert "Content-Type" in client.headers
     assert client.headers["Content-Type"] == "application/json"
 

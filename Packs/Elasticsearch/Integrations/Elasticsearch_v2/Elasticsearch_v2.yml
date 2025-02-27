@@ -50,10 +50,10 @@ configuration:
 - display: Query String
   name: fetch_query
   type: 0
-  additionalinfo: |- 
-   The query will be used when fetching incidents. Index time field will be used as a filter in the query.
+  additionalinfo: |-
+    The query will be used when fetching incidents. Index time field will be used as a filter in the query.
 
-   The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   required: false
 - display: Index time field (for sorting sort and limiting data)
@@ -62,16 +62,16 @@ configuration:
   section: Collect
   required: false
   additionalinfo: |-
-   The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
+    The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
 
-   The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
 - display: Raw Query
   name: raw_query
   type: 12
-  additionalinfo: |- 
-   Will override the 'Query String' Lucene syntax string. Results will not be filtered.
+  additionalinfo: |-
+    Will override the 'Query String' Lucene syntax string. Results will not be filtered.
 
-   The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   advanced: true
   required: false
@@ -424,7 +424,7 @@ script:
       description: The result of the index operation.
       type: string
     description: Indexes a document into an Elasticsearch index.
-  dockerimage: demisto/elasticsearch:1.0.0.115427
+  dockerimage: demisto/elasticsearch:1.0.0.117175
   isfetch: true
   runonce: false
   script: '-'

@@ -1,7 +1,7 @@
 This OT Security pack is created to help you to automate the incident response and threat hunting processes in your Operations and ICS environment.
 
 # Pack Overview
-![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/OTSecurityEnvironment.png)
+![](doc_files/OTSecurityEnvironment.png)
 
 Cortex XSOAR helps to automate OT incidents and alerts response by gathering all relevant data, even from sources that may seem unrelated,
 allowing for the buildout of playbooks that cater to the particular automation needs of an ICS’s operational requirements. It also provides bot-aided war rooms where
@@ -13,26 +13,26 @@ Below are sample types OT investigation that his pack will focus on:
 
 - __Initial Access__
     - Supply Chain Compromise
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T862.png)
+    ![](doc_files/ATTandCK_T862.png)
 
     - Data Historian Compromise
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T810.png)
+    ![](doc_files/ATTandCK_T810.png)
 
 - __Execution and Persistence__
     - Unauthorized Program State Alteration
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T875.png)
+    ![](doc_files/ATTandCK_T875.png)
     - Project File Infection
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T873.png)
+    ![](doc_files/ATTandCK_T873.png)
 - __Evasion__
     - Rogue Device Detected
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T848.png)
+    ![](doc_files/ATTandCK_T848.png)
     - Rootkits Detected
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T851.png)
+    ![](doc_files/ATTandCK_T851.png)
 - __Discovery__
     - I/O Module Discovery
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T851.png)
+    ![](doc_files/ATTandCK_T851.png)
     - Network Service Scanning
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T824.png)
+    ![](doc_files/ATTandCK_T824.png)
 - __Lateral Movement__
     - Default Credentials Login
     - Unautherized Remote File Copy
@@ -69,6 +69,6 @@ XSOAR content included in this pack will be built based on our integrations with
     - Tenable
 
 # XSOAR in Isolated OT Environment
-![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/IsolatedDeployment.png)
+![](doc_files/IsolatedDeployment.png)
 XSOAR provides the ability to have a production instance running in an isolated OT environment, with a jumb host access to a local repository that stores the content updates, for more details:
 [Cortex XSOAR 6.13](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Configure-a-Remote-Repository-on-a-Development-Machine) or [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Set-up-a-remote-repository) or [Cortex XSOAR 8.7 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Remote-Repository-Management).

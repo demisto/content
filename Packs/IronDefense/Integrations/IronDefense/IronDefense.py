@@ -565,7 +565,7 @@ class IronDefense:
 
 def fetch_incidents_command():
     # IronDome Notification related params
-    dome_categories = PARAMS.get('domeCategories', None)
+    dome_categories = PARAMS.get('domeCategories', None)  # pylint: disable=E0601
     dome_limit = int(PARAMS.get('domeLimit', 200))
     disable_dome_notifs = not PARAMS.get('enableDomeNotifications', False)
     # Alert Notification related params
@@ -587,12 +587,12 @@ def fetch_incidents_command():
 
     incidents: list = []
     if disable_dome_notifs and disable_alert_notifs and disable_event_notifs:
-        LOGGER.debug("Ingestion of all notifications (Dome, Alert, Event) is disabled, not fetching")
+        LOGGER.debug("Ingestion of all notifications (Dome, Alert, Event) is disabled, not fetching")  # pylint: disable=E0601
     else:
         if disable_dome_notifs:
             LOGGER.debug('Ingestion of Dome Notifications is disabled')
         else:
-            incs = IRON_DEFENSE.fetch_dome_incidents(dome_categories, dome_limit)
+            incs = IRON_DEFENSE.fetch_dome_incidents(dome_categories, dome_limit)  # pylint: disable=E0601
             incidents.extend(incs)
             # If the limit was reached, poll again
             poll_count = 1

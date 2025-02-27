@@ -861,7 +861,7 @@ def return_file_entry(res, num_of_incidents):
     entry = fileResult(file_name, json.dumps(res))
     entry['Contents'] = res
     entry['HumanReadable'] = 'Fetched features from {} incidents'.format(num_of_incidents)
-    entry["ContentsFormat"]: formats["json"]  # type: ignore
+    entry["ContentsFormat"]: formats[json]  # type: ignore
     demisto.results(entry)
 
 

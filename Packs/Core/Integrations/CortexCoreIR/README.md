@@ -323,6 +323,7 @@ Gets the distribution URL for downloading the installation package.
 | --- | --- | --- |
 | distribution_id | The ID of the installation package.<br/>Copy the distribution_id from the "id" field on Endpoints &gt; Agent Installation page. | Required | 
 | package_type | The installation package type. Valid<br/>values are:<br/>• upgrade<br/>• sh - For Linux<br/>• rpm - For Linux<br/>• deb - For Linux<br/>• pkg - For Mac<br/>• x86 - For Windows<br/>• x64 - For Windows. Possible values are: upgrade, sh, rpm, deb, pkg, x86, x64. | Required | 
+| download_package | Supported only for package_type x64 or x86. Whether to download the installation package file. | Optional | 
 
 
 #### Context Output
@@ -606,7 +607,18 @@ Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
+
 ### core-get-quarantine-status
 ***
 Retrieves the quarantine status for a selected file.
@@ -675,7 +687,18 @@ Restores a quarantined file on requested endpoints.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
+
 ### core-endpoint-scan
 ***
 Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
@@ -713,6 +736,15 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 | --- | --- | --- |
 | Core.endpointScan.actionId | Number | The action ID of the scan request. | 
 | Core.endpointScan.aborted | Boolean | Was the scan aborted. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-endpoint-scan-abort
 ***
@@ -1038,6 +1070,15 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-retrieve-file-details
 ***
@@ -1215,19 +1256,19 @@ Gets the code of a specific script in the script library.
 > ```
 
 ### core-action-status-get
+
 ***
 Retrieves the status of the requested actions according to the action ID.
-
 
 #### Base Command
 
 `core-action-status-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | action_id | The action ID of the selected request. After performing an action, you will receive an action ID. | Required | 
-
 
 #### Context Output
 
@@ -1237,6 +1278,15 @@ Retrieves the status of the requested actions according to the action ID.
 | Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
 | Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
 | Core.GetActionStatus.action_id | number | The specified action ID. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 #### Command example
 ```!core-action-status-get action_id="1819"```
@@ -1306,6 +1356,15 @@ Initiates a new endpoint script execution action using the provided snippet code
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-get-script-execution-status
 ***
@@ -1419,13 +1478,13 @@ Initiate a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | incident_id | Link the response action to triggered incident. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
-| commands | Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `\|\|`, `&&`, `;` separators for controlling the flow of multiple commands). | Required | 
+| commands | Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `\|\|`, `&amp;&amp;`, `;` separators for controlling the flow of multiple commands). | Required | 
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional | 
+| command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | action_id | For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional |
-| command_type | Type of shell command. Possible values: "powershell", "null". | Optional |
 
 #### Context Output
 
@@ -1433,6 +1492,15 @@ Initiate a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-run-script-delete-file
 ***
@@ -1461,6 +1529,15 @@ Initiates a new endpoint script execution to delete the specified file.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-run-script-file-exists
 ***
@@ -1489,6 +1566,15 @@ Initiates a new endpoint script execution to check if file exists.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-run-script-kill-process
 ***
@@ -1517,6 +1603,15 @@ Initiates a new endpoint script execution kill process.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### endpoint
 ***
@@ -2838,10 +2933,24 @@ Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.TerminateProcess.action_id | String | The action ID. | 
+| Core.GetActionStatus | Unknown | The action status command results. | 
+| Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
+| Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
+| Core.GetActionStatus.action_id | number | The specified action ID. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
+
 ### core-terminate-causality
 
 ***
-Stops a process by its causality ID. Available only for XSIAM 2.4 and above.
+Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
 
 ##### Command Example
 
@@ -2881,6 +2990,19 @@ Stops a process by its causality ID. Available only for XSIAM 2.4 and above.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.TerminateCausality.action_id | String | The action id. | 
+| Core.GetActionStatus | Unknown | The action status command results. | 
+| Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
+| Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
+| Core.GetActionStatus.action_id | number | The specified action ID. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ##### Command Example
 

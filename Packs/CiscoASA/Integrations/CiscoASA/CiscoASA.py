@@ -1,6 +1,9 @@
+from requests import Response
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 from functools import wraps
 from copy import deepcopy
 from http import HTTPStatus
@@ -244,7 +247,7 @@ class Client(BaseClient):
             # if failed to logoof just write to log. no need to raise error
             demisto.debug(f'Logoff error: {str(e)}')
 
-    def get_all_rules(self, specific_interface: Optional[str] = None, rule_type: str = 'All') -> list:
+    def get_all_rules(self, specific_interface: str | None = None, rule_type: str = 'All') -> list:
         """
         Gets a list all rules for the supplied interface.
 
@@ -320,6 +323,7 @@ class Client(BaseClient):
             GET - rule info
             PATCH - edit rule
         """
+        rule = {}
         resp_type = {"GET": "json",
                      "DELETE": "text",
                      "PATCH": "response"
@@ -350,6 +354,7 @@ class Client(BaseClient):
         Returns:
             The new created rule's information.
         """
+        res = Response()
         if interface_type == "Global":
             res = self._http_request("POST", '/api/access/global/rules', json_data=rule_body, resp_type="response")
         if interface_type == 'In':
@@ -425,7 +430,7 @@ class Client(BaseClient):
         """
         Returns a list of interfaces.
         """
-        interfaces = list()  # type: ignore
+        interfaces = []  # type: ignore
         for type in ['global', 'in', 'out']:
             resp = self._http_request('GET', f'/api/access/{type}')
             interfaces.extend(resp.get('items', []))
@@ -710,7 +715,7 @@ def raw_to_rules(raw_rules):
     :return:
     Gets raw rules as received from API and extracts only the relevant fields
     """
-    rules = list()
+    rules = []
     for rule in raw_rules:
         source_services = rule.get('sourceService', {})
 
@@ -842,7 +847,7 @@ def extract_data_from_dict(dict_obj: dict[str, Any], keys_mapping: dict[str, Any
     return extracted
 
 
-def arg_to_optional_bool(arg: Optional[Any]) -> Optional[bool]:
+def arg_to_optional_bool(arg: Any | None) -> bool | None:
     """
     Wrapper to argToBoolean function that will allow Optional arguments.
 

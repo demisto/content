@@ -254,7 +254,7 @@ def build_entry_context(results: Union[Dict, List], indicator_type: str):
             # Exclude raw whois
             if key == 'raw':
                 continue
-            if value and type(value) == list and key in ('creation_date', 'expiration_date', 'updated_date', 'registrar'):
+            if value and type(value) is list and key in ('creation_date', 'expiration_date', 'updated_date', 'registrar'):
                 value = value[0]
             return_context['Whois Details'][key] = value
         return_context['DNS Details'] = result_data.get('dns_info', {})

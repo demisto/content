@@ -44,6 +44,18 @@
           "type": "string",
           "is_array": false
       },
+      "audit": {
+          "type": "string",
+          "is_array": false
+      },
+      "metadata": {
+        "type": "string",
+        "is_array": false
+    },
+    "parsed_fields": {
+        "type": "string",
+        "is_array": false
+    },
       "envelope": {
           "type": "string",
           "is_array": false

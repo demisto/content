@@ -1,28 +1,28 @@
 {
-  "name": "BreachRx",
-  "description": "Automate your privacy Incident Response workflow through the BreachRx platform.",
-  "support": "partner",
-  "currentVersion": "1.0.19",
-  "author": "BreachRx",
-  "url": "https://breachrx.com",
-  "email": "support@breachrx.com",
-  "categories": [
-    "Case Management"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": [
-    "Breach",
-    "GDPR",
-    "Compliance",
-    "HIPAA",
-    "Privacy"
-  ],
-  "marketplaces": [
-    "xsoar",
-    "marketplacev2"
-  ],
-  "devEmail": [
-    "support@breachrx.com"
-  ]
+    "name": "BreachRx",
+    "description": "Automate your privacy Incident Response workflow through the BreachRx platform.",
+    "support": "partner",
+    "currentVersion": "1.0.20",
+    "author": "BreachRx",
+    "url": "https://breachrx.com",
+    "email": "support@breachrx.com",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Breach",
+        "GDPR",
+        "Compliance",
+        "HIPAA",
+        "Privacy"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "support@breachrx.com"
+    ]
 }

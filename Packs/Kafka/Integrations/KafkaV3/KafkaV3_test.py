@@ -261,7 +261,7 @@ def test_fetch_partitions(mocker, demisto_args, cluster_tree, topic):
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     result = fetch_partitions(KAFKA, demisto_args)
-    assert {'Name': topic, 'Partition': cluster_tree[topic]} == result.outputs
+    assert result.outputs == {'Name': topic, 'Partition': cluster_tree[topic]}
 
 
 @pytest.mark.parametrize('demisto_args', [{'topic': 'some-topic'}, {'topic': None}])
@@ -802,7 +802,7 @@ def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_p
                 None,
             ],
             [(0, 2), (0, 2), (0, 2)],
-            id="first run, offset is 0," "stop_consuming_upon_timeout is true",
+            id="first run, offset is 0,stop_consuming_upon_timeout is true",
         )
     ],
 )

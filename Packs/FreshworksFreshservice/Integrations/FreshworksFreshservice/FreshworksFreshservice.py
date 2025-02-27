@@ -3003,6 +3003,9 @@ def convert_date_time(date_time: str) -> str | None:
     datetime_arg = arg_to_datetime(date_time)
     if isinstance(datetime_arg, datetime):
         updated_datetime_arg = datetime_arg.strftime(STRFTIME)
+    else:
+        updated_datetime_arg = date_time
+        demisto.debug(f"{datetime_arg=} isn't of type datetime.")
     return updated_datetime_arg
 
 
@@ -3317,6 +3320,9 @@ def get_last_run(args: dict[str, Any], ticket_type: str) -> tuple:
     # use condition statement to avoid mypy error
     if last_run_datetime:
         last_run_datetime_str = last_run_datetime.strftime(TIME_FORMAT)
+    else:
+        last_run_datetime_str = ''
+        demisto.debug(f"{last_run_datetime=} -> {last_run_datetime_str=}")
     last_run_datetime = dateparser.parse(last_run_datetime_str)
 
     return last_run_id, last_run_datetime, last_run_datetime_str

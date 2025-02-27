@@ -9,7 +9,8 @@ from datetime import datetime
 
 
 import requests
-from typing import Dict, Any, Tuple, Callable
+from typing import Any
+from collections.abc import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -109,7 +110,7 @@ class Client(BaseClient):
         return response
 
     def service_record_list_request(self, record_type: str, fields: str = None, offset: int = None, limit: int = None,
-                                    ids: List[str] = None, archive: int = None, filters: Dict[str, Any] = None, ):
+                                    ids: List[str] = None, archive: int = None, filters: dict[str, Any] = None, ):
         params = assign_params(type=record_type, fields=fields, offset=offset, limit=limit, ids=ids, archive=archive)
         params.update(filters or {})
         response = self._http_request('GET', 'sr', params=params, cookies=self._cookies)
@@ -117,7 +118,7 @@ class Client(BaseClient):
         return response
 
     def service_record_search_request(self, record_type: str, query: str, fields: str = None, offset: int = None,
-                                      limit: int = None, archive: int = None, filters: Dict[str, Any] = None):
+                                      limit: int = None, archive: int = None, filters: dict[str, Any] = None):
         params = assign_params(type=record_type, fields=fields, offset=offset, limit=limit, query=query, archive=archive)
         params.update(filters)
 
@@ -125,7 +126,7 @@ class Client(BaseClient):
 
         return response
 
-    def service_record_update_request(self, id_: str, info: List[Dict[str, str]] = None):
+    def service_record_update_request(self, id_: str, info: List[dict[str, str]] = None):
         data = {"id": id_, "info": info}
 
         response = self._http_request('PUT', f'sr/{id_}', json_data=data, cookies=self._cookies, resp_type='response')
@@ -148,7 +149,7 @@ class Client(BaseClient):
 
         return response
 
-    def service_record_create_request(self, record_type: str, info: List[Dict[str, str]], fields: str = None,
+    def service_record_create_request(self, record_type: str, info: List[dict[str, str]], fields: str = None,
                                       template_id: str = None):
         params = assign_params(fields=fields, type=record_type, template=template_id)
         data = {"info": info}
@@ -223,7 +224,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def read_file(file_id: str) -> Tuple[bytes, int, str]:
+def read_file(file_id: str) -> tuple[bytes, int, str]:
     """
     Reads file that was uploaded to War Room.
 
@@ -261,7 +262,7 @@ def get_content_type(file_name: str):
 
 
 def create_readable_response(responses: Union[dict, List[dict], str], handle_one_response: Callable, remove_if_null: str = None) \
-        -> Union[str, List[Dict[str, str]]]:
+        -> Union[str, List[dict[str, str]]]:
     """
     Creates a readable response for responses that have fields in the form of:
         {
@@ -293,7 +294,7 @@ def create_readable_response(responses: Union[dict, List[dict], str], handle_one
     return readable_response
 
 
-def asset_list_handler(response: Dict[str, Any], remove_if_null: str):
+def asset_list_handler(response: dict[str, Any], remove_if_null: str):
     """
     Creates a readable response for one asset response. Is sent as **handle_one_response** to *create_readable_response*.
 
@@ -311,7 +312,7 @@ def asset_list_handler(response: Dict[str, Any], remove_if_null: str):
     return response_entry
 
 
-def filter_list_handler(response: Dict[str, Any]):
+def filter_list_handler(response: dict[str, Any]):
     """
     Creates a readable response for one filter response. Is sent as **handle_one_response** to *create_readable_response*.
 
@@ -327,7 +328,7 @@ def filter_list_handler(response: Dict[str, Any]):
     return response_entry
 
 
-def service_record_handler(response: Dict[str, Any]):
+def service_record_handler(response: dict[str, Any]):
     """
     Creates a readable response for one service record response. Is sent as **handle_one_response** to *create_readable_response*.
 
@@ -346,7 +347,7 @@ def service_record_handler(response: Dict[str, Any]):
     return None
 
 
-def service_record_response_handler(response: Dict[str, Any]):
+def service_record_response_handler(response: dict[str, Any]):
     """
     Creates a response for one service record response. Is sent as **handle_one_response** to *create_readable_response*.
     Saves all fields with their key names.
@@ -359,7 +360,7 @@ def service_record_response_handler(response: Dict[str, Any]):
     return response
 
 
-def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[str]) -> Dict[str, Any]:
+def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[str]) -> dict[str, Any]:
     """
     Additional filters are sent in a request in a form of:
         {filter1}={filter1_value}&{filter2}={filter2_value}
@@ -371,7 +372,7 @@ def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[st
     return filters
 
 
-def set_service_record_info(args: Dict[str, Any]) -> List[Dict[str, str]]:
+def set_service_record_info(args: dict[str, Any]) -> List[dict[str, str]]:
     """
     Update and create service record commands have many arguments, this function organizes the arguments in the form they need to
     appear in the body of the request.
@@ -391,7 +392,7 @@ def set_service_record_info(args: Dict[str, Any]) -> List[Dict[str, str]]:
     return info
 
 
-def template_readable_response(responses: Union[dict, List[dict], str]) -> Union[str, List[Dict[str, Any]]]:
+def template_readable_response(responses: Union[dict, List[dict], str]) -> Union[str, List[dict[str, Any]]]:
     """
     Creates a readable response for responses that have fields in the form of:
         {
@@ -474,8 +475,8 @@ def fetch_request(client: Client, fetch_types: str = None, include_archived: boo
     return responses
 
 
-def filter_service_records_by_time(service_records: List[Dict[str, Any]], fetch_start_datetime: datetime) \
-        -> List[Dict[str, Any]]:
+def filter_service_records_by_time(service_records: List[dict[str, Any]], fetch_start_datetime: datetime) \
+        -> List[dict[str, Any]]:
     """
     Returns the service records that changed after the fetch_start_datetime, from the service_records given.
 
@@ -491,15 +492,15 @@ def filter_service_records_by_time(service_records: List[Dict[str, Any]], fetch_
     return filtered_service_records
 
 
-def filter_service_records_by_id(service_records: List[Dict[str, Any]], fetch_start_datetime: datetime, last_id_fetched: str):
+def filter_service_records_by_id(service_records: List[dict[str, Any]], fetch_start_datetime: datetime, last_id_fetched: str):
     # only for service_records with the same update_time as fetch_start_datetime
     return [service_record for service_record in service_records
             if get_service_record_update_time(service_record) != fetch_start_datetime
             or service_record['id'] > last_id_fetched]
 
 
-def reduce_service_records_to_limit(service_records: List[Dict[str, Any]], limit: int, last_fetch: datetime,
-                                    last_id_fetched: str) -> Tuple[datetime, str, List[Dict[str, Any]]]:
+def reduce_service_records_to_limit(service_records: List[dict[str, Any]], limit: int, last_fetch: datetime,
+                                    last_id_fetched: str) -> tuple[datetime, str, List[dict[str, Any]]]:
     incidents_count = min(limit, len(service_records))
     # limit can't be 0 or less, but there could be no service_records at the wanted time
     if incidents_count > 0:
@@ -510,8 +511,8 @@ def reduce_service_records_to_limit(service_records: List[Dict[str, Any]], limit
     return last_fetch, last_id_fetched, service_records
 
 
-def parse_service_records(service_records: List[Dict[str, Any]], limit: int, fetch_start_datetime: datetime,
-                          last_id_fetched: str) -> Tuple[datetime, str, List[Dict[str, Any]]]:
+def parse_service_records(service_records: List[dict[str, Any]], limit: int, fetch_start_datetime: datetime,
+                          last_id_fetched: str) -> tuple[datetime, str, List[dict[str, Any]]]:
     service_records = filter_service_records_by_time(service_records, fetch_start_datetime)
     service_records = filter_service_records_by_id(service_records, fetch_start_datetime, last_id_fetched)
 
@@ -521,7 +522,7 @@ def parse_service_records(service_records: List[Dict[str, Any]], limit: int, fet
     last_fetch, last_id_fetched, service_records = reduce_service_records_to_limit(service_records, limit, fetch_start_datetime,
                                                                                    last_id_fetched)
 
-    incidents: List[Dict[str, Any]] = [service_record_to_incident_context(service_record) for service_record in service_records]
+    incidents: List[dict[str, Any]] = [service_record_to_incident_context(service_record) for service_record in service_records]
     return last_fetch, last_id_fetched, incidents
 
 
@@ -538,7 +539,7 @@ def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str):
     return max(last_fetch_datetime, first_fetch_datetime)
 
 
-def get_service_record_update_time(service_record: Dict[str, Any]) -> Optional[datetime]:
+def get_service_record_update_time(service_record: dict[str, Any]) -> Optional[datetime]:
     for service_record_info in service_record['info']:
         if service_record_info['key'] == 'update_time':
             # We are using 'valueCaption' and not 'value' as they hold different values
@@ -549,7 +550,7 @@ def get_service_record_update_time(service_record: Dict[str, Any]) -> Optional[d
     return None
 
 
-def service_record_to_incident_context(service_record: Dict[str, Any]):
+def service_record_to_incident_context(service_record: dict[str, Any]):
     title, record_type = '', ''
     for service_record_info in service_record['info']:
         if service_record_info['key'] == 'sr_type':
@@ -558,8 +559,7 @@ def service_record_to_incident_context(service_record: Dict[str, Any]):
             title = service_record_info['valueCaption']
 
     occurred_datetime = get_service_record_update_time(service_record)
-    if occurred_datetime:
-        occurred = occurred_datetime.strftime(DATE_FORMAT)
+    occurred = occurred_datetime.strftime(DATE_FORMAT) if occurred_datetime else None
 
     incident_context = {
         'name': title,
@@ -575,7 +575,7 @@ def service_record_to_incident_context(service_record: Dict[str, Any]):
 ''' COMMAND FUNCTIONS '''
 
 
-def table_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def table_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     entity = args.get('entity')
     entity_id = args.get('entity_id')
     entity_type = arg_to_number(args.get('entity_type'))
@@ -603,7 +603,7 @@ def table_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def asset_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     asset_id = args.get('asset_id')
     fields = set_returned_fields(args.get('fields'))
 
@@ -635,7 +635,7 @@ def asset_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def asset_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
     query = args.get('query')
     fields = set_returned_fields(args.get('fields'))
 
@@ -661,7 +661,7 @@ def asset_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
-def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def filter_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     fields = set_returned_fields(args.get('fields'))
 
     response = client.filter_list_request(fields)
@@ -682,7 +682,7 @@ def filter_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def user_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     fields = set_returned_fields(args.get('fields'))
     record_type = args.get('type')
 
@@ -706,7 +706,7 @@ def user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def user_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
     query = args.get('query')
     fields = set_returned_fields(args.get('fields'))
     record_type = args.get('type')
@@ -731,7 +731,7 @@ def user_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def service_record_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     record_type = args.get('type')
     fields = set_returned_fields(args.get('fields'))
     ids = args.get('ids')
@@ -768,7 +768,7 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
     return command_results
 
 
-def service_record_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
     query = args.get('query')
     record_type = args.get('type')
     fields = set_returned_fields(args.get('fields'))
@@ -801,7 +801,7 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def service_record_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = args.get('id')
     info = set_service_record_info(args)
 
@@ -818,7 +818,7 @@ def service_record_update_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def service_record_close_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_close_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = args.get('id')
     solution = args.get('solution')
 
@@ -837,7 +837,7 @@ def service_record_close_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def service_record_template_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_template_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     fields = set_returned_fields(args.get('fields'))
     record_type = args.get('type')
     template_id = args.get('template_id')
@@ -859,7 +859,7 @@ def service_record_template_get_command(client: Client, args: Dict[str, Any]) ->
     return command_results
 
 
-def service_record_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     fields = set_returned_fields(args.get('fields'))
     record_type = args.get('type')
     template_id = args.get('template_id')
@@ -885,7 +885,7 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def service_record_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     ids = str(args.get('ids'))
     solution = args.get('solution')
 
@@ -904,7 +904,7 @@ def service_record_delete_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def service_record_attach_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_attach_file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     sr_id = str(args.get('id'))
     file_id = str(args.get('file_id'))
 
@@ -922,7 +922,7 @@ def service_record_attach_file_command(client: Client, args: Dict[str, Any]) -> 
     return command_results
 
 
-def service_record_get_file_command(client: Client, args: Dict[str, Any]):
+def service_record_get_file_command(client: Client, args: dict[str, Any]):
     sr_id = str(args.get('id'))
     file_id = str(args.get('file_id'))
     file_name = str(args.get('file_name'))
@@ -941,7 +941,7 @@ def service_record_get_file_command(client: Client, args: Dict[str, Any]):
         return_error(msg)
 
 
-def service_record_delete_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_delete_file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     sr_id = str(args.get('id'))
     file_id = str(args.get('file_id'))
 
@@ -959,7 +959,7 @@ def service_record_delete_file_command(client: Client, args: Dict[str, Any]) -> 
     return command_results
 
 
-def service_record_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     sr_id = str(args.get('id'))
     fields = set_returned_fields(args.get('fields'))
 
@@ -982,7 +982,7 @@ def service_record_get_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def service_record_add_note_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def service_record_add_note_command(client: Client, args: dict[str, Any]) -> CommandResults:
     sr_id = str(args.get('id'))
     note = str(args.get('note'))
     username = str(args.get('username'))
@@ -1053,8 +1053,8 @@ def test_module(client: Client, params: dict) -> None:
 
 
 def main() -> None:
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     url = params.get('url')
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)

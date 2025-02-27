@@ -1,8 +1,10 @@
 """Imports"""
 # STD packages
+import asyncio
 from datetime import datetime
 import time
 import json
+
 import demistomock as demisto
 
 # 3-rd party packages
@@ -534,3 +536,261 @@ def test_is_last_request_smaller_than_page_size(num_events_from_previous_request
         - Case 3: Should return False (meaning we shouldn't break yet).
     """
     assert Akamai_SIEM.is_last_request_smaller_than_page_size(num_events_from_previous_request, page_size) is expected_results
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "offset, request_query",
+    [
+        (None, "50170?limit=100&from=1691303422"),
+        ("test_offset", "50170?limit=100&offset=test_offset")
+    ],
+)
+async def test_get_events_concurrently_success(client, offset, request_query, requests_mock):
+    """
+        Given:
+        - A successful mock http call response with 2 events and offset context.
+        When:
+        - Calling get_events_concurrently().
+        Then:
+        - Ensure the right log type and text returned. And the right length of events, and offset returned.
+    """
+    response_mock = '{"id": 1, "httpMessage": {"start": 1}}\n{"id": 2, "httpMessage": {"start": 2}}\n{"offset": "a"}'
+    requests_mock.get(f"{BASE_URL}/{request_query}", text=response_mock)
+    events, response_offset = await client.get_events_concurrently("50170", offset, 100, "1691303422", 2)
+    assert len(events) == 2
+    assert response_offset == "a"
+
+
+@pytest.mark.asyncio
+async def test_get_events_concurrently_failure(client, requests_mock):
+    """
+        Given:
+        - An error mock http response.
+        When:
+        - Calling get_events_concurrently().
+        Then:
+        - Ensure the right log type and text returned.
+    """
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=offset", status_code=416, text="Requested Range Not Satisfiable")
+    with pytest.raises(DemistoException) as e:
+        await client.get_events_concurrently("50170", "offset", 100, "1691303422", 2)
+    assert 'Error in API call [416]' in str(e.value)
+    assert "Requested Range Not Satisfiable" in str(e.value)
+
+
+@pytest.mark.asyncio
+async def test_get_events_from_akamai_success(mocker, client, requests_mock):
+    """
+        Given:
+        - A successful mock http request response with 2 events and offset context.
+        When:
+        - Calling get_events_from_akamai().
+        Then:
+        - Ensure the right log type and text returned. And the right length of events, offset, and counter returned.
+    """
+    response_mock = '{"id": 1, "httpMessage": {"start": 1}}\n{"id": 2, "httpMessage": {"start": 2}}\n{"offset": "a"}'
+    demisto_info = mocker.patch.object(demisto, 'info')
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=test_offset", text=response_mock)
+    async for events, counter, response_offset in Akamai_SIEM.get_events_from_akamai(client=client,
+                                                                                     config_ids="50170",
+                                                                                     from_time="1 day",
+                                                                                     page_size=100,
+                                                                                     offset="test_offset",
+                                                                                     max_concurrent_tasks=300):
+        assert counter == 1
+        assert len(events) == 2
+        assert response_offset == "a"
+        demisto_info.assert_called_with("Running in interval = 1. got 2 events and offset='a'.")
+        break
+
+
+@pytest.mark.asyncio
+async def test_get_events_from_akamai_failure(mocker, client, requests_mock):
+    """
+        Given:
+        - An error mock http response.
+        When:
+        - Calling get_events_from_akamai().
+        Then:
+        - Ensure the right log type and text returned.
+    """
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=test_offset", status_code=416, text="Requested Range Not Satisfiable")
+    mocker.patch.object(demisto, 'error')
+    # cause an exception to break endless loop.
+    update_module_health = mocker.patch.object(demisto, 'updateModuleHealth', side_effect=Exception("Interrupted execution"))
+    with pytest.raises(Exception) as e:
+        async for _, _, _ in Akamai_SIEM.get_events_from_akamai(client=client,
+                                                                config_ids="50170",
+                                                                from_time="1 day",
+                                                                page_size=100,
+                                                                offset="test_offset",
+                                                                max_concurrent_tasks=300):
+            pass
+    assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
+    expected_error_msg = "Running in interval = 1. Got offset out of range error when attempting to fetch events from Akamai.\n" \
+        "This occurred due to offset pointing to events older than 12 hours which isn't supported by akamai.\nRestarting" \
+        " fetching events to start from 1 day ago. For more information, please refer to the Troubleshooting section in the" \
+        " integration documentation.\noriginal error: [Error in API call [416] - None\nRequested Range Not Satisfiable]"
+
+    assert expected_error_msg in update_module_health.mock_calls[0][1]
+    assert {'is_error': True} in update_module_health.mock_calls[0]
+
+
+@pytest.mark.asyncio
+async def test_get_events_from_akamai_no_events(mocker, client, requests_mock):
+    """
+        Given:
+        - A successful mock http response with no events.
+        When:
+        - Calling get_events_from_akamai().
+        Then:
+        - Ensure the right log type and text returned.
+    """
+    response_mock = '{"offset": "a"}'
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=test_offset", text=response_mock)
+    demisto_debug = mocker.patch.object(demisto, 'debug')
+    # cause an exception to break endless loop.
+    mocker.patch.object(asyncio, 'sleep', side_effect=Exception("Interrupted execution"))
+    with pytest.raises(Exception) as e:
+        async for _, _, _ in Akamai_SIEM.get_events_from_akamai(client=client,
+                                                                config_ids="50170",
+                                                                from_time="1 day",
+                                                                page_size=100,
+                                                                offset="test_offset",
+                                                                max_concurrent_tasks=300):
+            pass
+    assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
+    demisto_debug.assert_called_with("Running in interval = 1. No events were received from Akamai,going"
+                                     " to sleep for 60 seconds.")
+
+
+@pytest.mark.asyncio
+async def test_process_and_send_events_to_xsiam_skip_events_decoding(mocker):
+    """
+        Given:
+        - 2 non serialized events
+        When:
+        - Calling process_and_send_events_to_xsiam() with should_skip_decode_events=True.
+        Then:
+        - Ensure the events were not modified, and the right logs were printed.
+    """
+    requestHeaders = "Content-Type%3A%20application/json%3Bcharset%3DUTF-8%0Auser%3A%20test%40test.com%0Aclient%3A%20"
+    "test_client%0AX-Kong-Upstream-Latency%3A%2066%0AX-Kong-Proxy-Latency%3A%202%0AX-Kong-Request-Id%3A%20X_request_id%"
+    "0AEPM-Request-ID%3A%20EPM_request_id%0AContent-Length%3A%20157%0ADate%3A%20Mon%2C%2025%20Mar%202024%2013%3A52%3A11"
+    "%20GMT%0AConnection%3A%20keep-alive%0AServer-Timing%3A%20cdn-cache%3B%20desc%3DMISS%0AServer-Timing%3A%20edge%3B"
+    "%20dur%3D23%0AServer-Timing%3A%20origin%3B%20dur%3D72%0AServer-Timing%3A%20intid%3Bdesc%3Ddd%0A"
+    "Strict-Transport-Security%3A%20max-age%3D31536000%20%3B%20includeSubDomains%20%3B%20preload%0A"
+    events = [f'{{"id": 1, "httpMessage": {{"start": 1591303422, "requestHeaders": "{requestHeaders}"}}}}',
+              f'{{"id": 2, "httpMessage": {{"start": 1591303422, "requestHeaders": "{requestHeaders}"}}}}']
+    demisto_info = mocker.patch.object(demisto, 'info')
+    send_events_to_xsiam_akamai = mocker.patch("Akamai_SIEM.send_events_to_xsiam_akamai",
+                                               side_effect=Exception("Interrupted execution"))  # to break endless loop.
+    with pytest.raises(Exception) as e:
+        await Akamai_SIEM.process_and_send_events_to_xsiam(events, should_skip_decode_events=True, offset="test", counter=1)
+    assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
+    assert send_events_to_xsiam_akamai.call_args_list[0][0][0] == events
+    assert isinstance(send_events_to_xsiam_akamai.call_args_list[0][0][0][0], str)
+    demisto_info.assert_has_calls([
+        mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
+        mocker.call("Running in interval = 1. Skipping decode events."),
+        mocker.call(f"Running in interval = 1. Sending {len(events)} events to xsiam. "
+                    "latest event time is: 2020-06-04T20:43:42Z")
+    ])
+
+
+@pytest.mark.asyncio
+async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
+    """
+        Given:
+        - 2 non serialized events
+        When:
+        - Calling process_and_send_events_to_xsiam() with should_skip_decode_events=False.
+        Then:
+        - Ensure the events were loaded decoded correctly, and the right logs were printed.
+    """
+    requestHeaders = "Content-Type%3A%20application/json%3Bcharset%3DUTF-8%0Auser%3A%20test%40test.com%0Aclient%3A%20"
+    "test_client%0AX-Kong-Upstream-Latency%3A%2066%0AX-Kong-Proxy-Latency%3A%202%0AX-Kong-Request-Id%3A%20X_request_id%"
+    "0AEPM-Request-ID%3A%20EPM_request_id%0AContent-Length%3A%20157%0ADate%3A%20Mon%2C%2025%20Mar%202024%2013%3A52%3A11"
+    "%20GMT%0AConnection%3A%20keep-alive%0AServer-Timing%3A%20cdn-cache%3B%20desc%3DMISS%0AServer-Timing%3A%20edge%3B"
+    "%20dur%3D23%0AServer-Timing%3A%20origin%3B%20dur%3D72%0AServer-Timing%3A%20intid%3Bdesc%3Ddd%0A"
+    "Strict-Transport-Security%3A%20max-age%3D31536000%20%3B%20includeSubDomains%20%3B%20preload%0A"
+    events = [f'{{"id": 1, "httpMessage": {{"start": 1491303422, "requestHeaders": "{requestHeaders}"}}}}',
+              f'{{"id": 2, "httpMessage": {{"start": 1591303422, "requestHeaders": "{requestHeaders}"}}}}']
+    demisto_info = mocker.patch.object(demisto, 'info')
+    send_events_to_xsiam_akamai = mocker.patch("Akamai_SIEM.send_events_to_xsiam_akamai",
+                                               side_effect=Exception("Interrupted execution"))  # to break endless loop.
+    with pytest.raises(Exception) as e:
+        await Akamai_SIEM.process_and_send_events_to_xsiam(events, should_skip_decode_events=False, offset="test", counter=1)
+    assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
+    processed_events = [
+        {"id": 1, "httpMessage": {"start": 1491303422, "requestHeaders": {'Content_Type': 'application/json;charset=UTF-8',
+                                                                          'user': 'test@test.com', 'client': ''},
+                                  "responseHeaders": {}}},
+        {"id": 2, "httpMessage": {"start": 1591303422, "requestHeaders": {'Content_Type': 'application/json;charset=UTF-8',
+                                                                          'user': 'test@test.com', 'client': ''},
+                                  "responseHeaders": {}}}
+    ]
+    assert send_events_to_xsiam_akamai.call_args_list[0][0][0] == processed_events
+    assert isinstance(send_events_to_xsiam_akamai.call_args_list[0][0][0][0], dict)
+    demisto_info.assert_has_calls([
+        mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
+        mocker.call("Running in interval = 1. decoding events."),
+        mocker.call(f"Running in interval = 1. Sending {len(events)} events to xsiam. "
+                    "latest event time is: 2020-06-04T20:43:42Z")
+    ])
+
+
+def test_test_fetch_events_long_running_command_flow(mocker, client, caplog):
+    async def test_fetch_events_long_running_command_flow(mocker, client):
+        """
+            Given:
+            - 2 mock response for 2 consecutive requests, one with 2 events, and one with 1 event.
+            When:
+            - Calling fetch_events_long_running_command() with page_size=2.
+            Then:
+            - Ensure the events were fetched and moved to send_events_to_xsiam as expected.
+            The send_events_to_xsiam_akamai function was called once and the 2 requests were sent.
+            The execution went into sleep after the second request as there were less the limit events to fetch.
+            The right log was printed.
+        """
+
+        from Akamai_SIEM import Client
+        requestHeaders = "Content-Type%3A%20application/json%3Bcharset%3DUTF-8%0Auser%3A%20test%40test.com%0Aclient%3A%20"
+        "test_client%0AX-Kong-Upstream-Latency%3A%2066%0AX-Kong-Proxy-Latency%3A%202%0AX-Kong-Request-Id%3A%20X_request_id%"
+        "0AEPM-Request-ID%3A%20EPM_request_id%0AContent-Length%3A%20157%0ADate%3A%20Mon%2C%2025%20Mar%202024%2013%3A52%3A11"
+        "%20GMT%0AConnection%3A%20keep-alive%0AServer-Timing%3A%20cdn-cache%3B%20desc%3DMISS%0AServer-Timing%3A%20edge%3B"
+        "%20dur%3D23%0AServer-Timing%3A%20origin%3B%20dur%3D72%0AServer-Timing%3A%20intid%3Bdesc%3Ddd%0A"
+        "Strict-Transport-Security%3A%20max-age%3D31536000%20%3B%20includeSubDomains%20%3B%20preload%0A"
+        event_1 = f'{{"id": 1, "httpMessage": {{"start": 1, "requestHeaders": "{requestHeaders}"}}}}'
+        event_2 = f'{{"id": 2, "httpMessage": {{"start": 2, "requestHeaders": "{requestHeaders}"}}}}'
+        event_3 = f'{{"id": 3, "httpMessage": {{"start": 3, "requestHeaders": "{requestHeaders}"}}}}'
+        response_mock_1 = f'{event_1}\n{event_2}\n{{"offset": "a"}}'
+        response_mock_2 = f'{event_3}\n{{"offset": "b"}}'
+        execution_count = 0
+
+        def count_execution(*args, **kwargs):
+            nonlocal execution_count
+            execution_count += 1
+            if execution_count == 1:
+                return response_mock_1
+            else:
+                return response_mock_2
+        mocker.patch.object(Client, '_http_request', side_effect=count_execution)
+
+        async def mock_func():
+            return 2
+        demisto_debug = mocker.patch.object(demisto, 'debug')
+        send_events_to_xsiam_akamai = mocker.patch("Akamai_SIEM.send_events_to_xsiam_akamai",
+                                                   side_effect=asyncio.create_task(mock_func()))  # to break endless loop.
+        mocker.patch.object(asyncio, "sleep", side_effect=Exception("Interrupted execution"))  # to break endless loop.
+        with pytest.raises(Exception) as e:
+            await Akamai_SIEM.fetch_events_long_running_command(client, "5 minutes", 2, "50170", {}, True, 5)
+        assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
+        assert send_events_to_xsiam_akamai.call_count == 1
+        assert execution_count == 2
+        assert send_events_to_xsiam_akamai.call_args_list[0][0][0] == [event_1, event_2]
+        demisto_debug.assert_called_with(
+            'Running in interval = 2. got 1 events which is less than 0.95 % of the page_size=2, going to sleep for 60 seconds.')
+    asyncio.run(test_fetch_events_long_running_command_flow(mocker, client))
+    caplog.clear()

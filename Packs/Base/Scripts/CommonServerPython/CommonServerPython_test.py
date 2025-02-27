@@ -18,7 +18,7 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import (find_and_remove_sensitive_text, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
+from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
                                 flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList,
                                 remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
                                 get_demisto_version, IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger,
@@ -9754,10 +9754,26 @@ def test_create_clickable_test_wrong_text_value():
         "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer <XX_REPLACED>\\r\\n"
     ),
     (
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: JWT token123\\r\\n",
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: JWT <XX_REPLACED>\\r\\n"
+    ),
+    (
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'",
         str("send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'")
     ),
-])
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\apiKey: 1234\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\apiKey: <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\credentials: {'good':'day'}\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\credentials: <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\client_name: client\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\client_name: <XX_REPLACED>\\r\\n'"
+    ),],
+    ids=["Bearer", "Cookie", "Authorization", "Bearer", "JWT", "No change", "Key", "credential", "client"],)
 def test_censor_request_logs(request_log, expected_output):
     """
     Given:
@@ -9994,73 +10010,3 @@ def test_get_engine_base_url(mocker):
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     res = get_engine_base_url('1111')
     assert res == '11.111.111.33:443'
-
-
-@pytest.mark.parametrize('input_text, pattern, expected_output, call_count', [
-    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234',
-                 r'(token:\s*)(\S+)', '1234', 1, id='Match token value'),
-    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', r'(invalid_grant: java.security.SignatureException: Invalid signature for token: 1234)',
-                 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', 1, id='Match entire string')
-])
-def test_find_and_remove_sensitive_text__found_onc(input_text, pattern, expected_output, call_count, mocker):
-    """
-    Given:
-    - Input text that includes sensitive information.
-
-    When:
-    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for sensitive information.
-
-    Then:
-    - Verify that the function responsible for removing sensitive information from the logs is called with the sensitive data as an argument.
-    - Verify that the function is called the correct number of times.
-
-    """
-    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234'
-    mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
-    find_and_remove_sensitive_text(input_text, pattern)
-
-    assert mock_remove_from_logs.call_count == call_count
-    assert mock_remove_from_logs.call_args[0][0] == expected_output
-
-
-@pytest.mark.parametrize('pattern, expected_output, call_count', [
-    pytest.param(r'n', ['n', 'n', 'n', 'n', 'n', 'n', 'n'], 7, id='Match character "n"'),
-    pytest.param(r'(?i)invalid', ['invalid', 'Invalid'], 2, id='Match word "invalid" case insensitive')
-])
-def test_find_and_remove_sensitive_text__found_multiple(pattern, expected_output, call_count, mocker):
-    """
-    Given:
-    - Input text that includes sensitive information.
-
-    When:
-    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for a sensitive information.
-
-    Then:
-        verify that the function responsible for removing sensitive information from the logs is called with the sensitive data as an argument.
-        verify that the function is called the correct number of times.
-    """
-    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234'
-    mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
-    find_and_remove_sensitive_text(input_text, pattern)
-    assert mock_remove_from_logs.call_count == call_count
-    for x in range(call_count):
-        assert mock_remove_from_logs.call_args_list[x][0][0] == expected_output[x]
-
-
-def test_find_and_remove_sensitive_text__not_found(mocker):
-    """
-    Given:
-    - Input text that does not contain any sensitive information (e.g., no word following "token:").
-
-    When:
-    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for a sensitive information (the word following "token:").
-
-    Then:
-    - Ensure that the function does not remove anything from the logs.
-    """
-
-    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for text: 1234'
-    mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
-    find_and_remove_sensitive_text(input_text, r'(token:\s*)(\S+)')
-
-    mock_remove_from_logs.assert_not_called()
