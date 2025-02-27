@@ -380,6 +380,31 @@ def test_update_remote_system_command(client, mocker):
     mock_debug.assert_called()  # Ensure debug logs are being generated
     mock_error.assert_not_called()  # Ensure no errors were logged
 
+def test_update_remote_system_command_exception(client, mocker):
+    """Test update_remote_system_command function."""
+
+    # Mocking demisto functions using mocker.patch.object
+    mock_debug = mocker.patch.object(demisto, "debug")
+    mock_error = mocker.patch.object(demisto, "error")
+
+    args = {
+        "data": {"queue_state": "archived"},
+        "incidentChanged": True,
+        "remoteId": "123",
+    }
+
+
+    # Run the function
+    result = update_remote_system_command(client, args)
+
+    # Assertions
+    # Verify demisto.error was called with the expected error message
+    demisto.error.assert_called_with(
+        "Doppel - Error in outgoing mirror for incident 123 \nError message: Test exception"
+    )
+
+    assert result == "123", "Returned remoteId should match input"
+
 
 def test_update_remote_system_incident_not_closed():
     """Test update_remote_system_command when the incident is not closed."""
