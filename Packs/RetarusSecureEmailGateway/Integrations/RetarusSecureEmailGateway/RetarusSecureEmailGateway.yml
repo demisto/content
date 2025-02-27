@@ -52,7 +52,7 @@ script:
   - name: "retarus-get-last-run-results"
     description: Retrieves the results of a connection attempt to Retarus, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
   subtype: python3
-  dockerimage: demisto/netutils:1.0.0.115452
+  dockerimage: demisto/netutils:1.0.0.2067260
   longRunning: true
 marketplaces:
 - marketplacev2
