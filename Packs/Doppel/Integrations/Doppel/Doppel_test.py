@@ -276,6 +276,7 @@ def test_doppel_get_alert_command_with_missing_params(client):
     with pytest.raises(ValueError):
         doppel_get_alert_command(client, args)
 
+
 def mock_no_alert_found(*args, **kwargs):
     raise DemistoException('No alert found with the given parameters.')
 
@@ -312,6 +313,37 @@ def test_doppel_update_alert_command(mocker):
     assert result.outputs_prefix == "Doppel.UpdatedAlert", "Incorrect outputs prefix"
     assert result.outputs_key_field == "id", "Incorrect key field"
     assert result.outputs == {"id": "123", "queue_state": "archived", "entity_state": "closed"}, "Unexpected output"
+
+
+def test_doppel_update_alert_command_negative_cases():
+    """Test doppel_update_alert_command for various negative scenarios."""
+
+    mock_client = MagicMock()
+
+    # Case 1: Both alert_id and entity are provided
+    args_conflict = {
+        "alert_id": "123",
+        "entity": "some_entity",
+        "queue_state": "archived"
+    }
+    with pytest.raises(ValueError, match="Only one of 'alert_id' or 'entity' can be specified."):
+        doppel_update_alert_command(mock_client, args_conflict)
+
+    # Case 2: No update fields provided
+    args_missing_fields = {
+        "alert_id": "123"
+    }
+    with pytest.raises(ValueError, match="At least one of 'queue_state', 'entity_state', or 'comment' must be provided."):
+        doppel_update_alert_command(mock_client, args_missing_fields)
+
+    # Case 3: API Failure (Simulated by raising an exception in mock)
+    mock_client.update_alert.side_effect = Exception("API error: Alert not found")
+    args_api_error = {
+        "alert_id": "999",
+        "queue_state": "archived"
+    }
+    with pytest.raises(Exception, match="Failed to update the alert with the given parameters :- API error: Alert not found"):
+        doppel_update_alert_command(mock_client, args_api_error)
 
 
 def test_doppel_update_alert_command_with_entity(client, mocker):
@@ -472,7 +504,6 @@ def test_doppel_create_abuse_alert_command_missing_entity(client):
     with pytest.raises(ValueError, match="Entity must be specified to create an abuse alert."):
         doppel_create_abuse_alert_command(client, args)
 
-import pytest
 
 def test_get_modified_remote_data_command(mocker):
     """
