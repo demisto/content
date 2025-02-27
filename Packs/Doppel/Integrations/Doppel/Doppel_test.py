@@ -1011,8 +1011,8 @@ def test_get_remote_updated_incident_data_with_entry():
     mock_client.get_alert.return_value = {
         "id": doppel_alert_id,
         "audit_logs": [
-            {"timestamp": "2025-02-24T15:00:00.120000Z", "action": "Updated"},
-            {"timestamp": "2025-02-23T14:00:00.500000Z", "action": "Created"}
+            {"timestamp": "2024-11-27T06:51:50.357664", "type": "alert_create"},
+            {"timestamp": "2024-11-27T06:51:50.357664", "type": "alert_create"}
         ]
     }
 
