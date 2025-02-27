@@ -285,12 +285,12 @@ tasks:
       version: -1
       name: Retrieve all incident alerts
       description: |-
-        Searches Cortex XSIAM alerts. A summarized version of this scrips is available with the summarizedversion argument.
+        Searches Cortex XSIAM alerts. A summarized version of this script is available with the summarizedversion argument.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
 
-        For Cortex.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
+        For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
 
         For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
 
@@ -576,7 +576,7 @@ tasks:
       id: cd768fe6-4308-492c-8f3f-02d4d77daf5d
       version: -1
       name: Terminate target process
-      description: Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
+      description: Terminate a process by its instance ID. Available only for Cortex XSIAM 2.4 and above.
       script: '|||core-terminate-process'
       type: regular
       iscommand: true
@@ -1046,7 +1046,7 @@ tasks:
       id: d5bfd9fb-9daf-442c-8107-77255db16b94
       version: -1
       name: Check for suspicious process tree
-      description: Checks if a suspicious process execution chain detected. This Indicates high probability of malicious behavior.
+      description: Checks if a suspicious process execution chain was detected. This Indicates a high probability of malicious behavior.
       type: condition
       iscommand: false
       brand: ""
@@ -1192,7 +1192,7 @@ tasks:
       id: de317f0e-4b02-4628-81fa-134576939a13
       version: -1
       name: Get endpoint status
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of the endpoint from the start of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -1290,7 +1290,7 @@ tasks:
       id: 2aabb75e-d911-4d92-8974-0891c6156934
       version: -1
       name: Terminate causality process
-      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4 and above.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true

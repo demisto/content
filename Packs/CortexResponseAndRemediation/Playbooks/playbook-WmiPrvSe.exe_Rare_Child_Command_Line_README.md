@@ -1,4 +1,4 @@
-This playbook addresses the following alerts:
+This playbook addresses the following alert:
 
 * WmiPrvSe.exe Rare Child Command Line
 
