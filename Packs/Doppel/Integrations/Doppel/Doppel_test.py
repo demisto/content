@@ -992,3 +992,49 @@ def test_get_mirroring_fields():
     }
     
     assert _get_mirroring_fields() == expected_result
+
+
+def test_get_remote_updated_incident_data_with_entry():
+    """Test _get_remote_updated_incident_data_with_entry with mock data."""
+
+    # Mock client
+    mock_client = MagicMock()
+
+    # Test data
+    doppel_alert_id = "12345"
+    last_update_str = "2025-02-24T14:30:00.120000Z"  # Ensure valid format
+
+    # Mock API response with consistent timestamp format
+    mock_client.get_alert.return_value = {
+        "id": doppel_alert_id,
+        "audit_logs": [
+            {"timestamp": "2025-01-01T00:00:00.000000Z", "action": "Updated"},
+            {"timestamp": "2025-01-02T00:00:00.500000Z", "action": "Created"}
+        ]
+    }
+
+    # Ensure timestamp format consistency
+    def normalize_timestamp(ts):
+        """Convert timestamps to match expected format"""
+        return ts.replace("Z", "") if "." in ts else ts.replace("Z", ".000000")
+
+    # Normalize timestamps in mock response
+    for log in mock_client.get_alert.return_value["audit_logs"]:
+        log["timestamp"] = normalize_timestamp(log["timestamp"])
+
+    # Normalize last_update_str
+    last_update_str = normalize_timestamp(last_update_str)
+
+    # Call function
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, doppel_alert_id, last_update_str
+    )
+
+    # Debugging output (optional)
+    print("Updated Alert:", updated_alert)
+    print("Entries:", entries)
+
+    # Assertions
+    assert updated_alert is not None, "Updated alert should not be None"
+    assert isinstance(entries, list), "Entries should be a list"
+    assert all(isinstance(entry, dict) for entry in entries), "Entries should contain dictionaries"
