@@ -66,7 +66,7 @@ class Client(BaseClient):
             params=params,
             json_data=data,
             resp_type="response",
-            ok_codes=(401, 403, 200, 201, 302),
+            ok_codes=(401, 403, 200, 201, 302, 404),
         )
         if response.status_code in (200, 201):
             return response.json() if not pdf else response
@@ -81,7 +81,7 @@ class Client(BaseClient):
         token = self.get_access_token(create_new_token=True)
         headers["Authorization"] = f'Bearer {token}'
 
-        return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params, json_data=data)
+        return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params, json_data=data, ok_codes=(404,))
 
     def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_MAX_FETCH) -> List[dict[str, Any]]:
         """
@@ -166,6 +166,109 @@ class Client(BaseClient):
         """
         return self.http_request(method='GET', url_suffix="/api/v2/reports",
                                  params=params).get("reports") or []  # type: ignore
+
+    def get_report_by_id(self, id: str, pdf: bool) -> dict[str, Any] | Response:
+        """
+        Retrieves a report by its ID.
+
+        Args:
+            id (str): The ID of the report.
+            pdf (bool): Whether to retrieve the report in PDF format.
+
+        Returns:
+            dict[str, Any] | Response: The report data or response object.
+        """
+        endpoint = f"/api/v1/reports/{id}"
+        endpoint += "/pdf" if pdf else ""
+        return self.http_request("GET", endpoint, pdf=pdf)
+
+    def get_mirror_report(self, id: str, csv: bool) -> dict[str, Any] | Response:
+        """
+        Retrieves a mirrored report by its ID.
+
+        Args:
+            id (str): The ID of the report.
+            csv (bool): Whether to retrieve the report in CSV format.
+
+        Returns:
+            dict[str, Any] | Response: The mirrored report data or response object.
+        """
+        endpoint = f"/api/v1/reports/{id}/mirror"
+        endpoint += "/csv" if csv else ""
+        return self.http_request("GET", endpoint, csv=True)
+
+    def get_archive_report(self, id: str) -> dict[str, Any] | Response:
+        """
+        Retrieves an archived mirrored report by its ID.
+
+        Args:
+            id (str): The ID of the report.
+
+        Returns:
+            dict[str, Any] | Response: The archived report data or response object.
+        """
+        endpoint = f"/api/v1/reports/{id}/mirror/archive"
+        return self.http_request("GET", endpoint, csv=True)
+
+    def status_update(self, reports_ids: list, status: str):
+        """
+        Updates the status of multiple reports.
+
+        Args:
+            reports_ids (list): A list of report IDs to update.
+            status (str): The new status to apply.
+
+        Returns:
+            dict[str, Any] | Response: The response from the API.
+        """
+        data = {"ids": reports_ids, "status": status}
+        return self.http_request("POST", "/api/v1/reports/status", data=data)
+
+    def get_report_comment(self, id: str, data: dict = {}) -> dict[str, Any] | Response:
+        """
+        Retrieves or creates a comment for a report.
+
+        Args:
+            id (str): The ID of the report.
+            data (dict, optional): The comment data to create. Defaults to an empty dictionary.
+
+        Returns:
+            dict[str, Any] | Response: The report comment data or response object.
+        """
+        # Using POST method to create new comment
+        method = "POST" if data else "GET"
+        return self.http_request(method, f"/api/v1/reports/{id}/comments", data=data)
+
+    def get_report_attachment(
+        self, report_id: str, attachment_id: str
+    ) -> dict[str, Any] | Response:
+        """
+        Retrieves an attachment from a report.
+
+        Args:
+            report_id (str): The ID of the report.
+            attachment_id (str): The ID of the attachment.
+
+        Returns:
+            dict[str, Any] | Response: The report attachment data or response object.
+        """
+        return self.http_request(
+            "GET", f"/api/v1/reports/{report_id}/attachments/{attachment_id}", pdf=True
+        )
+
+    def post_report_remediation_request(self, data: dict) -> dict[str, Any] | Response:
+        """
+        Submits a remediation request for a report.
+
+        Args:
+            data (dict): The remediation request data.
+
+        Returns:
+            dict[str, Any] | Response: The response from the API.
+        """
+        return self.http_request(
+            "POST", "/api/v1/reports/remediation-request", data=data
+        )
 
 
 def dedup_fetched_events(
@@ -283,7 +386,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-def cybelangel_report_list_command(client: Client, args) -> CommandResults:
+def cybelangel_report_list_command(client: Client, args: dict) -> CommandResults:
     """Retrieves a list of reports within the specified date range."""
 
     start_date = arg_to_datetime(args.get("start_date"))
@@ -294,39 +397,33 @@ def cybelangel_report_list_command(client: Client, args) -> CommandResults:
         outputs_prefix="CybelAngel.Report",
         outputs_key_field="id",
         outputs=response,
-        readable_output="All reports retrieved.",
+        # readable_output="All reports retrieved.",
     )
 
 
-def cybelangel_report_get_command(client: Client, args) -> CommandResults | dict:
+def cybelangel_report_get_command(client: Client, args: dict) -> CommandResults | dict:
     """Retrieves details of a specific report by ID, optionally as a PDF."""
-    report_id = args.get("report_id")
+    report_id = args.get("report_id", "")
     pdf = argToBoolean(args.get("pdf", "false"))
-
-    endpoint = f"/api/v1/reports/{report_id}"
-    endpoint += "/pdf" if pdf else ""
-    response = client.http_request("GET", f"/api/v2/reports/{report_id}", pdf=pdf)
+    response = client.get_report_by_id(report_id, pdf=pdf)
     if pdf:
         return fileResult(f"cybelangel_report_{report_id}.pdf", response.content, EntryType.ENTRY_INFO_FILE)  # type: ignore
     return CommandResults(
         outputs_prefix="CybelAngel.Report",
+        outputs_key_field="id",
         outputs=response,
-        readable_output=f"Report ID {report_id} retrieved.",
+        # readable_output=f"Report ID {report_id} retrieved.",
     )
 
 
-def cybelangel_mirror_report_get_command(client: Client, args) -> CommandResults | dict:
+def cybelangel_mirror_report_get_command(client: Client, args: dict) -> CommandResults | dict:
     """Retrieves mirror details for a report, optionally as a CSV file."""
-    report_id = args.get("report_id")
+    report_id = args.get("report_id", "")
     csv = argToBoolean(args.get("csv", "false"))
+    response = client.get_mirror_report(report_id, csv)
 
-    endpoint = f"/api/v1/reports/{report_id}/mirror"
-    endpoint += "/csv" if csv else ""
-    try:
-        response = client.http_request("GET", endpoint, csv=True)
-    except Exception as e:
-        if "Mirror details not found" in str(e):
-            return_error(f"Mirror details not found for this report ID: {report_id}.")
+    if isinstance(response, dict) and "title" in response:
+        return CommandResults(raw_response=response, readable_output=f"{response.get('title')}")
 
     if csv:
         return fileResult(
@@ -339,18 +436,17 @@ def cybelangel_mirror_report_get_command(client: Client, args) -> CommandResults
         outputs_prefix="CybelAngel.ReportMirror",
         outputs_key_field="report_id",
         outputs=response,
-        readable_output=f"Mirror details for Report ID {report_id} retrieved.",
+        # readable_output=f"Mirror details for Report ID {report_id} retrieved.",
     )
 
 
-def cybelangel_archive_report_by_id_get_command(client: Client, args) -> dict:
+def cybelangel_archive_report_by_id_get_command(client: Client, args: dict) -> CommandResults | dict:
     """Retrieves the archived mirror of a report as a ZIP file."""
-    report_id = args.get("report_id")
-    try:
-        response = client.http_request("GET", f"/api/v1/reports/{report_id}/mirror/archive", csv=True)
-    except Exception as e:
-        if "No mirrored archive" in str(e):
-            return_error(f"No mirrored archive found for report: ID: {report_id}.")
+    report_id = args.get("report_id", "")
+
+    response = client.get_archive_report(report_id)
+    if isinstance(response, dict) and "title" in response:
+        return CommandResults(raw_response=response, readable_output=f"{response.get('title')}")
 
     return fileResult(
         f"cybelangel_archive_report_{report_id}.zip",
@@ -359,73 +455,70 @@ def cybelangel_archive_report_by_id_get_command(client: Client, args) -> dict:
     )
 
 
-def cybelangel_report_status_update_command(client: Client, args) -> CommandResults:  # pragma: no cover
+def cybelangel_report_status_update_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """Updates the status of one or multiple reports."""
     report_ids = argToList(args.get("report_ids"))
-    status = args.get("status")
+    status = args.get("status", "")
 
-    client.http_request(
-        "POST", "/api/v1/reports/status", data={"ids": report_ids, "status": status}
-    )
+    client.status_update(report_ids, status)
 
     return CommandResults(
         readable_output=f"Status of {args.get('report_ids')} was successfully updated."
     )
 
 
-def cybelangel_report_comments_get_command(client: Client, args) -> CommandResults:
+def cybelangel_report_comments_get_command(client: Client, args: dict) -> CommandResults:
     """Retrieves comments for a specific report by ID."""
-    report_id = args.get("report_id")
+    report_id = args.get("report_id", "")
 
-    response = client.http_request("GET", f"/api/v1/reports/{report_id}/comments")
+    response = client.get_report_comment(report_id)
 
     return CommandResults(
         outputs_prefix="CybelAngel.Report.Comments",
+        outputs_key_field="id",
         outputs=response,
-        readable_output=f"Comments for Report ID {report_id} retrieved.",
+        # readable_output=f"Comments for Report ID {report_id} retrieved.",
     )
 
 
-def cybelangel_report_comment_create_command(client: Client, args) -> CommandResults:
+def cybelangel_report_comment_create_command(client: Client, args: dict) -> CommandResults:
     """Adds a comment to a specific report."""
-    report_id = args.get("report_id")
+    report_id = args.get("report_id", "")
     content = args.get("content")
     parent_id = args.get("parent_id")
     assigned = argToBoolean(args.get("assigned", "false"))
 
-    comments_response = client.http_request(
-        "GET", f"/api/v1/reports/{report_id}/comments"
-    )
-
-    discussion_id = comments_response.get("comments", [])[0].get("discussion_id")  # type: ignore
+    comments_response = client.get_report_comment(report_id).get("comments", [])  # type: ignore
+    if comments_response:
+        discussion_id = comments_response[0].get("discussion_id")
 
     data = {
         "content": content,
-        "discussion_id": discussion_id,
-        "parent_id": parent_id,
-        "assigned": assigned if assigned == "True" else "",
+        "discussion_id": discussion_id
     }
-    remove_nulls_from_dictionary(data)
+    if parent_id:
+        data["parent_id"] = parent_id
+    if assigned:
+        data["assigned"] = assigned
 
-    response = client.http_request(
-        "POST", f"/api/v1/reports/{report_id}/comments", data=data
-    )
+    response = client.get_report_comment(report_id, data=data)
 
     return CommandResults(
         outputs_prefix="CybelAngel.Report.Comments",
+        outputs_key_field="id",
         outputs=response,
-        readable_output=f"Comment added to Report ID {report_id}.",
+        # readable_output=f"Comment added to Report ID {report_id}.",
     )
 
 
-def cybelangel_report_attachment_get_command(client: Client, args) -> dict:  # pragma: no cover
+def cybelangel_report_attachment_get_command(client: Client, args: dict) -> dict | CommandResults:  # pragma: no cover
     """Retrieves a specific attachment from a report."""
-    report_id = args.get("report_id")
-    attachment_id = args.get("attachment_id")
+    report_id = args.get("report_id", "")
+    attachment_id = args.get("attachment_id", "")
 
-    response = client.http_request(
-        "GET", f"/api/v1/reports/{report_id}/attachments/{attachment_id}", pdf=True
-    )
+    response = client.get_report_attachment(report_id, attachment_id)
+    if isinstance(response, dict) and "title" in response:
+        return CommandResults(raw_response=response, readable_output=f"{response.get('title')}")
 
     return fileResult(
         f"cybelangel_report_{report_id}_attachment_{attachment_id}.csv",
@@ -434,7 +527,7 @@ def cybelangel_report_attachment_get_command(client: Client, args) -> dict:  # p
     )
 
 
-def cybelangel_report_remediation_request_create_command(client: Client, args) -> CommandResults:  # pragma: no cover
+def cybelangel_report_remediation_request_create_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """Creates a remediation request for a report."""
     report_id = args.get("report_id")
     requestor_email = args.get("requestor_email")
@@ -446,10 +539,11 @@ def cybelangel_report_remediation_request_create_command(client: Client, args) -
         "requester_fullname": requestor_fullname,
     }
 
-    response = client.http_request("POST", "/api/v1/reports/remediation-request", data=data)
+    response = client.post_report_remediation_request(data)
 
     return CommandResults(
         outputs_prefix="CybelAngel.Report.RemediationRequest",
+        outputs_key_field="report_id",
         outputs=response,
         readable_output=f"Remediation request was created for {report_id}."
     )

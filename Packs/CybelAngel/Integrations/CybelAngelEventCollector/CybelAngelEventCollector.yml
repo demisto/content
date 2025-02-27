@@ -92,7 +92,7 @@ script:
     outputs:
     - contextPath: CybelAngel.Report
       description: 'The retrieved report(s).'
-    - contextPath: File.EntryID
+    - contextPath: InfoFile.EntryID
       description: 'Entry ID of the saved PDF file.'
       type: String
   - name: cybelangel-mirror-report-get
@@ -112,8 +112,8 @@ script:
     outputs:
     - contextPath: CybelAngel.ReportMirror
       description: 'Mirror details of the report.'
-    - contextPath: CybelAngel.ReportMirror.CSV
-      description: 'CSV file with mirror details.'
+    - contextPath: InfoFile.EntryID
+      description: 'Entry ID of the saved CSV file.'
   - name: cybelangel-archive-report-by-id-get
     description: 'Retrieve an archived report by ID.'
     arguments:
@@ -178,7 +178,7 @@ script:
       description: 'The ID of the attachment.'
       required: true
     outputs:
-    - contextPath: File.EntryID
+    - contextPath: InfoFile.EntryID
       description: 'Entry ID of the retrieved file.'
   - name: cybelangel-report-remediation-request-create
     description: 'Create a remediation request for a report.'

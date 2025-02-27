@@ -360,7 +360,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CybelAngel.ReportMirror.files_volume}
+              simple: ${CybelAngel.ReportMirror.report_id}
             iscontext: true
     continueonerrortype: ""
     view: |-
