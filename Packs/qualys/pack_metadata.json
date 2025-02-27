@@ -2,7 +2,7 @@
     "name": "Qualys",
     "description": "Qualys Vulnerability Management let's you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance",
     "support": "xsoar",
-    "currentVersion": "3.1.6",
+    "currentVersion": "3.2.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

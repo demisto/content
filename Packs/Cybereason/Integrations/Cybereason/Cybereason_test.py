@@ -417,6 +417,38 @@ def test_update_malop_status_command(mocker):
     assert exc_info.match(r"Invalid status.")
 
 
+def test_update_malop_investigation_status_command(mocker):
+    from Cybereason import update_malop_investigation_status_command
+    from Cybereason import Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://test.server.com:8888",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {"malopGuid": "11.-7780537507363356527", "investigationStatus": "Under Investigation"}
+    raw_response = {
+        'status': "SUCCESS"
+    }
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
+    command_output = update_malop_investigation_status_command(client, args)
+    assert command_output.outputs['GUID'] == "11.-7780537507363356527"
+    assert command_output.outputs['InvestigationStatus'] == "Under Investigation"
+
+    raw_response = {
+        'status': "SUCESS"
+    }
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
+    with pytest.raises(Exception) as exc_info:
+        command_output = update_malop_investigation_status_command(client, args)
+    assert exc_info.match(r"message")
+
+    args = {"malopGuid": "11.-7780537507363356527", "investigationStatus": "test"}
+    with pytest.raises(Exception) as exc_info:
+        command_output = update_malop_investigation_status_command(client, args)
+    assert exc_info.match(r"Invalid investigation status")
+
+
 def test_prevent_file_command(mocker):
     from Cybereason import prevent_file_command
     from Cybereason import Client
