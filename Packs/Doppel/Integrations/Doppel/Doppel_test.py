@@ -1006,7 +1006,7 @@ def test_get_remote_updated_incident_data_with_entry():
 
     # Test data
     doppel_alert_id = "12345"
-    last_update_str = "2025-02-24T14:30:00.12Z"
+    last_update_str = "2025-02-24T14:30:00.120000Z"
 
     # Mock API response
     mock_client.get_alert.return_value = {
