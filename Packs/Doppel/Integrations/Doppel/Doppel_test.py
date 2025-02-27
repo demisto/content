@@ -385,15 +385,15 @@ def test_update_remote_system_command_exception(client, mocker):
     """Test update_remote_system_command function."""
 
     # Mocking demisto functions using mocker.patch.object
-    mock_debug = mocker.patch.object(demisto, "debug")
-    mock_error = mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, 'command', return_value='update-remote-system')
 
     args = {
         "data": {"queue_state": "archived"},
         "incidentChanged": True,
         "remoteId": "123",
     }
-
 
     # Run the function
     result = update_remote_system_command(client, args)
@@ -407,8 +407,12 @@ def test_update_remote_system_command_exception(client, mocker):
     assert result == "123", "Returned remoteId should match input"
 
 
-def test_update_remote_system_incident_not_closed():
+def test_update_remote_system_incident_not_closed(mocker, capfd):
     """Test update_remote_system_command when the incident is not closed."""
+    
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'command', return_value='update-remote-system')
     
     client = MagicMock()
     args = {
@@ -419,14 +423,11 @@ def test_update_remote_system_incident_not_closed():
         'inc_status': 1  # Not DONE (assuming DONE = 2)
     }
     
-    with patch("demisto.debug") as mock_debug:
+    with capfd.disabled():
         result = update_remote_system_command(client, args)
-    
-    # Ensure the function returns the remote ID without updating anything
-    assert result == '123456'
-    
-    # Verify that the debug log contains the correct message
-    mock_debug.assert_any_call('Incident not closed. Skipping update for remote ID [123456].')
+
+    demisto.debug.assert_called_with("Incident not closed. Skipping update for remote ID [123456].")
+
 
 
 def test_get_mapping_fields_command(client, mocker):
