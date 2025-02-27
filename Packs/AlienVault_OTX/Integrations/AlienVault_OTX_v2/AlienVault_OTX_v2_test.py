@@ -774,7 +774,7 @@ def test_delete_duplicated_entities(entities_list, field_name, expected_results)
     assert delete_duplicated_entities(entities_list, field_name) == expected_results
 
 
-def test_query_function_return_timeout_error():
+def test_ip_function_return_timeout_error():
     """
     Given
     - A client configured with should_error=True.
@@ -791,10 +791,10 @@ def test_query_function_return_timeout_error():
     client._http_request = MagicMock()
     client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
     with pytest.raises(requests.exceptions.ReadTimeout) as e:
-        ip_command(client, ip_address='9.9.9.9', ip_version='9.9.9.9')
+        ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
     assert e.value.args[0] == 'Request timed out'
 
-def test_query_function_return_timeout_warning():
+def test_ip_function_return_timeout_warning():
     """
     Given
     - A client configured with should_error=False.
@@ -811,6 +811,131 @@ def test_query_function_return_timeout_warning():
                     reliability='', should_error=False)
     client._http_request = MagicMock()
     client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
-    result = ip_command(client, ip_address='9.9.9.9', ip_version='9.9.9.9')
-    assert result[0].readable_output == '### Results:\n|IP|Result|\n|---|---|\n| 9.9.9.9 | Not found |\n'
+    result = ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
+    assert result[0].readable_output == '### Results:\n|IP|Result|\n|---|---|\n| 1.2.3.4 | Not found |\n'
+    
+    
+def test_domain_function_return_timeout_error():
+    """
+    Given
+    - A client configured with should_error=True.
+    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
+
+    When
+    - Calling domain_command with an IP address.
+
+    Then
+    - Ensure a ReadTimeout exception is raised.
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=True)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
+    with pytest.raises(requests.exceptions.ReadTimeout) as e:
+        domain_command(client, domain='aaaaaa')
+    assert e.value.args[0] == 'Request timed out'
+
+def test_domain_function_return_timeout_warning():
+    """
+    Given
+    - A client configured with should_error=False.
+    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
+
+    When
+    - Calling ip_command with an IP address.
+
+    Then
+    - Ensure the function does not raise an exception.
+    - Ensure the returned result contains a readable output indicating "Not found".
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=False)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
+    result = domain_command(client, domain='aaaaaa')
+    assert result[0].readable_output == '### Results:\n|DOMAIN|Result|\n|---|---|\n| aaaaaa | Not found |\n'
+
+
+def test_file_function_return_timeout_error():
+    """
+    Given
+    - A client configured with should_error=True.
+    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
+
+    When
+    - Calling file_command with an IP address.
+
+    Then
+    - Ensure a ReadTimeout exception is raised.
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=True)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
+    with pytest.raises(requests.exceptions.ReadTimeout) as e:
+        file_command(client, file='aaaaaa')
+    assert e.value.args[0] == 'Request timed out'
+
+def test_file_function_return_timeout_warning():
+    """
+    Given
+    - A client configured with should_error=False.
+    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
+
+    When
+    - Calling ip_command with an IP address.
+
+    Then
+    - Ensure the function does not raise an exception.
+    - Ensure the returned result contains a readable output indicating "Not found".
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=False)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
+    result = file_command(client, file="11111111111111111111111111111111")
+    assert result[0].readable_output == ('### Results:\n|MD5|Result|\n|---|---|\n| 11111111111111111111111111111111 | Not found '
+                                         '|\n')
+
+
+def test_url_function_return_timeout_error():
+    """
+    Given
+    - A client configured with should_error=True.
+    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
+
+    When
+    - Calling file_command with an IP address.
+
+    Then
+    - Ensure a ReadTimeout exception is raised.
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=True)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
+    with pytest.raises(requests.exceptions.ReadTimeout) as e:
+        url_command(client, url='aaaaaa')
+    assert e.value.args[0] == 'Request timed out'
+
+
+def test_url_function_return_timeout_warning():
+    """
+    Given
+    - A client configured with should_error=False.
+    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
+
+    When
+    - Calling ip_command with an IP address.
+
+    Then
+    - Ensure the function does not raise an exception.
+    - Ensure the returned result contains a readable output indicating "Not found".
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=False)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
+    result = url_command(client, url='aaaaaa')
+    assert result[0].readable_output == '### Results:\n|URL|Result|\n|---|---|\n| aaaaaa | Not found |\n'
         

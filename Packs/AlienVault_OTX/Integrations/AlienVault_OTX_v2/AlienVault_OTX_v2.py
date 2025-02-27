@@ -84,12 +84,6 @@ class Client(BaseClient):
                     raise
             else:
                 raise
-        except requests.exceptions.ReadTimeout as e:
-            if self.should_error:
-                raise e
-            demisto.error(f"An error was raised {e=}")
-            return_warning(f"{e}")
-            return {}
 
 
 ''' HELPER FUNCTIONS '''
@@ -348,8 +342,16 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
     command_results: List[CommandResults] = []
 
     for ip_ in ips_list:
-        raw_response = client.query(section=ip_version,
-                                    argument=ip_)
+        try:
+            raw_response = client.query(section=ip_version,
+                                        argument=ip_)
+        except requests.exceptions.ReadTimeout as e:
+            if client.should_error:
+                raise e
+            demisto.error(f"An error was raised {e=}")
+            return_warning(f"{e}")
+            raw_response = {}
+
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
             relationships = relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
@@ -417,7 +419,15 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for domain in domains_list:
-        raw_response = client.query(section='domain', argument=domain)
+        try:
+            raw_response = client.query(section='domain', argument=domain)
+        except requests.exceptions.ReadTimeout as e:
+            if client.should_error:
+                raise e
+            demisto.error(f"An error was raised {e=}")
+            return_warning(f"{e}")
+            raw_response = {}
+
         if raw_response and raw_response != 404:
             relationships = relationships_manager(client, entity_a=domain, indicator_type='domain',
                                                   entity_a_type=FeedIndicatorType.Domain, indicator=domain,
@@ -475,11 +485,19 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for hash_ in hashes_list:
-        raw_response_analysis = client.query(section='file',
-                                             argument=hash_,
-                                             sub_section='analysis')
-        raw_response_general = client.query(section='file',
-                                            argument=hash_)
+        try:
+            raw_response_analysis = client.query(section='file',
+                                                argument=hash_,
+                                                sub_section='analysis')
+            raw_response_general = client.query(section='file',
+                                                argument=hash_)
+        except requests.exceptions.ReadTimeout as e:
+            if client.should_error:
+                raise e
+            demisto.error(f"An error was raised {e=}")
+            return_warning(f"{e}")
+            raw_response_analysis =  {}
+
         if raw_response_analysis and raw_response_general and (
                 shortcut := dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'],
                                           {})) and raw_response_general != 404 and raw_response_analysis != 404:
@@ -550,7 +568,15 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
     for url in urls_list:
         url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
-        raw_response = client.query(section='url', argument=url)
+        try:
+            raw_response = client.query(section='url', argument=url)
+        except requests.exceptions.ReadTimeout as e:
+            if client.should_error:
+                raise e
+            demisto.error(f"An error was raised {e=}")
+            return_warning(f"{e}")
+            raw_response = 404
+
         if raw_response:
             if raw_response == 404:
                 command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=url,
