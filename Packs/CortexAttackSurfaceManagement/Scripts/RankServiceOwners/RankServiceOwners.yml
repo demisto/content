@@ -19,7 +19,7 @@ comment: Recommend most likely service owners from those surfaced by Cortex ASM 
 commonfields:
   id: RankServiceOwners
   version: -1
-dockerimage: demisto/xpanse-ml-ev2:1.0.0.1858265
+dockerimage: demisto/xpanse-ml-ev2:1.0.0.2038547
 enabled: true
 name: RankServiceOwners
 runas: DBotWeakRole

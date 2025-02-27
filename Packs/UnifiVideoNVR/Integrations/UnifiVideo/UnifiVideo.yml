@@ -139,7 +139,7 @@ script:
       required: true
     description: Gets the frame snapshot that has triggered the motion event.
     name: unifivideo-get-recording-motion-snapshot
-  dockerimage: demisto/unifi-video:1.0.0.114769
+  dockerimage: demisto/unifi-video:1.0.0.2059150
   isfetch: true
   runonce: true
   script: '-'

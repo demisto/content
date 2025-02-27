@@ -31,7 +31,7 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: demisto/bs4-py3:1.0.0.117152
+dockerimage: demisto/bs4-py3:1.0.0.2129847
 fromversion: 6.0.0
 tests:
 - No tests

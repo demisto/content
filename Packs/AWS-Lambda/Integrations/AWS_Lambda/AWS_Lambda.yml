@@ -1343,7 +1343,7 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     outputs: []
-  dockerimage: demisto/boto3py3:1.0.0.115129
+  dockerimage: demisto/boto3py3:1.0.0.2449603
   runonce: false
   subtype: python3
   script: ''
