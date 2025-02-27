@@ -164,7 +164,7 @@ def test_fetch_incidents_timeout(mocker):
 
     # Patch `time.time()` to simulate a gradually increasing time
     original_time = time.time()
-    mocker.patch("time.time", side_effect=lambda: original_time + 100)  # Simulates passing 100s
+    mocker.patch("time.time", side_effect=lambda: original_time + 10)  # Simulates passing 100s
 
     with pytest.raises(DemistoException, match="Fetch incidents - Time out. Please change first_fetch parameter to be more recent one"):
         fetch_incidents_command(client=mock_client, args={})
