@@ -32,8 +32,8 @@ Send events from CybelAngel to XSIAM. Used mainly for debugging.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Get reports from a specific start date. | Required | 
-| end_date | Get reports until a specific end date. If not provided, uses current date. | Required | 
+| start_date | Get reports from a specific start date. | Optional | 
+| end_date | Get reports until a specific end date. If not provided, uses current date. | Optional | 
 
 #### Context Output
 
@@ -426,6 +426,10 @@ Retrieve the mirror details for the specified report.
 
 ***
 Create a new comment on a report.
+
+**Note**:<br>
+This command will be supported only if at least one comment already exists in the report.
+
 
 #### Base Command
 

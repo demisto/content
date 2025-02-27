@@ -25,13 +25,16 @@ configuration:
   type: 0
   required: true
   section: Collect
+  hidden:
+  - xsoar
 - defaultvalue: 30 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: first_fetch
   required: false
   type: 0
   section: Collect
+  hidden:
+  - xsoar
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -68,10 +71,12 @@ script:
     arguments:
     - name: start_date
       description: 'Get reports from a specific start date formatted with ISO 8601.'
-      required: true
-    - name: end_date
-      description: 'Get reports until a specific end date formatted with ISO 8601.'
-      required: true
+      defaultValue: '3 Days ago'
+      required: false
+    - description: 'Get reports until a specific end date formatted with ISO 8601.'
+      defaultValue: 'Now'
+      name: end_date
+      required: false
     outputs:
     - contextPath: CybelAngel.Report
       description: 'The retrieved reports.'

@@ -19,6 +19,7 @@ DEFAULT_MAX_FETCH = 5000
 VENDOR = "cybelangel"
 PRODUCT = "platform"
 DEFAULT_FIRST_FETCH = "30 days"
+INTEGRATION = "Cybelangel"
 
 
 class LastRun(str, Enum):
@@ -394,37 +395,92 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def cybelangel_report_list_command(client: Client, args: dict) -> CommandResults:
-    """Retrieves a list of reports within the specified date range."""
+    """
+    Retrieves a list of reports within the specified date range.
 
+    Args:
+        client (Client): CybelAngel API client.
+        args (dict): Includes optional `start_date` and `end_date`.
+
+    Returns:
+        CommandResults: Report list in table format.
+    """
     start_date = arg_to_datetime(args.get("start_date"))
     end_date = arg_to_datetime(args.get("end_date"))
 
     response = client.get_reports_list({"start-date": start_date, "end-date": end_date})
+    human_readable = tableToMarkdown(
+        f"{INTEGRATION} Reports list",
+        response,
+        headers=[
+            "id",
+            "url",
+            "report_type",
+            "sender",
+            "severity",
+            "status",
+            "updated_at",
+            "report_content",
+        ],
+    )
     return CommandResults(
         outputs_prefix="CybelAngel.Report",
         outputs_key_field="id",
         outputs=response,
-        # readable_output="All reports retrieved.",
+        readable_output=human_readable,
     )
 
 
 def cybelangel_report_get_command(client: Client, args: dict) -> CommandResults | dict:
-    """Retrieves details of a specific report by ID, optionally as a PDF."""
+    """
+    Retrieves a report by ID, optionally as a PDF.
+
+    Args:
+        client (Client): CybelAngel API client.
+        args (dict): Includes `report_id` (required) and `pdf` (optional).
+
+    Returns:
+        CommandResults: Report details, or a PDF file result.
+    """
     report_id = args.get("report_id", "")
     pdf = argToBoolean(args.get("pdf", "false"))
     response = client.get_report_by_id(report_id, pdf=pdf)
     if pdf:
         return fileResult(f"cybelangel_report_{report_id}.pdf", response.content, EntryType.ENTRY_INFO_FILE)  # type: ignore
+    human_readable = tableToMarkdown(
+        f"{INTEGRATION} Report ID {report_id} details.",
+        response,
+        headers=[
+            "id",
+            "url",
+            "report_type",
+            "sender",
+            "severity",
+            "status",
+            "updated_at",
+            "report_content",
+        ],
+        removeNull=True
+    )
     return CommandResults(
         outputs_prefix="CybelAngel.Report",
         outputs_key_field="id",
         outputs=response,
-        # readable_output=f"Report ID {report_id} retrieved.",
+        readable_output=human_readable,
     )
 
 
 def cybelangel_mirror_report_get_command(client: Client, args: dict) -> CommandResults | dict:
-    """Retrieves mirror details for a report, optionally as a CSV file."""
+    """
+    Retrieves mirror details for a report, optionally as a CSV file.
+
+    Args:
+        client (Client): CybelAngel API client.
+        args (dict): Includes `report_id` (required) and `csv` (optional).
+
+    Returns:
+        CommandResults: Mirror report details or a CSV file result.
+    """
     report_id = args.get("report_id", "")
     csv = argToBoolean(args.get("csv", "false"))
     response = client.get_mirror_report(report_id, csv)
@@ -438,17 +494,27 @@ def cybelangel_mirror_report_get_command(client: Client, args: dict) -> CommandR
             response.content,  # type: ignore
             file_type=EntryType.ENTRY_INFO_FILE,
         )
-
+    human_readable = tableToMarkdown(f"{INTEGRATION} Mirror details for Report ID {report_id}.", response,
+                                     headers=["report_id", "created_at", "available_files_count", "updated_at"], removeNull=True)
     return CommandResults(
         outputs_prefix="CybelAngel.ReportMirror",
         outputs_key_field="report_id",
         outputs=response,
-        # readable_output=f"Mirror details for Report ID {report_id} retrieved.",
+        readable_output=human_readable,
     )
 
 
 def cybelangel_archive_report_by_id_get_command(client: Client, args: dict) -> CommandResults | dict:
-    """Retrieves the archived mirror of a report as a ZIP file."""
+    """
+    Retrieves the archived mirror of a report as a ZIP file.
+
+    Args:
+        client (Client): CybelAngel API client.
+        args (dict): Includes `report_id` (required).
+
+    Returns:
+        CommandResults: Archive report as a ZIP file or a raw response with the report title.
+    """
     report_id = args.get("report_id", "")
 
     response = client.get_archive_report(report_id)
@@ -463,42 +529,91 @@ def cybelangel_archive_report_by_id_get_command(client: Client, args: dict) -> C
 
 
 def cybelangel_report_status_update_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
-    """Updates the status of one or multiple reports."""
+    """
+    Updates the status of one or more reports.
+
+    Args:
+        client (Client): CybelAngel API client.
+        args (dict): Includes `report_ids` (required) and `status` (required).
+
+    Returns:
+        CommandResults: Success message with the count of updated reports.
+    """
     report_ids = argToList(args.get("report_ids"))
     status = args.get("status", "")
 
     client.status_update(report_ids, status)
 
     return CommandResults(
-        readable_output=f"Status of {args.get('report_ids')} was successfully updated."
+        readable_output=f"Total of {len(report_ids)} were successfully updated."
     )
 
 
 def cybelangel_report_comments_get_command(client: Client, args: dict) -> CommandResults:
-    """Retrieves comments for a specific report by ID."""
+    """
+    Retrieves comments for a specific report by its ID.
+
+    Args:
+        client (Client): CybelAngel API client.
+        args (dict): Includes `report_id` (required).
+
+    Returns:
+        CommandResults: Comments related to the report in a structured table format.
+    """
     report_id = args.get("report_id", "")
 
     response = client.get_report_comment(report_id)
 
+    hr_response = [
+        {**comment, "author_firstname": comment["author"]["firstname"], "author_lastname": comment["author"]["lastname"]}
+        for comment in response.get("comments", [])  # type: ignore
+    ]
+    human_readable = tableToMarkdown(
+        f"{INTEGRATION} Comments for Report ID {report_id}.",
+        hr_response,
+        headers=[
+            "content",
+            "created_at",
+            "parent_id",
+            "discussion_id",
+            "assigned",
+            "author_firstname",
+            "author_lastname",
+            "last_updated_at",
+        ],
+        removeNull=True,
+    )
     return CommandResults(
         outputs_prefix="CybelAngel.Report.Comments",
         outputs_key_field="id",
         outputs=response,
-        # readable_output=f"Comments for Report ID {report_id} retrieved.",
+        readable_output=human_readable,
     )
 
 
 def cybelangel_report_comment_create_command(client: Client, args: dict) -> CommandResults:
-    """Adds a comment to a specific report."""
+    """
+    Adds a comment to a specific report.
+
+    Args:
+        client (Client): CybelAngel API client.
+        args (dict): Includes `report_id` (required), `content` (required), `parent_id` (optional), and `assigned` (optional).
+
+    Returns:
+        CommandResults: Success message indicating comment creation.
+    """
     report_id = args.get("report_id", "")
     content = args.get("content")
     parent_id = args.get("parent_id")
     assigned = argToBoolean(args.get("assigned", "false"))
 
     comments_response = client.get_report_comment(report_id).get("comments", [])  # type: ignore
+    discussion_id = ""
     if comments_response:
         discussion_id = comments_response[0].get("discussion_id")
-
+    else:
+        return_error(f"""No comments exist for {report_id} report.
+                     This command will be supported only if at least one comment already exists in the report""")
     data = {
         "content": content,
         "discussion_id": discussion_id
@@ -514,12 +629,21 @@ def cybelangel_report_comment_create_command(client: Client, args: dict) -> Comm
         outputs_prefix="CybelAngel.Report.Comments",
         outputs_key_field="id",
         outputs=response,
-        # readable_output=f"Comment added to Report ID {report_id}.",
+        readable_output=f"Comments created successfully for report ID: {report_id}.",
     )
 
 
 def cybelangel_report_attachment_get_command(client: Client, args: dict) -> dict | CommandResults:  # pragma: no cover
-    """Retrieves a specific attachment from a report."""
+    """
+    Retrieves a specific attachment from a report.
+
+    Args:
+        client (Client): CybelAngel API client.
+        args (dict): Includes `report_id` (required) and `attachment_id` (required).
+
+    Returns:
+        dict | CommandResults: Attachment content as a file or raw response with attachment title.
+    """
     report_id = args.get("report_id", "")
     attachment_id = args.get("attachment_id", "")
 
@@ -535,7 +659,16 @@ def cybelangel_report_attachment_get_command(client: Client, args: dict) -> dict
 
 
 def cybelangel_report_remediation_request_create_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
-    """Creates a remediation request for a report."""
+    """
+    Creates a remediation request for a report.
+
+    Args:
+        client (Client): CybelAngel API client.
+        args (dict): Includes `report_id`, `requestor_email`, and `requestor_fullname` (all required).
+
+    Returns:
+        CommandResults: Success message indicating the remediation request creation.
+    """
     report_id = args.get("report_id")
     requestor_email = args.get("requestor_email")
     requestor_fullname = args.get("requestor_fullname")
