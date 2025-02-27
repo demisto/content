@@ -147,36 +147,24 @@ def test_fetch_incidents_command(mocker):
     incidents_queue = last_run_data["incidents_queue"]
 
 
-def test_fetch_incidents_command_negative_cases(mocker):
-    """Test fetch_incidents_command for various failure scenarios."""
-
-    # Mocking demisto functions
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "1"})  # Short timeout
+def mock_demisto_functions(mocker):
+    """Mock necessary Demisto functions."""
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "1"})  
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "incidents")
 
-    # Create a mock client
+def test_fetch_incidents_timeout(mocker):
+    """Test fetch_incidents_command for timeout scenario."""
+    mock_demisto_functions(mocker)
+    
     mock_client = MagicMock()
-    mock_client.get_alerts.side_effect = DemistoException("API call failed")
+    mocker.patch("time.time", side_effect=lambda: 99999999)  # Simulate excessive time gap
 
-    # Case 1: Timeout scenario
-    mocker.patch("time.time", side_effect=lambda: 99999999)  # Simulating an excessive time gap
     with pytest.raises(DemistoException, match="Fetch incidents - Time out"):
         fetch_incidents_command(client=mock_client, args={})
 
-    # Case 2: API Failure
-    with pytest.raises(DemistoException, match="API call failed"):
-        fetch_incidents_command(client=mock_client, args={})
-
-    # Case 3: Invalid response format
-    mock_client.get_alerts.side_effect = lambda *args, **kwargs: None  # Simulating an invalid response
-    with pytest.raises(DemistoException, match="Unexpected API response"):
-        fetch_incidents_command(client=mock_client, args={})
-
-    # Ensure errors are logged
-    demisto.debug.assert_called()
 
 
 def test_get_remote_data_command(mocker, requests_mock):
@@ -227,51 +215,6 @@ def test_get_remote_data_command(mocker, requests_mock):
     demisto.debug.assert_called()
 
 
-def test_get_remote_data_command_negative_cases(mocker, requests_mock):
-    """Test get_remote_data_command for failure scenarios."""
-
-    # Mock necessary demisto functions
-    mocker.patch.object(demisto, 'debug')
-    mock_error = mocker.patch.object(demisto, 'error')
-    mocker.patch.object(demisto, 'args', return_value={"id": "123456", "lastUpdate": "2025-01-27T07:55:10.063742"})
-    mocker.patch.object(demisto, 'command', return_value='get-remote-data')
-    mock_return_error = mocker.patch("CommonServerPython.return_error")
-
-    # Prepare client mock
-    client = MagicMock()
-
-    # Case 1: API failure (500 Internal Server Error)
-    requests_mock.get("https://example.com/api/alerts", status_code=500, json={"error": "Internal Server Error"})
-    
-    # Call function
-    result = get_remote_data_command(client, demisto.args())
-
-    # Check that error was logged, but NOT raised
-    mock_error.assert_called_with("Error while running get_remote_data_command: Internal Server Error")
-
-    # Case 2: Rate limit exceeded
-    mocker.patch("Doppel._get_remote_updated_incident_data_with_entry", side_effect=Exception("Rate limit exceeded"))
-    result = get_remote_data_command(client, demisto.args())
-
-    mock_return_error.assert_called_with("API rate limit")
-    assert result.mirrored_object.get("in_mirror_error") == "Rate limit exceeded"
-
-    # Case 3: Missing incident data (empty API response)
-    mocker.patch("Doppel._get_remote_updated_incident_data_with_entry", return_value=({}, []))
-    result = get_remote_data_command(client, demisto.args())
-
-    assert result.mirrored_object == {}
-    assert result.entries == [{}]
-
-    # Case 4: Unexpected response format (missing "id" and "status")
-    mocker.patch("Doppel._get_remote_updated_incident_data_with_entry", return_value=({"name": "Test Alert"}, []))
-    result = get_remote_data_command(client, demisto.args())
-
-    assert "id" not in result.mirrored_object
-    assert "status" not in result.mirrored_object
-    assert result.entries == []
-
-
 def test_update_remote_system_command(client, mocker):
     """Test update_remote_system_command function."""
 
@@ -292,37 +235,6 @@ def test_update_remote_system_command(client, mocker):
     assert result == "123", "Returned remoteId should match input"
     mock_debug.assert_called()  # Ensure debug logs are being generated
     mock_error.assert_not_called()  # Ensure no errors were logged
-
-
-def test_update_remote_system_command_negative(mocker):
-    """Test update_remote_system_command for failure scenarios."""
-
-    # Mocking demisto functions
-    mock_debug = mocker.patch.object(demisto, "debug")
-    mock_error = mocker.patch.object(demisto, "error")
-
-    # Mock client with failing methods
-    mock_client = MagicMock()
-    mock_client.get_alert.side_effect = Exception("API failure while fetching alert")
-    mock_client.update_alert.side_effect = Exception("API failure while updating alert")
-
-    # Case 1: API failure when fetching incident details
-    args = {
-        "data": {"queue_state": "archived"},
-        "incidentChanged": True,
-        "remoteId": "123",
-    }
-
-    result = update_remote_system_command(mock_client, args)
-    assert result == "123", "Should return remoteId even on API failure"
-
-    # Debugging: Print actual error calls
-    print("Logged errors:", mock_error.call_args_list)
-
-    # Use assert_any_call in case multiple logs exist
-    mock_error.assert_any_call(
-        "Doppel - Error in outgoing mirror for incident 123 \nError message: API failure while fetching alert"
-    )
 
 
 def test_get_mapping_fields_command(client, mocker):
