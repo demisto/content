@@ -679,7 +679,6 @@ def test_doppel_get_alerts_optional_params(mocker):
     assert result.outputs[0]["name"] == "Optional Param Test"
 
 
-
 def test_doppel_create_abuse_alert_command(client, mocker):
     test_response = util_load_json('test_data/create-abuse-alert.json')
 
@@ -736,3 +735,103 @@ def test_get_modified_remote_data_command(mocker):
     # Assert that the function raises NotImplementedError
     with pytest.raises(NotImplementedError, match='The command "get-modified-remote-data" is not implemented'):
         get_modified_remote_data_command(mock_client, args)
+
+
+
+def test_doppel_update_alert_both_alert_id_and_entity(mocker):
+    """Test failure when both alert_id and entity are provided."""
+
+    mock_client = MagicMock()
+    
+    test_args = {
+        "alert_id": "123",
+        "entity": "TestEntity",
+        "queue_state": "open"
+    }
+
+    with pytest.raises(ValueError, match="Only one of 'alert_id' or 'entity' can be specified."):
+        doppel_update_alert_command(mock_client, test_args)
+
+
+def test_doppel_update_alert_no_update_fields(mocker):
+    """Test failure when no update fields are provided."""
+
+    mock_client = MagicMock()
+    
+    test_args = {
+        "alert_id": "123"
+    }
+
+    with pytest.raises(ValueError, match="At least one of 'queue_state', 'entity_state', or 'comment' must be provided."):
+        doppel_update_alert_command(mock_client, test_args)
+
+
+def test_doppel_update_alert_api_failure(mocker):
+    """Test API failure handling when an exception is raised."""
+    
+    mock_client = MagicMock()
+    mock_client.update_alert.side_effect = Exception("API error")
+
+    test_args = {
+        "alert_id": "123",
+        "queue_state": "open"
+    }
+
+    with pytest.raises(Exception, match="Failed to update the alert with the given parameters"):
+        doppel_update_alert_command(mock_client, test_args)
+
+
+def test_doppel_update_alert_partial_update(mocker):
+    """Test updating an alert with only one field (entity_state)."""
+
+    mock_client = MagicMock()
+    mock_client.update_alert.return_value = {"id": "124", "entity_state": "investigating"}
+
+    test_args = {
+        "alert_id": "124",
+        "entity_state": "investigating"
+    }
+
+    result = doppel_update_alert_command(mock_client, test_args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Doppel.UpdatedAlert"
+    assert result.outputs["id"] == "124"
+    assert result.outputs["entity_state"] == "investigating"
+
+
+def test_doppel_update_alert_only_entity(mocker):
+    """Test updating an alert using 'entity' instead of 'alert_id'."""
+
+    mock_client = MagicMock()
+    mock_client.update_alert.return_value = {"id": "125", "queue_state": "open", "entity": "TestEntity"}
+
+    test_args = {
+        "entity": "TestEntity",
+        "queue_state": "open"
+    }
+
+    result = doppel_update_alert_command(mock_client, test_args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Doppel.UpdatedAlert"
+    assert result.outputs["entity"] == "TestEntity"
+    assert result.outputs["queue_state"] == "open"
+
+
+def test_doppel_update_alert_only_queue_state(mocker):
+    """Test updating an alert with only queue_state provided."""
+
+    mock_client = MagicMock()
+    mock_client.update_alert.return_value = {"id": "126", "queue_state": "archived"}
+
+    test_args = {
+        "alert_id": "126",
+        "queue_state": "archived"
+    }
+
+    result = doppel_update_alert_command(mock_client, test_args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Doppel.UpdatedAlert"
+    assert result.outputs["queue_state"] == "archived"
