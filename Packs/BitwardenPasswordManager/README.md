@@ -33,5 +33,5 @@ For more information, check the Bitwarden Public API documentation -> [Click her
 ### XSIAM Configuration
 
 1. In Cortex XSIAM, click **Marketplace** and install the **Bitwarden Password Manager** content pack.
-2. Next go to **Settings** -> **Data Sources** and look for the **Bitwarden Passwordd Manager** Data Source.
+2. Go to **Settings** > **Data Sources** and look for the **Bitwarden Password Manager** Data Source.
 3. Enter your **client_id**, **client_secret** and **Bitwwarden API Server URL**
