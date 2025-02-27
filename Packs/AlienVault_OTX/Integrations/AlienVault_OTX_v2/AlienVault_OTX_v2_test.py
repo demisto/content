@@ -794,6 +794,7 @@ def test_ip_function_return_timeout_error():
         ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
     assert e.value.args[0] == 'Request timed out'
 
+
 def test_ip_function_return_timeout_warning():
     """
     Given
@@ -813,8 +814,8 @@ def test_ip_function_return_timeout_warning():
     client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
     result = ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
     assert result[0].readable_output == '### Results:\n|IP|Result|\n|---|---|\n| 1.2.3.4 | Not found |\n'
-    
-    
+
+
 def test_domain_function_return_timeout_error():
     """
     Given
@@ -834,6 +835,7 @@ def test_domain_function_return_timeout_error():
     with pytest.raises(requests.exceptions.ReadTimeout) as e:
         domain_command(client, domain='aaaaaa')
     assert e.value.args[0] == 'Request timed out'
+
 
 def test_domain_function_return_timeout_warning():
     """
@@ -875,6 +877,7 @@ def test_file_function_return_timeout_error():
     with pytest.raises(requests.exceptions.ReadTimeout) as e:
         file_command(client, file='aaaaaa')
     assert e.value.args[0] == 'Request timed out'
+
 
 def test_file_function_return_timeout_warning():
     """
@@ -938,4 +941,3 @@ def test_url_function_return_timeout_warning():
     client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
     result = url_command(client, url='aaaaaa')
     assert result[0].readable_output == '### Results:\n|URL|Result|\n|---|---|\n| aaaaaa | Not found |\n'
-        

@@ -487,8 +487,8 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
     for hash_ in hashes_list:
         try:
             raw_response_analysis = client.query(section='file',
-                                                argument=hash_,
-                                                sub_section='analysis')
+                                                 argument=hash_,
+                                                 sub_section='analysis')
             raw_response_general = client.query(section='file',
                                                 argument=hash_)
         except requests.exceptions.ReadTimeout as e:
@@ -496,7 +496,7 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 raise e
             demisto.error(f"An error was raised {e=}")
             return_warning(f"{e}")
-            raw_response_analysis =  {}
+            raw_response_analysis = {}
             raw_response_general = {}
 
         if raw_response_analysis and raw_response_general and (
