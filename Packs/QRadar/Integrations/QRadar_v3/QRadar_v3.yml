@@ -518,7 +518,7 @@ script:
       description: ID of the host from which the rule's base capacity was determined.
       type: Number
     - contextPath: QRadar.Rule.CapacityTimestamp
-      description: Date when the rule's capacity values were last updated.
+      description: Date when the rule's capacity values were last updated
       type: Number
     - contextPath: QRadar.Rule.Origin
       description: 'Origin of the rule. Possible values: "SYSTEM", "OVERRIDE", "USER".'
@@ -530,10 +530,10 @@ script:
       description: 'Type of the rule. Possible values: "EVENT", "FLOW", "COMMON", "USER".'
       type: String
     - contextPath: QRadar.Rule.Enabled
-      description: Whether rule is enabled.
+      description: Whether rule is enabled
       type: Boolean
     - contextPath: QRadar.Rule.ModificationDate
-      description: Date when the rule was last modified.
+      description: Date when the rule was last modified
       type: Date
     - contextPath: QRadar.Rule.Name
       description: Name of the rule.
