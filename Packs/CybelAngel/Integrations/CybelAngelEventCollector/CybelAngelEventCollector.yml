@@ -67,6 +67,7 @@ script:
   isfetchevents: true
 fromversion: 8.0.0
 marketplaces:
-  - marketplacev2
+- marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
