@@ -232,6 +232,17 @@ def test_get_mapping_fields_command(client, mocker):
 
     mock_debug.assert_called()  # Ensure debug logs are generated
 
+def test_get_mapping_fields_command_raises_exception(mocker):
+    """Test get_mapping_fields_command function when an exception occurs."""
+
+    # Mock the SchemeTypeMapping to raise an exception
+    mock_scheme = mocker.patch("Doppel.SchemeTypeMapping")
+    mock_scheme.return_value.add_field.side_effect = Exception("Unexpected Error")
+
+    # Run the function and verify it raises an exception
+    with pytest.raises(Exception, match="Unexpected Error"):
+        get_mapping_fields_command(client=None, args={})
+
 
 def test_doppel_get_alert_command(client, mocker):
     # Mock API response
@@ -264,10 +275,10 @@ def test_doppel_get_alert_command_with_missing_params(client):
     with pytest.raises(ValueError):
         doppel_get_alert_command(client, args)
 
+def mock_no_alert_found(*args, **kwargs):
+        raise DemistoException('No alert found with the given parameters.')
 
 def test_doppel_get_alert_command_with_no_alert_found(client, mocker):
-    def mock_no_alert_found(*args, **kwargs):
-        raise DemistoException('No alert found with the given parameters.')
 
     mocker.patch.object(client, 'get_alert', side_effect=mock_no_alert_found)
 
