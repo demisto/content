@@ -1051,7 +1051,7 @@ def test_malop_to_incident_edr_malop(mocker):
             },
         },
         "elementValues": {
-            "rootCauseElements": {
+            "primaryRootCauseElements": {
                 "elementValues": [
                     {
                         "elementType": "File",
