@@ -429,6 +429,8 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     for arg in args:
         if not args[arg] and arg in delta_keys:
             fields_to_clear.append(arg)
+        elif arg in delta_keys: # For debugging
+            demisto.debug(f"Did not mirrored out {arg} as it was not in the delta.")
     demisto.debug(f'Fields to clear {fields_to_clear}')
 
     ticket_fields = {}
@@ -2796,6 +2798,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+        demisto.debug(f'Got the following delta {parsed_args.delta}')
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
@@ -2820,7 +2823,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 is_custom_close = True
                 parsed_args.data['state'] = close_custom_state
 
-        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type, list(parsed_args.delta.keys()))
+        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type, delta_keys=list(parsed_args.delta.keys()))
         demisto.debug(f"all fields= {fields}")
         if closure_case:
             # Convert the closing state to the right one if the ticket type is not incident in order to close the
