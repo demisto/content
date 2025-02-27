@@ -1,28 +1,10 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
-	"id": "e0e1f85a-55c1-46f8-8cba-f27c9b438322",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "1.0.0",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 2,
+	"id": "Doppel Outgoing_Mapper",
 	"mapping": {
-		"Doppel Alert": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"queue_state": {
-					"simple": "queuestate"
-				}
-			}
-		},
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
@@ -33,17 +15,7 @@
 		}
 	},
 	"name": "Doppel Outgoing_Mapper",
-	"nameRaw": "Doppel Outgoing_Mapper",
-	"packID": "",
-	"packName": "Doppel",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "602a520c-d5d3-45c8-8cd8-5fbbaa6e93ed",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
 	"type": "mapping-outgoing",
-	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.10.0"
 }

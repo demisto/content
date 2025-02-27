@@ -1,12 +1,7 @@
 {
-	"cacheVersn": 0,
-	"close": null,
 	"definitionId": "",
 	"description": "",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -124,7 +119,6 @@
 						"moved": false,
 						"name": "Linked Incidents",
 						"static": false,
-						"type": "linkedIncidents",
 						"w": 1,
 						"x": 1,
 						"y": 6
@@ -138,7 +132,6 @@
 						"moved": false,
 						"name": "Child Incidents",
 						"static": false,
-						"type": "childInv",
 						"w": 1,
 						"x": 2,
 						"y": 4
@@ -152,7 +145,6 @@
 						"moved": false,
 						"name": "Evidence",
 						"static": false,
-						"type": "evidence",
 						"w": 1,
 						"x": 2,
 						"y": 2
@@ -167,7 +159,6 @@
 						"moved": false,
 						"name": "Team Members",
 						"static": false,
-						"type": "team",
 						"w": 1,
 						"x": 2,
 						"y": 6
@@ -330,11 +321,6 @@
 				"type": "workPlan"
 			},
 			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
 				"id": "canvas",
 				"name": "Canvas",
 				"type": "canvas"
@@ -353,10 +339,19 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "doppelalertid",
+								"fieldId": "alertid",
 								"height": 26,
-								"id": "a6ce5d89-5115-4f48-b430-d33799081c52",
+								"id": "e151a0ab-11d1-4667-a874-2fbeb823cebe",
 								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "alertsource",
+								"height": 26,
+								"id": "7b939b5f-faa3-4505-9c58-334062803188",
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -365,7 +360,7 @@
 								"fieldId": "doppelseverity",
 								"height": 26,
 								"id": "2feff9ff-9c80-4aed-8866-abf3892a2fa6",
-								"index": 1,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -374,51 +369,6 @@
 								"fieldId": "doppelbrand",
 								"height": 26,
 								"id": "31921aa2-3b76-4b3a-a6d3-5f1e43968dcb",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "brand",
-								"height": 26,
-								"id": "5f7dc687-7405-4465-a603-fbab6c1e4686",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "entitystate",
-								"height": 26,
-								"id": "dbd066f4-285b-4a9a-9467-50671f5a2915",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "queuestate",
-								"height": 26,
-								"id": "27e8a019-7828-4406-93b9-dbf951f71a7a",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "product",
-								"height": 26,
-								"id": "079c3ec9-f0a9-4673-8aa5-4e4c9e9e79cf",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "platform",
-								"height": 26,
-								"id": "d2ad1638-1c98-4e96-a52e-561c72297fa6",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -428,7 +378,7 @@
 								"fieldId": "doppellink",
 								"height": 26,
 								"id": "128d659a-5c63-458c-a96b-0240bbeae842",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -437,7 +387,7 @@
 								"fieldId": "doppelnotes",
 								"height": 26,
 								"id": "a144e1c1-b303-4dcb-b56d-d89508e3ccd1",
-								"index": 4,
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -446,7 +396,7 @@
 								"fieldId": "doppelplatform",
 								"height": 26,
 								"id": "30e0153f-6343-44eb-b9ca-c4dea0e82161",
-								"index": 5,
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -455,7 +405,7 @@
 								"fieldId": "doppelproduct",
 								"height": 26,
 								"id": "edcef656-d794-4f5c-9fed-5b583384d3ea",
-								"index": 6,
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -464,7 +414,7 @@
 								"fieldId": "doppelqueuestate",
 								"height": 26,
 								"id": "820d34e6-33ef-4990-9345-865772efc7a1",
-								"index": 7,
+								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -473,24 +423,15 @@
 								"fieldId": "doppelcreatedat",
 								"height": 26,
 								"id": "270e7ec6-6db4-43ce-9f88-6d16e08649f9",
-								"index": 8,
+								"index": 9,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "doppelsource",
+								"fieldId": "tags",
 								"height": 26,
-								"id": "bd17abba-3f1f-4159-ab0e-9645d32c3c66",
-								"index": 10,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "doppeltags",
-								"height": 26,
-								"id": "98baebf3-14e6-445c-ae21-91664a795ade",
+								"id": "661bd421-ccb4-401f-9354-754d2f414d08",
 								"index": 10,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -540,7 +481,7 @@
 								"script": "",
 								"selectValues": null,
 								"type": "shortText",
-								"width": 124
+								"width": 208
 							},
 							{
 								"displayName": "ip_address",
@@ -553,7 +494,7 @@
 								"script": "",
 								"selectValues": null,
 								"type": "shortText",
-								"width": 118
+								"width": 154
 							},
 							{
 								"displayName": "contact_email",
@@ -566,7 +507,7 @@
 								"script": "",
 								"selectValues": null,
 								"type": "shortText",
-								"width": 150
+								"width": 224
 							},
 							{
 								"displayName": "country_code",
@@ -605,7 +546,7 @@
 								"script": "",
 								"selectValues": [],
 								"type": "longText",
-								"width": 120
+								"width": 382
 							},
 							{
 								"displayName": "nameservers",
@@ -618,7 +559,7 @@
 								"script": "",
 								"selectValues": null,
 								"type": "longText",
-								"width": 264
+								"width": 451
 							}
 						],
 						"description": "Details about the entity received from Doppel",
@@ -627,15 +568,6 @@
 						"hideName": false,
 						"i": "chtyrfjhpp-db82b87b-a67c-4e81-8e33-29dae245ea1b",
 						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "entitycontentrootdomainregistrar",
-								"height": 26,
-								"id": "f9107076-5e95-4c45-83ef-9c014570de24",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
 							{
 								"endCol": 2,
 								"fieldId": "doppelentity",
@@ -681,17 +613,7 @@
 						"h": 4,
 						"hideName": false,
 						"i": "chtyrfjhpp-07b54ffa-28e8-4216-b4d2-1d0590a0affe",
-						"items": [
-							{
-								"endCol": 4,
-								"fieldId": "doppelauditlogs",
-								"height": 106,
-								"id": "e211b223-1b57-4d29-b3cb-1bd7b7fd6475",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
+						"items": [],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -711,7 +633,7 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
 										"simple": "  ",
@@ -739,10 +661,10 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
-										"simple": "Safelist this Asset, we own it.",
+										"simple": "Safelist this Asset, We own it.",
 										"userMarkedRequired": true
 									},
 									"entity_state": {
@@ -767,10 +689,10 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
-										"simple": "Throw out this Alert later \nas this is a Noise.",
+										"simple": "Throw out this Alert later as this is a Noise.",
 										"userMarkedRequired": true
 									},
 									"entity_state": {
@@ -796,7 +718,7 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
 										"simple": " ",
@@ -823,7 +745,7 @@
 							{
 								"args": {
 									"alert_id": {
-										"simple": "${incident.doppelalertid}"
+										"simple": "${incident.alertid}"
 									},
 									"comment": {
 										"simple": " ",
@@ -848,6 +770,26 @@
 								"scriptId": "Doppel|||doppel-update-alert",
 								"sectionItemType": "button",
 								"startCol": 0
+							},
+							{
+								"args": {
+									"alert_id": {
+										"simple": "${incident.alertid}"
+									},
+									"comment": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "3c802f06-c14f-4b70-baea-3a19d22749bb",
+								"index": 5,
+								"name": "Add Comment",
+								"scriptId": "Doppel|||doppel-update-alert",
+								"sectionItemType": "button",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
@@ -864,24 +806,10 @@
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "0.0.0",
 	"group": "incident",
 	"id": "Doppel Incident Layout",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "1.0.0",
-	"locked": false,
-	"mobile": null,
 	"name": "Doppel Incident Layout",
-	"packID": "",
-	"packName": "Doppel",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "99.99.99",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.10.0"
 }

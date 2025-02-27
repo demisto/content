@@ -1,42 +1,18 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "Doppel-XSOAR integration classifier to classify the fetched incidents to Doppel_Incident_Test.",
 	"feed": false,
-	"fromServerVersion": "",
-	"id": "607dc952-f37f-44d9-899f-16b0946230dd",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"crypto": "Doppel Alert Crypto",
-		"domains": "Doppel Alert Domains",
-		"ecommerce": "Doppel Alert Ecommerce",
-		"email": "Doppel Alert Email",
-		"mobile_apps": "Doppel Alert Mobile_Apps",
-		"paid_ads": "Doppel Alert Paid_Ads",
-		"social_media": "Doppel Alert Social_Media"
-	},
-	"locked": false,
-	"logicalVersion": 6,
-	"mapping": null,
+	"id": "Doppel_Incident_Classifier",
+	"keyTypeMap": {},
 	"name": "Doppel_Incident_Classifier",
-	"nameRaw": "Doppel_Incident_Classifier",
-	"packID": "",
-	"packName": "",
 	"propagationLabels": [
 		"all"
 	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
 	"transformer": {
 		"simple": "product"
 	},
 	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.10.0"
 }

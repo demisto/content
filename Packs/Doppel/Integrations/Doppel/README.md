@@ -148,9 +148,9 @@ Creates an alert for a specified entity. This command requires the entity to be 
 
 | **Path** | **Type** | **Description** |  
 | --- | --- | --- |  
-| CreatedAlert.id | String | The unique ID of the alert. |  
-| CreatedAlert.entity | String | The entity URL associated with the alert. |  
-| CreatedAlert.doppel_link | String | The link to view the alert in the Doppel platform. |  
+| Doppel.CreatedAlert.id | String | The unique ID of the alert. |  
+| Doppel.CreatedAlert.entity | String | The entity URL associated with the alert. |  
+| Doppel.CreatedAlert.doppel_link | String | The link to view the alert in the Doppel platform. |  
 
 #### Command example
 

@@ -1,19 +1,9 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
-	"id": "c1af4cac-ec08-426f-880d-9fefee0fc672",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "1.0.0",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 21,
+	"id": "Doppel Incoming_Mapper",
 	"mapping": {
 		"Doppel Alert": {
 			"dontMapEventToLabels": false,
@@ -217,6 +207,12 @@
 				"Additional Indicators": {
 					"simple": "entity"
 				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
@@ -234,12 +230,6 @@
 				},
 				"Doppel  Alert Brand": {
 					"simple": "brand"
-				},
-				"Doppel Alert ID": {
-					"simple": "id"
-				},
-				"Doppel Audit Logs": {
-					"simple": "audit_logs.[]."
 				},
 				"Doppel Brand": {
 					"simple": "brand"
@@ -297,12 +287,6 @@
 				},
 				"Doppel Severity": {
 					"simple": "severity"
-				},
-				"Doppel Source": {
-					"simple": "source"
-				},
-				"Doppel Tags": {
-					"simple": "tags"
 				},
 				"Doppel Uploaded By": {
 					"simple": "uploaded_by"
@@ -394,12 +378,6 @@
 				"severity": {
 					"simple": "severity"
 				},
-				"source": {
-					"simple": "source"
-				},
-				"sourceBrand": {
-					"simple": "brand"
-				},
 				"uploaded_by": {
 					"simple": "uploaded_by"
 				}
@@ -407,17 +385,7 @@
 		}
 	},
 	"name": "Doppel Incoming_Mapper",
-	"nameRaw": "Doppel Incoming_Mapper",
-	"packID": "",
-	"packName": "Doppel",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "d1d1bfa4-c898-4eae-8a72-1e36d11ebbf2",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.10.0"
 }
