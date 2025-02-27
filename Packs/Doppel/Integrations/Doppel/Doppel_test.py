@@ -330,7 +330,7 @@ def test_get_remote_data_command(mocker, requests_mock):
     demisto.debug.assert_called()
 
 
-def test_get_remote_data_command_rate_limit_exception(mocker):
+def test_get_remote_data_command_rate_limit_exception(mocker, capfd):
     """
     Given:
         - A remote incident ID and last update timestamp.
@@ -351,8 +351,8 @@ def test_get_remote_data_command_rate_limit_exception(mocker):
     )
 
     client = MagicMock()
-
-    result = get_remote_data_command(client, demisto.args())
+    with capfd.disabled():
+        result = get_remote_data_command(client, demisto.args())
 
     assert result.mirrored_object == {"in_mirror_error": "Rate limit exceeded"}
     assert result.entries == []
