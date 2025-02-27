@@ -284,19 +284,7 @@ tasks:
       id: 19cbb840-f9a2-4334-8050-ea85ec73736a
       version: -1
       name: Retrieve all incident alerts
-      description: |-
-        Searches Cortex XSIAM alerts. A summarized version of this script is available with the summarizedversion argument.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-
-        For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
-
-        For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
-
-        For Cortex on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
-
-        For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
+      description: This task searches for Cortex XSIAM alerts related to the current incident.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -664,9 +652,9 @@ tasks:
       - "15"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved, confirmed as a True Positive
+        simple: The alert has been resolved. Confirmed as a True Positive by the playbook "WmiPrvSe.exe Rare Child Command Line"
       closeReason:
-        simple: Resolved - True Positive - Handled by the playbook "WmiPrvSe.exe Rare Child Command Line"
+        simple: Resolved - True Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -731,9 +719,9 @@ tasks:
       - "15"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved, confirmed as a False Positive
+        simple: The alert has been resolved. Confirmed as a False Positive by the playbook "WmiPrvSe.exe Rare Child Command Line"
       closeReason:
-        simple: Resolved - False Positive - Handled by the playbook "WmiPrvSe.exe Rare Child Command Line"
+        simple: Resolved - False Positive
       id:
         simple: ${alert.id}
     separatecontext: false
