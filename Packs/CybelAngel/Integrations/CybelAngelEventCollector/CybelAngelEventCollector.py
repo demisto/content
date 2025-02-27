@@ -81,7 +81,14 @@ class Client(BaseClient):
         token = self.get_access_token(create_new_token=True)
         headers["Authorization"] = f'Bearer {token}'
 
-        return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params, json_data=data, ok_codes=(404,))
+        return self._http_request(
+            method,
+            url_suffix=url_suffix,
+            headers=headers,
+            params=params,
+            json_data=data,
+            ok_codes=(200, 201, 302, 404),
+        )
 
     def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_MAX_FETCH) -> List[dict[str, Any]]:
         """

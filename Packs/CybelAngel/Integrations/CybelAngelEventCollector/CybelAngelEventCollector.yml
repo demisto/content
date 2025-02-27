@@ -91,7 +91,7 @@ script:
       - 'False'
     outputs:
     - contextPath: CybelAngel.Report
-      description: 'The retrieved report(s).'
+      description: 'The retrieved reports.'
     - contextPath: InfoFile.EntryID
       description: 'Entry ID of the saved PDF file.'
       type: String
@@ -115,14 +115,14 @@ script:
     - contextPath: InfoFile.EntryID
       description: 'Entry ID of the saved CSV file.'
   - name: cybelangel-archive-report-by-id-get
-    description: 'Retrieve an archived report by ID.'
+    description: 'Retrieve an archived report by ID as a ZIP file.'
     arguments:
     - name: report_id
       description: 'The ID of the archived report.'
       required: true
     outputs:
-    - contextPath: CybelAngel.ArchiveReport
-      description: 'The archived report details.'
+    - contextPath: InfoFile.EntryID
+      description: 'Entry ID of the saved ZIP file.'
   - name: cybelangel-report-status-update
     description: 'Update the status of one or multiple reports.'
     arguments:

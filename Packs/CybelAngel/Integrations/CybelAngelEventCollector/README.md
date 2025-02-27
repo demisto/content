@@ -89,8 +89,8 @@ Retrieve reports from CybelAngel.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybelAngel.Report | unknown | The retrieved report\(s\). | 
-| File.EntryID | String | Entry ID of the saved PDF file. | 
+| CybelAngel.Report | unknown | The retrieved report. | 
+| InfoFile.EntryID | String | Entry ID of the saved PDF file. | 
 
 #### Command example
 ```!cybelangel-report-get report_id=1234```
@@ -292,7 +292,7 @@ Retrieve an attachment from a report.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.EntryID | unknown | Entry ID of the retrieved file. | 
+| InfoFile.EntryID | unknown | Entry ID of the retrieved file. | 
 
 #### Command example
 ```!cybelangel-report-attachment-get report_id=1234 attachment_id=5678```
@@ -317,7 +317,7 @@ Retrieve an attachment from a report.
 ### cybelangel-archive-report-by-id-get
 
 ***
-Retrieve an archived report by ID.
+Retrieve an archived report by ID as a ZIP file.
 
 #### Base Command
 
@@ -333,7 +333,7 @@ Retrieve an archived report by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybelAngel.ArchiveReport | unknown | The archived report details. | 
+| InfoFile.EntryID | unknown | Entry ID of the saved ZIP file. | 
 
 #### Command example
 ```!cybelangel-archive-report-by-id-get report_id=1234```
@@ -376,7 +376,7 @@ Retrieve the mirror details for the specified report.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CybelAngel.ReportMirror | unknown | Mirror details of the report. | 
-| CybelAngel.ReportMirror.CSV | unknown | CSV file with mirror details. | 
+| InfoFile.EntryID| unknown | Entry ID of the saved CSV file. | 
 
 #### Command example
 ```!cybelangel-mirror-report-get report_id=1234```
