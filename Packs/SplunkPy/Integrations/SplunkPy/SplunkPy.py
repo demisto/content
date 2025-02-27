@@ -3451,7 +3451,7 @@ def main():  # pragma: no cover
                                              mapper=mapper,
                                              comment_tag_from_splunk=comment_tag_from_splunk)
         except Exception as e:
-            demisto.error(f"An error occurred during the Mirror In: {e}")
+            return_error(f"An error occurred during the Mirror In: {e}")
     elif command == 'update-remote-system':
         demisto.info('########### MIRROR OUT #############')
         return_results(update_remote_system_command(args, params, service, auth_token, mapper, comment_tag_to_splunk))
