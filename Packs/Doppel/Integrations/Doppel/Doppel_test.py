@@ -2,7 +2,7 @@ import json
 import time
 import pytest
 import demistomock as demisto
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from Doppel import (
     test_module,
     fetch_incidents_command,
@@ -358,6 +358,7 @@ def test_get_remote_data_command_rate_limit_exception(mocker, capfd):
     assert result.entries == []
     demisto.debug.assert_called_with("API rate limit")
  
+
 def test_update_remote_system_command(client, mocker):
     """Test update_remote_system_command function."""
 
@@ -379,6 +380,27 @@ def test_update_remote_system_command(client, mocker):
     mock_debug.assert_called()  # Ensure debug logs are being generated
     mock_error.assert_not_called()  # Ensure no errors were logged
 
+
+def test_update_remote_system_incident_not_closed():
+    """Test update_remote_system_command when the incident is not closed."""
+    
+    client = Mock()
+    args = {
+        'data': {'queue_state': 'active'},
+        'entries': [],
+        'incidentChanged': True,
+        'remoteId': '123456',
+        'inc_status': 1  # Not DONE (assuming DONE = 2)
+    }
+    
+    with patch("demisto.debug") as mock_debug:
+        result = update_remote_system_command(client, args)
+    
+    # Ensure the function returns the remote ID without updating anything
+    assert result == '123456'
+    
+    # Verify that the debug log contains the correct message
+    mock_debug.assert_any_call('Incident not closed. Skipping update for remote ID [123456].')
 
 def test_get_mapping_fields_command(client, mocker):
     """Test get_mapping_fields_command function."""
