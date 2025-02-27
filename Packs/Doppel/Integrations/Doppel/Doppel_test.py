@@ -273,11 +273,12 @@ def test_fetch_incidents_no_alerts(mocker):
     mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=[])  # Simulating no alerts returned
 
     
+    fetch_incidents_command(client=mock_client, args={})
 
     fetch_incidents_command(client=None, args={})
     
     # Assertions
-    demisto.info.assert_called_with("No new alerts fetched from Doppel. Exiting fetch_incidents.")
+    demisto.info.assert_called_with("No incidents to create. Exiting fetch_incidents_command.")
     demisto.incidents.assert_called_with([])  # Ensure no incidents are created
 
     
