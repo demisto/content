@@ -903,15 +903,9 @@ def test_format_datetime():
     # Test None input
     assert format_datetime(None) is None
 
-    # Test non-ISO datetime
-    non_iso_input = "Feb 27, 2025 14:30"
-    expected_output = datetime.strptime("Feb 27, 2025 14:30", "%b %d, %Y %H:%M").isoformat()
-    assert format_datetime(non_iso_input) == expected_output
-
-    # Test another format
-    non_iso_input_2 = "27-02-2025 14:30"
-    expected_output_2 = datetime.strptime("27-02-2025 14:30", "%d-%m-%Y %H:%M").isoformat()
-    assert format_datetime(non_iso_input_2) == expected_output_2
+    # Test non-ISO datetime (without mocking)
+    assert format_datetime("Feb 27, 2025 14:30") == "2025-02-27T14:30:00"
+    assert format_datetime("27-02-2025 14:30") == "2025-02-27T14:30:00"
 
     # Test invalid format
     with pytest.raises(ValueError):

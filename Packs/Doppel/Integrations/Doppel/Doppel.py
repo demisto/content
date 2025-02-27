@@ -381,12 +381,9 @@ def format_datetime(timestamp_str):
         return timestamp_str  # Already in ISO format
     except ValueError:
         datetime_obj = arg_to_datetime(timestamp_str)
-        # Convert datetime object to string
-        date_str = datetime_to_string(datetime_obj)
-        # Convert to datetime object
-        dt_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S.%f%z")
-        # Convert to ISO 8601 format
-        iso_format_truncated = dt_obj.isoformat(timespec='seconds')
+
+        # Convert to standard ISO 8601 format without microseconds and timezone
+        iso_format_truncated = datetime_obj.strftime("%Y-%m-%dT%H:%M:%S")
         return iso_format_truncated
 
 
