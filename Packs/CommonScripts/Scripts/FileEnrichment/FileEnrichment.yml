@@ -28,15 +28,30 @@ commonfields:
   version: -1
 name: file-enrichment
 outputs:
+  - contextPath: DBotScore.Indicator
+    description: The value of the file indicator.
+    type: String
+  - contextPath: DBotScore.Score
+    description: The risk score associated with the file.
+    type: Number
+  - contextPath: DBotScore.Reliability
+    description: The reliability level of the score, for example, "C - Fairly Reliable".
+    type: String
+  - contextPath: DBotScore.Type
+    description: The type of the indicator.
+    type: String
+  - contextPath: DBotScore.Vendor
+    description: The vendor (source brand) that provided the score.
+    type: String
   - contextPath: File.Name
-    description: The name of the associated file.
+    description: The name of the file including its extension.
     type: String
-  - contextPath: File.Extension
-    description: The file extension.
+  - contextPath: File.EntryID
+    description: The identifier used to locate the file in the Incident War Room.
     type: String
-  - contextPath: File.Type
-    description: The file type.
-    type: String
+  - contextPath: File.Size
+    description: The file size measured in bytes.
+    type: Number
   - contextPath: File.MD5
     description: The MD5 hash of the file.
     type: String
@@ -49,32 +64,128 @@ outputs:
   - contextPath: File.SHA512
     description: The SHA512 hash of the file.
     type: String
-  - contextPath: File.Size
-    description: The file size in bytes.
-    type: String
-  - contextPath: File.Signature.Authentihash
-    description: The authentihash of the file signature.
-    type: String
-  - contextPath: File.Signature.Copyright
-    description: The copyright information in the file signature.
-    type: String
-  - contextPath: File.Signature.Description
-    description: The description provided in the file signature.
-    type: String
-  - contextPath: File.Signature.FileVersion
-    description: The file version from the file signature.
-    type: String
-  - contextPath: File.Signature.InternalName
-    description: The internal name from the file signature.
-    type: String
-  - contextPath: File.Signature.OriginalName
-    description: The original name of the file from the file signature.
-    type: String
   - contextPath: File.SSDeep
-    description: The SSDeep fuzzy hash of the file.
+    description: The ssdeep hash of the file, used to track versions or alterations.
+    type: String
+  - contextPath: File.Extension
+    description: The file extension, indicating the type of file format, for example, 'exe'.
+    type: String
+  - contextPath: File.Type
+    description: The file type determined by libmagic.
+    type: String
+  - contextPath: File.Hostname
+    description: The hostname of the device where the file was found.
+    type: String
+  - contextPath: File.Path
+    description: The directory path where the file is located.
+    type: String
+  - contextPath: File.Company
+    description: The name of the company that released a binary.
+    type: String
+  - contextPath: File.ProductName
+    description: The product title to which the file belongs.
+    type: String
+  - contextPath: File.DigitalSignature.Publisher
+    description: The entity that issued the digital signature of the file.
+    type: String
+  - contextPath: File.Actor
+    description: The threat actor associated with the file, if applicable.
     type: String
   - contextPath: File.Tags
-    description: The tags associated with the file.
+    description: Tags assigned to the file for categorization or identification.
+    type: Array
+  - contextPath: File.FeedRelatedIndicators.value
+    description: Shows other indicators associated with the file.
+    type: String
+  - contextPath: File.FeedRelatedIndicators.type
+    description: Identifies the types of associated indicators.
+    type: String
+  - contextPath: File.FeedRelatedIndicators.description
+    description: Describes the associated indicators providing context or relevance.
+    type: String
+  - contextPath: File.MalwareFamily
+    description: Names the malware family associated with the file, if known.
+    type: String
+  - contextPath: File.Signature.Authentihash
+    description: The Authentihash, a cryptographic hash, used for verifying the file's authenticity.
+    type: String
+  - contextPath: File.Signature.Copyright
+    description: Copyright information related to the file.
+    type: String
+  - contextPath: File.Signature.Description
+    description: Describes the file signature data relevant to identification.
+    type: String
+  - contextPath: File.Signature.FileVersion
+    description: Indicates the version number of the file.
+    type: String
+  - contextPath: File.Signature.InternalName
+    description: The internal name of the file as designated by the creators.
+    type: String
+  - contextPath: File.Signature.OriginalName
+    description: The original name of the file before any changes or renames.
+    type: String
+  - contextPath: File.Malicious.Vendor
+    description: Specifies the vendor that identified the file as malicious.
+    type: String
+  - contextPath: File.Malicious.Description
+    description: Provides details on why the file was deemed malicious.
+    type: String
+  - contextPath: File.Relationships.EntityA
+    description: The initiating entity in a relationship involving the file.
+    type: string
+  - contextPath: File.Relationships.EntityB
+    description: The recipient or target entity in a relationship involving the file.
+    type: string
+  - contextPath: File.Relationships.Relationship
+    description: Defines the type or nature of the relationship between entities.
+    type: string
+  - contextPath: File.Relationships.EntityAType
+    description: The type or classification of the initiating entity.
+    type: string
+  - contextPath: File.Relationships.EntityBType
+    description: The type or classification of the recipient entity.
+    type: string
+  - contextPath: File.Campaign
+    description: The identified campaign associated with the file, if applicable.
+    type: String
+  - contextPath: File.TrafficLightProtocol
+    description: Specifies the TLP color designation suitable for handling the file.
+    type: String
+  - contextPath: File.CommunityNotes.note
+    description: Community-contributed notes regarding observations or findings related to the file.
+    type: String
+  - contextPath: File.CommunityNotes.timestamp
+    description: The timestamp when the community note was added.
+    type: Date
+  - contextPath: File.Publications.source
+    description: Identifies the publishing source of an article relating to the file.
+    type: String
+  - contextPath: File.Publications.title
+    description: The title of the publication discussing aspects of the file.
+    type: String
+  - contextPath: File.Publications.link
+    description: Provides a hyperlink to the full article or publication for detailed information.
+    type: String
+  - contextPath: File.Publications.timestamp
+    description: The publication date and time of the related article.
+    type: Date
+  - contextPath: File.Behavior.details
+    description: Detailed technical information describing the file's behavior.
+    type: String
+  - contextPath: File.Behavior.title
+    description: A brief description of the behavior exhibited by the file.
+    type: String
+  - contextPath: File.Imphash
+    description: The import hash (imphash) of the file, specific to the imports used within an executable.
+    type: String
+  - contextPath: File.Quarantined
+    description: Indicates whether the file has been quarantined to prevent potential harm.
+    type: Bool
+  - contextPath: File.Organization
+    description: The organization to which the file is attributed.
+    type: String
+  - contextPath: File.AssociatedFileNames
+    description: Lists other file names associated with this file.
     type: Array
 script: '-'
 timeout: '0'
