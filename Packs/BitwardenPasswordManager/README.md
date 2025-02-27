@@ -8,7 +8,7 @@ This is a content pack for **Bitwarden Password Manager** includes both an integ
 ## Overview
 
 Bitwarden Password Manager helps organizations to store their passwords and other sensitive data securely.
-The Password Manager is encrypted and have the abilities to identify compromised passwords.
+The Password Manager is encrypted and has the abilities to identify compromised passwords.
 
 
 ## What does this pack contains?
