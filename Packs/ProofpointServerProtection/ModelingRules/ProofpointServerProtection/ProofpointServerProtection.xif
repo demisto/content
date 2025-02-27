@@ -1,5 +1,6 @@
 [MODEL: dataset = "proofpoint_ps_raw"]
- alter xdm.observer.name = arrayindex(regextract(_raw_log, "^\<\d+\>\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2}\s+(\S+)"),0),
+  alter action = parsed_fields -> action
+| alter xdm.observer.name = arrayindex(regextract(_raw_log, "^\<\d+\>\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2}\s+(\S+)"),0),
        xdm.event.type = arrayindex(regextract(_raw_log, "^\<\d+\>\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2}\s+\w+\s+([^\[]+)"),0),
        xdm.event.description = parsed_fields,
        xdm.email.subject = ltrim(rtrim(parsed_fields -> subject,"\""),"\""),
@@ -18,6 +19,6 @@
        xdm.email.attachment.filename = parsed_fields -> file,
        xdm.email.message_id = parsed_fields -> s,
        xdm.event.id = parsed_fields -> x,
-       xdm.event.outcome = parsed_fields -> action,
+       xdm.event.outcome = if(action = "accept" or action = "continue", XDM_CONST.OUTCOME_SUCCESS, action = "reject" or action = "discard", XDM_CONST.OUTCOME_FAILED, to_string(action)),
        xdm.event.operation_sub_type = parsed_fields -> cmd,
        xdm.email.recipients = arraymap(split(parsed_fields -> to,","),ltrim(rtrim("@element","\>"),"\<"));
