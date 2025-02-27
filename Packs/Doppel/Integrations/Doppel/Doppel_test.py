@@ -147,26 +147,33 @@ def test_fetch_incidents_command(mocker):
     incidents_queue = last_run_data["incidents_queue"]
 
 
-def mock_demisto_functions(mocker):
-    """Mock necessary Demisto functions."""
-    mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "1"})  
+def test_fetch_incidents_timeout(mocker):
+    """
+    Test the `fetch_incidents_command` function for multiple fetch cycles.
+    """
+
+    # Mocking demisto functions
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "1"})
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "incidents")
 
-def test_fetch_incidents_timeout(mocker):
-    """Test fetch_incidents_command for timeout scenario."""
-    mock_demisto_functions(mocker)
+    # Load mock data
+    mock_alerts = util_load_json("test_data/get-all-alerts.json")  # List of alerts from Doppel
+
+    # Mock `_paginated_call_to_get_alerts` to simulate API responses in different cycles
+    mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[
+        mock_alerts['alerts'][:50],  # First fetch - fill queue
+        mock_alerts['alerts'][50:100],  # Second fetch - next batch
+        [],  # Third fetch - No new alerts, return remaining
+        []   # Fourth fetch - No new alerts, return empty
+    ])
+
+    with pytest.raises(DemistoException, match="Fetch incidents - Time out. Please change first_fetch parameter to be more recent one"):
+        fetch_incidents_command(client=None, args={})
+
     
-    mock_client = MagicMock()
-    mocker.patch("time.time", side_effect=lambda: 99999999)  # Simulate excessive time gap
-
-    with pytest.raises(DemistoException, match="Fetch incidents - Time out"):
-        fetch_incidents_command(client=mock_client, args={})
-
-
-
 def test_get_remote_data_command(mocker, requests_mock):
     """
     Given:
