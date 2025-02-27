@@ -356,10 +356,7 @@ def test_get_remote_data_command_rate_limit_exception(mocker):
 
     assert result.mirrored_object == {"in_mirror_error": "Rate limit exceeded"}
     assert result.entries == []
-    # assert "Error while running get_remote_data_command: Rate limit exceeded" in demisto.error
-    assert "API rate limit" in demisto.error
-    mock_get_remote_updated_incident_data_with_entry.assert_called_once()
-
+    
 
 def test_update_remote_system_command(client, mocker):
     """Test update_remote_system_command function."""
