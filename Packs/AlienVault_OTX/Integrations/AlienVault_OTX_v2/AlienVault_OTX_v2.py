@@ -497,6 +497,7 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
             demisto.error(f"An error was raised {e=}")
             return_warning(f"{e}")
             raw_response_analysis =  {}
+            raw_response_general = {}
 
         if raw_response_analysis and raw_response_general and (
                 shortcut := dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'],
