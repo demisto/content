@@ -3529,37 +3529,47 @@ def fetch_incidents(client: Client, params: dict):
             'page_size': 100
         }
         demisto.debug(f"Request arguments: {request_args}")
-        tickets = []
+        relevant_alerts_list = []
+        relevant_incidents_list = []
         next_link = ''
 
         while True:
             response = freshservice_request(**request_args, full_url=next_link, resp_type='response')
             json_response = response.json()
             new_tickets = json_response.get(f'{ticket_type}s', [])
-            tickets.extend(new_tickets)
-            demisto.debug(f"Fetched additional: {len(new_tickets)}")
 
-            if not (next_link := get_next_link(response)):
+            demisto.debug(f'Received {ticket_type=}: {len(new_tickets)} tickets before filtering.')
+
+            alert_list = convert_response_properties(new_tickets, TICKET_PROPERTIES_BY_TYPE[ticket_type])
+            if not isinstance(alert_list, list):
+                alert_list = [alert_list]
+
+            relevant_alerts, relevant_incidents = fetch_relevant_tickets_by_ticket_type(
+                client=client,
+                alert_list=alert_list,
+                alert_properties=alert_properties,
+                fetch_ticket_task=fetch_ticket_task,
+                ticket_type=ticket_type,
+                last_run_id=last_run_id,
+                last_run_datetime=last_run_datetime,
+                max_fetch_per_ticket_type=max_fetch_per_ticket_type,
+                mirror_direction=mirror_direction,
+            )
+            demisto.debug(f'fetched after filtering: {len(relevant_incidents)} for {ticket_type=}')
+            relevant_alerts_list.extend(relevant_alerts)
+            relevant_incidents_list.extend(relevant_incidents)
+
+            if len(relevant_incidents_list) >= max_fetch_per_ticket_type:
+                relevant_alerts_list = relevant_alerts_list[:max_fetch_per_ticket_type]
+                relevant_incidents_list = relevant_incidents_list[:max_fetch_per_ticket_type]
+                demisto.debug(f'Reached max fetch limit ({max_fetch_per_ticket_type}). Stopping fetch for {ticket_type=}')
                 break
 
-        demisto.debug(f'Total fetched before filtering: {len(tickets)} for {ticket_type=}')
-        alert_list = convert_response_properties(tickets, TICKET_PROPERTIES_BY_TYPE[ticket_type])
-        if not isinstance(alert_list, list):
-            alert_list = [alert_list]
+            next_link = get_next_link(response)
+            if not next_link:
+                break
 
-        relevant_alerts, relevant_incidents = fetch_relevant_tickets_by_ticket_type(
-            client=client,
-            alert_list=alert_list,
-            alert_properties=alert_properties,
-            fetch_ticket_task=fetch_ticket_task,
-            ticket_type=ticket_type,
-            last_run_id=last_run_id,
-            last_run_datetime=last_run_datetime,
-            max_fetch_per_ticket_type=max_fetch_per_ticket_type,
-            mirror_direction=mirror_direction,
-        )
-
-        demisto.debug(f'Total fetched after filtering: {len(relevant_incidents)} for {ticket_type=}')
+        demisto.debug(f'Total fetch:{len(relevant_incidents)} for {ticket_type=}')
         incidents += relevant_incidents
 
         if relevant_alerts:

@@ -28,8 +28,8 @@ configuration:
   type: 0
   required: false
   section: Collect
-- additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 100.
-  defaultvalue: '50'
+- additionalinfo: Maximum number of incidents per fetch. Default is 100.
+  defaultvalue: '100'
   display: Maximum incidents per fetch
   name: max_fetch
   type: 0
