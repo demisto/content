@@ -15,7 +15,8 @@ from Doppel import (
     doppel_create_alert_command,
     doppel_create_abuse_alert_command,
     get_modified_remote_data_command,
-    format_datetime
+    format_datetime,
+    _paginated_call_to_get_alerts
 )
 
 from CommonServerPython import *
@@ -26,6 +27,7 @@ ALERTS_RESPONSE = [
     {"id": "2", "created_at": "2025-02-01T12:05:00.000000Z"}
 ]
 
+DOPPEL_API_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 def util_load_json(path):
     """Helper function to load JSON data from a file."""
@@ -910,3 +912,36 @@ def test_format_datetime():
     # Test invalid format
     with pytest.raises(ValueError):
         format_datetime("invalid-date")
+
+def test_paginated_call_to_get_alerts():
+    """Test the _paginated_call_to_get_alerts function."""
+    
+    # Mock client and response
+    mock_client = MagicMock()
+    mock_client.get_alerts.return_value = {"alerts": [{"id": "alert1"}, {"id": "alert2"}]}
+
+    # Define test inputs
+    page = 1
+    last_fetch_datetime = datetime(2025, 2, 27, 14, 30, 0)
+
+    # Call function
+    result = _paginated_call_to_get_alerts(mock_client, page, last_fetch_datetime)
+
+    # Assertions
+    expected_query_params = {
+        "created_after": last_fetch_datetime.strftime(DOPPEL_API_DATE_FORMAT),
+        "sort_type": "date_sourced",
+        "sort_order": "asc",
+        "page": page,
+    }
+
+    mock_client.get_alerts.assert_called_once_with(params=expected_query_params)  # Ensure correct API call
+    assert isinstance(result, list)  # Should return a list
+    assert len(result) == 2  # Should return 2 alerts
+    assert result[0]["id"] == "alert1"  # Validate alert content
+    assert result[1]["id"] == "alert2"
+
+    # Test case where no alerts are returned
+    mock_client.get_alerts.return_value = {}
+    result = _paginated_call_to_get_alerts(mock_client, page, last_fetch_datetime)
+    assert result is None  # Should return None if no alerts key exists
