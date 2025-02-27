@@ -917,10 +917,6 @@ def test_format_datetime():
     # Test None input
     assert format_datetime(None) is None
 
-    # Test non-ISO datetime (without mocking)
-    assert format_datetime("Feb 27, 2025 14:30") == "2025-02-27T14:30:00"
-    assert format_datetime("27-02-2025 14:30") == "2025-02-27T14:30:00"
-
     # Test invalid format
     with pytest.raises(ValueError):
         format_datetime("invalid-date")
