@@ -1012,10 +1012,11 @@ def test_get_remote_updated_incident_data_with_entry():
     mock_client.get_alert.return_value = {
         "id": doppel_alert_id,
         "audit_logs": [
-            {"timestamp": "2025-01-01T00:00:00Z", "action": "Updated"},
-            {"timestamp": "2025-01-02T00:00:00Z", "action": "Created"}
+            {"timestamp": "2025-01-01T00:00:00.000000Z", "action": "Updated"},  # Include microseconds
+            {"timestamp": "2025-01-02T00:00:00.500000Z", "action": "Created"}   # Include microseconds
         ]
     }
+
 
     # Call function
     updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, doppel_alert_id, last_update_str)
