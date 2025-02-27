@@ -16,7 +16,8 @@ from Doppel import (
     doppel_create_abuse_alert_command,
     get_modified_remote_data_command,
     format_datetime,
-    _paginated_call_to_get_alerts
+    _paginated_call_to_get_alerts,
+    _get_last_fetch_datetime
 )
 
 from CommonServerPython import *
@@ -945,3 +946,28 @@ def test_paginated_call_to_get_alerts():
     mock_client.get_alerts.return_value = {}
     result = _paginated_call_to_get_alerts(mock_client, page, last_fetch_datetime)
     assert result is None  # Should return None if no alerts key exists
+
+def test_get_last_fetch_datetime():
+    """Test _get_last_fetch_datetime with various scenarios."""
+
+    # Test case: Valid last_run timestamp
+    last_run = "2025-02-24T14:30:00Z"
+    expected_datetime = datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%SZ")
+    assert _get_last_fetch_datetime(last_run) == expected_datetime
+
+    # Test case: No last_run, using first_fetch with a given value
+    first_fetch_time = "3 days"
+    expected_first_fetch = dateparser.parse(first_fetch_time)  # type: ignore # Expected parsed datetime
+    result = _get_last_fetch_datetime(None)
+    assert abs((result - expected_first_fetch).total_seconds()) < 5  # Allow minor differences
+
+    # Test case: Invalid last_run format should raise ValueError
+    with pytest.raises(ValueError):
+        _get_last_fetch_datetime("invalid-date")
+
+    # Test case: Edge case where first_fetch is an empty string
+    first_fetch_time = ""
+    expected_fallback = datetime.now()  # Defaults to current time
+    result = _get_last_fetch_datetime(None)
+    assert abs((result - expected_fallback).total_seconds()) < 5
+
