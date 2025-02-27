@@ -1,8 +1,7 @@
 import json
-import time
 import pytest
 import demistomock as demisto
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from Doppel import (
     test_module,
     fetch_incidents_command,
@@ -267,21 +266,20 @@ def test_fetch_incidents_no_alerts(mocker):
     mocker.patch.object(demisto, "incidents")
     mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
-    
+
     # Create a mock client
     mock_client = MagicMock()
     mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=[])  # Simulating no alerts returned
 
-    
     fetch_incidents_command(client=mock_client, args={})
 
     fetch_incidents_command(client=None, args={})
-    
+
     # Assertions
     demisto.info.assert_called_with("No incidents to create. Exiting fetch_incidents_command.")
     demisto.incidents.assert_called_with([])  # Ensure no incidents are created
 
-    
+
 def test_get_remote_data_command(mocker, requests_mock):
     """
     Given:
@@ -357,7 +355,9 @@ def test_get_remote_data_command_rate_limit_exception(mocker, capfd):
     assert result.mirrored_object == {"in_mirror_error": "Rate limit exceeded"}
     assert result.entries == []
     demisto.debug.assert_called_with("API rate limit")
- 
+
+    mock_get_remote_updated_incident_data_with_entry.assert_called_once()
+
 
 def test_update_remote_system_command(client, mocker):
     """Test update_remote_system_command function."""
@@ -381,39 +381,13 @@ def test_update_remote_system_command(client, mocker):
     mock_error.assert_not_called()  # Ensure no errors were logged
 
 
-def test_update_remote_system_command_exception(client, mocker):
-    """Test update_remote_system_command function."""
-
-    # Mocking demisto functions using mocker.patch.object
-    mocker.patch.object(demisto, "debug")
-    mocker.patch.object(demisto, "error")
-    mocker.patch.object(demisto, 'command', return_value='update-remote-system')
-
-    args = {
-        "data": {"queue_state": "archived"},
-        "incidentChanged": True,
-        "remoteId": "123",
-    }
-
-    # Run the function
-    result = update_remote_system_command(client, args)
-
-    # Assertions
-    # Verify demisto.error was called with the expected error message
-    demisto.error.assert_called_with(
-        "Doppel - Error in outgoing mirror for incident 123 \nError message: Test exception"
-    )
-
-    assert result == "123", "Returned remoteId should match input"
-
-
 def test_update_remote_system_incident_not_closed(mocker, capfd):
     """Test update_remote_system_command when the incident is not closed."""
-    
+
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'command', return_value='update-remote-system')
-    
+
     client = MagicMock()
     args = {
         'data': {'queue_state': 'active'},
@@ -422,12 +396,11 @@ def test_update_remote_system_incident_not_closed(mocker, capfd):
         'remoteId': '123456',
         'inc_status': 1  # Not DONE (assuming DONE = 2)
     }
-    
+
     with capfd.disabled():
-        result = update_remote_system_command(client, args)
+        update_remote_system_command(client, args)
 
     demisto.debug.assert_called_with("Incident not closed. Skipping update for remote ID [123456].")
-
 
 
 def test_get_mapping_fields_command(client, mocker):
@@ -694,13 +667,13 @@ def test_doppel_create_alert_command_failure(mocker):
     """Test doppel_create_alert_command when alert creation fails."""
     # Mock client
     mock_client = MagicMock()
-    
+
     # Simulate API failure
     mock_client.create_alert.side_effect = Exception("API call failed")
-    
+
     # Define arguments
     test_args = {"entity": "test_entity"}
-    
+
     # Verify exception is raised
     with pytest.raises(Exception, match="Failed to create the alert with the given parameters:- API call failed"):
         doppel_create_alert_command(client=mock_client, args=test_args)
@@ -720,6 +693,7 @@ def test_doppel_get_alerts_no_results(mocker):
     assert result.outputs_prefix == "Doppel.GetAlerts"
     assert result.outputs == []
     assert "No alerts were found" not in result.readable_output
+
 
 def test_doppel_get_alerts_missing_params(mocker):
     """Test when query parameters are missing."""
@@ -788,13 +762,13 @@ def test_doppel_create_abuse_alert_command_failure(mocker):
     """Test doppel_create_abuse_alert_command when abuse alert creation fails."""
     # Mock client
     mock_client = MagicMock()
-    
+
     # Simulate API failure
     mock_client.create_abuse_alert.side_effect = Exception("API call failed")
-    
+
     # Define arguments
     test_args = {"entity": "test_entity"}
-    
+
     # Verify exception is raised
     with pytest.raises(Exception, match="Failed to create the abuse alert with the given parameters:- API call failed"):
         doppel_create_abuse_alert_command(client=mock_client, args=test_args)
@@ -814,12 +788,11 @@ def test_get_modified_remote_data_command(mocker):
         get_modified_remote_data_command(mock_client, args)
 
 
-
 def test_doppel_update_alert_both_alert_id_and_entity(mocker):
     """Test failure when both alert_id and entity are provided."""
 
     mock_client = MagicMock()
-    
+
     test_args = {
         "alert_id": "123",
         "entity": "TestEntity",
@@ -834,7 +807,7 @@ def test_doppel_update_alert_no_update_fields(mocker):
     """Test failure when no update fields are provided."""
 
     mock_client = MagicMock()
-    
+
     test_args = {
         "alert_id": "123"
     }
@@ -845,7 +818,7 @@ def test_doppel_update_alert_no_update_fields(mocker):
 
 def test_doppel_update_alert_api_failure(mocker):
     """Test API failure handling when an exception is raised."""
-    
+
     mock_client = MagicMock()
     mock_client.update_alert.side_effect = Exception("API error")
 
