@@ -1985,7 +1985,7 @@ Returns all installed singularity marketplace applications that match the specif
 | account_ids | A comma-separated list of account IDs. | Optional | 
 | application_catalog_id | Filter results by application catalog id. | Optional |
 | creator_contains | Free-text filter by application creator. | Optional |
-| id | A comma-separated list of applications IDs. | Optional |
+| ids | A comma-separated list of applications IDs. | Optional |
 | name_contains | Free-text filter by application name | Optional |
 | site_ids | A comma-separated list of site IDs. | Optional |
 

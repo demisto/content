@@ -3451,7 +3451,7 @@ def list_installed_singu_mark_apps_command(client: Client, args: dict) -> Comman
         accountIds=argToList(args.get('account_ids')),
         applicationCatalogId=args.get('application_catalog_id'),
         creator__contains=args.get('creator_contains'),
-        id=argToList(args.get('id')),
+        id=argToList(args.get('ids')),
         limit=1000,
         name__contains=args.get('name_contains'),
         siteIds=argToList(args.get('site_ids'))

@@ -2662,7 +2662,7 @@ script:
       description: Filter results by application catalog id. 
     - name: creator_contains
       description: Free-text filter by application creator.
-    - name: id
+    - name: ids
       description: A comma-separated list of applications IDs.
       isArray: true
     - name: name_contains
