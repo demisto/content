@@ -6,7 +6,7 @@
        xdm.observer.type = coalesce(parsed_fields -> module, parsed_fields -> mod),
        xdm.network.rule = coalesce(parsed_fields -> rule, parsed_fields -> policy),
        xdm.alert.name = ltrim(rtrim(parsed_fields -> alert,"\""),"\""),
-       xdm.network.ip_protocol = parsed_fields -> proto,
+       xdm.network.application_protocol = parsed_fields -> proto,
        xdm.email.sender = ltrim(rtrim(parsed_fields -> from,"\>"),"\<"),
        xdm.source.ipv4 = arrayindex(regextract(parsed_fields -> ip,"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),0),
        xdm.source.host.hostname = parsed_fields -> host,
