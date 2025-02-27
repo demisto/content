@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterable
 import mimetypes
 
 DEFAULT_FETCH_TIME = '10 minutes'
-MAX_RETRY = 3
+MAX_RETRY = 6
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
 

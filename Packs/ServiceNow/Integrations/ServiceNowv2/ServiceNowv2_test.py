@@ -10,7 +10,7 @@ from freezegun import freeze_time
 import ServiceNowv2
 import requests
 from CommonServerPython import CommandResults, DemistoException, EntryType
-from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
+from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, MAX_RETRY, \
     generate_body, parse_dict_ticket_fields, split_fields, Client, update_ticket_command, create_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
@@ -1196,15 +1196,24 @@ def test_not_authenticated_retry_positive(requests_mock, mocker):
         }
     ])
     assert client.send_request('') == {}
-    assert demisto.debug.call_count == 13
     debug = demisto.debug.call_args_list
-    expected_debug_msg = "Got status code 401 - {'error': {'message': 'User Not Authenticated', " \
-                         "'detail': 'Required to provide Auth information'}, 'status': 'failure'}. Retrying ..."
-    assert debug[0][0][0] == expected_debug_msg
-    assert debug[1][0][0] == expected_debug_msg
+    
+    assert debug[0][0][0] == 'Sending request to ServiceNow. Method: GET, Path: '
+    assert debug[1][0][0] == "Constructed URL: http://server_url\nRequest headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}\nRequest params: {}"
+    assert debug[2][0][0] == f'Request attempt 1 of {MAX_RETRY}'
+    assert debug[3][0][0] == 'Sending regular request'
+    assert debug[4][0][0] == 'Response status code: 401'
+    assert debug[5][0][0] == f'Got status code 401. Retrying... (Attempt 1 of {MAX_RETRY})'
+    assert debug[6][0][0] == f'Request attempt 2 of {MAX_RETRY}'
+    assert debug[7][0][0] == 'Sending regular request'
+    assert debug[8][0][0] == 'Response status code: 401'
+    assert debug[9][0][0] == f'Got status code 401. Retrying... (Attempt 2 of {MAX_RETRY})' 
+    assert debug[10][0][0] == f'Request attempt 3 of {MAX_RETRY}'
+    assert debug[11][0][0] == 'Sending regular request'
+    assert debug[12][0][0] == 'Response status code: 200'
 
 
-def test_not_authenticated_retry_negative(requests_mock, mocker):
+def test_not_authenticated_retry_negative(requests_mock, mocker: MockerFixture):
     """
     Given
     - ServiceNow client
@@ -1228,33 +1237,21 @@ def test_not_authenticated_retry_negative(requests_mock, mocker):
                 'status': 'failure'
             }
         },
-        {
-            'status_code': 401,
-            'json': {
-                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
-                'status': 'failure'
-            }
-        },
-        {
-            'status_code': 401,
-            'json': {
-                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
-                'status': 'failure'
-            }
-        }
-    ])
+    ] * MAX_RETRY)
     with pytest.raises(Exception) as ex:
         client.send_request('')
     assert str(ex.value) == "Got status code 401 with url http://server_url with body b'{\"error\": {\"message\": " \
                             "\"User Not Authenticated\", \"detail\": \"Required to provide Auth information\"}, " \
                             "\"status\": \"failure\"}' with response headers {}"
-    assert demisto.debug.call_count == 3
+
     debug = demisto.debug.call_args_list
-    expected_debug_msg = "Got status code 401 - {'error': {'message': 'User Not Authenticated', " \
-                         "'detail': 'Required to provide Auth information'}, 'status': 'failure'}. Retrying ..."
-    assert debug[0][0][0] == expected_debug_msg
-    assert debug[1][0][0] == expected_debug_msg
-    assert debug[2][0][0] == expected_debug_msg
+
+    assert debug[0][0][0] == 'Sending request to ServiceNow. Method: GET, Path: '
+    assert debug[1][0][0] == "Constructed URL: http://server_url\nRequest headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}\nRequest params: {}"
+    assert debug[2][0][0] == f'Request attempt 1 of {MAX_RETRY}'
+    assert debug[3][0][0] == 'Sending regular request'
+    assert debug[4][0][0] == 'Response status code: 401'
+    assert debug[5][0][0] == f'Got status code 401. Retrying... (Attempt 1 of {MAX_RETRY})'
 
 
 def test_oauth_authentication(mocker, requests_mock):
