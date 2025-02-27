@@ -808,15 +808,6 @@
 							},
 							{
 								"endCol": 4,
-								"fieldId": "cybelangelsource",
-								"height": 22,
-								"id": "c21356d0-d9b5-11ef-8c70-f3286c01e863",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-							{
-								"endCol": 4,
 								"fieldId": "cybelangelstream",
 								"height": 22,
 								"id": "c3463180-d9b5-11ef-8c70-f3286c01e863",
@@ -985,7 +976,7 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "incident_reportcontent",
+						"fieldId": "cybelangelreportcontent",
 						"isVisible": true
 					}
 				],
@@ -1007,5 +998,8 @@
 	"quickView": {},
 	"system": false,
 	"version": -1,
-	"fromVersion": "6.0.0"
+	"fromVersion": "6.0.0",
+	"marketplaces": [
+		"xsoar"
+	]
 }

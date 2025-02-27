@@ -6,6 +6,7 @@
 	"description": "",
 	"defaultIncidentType": "CybelAngel",
 	"definitionId": "",
+	"fromVersion": "6.0.0",
 	"feed": false,
 	"mapping": {
 		"CybelAngel": {
