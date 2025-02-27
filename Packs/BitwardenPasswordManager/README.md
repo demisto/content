@@ -28,7 +28,7 @@ The Password Manager is encrypted and has the abilities to identify compromised 
 1. Log in to **Bitwarden Admin Console** and go to **Settings** -> **Organization info** -> **View API key**
 2. Copy the **client_id** and **client_secret**
 
-For more information please check the Bitwarden Public API doccumentation -> [Click here](https://bitwarden.com/help/public-api/#authentication).
+For more information, check the Bitwarden Public API documentation -> [Click here](https://bitwarden.com/help/public-api/#authentication).
 
 ### XSIAM Configuration
 
