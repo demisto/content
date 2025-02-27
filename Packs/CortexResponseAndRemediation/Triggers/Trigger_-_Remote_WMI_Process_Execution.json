@@ -11,7 +11,12 @@
             "SEARCH_FIELD": "alert_name",
             "SEARCH_TYPE": "CONTAINS",
             "SEARCH_VALUE": "Remote WMI Process Execution"
-        }
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
       ]
     }
   }
