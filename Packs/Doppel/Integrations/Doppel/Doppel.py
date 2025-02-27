@@ -598,7 +598,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
     except Exception as e:
         demisto.error(f'Error while running get_remote_data_command: {e}')
         if "Rate limit exceeded" in str(e):
-            return_error("API rate limit")
+            demisto.error("API rate limit")
         if not remote_updated_incident_data:
             remote_updated_incident_data = {"id": parsed_args.remote_incident_id}
         mirrored_object['in_mirror_error'] = str(e)

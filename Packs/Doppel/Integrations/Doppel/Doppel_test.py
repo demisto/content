@@ -342,7 +342,6 @@ def test_get_remote_data_rate_limit(mocker, requests_mock):
     # Mock necessary demisto functions
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'error')
-    mocker.patch("CommonServerPython.return_error", side_effect=Exception("API rate limit"))
     mocker.patch.object(demisto, 'args', return_value={"id": "123456", "lastUpdate": "2025-01-27T07:55:10.063742"})
     mocker.patch.object(demisto, 'command', return_value='get-remote-data')
 
