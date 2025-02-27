@@ -380,6 +380,7 @@ def test_update_remote_system_command(client, mocker):
     mock_debug.assert_called()  # Ensure debug logs are being generated
     mock_error.assert_not_called()  # Ensure no errors were logged
 
+
 def test_update_remote_system_command_exception(client, mocker):
     """Test update_remote_system_command function."""
 
@@ -409,7 +410,7 @@ def test_update_remote_system_command_exception(client, mocker):
 def test_update_remote_system_incident_not_closed():
     """Test update_remote_system_command when the incident is not closed."""
     
-    client = Mock()
+    client = MagicMock()
     args = {
         'data': {'queue_state': 'active'},
         'entries': [],
@@ -426,6 +427,7 @@ def test_update_remote_system_incident_not_closed():
     
     # Verify that the debug log contains the correct message
     mock_debug.assert_any_call('Incident not closed. Skipping update for remote ID [123456].')
+
 
 def test_get_mapping_fields_command(client, mocker):
     """Test get_mapping_fields_command function."""
