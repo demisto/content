@@ -342,6 +342,7 @@ def test_get_remote_data_rate_limit(mocker, requests_mock):
     # Mock necessary demisto functions
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'error')
+    mocker.patch("CommonServerPython.return_error", side_effect=Exception("API rate limit"))
     mocker.patch.object(demisto, 'args', return_value={"id": "123456", "lastUpdate": "2025-01-27T07:55:10.063742"})
     mocker.patch.object(demisto, 'command', return_value='get-remote-data')
 
@@ -646,6 +647,22 @@ def test_doppel_create_alert_command_missing_entity(client):
         doppel_create_alert_command(client, args)
 
 
+def test_doppel_create_alert_command_failure(mocker):
+    """Test doppel_create_alert_command when alert creation fails."""
+    # Mock client
+    mock_client = MagicMock()
+    
+    # Simulate API failure
+    mock_client.create_alert.side_effect = Exception("API call failed")
+    
+    # Define arguments
+    test_args = {"entity": "test_entity"}
+    
+    # Verify exception is raised
+    with pytest.raises(Exception, match="Failed to create the alert with the given parameters:- API call failed"):
+        doppel_create_alert_command(client=mock_client, args=test_args)
+
+
 def test_doppel_create_abuse_alert_command(client, mocker):
     test_response = util_load_json('test_data/create-abuse-alert.json')
 
@@ -672,6 +689,22 @@ def test_doppel_create_abuse_alert_command_missing_entity(client):
 
     with pytest.raises(ValueError, match="Entity must be specified to create an abuse alert."):
         doppel_create_abuse_alert_command(client, args)
+
+
+def test_doppel_create_abuse_alert_command_failure(mocker):
+    """Test doppel_create_abuse_alert_command when abuse alert creation fails."""
+    # Mock client
+    mock_client = MagicMock()
+    
+    # Simulate API failure
+    mock_client.create_abuse_alert.side_effect = Exception("API call failed")
+    
+    # Define arguments
+    test_args = {"entity": "test_entity"}
+    
+    # Verify exception is raised
+    with pytest.raises(Exception, match="Failed to create the abuse alert with the given parameters:- API call failed"):
+        doppel_create_abuse_alert_command(client=mock_client, args=test_args)
 
 
 def test_get_modified_remote_data_command(mocker):
