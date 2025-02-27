@@ -9,7 +9,7 @@ description: |-
 
   **Playbook Stages:**
 
-  **Enrichment:**
+  **Analysis:**
 
   * Enrich the attacker’s IP address to identify any known malicious activity.
 
@@ -31,7 +31,7 @@ description: |-
 
   * Propose endpoint isolation to prevent further compromise if malicious activity is confirmed.
 tags:
-- 'T1021 - Remote Services '
+- T1021 - Remote Services
 - TA0008 - Lateral Movement
 starttaskid: "0"
 tasks:
@@ -984,7 +984,7 @@ tasks:
     task:
       id: 7ae38b7e-4c38-4c10-8cd6-1e935e4e0e4f
       version: -1
-      name: Enrichment
+      name: Analysis
       type: title
       iscommand: false
       brand: ""

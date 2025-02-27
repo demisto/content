@@ -1,10 +1,10 @@
-This playbook addresses the following alert:
+This playbook addresses the following alerts:
 
 * WmiPrvSe.exe Rare Child Command Line
 
 **Playbook Stages:**
 
-**Enrichment:**
+**Analysis:**
 
 * Enrich the attacker’s IP address to identify any known malicious activity.
 

@@ -10,7 +10,7 @@ description: |-
 
   **Playbook Stages:**
 
-  **Enrichment:**
+  **Analysis:**
 
   * Enrich the attacker’s IP address to identify any known malicious activity.
 
@@ -32,8 +32,8 @@ description: |-
 
   * Propose endpoint isolation to prevent further compromise if malicious activity is confirmed.
 tags:
-- 'T1021 - Remote Services '
 - TA0008 - Lateral Movement
+- T1021 - Remote Services
 starttaskid: "0"
 tasks:
   "0":
@@ -208,7 +208,7 @@ tasks:
         **Conditions:**
 
         - A profile matches one or more of the following categories: **mixed case PowerShell, reversed command, PowerShell suspicious patterns, credential dumping, double encoding, AMSI techniques, or malicious commands.**
-        - OR the score is **greater than or equal to 30**.
+        - OR the score is **greater than or equal to 25**.
         - OR an **IP address** involved in the alert is flagged as **malicious**.
 
         If any condition is met, mark the result as **Malicious**.
@@ -353,8 +353,8 @@ tasks:
 
         **Conditions:**
 
-        - If Score is **greater than or equal to 10** AND a **prevention rule exists** in the same alert, classify the result as **Malicious**.
-        - Else, if Score is **less than 10** AND a **prevention rule exists** in the same alert, classify the result as **Suspicious**.
+        - If Score is **greater than or equal to 15** AND a **prevention rule exists** in the same alert, classify the result as **Malicious**.
+        - Else, if Score is **less than 15** AND a **prevention rule exists** in the same alert, classify the result as **Suspicious**.
 
         High-risk behavior with prevention rule: **Malicious**.
         Low-risk behavior with prevention rule: **Suspicious**.
@@ -406,7 +406,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "10"
+              simple: "15"
       - - operator: containsGeneral
           left:
             value:
@@ -452,7 +452,7 @@ tasks:
 
         **Conditions:**
 
-        If the score is in the range of **10–29**, mark the result as **Suspicious**.
+        If the score is in the range of **10–25**, mark the result as **Suspicious**.
       type: condition
       iscommand: false
       brand: ""
@@ -472,7 +472,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 10,21
+              simple: 10,25
     continueonerrortype: ""
     view: |-
       {
@@ -504,13 +504,13 @@ tasks:
         **One of the following supporting evidences**
 
         * Command Line Analysis score is in range 10 to 25
-        * Command Line Analysis score below 10 with a prevention rule in the same incident.
+        * Command Line Analysis score below 15 with a prevention rule in the same incident.
         * Suspicious process tree detected
 
         **Unmatched Verdicts:**
         * No matches for high-risk command line analysis profiles.
         * No malicious IP address detected.
-        * The command line analysis score is below 25 without high-confidence indicators.
+        * The command line analysis score is below 15 with high-confidence indicators.
 
         Analyst approval is required to proceed with further containment or escalation.
       type: condition
@@ -666,7 +666,9 @@ tasks:
       closeNotes:
         simple: The alert has been resolved, confirmed as a True Positive
       closeReason:
-        simple: Resolved - Handled by the playbook "WmiPrvSe.exe Rare Child Command Line" as True Positive
+        simple: Resolved - True Positive - Handled by the playbook "WmiPrvSe.exe Rare Child Command Line"
+      id:
+        simple: ${alert.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -731,7 +733,9 @@ tasks:
       closeNotes:
         simple: The alert has been resolved, confirmed as a False Positive
       closeReason:
-        simple: Resolved - Handled by the playbook "WmiPrvSe.exe Rare Child Command Line" as False Positive
+        simple: Resolved - False Positive - Handled by the playbook "WmiPrvSe.exe Rare Child Command Line"
+      id:
+        simple: ${alert.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -764,10 +768,7 @@ tasks:
         **Matched Verdicts:**
         * Matches for high-risk command line analysis profiles: mixed_case_powershell, double_encoding, amsi_techniques, malicious_commands, or powershell_suspicious_network_patterns.
 
-        * Malicious IP address detected.
-        Score >= 25, indicating high confidence probability for malicious behavior.
-
-        * Score >= 10 with a prevention rule detected in the same alert, correlating to malicious activity.
+        * Score >= 25, indicating high confidence probability for malicious behavior.
 
         **Action Required:**
 
@@ -867,8 +868,8 @@ tasks:
     task:
       id: aa59de8b-dca5-485b-90db-49fc8bad71dc
       version: -1
-      name: Should proceed to isolate the remote endpoint?
-      description: If the condition "Check for high-confidence evidence or malicious IP address" was matched and the remote endpoint ID is available, an endpoint isolation is suggested.
+      name: Should proceed to isolate the endpoint?
+      description: If the condition "Check for high-confidence evidence" was matched and the endpoint ID is available, an endpoint isolation is suggested.
       type: condition
       iscommand: false
       brand: ""
@@ -929,7 +930,7 @@ tasks:
     task:
       id: 7ae38b7e-4c38-4c10-8cd6-1e935e4e0e4f
       version: -1
-      name: Enrichment
+      name: Analysis
       type: title
       iscommand: false
       brand: ""
