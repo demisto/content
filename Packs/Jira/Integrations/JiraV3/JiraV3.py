@@ -2534,7 +2534,7 @@ def extract_comment_entry_from_raw_response(comment_response: Dict[str, Any]) ->
     Returns:
         Dict[str, Any]: The comment entry that will be used to return to the user.
     """
-    comment_body = BeautifulSoup(comment_response.get('renderedBody'), features="html.parser").get_text(
+    comment_body = BeautifulSoup(comment_response.get('renderedBody', ''), features="html.parser").get_text(
     ) if comment_response.get('renderedBody') else comment_response.get('body')
     return {
         'Id': comment_response.get('id'),
@@ -2619,7 +2619,7 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
         }
     res = client.add_comment(issue_id_or_key=issue_id_or_key, json_data=payload)
     markdown_dict = {
-        'Comment': BeautifulSoup(res.get('renderedBody'), features="html.parser").get_text()
+        'Comment': BeautifulSoup(res.get('renderedBody', ''), features="html.parser").get_text()
         if res.get('renderedBody')
         else res.get('body'),
         'Id': res.get('id', ''),
@@ -3818,7 +3818,6 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
             issue['forms'] = forms
         except DemistoException:
             demisto.debug(f'Failed to get reports for {issue_id}, Not retrieving. Error: {traceback.format_exc()}')
-            pass
 
     demisto.debug(f'Incident for issue {issue_id} is being created.')
 
