@@ -3818,6 +3818,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
             issue['forms'] = forms
         except DemistoException:
             demisto.debug(f'Failed to get reports for {issue_id}, Not retrieving. Error: {traceback.format_exc()}')
+            pass
 
     demisto.debug(f'Incident for issue {issue_id} is being created.')
 
