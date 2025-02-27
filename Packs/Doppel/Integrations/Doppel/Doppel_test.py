@@ -1,4 +1,5 @@
 import json
+import time
 import pytest
 import demistomock as demisto
 from unittest.mock import MagicMock
@@ -159,19 +160,15 @@ def test_fetch_incidents_timeout(mocker):
     mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "incidents")
 
-    # Load mock data
-    mock_alerts = util_load_json("test_data/get-all-alerts.json")  # List of alerts from Doppel
+    mock_client = MagicMock()
 
-    # Mock `_paginated_call_to_get_alerts` to simulate API responses in different cycles
-    mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[
-        mock_alerts['alerts'][:50],  # First fetch - fill queue
-        mock_alerts['alerts'][50:100],  # Second fetch - next batch
-        [],  # Third fetch - No new alerts, return remaining
-        []   # Fourth fetch - No new alerts, return empty
-    ])
+    # Patch `time.time()` to simulate a gradually increasing time
+    original_time = time.time()
+    mocker.patch("time.time", side_effect=lambda: original_time + 100)  # Simulates passing 100s
 
     with pytest.raises(DemistoException, match="Fetch incidents - Time out. Please change first_fetch parameter to be more recent one"):
-        fetch_incidents_command(client=None, args={})
+        fetch_incidents_command(client=mock_client, args={})
+
 
     
 def test_get_remote_data_command(mocker, requests_mock):
