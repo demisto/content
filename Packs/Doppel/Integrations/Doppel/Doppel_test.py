@@ -39,6 +39,7 @@ MIRROR_DIRECTION = {
     "Incoming And Outgoing": "Both",
 }
 
+
 def util_load_json(path):
     """Helper function to load JSON data from a file."""
     with open(path, encoding='utf-8') as f:
@@ -900,9 +901,10 @@ def test_doppel_update_alert_only_queue_state(mocker):
     assert result.outputs_prefix == "Doppel.UpdatedAlert"
     assert result.outputs["queue_state"] == "archived"
 
+
 def test_format_datetime():
     """Test format_datetime with various datetime formats."""
-    
+
     # Test valid ISO 8601 format
     assert format_datetime("2025-02-27T14:30:00") == "2025-02-27T14:30:00"
 
@@ -923,9 +925,10 @@ def test_format_datetime():
     with pytest.raises(ValueError):
         format_datetime("invalid-date")
 
+
 def test_paginated_call_to_get_alerts():
     """Test the _paginated_call_to_get_alerts function."""
-    
+
     # Mock client and response
     mock_client = MagicMock()
     mock_client.get_alerts.return_value = {"alerts": [{"id": "alert1"}, {"id": "alert2"}]}
@@ -956,6 +959,7 @@ def test_paginated_call_to_get_alerts():
     result = _paginated_call_to_get_alerts(mock_client, page, last_fetch_datetime)
     assert result is None  # Should return None if no alerts key exists
 
+
 def test_get_last_fetch_datetime():
     """Test _get_last_fetch_datetime with different inputs."""
 
@@ -973,24 +977,23 @@ def test_get_last_fetch_datetime():
         _get_last_fetch_datetime("invalid-date")
 
 
-
 def test_get_mirroring_fields():
     """Test _get_mirroring_fields function."""
-    
+
     # Mocking expected return values
     demisto_params = {"mirror_direction": "Both"}
     demisto_instance = "Test_Integration"
-    
+
     # Setting mock values manually
     demisto.params = lambda: demisto_params
     demisto.integrationInstance = lambda: demisto_instance
-    
+
     expected_result = {
         "mirror_direction": MIRROR_DIRECTION.get("Both"),
         "mirror_instance": "Test_Integration",
         "incident_type": "Doppel_Incident",
     }
-    
+
     assert _get_mirroring_fields() == expected_result
 
 
@@ -1020,5 +1023,3 @@ def test_get_remote_updated_incident_data_with_entry():
 
     # Assertions
     assert updated_alert or updated_alert is None, "Updated alert should be either valid or None"
-
-    

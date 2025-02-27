@@ -383,7 +383,7 @@ def format_datetime(timestamp_str):
         datetime_obj = arg_to_datetime(timestamp_str)
 
         # Convert to standard ISO 8601 format without microseconds and timezone
-        iso_format_truncated = datetime_obj.strftime("%Y-%m-%dT%H:%M:%S")
+        iso_format_truncated = datetime_obj.strftime("%Y-%m-%dT%H:%M:%S.%fZ") if datetime_obj else None
         return iso_format_truncated
 
 
