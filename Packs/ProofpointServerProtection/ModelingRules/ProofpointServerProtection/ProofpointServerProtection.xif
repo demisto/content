@@ -1,4 +1,4 @@
-[MODEL: dataset = proofpoint_ps_raw]
+[MODEL: dataset = "proofpoint_ps_raw"]
  alter xdm.observer.name = arrayindex(regextract(_raw_log, "^\<\d+\>\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2}\s+(\S+)"),0),
        xdm.event.type = arrayindex(regextract(_raw_log, "^\<\d+\>\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2}\s+\w+\s+([^\[]+)"),0),
        xdm.event.description = parsed_fields,

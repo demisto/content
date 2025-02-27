@@ -3,6 +3,10 @@
         "parsed_fields": {
             "type": "string",
             "is_array": false
+        },
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
         }
     }
   }
