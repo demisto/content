@@ -163,6 +163,7 @@ def get_time_delta(fetch_delta):
     Returns:
         The time delta.
     """
+    demisto.debug(f"entering get_time_delta function {fetch_delta=}")
     fetch_delta_split = fetch_delta.strip().split(' ')
     if len(fetch_delta_split) != 2:
         raise Exception(
@@ -180,6 +181,7 @@ def get_time_delta(fetch_delta):
         time_delta = timedelta(hours=number)  # batch by hours
     else:
         time_delta = timedelta(minutes=number)  # batch by minutes
+    demisto.debug(f"finishing get_time_delta function {fetch_delta=} and returning {time_delta=}")
     return time_delta
 
 
@@ -232,7 +234,9 @@ def get_incidents_batch_by_time_request(client, params):
     }
 
     # while loop relevant for fetching old incidents
+    i = 0
     while created_before < current_time and len(incidents_list) < fetch_limit:  # type: ignore[operator]
+        demisto.debug(f"Entering pagination at {i} time")
         demisto.info(
             f"Entered the batch loop , with fetch_limit {fetch_limit} and events list "
             f"{[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)} "
@@ -249,18 +253,22 @@ def get_incidents_batch_by_time_request(client, params):
         # updating params according to the new times
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
-        demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} events")
+        demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} events. "
+            f"Changing request_params['created_after']={request_params['created_after']}, request_params['created_before']={request_params['created_before']}")
+        i += 1
 
     # fetching the last batch when created_before is bigger then current time = fetching new events
     if len(incidents_list) < fetch_limit:  # type: ignore[operator]
         # fetching the last batch
+        demisto.debug("Entering if statement (doing last pagination call)")
         request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
         new_incidents = get_new_incidents(client, request_params, last_fetched_id)
         incidents_list.extend(new_incidents)
 
         demisto.debug(
             f"Finished the last batch, with fetch_limit {fetch_limit} and events list:"
-            f" {[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)}")
+            f" {[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)}."
+            f" Changing request_params['created_after']={request_params['created_after']}, request_params['created_before']={request_params['created_before']}")
 
     incidents_list_limit = incidents_list[:fetch_limit]
     return incidents_list_limit
