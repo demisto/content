@@ -354,7 +354,7 @@ def test_get_remote_data_command_rate_limit_exception(mocker):
 
     result = get_remote_data_command(client, demisto.args())
 
-    assert result.mirrored_object == {"id": "123456", "in_mirror_error": "Rate limit exceeded"}
+    assert result.mirrored_object == {"in_mirror_error": "Rate limit exceeded"}
     assert result.entries == []
     assert "Error while running get_remote_data_command: Rate limit exceeded" in demisto.error_calls
     assert "API rate limit" in demisto.error_calls
