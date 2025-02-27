@@ -11,7 +11,7 @@ Bitwarden Password Manager helps organizations to store their passwords and othe
 The Password Manager is encrypted and has the abilities to identify compromised passwords.
 
 
-## What does this pack contains?
+## What does this pack contain?
 
 - Rest API integration for your Bitwarden Password Manager.
 - Modeling Rules for all security events:
