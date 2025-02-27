@@ -265,6 +265,8 @@ RESTAPI_TAS_RESULT = [
                     "comments": False,
                     "completedBy": "DBot",
                     "completedDate": "2020-09-29T16:48:30.427891714Z",
+                    "continueOnError": True,
+                    "continueOnErrorType": "errorPath",
                     "doNotSaveTaskHistory": True,
                     "dueDate": "0001-01-01T00:00:00Z",
                     "dueDateDuration": 0,
@@ -282,9 +284,13 @@ RESTAPI_TAS_RESULT = [
                     "id": "3",
                     "indent": 0,
                     "nextTasks": {
+                        "#error#": [
+                            "4"
+                        ],
                         "#none#": [
                             "1"
                         ]
+
                     },
                     "note": False,
                     "outputs": {},
@@ -421,7 +427,7 @@ RESTAPI_TAS_RESULT = [
 ]
 
 INTERNAL_TASKS_RESULT = {
-    "body": "[{\"Reopen\":false,\"ancestors\":[\"AutoFocusPolling\"],\"completedBy\":\"DBot\",\"completedDate\":\"2022-10-06T09:09:08.762414928Z\",\"conditions\":[{\"condition\":[[{\"left\":{\"isContext\":true,\"value\":{\"simple\":\"1\"}},\"operator\":\"isEqualString\",\"right\":{\"value\":{\"simple\":\"2\"}}}]],\"label\":\"yes\"}],\"doNotSaveTaskHistory\":true,\"dueDate\":\"0001-01-01T00:00:00Z\",\"entries\":[\"8@3\",\"9@3\"],\"evidenceData\":{},\"id\":\"3\",\"nextTasks\":{\"yes\":[\"2\"]},\"previousTasks\":{\"#none#\":[\"0\"]},\"quietMode\":2,\"startDate\":\"2022-10-06T09:09:08.744744147Z\",\"state\":\"Error\",\"task\":{\"cacheVersn\":0,\"id\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"modified\":\"2022-10-06T09:09:02.998455781Z\",\"name\":\"Fail\",\"type\":\"condition\",\"version\":1,\"description\":\"command desc\"},\"taskId\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"taskSize\":37,\"type\":\"condition\",\"view\":{\"position\":{\"x\":450,\"y\":230}}}]",
+    "body": "[{\"Reopen\":false,\"ancestors\":[\"AutoFocusPolling\"],\"completedBy\":\"DBot\",\"completedDate\":\"2022-10-06T09:09:08.762414928Z\",\"conditions\":[{\"condition\":[[{\"left\":{\"isContext\":true,\"value\":{\"simple\":\"1\"}},\"operator\":\"isEqualString\",\"right\":{\"value\":{\"simple\":\"2\"}}}]],\"label\":\"yes\"}],\"continueOnError\":true,\"continueOnErrorType\":\"errorPath\",\"doNotSaveTaskHistory\":true,\"dueDate\":\"0001-01-01T00:00:00Z\",\"entries\":[\"8@3\",\"9@3\"],\"evidenceData\":{},\"id\":\"3\",\"nextTasks\":{\"#error#\":[\"5\"],\"yes\":[\"2\"]},\"previousTasks\":{\"#none#\":[\"0\"]},\"quietMode\":2,\"startDate\":\"2022-10-06T09:09:08.744744147Z\",\"state\":\"Error\",\"task\":{\"cacheVersn\":0,\"id\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"modified\":\"2022-10-06T09:09:02.998455781Z\",\"name\":\"Fail\",\"type\":\"condition\",\"version\":1,\"description\":\"command desc\"},\"taskId\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"taskSize\":37,\"type\":\"condition\",\"view\":{\"position\":{\"x\":450,\"y\":230}}}]",
     "headers": {
         "Content-Length": [
             "807"

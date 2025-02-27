@@ -26,8 +26,8 @@ def test_get_failed_tasks(mocker, rest_api_instacne):
     main()
 
     human_readable = demisto.results.call_args[0][0].get('HumanReadable')
-    assert '|Incident Created Date|Incident ID|Task Name|Task ID|Playbook Name|Command Name|Brand Name|Error Entry ID|' in \
-           human_readable
+    assert ('|Incident Created Date|Incident ID|Task Name|Task ID|Playbook Name|Command Name|'
+            'Brand Name|Error Entry ID|Error Handling|') in human_readable
     assert human_readable.count('AutoFocusPolling') == 3
 
     entry_context = demisto.results.call_args[0][0].get('EntryContext')
@@ -44,7 +44,8 @@ def test_get_failed_tasks(mocker, rest_api_instacne):
                                                           'Playbook Name': 'AutoFocusPolling',
                                                           'Task ID': '3',
                                                           'Task Name': 'Fail',
-                                                          'Command Description': 'command desc'}
+                                                          'Command Description': 'command desc',
+                                                          'Error Handling': 'Error Path'}
 
 
 @pytest.mark.parametrize('tasks,expected_outputs', [
@@ -60,7 +61,8 @@ def test_get_failed_tasks(mocker, rest_api_instacne):
         'Playbook Name': 'AutoFocusPolling',
         'Task ID': '3',
         'Task Name': 'Fail',
-        'Command Description': 'command desc'
+        'Command Description': 'command desc',
+        'Error Handling': 'Error Path'
     }], 2))
 ])
 def test_get_failed_tasks_output(tasks, expected_outputs):
@@ -117,7 +119,8 @@ def test_get_failed_tasks_output_with_tasks(mocker):
             "Command Name": "Custom Script 1",
             "Brand Name": "brand1",
             "Incident Owner": "admin",
-            "Command Description": "Description 1"
+            "Command Description": "Description 1",
+            "Error Handling": "Stop Playbook"
         },
         {
             "Incident ID": "incident1",
@@ -129,7 +132,8 @@ def test_get_failed_tasks_output_with_tasks(mocker):
             "Incident Created Date": "2023-01-01",
             "Command Name": "Custom Script 2",
             "Brand Name": None,
-            "Incident Owner": "admin"
+            "Incident Owner": "admin",
+            "Error Handling": "Stop Playbook"
         }
     ]
 
