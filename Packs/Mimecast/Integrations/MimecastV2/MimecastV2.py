@@ -148,7 +148,7 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
     """
     demisto.debug(f"Sending request from request_with_pagination with {limit=}, {data=}")
     headers = {}
-    payload = {}
+    payload: dict[str, Any] = {'meta': {}}
     len_of_results = 0
     results = []
     dropped = 0
@@ -158,15 +158,11 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
         demisto.debug(f"current_next_page exists with value {current_next_page}")
     next_page = current_next_page or ''
     while True:
-        if not next_page:
-            demisto.debug("No next_page")
-            pagination = {'pageSize': limit}
-            payload['meta']['pagination'] = pagination
-        else:
+        pagination = {'pageSize': limit}
+        if next_page:
             demisto.debug(f"next_page exists with value {next_page}")
-            pagination = {'pageSize': limit,
-                          'pageToken': next_page}
-            payload['meta']['pagination'] = pagination
+            pagination = {'pageSize': limit, 'pageToken': next_page}
+        payload['meta']['pagination'] = pagination
         response = http_request('POST', api_endpoint, payload, headers=headers)
         if response.get('fail'):
             raise Exception(json.dumps(response.get('fail')[0].get('errors')))
@@ -176,13 +172,12 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
             response_data = response.get('data', [])
         for entry in response_data:
             entry_id = entry.get('id')
-            if not entry_id or entry_id not in dedup_messages:  # dedup for fetch
+            if not entry_id or entry_id not in dedup_messages:  # Dedup for fetch
                 len_of_results += 1
                 results.append(entry)
             elif entry_id in dedup_messages:
                 dropped += 1
                 demisto.debug(f"Dropped {entry_id} as it already exists.")
-        # If limit is reached or there are no more pages
         next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
         if not next_page or (limit and len_of_results >= limit):
             break
