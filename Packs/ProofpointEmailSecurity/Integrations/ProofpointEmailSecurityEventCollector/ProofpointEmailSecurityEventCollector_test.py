@@ -113,11 +113,11 @@ def test_fetch_events(mocker, connection):
 
 def test_fetch_events__logs_and_memory(mocker, connection):
     """
-    Given: connection fetch_interval=11 recv_timeout=10, extensive_logs=True
+    Given: connection fetch_interval=11 recv_timeout=10
     When: Calling fetch_events function
     Then:
-        - psutil.virtual_memory() is called 3 times
-        - demisto.debug(f"Max message size {max_message_size}") is logged 3 times
+        - psutil.virtual_memory() is called 2 times
+        - demisto.debug(f"Max message size {max_message_size}") is logged 2 times
     """
     fetch_interval = 15
     event_connection = EventConnection(event_type=EventType.MESSAGE, connection=connection)
@@ -125,15 +125,15 @@ def test_fetch_events__logs_and_memory(mocker, connection):
     mock_virtual_memory = mocker.patch("psutil.virtual_memory")
     debug_logs = mocker.patch.object(demisto, "debug")
     
-    _ = fetch_events(connection=event_connection, fetch_interval=fetch_interval, extensive_logs=True)
+    _ = fetch_events(connection=event_connection, fetch_interval=fetch_interval)
     
-    assert mock_virtual_memory.call_count == 3
-    assert str(debug_logs.call_args_list).count("Max message size") == 3
+    assert mock_virtual_memory.call_count == 2
+    assert str(debug_logs.call_args_list).count("Max message size") == 2
 
     
 def test_fetch_events__JSON_loads_exception(mocker, connection):
     """
-    Given: connection fetch_interval=1 recv_timeout=10, extensive_logs=False and json.loads(message) fails.
+    Given: connection fetch_interval=1 recv_timeout=10, and json.loads(message) fails.
     When: Calling fetch_events function
     Then: DemistoException(f"Failed to JSON decode message {message}. error: {e}") will be raised.
     """
@@ -145,7 +145,7 @@ def test_fetch_events__JSON_loads_exception(mocker, connection):
     mocker.patch("json.loads", side_effect=json.JSONDecodeError("Expecting value", "", 0))
 
     with pytest.raises(DemistoException):
-        fetch_events(connection=event_connection, fetch_interval=fetch_interval, extensive_logs=True)
+        fetch_events(connection=event_connection, fetch_interval=fetch_interval)
 
     
     

@@ -44,12 +44,6 @@ configuration:
   type: 8
   required: false
   section: Collect
-- display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
-  name: extensive_logs
-  type: 8
-  section: Collect
-  advanced: true
-  required: false
 script:
   script: ""
   type: python
