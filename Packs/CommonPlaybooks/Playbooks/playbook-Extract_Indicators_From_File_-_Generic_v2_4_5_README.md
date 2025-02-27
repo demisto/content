@@ -34,13 +34,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* ExtractIndicatorsFromWordFile
+* ConvertFile
 * ExtractHyperlinksFromOfficeFiles
 * ExtractIndicatorsFromTextFile
-* ReadQRCode
-* ConvertFile
-* SetAndHandleEmpty
+* ExtractIndicatorsFromWordFile
+* IsPDFFileEncrypted
 * ReadPDFFileV2
+* ReadQRCode
+* SetAndHandleEmpty
 
 ### Commands
 

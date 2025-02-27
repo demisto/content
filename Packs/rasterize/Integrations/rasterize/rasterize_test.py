@@ -607,7 +607,7 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
 
     def raise_connection_error(url):
         raise requests.exceptions.ConnectionError('connection error')
-
+    mocker.patch.object(rasterize, 'count_running_chromes', return_value=1)
     mocker.patch('pychrome.Browser', side_effect=raise_connection_error)
     mocker.patch('time.sleep')
     debug = mocker.patch.object(demisto, 'debug')
@@ -616,7 +616,7 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
 
     assert res is None
     debug.assert_called_with(
-        "Failed to connect to Chrome on port port on iteration 3. ConnectionError,"
+        "Failed to connect to Chrome on port port on iteration 4. ConnectionError,"
         " exp_str='connection error', exp=ConnectionError('connection error')")
 
 

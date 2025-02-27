@@ -187,7 +187,7 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
                 if HTTP_ERRORS.get(res.status_code) is not None:
                     # if it is a known http error - get the message form the preset messages
                     return_error("Failed to connect. "
-                                 "The following error occurred: {}".format(HTTP_ERRORS.get(res.status_code)))
+                                 f"The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
 
                 else:
                     # if it is unknown error - get the message from the error itself
@@ -597,7 +597,8 @@ def main():
         fetch_index = params.get('fetch_index')
         fetch_time = params.get('fetch_time', '3 days')
         fetch_limit = arg_to_number(params.get('fetch_limit', FETCH_LIMIT))
-        enrichment_excluded = params.get('enrichmentExcluded', False)
+        enrichment_excluded = (params.get('enrichmentExcluded', False)
+                               or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
         if not fetch_limit or fetch_limit > 10_000:
             raise DemistoException(f"Fetch limit must be between 1-10,000, got {fetch_limit}")
         query = params.get('es_query')
