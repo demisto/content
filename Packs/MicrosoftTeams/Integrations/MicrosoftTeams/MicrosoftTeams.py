@@ -736,7 +736,8 @@ def get_graph_access_token() -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug('Using access token from integration context')
         return access_token
-    tenant_id = integration_context.get('tenant_id')
+    #tenant_id = integration_context.get('tenant_id')
+    tenant_id = '##### Add your tenant id here #####'
     if not tenant_id:
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     headers = None
@@ -1523,11 +1524,15 @@ def add_bot_to_chat(chat_id: str):
     if is_bot_in_chat(chat_id):
         demisto.debug(f"Bot is already part of the chat - chat ID: {chat_id}")
         return
+    # res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
+    #                    params={"$filter": f"externalId eq '{BOT_ID}'"})
     res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
-                       params={"$filter": f"externalId eq '{BOT_ID}'"})
-    demisto.debug(f"res is: {res}")
-    demisto.debug(f"res type is: {type(res)}")
-    app_data = res.get('value')[0]      # type: ignore
+                       params={})
+    demisto.debug(f"App data is: {res}")
+    value = res.get('value', []) # type: ignore
+    if not value:
+        raise DemistoException(f"Bot with ID: {BOT_ID} was not found in the App Catalog in Microsoft.")
+    app_data = value[0]
     bot_internal_id = app_data.get('id')
 
     request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
