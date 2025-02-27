@@ -258,6 +258,27 @@ def test_fetch_incidents_max_fetch(mocker):
     incidents_queue = last_run_data["incidents_queue"]
 
 
+def test_fetch_incidents_no_alerts(mocker):
+    """Test fetch_incidents_command when there are no incidents to fetch."""
+    # Mock Demisto functions
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 1, "fetch_timeout": "10"})
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_run": None, "incidents_queue": []})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    
+    # Create a mock client
+    mock_client = MagicMock()
+    mocker.patch("Doppel._paginated_call_to_get_alerts", return_value=[])  # Simulating no alerts returned
+
+    
+
+    fetch_incidents_command(client=None, args={})
+    
+    # Assertions
+    demisto.info.assert_called_with("No new alerts fetched from Doppel. Exiting fetch_incidents.")
+    demisto.incidents.assert_called_with([])  # Ensure no incidents are created
 
     
 def test_get_remote_data_command(mocker, requests_mock):
