@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import pytest
 import demistomock as demisto
@@ -13,7 +14,8 @@ from Doppel import (
     doppel_get_alerts_command,
     doppel_create_alert_command,
     doppel_create_abuse_alert_command,
-    get_modified_remote_data_command
+    get_modified_remote_data_command,
+    format_datetime
 )
 
 from CommonServerPython import *
@@ -885,3 +887,32 @@ def test_doppel_update_alert_only_queue_state(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Doppel.UpdatedAlert"
     assert result.outputs["queue_state"] == "archived"
+
+def test_format_datetime():
+    """Test format_datetime with various datetime formats."""
+    
+    # Test valid ISO 8601 format
+    assert format_datetime("2025-02-27T14:30:00") == "2025-02-27T14:30:00"
+
+    # Test ISO 8601 with 'Z'
+    assert format_datetime("2025-02-27T14:30:00Z") == "2025-02-27T14:30:00+00:00"
+
+    # Test empty input
+    assert format_datetime("") is None
+
+    # Test None input
+    assert format_datetime(None) is None
+
+    # Test non-ISO datetime
+    non_iso_input = "Feb 27, 2025 14:30"
+    expected_output = datetime.strptime("Feb 27, 2025 14:30", "%b %d, %Y %H:%M").isoformat()
+    assert format_datetime(non_iso_input) == expected_output
+
+    # Test another format
+    non_iso_input_2 = "27-02-2025 14:30"
+    expected_output_2 = datetime.strptime("27-02-2025 14:30", "%d-%m-%Y %H:%M").isoformat()
+    assert format_datetime(non_iso_input_2) == expected_output_2
+
+    # Test invalid format
+    with pytest.raises(ValueError):
+        format_datetime("invalid-date")
