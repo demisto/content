@@ -2,7 +2,7 @@
     "name": "GreyNoise Indicator Feed",
     "description": "This content pack fetches IPv4 Internet Scanner indicators from GreyNoise.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "GreyNoise",
     "url": "https://www.greynoise.io",
     "email": "support@greynoise.com",
