@@ -3,15 +3,10 @@ from CommonServerPython import *  # noqa: F401
 import re
 from collections.abc import Callable, Iterable
 
-
 import mimetypes
 
-# disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
-
 DEFAULT_FETCH_TIME = '10 minutes'
-
+MAX_RETRY = 3
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
 
@@ -663,11 +658,61 @@ class Client(BaseClient):
         """
         return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api, custom_api=custom_api)
 
+    def _construct_url(self, custom_api: str, sc_api: bool, cr_api: bool, path: str, get_attachments: bool) -> str:
+        if custom_api:
+            if not custom_api.startswith("/"):
+                return_error("Argument custom_api must start with a leading forward slash '/'")
+            server_url = demisto.params().get('url')
+            url = f'{get_server_url(server_url)}{custom_api}{path}'
+        elif sc_api:
+            url = f'{self._sc_server_url}{path}'
+        elif cr_api:
+            url = f'{self._cr_server_url}{path}'
+        else:
+            url = f'{self._base_url}{path}'
+
+        # The attachments table does not support v2 api version
+        if get_attachments:
+            url = url.replace('/v2', '/v1')
+        
+        return url
+
+    def _send_file_request(self, url: str, method: str, headers: dict, body: dict, params: dict, file: dict)-> requests.Response:
+        # Not supported in v2
+        url = url.replace('/v2', '/v1')
+        try:
+            file_entry = file['id']
+            file_name = file['name']
+            file_path = demisto.getFilePath(file_entry)['path']
+            with open(file_path, 'rb') as f:
+                file_info = (file_name, f, self.get_content_type(file_name))
+                if self.use_oauth:
+                    access_token = self.snow_client.get_access_token()
+                    headers.update({'Authorization': f'Bearer {access_token}'})
+                    return requests.request(method, url, headers=headers, data=body, params=params,
+                                            files={'file': file_info}, verify=self._verify, proxies=self._proxies)
+                else:
+                    return requests.request(method, url, headers=headers, data=body, params=params,
+                                            files={'file': file_info}, auth=self._auth,
+                                            verify=self._verify, proxies=self._proxies)
+        except Exception as err:
+            raise Exception(f'Failed to upload file - {str(err)}')
+
+    def _send_regular_request(self, url: str, method: str, headers: dict, body: dict, params: dict) -> requests.Response:
+        if self.use_oauth:
+            access_token = self.snow_client.get_access_token()
+            headers.update({'Authorization': f'Bearer {access_token}'})
+            return requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                                    params=params, verify=self._verify, proxies=self._proxies)
+        else:
+            return requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                                    params=params, auth=self._auth, verify=self._verify, proxies=self._proxies)
+
     def send_request(self, path: str, method: str = 'GET', body: dict | None = None, params: dict | None = None,
                      headers: dict | None = None, file=None, sc_api: bool = False, cr_api: bool = False,
                      get_attachments: bool = False, no_record_found_res: dict = {'result': []}, custom_api: str = ''):
         """Generic request to ServiceNow.
-
+            This method handles both regular requests and file uploads
         Args:
             path: API path
             method: request method
@@ -682,90 +727,60 @@ class Client(BaseClient):
 
         Returns:
             response from API
+        Raises:
+            DemistoException: If the instance is in hibernate mode.
         """
+        demisto.debug(f"Sending request to ServiceNow. Method: {method}, Path: {path}")
+
         body = body if body is not None else {}
         params = params if params is not None else {}
-
-        if custom_api:
-            if not custom_api.startswith("/"):
-                return_error("Argument custom_api must start with a leading forward slash '/'")
-            server_url = demisto.params().get('url')
-            url = f'{get_server_url(server_url)}{custom_api}{path}'
-        elif sc_api:
-            url = f'{self._sc_server_url}{path}'
-        elif cr_api:
-            url = f'{self._cr_server_url}{path}'
-        else:
-            url = f'{self._base_url}{path}'
-
-        if not headers:
-            headers = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        # The attachments table does not support v2 api version
-        if get_attachments:
-            url = url.replace('/v2', '/v1')
-
-        max_retries = 3
-        num_of_tries = 0
-        while num_of_tries < max_retries:
+        url = self._construct_url(custom_api, sc_api, cr_api, path, get_attachments)
+        headers = headers or {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        demisto.debug(
+            f"Constructed URL: {url}\n"
+            f"Request headers: {headers}\n"
+            f"Request params: {params}"
+        )
+        
+        for attempt in range(1, MAX_RETRY + 1):
+        # retry mechanism for 401 Unauthorized errors
+            demisto.debug(f"Request attempt {attempt} of {MAX_RETRY}")
             if file:
-                # Not supported in v2
-                url = url.replace('/v2', '/v1')
-                try:
-                    file_entry = file['id']
-                    file_name = file['name']
-                    file_path = demisto.getFilePath(file_entry)['path']
-                    with open(file_path, 'rb') as f:
-                        file_info = (file_name, f, self.get_content_type(file_name))
-                        if self.use_oauth:
-                            access_token = self.snow_client.get_access_token()
-                            headers.update({
-                                'Authorization': f'Bearer {access_token}'
-                            })
-                            res = requests.request(method, url, headers=headers, data=body, params=params,
-                                                   files={'file': file_info}, verify=self._verify, proxies=self._proxies)
-                        else:
-                            res = requests.request(method, url, headers=headers, data=body, params=params,
-                                                   files={'file': file_info}, auth=self._auth,
-                                                   verify=self._verify, proxies=self._proxies)
-                except Exception as err:
-                    raise Exception('Failed to upload file - ' + str(err))
+                demisto.debug("Sending file upload request")
+                res = self._send_file_request(url, method, headers, body, params, file)
             else:
-                if self.use_oauth:
-                    access_token = self.snow_client.get_access_token()
-                    headers.update({
-                        'Authorization': f'Bearer {access_token}'
-                    })
-                    res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
-                                           params=params, verify=self._verify, proxies=self._proxies)
-                else:
-                    res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
-                                           params=params, auth=self._auth, verify=self._verify, proxies=self._proxies)
+                demisto.debug("Sending regular request")
+                res = self._send_regular_request(url, method, headers, body, params)
+            demisto.debug(f"Response status code: {res.status_code}")
 
             if "Instance Hibernating page" in res.text:
                 raise DemistoException(
                     "A connection was established but the instance is in hibernate mode.\n"
                     "Please wake your instance and try again.")
             try:
-                json_res = res.json()
+                json_res: dict = res.json()
             except Exception as err:
+                demisto.debug(f"Failed to parse JSON response: {err}")
                 if res.status_code == 201:
                     return "The ticket was successfully created."
                 if not res.content:
                     return ''
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
-            if 'error' in json_res:
-                error = json_res.get('error', {})
+            if error := json_res.get('error', {}):
                 if res.status_code == 401:
-                    demisto.debug(f'Got status code 401 - {json_res}. Retrying ...')
+                    if attempt < MAX_RETRY:
+                        demisto.debug(f"Got status code 401. Retrying... (Attempt {attempt} of {MAX_RETRY})")
+                        continue
                 else:
                     if isinstance(error, dict):
                         message = json_res.get('error', {}).get('message')
                         details = json_res.get('error', {}).get('detail')
                         if message == 'No Record found':
+                            demisto.debug("No record found, returning empty result")
                             return no_record_found_res
                         else:
                             raise Exception(f'ServiceNow Error: {message}, details: {details}')
@@ -773,14 +788,10 @@ class Client(BaseClient):
                         raise Exception(f'ServiceNow Error: {error}')
 
             if res.status_code < 200 or res.status_code >= 300:
-                if res.status_code != 401 or num_of_tries == (max_retries - 1):
-                    raise Exception(
-                        f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
-                        f' with headers {str(res.headers)}')
-            else:
-                break
-            num_of_tries += 1
-
+                raise Exception(
+                    f'Got status code {res.status_code} with url {url} with body {str(res.content)}'
+                    f' with response headers {str(res.headers)}'
+                )
         return json_res
 
     def get_content_type(self, file_name):
@@ -3204,7 +3215,7 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     command = demisto.command()
-    LOG(f'Executing command {command}')
+    demisto.debug(f'Executing command {command}')
 
     params = demisto.params()
     args = demisto.args()
@@ -3352,24 +3363,24 @@ def main():
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
-        elif demisto.command() == 'get-modified-remote-data':
+        elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args, update_timestamp_field, mirror_limit))
-        elif demisto.command() == 'servicenow-create-co-from-template':
+        elif command == 'servicenow-create-co-from-template':
             return_results(create_co_from_template_command(client, demisto.args()))
-        elif demisto.command() == 'servicenow-get-tasks-for-co':
+        elif command == 'servicenow-get-tasks-for-co':
             return_results(get_tasks_for_co_command(client, demisto.args()))
-        elif demisto.command() == 'servicenow-get-ticket-notes':
+        elif command == 'servicenow-get-ticket-notes':
             return_results(get_ticket_notes_command(client, args, params))
-        elif demisto.command() == 'servicenow-get-ticket-attachments':
+        elif command == 'servicenow-get-ticket-attachments':
             return_results(get_attachment_command(client, args))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         else:
             raise_exception = True
-            raise NotImplementedError(f'{COMMAND_NOT_IMPLEMENTED_MSG}: {demisto.command()}')
+            raise NotImplementedError(f'{COMMAND_NOT_IMPLEMENTED_MSG}: {command}')
 
     except Exception as err:
         LOG(err)
