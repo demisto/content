@@ -2381,6 +2381,32 @@ script:
     execution: false
     name: azure-sentinel-auth-reset
     arguments: []
+  - arguments:
+    - name: title
+      required: true
+    - auto: PREDEFINED
+      description: The incident severity.
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      - Informational
+    - auto: PREDEFINED
+      description: The incident status.
+      name: status
+      predefined:
+      - New
+      - Active
+      - Closed
+      required: true
+    - description: The incident description.
+      name: description
+    - description: Incident labels. Note that all labels will be set as labelType='User'.
+      isArray: true
+      name: labels
+    description: Create a sentinel incident.
+    name: azure-sentinel-create-incident
   dockerimage: demisto/crypto:1.0.0.117163
   isfetch: true
   runonce: false
