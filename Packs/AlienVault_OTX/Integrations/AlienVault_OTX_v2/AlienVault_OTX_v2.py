@@ -25,7 +25,7 @@ INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
 
 class Client(BaseClient):
     def __init__(self, base_url, headers, verify, proxy, default_threshold, max_indicator_relationships,
-                 reliability, create_relationships=True):
+                 reliability, create_relationships=True, should_error=True):
 
         BaseClient.__init__(self, base_url=base_url, headers=headers, verify=verify, proxy=proxy, )
 
@@ -33,6 +33,7 @@ class Client(BaseClient):
         self.create_relationships = create_relationships
         self.default_threshold = default_threshold
         self.max_indicator_relationships = 0 if not max_indicator_relationships else max_indicator_relationships
+        self.should_error = should_error
 
     def test_module(self) -> dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -84,8 +85,11 @@ class Client(BaseClient):
             else:
                 raise
         except requests.exceptions.ReadTimeout as e:
+            if self.should_error:
+                raise e
             demisto.error(f"An error was raised {e=}")
-            result = ''
+            return_warning(f"{e}")
+            return {}
 
 
 ''' HELPER FUNCTIONS '''
@@ -881,6 +885,7 @@ def main():
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         Exception("Please provide a valid value for the Source Reliability parameter.")
+    should_error = argToBoolean(params.get('should_error', True))
 
     client = Client(
         base_url=base_url,
@@ -890,7 +895,8 @@ def main():
         default_threshold=default_threshold,
         reliability=reliability,
         create_relationships=argToBoolean(params.get('create_relationships')),
-        max_indicator_relationships=max_indicator_relationships
+        max_indicator_relationships=max_indicator_relationships,
+        should_error=should_error
     )
 
     command = demisto.command()

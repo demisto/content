@@ -62,6 +62,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- defaultvalue: 'true'
+  additionalinfo: The AlienVault OTX API raise an error when an item is not found. Disable this parameter in order to return a warning instead.
+  display: Should Error When not found
+  name: should_error
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
