@@ -397,7 +397,7 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
     return result
 
 
-def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '') -> dict:
+def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '', delta_keys: list = []) -> dict:
     """Inverse the keys and values of those dictionaries
     to map the arguments to their corresponding values in ServiceNow.
 
@@ -427,7 +427,7 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
 
     # This is for updating null fields for update_remote_system function for example: assigned_to.
     for arg in args:
-        if not args[arg]:
+        if not args[arg] and arg in delta_keys:
             fields_to_clear.append(arg)
     demisto.debug(f'Fields to clear {fields_to_clear}')
 
@@ -2820,7 +2820,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 is_custom_close = True
                 parsed_args.data['state'] = close_custom_state
 
-        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
+        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type, list(parsed_args.delta.keys()))
         demisto.debug(f"all fields= {fields}")
         if closure_case:
             # Convert the closing state to the right one if the ticket type is not incident in order to close the
