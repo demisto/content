@@ -151,6 +151,8 @@ script:
     - description: A topic to fetch partitions for.
       name: topic
       required: true
+    - description: AAT targets.
+      name: test
     description: Fetch partitions for a topic.
     name: kafka-fetch-partitions
     outputs:
