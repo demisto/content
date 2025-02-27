@@ -458,6 +458,8 @@ def camel_to_title(text: str) -> str:
     return ''.join(result).strip().title()
 
 # Hoxhunt GQL API expects dates in ISO format
+
+
 def format_date_to_iso_string(date: datetime | None) -> str:
     return date.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'  # type: ignore
 

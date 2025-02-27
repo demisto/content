@@ -736,6 +736,7 @@ def test_commands(
         output = command_function(mock_client, args, params={})
         assert output == expected_output
 
+
 def test_format_date_to_iso_string():
     """
     Given
