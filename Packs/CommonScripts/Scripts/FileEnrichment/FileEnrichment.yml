@@ -11,7 +11,7 @@ args:
   - 'WildFire-v2'
   - 'Cortex Core - IR'
 - name: verbose
-  description: Whether to retrieve human readable entry for every command or only the final result. Set to true to get a human-readable entry for every command. Set to false to human-readable summary of the final result.
+  description: Whether to retrieve human readable entry for every command or only the final result. Set to true to get a human-readable entry for every command. Set to false to get a human-readable summary of the final result.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -22,7 +22,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: This script gathers user data from multiple integrations and returns an File entity with consolidated information to the context.
+comment: This script gathers file reputation data from multiple integrations and returns a File entity with consolidated information to the context output.
 commonfields:
   id: file-enrichment
   version: -1
