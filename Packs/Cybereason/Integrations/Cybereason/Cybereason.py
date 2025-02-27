@@ -2262,7 +2262,7 @@ def update_malop_investigation_status_command(client: Client, args: dict):
     malop_guid = str(args.get('malopGuid'))
     investigation_status = str(args.get('investigationStatus'))
 
-    if investigation_status not in INVESTIGATION_STATUS_MAP.keys():
+    if investigation_status not in INVESTIGATION_STATUS_MAP:
         raise Exception(f"Invalid investigation status. Must be one of: {', '.join(INVESTIGATION_STATUS_MAP.keys())}")
 
     update_malop_investigation_status(client, malop_guid, investigation_status)
