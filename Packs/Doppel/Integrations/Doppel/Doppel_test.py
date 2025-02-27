@@ -232,6 +232,7 @@ def test_get_mapping_fields_command(client, mocker):
 
     mock_debug.assert_called()  # Ensure debug logs are generated
 
+
 def test_get_mapping_fields_command_raises_exception(mocker):
     """Test get_mapping_fields_command function when an exception occurs."""
 
@@ -276,7 +277,8 @@ def test_doppel_get_alert_command_with_missing_params(client):
         doppel_get_alert_command(client, args)
 
 def mock_no_alert_found(*args, **kwargs):
-        raise DemistoException('No alert found with the given parameters.')
+    raise DemistoException('No alert found with the given parameters.')
+
 
 def test_doppel_get_alert_command_with_no_alert_found(client, mocker):
 
@@ -366,6 +368,53 @@ def test_doppel_get_alerts_command(client, mocker):
     assert result.outputs_key_field == 'id'
     assert result.outputs['alerts'][0]['id'] == 'TET-1953443'
     assert 'Alert Summary' in result.readable_output
+
+
+def test_doppel_get_alerts_command_no_results(client, mocker):
+    """Test doppel_get_alerts_command when no alerts are found."""
+
+    # Mock the API response to return an empty list
+    mocker.patch.object(client, 'get_alerts', return_value=[])
+
+    args = {
+        'search_key': 'non-existent-key',
+        'queue_state': 'closed',
+        'product': 'unknown',
+        'created_before': '2025-01-01T00:00:00Z',
+        'created_after': '2025-01-01T00:00:00Z',
+        'sort_type': 'created',
+        'sort_order': 'asc',
+        'page': 1,
+        'tags': 'invalid-tag'
+    }
+
+    result = doppel_get_alerts_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []  # Expecting an empty result
+    assert 'No alerts were found' not in result.readable_output  # Should not raise an error, just be empty
+
+
+def test_doppel_get_alerts_command_api_error(client, mocker):
+    """Test doppel_get_alerts_command when API raises an exception."""
+
+    # Mock the API call to raise an exception
+    mocker.patch.object(client, 'get_alerts', side_effect=Exception("API failure"))
+
+    args = {
+        'search_key': 'test-key',
+        'queue_state': 'open',
+        'product': 'domains',
+        'created_before': '2025-01-01T00:00:00Z',
+        'created_after': '2025-01-01T00:00:00Z',
+        'sort_type': 'created',
+        'sort_order': 'asc',
+        'page': 1,
+        'tags': 'tag1,tag2'
+    }
+
+    with pytest.raises(Exception, match="No alerts were found with the given parameters :- API failure."):
+        doppel_get_alerts_command(client, args)
 
 
 def test_doppel_create_alert_command(client, mocker):
