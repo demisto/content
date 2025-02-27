@@ -55,6 +55,11 @@ COMMAND_PREPARE_HUMAN_READABLE_PARAMS = [   # original_human_readable, is_error,
     ),
 ]
 
+MAIN_VALID_HASH_PARAMS = [
+    pytest.param(True, id="Enabled external enrichment"),
+    pytest.param(False, id="Disabled external enrichment"),
+]
+
 
 """ TEST HELPER FUNCTIONS """
 
@@ -271,7 +276,7 @@ def test_execute_file_reputation(mocker: MockerFixture):
     assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
 
 
-def test_execute_execute_wildfire_report(mocker: MockerFixture):
+def test_execute_wildfire_report(mocker: MockerFixture):
     """
     Given:
         - The '!wildfire-report' command with a SHA256 file hash.
@@ -292,6 +297,32 @@ def test_execute_execute_wildfire_report(mocker: MockerFixture):
     context_output, readable_command_results = execute_wildfire_report(command)
 
     expected_output = util_load_json("test_data/wildfire_report_command_expected.json")
+    assert context_output["_DBotScore"] == expected_output["DBotScore"]
+    assert context_output["_File"] == expected_output["File"]
+    assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
+
+
+def test_execute_wildfire_verdict(mocker: MockerFixture):
+    """
+    Given:
+        - The '!wildfire-get-verdict' command with a SHA256 file hash.
+
+    When:
+        - Calling `execute_wildfire_verdict`.
+
+    Assert:
+        - Ensure correct context output and human-readable output.
+    """
+    from FileEnrichment import execute_wildfire_verdict
+
+    command = Command(Brands.WILDFIRE_V2, "wildfire-get-verdict", {"hash": SHA_256_HASH})
+
+    demisto_execute_response = util_load_json("test_data/wildfire_verdict_command_response.json")
+    mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
+
+    context_output, readable_command_results = execute_wildfire_verdict(command)
+
+    expected_output = util_load_json("test_data/wildfire_verdict_command_expected.json")
     assert context_output["_DBotScore"] == expected_output["DBotScore"]
     assert context_output["_File"] == expected_output["File"]
     assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
@@ -556,3 +587,64 @@ def test_summarize_command_results_failed_commands(mocker: MockerFixture):
     }
 
     assert summary_command_results.outputs == {}
+
+
+def test_main_invalid_hash(mocker: MockerFixture):
+    """
+    Given:
+        - An invalid file hash.
+
+    When:
+        - Calling `main`
+
+    Assert:
+        - Ensure an error is returned with the appropriate error message.
+    """
+    from FileEnrichment import main
+
+    mocker.patch("FileEnrichment.demisto.args", return_value={"file_hash": "123"})
+    mock_return_error = mocker.patch("FileEnrichment.return_error")
+
+    expected_error_message = (
+        "Failed to execute file-enrichment command. "
+        "Error: A valid file hash must be provided. Supported types are: MD5, SHA1, SHA256, and SHA512."
+    )
+
+    main()
+
+    assert mock_return_error.call_args[0][0] == expected_error_message
+
+
+@pytest.mark.parametrize("external_enrichment", MAIN_VALID_HASH_PARAMS)
+def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
+    """
+    Given:
+        - A valid SHA256 file hash and external_enrichment boolean flag.
+
+    When:
+        - Calling `main`
+
+    Assert:
+        - Ensure the correct functions are called, depending on the value of external_enrichment.
+    """
+    from FileEnrichment import main
+
+    args = {"file_hash": SHA_256_HASH, "external_enrichment": external_enrichment}
+    mocker.patch("FileEnrichment.demisto.args", return_value=args)
+
+    mock_search_file_indicator = mocker.patch("FileEnrichment.search_file_indicator")
+    mock_demisto_get_modules = mocker.patch("FileEnrichment.demisto.getModules")
+    mock_run_external_enrichment = mocker.patch("FileEnrichment.run_external_enrichment")
+    mock_summarize_command_results = mocker.patch("FileEnrichment.summarize_command_results")
+    mock_return_results = mocker.patch("FileEnrichment.return_results")
+
+    main()
+
+    assert mock_search_file_indicator.call_count == 1
+
+    # Should not run if external_enrichment is False
+    assert mock_demisto_get_modules.call_count == int(external_enrichment)
+    assert mock_run_external_enrichment.call_count == int(external_enrichment)
+
+    assert mock_summarize_command_results.call_count == 1
+    assert mock_return_results.call_count == 1
