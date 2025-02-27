@@ -330,6 +330,36 @@ def test_get_remote_data_command(mocker, requests_mock):
     demisto.debug.assert_called()
 
 
+def test_get_remote_data_command_rate_limit_exception(mocker):
+    """
+    Given:
+        - A remote incident ID and last update timestamp.
+        - A Rate limit exceeded exception is raised during _get_remote_updated_incident_data_with_entry.
+    When:
+        - Running get_remote_data_command to fetch updates.
+    Then:
+        - It returns a GetRemoteDataResponse with the error message in mirrored_object and logs API rate limit.
+    """
+    mocker.patch.object(demisto, 'debug', side_effect=demisto.debug)
+    mocker.patch.object(demisto, 'error', side_effect=demisto.error)
+    mocker.patch.object(demisto, 'args', return_value={"id": "123456", "lastUpdate": "2025-01-27T07:55:10.063742"})
+    mocker.patch.object(demisto, 'command', return_value='get-remote-data')
+
+    mock_get_remote_updated_incident_data_with_entry = mocker.patch(
+        "__main__._get_remote_updated_incident_data_with_entry",
+        side_effect=Exception("Rate limit exceeded"),
+    )
+
+    client = MagicMock()
+
+    result = get_remote_data_command(client, demisto.args())
+
+    assert result.mirrored_object == {"id": "123456", "in_mirror_error": "Rate limit exceeded"}
+    assert result.entries == []
+    assert "Error while running get_remote_data_command: Rate limit exceeded" in demisto.error_calls
+    assert "API rate limit" in demisto.error_calls
+    mock_get_remote_updated_incident_data_with_entry.assert_called_once()
+
 
 def test_update_remote_system_command(client, mocker):
     """Test update_remote_system_command function."""
