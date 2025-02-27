@@ -12,7 +12,7 @@ def check_for_obfuscation(command_line: str) -> tuple[dict[str, bool], str]:
     flags = {
         "base_64_encoded": False,
         "obfuscated": False,
-        "double_encoded": False,
+        "double_encoding": False,
         "reversed": False,
     }
 
@@ -25,11 +25,11 @@ def check_for_obfuscation(command_line: str) -> tuple[dict[str, bool], str]:
             reversed_command_line  # Use the reversed command line for further analysis
         )
 
-    decoded_command_line, flags["base_64_encoded"], flags["double_encoded"] = (
+    decoded_command_line, flags["base_64_encoded"], flags["double_encoding"] = (
         identify_and_decode_base64(parsed_command_line)
     )
 
-    if flags["double_encoded"] or flags["base_64_encoded"]:
+    if flags["double_encoding"] or flags["base_64_encoded"]:
         parsed_command_line = decoded_command_line
 
     decoded_command_line, flags["obfuscated"] = encode_hex_and_oct_chars(
@@ -374,6 +374,9 @@ def check_malicious_commands(command_line: str) -> list[str]:
     ]
 
     matches: list[str] = []
+    
+    demisto.debug("Checking for malicious commands.")
+    
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -404,6 +407,8 @@ def check_reconnaissance_temp(command_line: str) -> list[str]:
         r"\bwmic\s+process\s+list\b",
     ]
 
+    demisto.debug("Checking for reconnaissance patterns.")
+    
     matches: list[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
@@ -427,6 +432,8 @@ def check_windows_temp_paths(command_line: str) -> list[str]:
         r"\\Windows\\System32\\spool\b",
     ]
 
+    demisto.debug("Checking for windows temp paths in command line.")
+    
     matches: list[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
@@ -458,6 +465,8 @@ def check_suspicious_content(command_line: str) -> list[str]:
         r"wevtutil\s+cl\b",
     ]
 
+    demisto.debug("Checking for suspicious content.")
+    
     matches: list[str] = []
     for pattern in patterns:
         matches.extend(
@@ -475,6 +484,8 @@ def check_amsi(command_line: str) -> list[str]:
         r"\bAmsiScanBuffer\(\)\b",
     ]
 
+    demisto.debug("Checking for amsi patterns.")
+    
     matches: list[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
@@ -486,7 +497,9 @@ def check_mixed_case_powershell(command_line: str) -> list[str]:
     mixed_case_powershell_regex = re.compile(
         r"\b(?=.*[a-z])(?=.*[A-Z])[pP][oO][wW][eE][rR][sS][hH][eE][lL]{2}(\.exe)?\b"
     )
-
+    
+    demisto.debug("Checking for mixed case powershell usage.")
+    
     exclusions = {
         "Powershell",
         "PowerShell",
@@ -534,6 +547,8 @@ def check_powershell_suspicious_patterns(command_line: str) -> list[str]:
         r"powershell.*?\b(iex.*?2>&1)\b",
     ]
 
+    demisto.debug("Checking for powershell suspicious patterns.")
+    
     matches: list[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
@@ -569,6 +584,8 @@ def check_credential_dumping(command_line: str) -> list[str]:
         r"\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*",
     ]
 
+    demisto.debug("Checking for credential dumping.")
+    
     matches: list[str] = []
     for pattern in patterns:
         matches.extend(
@@ -603,6 +620,8 @@ def check_lateral_movement(command_line: str) -> list[str]:
         r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b',
     ]
 
+    demisto.debug("Checking for lateral movement patterns.")
+    
     matches: list[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
@@ -627,6 +646,8 @@ def check_data_exfiltration(command_line: str) -> list[str]:
         r"\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
     ]
 
+    demisto.debug("Checking for data exfiltration patterns.")
+    
     matches: list[str] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
@@ -642,6 +663,8 @@ def check_suspicious_mshta(command_line: str) -> list[str]:
         r"mshta(?:\.exe)?.*(?:-enc|base64)",
     ]
 
+    demisto.debug("Checking for suspicious mshta usage.")
+    
     matches: list[str] = []
 
     for pattern in patterns:
@@ -659,6 +682,8 @@ def check_social_engineering(command_line: str) -> list[str]:
         "\u1F5F9",  # 🗹 Ballot Box with Bold Check
     ]
 
+    demisto.debug("Checking for social engineering patterns in command.")
+    
     for emoji in checkmark_emojis:
         if emoji in command_line:
             return ["Emoji Found in command line"]
@@ -704,6 +729,8 @@ def extract_indicators(command_line: str) -> dict[str, list[str]]:
     """
     extracted_by_type: dict[str, list[str]] = {}
 
+    demisto.debug("Attempting to extract indicators from command line.")
+    
     try:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
 
@@ -856,9 +883,9 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
     #scores["decoded"], findings["decoded"] = process_context(decoded_results)
 
     # Check global combinations (like double encoding globally)
-    #if results.get("Double Encoding Detected"):
-    #    scores["decoded"] += weights["double_encoding"]
-    #    findings["decoded"].append("Double Encoding Detected")
+    if original_results.get("double_encoding", False):
+        scores["decoded"] += weights["double_encoding"]
+        findings["decoded"].append("double_encoding")
 
     # Calculate total raw score
     total_raw_score = scores["original"]# + scores["decoded"]
