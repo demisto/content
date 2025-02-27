@@ -25,7 +25,7 @@ The Password Manager is encrypted and has the abilities to identify compromised 
 ## How to integrate with XSIAM?
 
 ### Generate API Keys in Bitwarden Password Manager
-1. Login to **Bitwarden Admin Console** and go to **Settings** -> **Organization info** -> **View API key**
+1. Log in to **Bitwarden Admin Console** and go to **Settings** -> **Organization info** -> **View API key**
 2. Copy the **client_id** and **client_secret**
 
 For more information please check the Bitwarden Public API doccumentation -> [Click here](https://bitwarden.com/help/public-api/#authentication).
