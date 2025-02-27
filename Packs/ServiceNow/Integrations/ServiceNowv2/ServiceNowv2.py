@@ -674,10 +674,10 @@ class Client(BaseClient):
         # The attachments table does not support v2 api version
         if get_attachments:
             url = url.replace('/v2', '/v1')
-        
+
         return url
 
-    def _send_file_request(self, url: str, method: str, headers: dict, body: dict, params: dict, file: dict)-> requests.Response:
+    def _send_file_request(self, url: str, method: str, headers: dict, body: dict, params: dict, file: dict) -> requests.Response:
         # Not supported in v2
         url = url.replace('/v2', '/v1')
         try:
@@ -744,9 +744,9 @@ class Client(BaseClient):
             f"Request headers: {headers}\n"
             f"Request params: {params}"
         )
-        
+
         for attempt in range(1, MAX_RETRY + 1):
-        # retry mechanism for 401 Unauthorized errors
+            # retry mechanism for 401 Unauthorized errors
             demisto.debug(f"Request attempt {attempt} of {MAX_RETRY}")
             if file:
                 demisto.debug("Sending file upload request")
