@@ -127,7 +127,7 @@ def test_conversion_feed_to_indicato_obj(mocker, dt_feeds_client):
     }
 
     indicators = fetch_indicators(
-        dt_feeds_client, feed_type="nod", **mock_dt_feeds_kwargs
+        dt_feeds_client, feed_type="nod", dt_feed_kwargs=mock_dt_feeds_kwargs
     )
 
     assert len(indicators) == 10
@@ -163,7 +163,7 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         return_value=mock_feed_response[feed_type],
     )
     results = get_indicators_command(
-        dt_feeds_client, args={"feed_type": feed_type}, params={}
+        dt_feeds_client, args={"feed_type": feed_type, "top": "1"}, params={}
     )
 
     expected_indicator_results = {
@@ -197,7 +197,7 @@ def test_fetch_indicators_command(mocker, dt_feeds_client):
         return_value=feed_mock_response.NAD_FEED_RESPONSE
         + feed_mock_response.NOD_FEED_RESPONSE,
     )
-    results = fetch_indicators_command(dt_feeds_client)
+    results = fetch_indicators_command(dt_feeds_client, params={"top": "1"})
 
     assert len(results) == 40
 

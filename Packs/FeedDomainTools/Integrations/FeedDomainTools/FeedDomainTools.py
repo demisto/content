@@ -101,7 +101,7 @@ class DomainToolsClient(BaseClient):
         return value
 
     def build_iterator(
-        self, feed_type: str = "nod", **kwargs
+        self, feed_type: str = "nod", **dt_feed_kwargs
     ) -> Iterator:
         """
         Retrieves all entries from the feed.
@@ -117,11 +117,11 @@ class DomainToolsClient(BaseClient):
         self.feed_type = feed_type
 
         # DomainTools feeds optional arguments
-        session_id = kwargs.get("session_id") or "dt-cortex-feeds"
-        top = int(kwargs.get("top") or "5000")
-        domain = kwargs.get("domain") or None
-        after = kwargs.get("after") or None
-        before = kwargs.get("before") or None
+        session_id = dt_feed_kwargs.get("session_id", "dt-cortex-feeds")
+        top = int(dt_feed_kwargs.get("top", "5000"))
+        domain = dt_feed_kwargs.get("domain")
+        after = dt_feed_kwargs.get("after")
+        before = dt_feed_kwargs.get("before")
 
         demisto.info(f"Start building list of indicators for {self.feed_type} feed.")
 
@@ -130,10 +130,10 @@ class DomainToolsClient(BaseClient):
 
         try:
             # format the after parameter first make sure to append "-" if not given
-            if after is not None:
+            if after:
                 after = self._format_parameter(key="after", value=after)
 
-            if before is not None:
+            if before:
                 before = self._format_parameter(key="before", value=before)
 
             dt_feeds = self._get_dt_feeds(
@@ -155,11 +155,11 @@ class DomainToolsClient(BaseClient):
 
                 json_feed = json.loads(feed)
 
-                timestamp = json_feed.get("timestamp") or ""
-                indicator = json_feed.get("domain") or None
+                timestamp = json_feed.get("timestamp", "")
+                indicator = json_feed.get("domain")
                 indicator_type = auto_detect_indicator_type(indicator)
 
-                if indicator is not None and indicator_type is not None:
+                if indicator and indicator_type:
                     yield {
                         "value": indicator,
                         "type": indicator_type,
@@ -180,7 +180,7 @@ class DomainToolsClient(BaseClient):
 
 
 def fetch_indicators(
-    client: DomainToolsClient, feed_type: str = "nod", **kwargs
+    client: DomainToolsClient, feed_type: str = "nod", dt_feed_kwargs: dict[str, Any] = {}
 ) -> list[dict]:
     """Retrieves indicators from the feed
 
@@ -194,11 +194,11 @@ def fetch_indicators(
     indicators = []
     try:
         # extract values from iterator
-        for idx, item in enumerate(client.build_iterator(feed_type=feed_type, **kwargs), start=1):
+        for idx, item in enumerate(client.build_iterator(feed_type=feed_type, **dt_feed_kwargs), start=1):
             value_ = item.get("value")
             type_ = item.get("type")
             timestamp_ = item.get("timestamp")
-            tags_ = item.get("tags") or []
+            tags_ = item.get("tags", [])
             tlp_color_ = item.get("tlp_color")
 
             indicator_tags = ",".join(tags_)
@@ -241,11 +241,11 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
     Returns:
         Outputs.
     """
-    feed_type = args.get("feed_type") or "nod"
+    feed_type = args.get("feed_type", "nod")
     session_id = args.get("session_id")
     domain = args.get("domain")
     after = args.get("after")
-    before = args.get("before") or None
+    before = args.get("before")
     top = args.get("top")
 
     dt_feeds_kwargs = {
@@ -258,7 +258,7 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
 
     demisto.debug(f"Fetching feed indicators by feed_type: {feed_type}")
     indicators = fetch_indicators(
-        client, feed_type=feed_type, **dt_feeds_kwargs
+        client, feed_type=feed_type, dt_feed_kwargs=dt_feeds_kwargs
     )
 
     human_readable = tableToMarkdown(
@@ -277,7 +277,7 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
     )
 
 
-def fetch_indicators_command(client: DomainToolsClient, **params) -> list[dict]:
+def fetch_indicators_command(client: DomainToolsClient, params: dict[str, Any] = {}) -> list[dict]:
     """
     Wrapper for fetching indicators from the feed to the Indicators tab.
 
@@ -291,7 +291,7 @@ def fetch_indicators_command(client: DomainToolsClient, **params) -> list[dict]:
     after = params.get("after")
     top = params.get("top")
 
-    feed_type_ = params.get("feed_type") or "ALL"
+    feed_type_ = params.get("feed_type", "ALL")
 
     FEEDS_TO_PROCESS = {
         client.NOD_FEED: {"top": top, "after": after, "session_id": session_id},
@@ -303,9 +303,9 @@ def fetch_indicators_command(client: DomainToolsClient, **params) -> list[dict]:
     for feed_type, dt_feed_kwargs in FEEDS_TO_PROCESS.items():
         indicators = []
         if feed_type_ == "ALL":
-            indicators = fetch_indicators(client, feed_type=feed_type, **dt_feed_kwargs)
+            indicators = fetch_indicators(client, feed_type=feed_type, dt_feed_kwargs=dt_feed_kwargs)
         if feed_type_ == feed_type.upper():
-            indicators = fetch_indicators(client, feed_type=feed_type, **dt_feed_kwargs)
+            indicators = fetch_indicators(client, feed_type=feed_type, dt_feed_kwargs=dt_feed_kwargs)
 
         fetched_indicators.extend(indicators)
 
@@ -348,7 +348,7 @@ def main():
     api_key = params.get("credentials", {}).get("password", "")
     insecure = not params.get("insecure", False)
     proxy = params.get('proxy', False)
-    user_defined_tags = params.get("feedTags") or ""
+    user_defined_tags = params.get("feedTags", "")
     tlp_color = params.get("tlp_color")
 
     try:
@@ -360,7 +360,7 @@ def main():
             return_results(commands[command](client, args, params))
 
         elif command == "fetch-indicators":
-            indicators = fetch_indicators_command(client, **params)
+            indicators = fetch_indicators_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:
