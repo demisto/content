@@ -26,7 +26,7 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/netutils:1.0.0.118055
+dockerimage: demisto/netutils:1.0.0.2067260
 runas: DBotWeakRole
 tests:
 - No test

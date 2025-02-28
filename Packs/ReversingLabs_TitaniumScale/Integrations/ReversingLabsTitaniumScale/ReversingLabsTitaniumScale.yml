@@ -221,7 +221,7 @@ script:
       - contextPath: ReversingLabs.yara_id
         description: Identifier of the current set of YARA rules on the TitaniumScale Worker instance.
         type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.1872154
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.2072885
   runonce: false
   script: '-'
   subtype: python3
