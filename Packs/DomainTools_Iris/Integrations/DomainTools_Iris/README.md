@@ -1,14 +1,14 @@
 Together, DomainTools and Cortex XSOAR automate and orchestrate the incident response process with essential domain profile, web crawl, SSL and infrastructure data. SOCs can create custom, automated workflows to trigger Indicator of Compromise (IoC) investigations, block threats based on connected infrastructure, and identify potentially malicious domains before weaponization. The DomainTools App for Cortex XSOAR is shipped with pre-built playbooks to enable automated enrichment, decision logic, ad-hoc investigations, and the ability to persist enriched intelligence.
-This integration was integrated and tested with version 2.1.3 of DomainTools Iris.
+This integration was integrated and tested with version 2.2.0 of DomainTools Iris.
 
 ## Configure DomainTools Iris in Cortex
 
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| DomainTools API URL | Change to <https://api.domaintools.com> in order to use DomainTool's https endpoint. | True |
-| API Username |  | True |
-| API Key |  | True |
+| API Username |  | False |
+| API Key |  | False |
 | High-Risk Threshold |  | True |
 | Young Domain Timeframe (within Days) |  | True |
 | Trust any certificate (not secure) |  | False |
@@ -25,6 +25,7 @@ This integration was integrated and tested with version 2.1.3 of DomainTools Iri
 | Incident type |  |  |
 | Fetch incidents |  |  |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags. | False |
+
 
 
 ## Commands
@@ -917,7 +918,6 @@ The DomainTools Parsed Whois API provides parsed information extracted from the 
 | Domain.Name | unknown | Requested domain name. |
 | Domain.Whois | unknown | Parsed Whois data. |
 | Domain.WhoisRecords | unknown | Full Whois record. |
-
 ### domainRdap
 
 ***
@@ -936,3 +936,49 @@ Returns the most recent Domain-RDAP registration record.
 #### Context Output
 
 There is no context output for this command.
+### reverseIP
+
+***
+Reverse loopkup of an IP address or a domain.
+
+#### Base Command
+
+`reverseIP`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | Specify the IP address to query. | Optional |
+| domain | If a domain name is provided, DomainTools will respond with the list of other domains that share the same IP. | Optional |
+| limit | Limits the size of the domain list than can appear in a response. The limit is applied per-IP address, not for the entire request. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | unknown | Domain name returned by the query. |
+| Domain.DNS.Address | unknown | The IP address associated with the returned domains. |
+
+### reverseNameServer
+
+***
+Reverse nameserver lookup.
+
+#### Base Command
+
+`reverseNameServer`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| nameServer | Specify the name of the primary or secondary nameserver. | Required |
+| limit | Limit the size of the domain list than can appear in a response. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | unknown | Name of the domain returned by the query. |
+

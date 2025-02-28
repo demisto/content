@@ -2440,6 +2440,38 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
+  - name: reverseIP
+    arguments:
+    - default: true
+      name: ip
+      description: Specify the IP address to query.
+    - name: domain
+      description: If a domain name is provided, DomainTools will respond with the list of other domains that share the same IP.
+    - name: limit
+      description: Limits the size of the domain list than can appear in a response. The limit is applied per-IP address, not for the entire request.
+      defaultValue: 50
+    description: Reverse loopkup of an IP address or a domain.
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name returned by the query.
+    - contextPath: Domain.DNS.Address
+      description: The IP address associated with the returned domains.
+  - name: reverseNameServer
+    arguments:
+    - name: nameServer
+      required: true
+      description: Specify the name of the primary or secondary nameserver.
+    - name: limit
+      description: Limit the size of the domain list than can appear in a response.
+      defaultValue: 50
+    deprecated: false
+    execution: false
+    description: Reverse nameserver lookup.
+    outputs:
+    - contextPath: Domain.Name
+      description: Name of the domain returned by the query.
   dockerimage: demisto/vendors-sdk:1.0.0.2141458
   runonce: false
   script: '-'

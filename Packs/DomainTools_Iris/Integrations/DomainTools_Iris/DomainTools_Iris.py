@@ -128,6 +128,12 @@ def http_request(method: str, params: dict = {}):
             response = api.parsed_whois(params.get('domain')).response()
         elif method == "parsed-domain-rdap":
             response = api.parsed_domain_rdap(query=params.get("domain"))
+        elif method == "reverse-nameserver":
+            response = api.reverse_name_server(params.get("nameserver"), limit=params.get("limit")).response()
+        elif method == "reverse-ip":
+            response = api.reverse_ip(domain=params.get("domain"), limit=params.get("limit")).response()
+        elif method == "host-domains":
+            response = api.host_domains(ip=params.get("ip"), limit=params.get("limit")).response()
         else:
             response = api.iris_investigate(**params).response()
     except Exception as e:
@@ -483,13 +489,34 @@ def parsed_whois(domain):
     return http_request('parsed-whois', {'domain': domain})
 
 
-def parsed_domain_rdap(domain: str):
+def parsed_domain_rdap(domain: str) -> dict[str, Any]:
+    """ Returns the parsed domain rdap by a given domain.
+
+    Args:
+        domain (str): The domain to lookup.
+
+    Returns:
+        dict: The parsed domain rdap results from DT API.
+
+    """
     resp = http_request("parsed-domain-rdap", params={"domain": domain})
 
     return {
         "_raw": resp.response(),
         "flat": resp.flattened()
     }
+
+
+def reverse_nameserver(nameserver: str, limit: int | None = None) -> dict:
+    return http_request("reverse-nameserver", params={"nameserver": nameserver, "limit": limit})
+
+
+def reverse_ip(domain: str, limit: int | None = None) -> dict:
+    return http_request("reverse-ip", params={"domain": domain, "limit": limit})
+
+
+def host_domains(ip: str, limit: int | None = None) -> dict:
+    return http_request("host-domains", params={"ip": ip, "limit": limit})
 
 
 def add_key_to_json(cur, to_add):
@@ -1513,6 +1540,69 @@ def reverse_whois_command():
     )
 
 
+def reverse_nameserver_command():
+    """
+    Returns the reverse lookup on a given nameserver.
+    """
+    nameserver = demisto.args()["nameServer"]
+    limit = int(demisto.args().get("limit") or 50)
+
+    context: dict[str, list[dict]] = {"Domain": []}
+
+    results = reverse_nameserver(nameserver=nameserver, limit=limit)
+    primary_domains = results.get("primary_domains") or []
+
+    total_primary_domains = len(primary_domains)
+
+    human_readable = f"Found {total_primary_domains} domains. \n"
+
+    for domain in primary_domains:
+        context["Domain"].append({"Name": domain})
+        human_readable += f"* {domain} \n"
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs=context,
+        raw_response=results,
+        ignore_auto_extract=True
+    )
+
+
+def reverse_ip_command():
+    """
+    Returns the reverse lookup on a given domain or ip.
+    """
+    cmd_args = demisto.args()
+    ip = cmd_args.get("ip")
+    domain = cmd_args.get("domain")
+    limit = int(cmd_args.get("limit") or 50)
+
+    context: dict[str, list[dict]] = {"Domain": []}
+    human_readable = ""
+
+    if domain:
+        results = reverse_ip(domain=domain, limit=limit)
+    elif ip:
+        results = host_domains(ip=ip, limit=limit)
+
+    addresses: list | dict = results.get("ip_addresses") or []
+    if not isinstance(addresses, list):
+        addresses = [addresses]
+
+    for address in addresses:
+        human_readable += f"\nFound {address.get('domain_count', 0)} domains for {address.get('ip_address')}. \n"
+        for domain in address.get("domain_names") or []:
+            context["Domain"].append({"Name": domain})
+            human_readable += f"* {domain} \n"
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs=context,
+        raw_response=results,
+        ignore_auto_extract=True
+    )
+
+
 def parsed_whois_command():
     domain = demisto.args()['query']
     response = parsed_whois(domain)
@@ -1565,6 +1655,31 @@ def parsed_whois_command():
     )
 
 
+def parsed_domain_rdap_command():
+    """
+    Returns parsed domain rdap data in a given domain
+    """
+    domain = demisto.args()['domain']
+    results = parsed_domain_rdap(domain=domain)
+
+    _raw_response = results.get("_raw") or {}
+    flat_response = results.get("flat") or {}
+
+    for key, val in flat_response.items():
+        if "|" in val:
+            flat_response[key] = ", ".join([v.strip() for v in val.split("|")])
+
+    headers = list(flat_response.keys())
+
+    human_readable = tableToMarkdown(f'DomainTools parsed domain rdap result for {domain}', flat_response, headers=headers)
+
+    return CommandResults(
+        readable_output=human_readable,
+        raw_response=_raw_response,
+        ignore_auto_extract=True
+    )
+
+
 def test_module():
     """
     Tests the API key for a user.
@@ -1598,31 +1713,6 @@ def fetch_domains():
     )
 
 
-def parsed_domain_rdap_command():
-    """
-    Returns parsed domain rdap data in a given domain
-    """
-    domain = demisto.args()['domain']
-    results = parsed_domain_rdap(domain=domain)
-
-    _raw_response = results.get("_raw") or {}
-    flat_response = results.get("flat") or {}
-
-    for key, val in flat_response.items():
-        if "|" in val:
-            flat_response[key] = ", ".join([v.strip() for v in val.split("|")])
-
-    headers = list(flat_response.keys())
-
-    human_readable = tableToMarkdown(f'DomainTools parsed domain rdap result for {domain}', flat_response, headers=headers)
-
-    return CommandResults(
-        readable_output=human_readable,
-        raw_response=_raw_response,
-        ignore_auto_extract=True
-    )
-
-
 def main():
     """
     Main Demisto function.
@@ -1631,6 +1721,7 @@ def main():
         "test-module": test_module,
         "domain": domain_command,
         "domainRdap": parsed_domain_rdap_command,
+        "domaintools-whois": parsed_whois_command,
         "domaintoolsiris-investigate": domain_command,
         "domaintoolsiris-analytics": domain_analytics_command,
         "domaintoolsiris-threat-profile": threat_profile_command,
@@ -1639,7 +1730,8 @@ def main():
         "domaintools-whois-history": whois_history_command,
         "domaintools-hosting-history": hosting_history_command,
         "domaintools-reverse-whois": reverse_whois_command,
-        "domaintools-whois": parsed_whois_command,
+        "reverseNameServer": reverse_nameserver_command,
+        "reverseIP": reverse_ip_command
     }
 
     try:
