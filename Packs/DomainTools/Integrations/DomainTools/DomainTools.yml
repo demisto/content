@@ -4,10 +4,10 @@ commonfields:
   version: -1
 name: DomainTools
 fromversion: 5.0.0
-display: DomainTools
+display: DomainTools (Deprecated)
 deprecated: true
 category: Data Enrichment & Threat Intelligence
-description: Use DomainTools Iris Pack instead.
+description: Deprecated. Use DomainTools Iris Pack instead.
 configuration:
 - display: DomainTools API URL
   name: server
