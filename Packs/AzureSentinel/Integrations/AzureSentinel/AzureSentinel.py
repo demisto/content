@@ -1062,6 +1062,7 @@ def update_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
         raw_response=result
     )
 
+
 def create_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
     inc_id = uuid.uuid4()
     inc_data = {
@@ -1092,6 +1093,7 @@ def create_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
         outputs_key_field='ID',
         raw_response=result,
     )
+
 
 def delete_incident_command(client, args):
     inc_id = args.get('incident_id')
