@@ -433,7 +433,7 @@ script:
           name: filter
       description: |-
         Retrieves the MFA methods for a user.
-        Permissions: - User.Read (Delegated) - User.Read.All (Application).
+        Permissions: - UserAuthenticationMethod.Read.All  (Delegated) - UserAuthenticationMethod.Read.All (Application).
       name: msgraph-user-get-mfa-methods
       outputs:
         - contextPath: MSGraphUser.ID
