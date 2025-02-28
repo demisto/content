@@ -3,19 +3,12 @@ commonfields:
   id: FeedDomainTools
   version: -1
 configuration:
-- display: API Username
-  name: api_username
+- additionalinfo: API Username and API Key
+  display: API Username
+  displaypassword: API Key
+  name: credentials
+  type: 9
   required: true
-  hidden: false
-  type: 0
-  additionalinfo: The DomainTools API Username to use.
-  section: Connect
-- display: API Key
-  name: api_key
-  required: true
-  hidden: false
-  type: 4
-  additionalinfo: The DomainTools API Key to use.
   section: Connect
 - display: Session ID
   name: session_id
@@ -146,7 +139,7 @@ description: "Real-Time Threat Intelligence Feeds provide data on the different 
 name: FeedDomainTools
 script:
   commands:
-  - name: dtfeeds-get-indicators
+  - name: domaintools-get-indicators
     deprecated: false
     description: Gets indicators from the feed.
     execution: false

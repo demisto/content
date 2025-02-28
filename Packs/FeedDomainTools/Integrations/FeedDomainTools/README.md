@@ -6,8 +6,8 @@ This integration was integrated and tested with version 1.0.0 of FeedDomainTools
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API Username | The DomainTools API Username to use. | True |
-| API Key | The DomainTools API Key to use. | True |
+| API Username | API Username and API Key | True |
+| API Key |  | True |
 | Session ID | The session id to serve as unique identifier. On it's initial use, it will retrieve data from the past 5 days. Defaults to 'dt-cortex-feeds'. | False |
 | After | The start of the query window in seconds, relative to the current time, inclusive. Defaults to -3600. | False |
 | Top | Limits the number of results in the response payload. Defaults to 5000. | False |
@@ -29,14 +29,14 @@ This integration was integrated and tested with version 1.0.0 of FeedDomainTools
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### dtfeeds-get-indicators
+### domaintools-get-indicators
 
 ***
 Gets indicators from the feed.
 
 #### Base Command
 
-`dtfeeds-get-indicators`
+`domaintools-get-indicators`
 
 #### Input
 

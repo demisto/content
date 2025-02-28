@@ -341,11 +341,11 @@ def main():
 
     commands: dict[str, Callable] = {
         "test-module": test_module,
-        "dtfeeds-get-indicators": get_indicators_command,
+        "domaintools-get-indicators": get_indicators_command,
     }
 
-    api_username = params.get("api_username")
-    api_key = params.get("api_key")
+    api_username = params.get("credentials", {}).get("identifier", "")
+    api_key = params.get("credentials", {}).get("password", "")
     insecure = not params.get("insecure", False)
     proxy = params.get('proxy', False)
     user_defined_tags = params.get("feedTags") or ""
