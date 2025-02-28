@@ -49,11 +49,9 @@ class Client(BaseClient):
                 raise DemistoException(res[error_attribute])
         return res
 
-    def http_file_request(self, url_suffix, size=None):
-        params = {'size': size} if size else None
+    def http_file_request(self, url_suffix):
         res = self._http_request("GET",
                                  url_suffix=url_suffix,
-                                 params=params,
                                  resp_type='bytes')
         return res
 
@@ -433,38 +431,56 @@ def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: D
     return_results(command_results)
 
 
-def vulndb_get_vuln_report_command(args: dict, client: Client):
+'''
+Returns a PDF report summary of the vulnerability from VulnDB
+
+Inputs:
+    vuln_id: Unique ID for the vulnerability
+Returns:
+    file_entry: PDF report for the vulnerability
+'''
+
+
+def vulndb_get_vuln_report_command(args: dict, client: Client) -> fileResult:
     vulndb_id = args['vuln_id']
     res = client.http_file_request(f'/vulnerabilities/{vulndb_id}.pdf')
 
     # Byte data of the result file
     report_file = res.content
 
-    # 'content-disposition' comes back in the following format:
-    # attachment; filename="VulnDB ID 389586.pdf"; filename*=UTF-8''VulnDB%20ID%20389586.pdf
-    # Parse out the filename from this return
-    report_file_name = res.headers.get('content-disposition').split(';')[1].split('"')[1]
-
-    return_results(fileResult(report_file_name, report_file))
+    file_entry = fileResult(f'VulnDB ID {vulndb_id}.pdf', report_file, file_type=EntryType.ENTRY_INFO_FILE)
+    return_results(file_entry)
 
 
-def vulndb_get_cpe_command(args: dict, client: Client):
+'''
+Returns a list of CPE values for the given VulnDB vulnerability.
+
+Inputs:
+    vuln_id: Unique ID for the vulnerability
+Returns:
+    output: Sorted and deduplicated list of CPE values from VulnDB
+'''
+
+
+def vulndb_get_cpe_command(args: dict, client: Client) -> CommandResults:
     vulndb_id = args['vuln_id']
 
     res = client.http_request(f'/vulnerabilities/{vulndb_id}?show_cpe=true')
     all_cpes = []
-    for product in res['vulnerability']['products']:
-        for version in product['versions']:
-            for cpe in version['cpe']:
-                all_cpes.append(cpe['cpe'])
+    for product in res.get('vulnerability').get('products'):
+        for version in product.get('versions'):
+            for cpe in version.get('cpe'):
+                all_cpes.append(cpe.get('cpe'))
     # Convert to set to deduplicate, then back to list to be sorted
     deduplicated_set = set(all_cpes)
     output = sorted(deduplicated_set)
 
     return_results(CommandResults(
-        outputs_prefix='VulnDB.CPE',
-        outputs=all_cpes,
-        readable_output=str(output)
+        outputs_prefix='VulnDB.CPE.Value',
+        outputs=output,
+        readable_output=str(output),
+        raw_response=res
+
     ))
 
 
