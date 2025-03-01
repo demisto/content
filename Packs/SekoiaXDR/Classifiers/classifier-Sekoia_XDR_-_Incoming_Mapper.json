@@ -1,7 +1,19 @@
 {
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
 	"description": "Maps incoming Sekoia XDR incidents fields.\n",
 	"feed": false,
+	"fromServerVersion": "",
 	"id": "Sekoia XDR - Incoming Mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
 	"mapping": {
 		"Sekoia XDR": {
 			"dontMapEventToLabels": true,
@@ -43,8 +55,11 @@
 						"transformers": []
 					}
 				},
-                "SekoiaXDR MirrorOut": {
+				"SekoiaXDR MirrorOut": {
 					"simple": "mirrorOut"
+				},
+				"SekoiaXDR events": {
+					"simple": "events"
 				},
 				"Source Create time": {
 					"complex": {
@@ -135,7 +150,14 @@
 		}
 	},
 	"name": "Sekoia XDR - Incoming Mapper",
+	"nameRaw": "Sekoia XDR - Incoming Mapper",
+	"packID": "",
+	"packName": "",
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
 	"type": "mapping-incoming",
-    "version": -1,
-    "fromVersion": "6.10.0"
+	"unclassifiedCases": null,
+	"version": -1
 }
