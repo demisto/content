@@ -2,7 +2,7 @@
     "name": "DomainTools Enterprise",
     "description": "Provides DomainTools market-leading Whois data including hosting history and parsed IP records within Cortex XSOAR. Requires a DomainTools Enterprise API key.",
     "support": "partner",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.1.7",
     "author": "DomainTools",
     "url": "https://www.domaintools.com/support/",
     "email": "memberservices@domaintools.com",
