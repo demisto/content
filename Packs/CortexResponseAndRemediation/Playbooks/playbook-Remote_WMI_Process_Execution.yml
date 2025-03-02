@@ -626,9 +626,9 @@ tasks:
       - "15"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved, confirmed as a True Positive
+        simple: The alert has been resolved. Confirmed as a True Positive by the playbook "Remote WMI Process Execution"
       closeReason:
-        simple: Resolved - Handled by the playbook "Remote WMI Process Execution" as True Positive
+        simple: Resolved - True Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -691,9 +691,9 @@ tasks:
       - "15"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved, confirmed as a False Positive
+        simple: The alert has been resolved. Confirmed as a False Positive by the playbook "Remote WMI Process Execution"
       closeReason:
-        simple: Resolved - Handled by the playbook "Remote WMI Process Execution" as False Positive
+        simple: Resolved - False Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
