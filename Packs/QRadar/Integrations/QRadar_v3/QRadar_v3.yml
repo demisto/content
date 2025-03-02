@@ -57,11 +57,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: Fetch incidents
-  name: isFetch
-  type: 8
-  required: false
-  section: Collect
 - defaultvalue: '20'
   display: Maximum number of events per incident.
   name: events_limit
@@ -3129,7 +3124,6 @@ script:
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true
-  isfetch: true
   ismappable: true
 fromversion: 5.5.0
 defaultmapperin: QRadar - Generic Incoming Mapper
