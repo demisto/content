@@ -15,7 +15,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "dependencies": {
         "GCP-IAM": {
@@ -40,5 +41,6 @@
         "CommonScripts",
         "GoogleCloudCompute",
         "GCP-IAM"
-    ]
+    ],
+    "supportedModules": []
 }
