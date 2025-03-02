@@ -429,7 +429,7 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     for arg in args:
         if not args[arg] and arg in delta_keys:
             fields_to_clear.append(arg)
-        elif arg in delta_keys: # For debugging
+        elif arg not in delta_keys: # For debugging
             demisto.debug(f"Did not mirrored out {arg} as it was not in the delta.")
     demisto.debug(f'Fields to clear {fields_to_clear}')
 
@@ -2693,7 +2693,8 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         ticket_state = ticket.get('state', '')
         ticket_close_code = ticket.get('close_code', '')
         demisto.debug(f"Mirror-in {server_close_custom_state=}, {server_custom_close_code=}, {ticket_state=}, "
-                      f"{ticket_close_code=}, {ticket.get('close_notes')}, {ticket.get('closed_at')}, {ticket.get('resolved_at')}")
+                      f"{ticket_close_code=}, close_notes={ticket.get('close_notes')}, closed_at={ticket.get('closed_at')},"
+                      f" resolved_at={ticket.get('resolved_at')}")
         # The first condition is for closing the incident if the ticket's state is in the
         # `Mirrored XSOAR Ticket custom close state code` parameter, which is configured by the user in the
         # integration configuration.
