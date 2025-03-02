@@ -85,11 +85,11 @@ Packs/Whois/Integrations/Whois/test_data/microsocks
 .report.json
 .report_mypy.xml
 .report_pytest.xml
+report_pytest.xml
 coverage.xml
 Packs/**/Integrations/**/.pytest.ini
 Packs/**/Scripts/**/.pytest.ini
 pytest_report.json
-report_pytest.xml
 test_runner.sh
 .sourcery_tmp.yaml
 testResults.xml

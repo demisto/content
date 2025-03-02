@@ -3,5 +3,5 @@ variables:
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: temp-report-pytest
+    ref: $INFRA_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
