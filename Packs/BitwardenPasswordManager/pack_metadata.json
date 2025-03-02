@@ -2,16 +2,22 @@
     "name": "Bitwarden Password Manager",
     "description": "Bitwarden Password Manager is a secure, open-source tool for storing and managing passwords and sensitive information across devices.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Vault",
+        "Password Management",
+        "Credentials"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
