@@ -153,7 +153,7 @@ def filter_incidents(incidents_list):
                                                                                               abuse_disposition_values):
             filtered_incidents_list.append(incident)
         else:
-            demisto.debug(f"incident with id= {incident.get('id')} didn't pass filter_incidents")
+            demisto.debug(f"Dropped incident with id= {incident.get('id')}.")
 
     return filtered_incidents_list
 
@@ -201,7 +201,7 @@ def get_new_incidents(client, request_params, last_fetched_id):
     """
     # add logs
     incidents = client.get_incidents_request(request_params)
-    demisto.debug(f"Got {len(incidents)} incidents: {[(incident['id'], incident['created_at']) for incident in incidents]}")
+    demisto.debug(f"Got {len(incidents)} incidents from client: {[(incident['id'], incident['created_at']) for incident in incidents]}")
     filtered_incidents_list = filter_incidents(incidents)
     demisto.debug(f"After filtering got {len(filtered_incidents_list)} incidents: {[(incident['id'], incident['created_at']) for incident in filtered_incidents_list]}")
     ordered_incidents = sorted(filtered_incidents_list, key=lambda k: (k['created_at'], k['id']))
@@ -243,12 +243,13 @@ def get_incidents_batch_by_time_request(client, params):
     # while loop relevant for fetching old incidents
     i = 0
     while created_before < current_time and len(incidents_list) < fetch_limit:  # type: ignore[operator]
-        demisto.debug(f"Entering pagination at {i} time")
-        demisto.info(
-            f"Entered the batch loop of state {params.get('state')}, with fetch_limit {fetch_limit} and events list "
-            f"{[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)} "
+        demisto.debug(f"Entering pagination #{i} loop.")
+        demisto.debug(
+            f"Entered the batch loop of state {request_params.get('state')}, with fetch_limit {fetch_limit} and events list "
+            f"{[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)} \n"
             f"with created_after {request_params['created_after']} and "
             f"created_before {request_params['created_before']}")
+        demisto.debug(f"Calling get_new_incidents with {last_fetched_id=}")
 
         new_incidents = get_new_incidents(client, request_params, last_fetched_id)
         incidents_list.extend(new_incidents)
@@ -269,6 +270,7 @@ def get_incidents_batch_by_time_request(client, params):
         # fetching the last batch
         demisto.debug("Entering if statement (doing last pagination call)")
         request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
+        demisto.debug(f"Calling get_new_incidents with {last_fetched_id=}, {request_params['created_before']=}, {request_params['created_after']=}")
         new_incidents = get_new_incidents(client, request_params, last_fetched_id)
         incidents_list.extend(new_incidents)
 
@@ -293,6 +295,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             last_fetch[state] = first_fetch
         if not last_fetched_id.get(state):
             last_fetched_id[state] = '0'
+    demisto.debug(f"Last fetch is set to {last_fetch=}, {last_fetched_id=}")
 
     incidents = []
     for state in incidents_states:
@@ -313,7 +316,9 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             last_fetch[state] = \
                 (datetime.strptime(last_fetch_time, TIME_FORMAT) - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
             last_fetched_id[state] = id
-            demisto.debug(f"")
+            demisto.debug(f"Got {len(incidents_list)} events. Last incident date: {id=}, {last_fetch_time=}, {last_fetch[state]=} of state {incidents_list[-1].get('state')}.")
+        else:
+            demisto.debug("No new events.")
 
     demisto.debug(f"End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id"
                   f" {str(last_fetched_id)}")
