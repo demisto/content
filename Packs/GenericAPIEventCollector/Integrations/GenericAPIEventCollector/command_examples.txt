@@ -1,0 +1,1 @@
+!generic-api-event-collector-get-events limit=1 should_push_events=false
