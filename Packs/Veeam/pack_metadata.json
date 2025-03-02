@@ -14,8 +14,10 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "defaultDataSource": "VBR REST API",
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }
