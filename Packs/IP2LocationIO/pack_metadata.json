@@ -15,9 +15,11 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "ip2location"
-    ]
+    ],
+    "supportedModules": []
 }
