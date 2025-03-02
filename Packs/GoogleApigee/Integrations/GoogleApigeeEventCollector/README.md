@@ -23,7 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### google-apigee-get-events
 
 ***
-Gets logs from google apigee.
+Gets logs from Google Apigee.
 
 #### Base Command
 

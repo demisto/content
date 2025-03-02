@@ -70,7 +70,7 @@ script:
       name: from_date
       required: false
     deprecated: false
-    description: Gets logs from google apigee.
+    description: Gets logs from Google Apigee.
     execution: false
     name: google-apigee-get-events
   dockerimage: demisto/python3:3.11.10.115186
