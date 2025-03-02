@@ -1,6 +1,6 @@
 {
     "name": "Lost / Stolen Device",
-    "description": "Looking to reduce the multiple triage, response and mitigation steps involved in handling lost/stolen devices? We’ve got just the Content Pack for you!",
+    "description": "Looking to reduce the multiple triage, response and mitigation steps involved in handling lost/stolen devices? We\u2019ve got just the Content Pack for you!",
     "support": "xsoar",
     "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
@@ -10,9 +10,7 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [
-        "Use Case"
-    ],
+    "tags": ["Use Case"],
     "useCases": [
         "Compliance"
     ],
@@ -22,8 +20,6 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": []
+        "marketplacev2"
+    ]
 }
