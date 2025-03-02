@@ -15,7 +15,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "dependencies": {
         "AWS-IAM": {
@@ -45,5 +46,6 @@
         "AWS-EC2",
         "AWS-S3",
         "AWS_SystemManager"
-    ]
+    ],
+    "supportedModules": []
 }
