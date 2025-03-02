@@ -62,7 +62,8 @@ def test_fetch_indicators_command(patched_get_advisories):
     for _field, field_value in result[0].get("fields").items():
         assert field_value
 
-    # Tests to cover CVE extraction issue - XSUP-47513
+    # Tests to cover CVE extraction issue. This test ensures the data which is expected in the CVE information is correct and
+    # present. Fields effected are: cvss_score, cvss_severity, cvss_vector_string
     assert result[0].get('fields', {}).get('cvss', 0.0) == 9.3
     assert result[0].get('fields', {}).get('cvssscore', 0.0) == 9.3
     assert result[0].get('fields', {}).get('cvssvector', 'NONE') == ('CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:L/SI:'
