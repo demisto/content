@@ -1247,7 +1247,7 @@ view: |-
   }
 inputs: []
 outputs: []
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
 tests:
 - no tests
 fromversion: 8.8.0
