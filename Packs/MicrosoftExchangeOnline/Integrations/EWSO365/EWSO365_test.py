@@ -87,6 +87,7 @@ class TestNormalCommands:
             self.protocol = ""
             self.mark_as_read = False
             self.folder_name = ""
+            self.version = 'O365'
 
         def get_account(self, target_mailbox=None, access_type=None):
             return self.account
@@ -155,8 +156,8 @@ class TestNormalCommands:
         mocker.patch.object(GetSearchableMailboxes, "call", return_value=raw_response)
         client = self.MockClient()
         res = get_searchable_mailboxes(client)
-        actual_ec = res[1]
-        assert expected == actual_ec
+        actual_ec = res.outputs
+        assert expected.get(res.outputs_prefix) == actual_ec
 
     def test_expand_group(self, mocker):
         """
@@ -182,8 +183,8 @@ class TestNormalCommands:
         res = get_expanded_group(
             client, email_address="testgroup-1@demistodev.onmicrosoft.com"
         )
-        actual_ec = res[1]
-        assert expected == actual_ec
+        actual_ec = res.outputs
+        assert expected.get(res.outputs_prefix) == actual_ec
 
 
 MESSAGES = [
