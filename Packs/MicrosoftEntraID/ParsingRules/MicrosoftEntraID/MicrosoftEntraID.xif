@@ -19,7 +19,7 @@ filter to_string(createdDateTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
 [INGEST:vendor="msft", product="Azure AD Audit", target_dataset="msft_azure_ad_audit_raw", no_hit=keep]
 filter to_string(activityDateTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
 | alter 
-    tmp_get_keys = rtrim(arraystring(arraymap(arraymap(to_string(additionalDetails) -> [], "@element" -> key), concat("(?P<", replace(replex("@element", "\s", ""), "-", ""), ">[^|]+)?\|")), ""), "\|"),
+    tmp_get_keys = rtrim(arraystring(arraymap(arraymap(to_string(additionalDetails) -> [], "@element" -> key), concat("(?P<", replex("@element", "[\s-,\<\>\[\]\(\)\:\/\;]", ""), ">[^|]+)?\|")), ""), "\|"),
     tmp_get_values = replex(replex(arraystring(arraymap(to_string(additionalDetails) -> [], if("@element" -> value = "" or "@element" -> value = null, "null", "@element" -> value)), "|"), "(?:^|)null(?:\||$)", "|"), "\|$", "")
 | alter
     parsed_fields = if(tmp_get_values = null or tmp_get_values ~= "^\s*$", null, regexcapture(tmp_get_values, tmp_get_keys)),
