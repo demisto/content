@@ -18,6 +18,8 @@
         "Internet Information Services"
     ],
     "marketplaces": [
-        "marketplacev2"
-    ]
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": []
 }
