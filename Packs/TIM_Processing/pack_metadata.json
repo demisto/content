@@ -237,8 +237,6 @@
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": []
+        "marketplacev2"
+    ]
 }
