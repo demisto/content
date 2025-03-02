@@ -7,7 +7,6 @@ fromversion: "5.0.0"
 marketplaces:
 - xsoar
 - marketplacev2
-- platform
 tasks:
   "0":
     id: "0"

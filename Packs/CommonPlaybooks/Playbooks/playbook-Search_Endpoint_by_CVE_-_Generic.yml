@@ -596,7 +596,8 @@ tasks:
       id: 38fa22d3-111a-4edb-8e4b-407af0cc699b
       version: -1
       name: Set results to Endpoint context
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -641,7 +642,8 @@ tasks:
       id: 97583f7a-e6b3-4662-86be-7e267e2539ac
       version: -1
       name: Set results to Endpoint context
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -712,6 +714,5 @@ tests:
 - No tests
 fromversion: 5.5.0
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

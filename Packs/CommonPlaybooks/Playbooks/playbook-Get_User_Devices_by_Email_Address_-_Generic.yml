@@ -2209,6 +2209,5 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2

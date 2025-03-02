@@ -922,7 +922,6 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
-- platform
 contentitemexportablefields:
   contentitemfields: {}
 system: true
