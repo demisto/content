@@ -16,12 +16,12 @@ The Password Manager is encrypted and has the abilities to identify compromised 
 
 - Rest API integration for your Bitwarden Password Manager.
 - Modeling Rules for all security events:
-  User Events
-  Collection Events
-  Organization Events
-  Item Events
-  Group Events
-  Secrets Manager Events
+  - User Events
+  - Collection Events
+  - Organization Events
+  - Item Events
+  - Group Events
+  - Secrets Manager Events
 
 ## How to integrate with XSIAM?
 
