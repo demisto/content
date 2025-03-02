@@ -54,6 +54,7 @@ script:
   dockerimage: demisto/py3-tools:1.0.0.114656
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
