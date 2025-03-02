@@ -30,11 +30,13 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  additionalinfo: Enable fetching incidents from the selected SaaS application.
 - section: Collect
   display: Incident type
   name: incidentType
   type: 13
   required: false
+  additionalinfo: Fetch incidents of the selected types.
 - section: Connect
   display: ""
   name: client_id
@@ -44,6 +46,7 @@ configuration:
   hiddenusername: true
   additionalinfo: The client ID of the Smart API or Check Point Infinity API.
 - display: ""
+  section: Connect
   displaypassword: Client Secret
   name: client_secret
   type: 9
@@ -59,6 +62,7 @@ configuration:
   additionalinfo: The time range for the first fetch. The default is 1 hour.
 - display: SaaS Application
   name: saas_apps
+  section: Collect
   type: 16
   required: false
   options:
@@ -66,6 +70,7 @@ configuration:
   - Gmail
   additionalinfo: Get incidents from the selected SaaS.
 - display: State
+  section: Collect
   name: event_state
   type: 16
   required: false
@@ -77,6 +82,7 @@ configuration:
   - Dismissed
   additionalinfo: Get incidents with only the selected states.
 - display: Severity
+  section: Collect
   name: event_severity
   type: 16
   required: false
@@ -88,6 +94,7 @@ configuration:
   - Very Low
   additionalinfo: Get incidents with only the selected severities.
 - display: Threat Type
+  section: Collect
   name: threat_type
   type: 16
   required: false
@@ -103,6 +110,7 @@ configuration:
   - Spam
   - Malicious URL
   - Malicious URL Click
+  - Graymail
   additionalinfo: Get incidents with only the selected types.
 - display: Maximum number of incidents per fetch
   name: max_fetch
@@ -111,13 +119,13 @@ configuration:
   required: false
   section: Collect
   additionalinfo: The maximum number of incidents to retrieve per fetch.
-- section: Restore requests
+- section: Collect
   display: Collect restore requests
   name: collect_restore_requests
   type: 8
   required: false
   additionalinfo: Collect restore requests as incidents.
-- section: Restore requests
+- section: Collect
   display: Include denied requests
   name: include_denied_requests
   type: 8
@@ -127,7 +135,7 @@ configuration:
   name: include_accepted_requests
   type: 8
   required: false
-  section: Restore requests
+  section: Collect
   additionalinfo: Accepted restore requests will be in the results (they are not by default).
 - display: Trust any certificate (not secure)
   additionalinfo: Trust server certificate.
@@ -144,6 +152,7 @@ configuration:
   type: 8
   required: false
 - display: Incidents Fetch Interval
+  section: Collect
   additionalinfo: The interval in minutes to fetch incidents. The default is 1 minute.
   name: incidentFetchInterval
   defaultvalue: "1"
@@ -367,6 +376,15 @@ script:
     - name: entity
       description: Scanned entity id.
       required: true
+    - name: include_clean
+      defaultValue: 'False'
+      description: Include clean scans.
+      type: Boolean
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
     description: Retrieve specific email scan with positive threats.
     outputs:
     - contextPath: CheckPointHEC.ScanResult.ap
@@ -1841,12 +1859,30 @@ script:
     - name: entity_id
       description: Entity id.
       required: false
+  - name: checkpointhec-download-email
+    description: Download email file.
+    arguments:
+    - name: entity_id
+      description: Email entity id, currently available in the incident's mirror external id.
+      required: true
+    - name: original
+      defaultValue: 'False'
+      type: Boolean
+      description: Whether to download original email or with modifications.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
   isfetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.113941
+  dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect
