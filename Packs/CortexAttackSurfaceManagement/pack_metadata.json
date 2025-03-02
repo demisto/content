@@ -100,7 +100,8 @@
     },
     "marketplaces": [
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "itemPrefix": [
         "ASM"
@@ -121,5 +122,6 @@
         "Jira",
         "Tenable_io",
         "Venafi"
-    ]
+    ],
+    "supportedModules": []
 }
