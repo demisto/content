@@ -28,3 +28,4 @@
 !prisma-sase-external-dynamic-list-delete id="Id"
 !prisma-sase-candidate-config-push folders="Mobile Users"
 !prisma-sase-quarantine-host host_id="host_id"
+!prisma-sase-cie-user-get domain="example.com" operator="Equal" value_for_filter="CN=Test,UID=TestID,DC=example,DC=com"
