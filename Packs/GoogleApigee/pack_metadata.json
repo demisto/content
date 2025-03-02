@@ -1,6 +1,6 @@
 {
     "name": "Google Apigee",
-    "description": "",
+    "description": "Event Collector for Google Apigee Audit events",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
