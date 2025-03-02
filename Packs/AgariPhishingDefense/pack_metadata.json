@@ -21,7 +21,8 @@
     "githubUser": "",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "dependencies": {
         "PhishingAlerts": {
@@ -71,5 +72,6 @@
         "Gmail",
         "CoreAlertFields",
         "CommonScripts"
-    ]
+    ],
+    "supportedModules": []
 }

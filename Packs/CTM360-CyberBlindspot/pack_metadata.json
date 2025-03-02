@@ -21,11 +21,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "xsoar@ctm360.com"
     ],
     "githubUser": [],
-    "defaultDataSource": "CTM360_CyberBlindspot"
+    "defaultDataSource": "CTM360_CyberBlindspot",
+    "supportedModules": []
 }

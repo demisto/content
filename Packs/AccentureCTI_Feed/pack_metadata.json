@@ -16,10 +16,12 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "CTI.Engineering.Integration@accenture.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

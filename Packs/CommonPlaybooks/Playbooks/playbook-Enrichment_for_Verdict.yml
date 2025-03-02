@@ -2,6 +2,7 @@ id: Enrichment for Verdict
 version: -1
 marketplaces:
 - marketplacev2
+- platform
 name: Enrichment for Verdict
 description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
 starttaskid: "0"
@@ -1337,9 +1338,7 @@ inputs:
   value:
     simple: "2"
   required: false
-  description: The number of previous alerts that were closed as false positive alerts.
-    This threshold establishes whether the Previous Verdict key
-    will be marked as false positive.
+  description: The number of previous alerts that were closed as false positive alerts. This threshold establishes whether the Previous Verdict key will be marked as false positive.
   playbookInputQuery:
 - key: query
   value:
@@ -1348,11 +1347,10 @@ inputs:
   description: |-
     A query for the previous alerts search.
     Use free form query (Lucene syntax) as a filter. All other filters are ignored when this filter is used.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CloseReason
   value:
-    simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known
-      Issue
+    simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
   required: false
   description: |-
     The closing reason of the previous alerts to search for.
@@ -1409,8 +1407,7 @@ inputs:
 - key: ResolveIP
   value: {}
   required: false
-  description: Determines whether to convert the IP address to a hostname using a
-    DNS query (True/ False).
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
   playbookInputQuery:
 - key: URL
   value:
