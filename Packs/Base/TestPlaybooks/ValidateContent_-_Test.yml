@@ -93,6 +93,8 @@ tasks:
     scriptarguments:
       entry_id:
         simple: ${lastCompletedTaskEntries}
+      retry-count:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-

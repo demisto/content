@@ -4,7 +4,7 @@ import pytest
 import requests_mock
 from pytest_mock import MockerFixture
 from requests_mock.mocker import Mocker as RequestsMock
-
+import panos.errors
 import demistomock as demisto
 from unittest.mock import patch, MagicMock
 from panos.device import Vsys
@@ -13,6 +13,7 @@ from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
+
 from test_data import fetch_incidents_input
 from test_data import mock_rules
 from freezegun import freeze_time
@@ -6627,9 +6628,7 @@ class TestFetchIncidentsHelperFunctions:
          """
         from Panorama import get_query_entries_by_id_request
         mocker.patch('Panorama.http_request', return_value=response)
-        debug = mocker.patch('demistomock.debug')
         assert get_query_entries_by_id_request('000', 1) == expected_result
-        assert debug.called_with(debug_msg)
 
 
 class TestFetchIncidentsFlows:
@@ -8046,3 +8045,24 @@ def test_pan_os_get_master_key_details_command(mocker: MockerFixture, requests_m
     assert table_data == raw_response['response']['result']
     assert command_results.outputs == raw_response['response']['result']
     assert command_results.raw_response == raw_response
+
+
+@patch("Panorama.run_op_command")
+def test_show_jobs_id_not_found(patched_run_op_command):
+    """
+    Given:
+        - A specific job_id (23)
+
+    When:
+        - running show_jobs function
+
+    Then:
+        - Ensure DemistoException is thrown with ann informative message (since the given ID does not exist in all devices)
+    """
+    from Panorama import UniversalCommand
+
+    patched_run_op_command.side_effect = panos.errors.PanDeviceXapiError("job 23 not found")
+    MockTopology = type('MockTopology', (), {'all': lambda *x, **y: [Panorama(hostname='123')]})
+
+    with pytest.raises(DemistoException, match="The given ID 23 is not found in all devices of the topology."):
+        UniversalCommand.show_jobs(topology=MockTopology(), id=23)

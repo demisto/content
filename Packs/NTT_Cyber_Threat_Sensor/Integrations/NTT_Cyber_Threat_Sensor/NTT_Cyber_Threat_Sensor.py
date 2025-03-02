@@ -2,9 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 import base64
-from datetime import datetime
-from datetime import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta, UTC
 import requests
 import dateutil.parser
 import urllib3
@@ -29,9 +27,9 @@ USE_SSL = not demisto.params().get('insecure')
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'x-api-key': '{}'.format(APIKEY),
-    'x-soar-token': '{}'.format(SOARTOKEN),
-    'tenant-id': '{}'.format(TENANT_ID)
+    'x-api-key': f'{APIKEY}',
+    'x-soar-token': f'{SOARTOKEN}',
+    'tenant-id': f'{TENANT_ID}'
 }
 
 """HELPER FUNCTIONS
@@ -68,7 +66,7 @@ def http_request(method, url_suffix, json_dict=None, params=None, headers=None, 
     if res.status_code == 401:
         raise DemistoException('UnauthorizedError: please validate your credentials.')
     if res.status_code not in {200}:
-        raise DemistoException('Error in API call [{}] - {}'.format(res.status_code, res.reason))
+        raise DemistoException(f'Error in API call [{res.status_code}] - {res.reason}')
     return res.json()
 
 
@@ -77,7 +75,7 @@ def download(url):
     """
     r = requests.request('GET', url)
     if r.status_code != requests.codes.ok:
-        return_error('Error in API call to download %s - %s' % (url, r.text))
+        return_error(f'Error in API call to download {url} - {r.text}')
     return r
 
 
@@ -104,7 +102,7 @@ def item_to_incident(item):
 def fetch_incidents():
     """Fetch incidents from the API
     """
-    data = dict()
+    data = {}
     last_run = demisto.getLastRun()
 
     if last_run and 'timestamp' in last_run:
@@ -112,12 +110,12 @@ def fetch_incidents():
         if 'offset' in last_run:
             data['offset'] = last_run['offset']
     else:
-        last_run = dict()
+        last_run = {}
         last_run['timestamp'] = (datetime.now() - timedelta(days=int(DAYS_BACK))).isoformat()
         data['after'] = last_run['timestamp']
 
     data['limit'] = int(ITEMS_TO_FETCH)
-    artifacts_meta = list()
+    artifacts_meta = []
     results_meta = http_request('POST', '/artifacts/alerts', json_dict=data)
     if 'alerts' in results_meta:
         for result_meta in results_meta['alerts']:
@@ -128,7 +126,7 @@ def fetch_incidents():
             last_run.pop('offset', None)
             last_run['timestamp'] = datetime.now().isoformat()
 
-    incidents = list()
+    incidents = []
     for artifact_meta in artifacts_meta:
         demisto.debug('\nRequesting data for event: {}\n\n'.format(artifact_meta['event_id']))
         result_artifact = http_request('GET', '/artifacts/alerts/%s' % artifact_meta['event_id'])
@@ -142,12 +140,12 @@ def poll_blobs():
     """Check if one or more blobs from provided event_id is ready for download
     """
     event_id = demisto.args().get('event_id')
-    cntext = dict()
+    cntext = {}
     cntext['ID'] = event_id
     if demisto.args().get('timestamp'):
         timestamp = dateutil.parser.parse(demisto.args().get('timestamp'))
         now = dateutil.parser.parse(datetime.utcnow().isoformat())
-        diff = now.replace(tzinfo=timezone.utc) - timestamp.replace(tzinfo=timezone.utc)
+        diff = now.replace(tzinfo=UTC) - timestamp.replace(tzinfo=UTC)
 
         # We need to wait three minutes from the time of the event since pcap
         #  are sent little later to make sure we record most of the triggered traffic
@@ -194,7 +192,7 @@ def fetch_blobs():
     """Download one or more blobs from provided event_id
     """
     event_id = demisto.args().get('event_id')
-    blob_list = list()
+    blob_list = []
     result_blobs = http_request('GET', '/artifacts/blobs/%s' % event_id)
     if 'blobs' in result_blobs and len(result_blobs['blobs']) > 0:
         for blob in result_blobs['blobs']:
@@ -226,8 +224,8 @@ def fetch_blobs():
 def test_module():
     """Test module to verify settings
     """
-    errors = list()
-    data = dict()
+    errors = []
+    data = {}
 
     if TENANT_ID == '0000000-0000-0000-000000000' or TENANT_ID == '':
         errors.append('Incorrect tenant id')
@@ -273,13 +271,13 @@ def main():
     """Main function
     """
     cmd = demisto.command()
-    demisto.debug('Command being called is {}'.format(cmd))
+    demisto.debug(f'Command being called is {cmd}')
 
     try:
         if cmd in COMMANDS:
             COMMANDS[cmd]()
         else:
-            demisto.debug('Command {} not implemented'.format(cmd))
+            demisto.debug(f'Command {cmd} not implemented')
 
     # Log exceptions
     except Exception as e:
@@ -290,7 +288,7 @@ def main():
             demisto.debug(str(e))
             raise
         else:
-            return_error('An error occurred: {}'.format(str(e)))
+            return_error(f'An error occurred: {str(e)}')
 
 
 # python2 uses __builtin__ python3 uses builtins

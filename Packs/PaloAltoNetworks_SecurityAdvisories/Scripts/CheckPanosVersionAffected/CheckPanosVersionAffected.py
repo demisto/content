@@ -50,6 +50,12 @@ def return_result_dataclass(result: list[Advisory]):
         summary_list = [vars(x) for x in result]
         title = result[0]._title
         output_prefix = result[0]._output_prefix
+    else:
+        title = ''
+        summary_list = []
+        outputs = []
+        output_prefix = ''
+        demisto.debug(f"The result isn't of type list. {title=} {summary_list=} {outputs=} {output_prefix=}")
 
     readable_output = tableToMarkdown(title, summary_list)
     command_result = CommandResults(

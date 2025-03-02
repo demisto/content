@@ -2,7 +2,7 @@
     "name": "Box",
     "description": "Manage Box users",
     "support": "xsoar",
-    "currentVersion": "3.2.8",
+    "currentVersion": "3.2.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -2,7 +2,7 @@
     "name": "Cortex REST API",
     "description": "Use Demisto REST APIs",
     "support": "xsoar",
-    "currentVersion": "1.3.64",
+    "currentVersion": "1.3.66",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

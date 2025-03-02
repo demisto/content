@@ -70,7 +70,7 @@ name: Trend Micro Vision One
 script:
   commands:
   - arguments:
-    - description: 'The type of object you would like to add to the block list: "file_sha1", "ip", "domain", "url" or "mailbox"'
+    - description: 'The type of object you would like to add to the block list: "file_sha1", "ip", "domain", "url" or "mailbox".'
       name: value_type
       required: true
       auto: PREDEFINED
@@ -80,24 +80,24 @@ script:
       - ip
       - url
       - mailbox
-    - description: The object you would like to add that matches the value-type
+    - description: The object you would like to add that matches the value-type.
       name: target_value
       required: true
-    - description: Target product
+    - description: Target product.
       name: product_id
-    - description: Optional description for reference
+    - description: Optional description for reference.
       name: description
-    description: Adds a file SHA-1, IP address, domain, or URL object to the User-Defined Suspicious Objects List, which blocks the objects on subsequent detections
+    description: Adds a file SHA-1, IP address, domain, or URL object to the User-Defined Suspicious Objects List, which blocks the objects on subsequent detections.
     name: trendmicro-visionone-add-to-block-list
     outputs:
     - contextPath: VisionOne.BlockList.actionId
-      description: Action ID of task adding file SHA-1, IP address, domain, or URL to the User-Defined Suspicious Objects List
+      description: Action ID of task adding file SHA-1, IP address, domain, or URL to the User-Defined Suspicious Objects List.
       type: string
     - contextPath: VisionOne.BlockList.taskStatus
-      description: Task status of adding file SHA-1, IP address, domain, or URL object to the User-Defined Suspicious Objects List
+      description: Task status of adding file SHA-1, IP address, domain, or URL object to the User-Defined Suspicious Objects List.
       type: string
   - arguments:
-    - description: 'The type of object you would like to remove from the block list: "file_sha1", "ip", "domain", "url" or "mailbox"'
+    - description: 'The type of object you would like to remove from the block list: "file_sha1", "ip", "domain", "url" or "mailbox".'
       name: value_type
       auto: PREDEFINED
       predefined:
@@ -107,79 +107,79 @@ script:
       - url
       - mailbox
       required: true
-    - description: The object you would like to add that matches the value-type
+    - description: The object you would like to add that matches the value-type.
       name: target_value
       required: true
-    - description: Target product
+    - description: Target product.
       name: product_id
-    - description: Optional description for reference
+    - description: Optional description for reference.
       name: description
-    description: Removes a file SHA-1, IP address, domain, or URL from the User-Defined Suspicious Objects List
+    description: Removes a file SHA-1, IP address, domain, or URL from the User-Defined Suspicious Objects List.
     name: trendmicro-visionone-remove-from-block-list
     outputs:
     - contextPath: VisionOne.BlockList.actionId
-      description: Action ID of task removing file SHA-1, IP address, domain, or URL object from the User-Defined Suspicious Objects List
+      description: Action ID of task removing file SHA-1, IP address, domain, or URL object from the User-Defined Suspicious Objects List.
       type: string
     - contextPath: VisionOne.BlockList.taskStatus
-      description: Task Status of removing file SHA-1, IP address, domain, or URL object that was added to the User-Defined Suspicious Objects List from block list
+      description: Task Status of removing file SHA-1, IP address, domain, or URL object that was added to the User-Defined Suspicious Objects List from block list.
       type: string
   - arguments:
-    - description: Email Message ID from Trend Micro Vision One message activity data
+    - description: Email Message ID from Trend Micro Vision One message activity data.
       name: message_id
       required: true
-    - description: Email mailbox where the message will be quarantined from
+    - description: Email mailbox where the message will be quarantined from.
       name: mailbox
       required: true
-    - description: Email message's original delivery time
+    - description: Email message's original delivery time.
       name: message_delivery_time
       required: true
     - default: true
       defaultValue: sca
-      description: Target product
+      description: Target product.
       name: product_id
-    - description: Optional description for reference
+    - description: Optional description for reference.
       name: description
-    description: Moves a message from a mailbox to the quarantine folder
+    description: Moves a message from a mailbox to the quarantine folder.
     name: trendmicro-visionone-quarantine-email-message
     outputs:
     - contextPath: VisionOne.Email.actionId
-      description: The Action Id of moving a message from a mailbox to the quarantine folder
+      description: The Action Id of moving a message from a mailbox to the quarantine folder.
       type: string
     - contextPath: VisionOne.Email.taskStatus
-      description: The status of moving a message from a mailbox to the quarantine folder
+      description: The status of moving a message from a mailbox to the quarantine folder.
       type: string
   - arguments:
-    - description: Email Message ID from Trend Micro Vision One message activity data
+    - description: Email Message ID from Trend Micro Vision One message activity data.
       name: message_id
       required: true
-    - description: Email mailbox where the message will be quarantined from
+    - description: Email mailbox where the message will be quarantined from.
       name: mailbox
       required: true
-    - description: Email message's delivery time
+    - description: Email message's delivery time.
       name: message_delivery_time
       required: true
     - default: true
       defaultValue: sca
-      description: Target product
+      description: Target product.
       name: product_id
-    - description: Optional description for reference
+    - description: Optional description for reference.
       name: description
-    description: Deletes a message from a mailbox
+    description: Deletes a message from a mailbox.
     name: trendmicro-visionone-delete-email-message
     outputs:
     - contextPath: VisionOne.Email.actionId
-      description: The action id of deleting a message from a mailbox
+      description: The action id of deleting a message from a mailbox.
       type: string
     - contextPath: VisionOne.Email.taskStatus
-      description: The task status of deleting a message from a mailbox
+      description: The task status of deleting a message from a mailbox.
       type: string
   - arguments:
-    - description: '"hostname", "macaddr" or "ip" of the endpoint to isolate'
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to isolate.'
       name: endpoint
       required: true
     - default: true
       defaultValue: sao
-      description: 'Target product: "sao", "sds", or "xes"'
+      description: 'Target product: "sao", "sds", or "xes".'
       name: product_id
       auto: PREDEFINED
       predefined:
@@ -187,24 +187,24 @@ script:
       - sds
       - xes
       required: true
-    - description: Description
+    - description: Description.
       name: description
-    description: Disconnects an endpoint from the network (but allows communication with the managing Trend Micro product)
+    description: Disconnects an endpoint from the network (but allows communication with the managing Trend Micro product).
     name: trendmicro-visionone-isolate-endpoint
     outputs:
     - contextPath: VisionOne.Endpoint_Connection.actionId
-      description: The action ID of isolate endpoint task
+      description: The action ID of isolate endpoint task.
       type: string
     - contextPath: VisionOne.Endpoint_Connection.taskStatus
-      description: 'The task status of isolate endpoint '
+      description: 'The task status of isolate endpoint.'
       type: string
   - arguments:
-    - description: '"hostname", "macaddr" or "ip" of the endpoint to restore'
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to restore.'
       name: endpoint
       required: true
     - default: true
       defaultValue: sao
-      description: 'Target product: "sao", "sds", or "xes"'
+      description: 'Target product: "sao", "sds", or "xes".'
       name: product_id
       auto: PREDEFINED
       predefined:
@@ -212,16 +212,16 @@ script:
       - sds
       - xes
       required: true
-    - description: Description
+    - description: Description.
       name: description
-    description: Restores network connectivity to an endpoint that applied the "isolate endpoint" action
+    description: Restores network connectivity to an endpoint that applied the "isolate endpoint" action.
     name: trendmicro-visionone-restore-endpoint-connection
     outputs:
     - contextPath: VisionOne.Endpoint_Connection.actionId
-      description: The action ID of the restore endpoint connection
+      description: The action ID of the restore endpoint connection.
       type: string
     - contextPath: VisionOne.Endpoint_Connection.taskStatus
-      description: The task status of restore endpoint connection
+      description: The task status of restore endpoint connection.
       type: string
   - arguments:
     - description: 'Object type: "domain", "ip", "sha1", or "url".'
@@ -233,22 +233,22 @@ script:
       - sha1
       - url
       required: true
-    - description: The object value. Full and partial matches supported. Domain partial match, (with a wildcard as the subdomain, example, .example.com) IP partial match, (IP range example, 192.168.35.1-192.168.35.254, cidr example, 192.168.35.1/24) URL Partial match, (Supports wildcards 'http://.'', 'https://.'' at beginning, or ''' at the end. Multiple wild cards also supported, such as , https://.example.com/path1/) SHA1 Only full match"
+    - description: The object value. Full and partial matches supported. Domain partial match, (with a wildcard as the subdomain, example, .example.com) IP partial match, (IP range example, 192.168.35.1-192.168.35.254, cidr example, 192.168.35.1/24) URL Partial match, (Supports wildcards 'http://.'', 'https://.'' at beginning, or ''' at the end. Multiple wild cards also supported, such as , https://.example.com/path1/) SHA1 Only full match".
       name: value
       required: true
     - description: Exception description.
       name: description
-    description: Adds domains, file SHA-1 values, IP addresses, or URLs to the Exception List and prevents these objects from being added to the Suspicious Object List
+    description: Adds domains, file SHA-1 values, IP addresses, or URLs to the Exception List and prevents these objects from being added to the Suspicious Object List.
     name: trendmicro-visionone-add-objects-to-exception-list
     outputs:
     - contextPath: VisionOne.Exception_List.message
-      description: status message success after task completion
+      description: status message success after task completion.
       type: string
     - contextPath: VisionOne.Exception_List.status_code
-      description: status code of response
+      description: status code of response.
       type: string
     - contextPath: VisionOne.Exception_List.total_items
-      description: count of item present in exception list
+      description: count of item present in exception list.
       type: string
   - arguments:
     - description: 'Object type: "domain", "ip", "sha1", or "url".'
@@ -267,13 +267,13 @@ script:
     name: trendmicro-visionone-delete-objects-from-exception-list
     outputs:
     - contextPath: VisionOne.Exception_List.message
-      description: status message success after task completion
+      description: status message success after task completion.
       type: string
     - contextPath: VisionOne.Exception_List.status_code
-      description: status code of response
+      description: status code of response.
       type: number
     - contextPath: VisionOne.Exception_List.total_items
-      description: count of item present in exception list
+      description: count of item present in exception list.
       type: string
   - arguments:
     - description: 'Object type: "domain", "ip", "sha1", or "url".'
@@ -288,7 +288,7 @@ script:
     - description: The object value.
       name: value
       required: true
-    - description: Description
+    - description: Description.
       name: description
     - description: The action to take if object is found. If you don't use this parameter, the scan action specified in default_settings.riskLevel.type will be used instead. "block" or "log".
       name: scan_action
@@ -309,13 +309,13 @@ script:
     name: trendmicro-visionone-add-objects-to-suspicious-list
     outputs:
     - contextPath: VisionOne.Suspicious_List.message
-      description: Status message of adding item to suspicious object list
+      description: Status message of adding item to suspicious object list.
       type: string
     - contextPath: VisionOne.Suspicious_List.status_code
-      description: Response code of adding item to suspicious object list
+      description: Response code of adding item to suspicious object list.
       type: number
     - contextPath: VisionOne.Suspicious_List.total_items
-      description: Number of items present in suspicious object list
+      description: Number of items present in suspicious object list.
       type: number
   - arguments:
     - description: 'Object type: "domain", "ip", "sha1", or "url".'
@@ -330,106 +330,106 @@ script:
     - description: The object value.
       name: value
       required: true
-    description: Deletes domains, file SHA-1 values, IP addresses, or URLs from the Suspicious Object List
+    description: Deletes domains, file SHA-1 values, IP addresses, or URLs from the Suspicious Object List.
     name: trendmicro-visionone-delete-objects-from-suspicious-list
     outputs:
     - contextPath: VisionOne.Suspicious_List.message
-      description: Status message of removing item from suspicious object list
+      description: Status message of removing item from suspicious object list.
       type: string
     - contextPath: VisionOne.Suspicious_List.status_code
-      description: Response code of removing item from suspicious object list
+      description: Response code of removing item from suspicious object list.
       type: number
     - contextPath: VisionOne.Suspicious_List.total_items
-      description: Number of items present in suspicious object list
+      description: Number of items present in suspicious object list.
       type: number
   - arguments:
-    - description: '"hostname", "macaddr" or "ip" of the endpoint to query'
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to query.'
       name: endpoint
       required: true
-    description: Retrieves information about a specific endpoint
+    description: Retrieves information about a specific endpoint.
     name: trendmicro-visionone-get-endpoint-info
     outputs:
     - contextPath: VisionOne.Endpoint_Info.message
-      description: Message information from the request
+      description: Message information from the request.
       type: string
     - contextPath: VisionOne.Endpoint_Info.errorCode
-      description: Error code
+      description: Error code.
       type: integer
     - contextPath: VisionOne.Endpoint_Info.status
-      description: Status of the request
+      description: Status of the request.
       type: string
     - contextPath: VisionOne.Endpoint_Info.logonAccount
-      description: Account currently logged on to the endpoint
+      description: Account currently logged on to the endpoint.
       type: string
     - contextPath: VisionOne.Endpoint_Info.hostname
-      description: Hostname
+      description: Hostname.
       type: string
     - contextPath: VisionOne.Endpoint_Info.macAddr
-      description: MAC address
+      description: MAC address.
       type: string
     - contextPath: VisionOne.Endpoint_Info.ip
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: VisionOne.Endpoint_Info.osName
-      description: Operating System name
+      description: Operating System name.
       type: string
     - contextPath: VisionOne.Endpoint_Info.osVersion
-      description: Operating System nersion
+      description: Operating System nersion.
       type: string
     - contextPath: VisionOne.Endpoint_Info.osDescription
-      description: Description of the Operating System
+      description: Description of the Operating System.
       type: string
     - contextPath: VisionOne.Endpoint_Info.productCode
-      description: Product code of the Trend Micro product running on the endpoint
+      description: Product code of the Trend Micro product running on the endpoint.
       type: string
   - arguments:
-    - description: '"hostname", "macaddr" or "ip" of the endpoint to terminate process on'
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to terminate process on.'
       name: endpoint
       required: true
-    - description: SHA1 hash of the process to terminate
+    - description: SHA1 hash of the process to terminate.
       name: file_sha1
       required: true
     - default: true
       defaultValue: sao
-      description: Target product
+      description: Target product.
       auto: PREDEFINED
       predefined:
       - sao
       name: product_id
-    - description: Description
+    - description: Description.
       name: description
-    - description: Optional file name list for log
+    - description: Optional file name list for log.
       name: filename
-    description: Terminates a process that is running on an endpoint
+    description: Terminates a process that is running on an endpoint.
     name: trendmicro-visionone-terminate-process
     outputs:
     - contextPath: VisionOne.Terminate_Process.actionId
-      description: Action Id of the current running task
+      description: Action Id of the current running task.
       type: string
     - contextPath: VisionOne.Terminate_Process.taskStatus
-      description: Status of current running task
+      description: Status of current running task.
       type: string
   - arguments:
-    - description: task_id from the trendmicro-visionone-submit-file-to-sandbox command output
+    - description: task_id from the trendmicro-visionone-submit-file-to-sandbox command output.
       name: task_id
       required: true
-    description: Retrieves the status of a sandbox analysis submission
+    description: Retrieves the status of a sandbox analysis submission.
     name: trendmicro-visionone-get-file-analysis-status
     outputs:
     - contextPath: VisionOne.File_Analysis_Status.message
-      description: Status of the sandbox analysis
+      description: Status of the sandbox analysis.
       type: string
     - contextPath: VisionOne.File_Analysis_Status.code
-      description: Response code
+      description: Response code.
       type: string
     - contextPath: VisionOne.File_Analysis_Status.task_id
-      description: task_id of the task queried
+      description: task_id of the task queried.
       type: string
     - contextPath: VisionOne.File_Analysis_Status.taskStatus
-      description: Sandbox analysis status
+      description: Sandbox analysis status.
       type: string
     - contextPath: VisionOne.File_Analysis_Status.digest
-      description: The hash values of file analyzed
+      description: The hash values of file analyzed.
       type: string
     - contextPath: VisionOne.File_Analysis_Status.analysis_completion_time
       description: Sample analysis completed time.
@@ -461,10 +461,10 @@ script:
       description: The Reliability level.
       type: string
   - arguments:
-    - description: report_id of the sandbox submission retrieved from the trendmicro-visionone-get-file-analysis-status command
+    - description: report_id of the sandbox submission retrieved from the trendmicro-visionone-get-file-analysis-status command.
       name: report_id
       required: true
-    - description: 'Type of report to retrieve: "vaReport", "investigationPackage", or "suspiciousObject"'
+    - description: 'Type of report to retrieve: "vaReport", "investigationPackage", or "suspiciousObject".'
       name: type
       auto: PREDEFINED
       predefined:
@@ -472,38 +472,38 @@ script:
       - investigationPackage
       - suspiciousObject
       required: true
-    description: Retrieves the analysis report, investigation package, or Suspicious Object List of a submitted file
+    description: Retrieves the analysis report, investigation package, or Suspicious Object List of a submitted file.
     name: trendmicro-visionone-get-file-analysis-report
     outputs:
     - contextPath: VisionOne.File_Analysis_Report.message
-      description: Status message of file report
+      description: Status message of file report.
       type: string
     - contextPath: VisionOne.File_Analysis_Report.code
-      description: status code of file report
+      description: status code of file report.
       type: string
     - contextPath: VisionOne.File_Analysis_Report.type
-      description: Suspicious object type
+      description: Suspicious object type.
       type: string
     - contextPath: VisionOne.File_Analysis_Report.value
-      description: Suspicious object value
+      description: Suspicious object value.
       type: string
     - contextPath: VisionOne.File_Analysis_Report.risk_level
-      description: Risk Level of suspicious object
+      description: Risk Level of suspicious object.
       type: string
     - contextPath: VisionOne.File_Analysis_Report.analysis_completion_time
-      description: Analyze time of suspicious object
+      description: Analyze time of suspicious object.
       type: string
     - contextPath: VisionOne.File_Analysis_Report.expired_time
-      description: Expire time of suspicious object
+      description: Expire time of suspicious object.
       type: string
     - contextPath: VisionOne.File_Analysis_Report.root_file_sha1
-      description: Sample sha1 generate this suspicious object
+      description: Sample sha1 generate this suspicious object.
       type: string
   - arguments:
-    - description: '"hostname", "macaddr" or "ip" of the endpoint to collect file from'
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to collect file from.'
       name: endpoint
       required: true
-    - description: 'Product: "sao", "sds" or "xes"'
+    - description: 'Product: "sao", "sds" or "xes".'
       name: product_id
       auto: PREDEFINED
       predefined:
@@ -514,44 +514,44 @@ script:
     - description: Path to the file to collect.
       name: file_path
       required: true
-    - description: Type of OS. "windows", "mac" or "linux"
+    - description: Type of OS. "windows", "mac" or "linux".
       name: os
       required: true
     - description: Description of the file.
       name: description
-    description: Compresses a file on an endpoint in a password-protected archive and then sends the archive to the XDR service platform
+    description: Compresses a file on an endpoint in a password-protected archive and then sends the archive to the XDR service platform.
     name: trendmicro-visionone-collect-forensic-file
     outputs:
     - contextPath: VisionOne.Collect_Forensic_File.actionId
       description: Action ID of the particular file.
       type: string
     - contextPath: VisionOne.Collect_Forensic_File.taskStatus
-      description: Task status of collected file
+      description: Task status of collected file.
       type: string
   - arguments:
     - description: actionId output from the collect command used to collect the file.
       name: actionId
       required: true
-    description: Retrieves a URL and other information required to download a collected file via the trendmicro-visionone-collect-forensic-file command
+    description: Retrieves a URL and other information required to download a collected file via the trendmicro-visionone-collect-forensic-file command.
     name: trendmicro-visionone-download-information-for-collected-forensic-file
     outputs:
     - contextPath: VisionOne.Download_Information_For_Collected_Forensic_File.url
-      description: URL of the collected file
+      description: URL of the collected file.
       type: string
     - contextPath: VisionOne.Download_Information_For_Collected_Forensic_File.expires
-      description: URL expiration date
+      description: URL expiration date.
       type: string
     - contextPath: VisionOne.Download_Information_For_Collected_Forensic_File.password
-      description: Archive password for the protected forensic file
+      description: Archive password for the protected forensic file.
       type: string
     - contextPath: VisionOne.Download_Information_For_Collected_Forensic_File.filename
-      description: Name of the collected file
+      description: Name of the collected file.
       type: string
   - arguments:
     - description: URL pointing to the location of the file to be submitted.
       name: file_url
       required: true
-    - description: Name of the file to be analyzed
+    - description: Name of the file to be analyzed.
       name: filename
       required: true
     - description: The Base64 encoded password for decrypting the submitted document. sample.
@@ -565,13 +565,13 @@ script:
       description: Status message of the file submitted to sandbox.
       type: string
     - contextPath: VisionOne.Submit_File_to_Sandbox.code
-      description: status code of the file submitted to sandbox
+      description: status code of the file submitted to sandbox.
       type: string
     - contextPath: VisionOne.Submit_File_to_Sandbox.task_id
-      description: Task ID of the submitted file
+      description: Task ID of the submitted file.
       type: string
     - contextPath: VisionOne.Submit_File_to_Sandbox.digest
-      description: The hash value of the file
+      description: The hash value of the file.
   - arguments:
     - name: entry_id
       description: Entry ID of the file to be submitted.
@@ -585,22 +585,22 @@ script:
       description: Status message of the file submitted to sandbox.
       type: string
     - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.code
-      description: status code of the file submitted to sandbox
+      description: status code of the file submitted to sandbox.
       type: string
     - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.task_id
-      description: Task ID of the submitted file
+      description: Task ID of the submitted file.
       type: string
     - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.digest
-      description: The hash value of the file
+      description: The hash value of the file.
       type: string
     - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.filename
-      description: The name of the file submitted
+      description: The name of the file submitted.
       type: string
     - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.file_path
-      description: The path to the file associated to incident
+      description: The path to the file associated to incident.
       type: string
     - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.entryId
-      description: The Entry ID for the file
+      description: The Entry ID for the file.
       type: string
     name: trendmicro-visionone-submit-file-entry-to-sandbox
     description: Submits the file corresponding to EntryID to the sandbox for analysis (Note. For more information about the supported file types, see the Trend Micro Vision One Online Help. Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
@@ -609,24 +609,24 @@ script:
       name: polling
       default: true
       defaultValue: 'true'
-    - description: task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output
+    - description: task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output.
       name: task_id
       required: true
     outputs:
     - contextPath: VisionOne.Sandbox_Submission_Polling.message
-      description: Status of the sandbox analysis
+      description: Status of the sandbox analysis.
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.code
-      description: Response code
+      description: Response code.
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.task_id
-      description: task_id of the task queried
+      description: task_id of the task queried.
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.taskStatus
-      description: Sandbox analysis status
+      description: Sandbox analysis status.
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.digest
-      description: The hash values of file analyzed
+      description: The hash values of file analyzed.
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.analysis_completion_time
       description: Sample analysis completed time.
@@ -658,7 +658,7 @@ script:
     - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.Reliability
       description: The Reliability level.
       type: string
-    description: Runs a polling command to retrieve the status of a sandbox analysis submission
+    description: Runs a polling command to retrieve the status of a sandbox analysis submission.
     name: trendmicro-visionone-run-sandbox-submission-polling
     polling: true
   - arguments:
@@ -681,7 +681,7 @@ script:
     - description: ID of the workbench you would like to attach the note to.
       name: workbench_id
       required: true
-    - description: Contents of the note to be attached
+    - description: Contents of the note to be attached.
       name: content
       required: true
     outputs:
@@ -692,18 +692,18 @@ script:
       description: The ID of the note that was added.
       type: string
     - contextPath: VisionOne.Add_Note.Response_Code
-      description: The response code from the command
+      description: The response code from the command.
       type: string
     - contextPath: VisionOne.Add_Note.Response_Msg
-      description: The response message from the command
+      description: The response message from the command.
       type: string
-    description: Attaches a note to a workbench alert
+    description: Attaches a note to a workbench alert.
     name: trendmicro-visionone-add-note
   - arguments:
     - description: ID of the workbench you would like to update the status for.
       name: workbench_id
       required: true
-    - description: Status to assign to the workbench alert
+    - description: Status to assign to the workbench alert.
       name: status
       required: true
       auto: PREDEFINED
@@ -717,14 +717,14 @@ script:
       description: The ID of the workbench that had the status updated.
       type: string
     - contextPath: VisionOne.Update_Status.Response_Code
-      description: The response code from the command
+      description: The response code from the command.
       type: string
     - contextPath: VisionOne.Update_Status.Response_Msg
-      description: The response message from the command
+      description: The response message from the command.
       type: string
-    description: Updates the status of a workbench alert
+    description: Updates the status of a workbench alert.
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.10.116949
   isFetchSamples: true
   isfetch: true
   script: ''
