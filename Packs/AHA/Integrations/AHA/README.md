@@ -21,7 +21,7 @@ itamar test command for testing rm110
 
 #### Base Command
 
-`aha-itamar-test-command user=usertest@email.com`
+`aha-itamar-test-command user=does-not-exist@email.com`
 
 ### aha-get-features
 ***
