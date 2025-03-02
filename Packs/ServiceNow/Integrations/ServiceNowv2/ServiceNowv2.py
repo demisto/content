@@ -783,7 +783,11 @@ class Client(BaseClient):
                             demisto.debug("No record found, returning empty result")
                             return no_record_found_res
                         else:
-                            raise Exception(f'ServiceNow Error: {message}, details: {details}')
+                            raise Exception(
+                                f'ServiceNow Error: {message}, details: {details}'
+                                f' Got status code {res.status_code} with url {url} with body {str(res.content)}'
+                                f' with response headers {str(res.headers)}'
+                            )
                     else:
                         raise Exception(f'ServiceNow Error: {error}')
 

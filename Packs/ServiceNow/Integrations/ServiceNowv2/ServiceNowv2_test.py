@@ -1240,7 +1240,8 @@ def test_not_authenticated_retry_negative(requests_mock, mocker: MockerFixture):
     ] * MAX_RETRY)
     with pytest.raises(Exception) as ex:
         client.send_request('')
-    assert str(ex.value) == "Got status code 401 with url http://server_url with body b'{\"error\": {\"message\": " \
+    assert str(ex.value) == "ServiceNow Error: User Not Authenticated, details: Required to provide Auth information " \
+                            "Got status code 401 with url http://server_url with body b'{\"error\": {\"message\": " \
                             "\"User Not Authenticated\", \"detail\": \"Required to provide Auth information\"}, " \
                             "\"status\": \"failure\"}' with response headers {}"
 
@@ -2348,7 +2349,7 @@ def test_update_remote_data_upload_file_exception(mocker):
                          [
                              ({'error': 'invalid client.'}, 'ServiceNow Error: invalid client.'),
                              ({'error': {'message': 'invalid client', 'detail': 'the client you have entered is invalid.'}},
-                              'ServiceNow Error: invalid client, details: the client you have entered is invalid.')
+                              'ServiceNow Error: invalid client, details: the client you have entered is invalid. Got status code 400 with url server_urltable with body  with response headers {}')
                          ])
 def test_send_request_with_str_error_response(mocker, mock_json, expected_results):
     """
@@ -2374,6 +2375,8 @@ def test_send_request_with_str_error_response(mocker, mock_json, expected_result
             self.text = 'some text'
             self.json_data = mock_json
             self.status_code = 400
+            self.content = ""
+            self.headers = {}
 
         def json(self):
             return self.json_data
