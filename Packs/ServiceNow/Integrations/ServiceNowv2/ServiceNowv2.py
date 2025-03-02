@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterable
 import mimetypes
 
 DEFAULT_FETCH_TIME = '10 minutes'
-MAX_RETRY = 6
+MAX_RETRY = 9
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
 
@@ -662,7 +662,7 @@ class Client(BaseClient):
         if custom_api:
             if not custom_api.startswith("/"):
                 return_error("Argument custom_api must start with a leading forward slash '/'")
-            server_url = demisto.params().get('url')
+            server_url = demisto.params()['url']
             url = f'{get_server_url(server_url)}{custom_api}{path}'
         elif sc_api:
             url = f'{self._sc_server_url}{path}'
@@ -732,8 +732,8 @@ class Client(BaseClient):
         """
         demisto.debug(f"Sending request to ServiceNow. Method: {method}, Path: {path}")
 
-        body = body if body is not None else {}
-        params = params if params is not None else {}
+        body = body or {}
+        params = params or {}
         url = self._construct_url(custom_api, sc_api, cr_api, path, get_attachments)
         headers = headers or {
             'Accept': 'application/json',
@@ -759,7 +759,8 @@ class Client(BaseClient):
             if "Instance Hibernating page" in res.text:
                 raise DemistoException(
                     "A connection was established but the instance is in hibernate mode.\n"
-                    "Please wake your instance and try again.")
+                    "Please wake your instance and try again."
+                )
             try:
                 json_res: dict = res.json()
             except Exception as err:
@@ -771,14 +772,13 @@ class Client(BaseClient):
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
             if error := json_res.get('error', {}):
-                if res.status_code == 401:
-                    if attempt < MAX_RETRY:
-                        demisto.debug(f"Got status code 401. Retrying... (Attempt {attempt} of {MAX_RETRY})")
-                        continue
+                if res.status_code == 401 and attempt < MAX_RETRY:
+                    demisto.debug(f"Got status code 401. Retrying... (Attempt {attempt} of {MAX_RETRY})")
+                    continue
                 else:
                     if isinstance(error, dict):
-                        message = json_res.get('error', {}).get('message')
-                        details = json_res.get('error', {}).get('detail')
+                        message = error.get('message')
+                        details = error.get('detail')
                         if message == 'No Record found':
                             demisto.debug("No record found, returning empty result")
                             return no_record_found_res
@@ -787,7 +787,9 @@ class Client(BaseClient):
                     else:
                         raise Exception(f'ServiceNow Error: {error}')
 
-            if res.status_code < 200 or res.status_code >= 300:
+            if 200 <= res.status_code < 300:
+                return json_res
+            else:
                 raise Exception(
                     f'Got status code {res.status_code} with url {url} with body {str(res.content)}'
                     f' with response headers {str(res.headers)}'
