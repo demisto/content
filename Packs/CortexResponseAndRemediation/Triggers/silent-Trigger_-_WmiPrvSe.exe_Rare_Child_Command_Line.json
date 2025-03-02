@@ -1,9 +1,9 @@
 {
   "trigger_id": "28d01c211cb6b82e18cac5b9d8f5f443",
-  "playbook_id": "WmiPrvSe.exe Rare Child Command Line",
+  "playbook_id": "silent-WmiPrvSe.exe Rare Child Command Line",
   "suggestion_reason": "Recommended for WmiPrvSe.exe Rare Child Command Line alerts",
   "description": "This trigger is responsible for handling WmiPrvSe.exe Rare Child Command Line alerts",
-  "trigger_name": "WmiPrvSe.exe Rare Child Command Line",
+  "trigger_name": "silent-WmiPrvSe.exe Rare Child Command Line",
   "alerts_filter": {
     "filter": {
       "AND": [

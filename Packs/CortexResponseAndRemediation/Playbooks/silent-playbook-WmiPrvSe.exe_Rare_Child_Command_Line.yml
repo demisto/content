@@ -1,8 +1,8 @@
-id: WmiPrvSe.exe Rare Child Command Line
+id: silent-WmiPrvSe.exe Rare Child Command Line
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: WmiPrvSe.exe Rare Child Command Line
+name: silent-WmiPrvSe.exe Rare Child Command Line
 description: |-
   This playbook addresses the following alerts:
 
