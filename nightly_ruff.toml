@@ -4,6 +4,7 @@ lint.select = [
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
+    "B007", # unused-loop-control-variable
     "B013", # redundant-tuple-in-exception-handler
     "B014", # duplicate-handler-exception
     "B016", # cannot-raise-literal
@@ -16,8 +17,11 @@ lint.select = [
     "B031", # reuse-of-groupby-generator
 
     "C406", # unnecessary-literal-dict
+    "C408", # unnecessary-collection-call
     "C410", # unnecessary-literal-within-list-call
     "C415", # unnecessary-subscript-reversal
+    "C416", # unnecessary-comprehension
+    "C417", # unnecessary-map
 
     "E101", # mixed-spaces-and-tabs
     "E401", # multiple-imports-on-one-line
@@ -118,6 +122,7 @@ lint.select = [
     "PLW0711", # binary-op-exception
     "PLW1508", # invalid-envvar-default
     "PT010", # pytest-raises-without-exception
+    "PT018", # pytest-composite-assertion
     "PT024", # pytest-unnecessary-asyncio-mark-on-fixture
     "PT025", # pytest-erroneous-use-fixtures-on-fixture
     "PT026", # pytest-use-fixtures-without-parameters
@@ -130,6 +135,10 @@ lint.select = [
     "PTH121", # os-path-samefile
     "PTH124", # py-path
 
+    "RET503", # implicit-return
+    "RET502", # implicit-return-value
+
+    "RUF001", # ambiguous-unicode-character-string
     "RUF006", # asyncio-dangling-task
     "RUF007", # pairwise-over-zipped
     "RUF008", # mutable-dataclass-default
@@ -157,23 +166,42 @@ lint.select = [
     "S612", # logging-config-insecure-listen
     "S701", # jinja2-autoescape-false
 
+    "SIM102", # collapsible-if
     "SIM202", # negate-not-equal-op
     "SIM208", # double-negation
+    "SIM210", # if-expr-with-true-false
+    "SIM211", # if-expr-with-false-true
+    "SIM212", # if-expr-with-twisted-arms
+    "SIM118", # in-dict-keys
     "SIM220", # expr-and-not-expr
     "SIM221", # expr-or-not-expr
     "SIM223", # expr-and-false
+    "SIM300", # yoda-conditions
 
     "T203", # p-print
 
     "UP001", # useless-metaclass-type
     "UP003", # type-of-primitive
+    "UP004", # useless-object-inheritance
     "UP005", # deprecated-unittest-alias
+    "UP006", # non-pep585-annotation
+    "UP007", # non-pep604-annotation
     "UP013", # convert-typed-dict-functional-to-class
+    "UP015", # redundant-open-modes
     "UP017", # datetime-timezone-utc
+    "UP018", # native-literals
+    "UP020", # open-alias
     "UP021", # replace-universal-newlines
+    "UP025", # unicode-kind-prefix
     "UP029", # unnecessary-builtin-import
+    "UP030", # format-literals
+    "UP031", # printf-string-formatting
+    "UP032", # f-string
     "UP033", # lru-cache-with-maxsize-none
+    "UP034", # extraneous-parentheses
+    "UP035", # deprecated-import
     "UP037", # quoted-annotation
+    "UP038", # non-pep604-isinstance
 
     "W291", # trailing-whitespace
 
