@@ -82,7 +82,9 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
-    "hybrid": true
+    "hybrid": true,
+    "supportedModules": []
 }
