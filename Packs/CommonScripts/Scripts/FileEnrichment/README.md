@@ -7,6 +7,7 @@ This script gathers file reputation data from multiple integrations and returns 
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Inputs
 
