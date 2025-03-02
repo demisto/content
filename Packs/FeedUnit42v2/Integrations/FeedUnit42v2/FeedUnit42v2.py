@@ -82,7 +82,7 @@ class Client(STIX2XSOARParser):
                         break
                     except requests.exceptions.HTTPError as e:
                         if e.response.status_code == 502:
-                            demisto.log("Received 502 error, retrying...")
+                            demisto.debug("Received 502 error, retrying...")
                             time.sleep(25)
                         else:
                             raise
