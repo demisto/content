@@ -563,6 +563,9 @@ def cybelangel_report_comments_get_command(client: Client, args: dict) -> Comman
     report_id = args.get("report_id", "")
 
     response = client.get_report_comment(report_id)
+    
+    if not response.get("comments"):  # type: ignore
+        return CommandResults(readable_output=f"There are no comments for report ID: {report_id}.")
 
     hr_response = [
         {**comment, "author_firstname": comment["author"]["firstname"], "author_lastname": comment["author"]["lastname"]}
