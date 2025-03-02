@@ -1,0 +1,48 @@
+{
+    "google_apigee_raw": {
+        "field_json": {
+            "type": "string",
+            "is_array": false
+        },
+        "field_str": {
+            "type": "string",
+            "is_array": false
+        },
+        "field_int": {
+            "type": "int",
+            "is_array": false
+        },
+        "field_float": {
+            "type": "float",
+            "is_array": false
+        },
+        "field_datetime": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "field_bool": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "field_str_list": {
+            "type": "string",
+            "is_array": false
+        },
+        "field_int_list": {
+            "type": "int",
+            "is_array": true
+        },
+        "field_float_list": {
+            "type": "float",
+            "is_array": true
+        },
+        "field_datetime_list": {
+            "type": "datetime",
+            "is_array": true
+        },
+        "field_bool_list": {
+            "type": "boolean",
+            "is_array": true
+        }
+    }
+}
