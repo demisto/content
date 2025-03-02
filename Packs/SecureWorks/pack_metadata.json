@@ -15,7 +15,9 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Dell Secureworks"
+    "defaultDataSource": "Dell Secureworks",
+    "supportedModules": []
 }
