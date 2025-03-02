@@ -427,7 +427,8 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
 
     # This is for updating null fields for update_remote_system function for example: assigned_to.
     for arg in args:
-        if not args[arg] and arg in delta_keys:
+        current_command = demisto.command()
+        if not args[arg] and (current_command != 'update-remote-system' or arg in delta_keys):
             fields_to_clear.append(arg)
         elif arg not in delta_keys: # For debugging
             demisto.debug(f"Did not mirrored out {arg} as it was not in the delta.")
