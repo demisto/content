@@ -128,7 +128,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CybelAngel.Report.reports.[0].id
+              simple: CybelAngel.Report.[0].id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -163,7 +163,7 @@ tasks:
       - "6"
     scriptarguments:
       report_id:
-        simple: ${CybelAngel.Report.reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -201,12 +201,14 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CybelAngel.Report.reports.[0]}
+              simple: ${CybelAngel.Report.[0]}
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CybelAngel.Report.reports.[1]}
+              simple: ${CybelAngel.Report.[1]}
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -243,7 +245,9 @@ tasks:
       pdf:
         simple: "True"
       report_id:
-        simple: ${CybelAngel.Report.reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
+      retry-count:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -315,13 +319,11 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#error#':
-      - "15"
       '#none#':
       - "10"
     scriptarguments:
       report_id:
-        simple: ${CybelAngel.Report.[0].reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -351,6 +353,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "15"
       "yes":
       - "11"
     separatecontext: false
@@ -397,7 +401,7 @@ tasks:
       csv:
         simple: "True"
       report_id:
-        simple: ${CybelAngel.Report.[0].reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -473,7 +477,7 @@ tasks:
       - "14"
     scriptarguments:
       report_id:
-        simple: ${CybelAngel.Report.[0].reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -549,7 +553,7 @@ tasks:
       - "16"
     scriptarguments:
       report_ids:
-        simple: ${CybelAngel.Report.reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
       status:
         simple: resolved
     separatecontext: false
@@ -586,7 +590,7 @@ tasks:
       - "17"
     scriptarguments:
       report_id:
-        simple: ${CybelAngel.Report.reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -662,7 +666,7 @@ tasks:
       - "20"
     scriptarguments:
       report_id:
-        simple: ${CybelAngel.Report.[0].reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -700,8 +704,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CybelAngel.Report.[2].Comments.comments.[0].id}
+              simple: ${CybelAngel.Report.[0].Comments.[0].id}
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -737,7 +743,7 @@ tasks:
       content:
         simple: Test Playbook
       report_id:
-        simple: ${CybelAngel.Report.reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -772,14 +778,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: CybelAngel.Report.[3].Comments.content
+              simple: CybelAngel.Report.[0].new
             iscontext: true
-          right:
-            value:
-              simple: Test Playbook
     continueonerrortype: ""
     view: |-
       {
@@ -815,9 +818,9 @@ tasks:
       - "25"
     scriptarguments:
       attachment_id:
-        simple: ${CybelAngel.Report.[0].reports.[0].attachments.[0].id}
+        simple: ${CybelAngel.Report.[0].attachments.[0].id}
       report_id:
-        simple: ${CybelAngel.Report.[0].reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -894,7 +897,7 @@ tasks:
       - "27"
     scriptarguments:
       report_id:
-        simple: ${CybelAngel.Report.[0].reports.[0].id}
+        simple: ${CybelAngel.Report.[0].id}
       requestor_email:
         simple: TestPlaybook@paloaltonetworks.com
       requestor_fullname:
@@ -936,7 +939,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CybelAngel.Report.[4].RemediationRequest.report_id
+              simple: CybelAngel.RemediationRequest.report_id
             iscontext: true
           right:
             value: {}
@@ -966,7 +969,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-

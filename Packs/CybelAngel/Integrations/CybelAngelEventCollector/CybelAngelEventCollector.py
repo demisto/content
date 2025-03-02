@@ -563,10 +563,12 @@ def cybelangel_report_comments_get_command(client: Client, args: dict) -> Comman
     report_id = args.get("report_id", "")
 
     response = client.get_report_comment(report_id)
-    
+
     if not response.get("comments"):  # type: ignore
         return CommandResults(readable_output=f"There are no comments for report ID: {report_id}.")
-
+    if isinstance(response, dict):
+        response["id"] = report_id
+        response["Comments"] = response.pop("comments")
     hr_response = [
         {**comment, "author_firstname": comment["author"]["firstname"], "author_lastname": comment["author"]["lastname"]}
         for comment in response.get("comments", [])  # type: ignore
@@ -587,7 +589,7 @@ def cybelangel_report_comments_get_command(client: Client, args: dict) -> Comman
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="CybelAngel.Report.Comments",
+        outputs_prefix="CybelAngel.Report",
         outputs_key_field="id",
         outputs=response,
         readable_output=human_readable,
@@ -689,7 +691,7 @@ def cybelangel_report_remediation_request_create_command(client: Client, args: d
     response = client.post_report_remediation_request(data)
 
     return CommandResults(
-        outputs_prefix="CybelAngel.Report.RemediationRequest",
+        outputs_prefix="CybelAngel.RemediationRequest",
         outputs_key_field="report_id",
         outputs=response,
         readable_output=f"Remediation request was created for {report_id}."

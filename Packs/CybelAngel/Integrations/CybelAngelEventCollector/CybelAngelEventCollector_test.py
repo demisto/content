@@ -759,8 +759,8 @@ def test_cybelangel_report_comments_get_command(mocker):
     report_id = "11223344"
     args = {'report_id': report_id}
     response = cybelangel_report_comments_get_command(client, args)
-    assert response.outputs.get("comments")[0].get("discussion_id").startswith(report_id)  # type: ignore
-    assert response.outputs.get("comments")[0].get("discussion_id").endswith("Tenant id")  # type: ignore
+    assert response.outputs.get("Comments")[0].get("discussion_id").startswith(report_id)  # type: ignore
+    assert response.outputs.get("Comments")[0].get("discussion_id").endswith("Tenant id")  # type: ignore
 
 
 def test_cybelangel_report_attachment_get_command(mocker):
