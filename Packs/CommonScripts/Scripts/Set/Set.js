@@ -1,7 +1,7 @@
 var ec = {};
 var value;
 try {
-    if (args.stringify === 'true') {
+    if (args.stringify === 'true' ) {
         if (typeof args.value === 'string') {
             value = args.value
         } else {
