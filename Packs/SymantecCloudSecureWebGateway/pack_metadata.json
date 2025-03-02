@@ -18,6 +18,8 @@
         "web security service"
     ],
     "marketplaces": [
-        "marketplacev2"
-    ]
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": []
 }
