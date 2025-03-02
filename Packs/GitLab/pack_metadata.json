@@ -16,6 +16,8 @@
     "keywords": [],
     "marketplaces": [
         "marketplacev2",
-        "xsoar"
-    ]
+        "xsoar",
+        "platform"
+    ],
+    "supportedModules": []
 }
