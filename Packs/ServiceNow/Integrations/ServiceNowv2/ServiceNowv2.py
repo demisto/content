@@ -2356,6 +2356,8 @@ def fetch_incidents(client: Client) -> list:
     )
 
     for ticket in tickets_response:
+        demisto.debug(f"Resolve info {ticket.get('close_code')}, {ticket.get('close_notes')},"
+                      f"{ticket.get('closed_at')}, {ticket.get('resolved_at')}, {ticket.get('state', '')}")
         ticket.update(get_mirroring())
 
         if client.timestamp_field not in ticket:
@@ -2605,6 +2607,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     ticket_type = client.ticket_type
     result = client.get(ticket_type, ticket_id, use_display_value=client.use_display_value)
+    
 
     is_new_ticket_id = is_new_incident(ticket_id)
     if not result or 'result' not in result:
@@ -2683,11 +2686,14 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     # Handle closing ticket/incident in XSOAR
     close_incident = params.get('close_incident')
+    demisto.debug(f"{close_incident=}")
     if close_incident != 'None':
         server_close_custom_state = params.get('server_close_custom_state', '')
         server_custom_close_code = params.get('server_custom_close_code', '')
         ticket_state = ticket.get('state', '')
         ticket_close_code = ticket.get('close_code', '')
+        demisto.debug(f"Mirror-in {server_close_custom_state=}, {server_custom_close_code=}, {ticket_state=}, "
+                      f"{ticket_close_code=}, {ticket.get('close_notes')}, {ticket.get('closed_at')}, {ticket.get('resolved_at')}")
         # The first condition is for closing the incident if the ticket's state is in the
         # `Mirrored XSOAR Ticket custom close state code` parameter, which is configured by the user in the
         # integration configuration.
