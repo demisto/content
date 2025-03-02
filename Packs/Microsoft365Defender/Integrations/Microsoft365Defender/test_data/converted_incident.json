@@ -5,6 +5,7 @@
   "Incident ID": 263,
   "Categories": "SuspiciousActivity",
   "Impacted entities": "",
+  "Impacted mailboxes": "",
   "Active alerts": "0 / 12",
   "Service sources": "MicrosoftDefenderForEndpoint",
   "Detection sources": "AutomatedInvestigation",
