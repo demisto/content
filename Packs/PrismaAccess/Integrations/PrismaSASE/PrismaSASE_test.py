@@ -826,3 +826,59 @@ def test_build_security_rule():
         "to": ["zone3", "zone4"],
     }
     assert res == expected
+
+
+def test_get_cie_user(mocker):
+    """
+    Given:
+        - A user to be retrieved.
+    When:
+        - Call to get_cie_user_command.
+    Then:
+        - Validate the command pass and the output is as expected.
+    """
+    from PrismaSASE import get_cie_user_command
+    client = create_mocked_client()
+    args = {'attributes_to_filter_by': 'Distinguished Name, Unique Identifier, Common-Name, Name, User Principal Name',
+            'attributes_to_return': 'Common-Name, Unique Identifier, Manager, User Principal Name, Name, Distinguished Name',
+            'domain': 'example.com', 'operator': 'Equal',
+            'value_for_filter': 'CN=Test,UID=TestID,DC=example,DC=com'}
+    mocked_resp = json.loads(load_mock_response('./cie_get_user.json'))
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, '_http_request', return_value=mocked_resp.get('api_response'))
+
+    result = get_cie_user_command(client, args)
+
+    assert result.outputs == mocked_resp.get('expected_result')
+
+
+def test_get_cie_user_prepare_args():
+    """
+    Given:
+        - Args for the get_cie_user_command
+    When:
+        - Call to prepare_args_for_get_cie_user.
+    Then:
+        - Validate the parsed argument as the API expected.
+    """
+    from PrismaSASE import cie_user_prepare_args
+
+    args = {'attributes_to_filter_by': 'Distinguished Name, Unique Identifier, Common-Name, Name, User Principal Name',
+            'attributes_to_return': 'Common-Name, Unique Identifier, Manager, User Principal Name, Name, Distinguished Name',
+            'domain': 'example.com', 'operator': 'Equal',
+            'value_for_filter': 'CN=Test,UID=TestID,DC=example,DC=com'}
+
+    expected_result = {'domain': 'example.com',
+                       'attrs': ['Unique Identifier', 'Common-Name',
+                                 'Distinguished Name', 'User Principal Name', 'Name',
+                                 'Manager'], 'name': {
+                           'attrNameOR': ['Distinguished Name', 'Unique Identifier',
+                                          'Common-Name', 'Name', 'User Principal Name'],
+                           'attrValue': 'CN=Test,UID=TestID,DC=example,DC=com', 'match': 'equal'}, 'useNormalizedAttrs': 'True'}
+    res = cie_user_prepare_args(args)
+    for key, value in res.items():
+        if isinstance(value, list):
+            value.sort()
+            expected_result.get(key).sort()
+        assert value == expected_result.get(key)
