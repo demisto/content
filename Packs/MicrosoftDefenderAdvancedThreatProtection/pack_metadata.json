@@ -15,7 +15,8 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "dependencies": {
         "CommonScripts": {
@@ -66,5 +67,6 @@
         "CommonPlaybooks",
         "CommonTypes"
     ],
-    "defaultDataSource": "Microsoft Defender Advanced Threat Protection"
+    "defaultDataSource": "Microsoft Defender Advanced Threat Protection",
+    "supportedModules": []
 }
