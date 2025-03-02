@@ -18,7 +18,9 @@
     "githubUser": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "supportedModules": []
 }
