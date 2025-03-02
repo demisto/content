@@ -14,12 +14,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "support@secinfra.fr"
     ],
     "githubUser": [
         "SecInfra"
-    ]
+    ],
+    "supportedModules": []
 }
