@@ -550,6 +550,7 @@ def fetch_events_command(
                     "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{e}]'
+                reset_offset_command(client)
                 raise DemistoException(err_msg)
             else:
                 raise DemistoException(e)
