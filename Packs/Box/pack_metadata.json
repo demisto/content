@@ -15,7 +15,9 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "BoxEventsCollector"
+    "defaultDataSource": "BoxEventsCollector",
+    "supportedModules": []
 }
