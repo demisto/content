@@ -109,9 +109,6 @@ outputs:
   - contextPath: File.Signature.Authentihash
     description: The Authentihash, a cryptographic hash, used for verifying the file's authenticity.
     type: String
-  - contextPath: File.Signature.Copyright
-    description: Copyright information related to the file.
-    type: String
   - contextPath: File.Signature.Description
     description: Describes the file signature data relevant to identification.
     type: String

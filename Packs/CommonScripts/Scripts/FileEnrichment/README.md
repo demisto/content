@@ -52,7 +52,6 @@ This script gathers file reputation data from multiple integrations and returns 
 | File.FeedRelatedIndicators.description | Describes the associated indicators providing context or relevance. | String |
 | File.MalwareFamily | Names the malware family associated with the file, if known. | String |
 | File.Signature.Authentihash | The Authentihash, a cryptographic hash, used for verifying the file's authenticity. | String |
-| File.Signature.Copyright | Copyright information related to the file. | String |
 | File.Signature.Description | Describes the file signature data relevant to identification. | String |
 | File.Signature.FileVersion | Indicates the version number of the file. | String |
 | File.Signature.InternalName | The internal name of the file as designated by the creators. | String |
