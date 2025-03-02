@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 import requests
 from enum import Enum
 
-
+# Itamar test
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
 
@@ -14,7 +14,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 URL_SUFFIX_PATTERN = f'/products/{REPLACE}/'
 EDIT_FIELDS = ['id', 'reference_num', 'name', 'description', 'workflow_status', 'created_at']
 DEFAULT_FIELDS = ['reference_num', 'name', 'id', 'created_at']
-FEATURE_FIELDS = ['ideas']
+FEATURE_FIELDS = ['ideas', 'test']
 
 ''' AHA ENUM'''
 
