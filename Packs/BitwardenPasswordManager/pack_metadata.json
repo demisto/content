@@ -14,12 +14,9 @@
     ],
     "useCases": [],
     "keywords": [
-        "Bitwarden",
-        "Bitwarden Password",
-        "Bitwarden Password Manager",
-        "Password Manager",
-        "Password",
-        "Vault"
+        "Vault",
+        "Password Management",
+        "Credentials"
     ],
     "marketplaces": [
         "marketplacev2"
