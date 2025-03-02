@@ -1378,53 +1378,6 @@ tasks:
     nexttasks:
       '#none#':
       - "37"
-    scriptarguments:
-      closeNotes:
-        complex:
-          root: .
-          transformers:
-          - operator: If-Elif
-            args:
-              conditions:
-                value:
-                  simple: |-
-                    [
-                        {
-                          "condition": "#{Analyst Action.Answers.0} in ['Disable Invited User','Disable Inviting User','Disable Both Users']",
-                          "return": "Action was taken."
-                        },
-                        {
-                          "condition": "#{MaliciousIP} != null or #{MaliciousEmail} != null or #{MaliciousDomain} != null or #{AzureSecurityAlerts} != null or #{UserRiskyCoreReason} != null or #{UserRiskyAzureDetections} != null",
-                          "return": "Evidence found, but no action was taken."
-                        },
-                        {
-                          "default": "No evidence found, and no action was taken."
-                        }
-                    ]
-              flags: {}
-      closeReason:
-        complex:
-          root: .
-          transformers:
-          - operator: If-Elif
-            args:
-              conditions:
-                value:
-                  simple: |-
-                    [
-                        {
-                          "condition": "#{Analyst Action.Answers.0} in ['Disable Invited User','Disable Inviting User','Disable Both Users']",
-                          "return": "Resolved - True Positive"
-                        },
-                        {
-                          "condition": "#{MaliciousIP} != null or #{MaliciousEmail} != null or #{MaliciousDomain} != null or #{AzureSecurityAlerts} != null or #{UserRiskyCoreReason} != null or #{UserRiskyAzureDetections} != null",
-                          "return": "Resolved - Other"
-                        },
-                        {
-                          "default": "Resolved - False Positive"
-                        }
-                    ]
-              flags: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
