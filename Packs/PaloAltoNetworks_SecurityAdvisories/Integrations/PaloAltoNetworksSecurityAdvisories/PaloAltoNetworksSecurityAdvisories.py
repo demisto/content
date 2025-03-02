@@ -135,7 +135,7 @@ def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
         cvss_score=cvss_info.get("baseScore", 0),
         cvss_severity=cvss_info.get("baseSeverity", ""),
         cvss_vector_string=cvss_info.get("vectorString", ""),
-        affected_version_list=cna.get("affected", [])
+        affected_version_list=cna.get("x_affectedList", [])
     )
 
 
