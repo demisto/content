@@ -127,7 +127,7 @@ def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
 
     return Advisory(
         data_type=advisory_dict.get("dataType", ""),
-        data_format=advisory_dict.get("dataVersion", ""),
+        data_format=metrics[0].get("format", ""),
         cve_id=advisory_dict.get("cveMetadata", {}).get("cveId", ""),
         cve_title=cna.get("title", ""),
         cve_date_public=cna.get("datePublic", ""),

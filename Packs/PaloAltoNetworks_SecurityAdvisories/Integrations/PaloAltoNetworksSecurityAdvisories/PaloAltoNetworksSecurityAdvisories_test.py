@@ -62,6 +62,14 @@ def test_fetch_indicators_command(patched_get_advisories):
     for _field, field_value in result[0].get("fields").items():
         assert field_value
 
+    # Tests to cover CVE extraction issue - XSUP-47513
+    assert result[0].get('fields', {}).get('cvss', 0.0) == 9.3
+    assert result[0].get('fields', {}).get('cvssscore', 0.0) == 9.3
+    assert result[0].get('fields', {}).get('cvssvector', 'NONE') == ('CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:L/SI:'
+                                                                     'N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red')
+    assert result[0].get('fields', {}).get('cvssversion', 'NONE') == '4.0'
+
+
 
 def test_advisory_to_indicator() -> None:
     """
