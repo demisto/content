@@ -5,23 +5,39 @@ lint.select = [
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
     "B007", # unused-loop-control-variable
+    "B009", # get-attr-with-constant
+    "B010", # set-attr-with-constant
+    "B011", # assert-false
     "B013", # redundant-tuple-in-exception-handler
     "B014", # duplicate-handler-exception
     "B016", # cannot-raise-literal
     "B021", # f-string-docstring
     "B022", # useless-contextlib-suppress
     "B025", # duplicate-try-block-exception
+    "B027", # empty-method-without-abstract-decorator
     "B028", # no-explicit-stacklevel
     "B029", # except-with-empty-tuple
     "B030", # except-with-non-exception-classes
     "B031", # reuse-of-groupby-generator
 
+    "C400", # unnecessary-generator-list
+    "C401", # unnecessary-generator-set
+    "C402", # unnecessary-generator-dict
+    "C403", # unnecessary-list-comprehension-set
+    "C404", # unnecessary-list-comprehension-dict
+    "C405", # unnecessary-literal-set
     "C406", # unnecessary-literal-dict
     "C408", # unnecessary-collection-call
+    "C409", # unnecessary-literal-within-tuple-call
     "C410", # unnecessary-literal-within-list-call
+    "C411", # unnecessary-list-call
+    "C413", # unnecessary-call-around-sorted
+    "C414", # unnecessary-double-cast-or-process
     "C415", # unnecessary-subscript-reversal
     "C416", # unnecessary-comprehension
     "C417", # unnecessary-map
+    "C418", # unnecessary-literal-within-dict-call
+    "C419", # unnecessary-comprehension-any-all
 
     "E101", # mixed-spaces-and-tabs
     "E401", # multiple-imports-on-one-line
@@ -31,6 +47,8 @@ lint.select = [
     "E703", # useless-semicolon
     "E711", # none-comparison
     "E712", # true-false-comparison
+    "E713", # not-in-test
+    "E714", # not-is-test
     "E721", # type-comparison
     "E722", # bare-except
     "E731", # lambda-assignment
@@ -39,6 +57,7 @@ lint.select = [
     "E743", # ambiguous-function-name
     "E902", # io-error
 
+    "F401", # unused-import
     "F402", # import-shadowed-by-loop-var
     "F404", # late-future-import
     "F406", # undefined-local-with-nested-import-star-usage
@@ -88,6 +107,9 @@ lint.select = [
     "N804", # invalid-first-argument-name-for-class-method
     "N807", # dunder-function-name
 
+    "NPY001", # numpy-deprecated-type-alias
+
+    "PD002", # pandas-use-of-inplace-argument
     "PD007", # pandas-use-of-dot-ix
     "PD008", # pandas-use-of-dot-at
     "PD009", # pandas-use-of-dot-iat
@@ -95,8 +117,12 @@ lint.select = [
     "PD012", # pandas-use-of-dot-read-table
     "PD013", # pandas-use-of-dot-stack
     "PD015", # pandas-use-of-pd-merge
+    "PIE790", # unnecessary-pass
+    "PIE794", # duplicate-class-field-definition
     "PIE807", # reimplemented-list-builtin
+    "PIE810", # multiple-starts-ends-with
     "PLC3002", # unnecessary-direct-lambda-call
+    "PLC0414", # useless-import-alias
     "PLE0100", # yield-in-init
     "PLE0101", # return-in-init
     "PLE0116", # continue-in-finally
@@ -118,11 +144,15 @@ lint.select = [
     "PLE2514", # invalid-character-nul
     "PLE2515", # invalid-character-zero-width-space
     "PLR0206", # property-with-parameters
+    "PLR0402", # manual-from-import
+    "PLR1711", # useless-return
     "PLR1722", # sys-exit-alias
     "PLW0711", # binary-op-exception
     "PLW1508", # invalid-envvar-default
+    "PT009", # pytest-unittest-assertion
     "PT010", # pytest-raises-without-exception
     "PT018", # pytest-composite-assertion
+    "PT022", # pytest-useless-yield-fixture
     "PT024", # pytest-unnecessary-asyncio-mark-on-fixture
     "PT025", # pytest-erroneous-use-fixtures-on-fixture
     "PT026", # pytest-use-fixtures-without-parameters
@@ -135,8 +165,11 @@ lint.select = [
     "PTH121", # os-path-samefile
     "PTH124", # py-path
 
+    "RET501", # unnecessary-return-none
     "RET503", # implicit-return
     "RET502", # implicit-return-value
+
+    "RSE102", # unnecessary-paren-on-raise-exception
 
     "RUF001", # ambiguous-unicode-character-string
     "RUF006", # asyncio-dangling-task
@@ -166,17 +199,25 @@ lint.select = [
     "S612", # logging-config-insecure-listen
     "S701", # jinja2-autoescape-false
 
+    "SIM201", # negate-equal-op
+    "SIM101", # duplicate-isinstance-call
     "SIM102", # collapsible-if
+    "SIM103", # needless-bool
+    "SIM109", # compare-with-tuple
     "SIM202", # negate-not-equal-op
     "SIM208", # double-negation
     "SIM210", # if-expr-with-true-false
     "SIM211", # if-expr-with-false-true
     "SIM212", # if-expr-with-twisted-arms
+    "SIM110", # reimplemented-builtin
+    "SIM117", # multiple-with-statements
     "SIM118", # in-dict-keys
     "SIM220", # expr-and-not-expr
     "SIM221", # expr-or-not-expr
+    "SIM222", # expr-or-true
     "SIM223", # expr-and-false
     "SIM300", # yoda-conditions
+    "SIM401", # if-else-block-instead-of-dict-get
 
     "T203", # p-print
 
@@ -186,13 +227,25 @@ lint.select = [
     "UP005", # deprecated-unittest-alias
     "UP006", # non-pep585-annotation
     "UP007", # non-pep604-annotation
+    "UP008", # super-call-with-parameters
+    "UP009", # utf8-encoding-declaration
+    "UP010", # unnecessary-future-import
+    "UP011", # lru-cache-without-parameters
+    "UP012", # unnecessary-encode-utf8
     "UP013", # convert-typed-dict-functional-to-class
+    "UP014", # convert-named-tuple-functional-to-class
     "UP015", # redundant-open-modes
     "UP017", # datetime-timezone-utc
     "UP018", # native-literals
+    "UP019", # typing-text-str-alias
     "UP020", # open-alias
     "UP021", # replace-universal-newlines
+    "UP022", # replace-stdout-stderr
+    "UP023", # deprecated-c-element-tree
+    "UP024", # os-error-alias
     "UP025", # unicode-kind-prefix
+    "UP026", # deprecated-mock-import
+    "UP028", # yield-in-for-loop
     "UP029", # unnecessary-builtin-import
     "UP030", # format-literals
     "UP031", # printf-string-formatting
@@ -200,6 +253,7 @@ lint.select = [
     "UP033", # lru-cache-with-maxsize-none
     "UP034", # extraneous-parentheses
     "UP035", # deprecated-import
+    "UP036", # outdated-version-block
     "UP037", # quoted-annotation
     "UP038", # non-pep604-isinstance
 
