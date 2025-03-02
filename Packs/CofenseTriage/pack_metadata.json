@@ -26,7 +26,9 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Cofense Triage v3"
+    "defaultDataSource": "Cofense Triage v3",
+    "supportedModules": []
 }
