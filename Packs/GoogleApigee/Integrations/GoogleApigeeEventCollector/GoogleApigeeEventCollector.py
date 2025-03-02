@@ -67,47 +67,50 @@ class Client(BaseClient):
         access_token = integration_context.get('access_token')
         token_initiate_time = integration_context.get('token_initiate_time')
         token_expiration_seconds = integration_context.get('token_expiration_seconds')
+        refresh_token = integration_context.get('refresh_token', '')
 
         if access_token and Client.is_token_valid(
             token_initiate_time=float(token_initiate_time),
             token_expiration_seconds=float(token_expiration_seconds)
         ):
             return access_token
-        # TODO: add refresh to token?
         # There's no token or it is expired
-        access_token, token_expiration_seconds = self.get_token_request()
+        access_token, token_expiration_seconds, refresh_token = self.get_token_request(refresh_token)
         integration_context = {
             'access_token': access_token,
             'token_expiration_seconds': token_expiration_seconds,
-            'token_initiate_time': time.time()
+            'token_initiate_time': time.time(),
+            'refresh_token': refresh_token,
         }
         demisto.info('successfully updated access token')
         set_integration_context(context=integration_context)
 
         return access_token
 
-    def get_token_request(self) -> tuple[str, str]:
+    def get_token_request(self, refresh_token: str = '') -> tuple[str, str, str]:
         """
         Sends request to retrieve token.
 
        Returns:
            tuple[str, str]: token and its expiration date
         """
+        grant_type = 'refresh_token' if refresh_token else 'password'
         data = {
             'username': self.username,
             'password': self.password,
-            'grant_type': 'password'
+            'grant_type': grant_type
         }
+        if refresh_token:
+            data['refresh_token'] = refresh_token
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
             'Accept': 'application/json;charset=utf-8',
-            'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0'
-
+            'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0',
         }
         zone = f'{self.zone}.' if self.zone else ''
         url = f'https://{zone}login.apigee.com/oauth/token'
         token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
-        return token_response.get('access_token'), token_response.get('expires_in')
+        return token_response.get('access_token'), token_response.get('expires_in'), token_response.get('refresh_token')
 
     @staticmethod
     def is_token_valid(token_initiate_time: float, token_expiration_seconds: float) -> bool:
@@ -137,10 +140,9 @@ class Client(BaseClient):
         return res
 
 
-def search_events(client, last_run: Dict[str, float]) -> tuple[List[Dict[str, Any]], Dict[str, float]]:
+def search_events(client, last_run: Dict[str, float], limit: int = 0) -> tuple[List[Dict[str, Any]], Dict[str, float]]:
     """
     Searches for logs using the '/<url_suffix>' API endpoint.
-    Note: it seems that this API use timestamp as ID (we still handle duplicate timestamp situation)
     Args:
         client (Client): client to interact with the service API
         last_run (Dict): A list containing the time of the last run and the amount of events of this time
@@ -150,8 +152,8 @@ def search_events(client, last_run: Dict[str, float]) -> tuple[List[Dict[str, An
             List: A list containing the events.
             List: A dict containing the time of the last run and the amount of events of this time
     """
-    last_fetch = last_run.get('last_fetch')
     to_time = int(time.time()) * MILLISECOENDS_CONVERT
+    last_fetch = last_run.get('last_fetch', to_time)
     events_count = 0
     logs_response = client.get_logs(last_fetch, to_time)
     logs = logs_response.get('auditRecord', [])
@@ -164,9 +166,11 @@ def search_events(client, last_run: Dict[str, float]) -> tuple[List[Dict[str, An
             logs.pop()
         else:
             break
-    limit = 0 if len(logs) <= client.max_fetch else -client.max_fetch
+    if not limit:
+        limit = client.max_fetch
+    limit = 0 if len(logs) <= limit else -limit
     events = logs[limit:]
-    time_stamp = events[1].get('timeStamp') if events else 0
+    time_stamp = events[0].get('timeStamp') if events else 0
     if len(events) == client.max_fetch:
         to_time = time_stamp
     # could be less than limit and still same
@@ -213,8 +217,11 @@ def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
             List: A list containing the events.
             CommandResults: A readable ontaining the events and raw response of the logs
     """
-    from_date = arg_to_number(args.get('from_date')) or int(time.time() * MILLISECOENDS_CONVERT)
-    events, _ = search_events(client, {'last_fetch': from_date})
+    limit = arg_to_number(args.get('limit')) or 0
+    from_date = arg_to_datetime(args.get('from_date')) or int(time.time() * MILLISECOENDS_CONVERT)
+    if isinstance(from_date, datetime):
+        from_date = int(from_date.timestamp()) * 1000
+    events, _ = search_events(client, {'last_fetch': from_date}, limit)
     hr = tableToMarkdown(name='Audit Logs', t=events)
     return events, CommandResults(readable_output=hr, raw_response=events)
 
@@ -229,7 +236,7 @@ def fetch_events(client: Client, last_run: Dict[str, float]) -> tuple[Dict[str, 
         List: list of events that will be created in XSIAM.
     """
     events, next_fetch = search_events(client, last_run)
-    demisto.debug(f'fetch: {next_fetch}')
+    demisto.debug(f'fetch_events: {next_fetch=}')
     return next_fetch, events
 
 
@@ -262,10 +269,10 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f'Command being called is {command}')
     try:
-        limit = arg_to_number(params.get('limit')) or DEFAULT_LIMIT
+        max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_LIMIT
 
         client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy,
-                        org_name=org_name, zone=zone, username=username, password=password, limit=limit)
+                        org_name=org_name, zone=zone, username=username, password=password, limit=max_fetch)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
