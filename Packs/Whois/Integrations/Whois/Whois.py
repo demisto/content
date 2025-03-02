@@ -9128,7 +9128,7 @@ def new_test_command():
 
 
 def main():  # pragma: no cover
-    demisto.debug(f"command is {demisto.command()}")
+    demisto.debug(f"command is {demisto.command() }")
     command = demisto.command()
     params = demisto.params()
     should_error = argToBoolean(demisto.params().get('with_error', False))
