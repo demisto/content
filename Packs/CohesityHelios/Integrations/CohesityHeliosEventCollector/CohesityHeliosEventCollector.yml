@@ -45,6 +45,7 @@ name: Cohesity Helios Event Collector
 supportlevelheader: xsoar
 marketplaces:
 - marketplacev2
+- platform
 fromversion: '8.2.0'
 script:
   commands:
