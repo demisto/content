@@ -1728,7 +1728,7 @@ outputSections:
 outputs: []
 tests:
 - Test Playbook - NGFW Scan
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
 fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
