@@ -50,6 +50,16 @@ def generate_mocked_event(event_time: int):
         (
             'get all events between the timespan',  # scenario
             1,  # last_fetch
+            7,  # limit
+            0,  # events_amount
+            [9, 9, 8, 7, 6, 5, 2],  # events_per_time,
+            2,  # new_events_amount
+            9,  # last_event_time
+            7,  # events_size
+        ),
+        (
+            'get all events between the timespan and limit > fetched_events',  # scenario
+            1,  # last_fetch
             10,  # limit
             0,  # events_amount
             [9, 9, 8, 7, 6, 5, 2],  # events_per_time,
