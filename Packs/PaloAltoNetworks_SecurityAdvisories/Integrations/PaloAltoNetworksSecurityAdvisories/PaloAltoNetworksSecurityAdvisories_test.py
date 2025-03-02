@@ -70,7 +70,6 @@ def test_fetch_indicators_command(patched_get_advisories):
     assert result[0].get('fields', {}).get('cvssversion', 'NONE') == '4.0'
 
 
-
 def test_advisory_to_indicator() -> None:
     """
     Test the function advisory_to_indicator.
