@@ -70,13 +70,26 @@ class Client(STIX2XSOARParser):
         data: list = []
         for api_root in self.server.api_roots:
             for collection in api_root.collections:
-                for bundle in as_pages(collection.get_objects, per_request=100, **kwargs):
-                    data.extend(bundle.get('objects') or [])
-                    if test and limit < len(data):
-                        return data
+                for _ in range(2):
+                    try:
+                        objects: list = []
+                        for bundle in as_pages(collection.get_objects, per_request=100, **kwargs):
+                            objects.extend(bundle.get('objects') or [])
+                            if test and limit < len(objects):
+                                return objects
+
+                        data.extend(objects)
+                        break
+                    except requests.exceptions.HTTPError as e:
+                        if e.response.status_code == 502:
+                            demisto.debug("Received 502 error, retrying...")
+                            time.sleep(25)
+                        else:
+                            raise
 
         if test:
             return data
+
         self.objects_data[kwargs.get('type')] = data
         return None
 
