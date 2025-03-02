@@ -1197,7 +1197,7 @@ def test_not_authenticated_retry_positive(requests_mock, mocker):
     ])
     assert client.send_request('') == {}
     debug = demisto.debug.call_args_list
-    
+
     assert debug[0][0][0] == 'Sending request to ServiceNow. Method: GET, Path: '
     assert debug[1][0][0] == "Constructed URL: http://server_url\nRequest headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}\nRequest params: {}"
     assert debug[2][0][0] == f'Request attempt 1 of {MAX_RETRY}'
@@ -1207,7 +1207,7 @@ def test_not_authenticated_retry_positive(requests_mock, mocker):
     assert debug[6][0][0] == f'Request attempt 2 of {MAX_RETRY}'
     assert debug[7][0][0] == 'Sending regular request'
     assert debug[8][0][0] == 'Response status code: 401'
-    assert debug[9][0][0] == f'Got status code 401. Retrying... (Attempt 2 of {MAX_RETRY})' 
+    assert debug[9][0][0] == f'Got status code 401. Retrying... (Attempt 2 of {MAX_RETRY})'
     assert debug[10][0][0] == f'Request attempt 3 of {MAX_RETRY}'
     assert debug[11][0][0] == 'Sending regular request'
     assert debug[12][0][0] == 'Response status code: 200'
@@ -2349,7 +2349,8 @@ def test_update_remote_data_upload_file_exception(mocker):
                          [
                              ({'error': 'invalid client.'}, 'ServiceNow Error: invalid client.'),
                              ({'error': {'message': 'invalid client', 'detail': 'the client you have entered is invalid.'}},
-                              'ServiceNow Error: invalid client, details: the client you have entered is invalid. Got status code 400 with url server_urltable with body  with response headers {}')
+                              'ServiceNow Error: invalid client, details: the client you have entered is invalid. '
+                              'Got status code 400 with url server_urltable with body  with response headers {}')
                          ])
 def test_send_request_with_str_error_response(mocker, mock_json, expected_results):
     """
