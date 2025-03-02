@@ -113,19 +113,29 @@ class SeverityEnum(enum.Enum):
 
 
 def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
-    """Given a dictionary advisory, return an `Advisory` object"""
+    """
+    Given a dictionary representing a CVE advisory, return an Advisory object
+    with relevant fields extracted and flattened.
+
+    :param advisory_dict: Dictionary containing CVE advisory information.
+    :return: Advisory object with fields populated from advisory_dict.
+    """
+    cna = advisory_dict.get("containers", {}).get("cna", {})
+
+    metrics = cna.get("metrics", [{}])
+    cvss_info = metrics[0].get("cvssV4_0", {})
 
     return Advisory(
         data_type=advisory_dict.get("dataType", ""),
-        data_format=advisory_dict.get("format", ""),
+        data_format=metrics[0].get("format", ""),
         cve_id=advisory_dict.get("cveMetadata", {}).get("cveId", ""),
-        cve_title=advisory_dict.get("containers", {}).get("cna", {}).get("title", ""),
-        cve_date_public=advisory_dict.get("containers", {}).get("cna", {}).get("datePublic", ""),
-        description=advisory_dict.get("containers", {}).get("cna", {}).get("descriptions", [])[0].get("value", ""),
-        cvss_score=advisory_dict.get("containers", {}).get("cna", {}).get("metrics", [{}])[0].get("baseScore"),
-        cvss_severity=advisory_dict.get("containers", {}).get("cna", {}).get("metrics", [{}])[0].get("baseSeverity", ""),
-        cvss_vector_string=advisory_dict.get("containers", {}).get("cna", {}).get("metrics", [{}])[0].get("vectorString", ""),
-        affected_version_list=advisory_dict.get("containers", {}).get("cna", {}).get("x_affectedList", [])
+        cve_title=cna.get("title", ""),
+        cve_date_public=cna.get("datePublic", ""),
+        description=cna.get("descriptions", [{}])[0].get("value", ""),
+        cvss_score=cvss_info.get("baseScore", 0),
+        cvss_severity=cvss_info.get("baseSeverity", ""),
+        cvss_vector_string=cvss_info.get("vectorString", ""),
+        affected_version_list=cna.get("x_affectedList", [])
     )
 
 
