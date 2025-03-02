@@ -58,11 +58,11 @@ This script gathers file reputation data from multiple integrations and returns 
 | File.Signature.OriginalName | The original name of the file before any changes or renames. | String |
 | File.Malicious.Vendor | Specifies the vendor that identified the file as malicious. | String |
 | File.Malicious.Description | Provides details on why the file was deemed malicious. | String |
-| File.Relationships.EntityA | The initiating entity in a relationship involving the file. | string |
-| File.Relationships.EntityB | The recipient or target entity in a relationship involving the file. | string |
-| File.Relationships.Relationship | Defines the type or nature of the relationship between entities. | string |
-| File.Relationships.EntityAType | The type or classification of the initiating entity. | string |
-| File.Relationships.EntityBType | The type or classification of the recipient entity. | string |
+| File.Relationships.EntityA | The initiating entity in a relationship involving the file. | String |
+| File.Relationships.EntityB | The recipient or target entity in a relationship involving the file. | String |
+| File.Relationships.Relationship | Defines the type or nature of the relationship between entities. | String |
+| File.Relationships.EntityAType | The type or classification of the initiating entity. | String |
+| File.Relationships.EntityBType | The type or classification of the recipient entity. | String |
 | File.Campaign | The identified campaign associated with the file, if applicable. | String |
 | File.TrafficLightProtocol | Specifies the TLP color designation suitable for handling the file. | String |
 | File.CommunityNotes.note | Community-contributed notes regarding observations or findings related to the file. | String |

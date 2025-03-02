@@ -129,19 +129,19 @@ outputs:
     type: String
   - contextPath: File.Relationships.EntityA
     description: The initiating entity in a relationship involving the file.
-    type: string
+    type: String
   - contextPath: File.Relationships.EntityB
     description: The recipient or target entity in a relationship involving the file.
-    type: string
+    type: String
   - contextPath: File.Relationships.Relationship
     description: Defines the type or nature of the relationship between entities.
-    type: string
+    type: String
   - contextPath: File.Relationships.EntityAType
     description: The type or classification of the initiating entity.
-    type: string
+    type: String
   - contextPath: File.Relationships.EntityBType
     description: The type or classification of the recipient entity.
-    type: string
+    type: String
   - contextPath: File.Campaign
     description: The identified campaign associated with the file, if applicable.
     type: String
