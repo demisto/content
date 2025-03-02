@@ -128,7 +128,7 @@ filter category = "FunctionAppLogs"
             to_string(log_level)),
         xdm.source.application.name = coalesce(properties_json -> appName, AppName),
         xdm.event.operation_sub_type = coalesce(properties_json -> eventName, EventName),
-        xdm.source.host.hostname = if(Host != "" and Host != null, Host, properties -> hostInstanceId != null, properties -> hostInstanceId, HostInstanceId),,
+        xdm.source.host.hostname = if(Host != "" and Host != null, Host, properties -> hostInstanceId != null, properties -> hostInstanceId, HostInstanceId),
         xdm.event.description = coalesce(properties -> message, Message),
         xdm.source.process.pid = to_integer(coalesce(properties -> processId, ProcessId));
 
