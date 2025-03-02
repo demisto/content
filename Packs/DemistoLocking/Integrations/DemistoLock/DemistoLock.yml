@@ -72,7 +72,6 @@ script:
 marketplaces:
 - xsoar
 - marketplacev2
-- platform
 fromversion: 5.0.0
 tests:
 - No tests
