@@ -275,7 +275,7 @@ inputs:
   value: {}
   required: false
   description: The username to disable.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UserVerification
   value:
     simple: "True"
@@ -283,7 +283,7 @@ inputs:
   description: |-
     Possible values:True/False. Default:True.
     Specify if User Verification is required to disable users.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Blocklist.Final
   description: Blocked accounts
@@ -294,3 +294,4 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
+- platform
