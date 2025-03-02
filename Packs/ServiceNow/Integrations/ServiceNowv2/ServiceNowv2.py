@@ -2608,7 +2608,6 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     ticket_type = client.ticket_type
     result = client.get(ticket_type, ticket_id, use_display_value=client.use_display_value)
-    
 
     is_new_ticket_id = is_new_incident(ticket_id)
     if not result or 'result' not in result:
