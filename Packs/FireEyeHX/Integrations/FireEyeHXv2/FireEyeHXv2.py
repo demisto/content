@@ -1,7 +1,7 @@
 import urllib.parse
 import urllib3
 from json import JSONDecodeError
-from typing import Tuple, Pattern
+from re import Pattern
 
 from CommonServerPython import *
 
@@ -1357,6 +1357,7 @@ def general_context_from_event(alert: Dict):
 
 def oneFromList(list_of_args, args):
     checker = 0
+    result = None
     for arg in list_of_args:
         if args.get(arg):
             checker += 1
@@ -1365,7 +1366,7 @@ def oneFromList(list_of_args, args):
     return result if checker == 1 else False
 
 
-def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
+def organize_search_body_host(client: Client, arg: tuple, body: Dict):
     if arg[0] == "hostsNames":
         hostsNames = arg[1].split(",")
         agentsIds = []
@@ -1398,7 +1399,7 @@ def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
     return body
 
 
-def organize_search_body_query(argForQuery: Tuple, args: Dict):
+def organize_search_body_query(argForQuery: tuple, args: Dict):
     query = []
     if argForQuery[0] == "fieldSearchName":
         if not args.get("fieldSearchOperator") or not args.get("fieldSearchValue"):
@@ -1669,7 +1670,7 @@ def query_fetch(reported_at=None, first_fetch: str = None):
 
 def parse_alert_to_incident(alert: Dict, pattern: Pattern) -> Dict:
     event_type = alert.get('event_type')
-    event_type = 'NewEvent' if not event_type else event_type
+    event_type = event_type if event_type else "NewEvent"
     event_values = alert.get('event_values', {})
     event_indicators_map = {
         'fileWriteEvent': 'fileWriteEvent/fileName',
@@ -1678,13 +1679,13 @@ def parse_alert_to_incident(alert: Dict, pattern: Pattern) -> Dict:
         'regKeyEvent': 'regKeyEvent/valueName'
     }
     event_indicator = event_indicators_map.get(event_type)
-    event_indicator = 'No Indicator' if not event_indicator else event_indicator
+    event_indicator = event_indicator if event_indicator else "No Indicator"
 
     indicator = ''
     if isinstance(event_values, dict):
         indicator = event_values.get(event_indicator, '')
 
-    incident_name = u'{event_type_parsed}: {indicator}'.format(
+    incident_name = '{event_type_parsed}: {indicator}'.format(
         event_type_parsed=pattern.sub("\g<1> \g<2>", event_type).title(),
         indicator=indicator
     )
@@ -1704,6 +1705,7 @@ def run_commands_without_polling(client: Client, args: Dict[str, Any]):
         return data_acquisition_command(client, args)[0]
     if args.get('cmd') == 'fireeye-hx-file-acquisition':
         return file_acquisition_command(client, args)[0]
+    return None
 
 
 ''' COMMAND FUNCTIONS '''
@@ -2130,6 +2132,9 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
             data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             host_set_id = data.get('_id')
             message = f'Static Host Set {host_set_name} with id {host_set_id} was created successfully.'
+        else:
+            message = ''
+            demisto.debug(f"No data -> {message=}")
     except Exception as e:
         response = {}
         if '409' in str(e):
@@ -2209,6 +2214,9 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
             data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             host_set_id = data.get('_id')
             message = f'Dynamic Host Set {host_set_name} with id {host_set_id} was created successfully.'
+        else:
+            message = ''
+            demisto.debug(f"No data -> {message=}")
     except Exception as e:
         response = {}
         if '409' in str(e):
@@ -2248,6 +2256,9 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
             date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
             data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             message = f'Dynamic Host Set {host_set_name} was updated successfully.'
+        else:
+            message = ''
+            demisto.debug(f"No data -> {message=}")
     except Exception as e:
         response = {}
         if '409' in str(e):
@@ -2272,7 +2283,7 @@ ACQUISITION
 """
 
 
-def data_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def data_acquisition_command(client: Client, args: Dict[str, Any]) -> tuple[CommandResults, bool, str]:
     if 'acquisition_id' not in args:
         acquisition_info = get_data_acquisition(client, args)
         acquisition_id = acquisition_info.get('_id')
@@ -2330,7 +2341,7 @@ def delete_data_acquisition_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def file_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def file_acquisition_command(client: Client, args: Dict[str, Any]) -> tuple[CommandResults, bool, str]:
     if "acquisition_id" not in args:
         if not args.get('hostName') and not args.get('agentId'):
             raise ValueError('Please provide either agentId or hostName')
@@ -2427,7 +2438,7 @@ def get_data_acquisition_command(client: Client, args: Dict[str, Any]) -> List[C
             outputs_key_field="_id",
             outputs=acquisition_info,
             readable_output=f"{message}\nacquisition ID: {acquisition_id}"
-        ), fileResult('{}_agent_{}_data.mans'.format(acquisition_id, agent_id), data)]
+        ), fileResult(f'{acquisition_id}_agent_{agent_id}_data.mans', data)]
 
     # else return message for states in [ NEW, ERROR, QUEUED, RUNNING, FAILED ]
     state = acquisition_info.get('state')
@@ -2568,7 +2579,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     )
 
     event_type = alert.get('event_type')
-    event_type = 'NewEvent' if not event_type else event_type
+    event_type = event_type if event_type else "NewEvent"
     event_type = re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title()
     event_table = tableToMarkdown(
         name=event_type,
@@ -2859,7 +2870,7 @@ SEARCHES
 """
 
 
-def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def start_search_command(client: Client, args: Dict[str, Any]) -> tuple[CommandResults, bool, str]:
     if 'searchId' not in args:
         demisto.debug("searchId is not in the args, starting a new search")
         list_of_args = ["agentsIds", "hostsNames", "hostSet", "hostSetName"]
@@ -2881,7 +2892,7 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
 
         # this function organize the query of the request body, and returns list of queries
         body["query"] = organize_search_body_query(arg_for_query, args)
-        body["exhaustive"] = False if args.get("exhaustive") == "false" else True
+        body["exhaustive"] = args.get("exhaustive") != "false"
 
         try:
             search_id = client.search_request(body)["data"]["_id"]
@@ -2896,7 +2907,7 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
     pending = searchInfo.get('stats', {}).get('search_state', {}).get('PENDING', 0)
     running_state = searchInfo.get('stats', {}).get('running_state', {})
     new_run = True
-    for state, count in running_state.items():
+    for _state, count in running_state.items():
         if count != 0:
             new_run = False
             break

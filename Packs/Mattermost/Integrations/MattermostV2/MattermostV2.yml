@@ -526,7 +526,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/netutils:1.0.0.115452
+  dockerimage: demisto/netutils:1.0.0.118055
 fromversion: 6.10.0
 tests:
 - MattermostV2 - testplaybook

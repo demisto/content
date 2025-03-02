@@ -100,6 +100,7 @@ SystemDiagnosticsResults = {
 }
 
 out = []
+bigTasksNewFormat = []
 for key, value in SystemDiagnosticsResults.copy().items():
     if key != "bigTasks":
         res = FormatTableAndSet(value, key)

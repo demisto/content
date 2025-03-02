@@ -7,7 +7,7 @@ from typing import Any
 from collections.abc import Callable
 from dateutil import parser
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 import json
 import ast
 from enum import Enum
@@ -23,7 +23,7 @@ GRANT_TYPE = 'password'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 CONTENT_TYPE = 'application/json'
 ERROR_IN_TRIGGERED_ALARMS = 'error_in_triggered_alarms'
-SUPPORTED_VONE_VERSION = '12.2.0'
+SUPPORTED_VONE_VERSION = '12.2.0.0'
 NOT_APPLICABLE = 'N/A'
 DEFAULT_PAGE_SIZE = 100
 DEFAULT_SIZE_LIMIT = 0  # Unlimited
@@ -297,11 +297,11 @@ def try_cast_to_int(value: str) -> None:
 
 
 def check_version(version_: str) -> None:
-    parsed_version = LooseVersion(version_)
-    parsed_supported_version = LooseVersion(SUPPORTED_VONE_VERSION)
+    parsed_version = Version(version_)
+    parsed_supported_version = Version(SUPPORTED_VONE_VERSION)
 
     if parsed_version < parsed_supported_version:
-        raise ValueError(f"Version {version_} is less than {SUPPORTED_VONE_VERSION}")
+        raise ValueError(f"Minimum supported version is {SUPPORTED_VONE_VERSION}. Current version is {version_}")
 
 
 def test_module(client: Client) -> str:

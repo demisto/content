@@ -158,7 +158,7 @@ def create_context(indicators, include_dbot_score=False, fields_to_return: list 
         # if there is more than one indicator results - take the one with the highest score
         if include_dbot_score:
             # see explanation in issue #42224
-            keys = (value,) if indicator_type != 'file' else filter(None, (md5, sha1, sha256))
+            keys = (value,) if indicator_type != 'file' else filter(None, (md5, sha1, sha256))  # type: ignore[var-annotated]
 
             old_val = indicators_dbot_score.get(value)
             if old_val and old_val['Score'] < dbot_score:

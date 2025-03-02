@@ -34,7 +34,7 @@ configuration:
   - System Cleared
   type: 16
   required: false
-- additionalinfo: Fetch With Events mode is currently available only for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance.  
+- additionalinfo: Fetch With Events mode is currently available only for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance.
   defaultvalue: Fetch Without Events
   display: Fetch Mode
   name: fetch_mode
@@ -701,7 +701,7 @@ script:
     - contextPath: FortiSIEM.WatchlistEntry.ageOut
       description: Expiration date of the entry.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetch: true
   runonce: false
   script: '-'

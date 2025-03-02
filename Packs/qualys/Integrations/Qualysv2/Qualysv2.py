@@ -2931,7 +2931,7 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
         Host list detections assets
     """
     demisto.debug('Pulling host list detections')
-    assets = []
+    assets: list = []
     host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime=since_datetime,
                                                                          next_page=next_page,
                                                                          limit=limit)

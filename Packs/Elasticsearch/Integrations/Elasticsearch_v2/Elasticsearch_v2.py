@@ -131,7 +131,8 @@ def timestamp_to_date(timestamp_string):
         timestamp_number = float(int(timestamp_string) / 1000)
 
     # find timestamp in form of seconds since epoch: 1572164838
-    elif TIME_METHOD == 'Timestamp-Seconds':
+    else:  # TIME_METHOD == 'Timestamp-Seconds':
+        demisto.debug(f"{TIME_METHOD=}. Should be Timestamp-Seconds.")
         timestamp_number = float(timestamp_string)
 
     # convert timestamp (a floating point number representing time since epoch) to datetime

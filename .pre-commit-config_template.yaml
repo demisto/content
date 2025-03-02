@@ -98,7 +98,7 @@ repos:
     args:
     - --ignore=demistomock.py,CommonServerPython.py,CommonServerUserPython.py,conftest.py,.venv
     - -E
-    - --disable=bad-option-value,unsubscriptable-object
+    - --disable=bad-option-value,unsubscriptable-object,E0601,E0606  # Remove E0601,E0606 after CIAC-11651 is done
     - -d duplicate-string-formatting-argument
     - "--msg-template='{path}:{line}:{column}: {msg_id} {obj}: {msg}'"
     - --generated-members=requests.packages.urllib3,requests.codes.ok

@@ -5186,7 +5186,7 @@ def start_site_scan_command(client: Client, site_id: str | None = None, site_nam
     scan_response = client.start_site_scan(
         site_id=site.id,
         scan_name=name if name else f"scan {datetime.now()}",
-        hosts=argToList(hosts) if hosts else None,
+        hosts=argToList(hosts) if hosts else None,  # type: ignore[arg-type]
     )
 
     if not scan_response or "id" not in scan_response:

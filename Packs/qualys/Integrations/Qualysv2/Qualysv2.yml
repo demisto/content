@@ -39,8 +39,8 @@ configuration:
   advanced: true
   type: 0
   hidden:
-    - xsoar
-    - xpanse
+  - xsoar
+  - xpanse
 - defaultvalue: 10000
   section: Collect
   display: Event Fetch Limit
@@ -50,8 +50,8 @@ configuration:
   required: false
   type: 0
   hidden:
-    - xsoar
-    - xpanse
+  - xsoar
+  - xpanse
 - defaultvalue: 1
   display: Events Fetch Interval
   name: eventFetchInterval
@@ -60,8 +60,8 @@ configuration:
   advanced: true
   required: false
   hidden:
-    - xsoar
-    - xpanse
+  - xsoar
+  - xpanse
 - additionalinfo: The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour.
   defaultvalue: 1440
   display: Assets and Vulnerabilities Fetch Interval
@@ -71,8 +71,8 @@ configuration:
   advanced: true
   required: false
   hidden:
-    - xsoar
-    - xpanse
+  - xsoar
+  - xpanse
 description: Qualys Vulnerability Management lets you create, run, manage reports and to fetch Activity Logs, Assets and Vulnerabilities, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys VMDR
 name: QualysV2
@@ -2774,7 +2774,7 @@ script:
     arguments:
     - name: ids
       required: true
-      description:  A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges.
+      description: A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges.
     - name: add_ips
       required: true
       description: A comma-separated list of IPs and/or ranges to add to the IPs list for this record.
@@ -2830,17 +2830,17 @@ script:
     description: Gets activity logs from Qualys.
     name: qualys-get-events
   - arguments:
-      - auto: PREDEFINED
-        defaultValue: 'false'
-        description: If true, the command will create assets, otherwise it will only display the amount of available assets.
-        name: should_push_assets
-        predefined:
-          - 'true'
-          - 'false'
-        required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create assets, otherwise it will only display the amount of available assets.
+      name: should_push_assets
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
     description: Gets assets from Qualys.
     name: qualys-get-assets
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetchevents: true
   isfetchassets: true
   runonce: false

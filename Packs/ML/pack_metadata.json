@@ -2,7 +2,7 @@
     "name": "Machine Learning",
     "description": "Help to manage machine learning models in Cortex XSOAR",
     "support": "xsoar",
-    "currentVersion": "1.4.18",
+    "currentVersion": "1.4.19",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

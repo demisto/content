@@ -388,9 +388,9 @@ def error_handler(res):
             extracted_error_message += f'\n{str(resources)}'
         else:
             for host_id, resource in resources.items():
-                errors = resource.get('errors', []) if isinstance(resource, dict) else ''
+                errors = resource.get('errors', []) if isinstance(resource, dict) else ''  # type: ignore[union-attr]
                 if errors:
-                    error_message = errors[0].get('message')
+                    error_message = errors[0].get('message')  # type: ignore[union-attr]
                     extracted_error_message += f'\nHost ID {host_id} - {error_message}'
     elif res_json.get('errors') and not extracted_error_message:
         errors = res_json.get('errors', [])
@@ -1674,7 +1674,7 @@ def get_incidents_entities(incidents_ids: list):
 
 def get_detection_entities(incidents_ids: list):
     """
-        Send a request to retrieve IDP/ODS and mobile detection entities.
+        Send a request to retrieve IDP/ODS/OFP and mobile detection entities.
 
         :type incidents_ids: ``list``
         :param incidents_ids: The list of ids to search their entities.
@@ -2451,25 +2451,24 @@ def get_remote_data_command(args: dict[str, Any]):
             mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_incident_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
+                detection_type = 'Incident'
+                set_xsoar_entries(updated_object, entries, remote_incident_id,
+                                  detection_type, reopen_statuses_list)
         # for legacy endpoint detections
         elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
-        # for endpoint (in the new version) ,idp and mobile detections
-        elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION:
-            mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id)
+                detection_type = 'Detection'
+                set_xsoar_entries(updated_object, entries, remote_incident_id,
+                                  detection_type, reopen_statuses_list)  # sets in place
+        # for endpoint (in the new version) ,idp/ods/ofp/mobile detections
+        elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION, IncidentType.ON_DEMAND):
+            mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_idp_or_mobile_detection_entries(
+                set_xsoar_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)  # sets in place
-        elif incident_type == IncidentType.ON_DEMAND:
-            mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
-            if updated_object:
-                demisto.debug(f'Update on-demand detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)
 
         else:
             # this is here as prints can disrupt mirroring
@@ -2540,23 +2539,28 @@ def get_remote_detection_data(remote_incident_id: str):
     return mirrored_data, updated_object
 
 
-def get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id):
+def get_remote_detection_data_for_multiple_types(remote_incident_id):
     """
-        Gets the relevant Endpoint or IDP or Mobile detection entity from the remote system (CrowdStrike Falcon).
+        Gets the relevant detection entity from the remote system (CrowdStrike Falcon).
+        This function handles the following detection types:
+        - IDP (Identity Protection)
+        - Mobile
+        - Detection (not legacy)
+        - OFP (Other File Protection)
+        - ODS (On-Demand Scans)
 
         :type remote_incident_id: ``str``
         :param remote_incident_id: The incident id to return its information.
 
-        :return: The Endpoint or IDP or Mobile detection entity.
+        :return: The detection entity.
         :rtype ``dict``
         :return: The object with the updated fields.
         :rtype ``dict``
-        :return: The detection type (endpoint or idp or mobile).
+        :return: The detection type.
         :rtype ``str``
     """
     mirrored_data_list = get_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
-    demisto.debug(f'in get_remote_epp_or_idp_or_mobile_detection_data {mirrored_data=}')
     detection_type = ''
     mirroring_fields = ['status']
     updated_object: dict[str, Any] = {}
@@ -2576,41 +2580,17 @@ def get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id):
         updated_object = {'incident_type': OFP_DETECTION}
         detection_type = 'ofp'
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    if 'ods' in mirrored_data['type']:
+        updated_object = {'incident_type': ON_DEMAND_SCANS_DETECTION}
+        detection_type = 'ods'
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     set_updated_object(updated_object, mirrored_data, mirroring_fields)
-    demisto.debug(f'in get_remote_epp_or_idp_or_mobile_detection_data {mirroring_fields=} {updated_object=}')
+    demisto.debug(f'in get_remote_detection_data_for_multiple_types {mirrored_data=} { mirroring_fields=} {updated_object=}')
     return mirrored_data, updated_object, detection_type
 
 
-def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str,
-                               reopen_statuses_list: list):
-    reopen_statuses_set = {str(status).strip() for status in reopen_statuses_list}
-    demisto.debug(f'In set_xsoar_incident_entries {reopen_statuses_set=} {remote_incident_id=}')
-    if demisto.params().get('close_incident'):
-        if updated_object.get('status') == 'Closed':
-            close_in_xsoar(entries, remote_incident_id, 'Incident')
-        elif updated_object.get('status', '') in reopen_statuses_set:
-            reopen_in_xsoar(entries, remote_incident_id, 'Incident')
-        else:
-            demisto.debug(f"In set_xsoar_incident_entries not closing and not reopening {remote_incident_id=} since "
-                          f"{updated_object.get('status')=} and {reopen_statuses_set=}.")
-
-
-def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str,
-                                reopen_statuses_list: list):
-    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list}
-    demisto.debug(f'In set_xsoar_detection_entries {reopen_statuses_set=} {remote_detection_id=}')
-    if demisto.params().get('close_incident'):
-        if updated_object.get('status') == 'closed':
-            close_in_xsoar(entries, remote_detection_id, 'Detection')
-        elif updated_object.get('status') in reopen_statuses_set:
-            reopen_in_xsoar(entries, remote_detection_id, 'Detection')
-        else:
-            demisto.debug(f"In set_xsoar_detection_entries not closing and not reopening {remote_detection_id=} "
-                          f"since {updated_object.get('status')=} and {reopen_statuses_set=}.")
-
-
-def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str,
-                                              incident_type_name: str, reopen_statuses_list: list):
+def set_xsoar_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str,
+                      incident_type_name: str, reopen_statuses_list: list):
     """
         Send the updated object to the relevant status handler
 
@@ -2618,8 +2598,8 @@ def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], en
         :param updated_object: The updated object.
         :type entries: ``list``
         :param entries: The list of entries to add the new entry into.
-        :type remote_idp_detection_id: ``str``
-        :param remote_idp_detection_id: the remote idp detection id
+        :type remote_detection_id: ``str``
+        :param remote_detection_id: the remote detection id
         :type reopen_statuses_list: ``list``
         :param reopen_statuses_list: the set of statuses that should reopen an incident in XSOAR.
 
@@ -2627,14 +2607,14 @@ def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], en
         :rtype ``dict``
     """
     reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list}
-    demisto.debug(f'In set_xsoar_idp_or_mobile_detection_entries {reopen_statuses_set=} {remote_idp_detection_id=}')
+    demisto.debug(f'In set_xsoar_entries {reopen_statuses_set=} {remote_detection_id=}')
     if demisto.params().get('close_incident'):
-        if updated_object.get('status') == 'closed':
-            close_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
-        elif updated_object.get('status') in reopen_statuses_set:
-            reopen_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
+        if updated_object.get('status', '').lower() == 'closed':
+            close_in_xsoar(entries, remote_detection_id, incident_type_name)
+        elif updated_object.get('status', '').lower() in reopen_statuses_set:
+            reopen_in_xsoar(entries, remote_detection_id, incident_type_name)
         else:
-            demisto.debug(f"In set_xsoar_idp_or_mobile_detection_entries not closing and not reopening {remote_idp_detection_id=}"
+            demisto.debug(f"In set_xsoar_entries not closing and not reopening {remote_detection_id=}"
                           f" since {updated_object.get('status')=} and {reopen_statuses_set=}.")
 
 
@@ -4664,6 +4644,7 @@ def run_script_command():
     raw = args.get('raw')
     host_ids = argToList(args.get('host_ids'))
     offline = argToBoolean(args.get('queue_offline', False))
+    full_command = ""
     try:
         timeout = int(args.get('timeout', 30))
     except ValueError as e:

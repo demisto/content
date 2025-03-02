@@ -992,7 +992,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], res
             }
         demisto.debug(f'The {resolve_findings=} ,{parsed_args.inc_status=}')
         if parsed_args.inc_status == IncidentStatus.DONE and resolve_findings:
-            kwargs['Workflow']['Status'] = 'RESOLVED'
+            kwargs['Workflow']['Status'] = 'RESOLVED'  # type: ignore[index]
             parsed_args.data['Workflow.Status'] = ['RESOLVED']
             demisto.debug(f"{parsed_args.data['Workflow.Status']=}")
 

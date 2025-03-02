@@ -1100,9 +1100,9 @@ def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
     if isinstance(mime_content, bytes):
-        return email.message_from_bytes(mime_content, policy=email_policy)
+        return email.message_from_bytes(mime_content, policy=email_policy)  # type: ignore[arg-type]
     else:
-        return email.message_from_string(mime_content, policy=email_policy)
+        return email.message_from_string(mime_content, policy=email_policy)  # type: ignore[arg-type]
 
 
 def parse_incident_from_item(item, is_fetch):  # pragma: no cover
