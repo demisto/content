@@ -8,7 +8,7 @@ try {
             value = JSON.stringify(args.value)
         }
     } else {
-        if (!isNaN(args.value) && !args.value.includes('.') && args.value >= Number.MAX_SAFE_INTEGER) {
+        if (!isNaN(args.value) && !args.value.includes('.') && Number(args.value) >= Number.MAX_SAFE_INTEGER) {
             value = BigInt(args.value);
         }
         else {
