@@ -690,8 +690,8 @@ def test_cybelangel_archive_report_by_id_get_command(mocker):
     )
     result = cybelangel_archive_report_by_id_get_command(client, args)
     assert isinstance(result, dict)
-    
-    
+
+
 def test_cybelangel_report_comment_create_command(mocker):
     """
     Given:
@@ -709,7 +709,7 @@ def test_cybelangel_report_comment_create_command(mocker):
     """
     from CybelAngelEventCollector import cybelangel_report_comment_create_command, Client
     client = mock_client()
-    #case No previous comments exist in this report
+    # case No previous comments exist in this report
     mocker.patch.object(
         Client,
         "get_report_comment",
@@ -720,20 +720,20 @@ def test_cybelangel_report_comment_create_command(mocker):
             "content": "Test Comments"}
     response = cybelangel_report_comment_create_command(client, args)
     assert f"No comments exist for {report_id} report." in response.readable_output
-    
+
     mocker.patch.object(
         Client,
         "get_report_comment",
         return_value=load_test_data("create_comment_result"),
     )
-    
+
     args = {"report_id": report_id, "content": "Test func", "parent_id": "55667788", "assigned": "true"}
     response = cybelangel_report_comment_create_command(client, args)
-    
+
     assert f"Comments created successfully for report ID: {report_id}." in response.readable_output
     assert load_test_data("create_comment_result") == response.outputs
-    
-    
+
+
 def test_cybelangel_report_comments_get_command(mocker):
     """
     Given:
@@ -750,7 +750,7 @@ def test_cybelangel_report_comments_get_command(mocker):
     """
     from CybelAngelEventCollector import cybelangel_report_comments_get_command, Client
     client = mock_client()
-    #case No previous comments exist in this report
+    # case No previous comments exist in this report
     mocker.patch.object(
         Client,
         "get_report_comment",
@@ -761,8 +761,8 @@ def test_cybelangel_report_comments_get_command(mocker):
     response = cybelangel_report_comments_get_command(client, args)
     assert response.outputs.get("comments")[0].get("discussion_id").startswith(report_id)  # type: ignore
     assert response.outputs.get("comments")[0].get("discussion_id").endswith("Tenant id")  # type: ignore
-    
-    
+
+
 def test_cybelangel_report_attachment_get_command(mocker):
     """
     Given:
@@ -780,7 +780,8 @@ def test_cybelangel_report_attachment_get_command(mocker):
     response = mocker.patch.object(
         Client,
         "get_report_attachment",
-        return_value=type("StringWrapper", (object,), {"text": "sep=,\nkeyword,email,password\nTest1,Test2,Test3\nTest1,Test2"})(),
+        return_value=type("StringWrapper", (object,), {
+                          "text": "sep=,\nkeyword,email,password\nTest1,Test2,Test3\nTest1,Test2"})()
     )
     report_id = "11223344"
     attachment_id = "55667788"
