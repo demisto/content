@@ -28,9 +28,11 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "mikewilusz-stairwell"
-    ]
+    ],
+    "supportedModules": []
 }
