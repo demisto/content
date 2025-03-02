@@ -2,7 +2,7 @@
     "name": "Kafka",
     "description": "Kafka is an open source distributed streaming platform.",
     "support": "xsoar",
-    "currentVersion": "2.1.0",
+    "currentVersion": "2.0.25",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,8 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
-    ]
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": []
 }
