@@ -322,7 +322,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 5
+                        "y": 7
                     },
                     {
                         "displayType": "CARD",
@@ -365,7 +365,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 11
+                        "y": 13
                     },
                     {
                         "displayType": "CARD",
@@ -494,7 +494,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "displayType": "CARD",
@@ -555,7 +555,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "displayType": "CARD",
@@ -670,7 +670,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 23
+                        "y": 25
                     },
                     {
                         "displayType": "CARD",
@@ -767,7 +767,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 14
+                        "y": 16
                     },
                     {
                         "displayType": "CARD",
@@ -850,7 +850,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 26
+                        "y": 28
                     },
                     {
                         "displayType": "CARD",
@@ -893,7 +893,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 23
+                        "y": 25
                     },
                     {
                         "displayType": "CARD",
@@ -981,7 +981,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 14
+                        "y": 16
                     },
                     {
                         "displayType": "CARD",
@@ -1051,7 +1051,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 11
+                        "y": 13
                     },
                     {
                         "displayType": "CARD",
@@ -1094,7 +1094,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 26
+                        "y": 28
                     },
                     {
                         "displayType": "CARD",
@@ -1128,7 +1128,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 23
+                        "y": 25
                     },
                     {
                         "displayType": "CARD",
@@ -1198,7 +1198,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 11
+                        "y": 13
                     },
                     {
                         "displayType": "CARD",
@@ -1333,7 +1333,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 7
                     },
                     {
                         "displayType": "CARD",
@@ -1385,7 +1385,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 20
+                        "y": 22
                     },
                     {
                         "displayType": "CARD",
@@ -1536,7 +1536,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 14
+                        "y": 16
                     },
                     {
                         "displayType": "CARD",
@@ -1588,7 +1588,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 20
+                        "y": 22
                     },
                     {
                         "displayType": "CARD",
@@ -1640,7 +1640,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 20
+                        "y": 22
                     },
                     {
                         "displayType": "CARD",
@@ -1692,7 +1692,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 17
+                        "y": 19
                     },
                     {
                         "displayType": "CARD",
@@ -1762,7 +1762,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "displayType": "CARD",
@@ -1832,7 +1832,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 5
+                        "y": 7
                     },
                     {
                         "displayType": "CARD",
@@ -1857,7 +1857,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 17
+                        "y": 19
                     },
                     {
                         "displayType": "CARD",
@@ -1972,7 +1972,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 17
+                        "y": 19
                     },
                     {
                         "description": "",
@@ -1990,6 +1990,22 @@
                         "w": 1,
                         "x": 2,
                         "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-33c58920-d8a2-11ef-a012-d16f29377809",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "reputation:Bad or reputation:Suspicious",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 3,
+                        "x": 0,
+                        "y": 5
                     }
                 ],
                 "type": "custom"
