@@ -195,70 +195,66 @@ In order to connect to Microsoft Teams use one of the following authentication m
 1. *Client Credentials Flow*
 2. *Authorization Code Flow*
 
-##### Client Credentials Flow
+#### Client Credentials Flow
 
 Note: [The chat commands](#chat-commands) are only supported when using the `Authorization Code flow`.
 
+Executing commands when using client credentials requires **Application Permissions**.
+Perform the following steps to add the needed permissions:
+
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
-4. For the following permissions, search for the permission, select the checkbox, and click **Add permissions**.
-  - User.Read.All
-  - Group.ReadWrite.All
-  - Calls.Initiate.All
-  - Calls.InitiateGroupCall.All
-  - OnlineMeetings.ReadWrite.All
-  - ChannelMember.ReadWrite.All
-  - Channel.Create
+4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
+   **Application permissions required to use all credential flow supported commands:**
 
-5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
+    - `User.Read.All`
+    - `GroupMember.Read.All`
+    - `Channel.ReadBasic.All`
+    - `ChannelMember.ReadWrite.All`
+    - `Channel.Create`
+    - `Channel.Delete.All`
+    - `OnlineMeetings.ReadWrite.All`
+    - `Calls.Initiate.All`
+
+    Alternatively, check each relevant command section below for the minimum permissions it requires.
+
+5. Verify that all the needed permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
-
 
 #### Authorization Code Flow
 
-Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the `Client Credentials flow` due to a limitation in Microsoft's permissions system. 
+Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the `Client Credentials flow` due to a limitation in Microsoft's permissions system.
+
+Executing commands when using an authorization code requires **Delegated Permissions**.
+Perform the following steps to add the needed permissions:
 
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
-3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
-4. For the following permissions, search for the permission, select the checkbox and click **Add permissions**.
-    ###### Required Application Permissions:
-      - User.Read.All
-      - Group.ReadWrite.All
-      - OnlineMeetings.ReadWrite.All 
-      - ChannelMember.ReadWrite.All
-      - Channel.Create
-      - Chat.Create
-      - TeamsAppInstallation.ReadWriteSelfForChat.All
-      - TeamsAppInstallation.ReadWriteForChat.All
-      - AppCatalog.Read.All
+3. Click **API permissions > Add a permission > Microsoft Graph > Delegated permissions**.
+4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
+   **Delegated permissions required to use all auth code flow supported commands:**
 
-    ###### Required Delegated Permissions:
-      - OnlineMeetings.ReadWrite
-      - ChannelMessage.Send
-      - Chat.ReadWrite
-      - ChatMessage.Send
-      - Group.ReadWrite.All
-      - Channel.Create
-      - ChannelSettings.ReadWrite.All
-      - ChatMember.ReadWrite
-      - Chat.Create
-      - TeamsAppInstallation.ReadWriteForChat
-      - TeamsAppInstallation.ReadWriteSelfForChat
-      - User.Read.All
-      - AppCatalog.Read.All
+    - `User.Read.All`
+    - `GroupMember.Read.All`
+    - `Channel.ReadBasic.All`
+    - `ChannelMember.ReadWrite.All`
+    - `Channel.Create`
+    - `Channel.Delete.All`
+    - `OnlineMeetings.ReadWrite.All`
+    - `Chat.ReadBasic`
+    - `Chat.Create`
+    - `ChatMessage.Send`
+    - `ChatMember.ReadWrite`
+    - `AppCatalog.Read.All`
+    - `TeamsAppInstallation.ReadWriteSelfForChat`
+
+    Alternatively, check each relevant command section below for the minimum permissions it requires.
+
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 7. Click **Expose an API** and add **Application ID URI**
-8. Click **Expose an API > Add a scope** > 
-   - Chat.ReadWrite
-   - ChatMessage.Send
-   - ChannelSettings.ReadWrite.All
-   - ChannelMember.Read.All
-   - ChannelMember.ReadWrite.All
-   - TeamsAppInstallation.ReadWriteForTeam
-9. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
+8. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
 
 ### Configure Microsoft Teams on Cortex XSOAR
 
@@ -374,7 +370,16 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -412,7 +417,18 @@ Mirrors the Cortex XSOAR/Cortex XSIAM investigation to the specified Microsoft T
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+`Channel.Create`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -447,7 +463,18 @@ Deletes the specified Microsoft Teams channel.
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+`Channel.Delete.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -504,10 +531,11 @@ Rings a user's Teams account. Note: This is a ring only! no media will play in c
 
 `microsoft-teams-ring-user`
 
-##### Required Permissions
+##### Required Permissions (Application)
+
+`User.Read.All`
 
 `Calls.Initiate.All`
-`Calls.InitiateGroupCall.All`
 
 ##### Input
 
@@ -540,7 +568,19 @@ For a comparison of Teams features for each channel type, see the Microsoft docu
 ##### Required Permissions
 
 `User.Read.All`
+
 `ChannelMember.ReadWrite.All`
+
+`Channel.ReadBasic.All`
+
+`GroupMember.Read.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -575,8 +615,18 @@ See also [Channel feature comparison](https://learn.microsoft.com/en-us/Microsof
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
+`User.Read.All`
+
+`GroupMember.Read.All`
+
 `Channel.Create`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -610,8 +660,10 @@ Creates a new meeting in Microsoft Teams.
 `microsoft-teams-create-meeting`
 
 ##### Required Permissions
-`OnlineMeetings.ReadWrite.All` - Application
-`OnlineMeetings.ReadWrite` - Delegated
+
+`OnlineMeetings.ReadWrite.All` - *Application (Client Credentials)*
+
+`OnlineMeetings.ReadWrite` - *Delegated (Authorization Code)*
 
 When using `Client Credentials Flow`:
 Besides setting up this permission, in order to create a meeting, the Azure admin needs to configure application access policy
@@ -663,7 +715,18 @@ Removes a member (user) from a private/shared channel.
 
 ##### Required Permissions
 
-`ChannelMember.ReadWrite.All` - Application
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+`ChannelMember.ReadWrite.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -695,8 +758,18 @@ Retrieves a list of members from a channel.
 
 ##### Required Permissions
 
-`ChannelMember.Read.All` - Application
-`ChannelMember.ReadWrite.All` - Application
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+`ChannelMember.Read.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -746,14 +819,15 @@ Notes:
 
 `microsoft-teams-chat-create`
 
-##### Required Permissions
-`Chat.Create` - Delegated, Application<br>
-`Chat.ReadWrite` - Delegated<br>
-`TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
-`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated<br>
-`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application<br>           
-`TeamsAppInstallation.ReadWriteForChat.All` - Application<br>
-`AppCatalog.Read.All` - Application<br>
+##### Required Permissions (Delegated)
+
+`User.Read.All`
+
+`Chat.Create`
+
+`AppCatalog.Read.All`
+
+`TeamsAppInstallation.ReadWriteSelfForChat`
 
 ##### Input
 
@@ -799,14 +873,17 @@ This command works with the consent user, not with the bot. Which means, the mes
 
 `microsoft-teams-message-send-to-chat`
 
-##### Required Permissions
-`ChatMessage.Send` - Delegated<br>
-`Chat.ReadWrite` - Delegated<br>
-`TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
-`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated<br>
-`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application<br>               
-`TeamsAppInstallation.ReadWriteForChat.All` - Application<br>
-`AppCatalog.Read.All` - Application
+##### Required Permissions (Delegated)
+
+`User.Read.All`
+
+`Chat.Create`
+
+`ChatMessage.Send`
+
+`AppCatalog.Read.All`
+
+`TeamsAppInstallation.ReadWriteSelfForChat`
 
 ##### Input
 
@@ -864,10 +941,11 @@ Adds a member (user) to a group chat.
 
 `microsoft-teams-chat-add-user`
 
-##### Required Permissions
+##### Required Permissions (Delegated)
 
-`ChatMember.ReadWrite` - Delegated
-`Chat.ReadWrite` - Delegated
+`Chat.ReadBasic`
+
+`ChatMember.ReadWrite`
 
 #### Input
 
@@ -897,9 +975,13 @@ Retrieves a list of members from a chat.
 
 `microsoft-teams-chat-member-list`
 
-##### Required Permissions
-`Chat.ReadWrite` - Delegated
-`ChatMember.ReadWrite` - Delegated
+##### Required Permissions (Delegated)
+
+`User.Read.All`
+
+`Chat.ReadBasic`
+
+`Chat.Create`
 
 #### Input
 
@@ -940,9 +1022,13 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 
 `microsoft-teams-chat-list`
 
-##### Required Permissions
+##### Required Permissions (Delegated)
 
-`Chat.ReadWrite` - Delegated
+`User.Read.All`
+
+`Chat.ReadBasic`
+
+`Chat.Create`
 
 #### Input
 
@@ -990,8 +1076,13 @@ Retrieves a list of messages in a chat.
 
 `microsoft-teams-chat-message-list`
 
-##### Required Permissions
-`Chat.ReadWrite` - Delegated
+##### Required Permissions (Delegated)
+
+`User.Read.All`
+
+`Chat.Read`
+
+`Chat.Create`
 
 #### Input
 
@@ -1051,9 +1142,11 @@ Updates the chat name. It can only be set for group chats.
 
 `microsoft-teams-chat-update`
 
-##### Required Permissions
+##### Required Permissions (Delegated)
 
-`Chat.ReadWrite` - Delegated
+`User.Read.All`
+
+`Chat.ReadWrite`
 
 #### Input
 
