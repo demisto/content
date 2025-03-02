@@ -17,6 +17,8 @@
     "authorImage": "content/Packs/Pcysys/Integrations/Pcysys/Pcysys_image.png",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
-    ]
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": []
 }
