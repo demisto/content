@@ -8475,7 +8475,7 @@ def prepare_readable_ip_data(response):
             'asn': response.get('asn'),
             'asn_cidr': response.get('asn_cidr'),
             'asn_date': response.get('asn_date'),
-            'country_code': network_data.get('country'),
+            'country_code': response.get('asn_country_code'),
             'network_name': network_data.get('name')
             }
 
@@ -8691,9 +8691,9 @@ def whois_command(reliability: str) -> List[CommandResults]:
 
             results.append(result)
 
-        except Exception as e:
-            demisto.error(
-                f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
+        except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
+
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics,
                 mapping=whois_exception_mapping,
@@ -8709,20 +8709,13 @@ def whois_command(reliability: str) -> List[CommandResults]:
                 },
             })
 
-            if should_error:
-                results.append(CommandResults(
-                    outputs=output,
-                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
-                    entry_type=EntryType.ERROR,
-                    raw_response=str(e)
-                ))
-            else:
-                results.append(CommandResults(
-                    outputs=output,
-                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
-                    entry_type=EntryType.WARNING,
-                    raw_response=str(e)
-                ))
+            results.append(CommandResults(
+                outputs=output,
+                readable_output=f"Exception of type {e.__class__.__name__}"
+                                f" was caught while performing whois lookup with the domain '{domain}': {e}",
+                entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
+                raw_response=str(e)
+            ))
 
     return append_metrics(execution_metrics=execution_metrics, results=results)
 
@@ -8768,9 +8761,9 @@ def domain_command(reliability: str) -> List[CommandResults]:
 
             results.append(result)
 
-        except Exception as e:
-            demisto.error(
-                f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
+        except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
+
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics,
                 mapping=whois_exception_mapping,
@@ -8786,20 +8779,13 @@ def domain_command(reliability: str) -> List[CommandResults]:
                 },
             })
 
-            if should_error:
-                results.append(CommandResults(
-                    outputs=output,
-                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
-                    entry_type=EntryType.ERROR,
-                    raw_response=str(e)
-                ))
-            else:
-                results.append(CommandResults(
-                    outputs=output,
-                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
-                    entry_type=EntryType.WARNING,
-                    raw_response=str(e)
-                ))
+            results.append(CommandResults(
+                outputs=output,
+                readable_output=f"Exception of type {e.__class__.__name__}"
+                                f" was caught while performing whois lookup with the domain '{domain}': {e}",
+                entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
+                raw_response=str(e)
+            ))
 
     return append_metrics(execution_metrics=execution_metrics, results=results)
 
@@ -9048,6 +9034,7 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
 def whois_and_domain_command(command: str, reliability: str) -> list[CommandResults]:
     args = demisto.args()
     domains = argToList(args.get("query") or args.get("domain"))
+    should_error = argToBoolean(demisto.params().get('with_error', False))
     execution_metrics = ExecutionMetrics()
     results: List[CommandResults] = []
     demisto.debug(f"{command=} is called with the query '{domains}'")
@@ -9097,10 +9084,9 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                     raw_response=dict(domain_data),
                 )
             )
-        except Exception as e:
-            demisto.error(
-                f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'"
-            )
+        except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
+
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics,
                 mapping=whois_exception_mapping,
@@ -9116,8 +9102,9 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
             results.append(
                 CommandResults(
                     outputs=output,
-                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
-                    entry_type=EntryType.ERROR,
+                    readable_output=f"Exception of type {e.__class__.__name__}"
+                                    f" was caught while performing whois lookup with the domain '{domain}': {e}",
+                    entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
                     raw_response=str(e),
                 )
             )

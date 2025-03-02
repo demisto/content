@@ -1,0 +1,105 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "AI Playground"
+    ],
+    "caseInsensitive": true,
+    "cliName": "anythingllmworkspacelist",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Action",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "action",
+            "orgType": "singleSelect",
+            "required": false,
+            "script": "",
+            "selectValues": [
+                "",
+                "Current"
+            ],
+            "type": "singleSelect",
+            "width": 100
+        },
+        {
+            "displayName": "Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "name",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 214
+        },
+        {
+            "displayName": "Temperature",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "temperature",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 139
+        },
+        {
+            "displayName": "Similarity",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "similarity",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 140
+        },
+        {
+            "displayName": "Top N Results",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "topnresults",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 176
+        }
+    ],
+    "content": true,
+    "defaultRows": [],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_anythingllmworkspacelist",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Anything LLM Workspace List",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "AnyLlmWorkspaceUpdate",
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
