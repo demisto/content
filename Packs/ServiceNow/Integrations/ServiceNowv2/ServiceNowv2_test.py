@@ -1199,7 +1199,10 @@ def test_not_authenticated_retry_positive(requests_mock, mocker):
     debug = demisto.debug.call_args_list
 
     assert debug[0][0][0] == 'Sending request to ServiceNow. Method: GET, Path: '
-    assert debug[1][0][0] == "Constructed URL: http://server_url\nRequest headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}\nRequest params: {}"
+    assert debug[1][0][0] == (
+        "Constructed URL: http://server_url\nRequest headers: "
+        "{'Accept': 'application/json', 'Content-Type': 'application/json'}\nRequest params: {}"
+    )
     assert debug[2][0][0] == f'Request attempt 1 of {MAX_RETRY}'
     assert debug[3][0][0] == 'Sending regular request'
     assert debug[4][0][0] == 'Response status code: 401'
