@@ -587,33 +587,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    fieldMapping:
-    - incidentfield: Source IPs
-      output:
-        simple: ${QRadar.SourceIP}
-    - incidentfield: Destination IPs
-      output:
-        simple: ${QRadar.DestinationIP}
-    - incidentfield: Usernames
-      output:
-        simple: ${QRadar.Username}
-    - incidentfield: High Level Categories
-      output:
-        simple: ${QRadar.HighLevelCategory}
-    - incidentfield: Low Level Categories Events
-      output:
-        simple: ${QRadar.LowLevelCategory}
-    - incidentfield: Event Names
-      output:
-        simple: ${QRadar.QidName}
-    - incidentfield: Start Time
-      output:
-        simple: ${QRadar.StartTime}
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
+    scriptarguments:
+      destinationips:
+        simple: ${QRadar.DestinationIP}
+      eventnames:
+        simple: ${QRadar.QidName}
+      highlevelcategories:
+        simple: ${QRadar.HighLevelCategory}
+      lowlevelcategoriesevents:
+        simple: ${QRadar.LowLevelCategory}
+      sourceips:
+        simple: ${QRadar.SourceIP}
+      starttime:
+        simple: ${QRadar.StartTime}
+      usernames:
+        simple: ${QRadar.Username}
   "43":
     id: "43"
     taskid: 5b1f21a3-d877-4c47-8bfa-2ae86d5f40e4
@@ -684,9 +677,7 @@ tasks:
           transformers:
           - operator: FormattedDateToEpoch
             args:
-              formatter:
-                value:
-                  simple: '%Y-%m-%dT%H:%M:%S.%f+00:00'
+              formatter: {}
           - operator: multiply
             args:
               by:
@@ -733,9 +724,7 @@ tasks:
           transformers:
           - operator: FormattedDateToEpoch
             args:
-              formatter:
-                value:
-                  simple: '%Y-%m-%dT%H:%M:%S.%f+00:00'
+              formatter: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
