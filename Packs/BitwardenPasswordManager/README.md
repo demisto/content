@@ -1,14 +1,7 @@
 # Bitwarden Password Manager
 
 Bitwarden Password Manager integrates with Palo Alto Network’s Cortex XSIAM to fetch records of events that occur within your Teams or Enterprise organization.
-
-This is a content pack for **Bitwarden Password Manager** includes both an integration and modeling rules.
-
-
-## Overview
-
-Bitwarden Password Manager helps organizations to store their passwords and other sensitive data securely.
-The Password Manager is encrypted and has the abilities to identify compromised passwords.
+Password Manager helps organizations store their passwords and other sensitive data securely in an encrypted vault and has the abilities to identify compromised passwords.
 
 <~XSIAM>
 
