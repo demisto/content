@@ -73,5 +73,6 @@ marketplaces:
 - xsoar
 - marketplacev2
 - xpanse
+- platform
 tests:
 - No tests

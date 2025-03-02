@@ -42,6 +42,7 @@ dockerimage: demisto/xsoar-tools:1.0.0.1902141
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - ContentPackInstaller_Test
 fromversion: 6.0.0
