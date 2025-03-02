@@ -17,9 +17,11 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "itemPrefix": [
         "Symantec ESC"
-    ]
+    ],
+    "supportedModules": []
 }
