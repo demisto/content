@@ -612,8 +612,12 @@ def cybelangel_report_comment_create_command(client: Client, args: dict) -> Comm
     if comments_response:
         discussion_id = comments_response[0].get("discussion_id")
     else:
-        return_error(f"""No comments exist for {report_id} report.
-                     This command will be supported only if at least one comment already exists in the report""")
+        return CommandResults(
+            readable_output=f"""No comments exist for {report_id} report.
+            This command will be supported only if at least one comment already exists in the report"""
+        )
+    # return_error(f"""No comments exist for {report_id} report.
+    #                  This command will be supported only if at least one comment already exists in the report""")
     data = {
         "content": content,
         "discussion_id": discussion_id
@@ -633,7 +637,7 @@ def cybelangel_report_comment_create_command(client: Client, args: dict) -> Comm
     )
 
 
-def cybelangel_report_attachment_get_command(client: Client, args: dict) -> dict | CommandResults:  # pragma: no cover
+def cybelangel_report_attachment_get_command(client: Client, args: dict) -> dict | CommandResults:
     """
     Retrieves a specific attachment from a report.
 
