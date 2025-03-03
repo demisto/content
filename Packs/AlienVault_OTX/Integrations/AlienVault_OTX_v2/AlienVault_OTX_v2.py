@@ -322,6 +322,8 @@ def reputation_with_handling_error(client, section, argument, sub_section=None):
             raise e
         demisto.error(f"An error was raised {e=}")
         return_warning(f"{e}")
+        if section == 'url':
+            return 404
         return {}
 
 
