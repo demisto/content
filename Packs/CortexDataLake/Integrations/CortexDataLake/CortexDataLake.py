@@ -671,6 +671,73 @@ def files_context_transformer(row_content: dict) -> dict:
     }
 
 
+def gp_context_transformer(row_content):
+    """
+        This function retrieves data from a row of raw data into context path locations.
+        Documentation: https://docs.paloaltonetworks.com/strata-logging-service/log-reference/network-logs/network-globalprotect-log
+
+        Args:
+            row_content: a dict representing raw data of a row
+
+        Returns:
+            a dict with context paths and their corresponding value
+        """
+    return {
+        'AttemptedGateways': row_content.get('attempted_gateways'),
+        'AuthMethod': row_content.get('auth_method'),
+        'ConnectMethod': row_content.get('connect_method'),
+        'ConnectionErrorID': row_content.get('connection_error', {}).get('id'),
+        'ConnectionErrorValue': row_content.get('connection_error', {}).get('value'),
+        'CountOfRepeats': row_content.get('count_of_repeats'),
+        'CustomerID': row_content.get('customer_id'),
+        'EndpointDeviceName': row_content.get('endpoint_device_name'),
+        'EndpointGPVersion': row_content.get('endpoint_gp_version'),
+        'EndpointOSType': row_content.get('endpoint_os_type'),
+        'EndpointOSVersion': row_content.get('endpoint_os_version'),
+        'EndpointSN': row_content.get('endpoint_serial_number'),
+        'EventID': row_content.get('event_id', {}).get('value'),
+        'Gateway': row_content.get('gateway'),
+        'GatewayPriority': row_content.get('gateway_priority', {}).get('value'),
+        'GatewaySelectionType': row_content.get('gateway_selection_type'),
+        'GPGatewayLocation': row_content.get('gpg_location'),
+        'HostID': row_content.get('host_id'),
+        'IsDuplicateLog': row_content.get('is_dup_log'),
+        'IsExported': row_content.get('is_exported'),
+        'IsForwarded': row_content.get('is_forwarded'),
+        'IsPrismaBranch': row_content.get('is_prisma_branch'),
+        'IsPrismaMobile': row_content.get('is_prisma_mobile'),
+        'LogSource': row_content.get('log_source'),
+        'LogSourceID': row_content.get('log_source_id'),
+        'LogSourceName': row_content.get('log_source_name'),
+        'LogTime': human_readable_time_from_epoch_time(row_content.get('log_time', 0)),
+        'LogType': row_content.get('log_type', {}).get('value'),
+        'LoginDuration': row_content.get('login_duration'),
+        'Opaque': row_content.get('opaque'),
+        'PanoramaSN': row_content.get('panorama_serial'),
+        'PlatformType': row_content.get('platform_type'),
+        'Portal': row_content.get('portal'),
+        'PrivateIPv4': row_content.get('private_ip', {}).get('value'),
+        'PrivateIPv6': row_content.get('private_ipv6', {}).get('value'),
+        'ProjectName': row_content.get('project_name'),
+        'PublicIPv4': row_content.get('public_ip', {}).get('value'),
+        'PublicIPv6': row_content.get('public_ipv6', {}).get('value'),
+        'QuarantineReason': row_content.get('quarantine_reason'),
+        'SequenceNo': row_content.get('sequence_no'),
+        'SourceRegion': row_content.get('source_region'),
+        'SourceUser': row_content.get('source_user'),
+        'SourceUserDomain': row_content.get('source_user_info', {}).get('domain'),
+        'SourceUserName': row_content.get('source_user_info', {}).get('name'),
+        'SourceUserUUID': row_content.get('source_user_info', {}).get('uuid'),
+        'SSLResponseTime': row_content.get('ssl_response_time'),
+        'Stage': row_content.get('stage'),
+        'EventStatus': row_content.get('status', {}).get('value'),
+        'Subtype': row_content.get('sub_type', {}).get('value'),
+        'TimeGenerated': human_readable_time_from_epoch_time(row_content.get('time_generated', 0)),
+        'TunnelType': row_content.get('tunnel'),
+        'VendorName': row_content.get('vendor_name'),
+    }
+
+
 def records_to_human_readable_output(fields: str, table_name: str, results: list) -> str:
     """
     This function gets all relevant data for the human readable output of a specific table.
@@ -796,7 +863,16 @@ def build_where_clause(args: dict) -> str:
         'sub_type': 'sub_type.value',
         'time_generated': 'time_generated',
         'url_category': 'url_category',
-        'url_domain': 'url_domain'
+        'url_domain': 'url_domain',
+        'event_name': 'event_id.value',
+        'gateway': 'gateway',
+        'private_ipv4': 'private_ip.value',
+        'private_ipv6': 'private_ipv6.value',
+        'public_ipv4': 'public_ip.value',
+        'public_ipv6': 'public_ipv6.value',
+        'event_status': 'status.value',
+        'portal': 'portal'
+
     }
     if args.get('ip') and (args.get('source_ip') or args.get('dest_ip')):
         raise DemistoException('Error: "ip" argument cannot appear with either "source_ip" nor "dest_ip"')
@@ -1134,6 +1210,18 @@ def query_file_data_command(args: dict, client: Client) -> tuple[str, dict, list
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_gp_logs_command(args: dict, client: Client):
+    """
+    The function of the command that queries firewall.globalprotect table
+
+        Returns: a Demisto's entry with all the parsed data
+    """
+    table_name: str = 'globalprotect'
+    context_transformer_function = gp_context_transformer
+    table_context_path: str = 'CDL.Logging.GlobalProtect'
+    return query_table_logs(args, client, table_name, context_transformer_function, table_context_path)
+
+
 def query_table_logs(args: dict,
                      client: Client,
                      table_name: str,
@@ -1222,7 +1310,8 @@ def main():
     enc_key = params.get('credentials_auth_key', {}).get('password') or params.get('auth_key')
     if not enc_key or not refresh_token or not registration_id_and_url:
         raise DemistoException('Key, Token and ID must be provided.')
-    is_fr = ('federal.paloaltonetworks.com' in demisto.getLicenseCustomField('Http_Connector.url'))
+    # is_fr = ('federal.paloaltonetworks.com' in demisto.getLicenseCustomField('Http_Connector.url'))
+    is_fr = False
     demisto.debug(f"working on tenant with {is_fr=}")
     registration_id_and_url = registration_id_and_url.split('@')
     if len(registration_id_and_url) != 2:
@@ -1269,6 +1358,8 @@ def main():
             return_outputs(*query_url_logs_command(args, client))
         elif command == 'cdl-query-file-data':
             return_outputs(*query_file_data_command(args, client))
+        elif command == 'cdl-query-gp-logs':
+            return_outputs(*query_gp_logs_command(args, client))
         elif command == 'fetch-incidents':
             first_fetch_timestamp = params.get('first_fetch_timestamp', '24 hours').strip()
             fetch_severity = params.get('firewall_severity')
