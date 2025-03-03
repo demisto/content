@@ -594,8 +594,8 @@ def test_cybelangel_report_get_command(mocker):
     assert result.outputs_prefix == "CybelAngel.Report"
     assert result.outputs is not None
     assert "Report ID" in result.readable_output
-    
-    
+
+
 def test_cybelangel_report_get_command_to_pdf(mocker):
     """
     Given:
@@ -628,6 +628,7 @@ def test_cybelangel_report_get_command_to_pdf(mocker):
     )
     result = cybelangel_report_get_command(client, args)
     assert isinstance(result, dict)
+
 
 def test_cybelangel_mirror_report_get_command(mocker):
     """
@@ -715,8 +716,8 @@ def test_cybelangel_report_comment_create_command(mocker):
     response = cybelangel_report_comment_create_command(client, args)
 
     assert f"Comment created successfully for report ID: {report_id}" in response.readable_output
-    
-    
+
+
 def test_cybelangel_report_comment_create_command_invalid(mocker):
     """
     Given:
@@ -728,7 +729,7 @@ def test_cybelangel_report_comment_create_command_invalid(mocker):
     Then:
      - Ensure the command raises a ValueError with the correct error message.
     """
-    from CybelAngelEventCollector import cybelangel_report_comment_create_command, Client
+    from CybelAngelEventCollector import cybelangel_report_comment_create_command
     client = mock_client()
     report_id = "11223344"
 
