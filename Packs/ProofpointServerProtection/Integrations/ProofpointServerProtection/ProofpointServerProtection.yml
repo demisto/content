@@ -52,22 +52,22 @@ script:
       description: Messages to recipient to quarantine.
     outputs:
     - contextPath: Proofpoint.Quarantine.Message.ID.
-      description: Message ID
+      description: Message ID.
       type: string
     - contextPath: Proofpoint.Quarantine.Message.Date.
-      description: Message date
+      description: Message date.
       type: date
     - contextPath: Proofpoint.Quarantine.Message.Recipient.
-      description: Message recipient
+      description: Message recipient.
       type: string
     - contextPath: Proofpoint.Quarantine.Message.Sender.
-      description: Message sender
+      description: Message sender.
       type: string
     - contextPath: Proofpoint.Quarantine.Message.Subject.
-      description: Message subject
+      description: Message subject.
       type: string
     - contextPath: Proofpoint.Quarantine.Message.Folder.
-      description: Message folder
+      description: Message folder.
       type: string
     description: Retrieves quarantined email messages.
   - name: proofpoint-smart-search
