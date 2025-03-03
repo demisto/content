@@ -48,7 +48,7 @@ When configuring the Office 365 data source, mark the following checkboxes under
   * **`Collect all sign-in event types`**
 * **`Azure AD Audit Logs`**
 
-![MicrosoftEntraID_Office_365](https://raw.githubusercontent.com/demisto/content/refs/heads/master/Packs/MicrosoftEntraID/doc_files/MicrosoftEntraID_Office_365.png)
+![MicrosoftEntraID_Office_3652](./././doc_files/MicrosoftEntraID_Office_365.png)
 
 ### Azure Event Hub Logs
 
@@ -57,6 +57,6 @@ To collect Azure Logs from an Azure Event Hub and ingest them into the *`msft_az
 When configuring the Azure Event Hub data source, mark the following checkbox under the *Enhanced Cloud Protection* section, as demonstrated in the screenshot below:
 * **`Use audit logs in analytics`** 
 
-![MicrosoftEntraID_Azure_Event_Hub](https://raw.githubusercontent.com/demisto/content/refs/heads/master/Packs/MicrosoftEntraID/doc_files/MicrosoftEntraID_Azure_Event_Hub.png)
+![MicrosoftEntraID_Azure_Event_Hub](./././doc_files/MicrosoftEntraID_Azure_Event_Hub.png)
 
 </~XSIAM>
