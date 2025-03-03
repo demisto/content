@@ -246,8 +246,6 @@ tasks:
         simple: "True"
       report_id:
         simple: ${CybelAngel.Report.[0].id}
-      retry-count:
-        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -704,7 +702,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CybelAngel.Report.[0].Comments.[0].id}
+              simple: ${CybelAngel.Report.[0].Comment.[0].id}
             iscontext: true
           right:
             value: {}
@@ -742,8 +740,8 @@ tasks:
     scriptarguments:
       content:
         simple: Test Playbook
-      report_id:
-        simple: ${CybelAngel.Report.[0].id}
+      discussion_id:
+        simple: ${CybelAngel.Report.[0].Comment.[0].discussion_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
